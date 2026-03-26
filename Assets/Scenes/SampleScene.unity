@@ -482,6 +482,51 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
+--- !u!1 &234167929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 234167931}
+  - component: {fileID: 234167930}
+  m_Layer: 0
+  m_Name: DamageTextManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &234167930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234167929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ea7f3ce25964a3fae8ca0fff9ebda2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DamageTextPrefab: {fileID: 3063888322354730739, guid: ee3cbea162a1d8b4ab0191c152b1df01, type: 3}
+--- !u!4 &234167931
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234167929}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.1386924, y: -0.9982128, z: 0.019966664}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &253110007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -970,6 +1015,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b2942a868c746a897554998f40d2469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 683311680}
   range: 2
   enemyLayerMask:
     serializedVersion: 2
@@ -977,7 +1023,8 @@ MonoBehaviour:
   aimLerp: 10
   hitDetectionTransform: {fileID: 1756075265}
   hitDetectionRadius: 0.3
-  damage: 1
+  damage: 10
+  attackDelay: 0.5
 --- !u!4 &683311679
 Transform:
   m_ObjectHideFlags: 0
@@ -1464,7 +1511,8 @@ GameObject:
   - component: {fileID: 1375590279}
   - component: {fileID: 1375590276}
   - component: {fileID: 1375590280}
-  m_Layer: 0
+  - component: {fileID: 1375590281}
+  m_Layer: 7
   m_Name: Dave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1556,6 +1604,41 @@ MonoBehaviour:
   maxHealth: 10
   healthSlider: {fileID: 1527038177}
   healthText: {fileID: 1749693332}
+--- !u!58 &1375590281
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375590275}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.5214381}
+  serializedVersion: 2
+  m_Radius: 0.4935627
 --- !u!1 &1432474698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2644,7 +2727,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1902076267}
   - component: {fileID: 1902076269}
-  - component: {fileID: 1902076268}
   m_Layer: 0
   m_Name: Dave Render
   m_TagString: Untagged
@@ -2667,41 +2749,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1375590278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &1902076268
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902076266}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.5777153}
-  serializedVersion: 2
-  m_Radius: 1.5777138
 --- !u!212 &1902076269
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2827,3 +2874,4 @@ SceneRoots:
   - {fileID: 253110007}
   - {fileID: 154764001}
   - {fileID: 1346355035}
+  - {fileID: 234167931}

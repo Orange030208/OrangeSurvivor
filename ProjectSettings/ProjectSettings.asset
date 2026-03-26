@@ -163,6 +163,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.Orange.2D
+    Standalone: com.Orange.2D------------
   buildNumber:
     Standalone: 0
     VisionOS: 0

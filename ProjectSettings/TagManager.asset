@@ -12,7 +12,7 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - 
+  - Player
   - 
   - 
   - 
@@ -43,4 +43,7 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Top
+    uniqueID: 2002517321
     locked: 0

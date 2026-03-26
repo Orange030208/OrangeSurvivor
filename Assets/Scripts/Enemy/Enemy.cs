@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private ParticleSystem passAwayParticles;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer spawnIndicator;
+    [SerializeField] private Collider2D collider;
     private bool _hasSpawned = false;
     
     [Header("攻击")]
@@ -19,6 +20,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float attackDetectionRadius;
     private float attackDelay;
     private float attackTimer;
+
+    public static Action<int,Vector2> onDamageTaken;
     
     [Header("生命值")]
     private int health;
@@ -48,6 +51,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if(!_hasSpawned) return;
         if (attackTimer >= attackDelay)
         {
             TryAttack();
@@ -62,6 +66,7 @@ public class Enemy : MonoBehaviour
     {
         int realDamage = Math.Min(health, damage);
         health -= realDamage;
+        onDamageTaken?.Invoke(realDamage,transform.position);
 
         if (health <= 0)
         {
@@ -73,6 +78,7 @@ public class Enemy : MonoBehaviour
     {
         SetRendersVisibility(true);
         _hasSpawned = true;
+        collider.enabled = true;
         _movement.SetTarget(_player);
     }
 
