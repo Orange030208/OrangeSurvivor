@@ -5,15 +5,22 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb;
-    [SerializeField] private float _speed;
+    [SerializeField] private float speed;
+    [SerializeField] private MobileJoystick playerJoystick;
 
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        
+        Move();
+    }
+
+    private void Move()
+    {
+        Vector2 moveDirection = playerJoystick.GetMoveVector();
+        _rb.velocity = moveDirection * Time.deltaTime * speed;
     }
 }
