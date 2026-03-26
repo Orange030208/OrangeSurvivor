@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.dbrizov.naughtyattributes": {
+      "version": "file:E:/unity/Packages/NaughtyAttributes",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "9.1.3",
       "depth": 1,

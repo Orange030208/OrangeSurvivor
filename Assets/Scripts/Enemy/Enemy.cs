@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyMovement))]
@@ -18,9 +19,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float attackDetectionRadius;
     private float attackDelay;
     private float attackTimer;
+    
+    [Header("生命值")]
+    private int health;
+    [SerializeField] private int maxHealth;
 
     private void Start()
     {
+        health = maxHealth;
+        
         _player = FindObjectOfType<Player>();
 
         _movement = GetComponent<EnemyMovement>();
@@ -48,6 +55,17 @@ public class Enemy : MonoBehaviour
         else
         {
             Wait();
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        int realDamage = Math.Min(health, damage);
+        health -= realDamage;
+
+        if (health <= 0)
+        {
+            PassAway();
         }
     }
 
@@ -81,7 +99,7 @@ public class Enemy : MonoBehaviour
     
     private void Attack()
     {
-        Debug.Log($"攻击 伤害为{damage}");
+        _player.TakeDamage(damage);
         attackTimer = 0;
     }
 
