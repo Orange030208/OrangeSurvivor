@@ -8,13 +8,7 @@ public class EnemyMovement : MonoBehaviour
     private Player _target;
     [SerializeField] private float moveSpeed;
 
-    private void Update()
-    {
-        if(_target!=null)
-            FollowPlayer();
-    }
-
-    private void FollowPlayer()
+    public void FollowPlayer()
     {
         Vector2 direction = (_target.transform.position - transform.position).normalized;
         Vector2 targetPos = (Vector2)transform.position + direction * moveSpeed * Time.deltaTime;
