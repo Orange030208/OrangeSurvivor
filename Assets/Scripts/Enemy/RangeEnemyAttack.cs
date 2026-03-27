@@ -18,11 +18,6 @@ public class RangeEnemyAttack : MonoBehaviour
         attackTimer = attackDelay;
     }
 
-    private void Update()
-    {
-        
-    }
-
     public void SetTarget(Player target)
     {
         _target = target;
@@ -48,6 +43,6 @@ public class RangeEnemyAttack : MonoBehaviour
         Vector2 direction = (_target.Center - (Vector2)shootingPoint.position).normalized;
         
         EnemyBullet enemyBullet = Instantiate(bulletPrefab,shootingPoint.position, Quaternion.identity);
-        enemyBullet.Shoot(damage,direction);
+        enemyBullet.Shoot(direction,damage,false);
     }
 }

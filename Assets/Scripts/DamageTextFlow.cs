@@ -5,54 +5,76 @@ using UnityEngine;
 public class DamageTextFlow : MonoBehaviour
 {
     [Header("基础飘字设置")]
-    public float floatHeight = 1.2f;
     public float floatTime = 0.8f;
-    public float randomOffsetX = 0.3f;
+    public Color normalColor = Color.white;
 
     [Header("视觉效果")]
     public float startScale = 0.5f;
     public bool useFade = true;
 
-    [SerializeField]private TextMeshPro _damageText;
-    private Sequence _animSequence; // 用Sequence管理动画，安全无报错
+    [Header("暴击专属效果")]
+    public Color criticalColor = new Color(1f, 0.6f, 0f);
+    public float criticalStartScale = 1.2f;
+    public float criticalShakeStrength = 0.3f;
 
-    private void OnEnable()
+    [SerializeField] private TextMeshPro _damageText;
+    private Sequence _animSequence;
+    private bool _isCritical;
+
+    private void OnEnable() { }
+
+    public void SetDamage(int damage, bool isCritical)
     {
-        transform.localScale = Vector3.one * startScale;
-        // 随机目标位置
-        Vector3 targetPos = transform.position + new Vector3(
-            Random.Range(-randomOffsetX, randomOffsetX),
-            floatHeight,
-            0
-        );
+        _damageText.text = damage.ToString();
+        _isCritical = isCritical;
+        Play();
+    }
 
-        // 3. 创建动画序列（修复Join报错的核心！）
+    private void Play()
+    {
+        // 1. 初始化参数
+        float currentStartScale = _isCritical ? criticalStartScale : startScale;
+        Color currentColor = _isCritical ? criticalColor : normalColor;
+
+        transform.localScale = Vector3.one * currentStartScale;
+        _damageText.color = currentColor;
+        _damageText.alpha = 1;
+
+        // 2. 清理旧动画
+        _animSequence?.Kill();
         _animSequence = DOTween.Sequence();
 
-        // 并行添加：位移 + 缩放
-        _animSequence.Append(transform.DOMove(targetPos, floatTime).SetEase(Ease.OutCubic));
-        _animSequence.Join(transform.DOScale(Vector3.one, floatTime * 0.3f).SetEase(Ease.OutBack));
+        // 3. 播放动画 (只有缩放 + 震动 + 渐隐)
+        Ease scaleEase = _isCritical ? Ease.OutElastic : Ease.OutBack;
+        float scaleDuration = _isCritical ? floatTime * 0.5f : floatTime * 0.3f;
+
+        // 缩放动画
+        _animSequence.Append(transform.DOScale(Vector3.one, scaleDuration).SetEase(scaleEase));
+
+        // 暴击震动
+        if (_isCritical)
+        {
+            _animSequence.Join(transform.DOShakePosition(
+                scaleDuration, 
+                criticalShakeStrength, 
+                20, 
+                90f, 
+                false, 
+                true
+            ));
+        }
 
         // 渐隐效果
         if (useFade)
         {
-            _damageText.alpha = 1;
-            _animSequence.Append(_damageText.DOFade(0, floatTime * 0.5f).SetDelay(floatTime * 0.5f));
+            float fadeDelay = _isCritical ? floatTime * 0.4f : floatTime * 0.5f;
+            _animSequence.Append(_damageText.DOFade(0, floatTime * 0.5f).SetDelay(fadeDelay));
         }
 
-        // 动画结束销毁
+        // 4. 结束回收
         _animSequence.OnComplete(DestroyDamageText);
     }
 
-    /// <summary>
-    /// 设置伤害数字（外部调用）
-    /// </summary>
-    public void SetDamage(int damage)
-    {
-        _damageText.text = damage.ToString();
-    }
-
-    // 安全销毁
     private void DestroyDamageText()
     {
         _animSequence?.Kill();

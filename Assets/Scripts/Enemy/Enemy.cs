@@ -2,7 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy : Entity
 {
     [Header("组件")]
     protected EnemyMovement _movement;
@@ -20,7 +20,10 @@ public abstract class Enemy : MonoBehaviour
     
     [SerializeField] protected float attackDetectionRadius;
     
-    public static Action<int,Vector2> onDamageTaken;
+    public static Action<DamageInfo> onDamageTaken;
+    public static Action<DeadInfo> onDeath;
+
+    public override Vector2 Center => transform.position;
 
     protected virtual void Start()
     {
@@ -64,11 +67,11 @@ public abstract class Enemy : MonoBehaviour
         spawnIndicator.enabled = !visible;
     }
     
-    public void TakeDamage(int damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
-        int realDamage = Math.Min(health, damage);
+        int realDamage = Math.Min(health, damageInfo.damage);
         health -= realDamage;
-        onDamageTaken?.Invoke(realDamage,transform.position);
+        onDamageTaken?.Invoke(damageInfo);
 
         if (health <= 0)
         {
@@ -80,7 +83,7 @@ public abstract class Enemy : MonoBehaviour
     {
         passAwayParticles.transform.SetParent(null);
         passAwayParticles.Play();
-
+        onDeath.Invoke(new DeadInfo(transform.position));
         Destroy(gameObject);
     }
     
