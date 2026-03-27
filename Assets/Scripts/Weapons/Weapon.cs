@@ -65,7 +65,7 @@ public class Weapon : MonoBehaviour
 
     private void AutoAim()
     {
-        Enemy closestEnemy = GetClosestEnemy();
+        MeleeEnemy closestEnemy = GetClosestEnemy();
 
         Vector2 targetUpVector = Vector3.up;
 
@@ -110,9 +110,9 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    private Enemy GetClosestEnemy()
+    private MeleeEnemy GetClosestEnemy()
     {
-        Enemy closestEnemy = null;
+        MeleeEnemy closestMeleeEnemy = null;
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, range, enemyLayerMask);
 
@@ -124,18 +124,18 @@ public class Weapon : MonoBehaviour
         float minDistance = range;
         for (int i = 0; i < colliders.Length; i++)
         {
-            Enemy enemyChecked = colliders[i].GetComponent<Enemy>();
+            MeleeEnemy meleeEnemyChecked = colliders[i].GetComponent<MeleeEnemy>();
 
-            float distanceToEnemy = Vector2.Distance(transform.position, enemyChecked.transform.position);
+            float distanceToEnemy = Vector2.Distance(transform.position, meleeEnemyChecked.transform.position);
 
             if (distanceToEnemy < minDistance)
             {
-                closestEnemy = enemyChecked;
+                closestMeleeEnemy = meleeEnemyChecked;
                 minDistance = distanceToEnemy;
             }
         }
 
-        return closestEnemy;
+        return closestMeleeEnemy;
     }
 
     private void OnDrawGizmosSelected()

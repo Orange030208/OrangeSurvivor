@@ -1,69 +1,69 @@
 using System;
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyMovement))]
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
-    private Player _player;
-    private EnemyMovement _movement;
-    [SerializeField] private ParticleSystem passAwayParticles;
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private SpriteRenderer spawnIndicator;
-    [SerializeField] private Collider2D collider;
-    private bool _hasSpawned = false;
-    
-    [Header("攻击")]
-    [SerializeField] private int damage;
-    [SerializeField] private float attackFrequency;
-    [SerializeField] private float attackDetectionRadius;
-    private float attackDelay;
-    private float attackTimer;
-
-    public static Action<int,Vector2> onDamageTaken;
+    [Header("组件")]
+    protected EnemyMovement _movement;
+    [SerializeField] protected ParticleSystem passAwayParticles;
+    [SerializeField] protected SpriteRenderer spriteRenderer;
+    [SerializeField] protected SpriteRenderer spawnIndicator;
+    [SerializeField] protected Collider2D collider;
     
     [Header("生命值")]
-    private int health;
-    [SerializeField] private int maxHealth;
+    [SerializeField] protected int maxHealth;
+    protected int health;
+    
+    protected Player _player;
+    protected bool _hasSpawned = false;
+    
+    [SerializeField] protected float attackDetectionRadius;
+    
+    public static Action<int,Vector2> onDamageTaken;
 
-    private void Start()
+    protected virtual void Start()
     {
         health = maxHealth;
-        
         _player = FindObjectOfType<Player>();
-
         _movement = GetComponent<EnemyMovement>();
-
         if (_player == null)
         {
             Debug.LogError("Player not found");
         }
 
-        SetRendersVisibility(false);
-        
-        transform.DOScale(1.2f, .3f).SetLoops(5, LoopType.Yoyo).SetEase(Ease.InOutSine)
-            .OnComplete(SpawnSequenceComplete);
-        
-        attackDelay = 1f / attackFrequency;
-        Debug.Log($"攻击延迟{attackDelay}");
+        StartSpawnSequence();
     }
 
     private void Update()
     {
         if (!spriteRenderer.enabled) return;
-        if (attackTimer >= attackDelay)
-        {
-            TryAttack();
-        }
-        else
-        {
-            Wait();
-        }
-        
-        _movement.FollowPlayer();
     }
 
+    protected virtual bool CanAttack => spriteRenderer.enabled;
+
+    protected void StartSpawnSequence()
+    {
+        SetRendersVisibility(false);
+        
+        transform.DOScale(1.2f, .3f).SetLoops(5, LoopType.Yoyo).SetEase(Ease.InOutSine)
+            .OnComplete(OnSpawnSequenceCompleted);
+    }
+    
+    private void OnSpawnSequenceCompleted()
+    {
+        SetRendersVisibility(true);
+        _hasSpawned = true;
+        collider.enabled = true;
+        _movement.SetTarget(_player);
+    }
+    
+    private void SetRendersVisibility(bool visible)
+    {
+        spriteRenderer.enabled = visible;
+        spawnIndicator.enabled = !visible;
+    }
+    
     public void TakeDamage(int damage)
     {
         int realDamage = Math.Min(health, damage);
@@ -75,42 +75,7 @@ public class Enemy : MonoBehaviour
             PassAway();
         }
     }
-
-    private void SpawnSequenceComplete()
-    {
-        SetRendersVisibility(true);
-        _hasSpawned = true;
-        collider.enabled = true;
-        _movement.SetTarget(_player);
-    }
-
-    private void SetRendersVisibility(bool visible)
-    {
-        spriteRenderer.enabled = visible;
-        spawnIndicator.enabled = !visible;
-    }
     
-    private void Wait()
-    {
-        attackTimer += Time.deltaTime;
-    }
-    
-    private void TryAttack()
-    {
-        float distanceToPlayer = Vector2.Distance(_player.transform.position, transform.position);
-
-        if (distanceToPlayer <= attackDetectionRadius)
-        {
-            Attack();
-        }
-    }
-    
-    private void Attack()
-    {
-        _player.TakeDamage(damage);
-        attackTimer = 0;
-    }
-
     private void PassAway()
     {
         passAwayParticles.transform.SetParent(null);
@@ -118,7 +83,7 @@ public class Enemy : MonoBehaviour
 
         Destroy(gameObject);
     }
-
+    
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

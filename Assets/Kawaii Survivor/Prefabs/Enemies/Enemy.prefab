@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1774002642989257402}
   - component: {fileID: 6863372801195459561}
-  - component: {fileID: 2060253259454038790}
+  - component: {fileID: 5121700486997552698}
   - component: {fileID: 2388690262079300533}
   m_Layer: 6
   m_Name: Enemy
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
---- !u!114 &2060253259454038790
+--- !u!114 &5121700486997552698
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,17 +59,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1621166214436897976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2da4c0e8cb04bf981e9fcd6b9d207fe, type: 3}
+  m_Script: {fileID: 11500000, guid: dbf374315cfdfb34db62a71b910ce99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   passAwayParticles: {fileID: 9203911137525845175}
   spriteRenderer: {fileID: 3412302525266147982}
   spawnIndicator: {fileID: 8791426376524187226}
   collider: {fileID: 2388690262079300533}
-  damage: 1
-  attackFrequency: 2
-  attackDetectionRadius: 0.5
   maxHealth: 10
+  attackDetectionRadius: 1
+  damage: 1
+  attackFrequency: 1
 --- !u!58 &2388690262079300533
 CircleCollider2D:
   m_ObjectHideFlags: 0

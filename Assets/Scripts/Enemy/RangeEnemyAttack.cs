@@ -4,7 +4,7 @@ using UnityEngine;
 public class RangeEnemyAttack : MonoBehaviour
 {
     [SerializeField] private Transform shootingPoint;
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private EnemyBullet bulletPrefab;
     private Player _target;
 
     [SerializeField]private int damage;
@@ -47,11 +47,7 @@ public class RangeEnemyAttack : MonoBehaviour
     {
         Vector2 direction = (_target.Center - (Vector2)shootingPoint.position).normalized;
         
-        GameObject bullet = Instantiate(bulletPrefab,shootingPoint.position, Quaternion.identity);
-        bullet.transform.right = direction;
-
-        bullet.GetComponent<Rigidbody2D>().velocity = direction * 5;
+        EnemyBullet enemyBullet = Instantiate(bulletPrefab,shootingPoint.position, Quaternion.identity);
+        enemyBullet.Shoot(damage,direction);
     }
-    
-    
 }

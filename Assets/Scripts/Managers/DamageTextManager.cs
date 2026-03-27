@@ -7,12 +7,12 @@ public class DamageTextManager:MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.onDamageTaken += InstantiateDamageText;
+        MeleeEnemy.onDamageTaken += InstantiateDamageText;
     }
 
     private void OnDisable()
     {
-        Enemy.onDamageTaken -= InstantiateDamageText;
+        MeleeEnemy.onDamageTaken -= InstantiateDamageText;
     }
 
     public void InstantiateDamageText(int damage,Vector2 position)
