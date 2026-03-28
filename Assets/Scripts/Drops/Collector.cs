@@ -48,6 +48,12 @@ public abstract class Collector : MonoBehaviour
     private void Collected()
     {
         Debug.Log("Collected");
+        OnCollected();
         Destroy(gameObject);
+    }
+
+    protected virtual void OnCollected()
+    {
+        
     }
 }
