@@ -1,23 +1,21 @@
 using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("设置")] 
-    [SerializeField] 
+    [Header("设置")]
+    [SerializeField]
     private int maxHealth = 10;
     private int health;
-    
-    [Header("UI")]
-    [SerializeField]private Slider healthSlider;
-    [SerializeField]private TextMeshProUGUI healthText;
+
+    public static event Action<int, int> OnHealthChanged;
+    public int CurrentHealth => health;
+    public int MaxHealth => maxHealth;
+
     private void Start()
     {
         health = maxHealth;
-        UpdateUI();
+        OnHealthChanged?.Invoke(health, maxHealth);
     }
 
     public void TakeDamage(int damage)
@@ -25,23 +23,17 @@ public class PlayerHealth : MonoBehaviour
         int realDamage = Math.Min(damage, health);
         health -= realDamage;
 
-        UpdateUI();
-        
+        OnHealthChanged?.Invoke(health, maxHealth);
+
         if (health <= 0)
         {
             PassAway();
         }
     }
 
-    private void UpdateUI()
-    {
-        healthSlider.value = (float)health / maxHealth;
-        healthText.text = $"{health} / {maxHealth}";
-    }
-
     private void PassAway()
     {
         Debug.Log("玩家挂了");
-        SceneManager.LoadScene(0);
+        GameManager.Instance.GameOver();
     }
 }

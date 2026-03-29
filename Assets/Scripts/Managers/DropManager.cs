@@ -22,11 +22,11 @@ public class DropManager:MonoBehaviour
     {
         Collector dropItem;
         int random = Random.Range(1, 101);
-        if (random <= 33)
+        if (random <= 49)
         {
             dropItem = candyPrefab;
         }
-        else if (random <= 66)
+        else if (random <= 98)
         {
             dropItem = cashPrefab;
         }

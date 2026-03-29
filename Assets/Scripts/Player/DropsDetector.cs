@@ -14,7 +14,6 @@ public class DropsDetector : MonoBehaviour
     {
         detectTimer = timeToDetect;
         collectLayer =  LayerMask.NameToLayer("Collector");
-        Debug.Log(collectLayer);
         _entity =  GetComponent<IEntity>();
     }
 

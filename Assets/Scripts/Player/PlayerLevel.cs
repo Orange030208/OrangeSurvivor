@@ -1,35 +1,41 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerLevel : MonoBehaviour
 {
-    [Header("经验")] 
+    [Header("经验")]
     private int requiredXP;
     private int currentXP;
     private int currentLevel = 1;
-    
-    [Header("UI")]
-    [SerializeField]private TextMeshProUGUI levelText;
-    [SerializeField]private Slider xpBar;
+    private int levelOnWaveStart;
+
+    public bool IsLevelUpInCurrentWave => currentLevel > levelOnWaveStart;
+
+    public int LevelUpValue => currentLevel - levelOnWaveStart;
+    public int CurrentLevel => currentLevel;    
+    public int CurrentXP  => currentXP;
+    public int RequiredXP => requiredXP;
+
+    public static event Action<int> OnLevelChanged;
+    public static event Action<int, int> OnXPChanged;
 
     private void OnEnable()
     {
         Candy.onCollected += CandyCollectedCallback;
+        WaveManager.OnWaveStarted += OnWaveStart;
     }
 
     private void OnDisable()
     {
         Candy.onCollected -= CandyCollectedCallback;
+        WaveManager.OnWaveStarted -= OnWaveStart;
     }
 
     private void Start()
     {
         RecaclRequiredXP();
-        UpdateUI();
+        OnXPChanged?.Invoke(currentXP, requiredXP);
+        OnLevelChanged?.Invoke(currentLevel);
     }
 
     private void RecaclRequiredXP()
@@ -37,26 +43,27 @@ public class PlayerLevel : MonoBehaviour
         requiredXP = currentLevel * 5;
     }
 
-    private void UpdateUI()
-    {
-        xpBar.value = (float)currentXP /  requiredXP;
-        levelText.text = "lvl" + currentLevel;
-    }
-
     private void CandyCollectedCallback(Candy candy)
     {
         currentXP++;
+        OnXPChanged?.Invoke(currentXP, requiredXP);
         if (currentXP >= requiredXP)
         {
             LevelUp();
         }
-        UpdateUI();
     }
 
     private void LevelUp()
     {
         currentLevel++;
+        OnLevelChanged?.Invoke(currentLevel);
         currentXP = 0;
+        OnXPChanged?.Invoke(currentXP, requiredXP);
         RecaclRequiredXP();
+    }
+
+    private void OnWaveStart(int waveCount, int totalWaves)
+    {
+        levelOnWaveStart = currentLevel;
     }
 }
