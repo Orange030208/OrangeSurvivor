@@ -30,11 +30,11 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>,IG
         for (int i = 0; i < UpgradeProps.Length; i++)
         {
             // 在 EntityProps 全枚举范围内随机生成一个可选升级属性。
-            UpgradeProps[i].prop = (EntityProps)Random.Range(0, Enum.GetNames(typeof(EntityProps)).Length);
+            UpgradeProps[i].propType = (EntityPropType)Random.Range(0, Enum.GetNames(typeof(EntityPropType)).Length);
 
             // 这里将“属性对应的执行逻辑”与“展示数值”解耦：
             // actionToPerform 负责真正执行升级，upgradeProp.value 负责提供 UI 展示值。
-            Action actionToPerform = GetActionToPerform(UpgradeProps[i].prop, out UpgradeProp upgradeProp);
+            Action actionToPerform = GetActionToPerform(UpgradeProps[i].propType, out UpgradeProp upgradeProp);
             UpgradeProps[i].value = upgradeProp.value;
 
             // 每轮重建选项前清空旧回调，避免同一个槽位重复叠加导致一次点击触发多次。
@@ -66,31 +66,32 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>,IG
         }
     }
 
-    private Action GetActionToPerform(EntityProps prop, out UpgradeProp upgradeProp)
+    private Action GetActionToPerform(EntityPropType propType, out UpgradeProp upgradeProp)
     {
         upgradeProp = new UpgradeProp();
-        upgradeProp.prop = prop;
+        upgradeProp.propType = propType;
         upgradeProp.value = 0;
 
         // TODO:AI写或者策略模式扩展
-        // 这里负责给“不同属性”分配对应的展示值。
-        // 当前仅实现 Attack，后续新增属性时在此补齐数值策略即可。
-        switch (prop)
+        switch (propType)
         {
-            case EntityProps.Attack:
+            case EntityPropType.Attack:
+                upgradeProp.value = Random.Range(1, 5);
+                break;
+            case EntityPropType.MaxHealth:
                 upgradeProp.value = Random.Range(1, 5);
                 break;
         }
-
-        // 返回延迟执行动作：按钮点击时才真正生效。
-        // 当前逻辑仅打印日志，后续应替换为对应属性的实际加成实现。
-        return () => print($"处理{prop.ToString()}");
+        
+        PropertiesManager propsManager = FindObjectOfType<PropertiesManager>();
+        var temp = upgradeProp;
+        return () => propsManager.AddProp(temp.propType, temp.value);
     }
 }
 
 public struct UpgradeProp
 {
-    public EntityProps prop;
+    public EntityPropType propType;
     public float value;
     public Action upgradeBonusCallback;
 }

@@ -1,4 +1,4 @@
-public enum PropEnum
+public enum EntityPropType
 {
     Attack,
     AttackSpeed,

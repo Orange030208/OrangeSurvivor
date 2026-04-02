@@ -7,24 +7,35 @@ namespace UniversalUI.Instances
 {
     public class WaveTransitionUIPage : UIPageBase
     {
-        [SerializeField] private Button[] upgradeButtons;
-        [SerializeField] private TextMeshProUGUI[] upgradeTexts;
+        [SerializeField] private UpgradeContainer[] upGradeContainers;
         
-        private int _btnCount = 3;
-
         protected override void OnPageOpened(UIPageOpenContext context)
         {
-            PropEnum[] props = FetchUpgradeProps();
-            for (int i = 0; i < _btnCount; i++)
+            UpgradeProp[] props = FetchUpgradeProps();
+            for (int i = 0; i < 3; i++)
             {
-                upgradeTexts[i].text = props[i].FormatPropName();
+                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%",props[i].upgradeBonusCallback);
+            }
+
+            WaveTransitionManager.Instance.OnUpdatePropsChanged += OnUpdatePropsChanged;
+        }
+
+        private UpgradeProp[] FetchUpgradeProps()
+        {
+            return WaveTransitionManager.Instance.UpgradeProps;
+        }
+
+        private void OnUpdatePropsChanged(UpgradeProp[] props)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%",props[i].upgradeBonusCallback);
             }
         }
-        
-        //ui来的时候主动拉一次数据，防止逻辑先于UI
-        private PropEnum[] FetchUpgradeProps()
+
+        protected override void OnPageClosed()
         {
-            return WaveTransitionManager.Instance.PropEnums;
+            WaveTransitionManager.Instance.OnUpdatePropsChanged -= OnUpdatePropsChanged;
         }
     }
 }

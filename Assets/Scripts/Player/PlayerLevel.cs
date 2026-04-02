@@ -8,9 +8,10 @@ public class PlayerLevel : MonoBehaviour
     private int currentXP;
     private int currentLevel = 1;
     private int levelOnWaveStart;
+    private int currentUsedLevelUpgradePoints = 0;
 
     public bool IsLevelUpInCurrentWave => currentLevel > levelOnWaveStart;
-
+    
     public int LevelUpValue => currentLevel - levelOnWaveStart;
     public int CurrentLevel => currentLevel;    
     public int CurrentXP  => currentXP;
@@ -56,6 +57,7 @@ public class PlayerLevel : MonoBehaviour
     private void LevelUp()
     {
         currentLevel++;
+        currentUsedLevelUpgradePoints++;
         OnLevelChanged?.Invoke(currentLevel);
         currentXP = 0;
         OnXPChanged?.Invoke(currentXP, requiredXP);
@@ -65,5 +67,15 @@ public class PlayerLevel : MonoBehaviour
     private void OnWaveStart(int waveCount, int totalWaves)
     {
         levelOnWaveStart = currentLevel;
+        currentUsedLevelUpgradePoints = 0;
+    }
+
+    public int UseUpgradePoints()
+    {
+        if (currentUsedLevelUpgradePoints > 0)
+        {
+            currentUsedLevelUpgradePoints--;
+        }
+        return currentUsedLevelUpgradePoints;
     }
 }

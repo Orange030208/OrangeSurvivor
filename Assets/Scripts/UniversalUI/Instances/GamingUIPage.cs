@@ -75,12 +75,12 @@ namespace UniversalUI.Instances
             timerText.text = $"{Mathf.RoundToInt(remainingTime)}s / {Mathf.RoundToInt(totalTime)}s";
         }
 
-        private void UpdateHealthUI(int currentHealth, int maxHealth)
+        private void UpdateHealthUI(float currentHealth, float maxHealth)
         {
             if (healthSlider != null)
-                healthSlider.value = (float)currentHealth / maxHealth;
+                healthSlider.value = currentHealth / maxHealth;
             if (healthText != null)
-                healthText.text = $"{currentHealth} / {maxHealth}";
+                healthText.text = $"{(int)currentHealth} / {(int)maxHealth}";
         }
 
         private void UpdateLevelUI(int currentLevel)

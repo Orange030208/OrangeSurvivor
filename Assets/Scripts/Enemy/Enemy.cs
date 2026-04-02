@@ -12,8 +12,8 @@ public abstract class Enemy : Entity
     [SerializeField] protected Collider2D collider;
     
     [Header("生命值")]
-    [SerializeField] protected int maxHealth;
-    protected int health;
+    [SerializeField] protected float maxHealth;
+    protected float health;
     
     protected Player _player;
     protected bool _hasSpawned = false;
@@ -69,7 +69,7 @@ public abstract class Enemy : Entity
     
     public void TakeDamage(DamageInfo damageInfo)
     {
-        int realDamage = Math.Min(health, damageInfo.damage);
+        float realDamage = Math.Min(health, damageInfo.damage);
         health -= realDamage;
         onDamageTaken?.Invoke(damageInfo);
 

@@ -1,26 +1,71 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
 {
-    [Header("设置")]
-    [SerializeField]
-    private int maxHealth = 10;
-    private int health;
+    [Header("设置")] 
+    [SerializeField] 
+    private int baseMaxHealth;
+    private float maxHealth;
+    private float health;
+    private float armor;
+    private float lifeSteal;
+    private float dodge;
 
-    public static event Action<int, int> OnHealthChanged;
-    public int CurrentHealth => health;
-    public int MaxHealth => maxHealth;
+    private float healthRecoverySpeed;
+    private float healthRecoveryTimer;
+    private float healthRecoveryDuration;
 
-    private void Start()
+    public static event Action<float, float> OnHealthChanged;
+    public static event Action<Vector2> onAttackDodged;
+    public float CurrentHealth => health;
+    public float MaxHealth => maxHealth;
+
+    private void OnEnable()
     {
-        health = maxHealth;
-        OnHealthChanged?.Invoke(health, maxHealth);
+        Enemy.onDamageTaken += EnemyTookDamageCallback;
     }
+
+    private void OnDisable()
+    {
+        Enemy.onDamageTaken -= EnemyTookDamageCallback;
+    }
+
+    private void Update()
+    {
+        if (health < maxHealth)
+        {
+            RecoveryHealth();
+        }
+    }
+
+    private void RecoveryHealth()
+    {
+        healthRecoveryTimer += Time.deltaTime;
+
+        if (healthRecoveryTimer >= healthRecoveryDuration)
+        {
+            healthRecoveryTimer = 0;
+            float healthToAdd = Mathf.Min(.1f,maxHealth - health);
+            health += healthToAdd;
+            
+            OnHealthChanged?.Invoke(health, maxHealth);
+        }
+    }
+
 
     public void TakeDamage(int damage)
     {
-        int realDamage = Math.Min(damage, health);
+        if (ShouldDodge())
+        {
+            onAttackDodged?.Invoke(transform.position);
+            print("闪避");
+            return;
+        }
+        float realDamage = damage * Mathf.Clamp(1 - (armor / 1000),0,10000);
+        realDamage = Mathf.Min(realDamage, health);
         health -= realDamage;
 
         OnHealthChanged?.Invoke(health, maxHealth);
@@ -31,9 +76,41 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    private bool ShouldDodge()
+    {
+        return Random.Range(1,101) <= dodge;
+    }
+
     private void PassAway()
     {
         Debug.Log("玩家挂了");
         GameManager.Instance.GameOver();
+    }
+    
+    private void EnemyTookDamageCallback(DamageInfo damageInfo)
+    {
+        if (health >= maxHealth) return;
+        float lifeStyleValue = damageInfo.damage * lifeSteal;
+        float healthToAdd = Math.Min(lifeStyleValue, maxHealth - health);
+        
+        health += healthToAdd;
+        OnHealthChanged?.Invoke(health, maxHealth);
+    }
+
+    public void UpdateStatus(PropertiesManager propertiesManager)
+    {
+        float addedHealth = propertiesManager.GetPropValue(EntityPropType.MaxHealth);
+        maxHealth = baseMaxHealth + (int)addedHealth;
+        maxHealth = Mathf.Max(maxHealth, 1);
+
+        health = maxHealth;
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+        
+        armor = propertiesManager.GetPropValue(EntityPropType.Armor);
+        lifeSteal =  propertiesManager.GetPropValue(EntityPropType.LifeSteal)/100;
+        dodge = propertiesManager.GetPropValue(EntityPropType.Dodge);
+
+        healthRecoverySpeed = Mathf.Max(propertiesManager.GetPropValue(EntityPropType.HealthRecoverySpeed), 0.00001f);
+        healthRecoveryDuration = 1 /  healthRecoverySpeed;
     }
 }

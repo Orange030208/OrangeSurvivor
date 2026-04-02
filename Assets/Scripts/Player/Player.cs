@@ -25,5 +25,6 @@ public class Player : Entity
     {
         _playerHealth.TakeDamage(damage);
     }
-    
+
+    public int UseUpgradePoints() => _playerLevel.UseUpgradePoints();
 }

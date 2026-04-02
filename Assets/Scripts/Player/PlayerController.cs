@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour,IPlayerStatusDependency
 {
     private Rigidbody2D _rb;
+    [SerializeField] private float baseSpeed;
     [SerializeField] private float speed;
     [SerializeField] private MobileJoystick playerJoystick;
 
@@ -22,5 +23,10 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 moveDirection = playerJoystick.GetMoveVector();
         _rb.velocity = moveDirection * Time.deltaTime * speed;
+    }
+
+    public void UpdateStatus(PropertiesManager propertiesManager)
+    {
+        speed = baseSpeed + propertiesManager.GetPropValue(EntityPropType.MoveSpeed);
     }
 }

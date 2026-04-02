@@ -23,9 +23,9 @@ public class DamageTextFlow : MonoBehaviour
 
     private void OnEnable() { }
 
-    public void SetDamage(int damage, bool isCritical)
+    public void SetDamage(float damage, bool isCritical)
     {
-        _damageText.text = damage.ToString();
+        _damageText.text = ((int)damage).ToString();
         _isCritical = isCritical;
         Play();
     }

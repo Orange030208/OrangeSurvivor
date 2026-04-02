@@ -2,9 +2,9 @@ using System;
 
 public static class Enums
 {
-    public static string FormatPropName(this PropEnum prop)
+    public static string FormatPropName(this EntityPropType propType)
     {
-        string unformatted = prop.ToString();
+        string unformatted = propType.ToString();
         if (string.IsNullOrEmpty(unformatted)) return "非法属性";
 
         // 栈上分配缓冲区

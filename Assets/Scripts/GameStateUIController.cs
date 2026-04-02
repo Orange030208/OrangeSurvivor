@@ -83,6 +83,7 @@ namespace UniversalUI.Integration.Game
 
         private void ShowShopStateUI()
         {
+            uiManager.CloseAllPages();
             uiManager.OpenPage<ShopUIPage>();
         }
     }
