@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
     private Rigidbody2D _rb;
     private Collider2D _collider;
     protected float _moveSpeed = 5;
-    protected int _damage;
+    protected float _damage;
     protected bool _isCritical;
     [SerializeField]protected LayerMask targetsLayerMask;
 
@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Shoot(Vector2 direction, int damage,bool isCritical)
+    public void Shoot(Vector2 direction, float damage,bool isCritical)
     {
         _damage = damage;
         _isCritical = isCritical;

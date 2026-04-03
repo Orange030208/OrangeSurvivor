@@ -2,7 +2,7 @@ using System;
 
 public static class Enums
 {
-    public static string FormatPropName(this EntityPropType propType)
+    public static string FormatPropName(this PropType propType)
     {
         string unformatted = propType.ToString();
         if (string.IsNullOrEmpty(unformatted)) return "非法属性";

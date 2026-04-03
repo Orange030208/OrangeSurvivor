@@ -56,7 +56,7 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
     }
 
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (ShouldDodge())
         {
@@ -99,18 +99,18 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
 
     public void UpdateStatus(PropertiesManager propertiesManager)
     {
-        float addedHealth = propertiesManager.GetPropValue(EntityPropType.MaxHealth);
+        float addedHealth = propertiesManager.GetPropValue(PropType.MaxHealth);
         maxHealth = baseMaxHealth + (int)addedHealth;
         maxHealth = Mathf.Max(maxHealth, 1);
 
         health = maxHealth;
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
         
-        armor = propertiesManager.GetPropValue(EntityPropType.Armor);
-        lifeSteal =  propertiesManager.GetPropValue(EntityPropType.LifeSteal)/100;
-        dodge = propertiesManager.GetPropValue(EntityPropType.Dodge);
+        armor = propertiesManager.GetPropValue(PropType.Armor);
+        lifeSteal =  propertiesManager.GetPropValue(PropType.LifeSteal)/100;
+        dodge = propertiesManager.GetPropValue(PropType.Dodge);
 
-        healthRecoverySpeed = Mathf.Max(propertiesManager.GetPropValue(EntityPropType.HealthRecoverySpeed), 0.00001f);
+        healthRecoverySpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed), 0.00001f);
         healthRecoveryDuration = 1 /  healthRecoverySpeed;
     }
 }

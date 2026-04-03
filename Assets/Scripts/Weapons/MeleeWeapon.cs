@@ -97,7 +97,7 @@ public class MeleeWeapon : Weapon
             Enemy enemy = colliders[i].GetComponent<Enemy>();
             if (!damagedEnemies.Contains(enemy))
             {
-                int finalDamage = GetDamage(out bool isCriticalHit);
+                float finalDamage = GetDamage(out bool isCriticalHit);
 
                 enemy.TakeDamage(new DamageInfo(finalDamage, enemy.transform.position, isCriticalHit));
                 damagedEnemies.Add(enemy);
@@ -112,5 +112,16 @@ public class MeleeWeapon : Weapon
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(hitDetectionTransform.position, hitDetectionRadius);
+    }
+
+    public override void UpdateStatus(PropertiesManager propertiesManager)
+    {
+        ConfigureProperties();
+        damage = propertiesManager.GetPropValue(PropType.Attack) + damage;
+        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
+
+        criticalChance =
+            Mathf.RoundToInt(criticalChance + propertiesManager.GetPropValue(PropType.CriticalChance) / 100);
+        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
     }
 }

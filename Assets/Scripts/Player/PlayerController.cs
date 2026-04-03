@@ -27,6 +27,6 @@ public class PlayerController : MonoBehaviour,IPlayerStatusDependency
 
     public void UpdateStatus(PropertiesManager propertiesManager)
     {
-        speed = baseSpeed + propertiesManager.GetPropValue(EntityPropType.MoveSpeed);
+        speed = baseSpeed + propertiesManager.GetPropValue(PropType.MoveSpeed);
     }
 }

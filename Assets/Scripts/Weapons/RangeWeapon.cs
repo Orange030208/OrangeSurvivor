@@ -40,8 +40,20 @@ public class RangeWeapon : Weapon
 
     private void Shoot()
     {
-        int finalDamage = GetDamage(out bool isCriticalHit);
+        float finalDamage = GetDamage(out bool isCriticalHit);
         Bullet bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
-        bullet.Shoot(transform.up, finalDamage,isCriticalHit);
+        bullet.Shoot(transform.up, finalDamage, isCriticalHit);
+    }
+
+    public override void UpdateStatus(PropertiesManager propertiesManager)
+    {
+        ConfigureProperties();
+        damage = propertiesManager.GetPropValue(PropType.Attack) + damage;
+        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
+
+        criticalChance += propertiesManager.GetPropValue(PropType.CriticalChance);
+        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
+        
+        range +=  propertiesManager.GetPropValue(PropType.Range);
     }
 }

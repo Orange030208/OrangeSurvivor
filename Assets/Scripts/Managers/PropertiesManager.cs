@@ -7,8 +7,8 @@ public class PropertiesManager:MonoSingletonBase<PropertiesManager>
 {
     [SerializeField] private CharacterDataSO basePropsData;
 
-    private Dictionary<EntityPropType, float> baseProps = new();
-    private readonly Dictionary<EntityPropType, float> addens = new();
+    private Dictionary<PropType, float> baseProps = new();
+    private readonly Dictionary<PropType, float> addens = new();
 
     private void Awake()
     {
@@ -26,7 +26,7 @@ public class PropertiesManager:MonoSingletonBase<PropertiesManager>
         UpdateStatus();
     }
 
-    public void AddProp(EntityPropType propType,float value)
+    public void AddProp(PropType propType,float value)
     {
         if (addens.ContainsKey(propType))
         {
@@ -50,7 +50,7 @@ public class PropertiesManager:MonoSingletonBase<PropertiesManager>
         }
     }
 
-    public float GetPropValue(EntityPropType propType)
+    public float GetPropValue(PropType propType)
     {
         return baseProps[propType] + addens[propType];
     }

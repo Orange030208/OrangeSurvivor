@@ -22,22 +22,22 @@ public class CharacterDataSO : ScriptableObject
     [SerializeField]private float dodge;
     [SerializeField]private float lifeSteal;
 
-    public Dictionary<EntityPropType, float> GetBaseProps()
+    public Dictionary<PropType, float> GetBaseProps()
     {
-        return new Dictionary<EntityPropType, float>
+        return new Dictionary<PropType, float>
         {
-            { EntityPropType.Attack, attack },
-            { EntityPropType.AttackSpeed, attackSpeed },
-            { EntityPropType.CriticalChance, criticalChance },
-            { EntityPropType.CriticalPercent, criticalPercent },
-            { EntityPropType.MoveSpeed, moveSpeed },
-            { EntityPropType.MaxHealth, maxHealth },
-            { EntityPropType.Range, range },
-            { EntityPropType.HealthRecoverySpeed, healthRecoverySpeed },
-            { EntityPropType.Armor, armor },
-            { EntityPropType.Luck, luck },
-            { EntityPropType.Dodge, dodge },
-            { EntityPropType.LifeSteal, lifeSteal },
+            { PropType.Attack, attack },
+            { PropType.AttackSpeed, attackSpeed },
+            { PropType.CriticalChance, criticalChance },
+            { PropType.CriticalPercent, criticalPercent },
+            { PropType.MoveSpeed, moveSpeed },
+            { PropType.MaxHealth, maxHealth },
+            { PropType.Range, range },
+            { PropType.HealthRecoverySpeed, healthRecoverySpeed },
+            { PropType.Armor, armor },
+            { PropType.Luck, luck },
+            { PropType.Dodge, dodge },
+            { PropType.LifeSteal, lifeSteal },
         };
     }
 }

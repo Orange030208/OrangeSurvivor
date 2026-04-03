@@ -15,7 +15,7 @@ MonoBehaviour:
   <Name>k__BackingField: "\u6234\u592B"
   <Sprite>k__BackingField: {fileID: -7888902146871769836, guid: 95cd4e99917ba734bafe9d543625fe72, type: 3}
   <PurchasePrice>k__BackingField: 1
-  attack: 0
+  attack: 10
   attackSpeed: 0
   criticalChance: 0
   criticalPercent: 0
