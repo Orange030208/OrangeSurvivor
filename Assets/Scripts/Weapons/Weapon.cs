@@ -61,20 +61,15 @@ public abstract class Weapon:MonoBehaviour,IPlayerStatusDependency
         return damage;
     }
 
-    protected void ConfigureProperties()
+    protected void ConfigureProps()
     {
+        var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData,Level);
         //TODO:不要每次都构建字典
-        float multiplier = 1 + (float)Level / 6;
-        damage = WeaponData.GetPropValue(PropType.Attack) * multiplier;
-        attackDelay = 1f/(WeaponData.GetPropValue(PropType.AttackSpeed) * multiplier);
-        criticalChance = (int)(WeaponData.GetPropValue(PropType.CriticalChance) * multiplier);
-        criticalPercent = WeaponData.GetPropValue(PropType.CriticalPercent) * multiplier;
-
-        //只有远程武器加射程
-        if (WeaponData.WeaponPrefab.GetType() == typeof(RangeWeapon))
-        {
-            range = WeaponData.GetPropValue(PropType.Range) * multiplier;
-        }
+        damage = calculatedProps[PropType.Attack];
+        attackDelay = 1f/calculatedProps[PropType.AttackSpeed];
+        criticalChance = (int)calculatedProps[PropType.CriticalChance];
+        criticalPercent = calculatedProps[PropType.CriticalPercent];
+        range = calculatedProps[PropType.Range];
     }
     
     public abstract void UpdateStatus(PropertiesManager propertiesManager);
@@ -82,6 +77,6 @@ public abstract class Weapon:MonoBehaviour,IPlayerStatusDependency
     public void UpgradeTo(int targetLevel)
     {
         Level = targetLevel;
-        ConfigureProperties();
+        ConfigureProps();
     }
 }

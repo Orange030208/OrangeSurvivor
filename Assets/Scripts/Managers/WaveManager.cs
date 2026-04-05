@@ -13,8 +13,8 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
     [SerializeField] private float waveDuration;
 
     // 配置的所有波次数据数组
-    [OnValueChanged("AutoSetWaveNames")]
-    [SerializeField] private Wave[] waves;
+    [OnValueChanged("AutoSetWaveNames")] [SerializeField]
+    private Wave[] waves;
 #if UNITY_EDITOR
     private void AutoSetWaveNames()
     {
@@ -29,9 +29,9 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
     // 每个波次分段的生成计数器列表：记录每个分段已生成的敌人数量，用于控制生成频率
     private List<int> counterList = new List<int>();
     private int currentWaveIndex = 0;
-    
+
     public int CurrentWave => currentWaveIndex + 1;
-    
+
     public int TotalWaves => waves.Length;
 
     // 波次运行计时器
@@ -96,7 +96,8 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
             if (timeSinceSegmentStart / spawnDelay >= counterList[i])
             {
                 // 在目标实体周围生成敌人，父物体为当前管理器
-                Instantiate(segment.enemy.gameObject, GetSpawnPosition(spawnAroundEntity), Quaternion.identity, transform);
+                Instantiate(segment.enemy.gameObject, GetSpawnPosition(spawnAroundEntity), Quaternion.identity,
+                    transform);
                 counterList[i]++;
             }
         }
@@ -178,6 +179,10 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
                 // 每次进入Game状态时，从第0波重新开始
                 StartWave(0);
                 break;
+            case GameState.WaveTransition:
+            case GameState.Shop:
+                DefeatAllEnemies();
+                break;
             case GameState.GameOver:
                 isTimerOn = false;
                 DefeatAllEnemies();
@@ -187,7 +192,10 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
 
     private void DefeatAllEnemies()
     {
-        transform.Clear();
+        foreach (var enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        {
+            enemy.PassAwayAfterWave();
+        }
     }
 }
 
@@ -199,6 +207,7 @@ public struct Wave
 {
     // 波次名称（用于编辑器区分）
     public string name;
+
     // 波次包含的所有分段列表
     public List<WaveSegment> segments;
 }
@@ -211,9 +220,10 @@ public struct WaveSegment
 {
     // 当前分段要生成的敌人预制体
     public Enemy enemy;
+
     // 敌人生成频率（单位：个/秒）
     public float spawnFrequency;
+
     // 分段生效的时间区间（0-100百分比，对应波次总时长）
-    [MinMaxSlider(0, 100)]
-    public Vector2 timeStartEnd;
+    [MinMaxSlider(0, 100)] public Vector2 timeStartEnd;
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -12,37 +13,50 @@ namespace UniversalUI.Instances
         [SerializeField] private TextMeshProUGUI weaponNameText;
         [SerializeField] private Button button;
         [SerializeField] private Image[] levelDependencyImages;
+        [SerializeField] private Image outline;
 
-        [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
+        [Header("Prop管理")][SerializeField] private Transform propContainersParent;
 
         private Action _clickAction;
         private bool _isSelected;
         public bool isSelected => _isSelected;
 
-        public void Configure(Sprite icon, string weaponName, int level, Action clickAction,WeaponDataSO weaponData)
+        public void Configure(Sprite icon, string weaponName, int level, Action clickAction, WeaponDataSO weaponData)
         {
             this._clickAction = clickAction;
 
             iconImage.sprite = icon;
-            weaponNameText.text = weaponName;
+            string levelPrefix = level switch
+            {
+                1 => "灰",
+                2 => "绿",
+                3 => "蓝",
+                4 => "紫",
+                5 => "橙",
+                6 => "红",
+                _ => ""
+            };
+            weaponNameText.text = $"Lv.{level} [{levelPrefix}] {weaponName}";
             Color levelColor = ItemLevelColorHelper.GetColorByLevel(level);
             weaponNameText.color = levelColor;
-            
+            outline.color = levelColor;
+
             foreach (var image in levelDependencyImages)
             {
                 image.color = levelColor;
             }
 
-            ConfigurePropContainer(weaponData);
+            Dictionary<PropType, float> calculatedProps = WeaponPropsCalculator.GetProps(weaponData, level);
+            ConfigurePropContainer(calculatedProps);
 
             // 先清理旧事件，再绑定新事件
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnButtonClick);
         }
 
-        private void ConfigurePropContainer(WeaponDataSO weaponData)
+        private void ConfigurePropContainer(Dictionary<PropType, float> calculatedProps)
         {
-            PropContainerManager.GeneratePropContainers(weaponData.GetBaseProps(), propContainersParent);
+            PropContainerManager.GeneratePropContainers(calculatedProps, propContainersParent);
         }
 
         private void OnButtonClick()

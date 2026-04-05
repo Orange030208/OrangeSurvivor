@@ -4,22 +4,20 @@ using UnityEngine;
 
 public abstract class Enemy : Entity
 {
-    [Header("组件")]
-    protected EnemyMovement _movement;
+    [Header("组件")] protected EnemyMovement _movement;
     [SerializeField] protected ParticleSystem passAwayParticles;
     [SerializeField] protected SpriteRenderer spriteRenderer;
     [SerializeField] protected SpriteRenderer spawnIndicator;
     [SerializeField] protected Collider2D collider;
-    
-    [Header("生命值")]
-    [SerializeField] protected float maxHealth;
+
+    [Header("生命值")] [SerializeField] protected float maxHealth;
     protected float health;
-    
+
     protected Player _player;
     protected bool _hasSpawned = false;
-    
+
     [SerializeField] protected float attackDetectionRadius;
-    
+
     public static Action<DamageInfo> onDamageTaken;
     public static Action<DeadInfo> onDeath;
 
@@ -48,11 +46,11 @@ public abstract class Enemy : Entity
     protected void StartSpawnSequence()
     {
         SetRendersVisibility(false);
-        
+
         transform.DOScale(1.2f, .3f).SetLoops(5, LoopType.Yoyo).SetEase(Ease.InOutSine)
             .OnComplete(OnSpawnSequenceCompleted);
     }
-    
+
     private void OnSpawnSequenceCompleted()
     {
         SetRendersVisibility(true);
@@ -60,13 +58,13 @@ public abstract class Enemy : Entity
         collider.enabled = true;
         _movement.SetTarget(_player);
     }
-    
+
     private void SetRendersVisibility(bool visible)
     {
         spriteRenderer.enabled = visible;
         spawnIndicator.enabled = !visible;
     }
-    
+
     public void TakeDamage(DamageInfo damageInfo)
     {
         float realDamage = Math.Min(health, damageInfo.damage);
@@ -78,15 +76,20 @@ public abstract class Enemy : Entity
             PassAway();
         }
     }
-    
-    private void PassAway()
+
+    public void PassAway()
+    {
+        onDeath.Invoke(new DeadInfo(transform.position));
+        PassAwayAfterWave();
+    }
+
+    public void PassAwayAfterWave()
     {
         passAwayParticles.transform.SetParent(null);
         passAwayParticles.Play();
-        onDeath.Invoke(new DeadInfo(transform.position));
         Destroy(gameObject);
     }
-    
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

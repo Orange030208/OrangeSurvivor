@@ -116,7 +116,7 @@ public class MeleeWeapon : Weapon
 
     public override void UpdateStatus(PropertiesManager propertiesManager)
     {
-        ConfigureProperties();
+        ConfigureProps();
         damage = propertiesManager.GetPropValue(PropType.Attack) + damage;
         attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
 

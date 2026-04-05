@@ -9,13 +9,13 @@ namespace UniversalUI.Instances
     public class WaveTransitionUIPage : UIPageBase
     {
         [SerializeField] private UpgradeContainer[] upGradeContainers;
-        
+
         protected override void OnPageOpened(UIPageOpenContext context)
         {
             UpgradeProp[] props = FetchUpgradeProps();
             for (int i = 0; i < 3; i++)
             {
-                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%",props[i].upgradeBonusCallback);
+                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%", props[i].upgradeBonusCallback);
             }
 
             WaveTransitionManager.Instance.OnUpdatePropsChanged += OnUpdatePropsChanged;
@@ -30,7 +30,7 @@ namespace UniversalUI.Instances
         {
             for (int i = 0; i < 3; i++)
             {
-                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%",props[i].upgradeBonusCallback);
+                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%", props[i].upgradeBonusCallback);
             }
         }
 
@@ -48,9 +48,9 @@ public class UpgradeContainer
     [SerializeField] private TextMeshProUGUI upgradeNameText;
     [SerializeField] private TextMeshProUGUI upgradeValueText;
 
-    [field:SerializeField]public Button Button {private set; get; }
+    [field: SerializeField] public Button Button { private set; get; }
 
-    public void Configure(Sprite icon, string upgradeName, string upgradeValue,Action buttonAction)
+    public void Configure(Sprite icon, string upgradeName, string upgradeValue, Action buttonAction)
     {
         image.sprite = icon;
         upgradeNameText.text = upgradeName;
