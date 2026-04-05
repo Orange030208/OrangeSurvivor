@@ -45,6 +45,7 @@ public class RangeWeapon : Weapon
         bullet.Shoot(transform.up, finalDamage, isCriticalHit);
     }
 
+    //TODO:属性初始加载有问题，后续要修改
     public override void UpdateStatus(PropertiesManager propertiesManager)
     {
         ConfigureProperties();

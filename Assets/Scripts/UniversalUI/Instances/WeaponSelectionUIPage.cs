@@ -62,7 +62,8 @@ namespace UniversalUI.Instances
                     weaponData?.Sprite,
                     weaponData?.Name ?? string.Empty,
                     selectionWeapons[i].level,
-                    () => OnWeaponClicked(index) // 点击时触发UI选中逻辑
+                    () => OnWeaponClicked(index), // 点击时触发UI选中逻辑
+                    weaponData
                 );
             }
         }
@@ -94,63 +95,5 @@ namespace UniversalUI.Instances
             }
         }
 
-    }
-}
-
-[Serializable]
-public class WeaponSelectionContainer
-{
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI weaponNameText;
-    [SerializeField] private Button button;
-    [SerializeField] private Transform rootTransform;
-    [SerializeField] private Image[] levelDependencyImages;
-
-    private Action _clickAction;
-    private bool _isSelected;
-    public bool isSelected => _isSelected;
-
-    public void Configure(Sprite icon, string weaponName, int level, Action clickAction)
-    {
-        this._clickAction = clickAction;
-
-        iconImage.sprite = icon;
-        weaponNameText.text = weaponName;
-        Color levelColor = ItemLevelColorHelper.GetColorByLevel(level);
-        foreach (var image in levelDependencyImages)
-        {
-            image.color = levelColor;
-        }
-
-        // 先清理旧事件，再绑定新事件
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnButtonClick);
-    }
-
-    private void OnButtonClick()
-    {
-        _clickAction?.Invoke();
-    }
-
-    public void Select()
-    {
-        rootTransform.DOKill();
-        _isSelected = true;
-        rootTransform.DOScale(Vector3.one * 1.1f, .3f).SetEase(Ease.InOutSine);
-    }
-
-    public void Deselect()
-    {
-        rootTransform.DOKill();
-        _isSelected = false;
-        rootTransform.DOScale(Vector3.one, .3f).SetEase(Ease.InOutSine);
-    }
-
-    public void Cleanup()
-    {
-        button.onClick.RemoveAllListeners();
-        _clickAction = null;
-        _isSelected = false;
-        rootTransform.DOKill();
     }
 }
