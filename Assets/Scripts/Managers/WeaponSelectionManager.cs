@@ -14,10 +14,17 @@ public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>,
     private WeaponDataSO _currentWeaponData;
     private int _currentWeaponLevel;
 
-    /// <summary>
-    /// 可挑选的武器改变
-    /// </summary>
-    public event Action<SelectionWeapon[]> OnSelectionWeaponsChanged;
+    private void OnEnable()
+    {
+        GameEventBus.Subscribe<RequestWeaponSelectionSnapshotEvent>(PublishSnapshot);
+        GameEventBus.Subscribe<WeaponSelectionOptionClickedEvent>(OnWeaponOptionClicked);
+    }
+
+    private void OnDisable()
+    {
+        GameEventBus.Unsubscribe<RequestWeaponSelectionSnapshotEvent>(PublishSnapshot);
+        GameEventBus.Unsubscribe<WeaponSelectionOptionClickedEvent>(OnWeaponOptionClicked);
+    }
 
     public void BeforeGameStateChanged(GameState oldState, GameState newState)
     {
@@ -43,14 +50,23 @@ public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>,
         SelectionWeapons = new SelectionWeapon[selectionCount];
         for (int i = 0; i < selectionCount; i++)
         {
-            var randomIndex = Random.Range(0, weaponDataPool.Length);
+            int randomIndex = Random.Range(0, weaponDataPool.Length);
             WeaponDataSO weaponData = weaponDataPool[randomIndex];
 
             SelectionWeapons[i].weaponData = weaponData;
             SelectionWeapons[i].level = Random.Range(1, 7);
-            SelectionWeapons[i].onWeaponSelected = SelectWeapon; // 直接绑定业务逻辑
         }
-        OnSelectionWeaponsChanged?.Invoke(SelectionWeapons);
+
+        PublishSnapshot();
+    }
+
+    private void OnWeaponOptionClicked(WeaponSelectionOptionClickedEvent e)
+    {
+        if (SelectionWeapons == null) return;
+        if (e.Index < 0 || e.Index >= SelectionWeapons.Length) return;
+
+        SelectionWeapon selectedWeapon = SelectionWeapons[e.Index];
+        SelectWeapon(selectedWeapon.weaponData, selectedWeapon.level);
     }
 
     private void SelectWeapon(WeaponDataSO weaponData, int level)
@@ -70,11 +86,16 @@ public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>,
         _currentWeaponData = weaponData;
         _currentWeaponLevel = level;
     }
+
+    private void PublishSnapshot()
+    {
+        if (SelectionWeapons == null) return;
+        GameEventBus.Publish(new WeaponSelectionChangedEvent(SelectionWeapons));
+    }
 }
 
 public struct SelectionWeapon
 {
     public WeaponDataSO weaponData;
     public int level;
-    public Action<WeaponDataSO, int> onWeaponSelected;
 }

@@ -28,7 +28,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
 
     // 每个波次分段的生成计数器列表：记录每个分段已生成的敌人数量，用于控制生成频率
     private List<int> counterList = new List<int>();
-    private int currentWaveIndex = 0;
+    private int currentWaveIndex;
 
     public int CurrentWave => currentWaveIndex + 1;
 
@@ -40,10 +40,15 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
 
     [SerializeField] private Entity spawnAroundEntity;
 
-    public static event Action<int, int> OnWaveStarted; // 传递当前波次和总波次
-    public static event Action<int> OnWaveComplete;
-    public static event Action OnAllWavesCompleted;
-    public static event Action<float, float> OnWaveProgress; // 传递剩余时间, 总时间
+    private void OnEnable()
+    {
+        GameEventBus.Subscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+    }
+
+    private void OnDisable()
+    {
+        GameEventBus.Unsubscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+    }
 
     private void Update()
     {
@@ -54,7 +59,9 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         {
             ProcessCurrentWaveSpawns();
             timer += Time.deltaTime;
-            OnWaveProgress?.Invoke(Mathf.Max(0, waveDuration - timer), waveDuration);
+
+            float remaining = Mathf.Max(0, waveDuration - timer);
+            GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
         }
         else
         {
@@ -116,7 +123,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
 
         if (waveIndex >= waves.Length)
         {
-            OnAllWavesCompleted?.Invoke();
+            GameEventBus.Publish<AllWavesCompletedEvent>();
             GameManager.Instance.EnterWaveTransition();
             return;
         }
@@ -131,7 +138,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         }
 
         isTimerOn = true;
-        OnWaveStarted?.Invoke(currentWaveIndex + 1, waves.Length);
+        GameEventBus.Publish(new WaveStartedEvent(currentWaveIndex + 1, waves.Length));
     }
 
     /// <summary>
@@ -140,7 +147,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
     private void CompleteCurrentWave()
     {
         isTimerOn = false;
-        OnWaveComplete?.Invoke(currentWaveIndex + 1);
+        GameEventBus.Publish(new WaveCompletedEvent(currentWaveIndex + 1));
 
         // 尝试开启下一波
         int nextWaveIndex = currentWaveIndex + 1;
@@ -150,7 +157,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         }
         else
         {
-            OnAllWavesCompleted?.Invoke();
+            GameEventBus.Publish<AllWavesCompletedEvent>();
         }
     }
 
@@ -165,6 +172,13 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         targetPos.y = Mathf.Clamp(targetPos.y, -10f, 10f);
 
         return targetPos;
+    }
+
+    private void PublishWaveHudSnapshot()
+    {
+        GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
+        float remaining = isTimerOn ? Mathf.Max(0, waveDuration - timer) : waveDuration;
+        GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
     }
 
     public void BeforeGameStateChanged(GameState oldState, GameState newState)

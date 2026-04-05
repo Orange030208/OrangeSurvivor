@@ -23,7 +23,9 @@ public class GameManager : MonoSingletonBase<GameManager>
             {
                 listener.BeforeGameStateChanged(oldState, value);
             }
+
             _gameState = value;
+
             foreach (IGameStateListener listener in stateListeners)
             {
                 listener.AfterGameStateChanged(oldState, value);
@@ -42,15 +44,15 @@ public class GameManager : MonoSingletonBase<GameManager>
     public void EnterMenu() => GameState = GameState.Menu;
     public void EnterShop() => GameState = GameState.Shop;
     public void EnterWaveTransition() => GameState = GameState.WaveTransition;
-    
+
     private void OnEnable()
     {
-        WaveManager.OnWaveComplete += OnWaveCompleted;
+        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
     }
 
     private void OnDisable()
     {
-        WaveManager.OnWaveComplete -= OnWaveCompleted;
+        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
     }
 
     private void Start()
@@ -59,7 +61,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameState = initialGameState;
     }
 
-    private void OnWaveCompleted(int waveNumber)
+    private void OnWaveCompleted(WaveCompletedEvent e)
     {
         if (_player.IsLevelUpInCurrentWave)
         {
@@ -69,6 +71,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         {
             GameState = GameState.Shop;
         }
+
         print(_player.LevelUpValue);
     }
 

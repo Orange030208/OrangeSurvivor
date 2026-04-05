@@ -22,77 +22,65 @@ namespace UniversalUI.Instances
 
         protected override void OnPageOpened(UIPageOpenContext context)
         {
-            // 主动拉取当前数据进行初始化，防止 UI 晚于逻辑实例化导致丢失初始状态
-            FetchAndApplyInitialData();
-            
-            WaveManager.OnWaveStarted += UpdateWaveText;
-            WaveManager.OnAllWavesCompleted += ShowAllWavesCompleted;
-            WaveManager.OnWaveProgress += UpdateTimerText;
-            PlayerHealth.OnHealthChanged += UpdateHealthUI;
-            PlayerLevel.OnLevelChanged += UpdateLevelUI;
-            PlayerLevel.OnXPChanged += UpdateXPUI;
-        }
+            GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+            GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
+            GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
+            GameEventBus.Subscribe<PlayerHealthChangedEvent>(OnPlayerHealthChanged);
+            GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
+            GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
 
-        private void FetchAndApplyInitialData()
-        {
-            UpdateWaveText(WaveManager.Instance.CurrentWave, WaveManager.Instance.TotalWaves);
-
-            //TODO:暂时这样写，框架修改时一起重写
-            PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
-            UpdateHealthUI(playerHealth.CurrentHealth, playerHealth.MaxHealth);
-
-            PlayerLevel playerLevel = FindFirstObjectByType<PlayerLevel>();
-            UpdateLevelUI(playerLevel.CurrentLevel);
-            UpdateXPUI(playerLevel.CurrentXP, playerLevel.RequiredXP);
+            // 请求快照，避免 UI 打开时错过早先事件
+            GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
+            GameEventBus.Publish<RequestPlayerHudSnapshotEvent>();
         }
 
         protected override void OnPageClosed()
         {
-            WaveManager.OnWaveStarted -= UpdateWaveText;
-            WaveManager.OnAllWavesCompleted -= ShowAllWavesCompleted;
-            WaveManager.OnWaveProgress -= UpdateTimerText;
-            PlayerHealth.OnHealthChanged -= UpdateHealthUI;
-            PlayerLevel.OnLevelChanged -= UpdateLevelUI;
-            PlayerLevel.OnXPChanged -= UpdateXPUI;
+            GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+            GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
+            GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
+            GameEventBus.Unsubscribe<PlayerHealthChangedEvent>(OnPlayerHealthChanged);
+            GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
+            GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
         }
 
-        private void UpdateWaveText(int currentWave, int totalWaves)
+        private void OnWaveStarted(WaveStartedEvent e)
         {
             if (waveText == null) return;
-            waveText.text = $"波次 {currentWave}/{totalWaves}";
+            waveText.text = $"波次 {e.CurrentWave}/{e.TotalWaves}";
         }
 
-        private void ShowAllWavesCompleted()
+        private void OnAllWavesCompleted()
         {
             if (waveText == null) return;
             waveText.text = "所有波次已完成!";
             if (timerText != null) timerText.text = "";
         }
 
-        private void UpdateTimerText(float remainingTime, float totalTime)
+        private void OnWaveProgress(WaveProgressEvent e)
         {
             if (timerText == null) return;
-            timerText.text = $"{Mathf.RoundToInt(remainingTime)}s / {Mathf.RoundToInt(totalTime)}s";
+            timerText.text = $"{Mathf.RoundToInt(e.RemainingTime)}s / {Mathf.RoundToInt(e.TotalTime)}s";
         }
 
-        private void UpdateHealthUI(float currentHealth, float maxHealth)
+        private void OnPlayerHealthChanged(PlayerHealthChangedEvent e)
         {
             if (healthSlider != null)
-                healthSlider.value = currentHealth / maxHealth;
+                healthSlider.value = e.MaxHealth <= 0 ? 0 : e.CurrentHealth / e.MaxHealth;
             if (healthText != null)
-                healthText.text = $"{(int)currentHealth} / {(int)maxHealth}";
+                healthText.text = $"{(int)e.CurrentHealth} / {(int)e.MaxHealth}";
         }
 
-        private void UpdateLevelUI(int currentLevel)
+        private void OnPlayerLevelChanged(PlayerLevelChangedEvent e)
         {
             if (levelText != null)
-                levelText.text = "lvl" + currentLevel;
+                levelText.text = "lvl" + e.CurrentLevel;
         }
 
-        private void UpdateXPUI(int currentXP, int requiredXP)
+        private void OnPlayerXpChanged(PlayerXpChangedEvent e)
         {
             if (xpBar != null)
-                xpBar.value = (float)currentXP / requiredXP;
+                xpBar.value = e.RequiredXP <= 0 ? 0 : (float)e.CurrentXP / e.RequiredXP;
         }
     }
 }

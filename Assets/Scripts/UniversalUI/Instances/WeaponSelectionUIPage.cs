@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -15,38 +14,34 @@ namespace UniversalUI.Instances
 
         protected override void OnPageOpened(UIPageOpenContext context)
         {
-            WeaponSelectionManager.Instance.OnSelectionWeaponsChanged += OnSelectionWeaponsChanged;
+            GameEventBus.Subscribe<WeaponSelectionChangedEvent>(OnSelectionWeaponsChanged);
+
             startButton.onClick.AddListener(() =>
             {
                 if (HasWeaponSelected) GameManager.Instance.StartGame();
             });
-            //TODO:架构修改
-            if (!FetchSelectionWeapons()) return;
-            ApplySelectionWeapons(currentSelectionWeapons);
+
+            GameEventBus.Publish<RequestWeaponSelectionSnapshotEvent>();
         }
 
         protected override void OnPageClosed()
         {
-            WeaponSelectionManager.Instance.OnSelectionWeaponsChanged -= OnSelectionWeaponsChanged;
+            GameEventBus.Unsubscribe<WeaponSelectionChangedEvent>(OnSelectionWeaponsChanged);
+
             // 清理所有Button事件
             foreach (var container in weaponContainers)
             {
                 container.Cleanup();
             }
+
             startButton.onClick.RemoveAllListeners();
         }
 
-        private bool FetchSelectionWeapons()
+        private void OnSelectionWeaponsChanged(WeaponSelectionChangedEvent e)
         {
-            currentSelectionWeapons = WeaponSelectionManager.Instance.SelectionWeapons;
-            if (currentSelectionWeapons == null) return false;
-            return true;
-        }
-
-        private void OnSelectionWeaponsChanged(SelectionWeapon[] selectionWeapons)
-        {
-            currentSelectionWeapons = selectionWeapons;
-            ApplySelectionWeapons(selectionWeapons);
+            currentSelectionWeapons = e.SelectionWeapons;
+            if (currentSelectionWeapons == null) return;
+            ApplySelectionWeapons(currentSelectionWeapons);
         }
 
         private void ApplySelectionWeapons(SelectionWeapon[] selectionWeapons)
@@ -62,7 +57,7 @@ namespace UniversalUI.Instances
                     weaponData?.Sprite,
                     weaponData?.Name ?? string.Empty,
                     selectionWeapons[i].level,
-                    () => OnWeaponClicked(index), // 点击时触发UI选中逻辑
+                    () => OnWeaponClicked(index),
                     weaponData
                 );
             }
@@ -70,8 +65,7 @@ namespace UniversalUI.Instances
 
         private void OnWeaponClicked(int selectedIndex)
         {
-            var selectedWeapon = currentSelectionWeapons[selectedIndex];
-            selectedWeapon.onWeaponSelected?.Invoke(selectedWeapon.weaponData, selectedWeapon.level);
+            GameEventBus.Publish(new WeaponSelectionOptionClickedEvent(selectedIndex));
 
             for (int i = 0; i < weaponContainers.Length; i++)
             {
@@ -91,9 +85,9 @@ namespace UniversalUI.Instances
                     if (container.isSelected)
                         return true;
                 }
+
                 return false;
             }
         }
-
     }
 }

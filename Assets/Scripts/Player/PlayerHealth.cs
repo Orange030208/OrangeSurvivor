@@ -3,10 +3,10 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
+public class PlayerHealth : MonoBehaviour, IPlayerStatusDependency
 {
-    [Header("设置")] 
-    [SerializeField] 
+    [Header("设置")]
+    [SerializeField]
     private int baseMaxHealth;
     private float maxHealth;
     private float health;
@@ -18,7 +18,6 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
     private float healthRecoveryTimer;
     private float healthRecoveryDuration;
 
-    public static event Action<float, float> OnHealthChanged;
     public static event Action<Vector2> onAttackDodged;
     public float CurrentHealth => health;
     public float MaxHealth => maxHealth;
@@ -26,11 +25,13 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
     private void OnEnable()
     {
         Enemy.onDamageTaken += EnemyTookDamageCallback;
+        GameEventBus.Subscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void OnDisable()
     {
         Enemy.onDamageTaken -= EnemyTookDamageCallback;
+        GameEventBus.Unsubscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void Update()
@@ -48,10 +49,10 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
         if (healthRecoveryTimer >= healthRecoveryDuration)
         {
             healthRecoveryTimer = 0;
-            float healthToAdd = Mathf.Min(.1f,maxHealth - health);
+            float healthToAdd = Mathf.Min(.1f, maxHealth - health);
             health += healthToAdd;
-            
-            OnHealthChanged?.Invoke(health, maxHealth);
+
+            GameEventBus.Publish(new PlayerHealthChangedEvent(health, maxHealth));
         }
     }
 
@@ -64,11 +65,12 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
             print("闪避");
             return;
         }
-        float realDamage = damage * Mathf.Clamp(1 - (armor / 1000),0,10000);
+
+        float realDamage = damage * Mathf.Clamp(1 - (armor / 1000), 0, 10000);
         realDamage = Mathf.Min(realDamage, health);
         health -= realDamage;
 
-        OnHealthChanged?.Invoke(health, maxHealth);
+        GameEventBus.Publish(new PlayerHealthChangedEvent(health, maxHealth));
 
         if (health <= 0)
         {
@@ -78,7 +80,7 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
 
     private bool ShouldDodge()
     {
-        return Random.Range(1,101) <= dodge;
+        return Random.Range(1, 101) <= dodge;
     }
 
     private void PassAway()
@@ -86,15 +88,15 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
         Debug.Log("玩家挂了");
         GameManager.Instance.GameOver();
     }
-    
+
     private void EnemyTookDamageCallback(DamageInfo damageInfo)
     {
         if (health >= maxHealth) return;
         float lifeStyleValue = damageInfo.damage * lifeSteal;
         float healthToAdd = Math.Min(lifeStyleValue, maxHealth - health);
-        
+
         health += healthToAdd;
-        OnHealthChanged?.Invoke(health, maxHealth);
+        GameEventBus.Publish(new PlayerHealthChangedEvent(health, maxHealth));
     }
 
     public void UpdateStatus(PropertiesManager propertiesManager)
@@ -104,13 +106,18 @@ public class PlayerHealth : MonoBehaviour,IPlayerStatusDependency
         maxHealth = Mathf.Max(maxHealth, 1);
 
         health = maxHealth;
-        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
-        
+        GameEventBus.Publish(new PlayerHealthChangedEvent(CurrentHealth, maxHealth));
+
         armor = propertiesManager.GetPropValue(PropType.Armor);
-        lifeSteal =  propertiesManager.GetPropValue(PropType.LifeSteal)/100;
+        lifeSteal = propertiesManager.GetPropValue(PropType.LifeSteal) / 100;
         dodge = propertiesManager.GetPropValue(PropType.Dodge);
 
         healthRecoverySpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed), 0.00001f);
-        healthRecoveryDuration = 1 /  healthRecoverySpeed;
+        healthRecoveryDuration = 1 / healthRecoverySpeed;
+    }
+
+    private void PublishSnapshot()
+    {
+        GameEventBus.Publish(new PlayerHealthChangedEvent(CurrentHealth, MaxHealth));
     }
 }

@@ -14,7 +14,6 @@ public abstract class Enemy : Entity
     protected float health;
 
     protected Player _player;
-    protected bool _hasSpawned = false;
 
     [SerializeField] protected float attackDetectionRadius;
 
@@ -54,7 +53,6 @@ public abstract class Enemy : Entity
     private void OnSpawnSequenceCompleted()
     {
         SetRendersVisibility(true);
-        _hasSpawned = true;
         collider.enabled = true;
         _movement.SetTarget(_player);
     }

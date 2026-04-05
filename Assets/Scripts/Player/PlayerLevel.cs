@@ -8,35 +8,35 @@ public class PlayerLevel : MonoBehaviour
     private int currentXP;
     private int currentLevel = 1;
     private int levelOnWaveStart;
-    private int currentUsedLevelUpgradePoints = 0;
+    private int currentUsedLevelUpgradePoints;
 
     public bool IsLevelUpInCurrentWave => currentLevel > levelOnWaveStart;
-    
-    public int LevelUpValue => currentLevel - levelOnWaveStart;
-    public int CurrentLevel => currentLevel;    
-    public int CurrentXP  => currentXP;
-    public int RequiredXP => requiredXP;
 
-    public static event Action<int> OnLevelChanged;
-    public static event Action<int, int> OnXPChanged;
+    public int LevelUpValue => currentLevel - levelOnWaveStart;
+    public int CurrentLevel => currentLevel;
+    public int CurrentXP => currentXP;
+    public int RequiredXP => requiredXP;
 
     private void OnEnable()
     {
         Candy.onCollected += CandyCollectedCallback;
-        WaveManager.OnWaveStarted += OnWaveStart;
+
+        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        GameEventBus.Subscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void OnDisable()
     {
         Candy.onCollected -= CandyCollectedCallback;
-        WaveManager.OnWaveStarted -= OnWaveStart;
+
+        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        GameEventBus.Unsubscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void Start()
     {
         RecaclRequiredXP();
-        OnXPChanged?.Invoke(currentXP, requiredXP);
-        OnLevelChanged?.Invoke(currentLevel);
+        PublishSnapshot();
     }
 
     private void RecaclRequiredXP()
@@ -47,7 +47,7 @@ public class PlayerLevel : MonoBehaviour
     private void CandyCollectedCallback(Candy candy)
     {
         currentXP++;
-        OnXPChanged?.Invoke(currentXP, requiredXP);
+        GameEventBus.Publish(new PlayerXpChangedEvent(currentXP, requiredXP));
         if (currentXP >= requiredXP)
         {
             LevelUp();
@@ -58,13 +58,15 @@ public class PlayerLevel : MonoBehaviour
     {
         currentLevel++;
         currentUsedLevelUpgradePoints++;
-        OnLevelChanged?.Invoke(currentLevel);
+
+        GameEventBus.Publish(new PlayerLevelChangedEvent(currentLevel));
+
         currentXP = 0;
-        OnXPChanged?.Invoke(currentXP, requiredXP);
+        GameEventBus.Publish(new PlayerXpChangedEvent(currentXP, requiredXP));
         RecaclRequiredXP();
     }
 
-    private void OnWaveStart(int waveCount, int totalWaves)
+    private void OnWaveStarted(WaveStartedEvent wave)
     {
         levelOnWaveStart = currentLevel;
         currentUsedLevelUpgradePoints = 0;
@@ -76,6 +78,13 @@ public class PlayerLevel : MonoBehaviour
         {
             currentUsedLevelUpgradePoints--;
         }
+
         return currentUsedLevelUpgradePoints;
+    }
+
+    private void PublishSnapshot()
+    {
+        GameEventBus.Publish(new PlayerLevelChangedEvent(CurrentLevel));
+        GameEventBus.Publish(new PlayerXpChangedEvent(CurrentXP, RequiredXP));
     }
 }

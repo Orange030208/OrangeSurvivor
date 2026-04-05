@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UniversalUI.Core.Runtime;
 
@@ -8,35 +9,29 @@ namespace UniversalUI.Instances
 {
     public class WaveTransitionUIPage : UIPageBase
     {
-        [SerializeField] private UpgradeContainer[] upGradeContainers;
+        [SerializeField] private UpgradeContainer[] upgradeContainers;
 
         protected override void OnPageOpened(UIPageOpenContext context)
         {
-            UpgradeProp[] props = FetchUpgradeProps();
-            for (int i = 0; i < 3; i++)
-            {
-                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%", props[i].upgradeBonusCallback);
-            }
-
-            WaveTransitionManager.Instance.OnUpdatePropsChanged += OnUpdatePropsChanged;
-        }
-
-        private UpgradeProp[] FetchUpgradeProps()
-        {
-            return WaveTransitionManager.Instance.UpgradeProps;
-        }
-
-        private void OnUpdatePropsChanged(UpgradeProp[] props)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                upGradeContainers[i].Configure(null, props[i].propType.FormatPropName(), $"+{props[i].value}%", props[i].upgradeBonusCallback);
-            }
+            GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+            GameEventBus.Publish<RequestUpgradeOptionsSnapshotEvent>();
         }
 
         protected override void OnPageClosed()
         {
-            WaveTransitionManager.Instance.OnUpdatePropsChanged -= OnUpdatePropsChanged;
+            GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+        }
+
+        private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent e)
+        {
+            if (e.Props == null) return;
+
+            int count = Mathf.Min(upgradeContainers.Length, e.Props.Length);
+            for (int i = 0; i < count; i++)
+            {
+                UpgradeProp prop = e.Props[i];
+                upgradeContainers[i].Configure(null, prop.propType.FormatPropName(), $"+{prop.value}%", prop.upgradeBonusCallback);
+            }
         }
     }
 }
