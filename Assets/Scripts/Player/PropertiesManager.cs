@@ -135,4 +135,15 @@ public class PropertiesManager : MonoBehaviour
     {
         return bonusProps.GetValueOrDefault(propType, 0);
     }
+
+    public Dictionary<PropType, float> GetAllPropValues()
+    {
+        var result = new Dictionary<PropType, float>(baseProps.Count);
+        foreach (var prop in baseProps)
+        {
+            result[prop.Key] = GetPropValue(prop.Key);
+        }
+
+        return result;
+    }
 }

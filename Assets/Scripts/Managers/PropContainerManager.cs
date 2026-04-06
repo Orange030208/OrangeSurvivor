@@ -8,22 +8,27 @@ public class PropContainerManager : MonoSingletonBase<PropContainerManager>
 
     private void GenerateContainer(Dictionary<PropType, float> propDictionary, Transform parent)
     {
-        // 清理现有的属性容器
-        for (int i = parent.childCount - 1; i >= 0; i--)
-        {
-            Destroy(parent.GetChild(i).gameObject);
-        }
+        GenerateContainerMap(propDictionary, parent);
+    }
+
+    private Dictionary<PropType, PropContainer> GenerateContainerMap(Dictionary<PropType, float> propDictionary, Transform parent)
+    {
+        parent.Clear();
 
         List<PropContainer> propContainers = new List<PropContainer>();
+        Dictionary<PropType, PropContainer> containerMap = new Dictionary<PropType, PropContainer>(propDictionary.Count);
+
         foreach (var prop in propDictionary)
         {
             PropContainer container = Instantiate(propContainer, parent);
             string formattedValue = prop.Value.ToString("F1");
             container.Configure(ResourcesManager.GetPropIcon(prop.Key), prop.Key.GetChineseName(), formattedValue);
             propContainers.Add(container);
+            containerMap[prop.Key] = container;
         }
 
         DOVirtual.DelayedCall(Time.deltaTime * 2, () => ResizeTexts(propContainers));
+        return containerMap;
     }
 
     private void ResizeTexts(List<PropContainer> propContainers)
@@ -49,5 +54,10 @@ public class PropContainerManager : MonoSingletonBase<PropContainerManager>
     public static void GeneratePropContainers(Dictionary<PropType, float> propDictionary, Transform parent)
     {
         Instance.GenerateContainer(propDictionary, parent);
+    }
+
+    public static Dictionary<PropType, PropContainer> GeneratePropContainersMap(Dictionary<PropType, float> propDictionary, Transform parent)
+    {
+        return Instance.GenerateContainerMap(propDictionary, parent);
     }
 }

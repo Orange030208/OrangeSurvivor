@@ -15,6 +15,11 @@ public class PropContainer : MonoBehaviour
         propValueText.text = propValue;
     }
 
+    public void SetValue(string propValue)
+    {
+        propValueText.text = propValue;
+    }
+
     public float GetFontSize()
     {
         return propText.fontSize;

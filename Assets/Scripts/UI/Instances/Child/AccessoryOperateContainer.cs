@@ -5,12 +5,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChestAccessoryContainer : MonoBehaviour
+public class AccessoryOperateContainer : MonoBehaviour
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI accessoryNameText;
     [SerializeField] private Button takeButton;
     [SerializeField] private Button recycleButton;
+    [SerializeField] private TextMeshProUGUI recyclePriceText;
     [SerializeField] private Image[] rarityDependencyImages;
     [SerializeField] private Image outline;
 
@@ -20,6 +21,7 @@ public class ChestAccessoryContainer : MonoBehaviour
     {
         iconImage.sprite = accessoryData.Icon;
         accessoryNameText.text = accessoryData.DisplayName;
+        recyclePriceText.text = accessoryData.RecyclePrice.ToString();
 
         Color color = ColorHelper.GetColorByRarity(accessoryData.Rarity);
         accessoryNameText.color = color;

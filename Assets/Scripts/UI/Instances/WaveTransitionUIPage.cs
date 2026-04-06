@@ -9,7 +9,7 @@ namespace UniversalUI.Instances
         [SerializeField] private Transform upgradeContainersParent;
 
         [Header("宝箱")]
-        [SerializeField] private ChestAccessoryContainer chestAccessoryContainer;
+        [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
         [SerializeField] private Transform chestContainerParent;
 
         protected override void OnPageOpened(UIPageOpenContext context)
@@ -29,7 +29,7 @@ namespace UniversalUI.Instances
             GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
             GameEventBus.Unsubscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
 
-            chestAccessoryContainer.CleanUp();
+            accessoryOperateContainer.CleanUp();
             foreach (var container in upgradeContainers)
             {
                 container.Cleanup();
@@ -62,7 +62,7 @@ namespace UniversalUI.Instances
                 return;
             }
 
-            chestAccessoryContainer.Configure(eventData.accessoryData);
+            accessoryOperateContainer.Configure(eventData.accessoryData);
         }
 
         private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
@@ -83,10 +83,10 @@ namespace UniversalUI.Instances
         private void SetChestSelectionVisible(bool visible)
         {
             chestContainerParent.gameObject.SetActive(visible);
-            chestAccessoryContainer.gameObject.SetActive(visible);
+            accessoryOperateContainer.gameObject.SetActive(visible);
             if (!visible)
             {
-                chestAccessoryContainer.CleanUp();
+                accessoryOperateContainer.CleanUp();
             }
         }
 
