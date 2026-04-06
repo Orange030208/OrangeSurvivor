@@ -110,7 +110,8 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         }
         else
         {
-            print($"回收了{eventData.accessoryData.DisplayName}");
+            CurrencyManager.Instance.AddCurrency(eventData.accessoryData.RecyclePrice);
+            print($"回收了{eventData.accessoryData.DisplayName},回收价格:{eventData.accessoryData.RecyclePrice}");
         }
 
         _collectChestCount = Mathf.Max(0, _collectChestCount - 1);

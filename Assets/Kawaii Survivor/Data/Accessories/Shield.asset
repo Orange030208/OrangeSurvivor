@@ -16,6 +16,7 @@ MonoBehaviour:
   <DisplayName>k__BackingField: "\u76FE\u724C"
   <Icon>k__BackingField: {fileID: -2757887451555568444, guid: 8fffe40f3ebda0d469b31ca1513a3248, type: 3}
   <Price>k__BackingField: 10
+  <RecyclePrice>k__BackingField: 7
   <Rarity>k__BackingField: 0
   propertyModifiers:
   - propType: 8

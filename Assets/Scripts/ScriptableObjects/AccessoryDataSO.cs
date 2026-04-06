@@ -11,6 +11,7 @@ public class AccessoryDataSO : ScriptableObject
     [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public Sprite Icon { get; private set; }
     [field: SerializeField] public int Price { get; private set; } = 10;
+    [field: SerializeField] public int RecyclePrice { get; private set; }
 
     [field: Range(0, 3)]
     [field: SerializeField]

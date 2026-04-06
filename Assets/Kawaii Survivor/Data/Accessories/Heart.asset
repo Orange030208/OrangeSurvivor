@@ -16,6 +16,7 @@ MonoBehaviour:
   <DisplayName>k__BackingField: 
   <Icon>k__BackingField: {fileID: 21300000, guid: 94243d9d34caa244bab355e648c592f6, type: 3}
   <Price>k__BackingField: 10
+  <RecyclePrice>k__BackingField: 7
   <Rarity>k__BackingField: 1
   propertyModifiers:
   - propType: 5
