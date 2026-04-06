@@ -11,14 +11,14 @@ namespace Survivors.Player
         [SerializeField] private List<AccessoryDataSO> initialAccessories = new();
 
         private PropertiesManager propertiesManager;
-        private readonly Dictionary<string, EquippedAccessory> equippedAccessories = new();
-        private readonly List<IAccessoryEffect> activeEffects = new();
-        private readonly List<AccessoryDataSO> accessories = new();
+        private readonly Dictionary<string, List<EquippedAccessory>> equippedAccessories = new();
+        private readonly List<IAccessoryEffect> _activeEffects = new();
+        [SerializeField] private readonly List<AccessoryDataSO> _accessories = new();
 
         public event Action<AccessoryDataSO> OnAccessoryEquipped;
         public event Action<AccessoryDataSO> OnAccessoryUnequipped;
 
-        public IReadOnlyList<AccessoryDataSO> EquippedAccessories => accessories.AsReadOnly();
+        public IReadOnlyList<AccessoryDataSO> EquippedAccessories => _accessories.AsReadOnly();
 
         private void Awake()
         {
@@ -39,7 +39,7 @@ namespace Survivors.Player
         private void Update()
         {
             float deltaTime = Time.deltaTime;
-            foreach (var effect in activeEffects)
+            foreach (var effect in _activeEffects)
             {
                 effect.OnUpdate(gameObject, propertiesManager, deltaTime);
             }
@@ -48,11 +48,15 @@ namespace Survivors.Player
         public bool EquipAccessory(AccessoryDataSO accessoryData)
         {
             if (accessoryData == null) return false;
-            if (equippedAccessories.ContainsKey(accessoryData.AccessoryId)) return false;
 
             var equipped = new EquippedAccessory(accessoryData);
-            equippedAccessories[accessoryData.AccessoryId] = equipped;
-            accessories.Add(accessoryData);
+            if (!equippedAccessories.TryGetValue(accessoryData.AccessoryId, out var list))
+            {
+                list = new List<EquippedAccessory>();
+                equippedAccessories[accessoryData.AccessoryId] = list;
+            }
+            list.Add(equipped);
+            _accessories.Add(accessoryData);
 
             ApplyAccessoryEffects(equipped);
 
@@ -62,12 +66,22 @@ namespace Survivors.Player
 
         public bool UnequipAccessory(string accessoryId)
         {
-            if (!equippedAccessories.TryGetValue(accessoryId, out var equipped)) return false;
+            if (!equippedAccessories.TryGetValue(accessoryId, out var list)) return false;
+            if (list.Count == 0)
+            {
+                equippedAccessories.Remove(accessoryId);
+                return false;
+            }
+            var equipped = list[list.Count - 1];
+            list.RemoveAt(list.Count - 1);
+            if (list.Count == 0)
+            {
+                equippedAccessories.Remove(accessoryId);
+            }
 
             RemoveAccessoryEffects(equipped);
-
-            equippedAccessories.Remove(accessoryId);
-            accessories.Remove(equipped.Data);
+            int index = _accessories.LastIndexOf(equipped.Data);
+            if (index >= 0) _accessories.RemoveAt(index);
 
             OnAccessoryUnequipped?.Invoke(equipped.Data);
             return true;
@@ -84,7 +98,7 @@ namespace Survivors.Player
             foreach (var effect in equipped.Effects)
             {
                 effect.OnEquip(gameObject, propertiesManager);
-                activeEffects.Add(effect);
+                _activeEffects.Add(effect);
             }
         }
 
@@ -93,18 +107,18 @@ namespace Survivors.Player
             foreach (var effect in equipped.Effects)
             {
                 effect.OnUnequip(gameObject, propertiesManager);
-                activeEffects.Remove(effect);
+                _activeEffects.Remove(effect);
             }
         }
 
         public IReadOnlyList<AccessoryDataSO> GetEquippedAccessories()
         {
-            return accessories.AsReadOnly();
+            return _accessories.AsReadOnly();
         }
 
         public bool IsEquipped(string accessoryId)
         {
-            return equippedAccessories.ContainsKey(accessoryId);
+            return equippedAccessories.TryGetValue(accessoryId, out var list) && list.Count > 0;
         }
 
         private class EquippedAccessory
@@ -115,7 +129,7 @@ namespace Survivors.Player
             public EquippedAccessory(AccessoryDataSO data)
             {
                 Data = data;
-                Effects = data.CreateEffects();
+                Effects = data.CreateEffects(Guid.NewGuid().ToString("N"));
             }
         }
     }

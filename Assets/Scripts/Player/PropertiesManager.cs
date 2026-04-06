@@ -7,8 +7,8 @@ public class PropertiesManager : MonoBehaviour
     [SerializeField] private CharacterDataSO basePropsData;
 
     private Dictionary<PropType, float> baseProps = new();
-    private readonly Dictionary<PropType, float> addens = new();
-    private readonly Dictionary<string, Dictionary<PropType, float>> additiveSources = new();
+    private readonly Dictionary<PropType, float> bonusProps = new();
+    private readonly Dictionary<string, Dictionary<PropType, float>> bonusSources = new();
 
     public event Action<PropType, float> OnPropertyChanged;
     public event Action OnAllPropertiesChanged;
@@ -28,72 +28,79 @@ public class PropertiesManager : MonoBehaviour
         baseProps = basePropsData != null
             ? basePropsData.GetBaseProps()
             : new Dictionary<PropType, float>();
-        addens.Clear();
 
+        bonusProps.Clear();
         foreach (var prop in baseProps)
         {
-            addens[prop.Key] = 0;
+            bonusProps[prop.Key] = 0;
         }
     }
 
-    public void AddAdditiveModifier(string sourceId, PropType propType, float value)
+    public void AddBonusModifier(string sourceId, PropType propType, float value)
+    {
+        if (string.IsNullOrWhiteSpace(sourceId))
+        {
+            Debug.LogWarning("[PropertiesManager] AddBonusModifier: sourceId is null or empty");
+            return;
+        }
+
+        Debug.Log($"[PropertiesManager] AddBonusModifier: sourceId={sourceId}, propType={propType}, value={value}");
+
+        if (!bonusSources.ContainsKey(sourceId))
+        {
+            bonusSources[sourceId] = new Dictionary<PropType, float>();
+        }
+
+        bonusSources[sourceId][propType] = value;
+        RecalculateBonus(propType);
+    }
+
+    public void RemoveBonusModifier(string sourceId, PropType propType)
     {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (!additiveSources.ContainsKey(sourceId))
+        if (bonusSources.ContainsKey(sourceId))
         {
-            additiveSources[sourceId] = new Dictionary<PropType, float>();
-        }
-
-        additiveSources[sourceId][propType] = value;
-        RecalculateAdditive(propType);
-    }
-
-    public void RemoveAdditiveModifier(string sourceId, PropType propType)
-    {
-        if (string.IsNullOrWhiteSpace(sourceId))
-        {
-            return;
-        }
-
-        if (additiveSources.ContainsKey(sourceId))
-        {
-            additiveSources[sourceId].Remove(propType);
-            if (additiveSources[sourceId].Count == 0)
+            bonusSources[sourceId].Remove(propType);
+            if (bonusSources[sourceId].Count == 0)
             {
-                additiveSources.Remove(sourceId);
+                bonusSources.Remove(sourceId);
             }
         }
-        RecalculateAdditive(propType);
+
+        RecalculateBonus(propType);
     }
 
-    public void RemoveAllAdditiveModifiers(string sourceId)
+    public void RemoveAllBonusModifiers(string sourceId)
     {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (!additiveSources.ContainsKey(sourceId)) return;
+        if (!bonusSources.ContainsKey(sourceId))
+        {
+            return;
+        }
 
-        var affectedTypes = new List<PropType>(additiveSources[sourceId].Keys);
-        additiveSources.Remove(sourceId);
+        var affectedTypes = new List<PropType>(bonusSources[sourceId].Keys);
+        bonusSources.Remove(sourceId);
 
         foreach (var propType in affectedTypes)
         {
-            RecalculateAdditive(propType);
+            RecalculateBonus(propType);
         }
     }
 
-    private void RecalculateAdditive(PropType propType)
+    private void RecalculateBonus(PropType propType)
     {
-        float oldValue = addens.GetValueOrDefault(propType, 0);
+        float oldValue = bonusProps.GetValueOrDefault(propType, 0);
         float newValue = 0;
 
-        foreach (var source in additiveSources.Values)
+        foreach (var source in bonusSources.Values)
         {
             if (source.TryGetValue(propType, out float value))
             {
@@ -101,7 +108,7 @@ public class PropertiesManager : MonoBehaviour
             }
         }
 
-        addens[propType] = newValue;
+        bonusProps[propType] = newValue;
 
         if (Mathf.Abs(oldValue - newValue) > Mathf.Epsilon)
         {
@@ -116,9 +123,7 @@ public class PropertiesManager : MonoBehaviour
 
     public float GetPropValue(PropType propType)
     {
-        float baseValue = baseProps.GetValueOrDefault(propType, 0);
-        float additiveValue = addens.GetValueOrDefault(propType, 0);
-        return baseValue + additiveValue;
+        return GetBaseValue(propType) + GetBonusValue(propType);
     }
 
     public float GetBaseValue(PropType propType)
@@ -126,8 +131,8 @@ public class PropertiesManager : MonoBehaviour
         return baseProps.GetValueOrDefault(propType, 0);
     }
 
-    public float GetAdditiveValue(PropType propType)
+    public float GetBonusValue(PropType propType)
     {
-        return addens.GetValueOrDefault(propType, 0);
+        return bonusProps.GetValueOrDefault(propType, 0);
     }
 }

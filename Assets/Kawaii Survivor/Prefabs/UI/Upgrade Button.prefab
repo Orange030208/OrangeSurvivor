@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6264321903921722492}
   - component: {fileID: 5905245484107517884}
   - component: {fileID: 1441765531784277568}
+  - component: {fileID: 723560232645862612}
   m_Layer: 0
   m_Name: Upgrade Button
   m_TagString: Untagged
@@ -123,6 +124,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &723560232645862612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 224992863806180983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872b95cd8d75fab408bf1b6dc84fcb88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 1819674530506526565}
+  upgradeNameText: {fileID: 3970462929771712574}
+  upgradeValueText: {fileID: 6769218305893098764}
+  button: {fileID: 1441765531784277568}
+  outline: {fileID: 0}
 --- !u!1 &4336214199083653093
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +233,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 64
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -424,7 +442,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 64
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

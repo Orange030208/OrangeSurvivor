@@ -40,7 +40,10 @@ public struct WaveProgressEvent : IGameEvent
     }
 }
 
-public struct RequestUpgradeOptionsSnapshotEvent : IGameEvent
+/// <summary>
+/// 由于业务的加载顺序可能快于UI,因此事件可能没有订阅上就触发了,所以重发一份快照帮助ui更新状态
+/// </summary>
+public struct WaveTransitionSnapshot : IGameEvent
 {
 }
 
@@ -96,36 +99,59 @@ public struct PlayerHealthChangedEvent : IGameEvent
 
 public struct PlayerLevelChangedEvent : IGameEvent
 {
-    public int CurrentLevel;
+    public int currentLevel;
 
     public PlayerLevelChangedEvent(int currentLevel)
     {
-        CurrentLevel = currentLevel;
+        this.currentLevel = currentLevel;
     }
 }
 
 public struct PlayerXpChangedEvent : IGameEvent
 {
-    public int CurrentXP;
-    public int RequiredXP;
+    public int currentXP;
+    public int requiredXP;
 
     public PlayerXpChangedEvent(int currentXP, int requiredXP)
     {
-        CurrentXP = currentXP;
-        RequiredXP = requiredXP;
+        this.currentXP = currentXP;
+        this.requiredXP = requiredXP;
     }
 }
 
-public struct ChestSelectionStartedEvent : IGameEvent
+public struct AccessorySelectionStartedEvent : IGameEvent
 {
-    public int ChestCount;
+    public AccessoryDataSO accessoryData;
 
-    public ChestSelectionStartedEvent(int chestCount)
+    public AccessorySelectionStartedEvent(AccessoryDataSO accessoryData)
     {
-        ChestCount = chestCount;
+        this.accessoryData = accessoryData;
     }
 }
 
-public struct ChestSelectionCompletedEvent : IGameEvent
+public struct AccessoryOperateEvent : IGameEvent
 {
+    public AccessoryDataSO accessoryData;
+    /// <summary>
+    /// true为获取,false为回收
+    /// </summary>
+    public bool selected;
+
+    public AccessoryOperateEvent(AccessoryDataSO accessoryData, bool selected)
+    {
+        this.accessoryData = accessoryData;
+        this.selected = selected;
+    }
+}
+
+public struct WaveTransitionPhaseChanged : IGameEvent
+{
+    public TransitionPhase oldPhase;
+    public TransitionPhase newPhase;
+
+    public WaveTransitionPhaseChanged(TransitionPhase oldPhase, TransitionPhase newPhase)
+    {
+        this.oldPhase = oldPhase;
+        this.newPhase = newPhase;
+    }
 }

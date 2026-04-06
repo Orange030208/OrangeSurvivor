@@ -1,8 +1,4 @@
-using System;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 using UniversalUI.Core.Runtime;
 
 namespace UniversalUI.Instances
@@ -10,47 +6,100 @@ namespace UniversalUI.Instances
     public class WaveTransitionUIPage : UIPageBase
     {
         [SerializeField] private UpgradeContainer[] upgradeContainers;
+        [SerializeField] private Transform upgradeContainersParent;
+
+        [Header("宝箱")]
+        [SerializeField] private ChestAccessoryContainer chestAccessoryContainer;
+        [SerializeField] private Transform chestContainerParent;
 
         protected override void OnPageOpened(UIPageOpenContext context)
         {
             GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
-            GameEventBus.Publish<RequestUpgradeOptionsSnapshotEvent>();
+            GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
+            GameEventBus.Subscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
+
+            SetChestSelectionVisible(false);
+            SetUpgradeSelectionVisible(false);
+            GameEventBus.Publish<WaveTransitionSnapshot>();
         }
 
         protected override void OnPageClosed()
         {
             GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+            GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
+            GameEventBus.Unsubscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
+
+            chestAccessoryContainer.CleanUp();
+            foreach (var container in upgradeContainers)
+            {
+                container.Cleanup();
+            }
         }
 
-        private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent e)
+        private void OnWaveTransitionPhaseChanged(WaveTransitionPhaseChanged eventData)
         {
-            if (e.Props == null) return;
+            switch (eventData.newPhase)
+            {
+                case TransitionPhase.ChestSelection:
+                    SetChestSelectionVisible(true);
+                    SetUpgradeSelectionVisible(false);
+                    break;
+                case TransitionPhase.UpgradeSelection:
+                    SetChestSelectionVisible(false);
+                    SetUpgradeSelectionVisible(true);
+                    break;
+                default:
+                    SetChestSelectionVisible(false);
+                    SetUpgradeSelectionVisible(false);
+                    break;
+            }
+        }
 
-            int count = Mathf.Min(upgradeContainers.Length, e.Props.Length);
+        private void ShowSelectAccessory(AccessorySelectionStartedEvent eventData)
+        {
+            if (!chestContainerParent.gameObject.activeSelf)
+            {
+                return;
+            }
+
+            chestAccessoryContainer.Configure(eventData.accessoryData);
+        }
+
+        private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
+        {
+            if (!upgradeContainersParent.gameObject.activeSelf || eventData.Props == null)
+            {
+                return;
+            }
+
+            int count = Mathf.Min(upgradeContainers.Length, eventData.Props.Length);
             for (int i = 0; i < count; i++)
             {
-                UpgradeProp prop = e.Props[i];
+                UpgradeProp prop = eventData.Props[i];
                 upgradeContainers[i].Configure(null, prop.propType.FormatPropName(), $"+{prop.value}%", prop.upgradeBonusCallback);
             }
         }
-    }
-}
 
-[Serializable]
-public class UpgradeContainer
-{
-    [SerializeField] private Image image;
-    [SerializeField] private TextMeshProUGUI upgradeNameText;
-    [SerializeField] private TextMeshProUGUI upgradeValueText;
+        private void SetChestSelectionVisible(bool visible)
+        {
+            chestContainerParent.gameObject.SetActive(visible);
+            chestAccessoryContainer.gameObject.SetActive(visible);
+            if (!visible)
+            {
+                chestAccessoryContainer.CleanUp();
+            }
+        }
 
-    [field: SerializeField] public Button Button { private set; get; }
-
-    public void Configure(Sprite icon, string upgradeName, string upgradeValue, Action buttonAction)
-    {
-        image.sprite = icon;
-        upgradeNameText.text = upgradeName;
-        upgradeValueText.text = upgradeValue;
-        Button.onClick.RemoveAllListeners();
-        Button.onClick.AddListener(() => buttonAction?.Invoke());
+        private void SetUpgradeSelectionVisible(bool visible)
+        {
+            upgradeContainersParent.gameObject.SetActive(visible);
+            if (!visible)
+            {
+                foreach (var container in upgradeContainers)
+                {
+                    container.Cleanup();
+                }
+            }
+        }
     }
 }

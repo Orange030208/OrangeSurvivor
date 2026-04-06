@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Deboink
   m_EditorClassIdentifier: 
   <Name>k__BackingField: "\u6728\u68CD"
-  <Sprite>k__BackingField: {fileID: 5485319108022510092, guid: 15c981701acaf3f4b840cf2f1f7d3446, type: 3}
+  <Icon>k__BackingField: {fileID: 5485319108022510092, guid: 15c981701acaf3f4b840cf2f1f7d3446, type: 3}
   <PurchasePrice>k__BackingField: 0
   <WeaponPrefab>k__BackingField: {fileID: 6802585226729800489, guid: 5f0f9962ee61b9642856089e224a9d22, type: 3}
   attack: 2

@@ -54,11 +54,9 @@ namespace UniversalUI.Instances
 
                 // 配置UI，并绑定点击事件（内部处理选中状态）
                 weaponContainers[i].Configure(
-                    weaponData?.Sprite,
-                    weaponData?.Name ?? string.Empty,
+                    weaponData,
                     selectionWeapons[i].level,
-                    () => OnWeaponClicked(index),
-                    weaponData
+                    () => OnWeaponClicked(index)
                 );
             }
         }

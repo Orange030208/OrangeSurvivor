@@ -27,15 +27,15 @@ public class AccessoryDataSO : ScriptableObject
         }
     }
 
-    public List<IAccessoryEffect> CreateEffects()
+    public List<IAccessoryEffect> CreateEffects(string instanceId)
     {
         var effects = new List<IAccessoryEffect>();
-        string effectPrefix = $"ACC_{AccessoryId}";
+        string effectPrefix = $"ACC_{AccessoryId}_{instanceId}";
 
         foreach (var modifier in propertyModifiers)
         {
             string effectId = $"{effectPrefix}_{modifier.propType}";
-            effects.Add(new PropertyModifierEffect(effectId, modifier.propType, modifier.value));
+            effects.Add(new PropertyModifierEffect(effectId, effectId, modifier.propType, modifier.value));
         }
 
         foreach (var customEffect in customEffects)
@@ -47,6 +47,16 @@ public class AccessoryDataSO : ScriptableObject
         }
 
         return effects;
+    }
+
+    public Dictionary<PropType, float> GetPropertyModifiers()
+    {
+        var dictionary = new Dictionary<PropType, float>();
+        foreach (var modifier in propertyModifiers)
+        {
+            dictionary[modifier.propType] = modifier.value;
+        }
+        return dictionary;
     }
 
     [Serializable]

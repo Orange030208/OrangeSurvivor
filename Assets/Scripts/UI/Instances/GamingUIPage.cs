@@ -74,13 +74,13 @@ namespace UniversalUI.Instances
         private void OnPlayerLevelChanged(PlayerLevelChangedEvent e)
         {
             if (levelText != null)
-                levelText.text = "lvl" + e.CurrentLevel;
+                levelText.text = "lvl" + e.currentLevel;
         }
 
         private void OnPlayerXpChanged(PlayerXpChangedEvent e)
         {
             if (xpBar != null)
-                xpBar.value = e.RequiredXP <= 0 ? 0 : (float)e.CurrentXP / e.RequiredXP;
+                xpBar.value = e.requiredXP <= 0 ? 0 : (float)e.currentXP / e.requiredXP;
         }
     }
 }
