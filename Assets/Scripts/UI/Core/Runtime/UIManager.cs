@@ -233,7 +233,7 @@ namespace UniversalUI.Core.Runtime
             scaler.referenceResolution = settings.ReferenceResolution;
             scaler.matchWidthOrHeight = settings.MatchWidthOrHeight;
 
-            if (settings.DontDestroyOnLoad)
+            if (settings.DontDestroyOnLoading)
             {
                 DontDestroyOnLoad(root);
             }

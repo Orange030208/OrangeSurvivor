@@ -76,7 +76,7 @@ namespace UniversalUI.Instances
             for (int i = 0; i < count; i++)
             {
                 UpgradeProp prop = eventData.Props[i];
-                upgradeContainers[i].Configure(null, prop.propType.FormatPropName(), $"+{prop.value}%", prop.upgradeBonusCallback);
+                upgradeContainers[i].Configure(ResourcesManager.GetPropIcon(prop.propType), prop.propType.GetChineseName(), $"+{prop.value}%", prop.upgradeBonusCallback);
             }
         }
 

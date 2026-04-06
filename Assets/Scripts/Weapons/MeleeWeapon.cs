@@ -17,7 +17,7 @@ public class MeleeWeapon : Weapon
     [SerializeField] private float hitDetectionRadius;
     private List<Enemy> damagedEnemies = new List<Enemy>();
 
-    private void Start()
+    protected override void Start()
     {
         _state = State.Idle;
     }

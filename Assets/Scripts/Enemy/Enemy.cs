@@ -8,7 +8,7 @@ public abstract class Enemy : Entity
     [SerializeField] protected ParticleSystem passAwayParticles;
     [SerializeField] protected SpriteRenderer spriteRenderer;
     [SerializeField] protected SpriteRenderer spawnIndicator;
-    [SerializeField] protected Collider2D collider;
+    [SerializeField] protected new Collider2D collider;
 
     [Header("生命值")] [SerializeField] protected float maxHealth;
     protected float health;

@@ -12,7 +12,7 @@ public class MeleeEnemy : Enemy
     private float attackDelay;
     private float attackTimer;
     
-    protected virtual void Start()
+    protected override void Start()
     {
         base.Start();
         attackDelay = 1f / attackFrequency;

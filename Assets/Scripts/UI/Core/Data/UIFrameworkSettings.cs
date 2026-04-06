@@ -11,7 +11,7 @@ namespace UniversalUI.Core.Data
 
         [Header("Root")]
         [SerializeField] private string rootName = "UIRoot";
-        [SerializeField] private bool dontDestroyOnLoad = true;
+        [SerializeField] private bool dontDestroyOnLoading = true;
         [SerializeField] private bool useUnscaledTime = true;
         [SerializeField] private RenderMode renderMode = RenderMode.ScreenSpaceOverlay;
         [SerializeField] private int rootSortingOrder;
@@ -27,7 +27,7 @@ namespace UniversalUI.Core.Data
 
         public string InstanceIdPrefix => instanceIdPrefix;
         public string RootName => rootName;
-        public bool DontDestroyOnLoad => dontDestroyOnLoad;
+        public bool DontDestroyOnLoading => dontDestroyOnLoading;
         public bool UseUnscaledTime => useUnscaledTime;
         public RenderMode RenderMode => renderMode;
         public int RootSortingOrder => rootSortingOrder;

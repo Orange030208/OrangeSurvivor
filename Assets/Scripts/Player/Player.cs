@@ -7,7 +7,7 @@ public class Player : Entity
     [Header("组件")]
     private PlayerHealth _playerHealth;
     private PlayerLevel _playerLevel;
-    [SerializeField]private CircleCollider2D collider;
+    [SerializeField]private new CircleCollider2D collider;
     
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
     
