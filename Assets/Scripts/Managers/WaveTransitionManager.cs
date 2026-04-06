@@ -11,14 +11,26 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
 {
     public UpgradeProp[] UpgradeProps { private set; get; } = new UpgradeProp[3];
 
+    private int collectChestCount = 0;
+    private TransitionPhase _currentPhase = TransitionPhase.None;
+
+    private enum TransitionPhase
+    {
+        None,
+        ChestSelection,
+        UpgradeSelection
+    }
+
     private void OnEnable()
     {
         GameEventBus.Subscribe<RequestUpgradeOptionsSnapshotEvent>(PublishSnapshot);
+        GameEventBus.Subscribe<ChestSelectionCompletedEvent>(OnChestSelectionCompleted);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<RequestUpgradeOptionsSnapshotEvent>(PublishSnapshot);
+        GameEventBus.Unsubscribe<ChestSelectionCompletedEvent>(OnChestSelectionCompleted);
     }
 
     public void BeforeGameStateChanged(GameState oldState, GameState newState)
@@ -30,14 +42,55 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         switch (newState)
         {
             case GameState.WaveTransition:
-                ConfigureUpgradeProps();
+                StartTransitionFlow();
                 break;
         }
+    }
+
+    private void StartTransitionFlow()
+    {
+        _currentPhase = TransitionPhase.ChestSelection;
+        TryOpenChest();
+    }
+
+    private void TryOpenChest()
+    {
+        if (collectChestCount > 0)
+        {
+            ShowAccessory();
+        }
+        else
+        {
+            ProceedToUpgradeSelection();
+        }
+    }
+
+    private void ShowAccessory()
+    {
+        _currentPhase = TransitionPhase.ChestSelection;
+        GameEventBus.Publish(new ChestSelectionStartedEvent(collectChestCount));
+    }
+
+    private void OnChestSelectionCompleted(ChestSelectionCompletedEvent e)
+    {
+        collectChestCount = 0;
+        ProceedToUpgradeSelection();
+    }
+
+    private void ProceedToUpgradeSelection()
+    {
+        _currentPhase = TransitionPhase.UpgradeSelection;
+        ConfigureUpgradeProps();
     }
 
     [NaughtyAttributes.Button]
     private void ConfigureUpgradeProps()
     {
+        if (_currentPhase != TransitionPhase.UpgradeSelection)
+        {
+            return;
+        }
+
         for (int i = 0; i < UpgradeProps.Length; i++)
         {
             UpgradeProps[i].propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
@@ -86,12 +139,19 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
 
         PropertiesManager propsManager = FindObjectOfType<PropertiesManager>();
         var temp = upgradeProp;
-        return () => propsManager.AddProp(temp.propType, temp.value);
+        string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
+        return () => propsManager.AddAdditiveModifier(upgradeId, temp.propType, temp.value);
     }
 
     private void PublishSnapshot()
     {
         GameEventBus.Publish(new UpgradeOptionsChangedEvent(UpgradeProps));
+    }
+
+    //TODO:后续修改掉
+    public void CollectChest()
+    {
+        collectChestCount++;
     }
 }
 

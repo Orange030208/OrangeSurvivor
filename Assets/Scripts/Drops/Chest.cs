@@ -1,21 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Chest : Collector
+public class Chest : Collection
 {
-    public static Action OnCollect;
-
-    public override bool CanCollect(IEntity source)
+    public override void TryCollect(IEntity target)
     {
-        return Vector2.Distance(transform.position, source.Center) <= _collectRadius;
+        if (target == null) return;
+        if (target.Distance(this) > contactRadius) return;
+
+        Collect(target);
     }
 
-    public override void StartCollect(IEntity target)
+    protected override void OnCollected(IEntity entity)
     {
-        Debug.Log($"Starting collect for {target}");
-        OnCollect?.Invoke();
-        Destroy(gameObject);
+        WaveTransitionManager.Instance.CollectChest();
     }
 }

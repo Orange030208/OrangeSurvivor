@@ -19,5 +19,5 @@ MonoBehaviour:
   attack: 2
   attackSpeed: 1
   criticalChance: 5
-  criticalPercent: 1.5
+  criticalPercent: 200
   range: 4

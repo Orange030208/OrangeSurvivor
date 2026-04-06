@@ -3,11 +3,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class PlayerHealth : MonoBehaviour, IPlayerStatusDependency
+public class PlayerHealth : MonoBehaviour
 {
-    [Header("设置")]
-    [SerializeField]
-    private int baseMaxHealth;
     private float maxHealth;
     private float health;
     private float armor;
@@ -22,16 +19,40 @@ public class PlayerHealth : MonoBehaviour, IPlayerStatusDependency
     public float CurrentHealth => health;
     public float MaxHealth => maxHealth;
 
+    private PropertiesManager propertiesManager;
+
+    private void Awake()
+    {
+        propertiesManager = GetComponent<PropertiesManager>();
+    }
+
     private void OnEnable()
     {
         Enemy.onDamageTaken += EnemyTookDamageCallback;
         GameEventBus.Subscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
+
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += UpdateAllProperties;
+            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        }
     }
 
     private void OnDisable()
     {
         Enemy.onDamageTaken -= EnemyTookDamageCallback;
         GameEventBus.Unsubscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
+
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= UpdateAllProperties;
+            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        }
+    }
+
+    private void Start()
+    {
+        UpdateAllProperties();
     }
 
     private void Update()
@@ -99,18 +120,53 @@ public class PlayerHealth : MonoBehaviour, IPlayerStatusDependency
         GameEventBus.Publish(new PlayerHealthChangedEvent(health, maxHealth));
     }
 
-    public void UpdateStatus(PropertiesManager propertiesManager)
+    private void OnPropertyChanged(PropType propType, float newValue)
     {
-        float addedHealth = propertiesManager.GetPropValue(PropType.MaxHealth);
-        maxHealth = baseMaxHealth + (int)addedHealth;
+        switch (propType)
+        {
+            case PropType.MaxHealth:
+                UpdateMaxHealth();
+                break;
+            case PropType.Armor:
+                armor = newValue;
+                break;
+            case PropType.LifeSteal:
+                lifeSteal = newValue / 100;
+                break;
+            case PropType.Dodge:
+                dodge = newValue;
+                break;
+            case PropType.HealthRecoverySpeed:
+                UpdateHealthRecovery();
+                break;
+        }
+    }
+
+    private void UpdateAllProperties()
+    {
+        if (propertiesManager == null) return;
+
+        UpdateMaxHealth();
+        armor = propertiesManager.GetPropValue(PropType.Armor);
+        lifeSteal = propertiesManager.GetPropValue(PropType.LifeSteal) / 100;
+        dodge = propertiesManager.GetPropValue(PropType.Dodge);
+        UpdateHealthRecovery();
+    }
+
+    private void UpdateMaxHealth()
+    {
+        if (propertiesManager == null) return;
+
+        maxHealth = propertiesManager.GetPropValue(PropType.MaxHealth);
         maxHealth = Mathf.Max(maxHealth, 1);
 
         health = maxHealth;
         GameEventBus.Publish(new PlayerHealthChangedEvent(CurrentHealth, maxHealth));
+    }
 
-        armor = propertiesManager.GetPropValue(PropType.Armor);
-        lifeSteal = propertiesManager.GetPropValue(PropType.LifeSteal) / 100;
-        dodge = propertiesManager.GetPropValue(PropType.Dodge);
+    private void UpdateHealthRecovery()
+    {
+        if (propertiesManager == null) return;
 
         healthRecoverySpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed), 0.00001f);
         healthRecoveryDuration = 1 / healthRecoverySpeed;

@@ -15,15 +15,16 @@ MonoBehaviour:
   <Name>k__BackingField: "\u6234\u592B"
   <Sprite>k__BackingField: {fileID: -7888902146871769836, guid: 95cd4e99917ba734bafe9d543625fe72, type: 3}
   <PurchasePrice>k__BackingField: 1
-  attack: 10
+  attack: 0
   attackSpeed: 0
   criticalChance: 0
   criticalPercent: 0
   moveSpeed: 5
-  maxHealth: -1
+  maxHealth: 100
   range: 0
   healthRecoverySpeed: 10
   armor: 0
   luck: 0
   dodge: 50
   lifeSteal: 10
+  pickupRadius: 8

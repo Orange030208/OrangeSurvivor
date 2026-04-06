@@ -13,7 +13,8 @@ public enum PropType
     Armor,
     Luck,
     Dodge,
-    LifeSteal
+    LifeSteal,
+    PickupRadius
 }
 
 public static class PropTypeExtensions
@@ -34,6 +35,7 @@ public static class PropTypeExtensions
             PropType.Luck => "幸运",
             PropType.Dodge => "闪避",
             PropType.LifeSteal => "生命偷取",
+            PropType.PickupRadius => "拾取半径",
             _ => "未知属性"
         };
     }

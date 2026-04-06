@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
 
-public class Candy : Collector
+public class Candy : Collection
 {
-    public static event Action<Candy> onCollected;
-
-    protected override void OnCollected()
+    protected override void OnCollected(IEntity entity)
     {
-        onCollected?.Invoke(this);
+        var levelComponent = entity.Transform.GetComponent<PlayerLevel>();
+        levelComponent.AddXP(1);
     }
 }

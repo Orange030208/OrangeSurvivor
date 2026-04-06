@@ -20,13 +20,13 @@ public class DropManager:MonoBehaviour
     
     private void EnemyPassAwayCallback(DeadInfo deadInfo)
     {
-        Collector dropItem;
+        Collection dropItem;
         int random = Random.Range(1, 101);
         if (random <= 49)
         {
             dropItem = candyPrefab;
         }
-        else if (random <= 98)
+        else if (random <= 50)
         {
             dropItem = cashPrefab;
         }

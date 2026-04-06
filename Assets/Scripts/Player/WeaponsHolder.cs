@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerWeapons : MonoBehaviour
+public class WeaponsHolder : MonoBehaviour
 {
     [SerializeField] private WeaponPosition[] weaponPositions;
     [SerializeField] private Transform weaponsParentTransform; // 武器实例化的父节点

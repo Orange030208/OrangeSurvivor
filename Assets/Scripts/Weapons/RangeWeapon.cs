@@ -44,17 +44,4 @@ public class RangeWeapon : Weapon
         Bullet bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
         bullet.Shoot(transform.up, finalDamage, isCriticalHit);
     }
-
-    //TODO:属性初始加载有问题，后续要修改
-    public override void UpdateStatus(PropertiesManager propertiesManager)
-    {
-        ConfigureProps();
-        damage = propertiesManager.GetPropValue(PropType.Attack) + damage;
-        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
-
-        criticalChance += propertiesManager.GetPropValue(PropType.CriticalChance);
-        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
-        
-        range +=  propertiesManager.GetPropValue(PropType.Range);
-    }
 }

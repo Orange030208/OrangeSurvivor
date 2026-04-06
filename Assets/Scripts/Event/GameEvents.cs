@@ -115,3 +115,17 @@ public struct PlayerXpChangedEvent : IGameEvent
         RequiredXP = requiredXP;
     }
 }
+
+public struct ChestSelectionStartedEvent : IGameEvent
+{
+    public int ChestCount;
+
+    public ChestSelectionStartedEvent(int chestCount)
+    {
+        ChestCount = chestCount;
+    }
+}
+
+public struct ChestSelectionCompletedEvent : IGameEvent
+{
+}

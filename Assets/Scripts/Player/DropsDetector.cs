@@ -1,20 +1,48 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(IEntity))]
+[RequireComponent(typeof(PropertiesManager))]
 public class DropsDetector : MonoBehaviour
 {
-    [SerializeField] private float detectRadius = 5;
-    [SerializeField] private float timeToDetect = 0.1f;
-    private int collectLayer;
+    private const float MIN_DETECT_INTERVAL = 0.01f;
+    private const string COLLECTOR_LAYER_NAME = "Collector";
+
+    [SerializeField] private float timeToDetect = 0.2f;
+    [SerializeField] private int collectLayerMask;
     private float detectTimer;
     private IEntity _entity;
+    private PropertiesManager propertiesManager;
+    private float detectRadius;
+
+    private void Awake()
+    {
+        _entity = GetComponent<IEntity>();
+        propertiesManager = GetComponent<PropertiesManager>();
+    }
+
+    private void OnEnable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += UpdateRadius;
+            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= UpdateRadius;
+            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        }
+    }
 
     private void Start()
     {
-        detectTimer = timeToDetect;
-        collectLayer =  LayerMask.NameToLayer("Collector");
-        _entity =  GetComponent<IEntity>();
+        detectTimer = 0;
+        collectLayerMask = LayerMask.GetMask(COLLECTOR_LAYER_NAME);
+        UpdateRadius();
     }
 
     private void Update()
@@ -23,21 +51,37 @@ public class DropsDetector : MonoBehaviour
         if (detectTimer <= 0)
         {
             Detect();
-            detectTimer =  timeToDetect;
+            detectTimer = Mathf.Max(timeToDetect, MIN_DETECT_INTERVAL);
         }
+    }
+
+    private void OnPropertyChanged(PropType propType, float newValue)
+    {
+        if (propType == PropType.PickupRadius)
+        {
+            UpdateRadius();
+        }
+    }
+
+    private void UpdateRadius()
+    {
+        if (propertiesManager == null) return;
+        detectRadius = propertiesManager.GetPropValue(PropType.PickupRadius);
     }
 
     private void Detect()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectRadius,1 << collectLayer);
+        if (_entity == null || collectLayerMask == 0 || detectRadius <= 0)
+        {
+            return;
+        }
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectRadius, collectLayerMask);
         foreach (var collider in colliders)
         {
-            if (collider.TryGetComponent(out Collector collector))
+            if (collider.TryGetComponent(out Collection collector))
             {
-                if (collector.CanCollect(_entity))
-                {
-                    collector.StartCollect(_entity);
-                }
+                collector.TryCollect(_entity);
             }
         }
     }

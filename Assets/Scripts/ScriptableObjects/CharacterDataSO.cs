@@ -9,18 +9,19 @@ public class CharacterDataSO : ScriptableObject
     [field: SerializeField] public int PurchasePrice { get; private set; }
 
     [Header("角色属性")]
-    [SerializeField]private float attack;
-    [SerializeField]private float attackSpeed;
-    [SerializeField]private float criticalChance;
-    [SerializeField]private float criticalPercent;
-    [SerializeField]private float moveSpeed;
-    [SerializeField]private float maxHealth;
-    [SerializeField]private float range;
-    [SerializeField]private float healthRecoverySpeed;
-    [SerializeField]private float armor;
-    [SerializeField]private float luck;
-    [SerializeField]private float dodge;
-    [SerializeField]private float lifeSteal;
+    [SerializeField] private float attack;
+    [SerializeField] private float attackSpeed;
+    [SerializeField] private float criticalChance;
+    [SerializeField] private float criticalPercent;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float maxHealth;
+    [SerializeField] private float range;
+    [SerializeField] private float healthRecoverySpeed;
+    [SerializeField] private float armor;
+    [SerializeField] private float luck;
+    [SerializeField] private float dodge;
+    [SerializeField] private float lifeSteal;
+    [SerializeField] private float pickupRadius;
 
     public Dictionary<PropType, float> GetBaseProps()
     {
@@ -38,6 +39,7 @@ public class CharacterDataSO : ScriptableObject
             { PropType.Luck, luck },
             { PropType.Dodge, dodge },
             { PropType.LifeSteal, lifeSteal },
+            { PropType.PickupRadius, pickupRadius },
         };
     }
 }

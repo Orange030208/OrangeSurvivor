@@ -113,15 +113,4 @@ public class MeleeWeapon : Weapon
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(hitDetectionTransform.position, hitDetectionRadius);
     }
-
-    public override void UpdateStatus(PropertiesManager propertiesManager)
-    {
-        ConfigureProps();
-        damage = propertiesManager.GetPropValue(PropType.Attack) + damage;
-        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
-
-        criticalChance =
-            Mathf.RoundToInt(criticalChance + propertiesManager.GetPropValue(PropType.CriticalChance) / 100);
-        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
-    }
 }

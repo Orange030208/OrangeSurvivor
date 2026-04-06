@@ -71,8 +71,6 @@ public class GameManager : MonoSingletonBase<GameManager>
         {
             GameState = GameState.Shop;
         }
-
-        print(_player.LevelUpValue);
     }
 
     public void ManageGameOver()

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>, IGameStateListener
 {
     [SerializeField] private WeaponDataSO[] weaponDataPool;
     [SerializeField] private Player player;
-    [SerializeField] private PlayerWeapons playerWeapons;
+    [FormerlySerializedAs("playerWeapons")] [SerializeField] private WeaponsHolder weaponsHolder;
 
     public SelectionWeapon[] SelectionWeapons { get; private set; }
 
@@ -35,7 +36,7 @@ public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>,
         switch (newState)
         {
             case GameState.Game:
-                playerWeapons.AddWeapon(_currentWeaponData, _currentWeaponLevel);
+                weaponsHolder.AddWeapon(_currentWeaponData, _currentWeaponLevel);
                 break;
             case GameState.WeaponSelection:
                 ConfigureSelectionWeapons();

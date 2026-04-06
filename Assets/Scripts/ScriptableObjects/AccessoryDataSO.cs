@@ -1,56 +1,58 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Survivors.Accessory;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
-public class AccessoryDataSO : ScriptableObject, IEnumerable<PropKV>
+public class AccessoryDataSO : ScriptableObject
 {
-    [field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public string AccessoryId { get; private set; }
+    [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public Sprite Icon { get; private set; }
-    [field: SerializeField] public int Price { get; private set; }
+    [field: SerializeField] public int Price { get; private set; } = 10;
 
     [field: Range(0, 3)]
     [field: SerializeField]
     public int Rarity { get; private set; }
 
-    [SerializeField] private PropKV[] modifiers;
+    [SerializeField] private List<PropertyModifierEntry> propertyModifiers = new();
+    [SerializeReference] private List<AccessoryEffectBase> customEffects = new();
 
-    public IEnumerator<PropKV> GetEnumerator()
+    private void OnValidate()
     {
-        foreach (var modifier in modifiers)
+        if (string.IsNullOrEmpty(AccessoryId))
         {
-            yield return modifier;
+            AccessoryId = Guid.NewGuid().ToString("N")[..8];
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public List<IAccessoryEffect> CreateEffects()
     {
-        return GetEnumerator();
-    }
+        var effects = new List<IAccessoryEffect>();
+        string effectPrefix = $"ACC_{AccessoryId}";
 
-    public Dictionary<PropType, float> ToDictionary()
-    {
-        Dictionary<PropType, float> ret = new Dictionary<PropType, float>();
-        foreach (var modifier in modifiers)
+        foreach (var modifier in propertyModifiers)
         {
-            ret.Add(modifier.propType, modifier.value);
+            string effectId = $"{effectPrefix}_{modifier.propType}";
+            effects.Add(new PropertyModifierEffect(effectId, modifier.propType, modifier.value));
         }
-        
-        return ret;
+
+        foreach (var customEffect in customEffects)
+        {
+            if (customEffect != null)
+            {
+                effects.Add(customEffect);
+            }
+        }
+
+        return effects;
     }
-}
 
-[Serializable]
-public struct PropKV
-{
-    public PropType propType;
-    public float value;
-
-
-    public PropKV(PropType propType, float value)
+    [Serializable]
+    private struct PropertyModifierEntry
     {
-        this.propType = propType;
-        this.value = value;
+        public PropType propType;
+        public float value;
     }
 }

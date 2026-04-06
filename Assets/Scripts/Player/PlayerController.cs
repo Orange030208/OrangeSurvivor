@@ -2,16 +2,41 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour,IPlayerStatusDependency
+public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb;
-    [SerializeField] private float baseSpeed;
     [SerializeField] private float speed;
     [SerializeField] private MobileJoystick playerJoystick;
 
-    private void Start()
+    private PropertiesManager propertiesManager;
+
+    private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        propertiesManager = GetComponent<PropertiesManager>();
+    }
+
+    private void OnEnable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
+            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= UpdateSpeed;
+            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        }
+    }
+
+    private void Start()
+    {
+        UpdateSpeed();
     }
 
     private void FixedUpdate()
@@ -25,8 +50,17 @@ public class PlayerController : MonoBehaviour,IPlayerStatusDependency
         _rb.velocity = moveDirection * Time.deltaTime * speed;
     }
 
-    public void UpdateStatus(PropertiesManager propertiesManager)
+    private void OnPropertyChanged(PropType propType, float newValue)
     {
-        speed = baseSpeed + propertiesManager.GetPropValue(PropType.MoveSpeed);
+        if (propType == PropType.MoveSpeed)
+        {
+            UpdateSpeed();
+        }
+    }
+
+    private void UpdateSpeed()
+    {
+        if (propertiesManager == null) return;
+        speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
     }
 }

@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public abstract class Weapon:MonoBehaviour,IPlayerStatusDependency
+public abstract class Weapon : MonoBehaviour
 {
-    [field:SerializeField] public WeaponDataSO WeaponData { get;private set; }
+    [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
     [SerializeField] protected float attackDelay;
     protected float attackTimer;
     [SerializeField] protected float damage;
@@ -12,31 +12,73 @@ public abstract class Weapon:MonoBehaviour,IPlayerStatusDependency
     [SerializeField] protected LayerMask enemyLayerMask;
     [SerializeField] protected float range;
     [SerializeField] protected Animator _animator;
-    
+
     public int Level { get; private set; }
-    
+
     [Header("暴击")]
     protected float criticalChance;
     protected float criticalPercent;
+
+    protected PropertiesManager propertiesManager;
+
+    protected virtual void Awake()
+    {
+        propertiesManager = GetComponentInParent<PropertiesManager>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += UpdateStatus;
+            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        }
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= UpdateStatus;
+            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        }
+    }
+
+    protected virtual void Start()
+    {
+        UpdateStatus();
+    }
+
+    private void OnPropertyChanged(PropType propType, float newValue)
+    {
+        if (propType == PropType.Attack ||
+            propType == PropType.AttackSpeed ||
+            propType == PropType.CriticalChance ||
+            propType == PropType.CriticalPercent ||
+            propType == PropType.Range)
+        {
+            UpdateStatus();
+        }
+    }
 
     protected Enemy GetClosestEnemy()
     {
         Enemy closestEnemy = null;
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, range, enemyLayerMask);
-        
+
         if (colliders.Length <= 0)
         {
             return null;
         }
-        
+
         float minDistance = range;
         for (int i = 0; i < colliders.Length; i++)
         {
             Enemy enemyChecked = colliders[i].GetComponent<Enemy>();
-        
+
             float distanceToEnemy = Vector2.Distance(transform.position, enemyChecked.transform.position);
-        
+
             if (distanceToEnemy < minDistance)
             {
                 closestEnemy = enemyChecked;
@@ -57,26 +99,36 @@ public abstract class Weapon:MonoBehaviour,IPlayerStatusDependency
             isCriticalHit = true;
             return damage * (criticalPercent / 100);
         }
-        
+
         return damage;
     }
 
     protected void ConfigureProps()
     {
-        var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData,Level);
-        //TODO:不要每次都构建字典
+        var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData, Level);
         damage = calculatedProps[PropType.Attack];
-        attackDelay = 1f/calculatedProps[PropType.AttackSpeed];
+        attackDelay = 1f / calculatedProps[PropType.AttackSpeed];
         criticalChance = (int)calculatedProps[PropType.CriticalChance];
         criticalPercent = calculatedProps[PropType.CriticalPercent];
         range = calculatedProps[PropType.Range];
     }
-    
-    public abstract void UpdateStatus(PropertiesManager propertiesManager);
+
+    public virtual void UpdateStatus()
+    {
+        if (propertiesManager == null) return;
+
+        ConfigureProps();
+        damage += propertiesManager.GetPropValue(PropType.Attack);
+        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
+        criticalChance += propertiesManager.GetPropValue(PropType.CriticalChance);
+        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
+        range += propertiesManager.GetPropValue(PropType.Range);
+    }
 
     public void UpgradeTo(int targetLevel)
     {
         Level = targetLevel;
         ConfigureProps();
+        UpdateStatus();
     }
 }

@@ -19,16 +19,12 @@ public class PlayerLevel : MonoBehaviour
 
     private void OnEnable()
     {
-        Candy.onCollected += CandyCollectedCallback;
-
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void OnDisable()
     {
-        Candy.onCollected -= CandyCollectedCallback;
-
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Unsubscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
@@ -44,7 +40,7 @@ public class PlayerLevel : MonoBehaviour
         requiredXP = currentLevel * 5;
     }
 
-    private void CandyCollectedCallback(Candy candy)
+    public void AddXP(int xpToAdd)
     {
         currentXP++;
         GameEventBus.Publish(new PlayerXpChangedEvent(currentXP, requiredXP));
