@@ -27,4 +27,11 @@ public static class ColorHelper
             _ => Color.white
         };
     }
+
+    public static Color GetColorByValue(float value)
+    {
+        if (value < 0) return Color.red;
+        if (value > 0)return Color.green;
+        return Color.white;
+    }
 }

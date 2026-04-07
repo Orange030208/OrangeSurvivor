@@ -21,8 +21,7 @@ public class PropContainerManager : MonoSingletonBase<PropContainerManager>
         foreach (var prop in propDictionary)
         {
             PropContainer container = Instantiate(propContainer, parent);
-            string formattedValue = prop.Value.ToString("F1");
-            container.Configure(ResourcesManager.GetPropIcon(prop.Key), prop.Key.GetChineseName(), formattedValue);
+            container.Configure(ResourcesManager.GetPropIcon(prop.Key), prop.Key.GetChineseName(), prop.Value);
             propContainers.Add(container);
             containerMap[prop.Key] = container;
         }

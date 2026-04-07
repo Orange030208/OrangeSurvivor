@@ -8,16 +8,17 @@ public class PropContainer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI propText;
     [SerializeField] private TextMeshProUGUI propValueText;
 
-    public void Configure(Sprite icon,string propName,string propValue)
+    public void Configure(Sprite icon,string propName,float propValue)
     {
         propImage.sprite = icon;
         propText.text = propName;
-        propValueText.text = propValue;
+        SetValue(propValue);
     }
 
-    public void SetValue(string propValue)
+    public void SetValue(float propValue)
     {
-        propValueText.text = propValue;
+        propValueText.color = ColorHelper.GetColorByValue(propValue);
+        propValueText.text = propValue.ToString("F1");
     }
 
     public float GetFontSize()

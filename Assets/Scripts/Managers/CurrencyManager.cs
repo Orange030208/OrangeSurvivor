@@ -7,5 +7,6 @@ public class CurrencyManager : MonoSingletonBase<CurrencyManager>
     public void AddCurrency(int amount)
     {
        Currency += amount;
+       GameEventBus.Publish(new CurrencyChangedEvent(Currency, amount));
     }
 }

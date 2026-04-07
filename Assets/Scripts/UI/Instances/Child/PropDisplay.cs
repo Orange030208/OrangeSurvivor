@@ -92,7 +92,7 @@ public class PropDisplay : MonoBehaviour
                 return;
             }
 
-            container.SetValue(prop.Value.ToString("F1"));
+            container.SetValue(prop.Value);
         }
     }
 
@@ -100,7 +100,7 @@ public class PropDisplay : MonoBehaviour
     {
         if (propContainerMap != null && propContainerMap.TryGetValue(propType, out PropContainer container))
         {
-            container.SetValue(value.ToString("F1"));
+            container.SetValue(value);
             return;
         }
 
