@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -57,17 +56,17 @@ public class ShopManager : MonoBehaviour
 
         ShopItemData itemData = currentItems[eventData.ItemIndex];
 
-        if (itemData.ItemType == ItemType.Accessory)
+        if (itemData.ItemData.ItemType == ItemType.Accessory)
         {
-            ProcessAccessoryPurchase(itemData);
+            ProcessAccessoryPurchase(itemData, eventData.ItemIndex);
         }
-        else if (itemData.ItemType == ItemType.Weapon)
+        else if (itemData.ItemData.ItemType == ItemType.Weapon)
         {
-            ProcessWeaponPurchase(itemData);
+            ProcessWeaponPurchase(itemData, eventData.ItemIndex);
         }
     }
 
-    private void ProcessAccessoryPurchase(ShopItemData itemData)
+    private void ProcessAccessoryPurchase(ShopItemData itemData, int itemIndex)
     {
         var accessoryData = itemData.ItemData as AccessoryDataSO;
         if (accessoryData == null)
@@ -91,11 +90,11 @@ public class ShopManager : MonoBehaviour
             player.EquipAccessory(accessoryData);
         }
 
-        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData));
-        RemoveItemFromShop(itemData.Index);
+        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
+        RemoveItemFromShop(itemIndex);
     }
 
-    private void ProcessWeaponPurchase(ShopItemData itemData)
+    private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
     {
         var weaponData = itemData.ItemData as WeaponDataSO;
         if (weaponData == null)
@@ -119,8 +118,8 @@ public class ShopManager : MonoBehaviour
             weaponsHolder.AddWeapon(weaponData, itemData.Level);
         }
 
-        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData));
-        RemoveItemFromShop(itemData.Index);
+        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
+        RemoveItemFromShop(itemIndex);
     }
 
     private void RemoveItemFromShop(int index)
@@ -137,7 +136,6 @@ public class ShopManager : MonoBehaviour
             if (i != index)
             {
                 newItems[writeIndex] = currentItems[i];
-                newItems[writeIndex].Index = writeIndex;
                 writeIndex++;
             }
         }
@@ -180,51 +178,57 @@ public class ShopManager : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            currentItems[i] = GenerateRandomShopItem(i);
+            currentItems[i] = GenerateRandomShopItem();
         }
     }
 
-    private ShopItemData GenerateRandomShopItem(int index)
+    private ShopItemData GenerateRandomShopItem()
     {
         int randomValue = Random.Range(0, 3);
         switch (randomValue)
         {
             case 0:
             case 1:
-                return GenerateAccessoryItem(index);
+                return GenerateAccessoryItem();
             case 2:
-                return GenerateWeaponItem(index);
+                return GenerateWeaponItem();
             default:
-                return GenerateAccessoryItem(index);
+                return GenerateAccessoryItem();
         }
     }
 
-    private ShopItemData GenerateAccessoryItem(int index)
+    private ShopItemData GenerateAccessoryItem()
     {
-        AccessoryDataSO accessoryData = null;
-
-        accessoryData = ResourcesManager.GetRandomAccessory();
+        AccessoryDataSO accessoryData = ResourcesManager.GetRandomAccessory();
 
         if (accessoryData == null)
         {
             Debug.LogWarning("Failed to get random accessory.");
-            return new ShopItemData { Index = index };
+            return default;
         }
 
-        return ShopItemData.CreateAccessory(index, accessoryData);
+        return new ShopItemData
+        {
+            ItemData = accessoryData,
+            Level = 1
+        };
     }
 
-    private ShopItemData GenerateWeaponItem(int index)
+    private ShopItemData GenerateWeaponItem()
     {
         var weaponData = ResourcesManager.GetRandomWeapon();
         if (weaponData == null)
         {
             Debug.LogWarning("No weapons available for shop.");
-            return new ShopItemData { Index = index };
+            return default;
         }
 
         int level = Random.Range(1, 7);
-        return ShopItemData.CreateWeapon(index, weaponData, level);
+        return new ShopItemData
+        {
+            ItemData = weaponData,
+            Level = level
+        };
     }
 
     private void PublishShopItems()

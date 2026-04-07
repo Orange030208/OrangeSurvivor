@@ -19,7 +19,6 @@ public class ShopUIPage : UIPageBase
     protected override void Awake()
     {
         base.Awake();
-        //清除UI预制体缓存
         shopItemParent.Clear();
     }
 
@@ -28,7 +27,6 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Subscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
         GameEventBus.Subscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
         GameEventBus.Subscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
-
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         BindButtonEvents();
@@ -40,7 +38,6 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Unsubscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
         GameEventBus.Unsubscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
         GameEventBus.Unsubscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
-
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         UnbindButtonEvents();
@@ -49,28 +46,14 @@ public class ShopUIPage : UIPageBase
 
     private void BindButtonEvents()
     {
-        if (rerollButton != null)
-        {
-            rerollButton.onClick.AddListener(OnRerollButtonClicked);
-        }
-
-        if (watchVideoRerollButton != null)
-        {
-            watchVideoRerollButton.onClick.AddListener(OnWatchVideoRerollButtonClicked);
-        }
+        rerollButton?.onClick.AddListener(OnRerollButtonClicked);
+        watchVideoRerollButton?.onClick.AddListener(OnWatchVideoRerollButtonClicked);
     }
 
     private void UnbindButtonEvents()
     {
-        if (rerollButton != null)
-        {
-            rerollButton.onClick.RemoveListener(OnRerollButtonClicked);
-        }
-
-        if (watchVideoRerollButton != null)
-        {
-            watchVideoRerollButton.onClick.RemoveListener(OnWatchVideoRerollButtonClicked);
-        }
+        rerollButton?.onClick.RemoveListener(OnRerollButtonClicked);
+        watchVideoRerollButton?.onClick.RemoveListener(OnWatchVideoRerollButtonClicked);
     }
 
     private void OnShopItemsChanged(ShopItemsChangedEvent eventData)
@@ -86,12 +69,11 @@ public class ShopUIPage : UIPageBase
 
         for (int i = 0; i < eventData.Items.Length; i++)
         {
-            ShopItemData itemData = eventData.Items[i];
-            SpawnShopItem(itemData);
+            SpawnShopItem(eventData.Items[i], i);
         }
     }
 
-    private void SpawnShopItem(ShopItemData itemData)
+    private void SpawnShopItem(ShopItemData itemData, int index)
     {
         if (shopItemPrefab == null || shopItemParent == null)
         {
@@ -100,7 +82,7 @@ public class ShopUIPage : UIPageBase
         }
 
         ShopItemContainer container = Instantiate(shopItemPrefab, shopItemParent);
-        container.OnItemClicked += () => OnShopItemClicked(itemData);
+        container.OnItemClicked += () => OnShopItemClicked(container);
 
         if (itemData.ItemData != null)
         {
@@ -110,9 +92,13 @@ public class ShopUIPage : UIPageBase
         spawnedItems.Add(container);
     }
 
-    private void OnShopItemClicked(ShopItemData itemData)
+    private void OnShopItemClicked(ShopItemContainer container)
     {
-        GameEventBus.Publish(new ShopItemClickedEvent(itemData.Index, itemData));
+        int index = spawnedItems.IndexOf(container);
+        if (index >= 0)
+        {
+            GameEventBus.Publish(new ShopItemClickedEvent(index));
+        }
     }
 
     private void OnRerollButtonClicked()
@@ -127,7 +113,7 @@ public class ShopUIPage : UIPageBase
 
     private void OnPurchaseSuccess(ShopPurchaseSuccessEvent eventData)
     {
-        Debug.Log($"Purchase successful: {eventData.PurchasedItem.ItemType}");
+        Debug.Log($"Purchase successful: {eventData.ItemData.ItemType}");
     }
 
     private void OnPurchaseFailed(ShopPurchaseFailedEvent eventData)

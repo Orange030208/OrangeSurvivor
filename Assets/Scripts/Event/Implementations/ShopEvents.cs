@@ -1,35 +1,10 @@
-using System;
-
-public struct ShopItemData : IGameEvent
+public struct ShopItemData
 {
-    public int Index;
     public ItemDataSO ItemData;
     public int Level;
-
-    public ItemType ItemType => ItemData?.ItemType ?? ItemType.Weapon;
-
-    public static ShopItemData CreateAccessory(int index, AccessoryDataSO accessoryData)
-    {
-        return new ShopItemData
-        {
-            Index = index,
-            ItemData = accessoryData,
-            Level = 1
-        };
-    }
-
-    public static ShopItemData CreateWeapon(int index, WeaponDataSO weaponData, int level)
-    {
-        return new ShopItemData
-        {
-            Index = index,
-            ItemData = weaponData,
-            Level = level
-        };
-    }
 }
 
-public struct ShopItemsChangedEvent : IGameEvent
+public struct ShopItemsChangedEvent:IGameEvent
 {
     public ShopItemData[] Items;
     public int RerollCost;
@@ -41,31 +16,29 @@ public struct ShopItemsChangedEvent : IGameEvent
     }
 }
 
-public struct ShopItemClickedEvent : IGameEvent
+public struct ShopItemClickedEvent:IGameEvent
 {
     public int ItemIndex;
-    public ShopItemData ItemData;
 
-    public ShopItemClickedEvent(int itemIndex, ShopItemData itemData)
+    public ShopItemClickedEvent(int itemIndex)
     {
         ItemIndex = itemIndex;
-        ItemData = itemData;
     }
 }
 
-public struct ShopRerollRequestedEvent : IGameEvent
+public struct ShopRerollRequestedEvent:IGameEvent
 {
 }
 
-public struct ShopVideoAdRerollRequestedEvent : IGameEvent
+public struct ShopVideoAdRerollRequestedEvent:IGameEvent
 {
 }
 
-public struct RequestShopSnapshotEvent : IGameEvent
+public struct RequestShopSnapshotEvent:IGameEvent
 {
 }
 
-public struct ShopPurchaseFailedEvent : IGameEvent
+public struct ShopPurchaseFailedEvent:IGameEvent
 {
     public string Message;
 
@@ -75,12 +48,14 @@ public struct ShopPurchaseFailedEvent : IGameEvent
     }
 }
 
-public struct ShopPurchaseSuccessEvent : IGameEvent
+public struct ShopPurchaseSuccessEvent:IGameEvent
 {
-    public ShopItemData PurchasedItem;
+    public ItemDataSO ItemData;
+    public int Level;
 
-    public ShopPurchaseSuccessEvent(ShopItemData purchasedItem)
+    public ShopPurchaseSuccessEvent(ItemDataSO itemData, int level)
     {
-        PurchasedItem = purchasedItem;
+        ItemData = itemData;
+        Level = level;
     }
 }
