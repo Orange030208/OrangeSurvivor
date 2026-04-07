@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
   m_Name: Fire
   m_EditorClassIdentifier: 
-  <AccessoryId>k__BackingField: f05b9a27
-  <DisplayName>k__BackingField: "\u706B\u7130"
-  <Icon>k__BackingField: {fileID: 1098286324429101383, guid: d324cc73e0e562f4eb709a519e9c6bfa, type: 3}
-  <Price>k__BackingField: 10
-  <RecyclePrice>k__BackingField: 7
-  <Rarity>k__BackingField: 0
+  itemName: "\u706B\u7130"
+  itemIcon: {fileID: 1098286324429101383, guid: d324cc73e0e562f4eb709a519e9c6bfa, type: 3}
+  itemPrice: 10
+  itemType: 1
+  accessoryId: 988f0418
+  recyclePrice: 10
+  rarity: 0
   propertyModifiers:
   - propType: 0
     value: 2

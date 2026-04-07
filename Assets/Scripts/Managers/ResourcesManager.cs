@@ -1,15 +1,18 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UniversalUI.Integration.Game.ScriptableObjects;
-using Survivors.Accessory;
+using Random = UnityEngine.Random;
 
 public static class ResourcesManager
 {
     private const string PROP_ICONS_DATA_PATH = "Data/Prop Icons";
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
+    private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
 
     private static PropIcon[] propIcons;
     private static AccessoryDataSO[] Accessories;
+    private static WeaponDataSO[] Weapons;
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -28,6 +31,44 @@ public static class ResourcesManager
         {
             Accessories = Resources.Load<AccessoryDataListSO>(ACCESSORY_DATA_PATH).Accessories;
         }
+    }
+
+    private static void LoadWeaponData()
+    {
+        if (Weapons == null)
+        {
+            Weapons = Resources.Load<WeaponDataListSO>(WEAPON_DATA_PATH).Weapons;
+        }
+    }
+
+    public static WeaponDataSO GetWeapon(string weaponName)
+    {
+        LoadWeaponData();
+        if (string.IsNullOrEmpty(weaponName))
+        {
+            Debug.LogWarning("WeaponName cannot be null or empty.");
+            return null;
+        }
+
+        return Weapons.FirstOrDefault(w => w != null && w.ItemName == weaponName);
+    }
+
+    public static WeaponDataSO GetRandomWeapon()
+    {
+        LoadWeaponData();
+        if (Weapons == null || Weapons.Length == 0)
+        {
+            Debug.LogWarning("No weapons available.");
+            return null;
+        }
+
+        return Weapons[Random.Range(0, Weapons.Length)];
+    }
+
+    public static WeaponDataSO[] GetAllWeapons()
+    {
+        LoadWeaponData();
+        return Weapons ?? Array.Empty<WeaponDataSO>();
     }
 
     public static AccessoryDataSO GetAccessory(string accessoryId)

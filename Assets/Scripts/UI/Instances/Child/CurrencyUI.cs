@@ -11,6 +11,8 @@ public class CurrencyUI : MonoBehaviour
     private void OnEnable()
     {
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChange);
+        //立即拉取一次
+        GameEventBus.Publish<FetchCurrencyEvent>(new FetchCurrencyEvent());
     }
 
     private void OnDisable()

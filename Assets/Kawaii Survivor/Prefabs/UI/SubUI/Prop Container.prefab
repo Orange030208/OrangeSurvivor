@@ -90,6 +90,10 @@ MonoBehaviour:
   propImage: {fileID: 7351177390416003833}
   propText: {fileID: 8217157795373131147}
   propValueText: {fileID: 1079194781770800876}
+  propTextMaxSize: 30
+  propTextMinSize: 30
+  propValueMaxSize: 30
+  propValueMinSize: 30
 --- !u!1 &3202911863688604377
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,7 +317,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 250
+  m_PreferredWidth: 300
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -338,7 +342,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 60
+  m_text: 333.3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 1f0a9e519ab63354296436f495aa4f5e, type: 2}
@@ -369,7 +373,7 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
+  m_fontSizeMin: 30
   m_fontSizeMax: 30
   m_fontStyle: 0
   m_HorizontalAlignment: 4
@@ -468,7 +472,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 600
+  m_PreferredWidth: 550
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -524,7 +528,7 @@ MonoBehaviour:
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
+  m_fontSizeMin: 30
   m_fontSizeMax: 30
   m_fontStyle: 0
   m_HorizontalAlignment: 1

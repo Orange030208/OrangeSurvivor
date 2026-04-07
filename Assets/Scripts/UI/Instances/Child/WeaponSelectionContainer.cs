@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -15,15 +14,19 @@ public class WeaponSelectionContainer : MonoBehaviour
 
     [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
 
-    private Action _clickAction;
+    private WeaponDataSO _currentWeaponData;
+    private int _currentLevel;
+    private int _containerIndex;
     private bool _isSelected;
     public bool isSelected => _isSelected;
 
-    public void Configure(WeaponDataSO weaponData,int level, Action clickAction)
+    public void Configure(int containerIndex, WeaponDataSO weaponData, int level)
     {
-        this._clickAction = clickAction;
+        _containerIndex = containerIndex;
+        _currentWeaponData = weaponData;
+        _currentLevel = level;
 
-        iconImage.sprite = weaponData.Icon;
+        iconImage.sprite = weaponData.ItemIcon;
         string levelPrefix = level switch
         {
             1 => "灰",
@@ -34,7 +37,7 @@ public class WeaponSelectionContainer : MonoBehaviour
             6 => "红",
             _ => ""
         };
-        weaponNameText.text = $"Lv.{level} [{levelPrefix}] {weaponData.Name}";
+        weaponNameText.text = $"Lv.{level} [{levelPrefix}] {weaponData.ItemName}";
         Color levelColor = ColorHelper.GetColorByLevel(level);
         weaponNameText.color = levelColor;
         outline.color = levelColor;
@@ -44,10 +47,9 @@ public class WeaponSelectionContainer : MonoBehaviour
             image.color = levelColor;
         }
 
-        Dictionary<PropType, float> calculatedProps = WeaponPropsCalculator.GetProps(weaponData, level);
+        Dictionary<PropType, float> calculatedProps = weaponData.GetPropsByLevel(level);
         ConfigurePropContainer(calculatedProps);
 
-        // 先清理旧事件，再绑定新事件
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(OnButtonClick);
     }
@@ -59,7 +61,7 @@ public class WeaponSelectionContainer : MonoBehaviour
 
     private void OnButtonClick()
     {
-        _clickAction?.Invoke();
+        GameEventBus.Publish(new WeaponSelectionContainerClickedEvent(_containerIndex, _currentWeaponData, _currentLevel));
     }
 
     public void Select()
@@ -79,7 +81,6 @@ public class WeaponSelectionContainer : MonoBehaviour
     public void Cleanup()
     {
         button.onClick.RemoveAllListeners();
-        _clickAction = null;
         _isSelected = false;
         transform.DOKill();
     }

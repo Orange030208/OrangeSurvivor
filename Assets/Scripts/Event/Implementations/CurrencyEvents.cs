@@ -14,3 +14,10 @@ public struct CurrencyChangedEvent : IGameEvent
         ChangeAmount = changeAmount;
     }
 }
+
+/// <summary>
+/// 拉取一次新的货币
+/// </summary>
+public struct FetchCurrencyEvent : IGameEvent
+{
+}

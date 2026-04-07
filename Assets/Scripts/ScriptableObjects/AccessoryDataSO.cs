@@ -1,37 +1,50 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Survivors.Accessory;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
-public class AccessoryDataSO : ScriptableObject
+public class AccessoryDataSO : ItemDataSO
 {
-    [field: SerializeField] public string AccessoryId { get; private set; }
-    [field: SerializeField] public string DisplayName { get; private set; }
-    [field: SerializeField] public Sprite Icon { get; private set; }
-    [field: SerializeField] public int Price { get; private set; } = 10;
-    [field: SerializeField] public int RecyclePrice { get; private set; }
+    [SerializeField] protected string accessoryId;
+    [SerializeField] protected int recyclePrice;
 
-    [field: Range(0, 3)]
-    [field: SerializeField]
-    public int Rarity { get; private set; }
+    [Range(0, 3)]
+    [SerializeField]
+    private int rarity;
 
     [SerializeField] private List<PropertyModifierEntry> propertyModifiers = new();
     [SerializeReference] private List<AccessoryEffectBase> customEffects = new();
 
+    public string AccessoryId => accessoryId;
+    public int RecyclePrice => recyclePrice;
+    public int Rarity => rarity;
+
     private void OnValidate()
     {
-        if (string.IsNullOrEmpty(AccessoryId))
+        if (string.IsNullOrEmpty(accessoryId))
         {
-            AccessoryId = Guid.NewGuid().ToString("N")[..8];
+            accessoryId = Guid.NewGuid().ToString("N")[..8];
         }
+        itemType = ItemType.Accessory;
+    }
+
+    public Dictionary<PropType, float> GetProps()
+    {
+        var dictionary = new Dictionary<PropType, float>();
+        foreach (var modifier in propertyModifiers)
+        {
+            dictionary[modifier.propType] = modifier.value;
+        }
+
+        return dictionary;
     }
 
     public List<IAccessoryEffect> CreateEffects(string instanceId)
     {
         var effects = new List<IAccessoryEffect>();
-        string effectPrefix = $"ACC_{AccessoryId}_{instanceId}";
+        string effectPrefix = $"ACC_{accessoryId}_{instanceId}";
 
         foreach (var modifier in propertyModifiers)
         {
@@ -48,16 +61,6 @@ public class AccessoryDataSO : ScriptableObject
         }
 
         return effects;
-    }
-
-    public Dictionary<PropType, float> GetPropertyModifiers()
-    {
-        var dictionary = new Dictionary<PropType, float>();
-        foreach (var modifier in propertyModifiers)
-        {
-            dictionary[modifier.propType] = modifier.value;
-        }
-        return dictionary;
     }
 
     [Serializable]

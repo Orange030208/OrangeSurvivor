@@ -140,7 +140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4a005630851400ab686db52ae4e033e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseSpeed: 0
   speed: 3
   playerJoystick: {fileID: 0}
 --- !u!114 &5359458450767791847
@@ -168,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92693e987cf045c9995a271cc9362486, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseMaxHealth: 100
 --- !u!114 &6756405707632950160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,8 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9076385a57fa45f59fa0f66e35227e29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRadius: 5
   timeToDetect: 0.1
+  collectLayerMask: 0
 --- !u!114 &4623821330200326049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,6 +218,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa04f276552f466f8f2f65d3e142f0aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponPositions: []
+  weaponsParentTransform: {fileID: 0}
 --- !u!50 &8093913012144903216
 Rigidbody2D:
   serializedVersion: 4

@@ -13,7 +13,7 @@ public class AccessoryDataListSO : ScriptableObject
     [field: SerializeField] public AccessoryDataSO[] Accessories { get; private set; }
 
 #if UNITY_EDITOR
-    private const string ACCESSORIES_DATA_PATH = "Assets/Kawaii Survivor/Data/Accessories";
+    private const string ACCESSORIES_DATA_PATH = "Assets/Resources/Data/Accessories";
     
     [NaughtyAttributes.Button]
     public void RefreshAccessories()
@@ -40,7 +40,7 @@ public class AccessoryDataListSO : ScriptableObject
             }
         }
 
-        Accessories = accessories.OrderBy(acc => acc.DisplayName).ToArray();
+        Accessories = accessories.OrderBy(acc => acc.ItemName).ToArray();
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
         Debug.Log($"Successfully loaded {Accessories.Length} accessories from {ACCESSORIES_DATA_PATH}");

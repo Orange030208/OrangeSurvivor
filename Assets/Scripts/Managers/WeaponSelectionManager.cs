@@ -82,7 +82,7 @@ public class WeaponSelectionManager : MonoSingletonBase<WeaponSelectionManager>,
             return;
         }
 
-        print($"武器名称:{weaponData.Name}");
+        print($"武器名称:{weaponData.ItemName}");
 
         _currentWeaponData = weaponData;
         _currentWeaponLevel = level;

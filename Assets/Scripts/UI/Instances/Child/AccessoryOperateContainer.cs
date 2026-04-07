@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -19,8 +18,8 @@ public class AccessoryOperateContainer : MonoBehaviour
 
     public void Configure(AccessoryDataSO accessoryData)
     {
-        iconImage.sprite = accessoryData.Icon;
-        accessoryNameText.text = accessoryData.DisplayName;
+        iconImage.sprite = accessoryData.ItemIcon;
+        accessoryNameText.text = accessoryData.ItemName;
         recyclePriceText.text = accessoryData.RecyclePrice.ToString();
 
         Color color = ColorHelper.GetColorByRarity(accessoryData.Rarity);
@@ -32,19 +31,19 @@ public class AccessoryOperateContainer : MonoBehaviour
         {
             image.color = color;
         }
-        
+
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
 
-        takeButton.onClick.AddListener(()=>OperateAccessory(accessoryData, true));
-        recycleButton.onClick.AddListener(()=>OperateAccessory(accessoryData, false));
+        takeButton.onClick.AddListener(() => OperateAccessory(accessoryData, true));
+        recycleButton.onClick.AddListener(() => OperateAccessory(accessoryData, false));
 
-        ConfigurePropContainer(accessoryData.GetPropertyModifiers());
+        ConfigurePropContainer(accessoryData.GetProps());
     }
 
-    private void OperateAccessory(AccessoryDataSO accessoryData,bool selected)
+    private void OperateAccessory(AccessoryDataSO accessoryData, bool selected)
     {
-        GameEventBus.Publish(new AccessoryOperateEvent(accessoryData,selected));
+        GameEventBus.Publish(new AccessoryOperateEvent(accessoryData, selected));
     }
 
     private void ConfigurePropContainer(Dictionary<PropType, float> calculatedProps)

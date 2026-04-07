@@ -43,12 +43,14 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
     {
         GameEventBus.Subscribe<WaveTransitionSnapshot>(PublishSnapshot);
         GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
+        GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<WaveTransitionSnapshot>(PublishSnapshot);
         GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
+        GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
     }
 
     public void BeforeGameStateChanged(GameState oldState, GameState newState)
@@ -106,12 +108,12 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         if (eventData.selected)
         {
             accessoryManager.EquipAccessory(eventData.accessoryData);
-            print($"选择了{eventData.accessoryData.DisplayName}");
+            print($"选择了{eventData.accessoryData.ItemName}");
         }
         else
         {
             CurrencyManager.Instance.AddCurrency(eventData.accessoryData.RecyclePrice);
-            print($"回收了{eventData.accessoryData.DisplayName},回收价格:{eventData.accessoryData.RecyclePrice}");
+            print($"回收了{eventData.accessoryData.ItemName},回收价格:{eventData.accessoryData.RecyclePrice}");
         }
 
         _collectChestCount = Mathf.Max(0, _collectChestCount - 1);
@@ -137,16 +139,22 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         for (int i = 0; i < upgradeProps.Length; i++)
         {
             upgradeProps[i].propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
-
-            Action actionToPerform = GetActionToPerform(upgradeProps[i].propType, out UpgradeProp upgradeProp);
-            upgradeProps[i].value = upgradeProp.value;
-
-            upgradeProps[i].upgradeBonusCallback = null;
-            upgradeProps[i].upgradeBonusCallback += actionToPerform;
-            upgradeProps[i].upgradeBonusCallback += UpgradeBonusCallback;
+            upgradeProps[i].value = GetRandomValueForPropType(upgradeProps[i].propType);
         }
 
         GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeProps));
+    }
+
+    private float GetRandomValueForPropType(PropType propType)
+    {
+        switch (propType)
+        {
+            case PropType.Attack:
+            case PropType.MaxHealth:
+                return Random.Range(1, 5);
+            default:
+                return Random.Range(1, 3);
+        }
     }
 
     private void UpgradeBonusCallback()
@@ -168,28 +176,23 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         }
     }
 
-    private Action GetActionToPerform(PropType propType, out UpgradeProp upgradeProp)
+    private void OnUpgradeContainerClicked(UpgradeContainerClickedEvent e)
     {
-        upgradeProp = new UpgradeProp
+        if (CurrentPhase != TransitionPhase.UpgradeSelection)
         {
-            propType = propType,
-            value = 0
-        };
-
-        switch (propType)
-        {
-            case PropType.Attack:
-                upgradeProp.value = Random.Range(1, 5);
-                break;
-            case PropType.MaxHealth:
-                upgradeProp.value = Random.Range(1, 5);
-                break;
+            return;
         }
 
+        // 应用属性加成
         PropertiesManager propsManager = FindObjectOfType<PropertiesManager>();
-        var temp = upgradeProp;
-        string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-        return () => propsManager.AddBonusModifier(upgradeId, temp.propType, temp.value);
+        if (propsManager != null)
+        {
+            string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
+            propsManager.AddBonusModifier(upgradeId, e.PropType, e.Value);
+        }
+
+        // 触发升级回调
+        UpgradeBonusCallback();
     }
 
     private void PublishSnapshot()
@@ -221,5 +224,4 @@ public struct UpgradeProp
 {
     public PropType propType;
     public float value;
-    public Action upgradeBonusCallback;
 }

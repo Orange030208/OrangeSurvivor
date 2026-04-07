@@ -1,5 +1,3 @@
-using System;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +9,15 @@ public class UpgradeContainer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI upgradeValueText;
     [SerializeField] private Button button;
 
-    private Action _clickAction;
-    private bool _isSelected;
-    public bool isSelected => _isSelected;
+    private int _containerIndex;
+    private PropType _propType;
+    private float _value;
 
-    public void Configure(Sprite icon, string upgradeName, string upgradeValue, Action clickAction)
+    public void Configure(int containerIndex, Sprite icon, string upgradeName, string upgradeValue, PropType propType, float value)
     {
-        _clickAction = clickAction;
+        _containerIndex = containerIndex;
+        _propType = propType;
+        _value = value;
 
         iconImage.sprite = icon;
         upgradeNameText.text = upgradeName;
@@ -29,28 +29,11 @@ public class UpgradeContainer : MonoBehaviour
 
     private void OnButtonClick()
     {
-        _clickAction?.Invoke();
-    }
-
-    public void Select()
-    {
-        transform.DOKill();
-        _isSelected = true;
-        transform.DOScale(Vector3.one * 1.1f, .3f).SetEase(Ease.InOutSine);
-    }
-
-    public void Deselect()
-    {
-        transform.DOKill();
-        _isSelected = false;
-        transform.DOScale(Vector3.one, .3f).SetEase(Ease.InOutSine);
+        GameEventBus.Publish(new UpgradeContainerClickedEvent(_containerIndex, _propType, _value));
     }
 
     public void Cleanup()
     {
         button.onClick.RemoveAllListeners();
-        _clickAction = null;
-        _isSelected = false;
-        transform.DOKill();
     }
 }

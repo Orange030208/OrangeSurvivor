@@ -10,17 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
-  m_Name: Shield
+  m_Name: Bike
   m_EditorClassIdentifier: 
-  <AccessoryId>k__BackingField: 9584f222
-  <DisplayName>k__BackingField: "\u76FE\u724C"
-  <Icon>k__BackingField: {fileID: -2757887451555568444, guid: 8fffe40f3ebda0d469b31ca1513a3248, type: 3}
-  <Price>k__BackingField: 10
-  <RecyclePrice>k__BackingField: 7
-  <Rarity>k__BackingField: 0
+  itemName: "\u81EA\u884C\u8F66"
+  itemIcon: {fileID: -460769226430981451, guid: e2b501b9b8126574ba147cee4db1cf55, type: 3}
+  itemPrice: 10
+  itemType: 1
+  accessoryId: 70c56528
+  recyclePrice: 10
+  rarity: 0
   propertyModifiers:
-  - propType: 8
+  - propType: 4
     value: 1
+  - propType: 8
+    value: -1
   customEffects: []
   references:
     version: 2

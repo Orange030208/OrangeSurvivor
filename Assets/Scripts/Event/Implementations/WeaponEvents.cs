@@ -20,6 +20,20 @@ public struct WeaponSelectionOptionClickedEvent : IGameEvent
     }
 }
 
+public struct WeaponSelectionContainerClickedEvent : IGameEvent
+{
+    public int ContainerIndex;
+    public WeaponDataSO WeaponData;
+    public int Level;
+
+    public WeaponSelectionContainerClickedEvent(int containerIndex, WeaponDataSO weaponData, int level)
+    {
+        ContainerIndex = containerIndex;
+        WeaponData = weaponData;
+        Level = level;
+    }
+}
+
 public struct RequestWeaponSelectionSnapshotEvent : IGameEvent
 {
 }

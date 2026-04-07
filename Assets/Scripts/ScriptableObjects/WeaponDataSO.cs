@@ -1,21 +1,27 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = "SO/WeaponData", order = 0)]
-public class WeaponDataSO : ScriptableObject
+public class WeaponDataSO : ItemDataSO
 {
-    [field:SerializeField] public string Name { get; private set; }
-    [field:SerializeField]public Sprite Icon { get; private set; }
-    [field:SerializeField]public int PurchasePrice { get; private set; }
-    [field:SerializeField]public Weapon WeaponPrefab{ get; private set; }
+    [SerializeField] protected Weapon weaponPrefab;
 
-    [Header("属性")] [SerializeField] private float attack;
-    [SerializeField] private float attackSpeed;
-    [SerializeField] private float criticalChance;
-    [SerializeField] private float criticalPercent;
-    [SerializeField] private float range;
+    [Header("属性")]
+    [SerializeField] protected float attack;
+    [SerializeField] protected float attackSpeed;
+    [SerializeField] protected float criticalChance;
+    [SerializeField] protected float criticalPercent;
+    [SerializeField] protected float range;
 
-    
+    public Weapon WeaponPrefab => weaponPrefab;
+
+    private void OnValidate()
+    {
+        itemType = ItemType.Weapon;
+    }
+
     public Dictionary<PropType, float> GetBaseProps()
     {
         return new Dictionary<PropType, float>
@@ -27,18 +33,9 @@ public class WeaponDataSO : ScriptableObject
             { PropType.Range, range },
         };
     }
-    
-    //TODO:不要重复构建字典
-    public float GetPropValue(PropType propType)
+
+    public Dictionary<PropType, float> GetPropsByLevel(int level)
     {
-        if (GetBaseProps().TryGetValue(propType, out float value))
-        {
-            return value;
-        }
-        else
-        {
-            Debug.Log($"{Name}不存在属性{propType.ToString()}");
-            return 0;
-        }
+        return WeaponPropsCalculator.GetProps(this, level);
     }
 }
