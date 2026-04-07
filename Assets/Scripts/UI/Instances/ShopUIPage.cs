@@ -69,11 +69,11 @@ public class ShopUIPage : UIPageBase
 
         for (int i = 0; i < eventData.Items.Length; i++)
         {
-            SpawnShopItem(eventData.Items[i], i);
+            SpawnShopItem(eventData.Items[i]);
         }
     }
 
-    private void SpawnShopItem(ShopItemData itemData, int index)
+    private void SpawnShopItem(ShopItemData itemData)
     {
         if (shopItemPrefab == null || shopItemParent == null)
         {
@@ -82,11 +82,12 @@ public class ShopUIPage : UIPageBase
         }
 
         ShopItemContainer container = Instantiate(shopItemPrefab, shopItemParent);
+        container.OnLockClicked += () => OnShopItemLockClicked(container);
         container.OnItemClicked += () => OnShopItemClicked(container);
 
         if (itemData.ItemData != null)
         {
-            container.Configure(itemData.ItemData, itemData.Level);
+            container.Configure(itemData.ItemData, itemData.Lock, itemData.Level);
         }
 
         spawnedItems.Add(container);
@@ -98,6 +99,15 @@ public class ShopUIPage : UIPageBase
         if (index >= 0)
         {
             GameEventBus.Publish(new ShopItemClickedEvent(index));
+        }
+    }
+
+    private void OnShopItemLockClicked(ShopItemContainer container)
+    {
+        int index = spawnedItems.IndexOf(container);
+        if (index >= 0)
+        {
+            GameEventBus.Publish(new OperateShopItemLockEvent(index));
         }
     }
 
@@ -150,7 +160,7 @@ public class ShopUIPage : UIPageBase
         {
             if (item != null)
             {
-                item.OnItemClicked -= () => { };
+                item.CleanUp();
                 Destroy(item.gameObject);
             }
         }

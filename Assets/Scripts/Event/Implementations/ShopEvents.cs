@@ -1,10 +1,4 @@
-public struct ShopItemData
-{
-    public ItemDataSO ItemData;
-    public int Level;
-}
-
-public struct ShopItemsChangedEvent:IGameEvent
+public struct ShopItemsChangedEvent : IGameEvent
 {
     public ShopItemData[] Items;
     public int RerollCost;
@@ -16,7 +10,7 @@ public struct ShopItemsChangedEvent:IGameEvent
     }
 }
 
-public struct ShopItemClickedEvent:IGameEvent
+public struct ShopItemClickedEvent : IGameEvent
 {
     public int ItemIndex;
 
@@ -26,19 +20,19 @@ public struct ShopItemClickedEvent:IGameEvent
     }
 }
 
-public struct ShopRerollRequestedEvent:IGameEvent
+public struct ShopRerollRequestedEvent : IGameEvent
 {
 }
 
-public struct ShopVideoAdRerollRequestedEvent:IGameEvent
+public struct ShopVideoAdRerollRequestedEvent : IGameEvent
 {
 }
 
-public struct RequestShopSnapshotEvent:IGameEvent
+public struct RequestShopSnapshotEvent : IGameEvent
 {
 }
 
-public struct ShopPurchaseFailedEvent:IGameEvent
+public struct ShopPurchaseFailedEvent : IGameEvent
 {
     public string Message;
 
@@ -48,7 +42,7 @@ public struct ShopPurchaseFailedEvent:IGameEvent
     }
 }
 
-public struct ShopPurchaseSuccessEvent:IGameEvent
+public struct ShopPurchaseSuccessEvent : IGameEvent
 {
     public ItemDataSO ItemData;
     public int Level;
@@ -57,5 +51,14 @@ public struct ShopPurchaseSuccessEvent:IGameEvent
     {
         ItemData = itemData;
         Level = level;
+    }
+}
+
+public struct OperateShopItemLockEvent : IGameEvent
+{
+    public int Index;
+    public OperateShopItemLockEvent(int index)
+    {
+        Index = index;
     }
 }

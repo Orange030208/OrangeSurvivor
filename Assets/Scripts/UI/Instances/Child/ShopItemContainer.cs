@@ -13,24 +13,44 @@ public class ShopItemContainer : MonoBehaviour
     [SerializeField] private Image outline;
     [SerializeField] private Button itemButton;
 
+    [SerializeField] private Button lockButton;
+    [SerializeField] private Image lockImage;
+    [SerializeField] private Sprite lockSprite, unlockSprite;
+
     [Header("Prop管理")][SerializeField] private Transform propContainersParent;
 
     public event Action OnItemClicked;
+    public event Action OnLockClicked;
 
-    private void Awake()
+    private void OnEnable()
     {
         if (itemButton != null)
         {
             itemButton.onClick.AddListener(OnButtonClicked);
         }
+
+        if (lockButton != null)
+        {
+            lockButton.onClick.AddListener(OnButtonLockClicked);
+        }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (itemButton != null)
         {
             itemButton.onClick.RemoveListener(OnButtonClicked);
         }
+
+        if (lockButton != null)
+        {
+            lockButton.onClick.RemoveListener(OnButtonLockClicked);
+        }
+    }
+
+    private void OnButtonLockClicked()
+    {
+        OnLockClicked?.Invoke();
     }
 
     private void OnButtonClicked()
@@ -38,7 +58,7 @@ public class ShopItemContainer : MonoBehaviour
         OnItemClicked?.Invoke();
     }
 
-    public void Configure(ItemDataSO itemData, int level = 1)
+    public void Configure(ItemDataSO itemData, bool isLocked, int level = 1)
     {
         if (itemData == null)
         {
@@ -65,6 +85,8 @@ public class ShopItemContainer : MonoBehaviour
             return;
         }
 
+        lockImage.sprite = isLocked ? lockSprite : unlockSprite;
+
         ConfigureCommon(itemData, color, props);
     }
 
@@ -83,5 +105,11 @@ public class ShopItemContainer : MonoBehaviour
         }
 
         PropContainerManager.GeneratePropContainers(props, propContainersParent);
+    }
+
+    public void CleanUp()
+    {
+        OnItemClicked = null;
+        OnLockClicked = null;
     }
 }

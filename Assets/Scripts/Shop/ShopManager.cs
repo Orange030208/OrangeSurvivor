@@ -2,6 +2,13 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public struct ShopItemData
+{
+    public ItemDataSO ItemData;
+    public int Level;
+    public bool Lock;
+}
+
 public class ShopManager : MonoBehaviour
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 6;
@@ -25,6 +32,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Subscribe<ShopItemClickedEvent>(OnItemClicked);
         GameEventBus.Subscribe<ShopRerollRequestedEvent>(OnRerollRequested);
         GameEventBus.Subscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
+        GameEventBus.Subscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
     }
 
     private void OnDisable()
@@ -33,6 +41,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Unsubscribe<ShopItemClickedEvent>(OnItemClicked);
         GameEventBus.Unsubscribe<ShopRerollRequestedEvent>(OnRerollRequested);
         GameEventBus.Unsubscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
+        GameEventBus.Unsubscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
     }
 
     private void Start()
@@ -168,7 +177,22 @@ public class ShopManager : MonoBehaviour
     {
         rerollCount++;
         rerollCost = baseRerollCost + rerollCount;
-        GenerateShopItems();
+
+        if (currentItems == null || currentItems.Length == 0)
+        {
+            GenerateShopItems();
+            return;
+        }
+
+        for (int i = 0; i < currentItems.Length; i++)
+        {
+            if (currentItems[i].Lock && currentItems[i].ItemData != null)
+            {
+                continue;
+            }
+
+            currentItems[i] = GenerateRandomShopItem();
+        }
     }
 
     private void GenerateShopItems()
@@ -210,7 +234,8 @@ public class ShopManager : MonoBehaviour
         return new ShopItemData
         {
             ItemData = accessoryData,
-            Level = 1
+            Level = 1,
+            Lock = false
         };
     }
 
@@ -227,7 +252,8 @@ public class ShopManager : MonoBehaviour
         return new ShopItemData
         {
             ItemData = weaponData,
-            Level = level
+            Level = level,
+            Lock = false
         };
     }
 
@@ -239,5 +265,16 @@ public class ShopManager : MonoBehaviour
         }
 
         GameEventBus.Publish(new ShopItemsChangedEvent(currentItems, rerollCost));
+    }
+
+    private void OnOperateShopItemLock(OperateShopItemLockEvent @event)
+    {
+        if (@event.Index < 0 || @event.Index >= currentItems.Length)
+        {
+            return;
+        }
+
+        currentItems[@event.Index].Lock = !currentItems[@event.Index].Lock;
+        PublishShopItems();
     }
 }

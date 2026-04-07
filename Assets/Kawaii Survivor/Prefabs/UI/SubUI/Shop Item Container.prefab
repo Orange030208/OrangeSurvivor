@@ -1072,6 +1072,10 @@ MonoBehaviour:
   colorDependencyImages: []
   outline: {fileID: 6868508240174883784}
   itemButton: {fileID: 8361415419830154117}
+  lockButton: {fileID: 6516009426905641946}
+  lockImage: {fileID: 897420215447622160}
+  lockSprite: {fileID: -5620155193319629329, guid: 5bf7f0050ae64884fb73a265bed13e87, type: 3}
+  unlockSprite: {fileID: 7451771499657765821, guid: e6e0c4110e86bfe48812aeb60cdf44fc, type: 3}
   propContainersParent: {fileID: 4672639665761057586}
 --- !u!1 &7478104143777634616
 GameObject:
