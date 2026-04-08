@@ -14,13 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - layerType: 2
-    prefab: {fileID: 8568845269548286201, guid: fcb91c6d2755d8142a992b263b8ce36a, type: 3}
-    singleton: 1
-    cacheOnClose: 1
-    trackInBackStack: 1
-    warmupCount: 0
-    maxCachedInstancesOverride: 0
-  - layerType: 2
     prefab: {fileID: 5453402992543493149, guid: 89a6afc08e4358d49a6203418c889fc3, type: 3}
     singleton: 1
     cacheOnClose: 1

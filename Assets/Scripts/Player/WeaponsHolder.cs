@@ -37,6 +37,33 @@ public class WeaponsHolder : MonoBehaviour
         OnWeaponsChanged?.Invoke();
     }
 
+    public bool RemoveWeapon(Weapon weapon)
+    {
+        if (weapon == null || weaponPositions == null)
+        {
+            return false;
+        }
+
+        bool removed = false;
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            if (weaponPositions[i] != null && weaponPositions[i].RemoveWeapon(weapon))
+            {
+                removed = true;
+                break;
+            }
+        }
+
+        if (!removed)
+        {
+            return false;
+        }
+
+        RebuildEquippedWeaponsCache();
+        OnWeaponsChanged?.Invoke();
+        return true;
+    }
+
     public void RefreshSnapshot()
     {
         RebuildEquippedWeaponsCache();

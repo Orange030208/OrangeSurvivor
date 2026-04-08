@@ -12,7 +12,6 @@ public class ShopItemContainer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI priceText;
     [Header("根据稀有度或者等级改变颜色的组件")]
     [SerializeField] private Graphic[] colorDependencyGraphics;
-    [SerializeField] private Image outline;
     [SerializeField] private Button itemButton;
 
     [SerializeField] private Button lockButton;

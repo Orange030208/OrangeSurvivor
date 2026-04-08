@@ -16,10 +16,10 @@ public class ShopUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI rerollCostText;
 
     [Header("属性面板(左)")]
-    [SerializeField] private SidebarSlidePanel propertiesSidebar;
+    [SerializeField] private SidebarSlider propertiesSidebar;
 
     [Header("背包面板(右)")]
-    [SerializeField] private SidebarSlidePanel inventorySidebar;
+    [SerializeField] private SidebarSlider inventorySidebar;
 
     [Header("侧边遮罩")]
     [SerializeField] private ClickOnlyHandler closeSidebarPanel;
@@ -27,7 +27,7 @@ public class ShopUIPage : UIPageBase
     private readonly List<ShopItemContainer> spawnedItems = new();
     private int currentRerollCost;
 
-    private SidebarSlidePanel currentOpenPanel;
+    private SidebarSlider currentOpenPanel;
 
     protected override void Awake()
     {
@@ -178,7 +178,7 @@ public class ShopUIPage : UIPageBase
         inventorySidebar?.CachePositionsByCurrentState();
     }
 
-    private void ShowPanel(SidebarSlidePanel panel)
+    private void ShowPanel(SidebarSlider panel)
     {
         if (panel == null)
         {

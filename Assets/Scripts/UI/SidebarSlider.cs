@@ -5,10 +5,12 @@ using UnityEngine;
 public enum SidebarType
 {
     Left,
-    Right
+    Right,
+    Top,
+    Bottom
 }
 
-public class SidebarSlidePanel : MonoBehaviour
+public class SidebarSlider : MonoBehaviour
 {
     [Header("基础")]
     [SerializeField] private RectTransform panelRect;
@@ -18,17 +20,20 @@ public class SidebarSlidePanel : MonoBehaviour
     [SerializeField] private float slideDuration = 0.25f;
     [SerializeField] private Ease slideEase = Ease.OutCubic;
     [SerializeField] private float extraHideOffset = 0f;
+    [SerializeField] private bool setInactiveOnHide = true;
 
-    public event Action<SidebarSlidePanel> OnShowStarted;
-    public event Action<SidebarSlidePanel> OnShowCompleted;
-    public event Action<SidebarSlidePanel> OnHideStarted;
-    public event Action<SidebarSlidePanel> OnHideCompleted;
+    public event Action<SidebarSlider> OnShowStarted;
+    public event Action<SidebarSlider> OnShowCompleted;
+    public event Action<SidebarSlider> OnHideStarted;
+    public event Action<SidebarSlider> OnHideCompleted;
 
     public bool IsShown { get; private set; }
 
     private Vector2 shownPos;
     private Vector2 hiddenPos;
     private Tween slideTween;
+    
+    private bool posCached = false;
 
     private void Awake()
     {
@@ -48,7 +53,7 @@ public class SidebarSlidePanel : MonoBehaviour
 
     public void CachePositionsByCurrentState()
     {
-        if (panelRect == null)
+        if (panelRect == null || posCached)
         {
             return;
         }
@@ -61,9 +66,37 @@ public class SidebarSlidePanel : MonoBehaviour
             panelWidth = Mathf.Abs(panelRect.sizeDelta.x);
         }
 
-        float hideDistance = panelWidth + extraHideOffset;
-        float direction = sidebarType == SidebarType.Right ? 1f : -1f;
-        hiddenPos = shownPos + new Vector2(direction * hideDistance, 0f);
+        float panelHeight = panelRect.rect.height;
+        if (panelHeight <= 0f)
+        {
+            panelHeight = Mathf.Abs(panelRect.sizeDelta.y);
+        }
+
+        float hideDistance;
+        Vector2 moveDir;
+
+        switch (sidebarType)
+        {
+            case SidebarType.Right:
+                hideDistance = panelWidth + extraHideOffset;
+                moveDir = Vector2.right;
+                break;
+            case SidebarType.Top:
+                hideDistance = panelHeight + extraHideOffset;
+                moveDir = Vector2.up;
+                break;
+            case SidebarType.Bottom:
+                hideDistance = panelHeight + extraHideOffset;
+                moveDir = Vector2.down;
+                break;
+            default:
+                hideDistance = panelWidth + extraHideOffset;
+                moveDir = Vector2.left;
+                break;
+        }
+
+        hiddenPos = shownPos + moveDir * hideDistance;
+        posCached = true;
     }
 
     public void Show()
@@ -94,8 +127,10 @@ public class SidebarSlidePanel : MonoBehaviour
         {
             return;
         }
-
+        
         KillTween();
+        
+        CachePositionsByCurrentState();
 
         OnHideStarted?.Invoke(this);
 
@@ -105,7 +140,11 @@ public class SidebarSlidePanel : MonoBehaviour
             .OnComplete(() =>
             {
                 IsShown = false;
-                panelRect.gameObject.SetActive(false);
+                if (setInactiveOnHide)
+                {
+                    panelRect.gameObject.SetActive(false);
+                }
+
                 OnHideCompleted?.Invoke(this);
             });
     }
@@ -116,10 +155,17 @@ public class SidebarSlidePanel : MonoBehaviour
         {
             return;
         }
-
+        
         KillTween();
+        
+        CachePositionsByCurrentState();
+        
         panelRect.anchoredPosition = hiddenPos;
-        panelRect.gameObject.SetActive(false);
+        if (setInactiveOnHide)
+        {
+            panelRect.gameObject.SetActive(false);
+        }
+
         IsShown = false;
     }
 

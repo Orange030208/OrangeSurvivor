@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ClickOnlyHandler : MonoBehaviour,IPointerClickHandler,IDisposable
 {
     public event Action<PointerEventData> OnClick;
-
+    
     public void OnPointerClick(PointerEventData eventData)
     {
         OnClick?.Invoke(eventData);

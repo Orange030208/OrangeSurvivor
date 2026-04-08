@@ -1,12 +1,20 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItemContainer : MonoBehaviour
+public class InventoryItemContainer : MonoBehaviour,IDisposable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
+    [SerializeField] private Button button;
+
+    public void AddClickListener(Action callback)
+    {
+        button.onClick.AddListener(() => callback());
+    }
 
     /// <summary>
     /// 
@@ -31,5 +39,10 @@ public class InventoryItemContainer : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void Dispose()
+    {
+        button.onClick.RemoveAllListeners();
     }
 }
