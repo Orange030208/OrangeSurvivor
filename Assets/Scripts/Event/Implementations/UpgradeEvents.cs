@@ -2,24 +2,21 @@ using System;
 
 public struct UpgradeOptionsChangedEvent : IGameEvent
 {
-    public UpgradeProp[] Props;
+    public PropEntry[] PropEntries
+        ;
 
-    public UpgradeOptionsChangedEvent(UpgradeProp[] props)
+    public UpgradeOptionsChangedEvent(PropEntry[] propEntries)
     {
-        Props = props;
+        PropEntries = propEntries;
     }
 }
 
 public struct UpgradeContainerClickedEvent : IGameEvent
 {
     public int ContainerIndex;
-    public PropType PropType;
-    public float Value;
 
-    public UpgradeContainerClickedEvent(int containerIndex, PropType propType, float value)
+    public UpgradeContainerClickedEvent(int containerIndex)
     {
         ContainerIndex = containerIndex;
-        PropType = propType;
-        Value = value;
     }
 }

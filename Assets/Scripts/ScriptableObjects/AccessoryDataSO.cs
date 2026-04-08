@@ -14,7 +14,7 @@ public class AccessoryDataSO : ItemDataSO
     [SerializeField]
     private int rarity;
 
-    [SerializeField] private List<PropertyModifierEntry> propertyModifiers = new();
+    [SerializeField] private List<PropEntry> propertyModifiers = new();
     [SerializeReference] private List<AccessoryEffectBase> customEffects = new();
 
     public string AccessoryId => accessoryId;
@@ -61,12 +61,5 @@ public class AccessoryDataSO : ItemDataSO
         }
 
         return effects;
-    }
-
-    [Serializable]
-    private struct PropertyModifierEntry
-    {
-        public PropType propType;
-        public float value;
     }
 }

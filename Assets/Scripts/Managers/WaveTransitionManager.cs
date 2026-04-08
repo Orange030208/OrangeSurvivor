@@ -18,7 +18,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
     //TODO:后续修改掉
     [SerializeField] private AccessoryManager accessoryManager;
 
-    private readonly UpgradeProp[] upgradeProps = new UpgradeProp[3];
+    private readonly PropEntry[] propEntries = new PropEntry[3];
     private AccessoryDataSO currentAccessoryData;
     private int _collectChestCount;
     private TransitionPhase _currentPhase = TransitionPhase.None;
@@ -136,13 +136,13 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
             return;
         }
 
-        for (int i = 0; i < upgradeProps.Length; i++)
+        for (int i = 0; i < propEntries.Length; i++)
         {
-            upgradeProps[i].propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
-            upgradeProps[i].value = GetRandomValueForPropType(upgradeProps[i].propType);
+            propEntries[i].propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
+            propEntries[i].value = GetRandomValueForPropType(propEntries[i].propType);
         }
 
-        GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeProps));
+        GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
     }
 
     private float GetRandomValueForPropType(PropType propType)
@@ -188,7 +188,8 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         if (propsManager != null)
         {
             string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-            propsManager.AddBonusModifier(upgradeId, e.PropType, e.Value);
+            PropEntry propEntry = propEntries[e.ContainerIndex];
+            propsManager.AddBonusModifier(upgradeId, propEntry.propType, propEntry.value);
         }
 
         // 触发升级回调
@@ -208,7 +209,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
                 }
                 break;
             case TransitionPhase.UpgradeSelection:
-                GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeProps));
+                GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
                 break;
         }
     }
@@ -218,10 +219,4 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
     {
         _collectChestCount++;
     }
-}
-
-public struct UpgradeProp
-{
-    public PropType propType;
-    public float value;
 }

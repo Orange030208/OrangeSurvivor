@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WaveTransitionUIPage : UIPageBase
 {
-    [SerializeField] private UpgradeContainer[] upgradeContainers;
+    [SerializeField] private UpgradeContainerUI[] upgradeContainers;
     [SerializeField] private Transform upgradeContainersParent;
 
     [Header("宝箱")][SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
@@ -26,10 +26,6 @@ public class WaveTransitionUIPage : UIPageBase
         GameEventBus.Unsubscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
 
         accessoryOperateContainer.CleanUp();
-        foreach (var container in upgradeContainers)
-        {
-            container.Cleanup();
-        }
     }
 
     private void OnWaveTransitionPhaseChanged(WaveTransitionPhaseChanged eventData)
@@ -63,23 +59,16 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
     {
-        if (!upgradeContainersParent.gameObject.activeSelf || eventData.Props == null)
+        if (!upgradeContainersParent.gameObject.activeSelf || eventData.PropEntries == null)
         {
             return;
         }
 
-        int count = Mathf.Min(upgradeContainers.Length, eventData.Props.Length);
+        int count = Mathf.Min(upgradeContainers.Length, eventData.PropEntries.Length);
         for (int i = 0; i < count; i++)
         {
-            UpgradeProp prop = eventData.Props[i];
-            upgradeContainers[i].Configure(
-                i,
-                ResourcesManager.GetPropIcon(prop.propType),
-                prop.propType.GetChineseName(),
-                $"+{prop.value}%",
-                prop.propType,
-                prop.value
-            );
+            PropEntry prop = eventData.PropEntries[i];
+            upgradeContainers[i].Configure(new UpgradeContainerUI.UpgradeContainerUIConfigure(prop,i));
         }
     }
 
@@ -96,12 +85,5 @@ public class WaveTransitionUIPage : UIPageBase
     private void SetUpgradeSelectionVisible(bool visible)
     {
         upgradeContainersParent.gameObject.SetActive(visible);
-        if (!visible)
-        {
-            foreach (var container in upgradeContainers)
-            {
-                container.Cleanup();
-            }
-        }
     }
 }

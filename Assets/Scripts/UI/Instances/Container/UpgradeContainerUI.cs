@@ -2,38 +2,31 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UpgradeContainer : MonoBehaviour
+public class UpgradeContainerUI : ContainerBaseUI<UpgradeContainerUI.UpgradeContainerUIConfigure>
 {
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI upgradeNameText;
     [SerializeField] private TextMeshProUGUI upgradeValueText;
-    [SerializeField] private Button button;
 
-    private int _containerIndex;
-    private PropType _propType;
-    private float _value;
-
-    public void Configure(int containerIndex, Sprite icon, string upgradeName, string upgradeValue, PropType propType, float value)
+    public override void Configure(UpgradeContainerUIConfigure resource)
     {
-        _containerIndex = containerIndex;
-        _propType = propType;
-        _value = value;
-
-        iconImage.sprite = icon;
-        upgradeNameText.text = upgradeName;
-        upgradeValueText.text = upgradeValue;
-
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnButtonClick);
+        iconImage.sprite = ResourcesManager.GetPropIcon(resource.propEntry.propType);
+        nameText.text = resource.propEntry.propType.GetChineseName();
+        upgradeValueText.text = resource.propEntry.value.ToString();
+        CleanClickEvent();
+        OnClicked += _ =>
+        {
+            GameEventBus.Publish<UpgradeContainerClickedEvent>(new UpgradeContainerClickedEvent(resource.index));
+        };
     }
-
-    private void OnButtonClick()
+    
+    public struct UpgradeContainerUIConfigure
     {
-        GameEventBus.Publish(new UpgradeContainerClickedEvent(_containerIndex, _propType, _value));
-    }
+        public PropEntry propEntry;
+        public int index;
 
-    public void Cleanup()
-    {
-        button.onClick.RemoveAllListeners();
+        public UpgradeContainerUIConfigure(PropEntry propEntry, int index)
+        {
+            this.propEntry = propEntry;
+            this.index = index;
+        }
     }
 }
