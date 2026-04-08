@@ -19,6 +19,8 @@ public class PropContainer : MonoBehaviour
         propText.fontSizeMin = propTextMinSize;
         propValueText.fontSizeMax = propValueMaxSize;
         propValueText.fontSizeMin = propValueMinSize;
+        propText.ForceMeshUpdate();
+        // propText.SetLayoutDirty();
     }
 
     public void Configure(Sprite icon,string propName,float propValue)

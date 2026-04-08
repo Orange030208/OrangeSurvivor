@@ -9,7 +9,8 @@ public class WeaponSelectionContainer : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI weaponNameText;
     [SerializeField] private Button button;
-    [SerializeField] private Image[] levelDependencyImages;
+    [Header("根据等级改变颜色的组件")]
+    [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private Image outline;
 
     [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
@@ -27,22 +28,10 @@ public class WeaponSelectionContainer : MonoBehaviour
         _currentLevel = level;
 
         iconImage.sprite = weaponData.ItemIcon;
-        string levelPrefix = level switch
-        {
-            1 => "灰",
-            2 => "绿",
-            3 => "蓝",
-            4 => "紫",
-            5 => "橙",
-            6 => "红",
-            _ => ""
-        };
-        weaponNameText.text = $"Lv.{level} [{levelPrefix}] {weaponData.ItemName}";
+        weaponNameText.text = ItemDisplayHelper.GetWeaponDisplayName(weaponData.ItemName, level);
         Color levelColor = ColorHelper.GetColorByLevel(level);
-        weaponNameText.color = levelColor;
-        outline.color = levelColor;
 
-        foreach (var image in levelDependencyImages)
+        foreach (var image in colorDependencyGraphics)
         {
             image.color = levelColor;
         }

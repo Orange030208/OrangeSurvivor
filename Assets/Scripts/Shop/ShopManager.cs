@@ -275,6 +275,7 @@ public class ShopManager : MonoBehaviour
         }
 
         currentItems[@event.Index].Lock = !currentItems[@event.Index].Lock;
+        print($"物品:{currentItems[@event.Index].ItemData.ItemName} 锁定状态:{currentItems[@event.Index].Lock}");
         PublishShopItems();
     }
 }

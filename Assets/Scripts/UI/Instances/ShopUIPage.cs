@@ -1,25 +1,39 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ShopUIPage : UIPageBase
 {
+
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
-    [SerializeField] private Button showPropButton;
+    [SerializeField] private Button showPropertiesButton;
     [SerializeField] private Button showInventoryButton;
     [SerializeField] private Button rerollButton;
     [SerializeField] private Button watchVideoRerollButton;
     [SerializeField] private TextMeshProUGUI rerollCostText;
 
-    private List<ShopItemContainer> spawnedItems = new();
+    [Header("属性面板(左)")]
+    [SerializeField] private SidebarSlidePanel propertiesSidebar;
+
+    [Header("背包面板(右)")]
+    [SerializeField] private SidebarSlidePanel inventorySidebar;
+
+    [Header("侧边遮罩")]
+    [SerializeField] private ClickOnlyHandler closeSidebarPanel;
+
+    private readonly List<ShopItemContainer> spawnedItems = new();
     private int currentRerollCost;
+
+    private SidebarSlidePanel currentOpenPanel;
 
     protected override void Awake()
     {
         base.Awake();
         shopItemParent.Clear();
+        InitSidebarPanels();
     }
 
     protected override void OnPageOpened(UIPageOpenContext context)
@@ -30,6 +44,7 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         BindButtonEvents();
+        HideAllSidebarPanelsImmediately();
         GameEventBus.Publish(new RequestShopSnapshotEvent());
     }
 
@@ -41,6 +56,7 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         UnbindButtonEvents();
+        KillPanelTweens();
         ClearShopItems();
     }
 
@@ -48,12 +64,27 @@ public class ShopUIPage : UIPageBase
     {
         rerollButton?.onClick.AddListener(OnRerollButtonClicked);
         watchVideoRerollButton?.onClick.AddListener(OnWatchVideoRerollButtonClicked);
+        showPropertiesButton?.onClick.AddListener(DisplayProperties);
+        showInventoryButton?.onClick.AddListener(DisplayInventory);
+
+        if (closeSidebarPanel != null)
+        {
+            closeSidebarPanel.OnClick += OnCloseSidebarClicked;
+        }
     }
 
     private void UnbindButtonEvents()
     {
         rerollButton?.onClick.RemoveListener(OnRerollButtonClicked);
         watchVideoRerollButton?.onClick.RemoveListener(OnWatchVideoRerollButtonClicked);
+        showPropertiesButton?.onClick.RemoveListener(DisplayProperties);
+        showInventoryButton?.onClick.RemoveListener(DisplayInventory);
+
+        if (closeSidebarPanel != null)
+        {
+            closeSidebarPanel.OnClick -= OnCloseSidebarClicked;
+            closeSidebarPanel.Dispose();
+        }
     }
 
     private void OnShopItemsChanged(ShopItemsChangedEvent eventData)
@@ -119,6 +150,85 @@ public class ShopUIPage : UIPageBase
     private void OnWatchVideoRerollButtonClicked()
     {
         GameEventBus.Publish(new ShopVideoAdRerollRequestedEvent());
+    }
+
+    private void DisplayProperties()
+    {
+        ShowPanel(propertiesSidebar);
+    }
+
+    private void DisplayInventory()
+    {
+        ShowPanel(inventorySidebar);
+    }
+
+    private void OnCloseSidebarClicked(PointerEventData _)
+    {
+        HideCurrentSidebarPanel();
+    }
+
+    private void UnDisplayProperties()
+    {
+        HideCurrentSidebarPanel();
+    }
+
+    private void InitSidebarPanels()
+    {
+        propertiesSidebar?.CachePositionsByCurrentState();
+        inventorySidebar?.CachePositionsByCurrentState();
+    }
+
+    private void ShowPanel(SidebarSlidePanel panel)
+    {
+        if (panel == null)
+        {
+            return;
+        }
+
+        if (currentOpenPanel != null && currentOpenPanel != panel)
+        {
+            currentOpenPanel.Hide();
+        }
+
+        panel.Show();
+        currentOpenPanel = panel;
+
+        if (closeSidebarPanel != null)
+        {
+            closeSidebarPanel.gameObject.SetActive(true);
+        }
+    }
+
+    private void HideCurrentSidebarPanel()
+    {
+        if (currentOpenPanel != null)
+        {
+            currentOpenPanel.Hide();
+            currentOpenPanel = null;
+        }
+
+        if (closeSidebarPanel != null)
+        {
+            closeSidebarPanel.gameObject.SetActive(false);
+        }
+    }
+
+    private void HideAllSidebarPanelsImmediately()
+    {
+        propertiesSidebar?.HideImmediate();
+        inventorySidebar?.HideImmediate();
+        currentOpenPanel = null;
+
+        if (closeSidebarPanel != null)
+        {
+            closeSidebarPanel.gameObject.SetActive(false);
+        }
+    }
+
+    private void KillPanelTweens()
+    {
+        propertiesSidebar?.KillTween();
+        inventorySidebar?.KillTween();
     }
 
     private void OnPurchaseSuccess(ShopPurchaseSuccessEvent eventData)

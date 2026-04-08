@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,8 @@ public class ShopItemContainer : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI priceText;
-    [SerializeField] private Image[] colorDependencyImages;
+    [Header("根据稀有度或者等级改变颜色的组件")]
+    [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private Image outline;
     [SerializeField] private Button itemButton;
 
@@ -96,10 +98,7 @@ public class ShopItemContainer : MonoBehaviour
         nameText.text = itemData.ItemName;
         priceText.text = itemData.ItemPrice.ToString();
 
-        nameText.color = color;
-        outline.color = color;
-
-        foreach (var image in colorDependencyImages)
+        foreach (var image in colorDependencyGraphics)
         {
             image.color = color;
         }

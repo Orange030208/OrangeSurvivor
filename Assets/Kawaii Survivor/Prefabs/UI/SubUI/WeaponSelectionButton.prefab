@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 188359830195738416}
   - component: {fileID: 5015721679588425894}
   m_Layer: 0
-  m_Name: WeaponNameText
+  m_Name: Weapon NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -886,8 +886,10 @@ MonoBehaviour:
   iconImage: {fileID: 4605485118363638198}
   weaponNameText: {fileID: 5015721679588425894}
   button: {fileID: 7386088829563256536}
-  levelDependencyImages:
+  colorDependencyGraphics:
+  - {fileID: 5609453739847822997}
   - {fileID: 2553861833400983332}
+  - {fileID: 5015721679588425894}
   outline: {fileID: 5609453739847822997}
   propContainersParent: {fileID: 5931683446202857071}
 --- !u!1 &8452851568118862949

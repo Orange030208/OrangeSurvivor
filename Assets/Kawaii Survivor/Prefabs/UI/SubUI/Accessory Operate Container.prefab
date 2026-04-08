@@ -1643,7 +1643,10 @@ MonoBehaviour:
   accessoryNameText: {fileID: 1193572580388997180}
   takeButton: {fileID: 1158301964515261112}
   recycleButton: {fileID: 2757525760990209693}
-  rarityDependencyImages:
+  recyclePriceText: {fileID: 0}
+  colorDependencyGraphics:
+  - {fileID: 965612355293811149}
+  - {fileID: 1193572580388997180}
   - {fileID: 8942778340036820248}
   outline: {fileID: 965612355293811149}
   propContainersParent: {fileID: 4089407953259059281}

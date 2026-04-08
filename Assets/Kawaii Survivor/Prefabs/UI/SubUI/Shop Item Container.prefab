@@ -1069,7 +1069,10 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   priceText: {fileID: 8927695711046786242}
-  colorDependencyImages: []
+  colorDependencyGraphics:
+  - {fileID: 6868508240174883784}
+  - {fileID: 3600694285946655353}
+  - {fileID: 6274204659472272891}
   outline: {fileID: 6868508240174883784}
   itemButton: {fileID: 8361415419830154117}
   lockButton: {fileID: 6516009426905641946}

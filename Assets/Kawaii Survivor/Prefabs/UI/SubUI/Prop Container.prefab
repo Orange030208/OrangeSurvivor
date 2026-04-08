@@ -90,8 +90,8 @@ MonoBehaviour:
   propImage: {fileID: 7351177390416003833}
   propText: {fileID: 8217157795373131147}
   propValueText: {fileID: 1079194781770800876}
-  propTextMaxSize: 30
-  propTextMinSize: 30
+  propTextMaxSize: 25
+  propTextMinSize: 25
   propValueMaxSize: 30
   propValueMinSize: 30
 --- !u!1 &3202911863688604377
@@ -369,12 +369,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
+  m_fontSize: 25
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 30
-  m_fontSizeMax: 30
+  m_fontSizeMin: 25
+  m_fontSizeMax: 25
   m_fontStyle: 0
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 512

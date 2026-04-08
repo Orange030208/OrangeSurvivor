@@ -11,7 +11,8 @@ public class AccessoryOperateContainer : MonoBehaviour
     [SerializeField] private Button takeButton;
     [SerializeField] private Button recycleButton;
     [SerializeField] private TextMeshProUGUI recyclePriceText;
-    [SerializeField] private Image[] rarityDependencyImages;
+    [Header("根据稀有度改变颜色的组件")]
+    [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private Image outline;
 
     [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
@@ -23,11 +24,8 @@ public class AccessoryOperateContainer : MonoBehaviour
         recyclePriceText.text = accessoryData.RecyclePrice.ToString();
 
         Color color = ColorHelper.GetColorByRarity(accessoryData.Rarity);
-        accessoryNameText.color = color;
 
-        outline.color = color;
-
-        foreach (var image in rarityDependencyImages)
+        foreach (var image in colorDependencyGraphics)
         {
             image.color = color;
         }

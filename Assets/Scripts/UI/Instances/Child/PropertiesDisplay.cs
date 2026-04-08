@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PropDisplay : MonoBehaviour
+public class PropertiesDisplay : MonoBehaviour
 {
     [Header("属性来源")]
     [SerializeField] private PropertiesManager propertiesManager;
