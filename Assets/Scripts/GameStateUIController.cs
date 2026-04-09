@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameStateUIController : MonoBehaviour, IGameStateListener
+public class GameStateUIController : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private bool openMenuOnStart = true;
@@ -13,6 +13,18 @@ public class GameStateUIController : MonoBehaviour, IGameStateListener
         }
     }
 
+    private void OnEnable()
+    {
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Subscribe<PauseStateChangedEvent>(OnPauseStateChanged);
+    }
+
+    private void OnDisable()
+    {
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Unsubscribe<PauseStateChangedEvent>(OnPauseStateChanged);
+    }
+
     private void Start()
     {
         if (!openMenuOnStart)
@@ -23,18 +35,14 @@ public class GameStateUIController : MonoBehaviour, IGameStateListener
         ShowMenuStateUI();
     }
 
-    public void BeforeGameStateChanged(GameState oldState, GameState newState)
-    {
-    }
-
-    public void AfterGameStateChanged(GameState oldState, GameState newState)
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
         if (uiManager == null)
         {
             return;
         }
 
-        switch (newState)
+        switch (eventData.NewState)
         {
             case GameState.Menu:
                 ShowMenuStateUI();
@@ -54,8 +62,29 @@ public class GameStateUIController : MonoBehaviour, IGameStateListener
         }
     }
 
+    private void OnPauseStateChanged(PauseStateChangedEvent eventData)
+    {
+        if (uiManager == null)
+        {
+            return;
+        }
+
+        if (eventData.IsPaused)
+        {
+            if (!uiManager.IsPageOpen<GamePauseMenu>())
+            {
+                uiManager.OpenPage<GamePauseMenu>();
+            }
+
+            return;
+        }
+
+        uiManager.ClosePage<GamePauseMenu>();
+    }
+
     private void ShowMenuStateUI()
     {
+        uiManager.CloseAllPages();
         uiManager.OpenPage<MenuUIPage>();
     }
 

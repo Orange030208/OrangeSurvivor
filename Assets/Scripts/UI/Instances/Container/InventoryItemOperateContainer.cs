@@ -58,11 +58,6 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
     public override void Dispose()
     {
         base.Dispose();
-        Cleanup();
-    }
-
-    public void Cleanup()
-    {
         sellButton.onClick.RemoveAllListeners();
         mergeButton.onClick.RemoveAllListeners();
     }

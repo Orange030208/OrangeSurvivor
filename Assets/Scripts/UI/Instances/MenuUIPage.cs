@@ -7,11 +7,16 @@ public class MenuUIPage : UIPageBase
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        startButton.onClick.AddListener(GameManager.Instance.WeaponSelection);
+        startButton.onClick.AddListener(OnStartButtonClicked);
     }
 
     protected override void OnPageClosed()
     {
-        startButton.onClick.RemoveListener(GameManager.Instance.WeaponSelection);
+        startButton.onClick.RemoveListener(OnStartButtonClicked);
+    }
+
+    private void OnStartButtonClicked()
+    {
+        GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.WeaponSelection));
     }
 }

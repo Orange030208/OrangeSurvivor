@@ -1,19 +1,20 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManager>, IGameStateListener
+public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManager>
 {
     [SerializeField] private WeaponsHolder weaponsHolder;
 
     public WeaponInfo[] SelectableWeapons { get; private set; }
 
     private int selectIndex = -1;
-    
+
     private void OnEnable()
     {
         GameEventBus.Subscribe<UISelectableWeaponsSnapshotEvent>(PublishSnapshot);
         GameEventBus.Subscribe<SelectWeaponEvent>(OnWeaponSelected);
         GameEventBus.Subscribe<SelectedWeaponConfirmEvent>(OnSelectedWeaponConfirm);
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void OnDisable()
@@ -21,15 +22,12 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
         GameEventBus.Unsubscribe<UISelectableWeaponsSnapshotEvent>(PublishSnapshot);
         GameEventBus.Unsubscribe<SelectWeaponEvent>(OnWeaponSelected);
         GameEventBus.Unsubscribe<SelectedWeaponConfirmEvent>(OnSelectedWeaponConfirm);
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
-    public void BeforeGameStateChanged(GameState oldState, GameState newState)
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-    }
-
-    public void AfterGameStateChanged(GameState oldState, GameState newState)
-    {
-        switch (newState)
+        switch (eventData.NewState)
         {
             case GameState.Game:
                 weaponsHolder.AddWeapon(SelectableWeapons[selectIndex].weaponData, SelectableWeapons[selectIndex].level);
@@ -61,7 +59,7 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
         if (SelectableWeapons == null) return;
         if (e.Index < 0 || e.Index >= SelectableWeapons.Length) return;
 
-        selectIndex  = e.Index;
+        selectIndex = e.Index;
     }
 
     private void OnSelectedWeaponConfirm(SelectedWeaponConfirmEvent e)
@@ -69,7 +67,7 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
         if (selectIndex >= 0 && selectIndex < SelectableWeapons.Length)
         {
             print($"选择了武器{SelectableWeapons[selectIndex].weaponData.ItemName}");
-            GameManager.Instance.StartGame();
+            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.Game));
         }
         else
         {

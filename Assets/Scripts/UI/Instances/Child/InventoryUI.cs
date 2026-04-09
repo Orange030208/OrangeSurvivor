@@ -27,7 +27,7 @@ public class InventoryUI : MonoBehaviour
     {
         Unsubscribe();
         CleanupSpawnedContainers();
-        inventoryItemOperateContainer?.Cleanup();
+        inventoryItemOperateContainer?.Dispose();
     }
 
     private void Subscribe()
@@ -176,14 +176,14 @@ public class InventoryUI : MonoBehaviour
     private void CloseOperatePanel()
     {
         currentOperateItemIndex = -1;
-        inventoryItemOperateContainer?.Cleanup();
+        inventoryItemOperateContainer?.Dispose();
         inventoryItemOperateContainerSidebar?.Hide();
     }
 
     private void CloseOperatePanelImmediate()
     {
         currentOperateItemIndex = -1;
-        inventoryItemOperateContainer?.Cleanup();
+        inventoryItemOperateContainer?.Dispose();
         inventoryItemOperateContainerSidebar?.HideImmediate();
     }
 

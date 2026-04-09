@@ -107,7 +107,7 @@ public class PlayerHealth : MonoBehaviour
     private void PassAway()
     {
         Debug.Log("玩家挂了");
-        GameManager.Instance.GameOver();
+        GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.GameOver));
     }
 
     private void EnemyTookDamageCallback(DamageInfo damageInfo)

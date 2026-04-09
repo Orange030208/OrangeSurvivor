@@ -1,84 +1,143 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoSingletonBase<GameManager>
 {
-    [SerializeField] private Player _player;
+    [SerializeField] private Player player;
     [SerializeField] private GameState initialGameState = GameState.Menu;
 
-    private GameState _gameState;
-    private GameState GameState
-    {
-        get => _gameState;
-        set
-        {
-            if (value == _gameState) return;
-            IEnumerable<IGameStateListener> stateListeners = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<IGameStateListener>();
-            GameState oldState = _gameState;
-            foreach (IGameStateListener listener in stateListeners)
-            {
-                listener.BeforeGameStateChanged(oldState, value);
-            }
-
-            _gameState = value;
-
-            foreach (IGameStateListener listener in stateListeners)
-            {
-                listener.AfterGameStateChanged(oldState, value);
-            }
-
-            if (value == GameState.GameOver)
-            {
-                ManageGameOver();
-            }
-        }
-    }
-
-    public void WeaponSelection() => GameState = GameState.WeaponSelection;
-    public void StartGame() => GameState = GameState.Game;
-    public void GameOver() => GameState = GameState.GameOver;
-    public void EnterMenu() => GameState = GameState.Menu;
-    public void EnterShop() => GameState = GameState.Shop;
-    public void EnterWaveTransition() => GameState = GameState.WaveTransition;
+    private GameState currentGameState = GameState.None;
+    private bool isPaused;
 
     private void OnEnable()
     {
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Subscribe<GameStateChangeRequestEvent>(OnGameStateChangeRequested);
+        GameEventBus.Subscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
+        GameEventBus.Subscribe<ResumeGameRequestedEvent>(OnResumeGameRequested);
+        GameEventBus.Subscribe<ReturnToMenuRequestedEvent>(OnReturnToMenuRequested);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Unsubscribe<GameStateChangeRequestEvent>(OnGameStateChangeRequested);
+        GameEventBus.Unsubscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
+        GameEventBus.Unsubscribe<ResumeGameRequestedEvent>(OnResumeGameRequested);
+        GameEventBus.Unsubscribe<ReturnToMenuRequestedEvent>(OnReturnToMenuRequested);
     }
 
     private void Start()
     {
         Application.targetFrameRate = 60;
-        GameState = initialGameState;
+        ChangeGameState(initialGameState);
+        SetPaused(false);
     }
 
-    private void OnWaveCompleted(WaveCompletedEvent e)
+    // private void Update()
+    // {
+    //     if (currentGameState != GameState.Game)
+    //     {
+    //         return;
+    //     }
+    //
+    //     if (Input.GetKeyDown(KeyCode.Escape))
+    //     {
+    //         if (isPaused)
+    //         {
+    //             GameEventBus.Publish<ResumeGameRequestedEvent>();
+    //         }
+    //         else
+    //         {
+    //             GameEventBus.Publish<PauseGameRequestedEvent>();
+    //         }
+    //     }
+    // }
+
+    private void OnWaveCompleted(WaveCompletedEvent _)
     {
-        if (_player.IsLevelUpInCurrentWave)
+        if (player != null && player.IsLevelUpInCurrentWave)
         {
-            GameState = GameState.WaveTransition;
+            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.WaveTransition));
+            return;
         }
-        else
+
+        GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.Shop));
+    }
+
+    private void OnGameStateChangeRequested(GameStateChangeRequestEvent eventData)
+    {
+        ChangeGameState(eventData.TargetState);
+    }
+
+    private void OnPauseGameRequested()
+    {
+        if (currentGameState != GameState.Game || isPaused)
         {
-            GameState = GameState.Shop;
+            return;
+        }
+
+        SetPaused(true);
+    }
+
+    private void OnResumeGameRequested()
+    {
+        if (!isPaused)
+        {
+            return;
+        }
+
+        SetPaused(false);
+    }
+
+    private void OnReturnToMenuRequested()
+    {
+        SetPaused(false);
+        ChangeGameState(GameState.Menu);
+        SceneManager.LoadScene(0);
+    }
+
+    private void ChangeGameState(GameState targetState)
+    {
+        if (targetState == currentGameState)
+        {
+            return;
+        }
+
+        if (targetState != GameState.Game && isPaused)
+        {
+            SetPaused(false);
+        }
+
+        GameState oldState = currentGameState;
+        currentGameState = targetState;
+        GameEventBus.Publish(new GameStateChangedEvent(oldState, currentGameState));
+
+        if (currentGameState == GameState.GameOver)
+        {
+            ManageGameOver();
         }
     }
 
-    public void ManageGameOver()
+    private void SetPaused(bool paused)
     {
-        DOVirtual.DelayedCall(2, () =>
+        if (isPaused == paused)
+        {
+            return;
+        }
+
+        isPaused = paused;
+        Time.timeScale = isPaused ? 0f : 1f;
+        GameEventBus.Publish(new PauseStateChangedEvent(isPaused));
+    }
+
+    private void ManageGameOver()
+    {
+        DOVirtual.DelayedCall(2f, () =>
         {
             SceneManager.LoadScene(0);
-        });
+        }).SetUpdate(true);
     }
 }
 
@@ -92,10 +151,4 @@ public enum GameState
     StageComplete,
     WaveTransition,
     Shop
-}
-
-public interface IGameStateListener
-{
-    void BeforeGameStateChanged(GameState oldState, GameState newState);
-    void AfterGameStateChanged(GameState oldState, GameState newState);
 }

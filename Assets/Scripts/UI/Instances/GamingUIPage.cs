@@ -4,19 +4,21 @@ using UnityEngine.UI;
 
 public class GamingUIPage : UIPageBase
 {
-    [Header("Wave UI")] [SerializeField] private TextMeshProUGUI waveText;
+    [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timerText;
 
-    [Header("Player Health UI")] [SerializeField]
+    [SerializeField]
     private Slider healthSlider;
 
     [SerializeField] private TextMeshProUGUI healthText;
 
-    [Header("Player Level UI")] [SerializeField]
+    [SerializeField]
     private Slider xpBar;
 
     [SerializeField] private TextMeshProUGUI levelText;
 
+    [SerializeField] private Button menuButton;
+    
     protected override void OnPageOpened(UIPageOpenContext context)
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
@@ -29,6 +31,8 @@ public class GamingUIPage : UIPageBase
         // 请求快照，避免 UI 打开时错过早先事件
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
         GameEventBus.Publish<RequestPlayerHudSnapshotEvent>();
+        
+        menuButton.onClick.AddListener(() => GameEventBus.Publish(new PauseGameRequestedEvent()));
     }
 
     protected override void OnPageClosed()
@@ -39,6 +43,8 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Unsubscribe<PlayerHealthChangedEvent>(OnPlayerHealthChanged);
         GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+        
+        menuButton.onClick.RemoveAllListeners();
     }
 
     private void OnWaveStarted(WaveStartedEvent e)

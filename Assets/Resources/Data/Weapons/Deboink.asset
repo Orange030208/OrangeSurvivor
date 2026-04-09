@@ -17,8 +17,8 @@ MonoBehaviour:
   itemPrice: 10
   itemType: 0
   weaponPrefab: {fileID: 6802585226729800489, guid: 5f0f9962ee61b9642856089e224a9d22, type: 3}
-  attack: 2
-  attackSpeed: 1
+  attack: 10
+  attackSpeed: 2
   criticalChance: 5
   criticalPercent: 200
   range: 4

@@ -20,6 +20,21 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 0
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.2
+      ease: 9
+      offset: 80
+      startScale: 0.94
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.2
+      ease: 9
+      offset: 80
+      startScale: 0.94
+      fade: 1
   - layerType: 2
     prefab: {fileID: 3816208830851736021, guid: e5958a3e181b13e439375b903b3e0d9f, type: 3}
     singleton: 1
@@ -27,6 +42,21 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 0
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.2
+      ease: 9
+      offset: 80
+      startScale: 0.94
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.2
+      ease: 9
+      offset: 80
+      startScale: 0.94
+      fade: 1
   - layerType: 3
     prefab: {fileID: 3816208830851736021, guid: e6ab8e1c786b9d4409cedc1cc5d99d58, type: 3}
     singleton: 1
@@ -34,6 +64,21 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.18
+      ease: 9
+      offset: 40
+      startScale: 0.98
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.14
+      ease: 8
+      offset: 30
+      startScale: 0.99
+      fade: 1
   - layerType: 3
     prefab: {fileID: 3816208830851736021, guid: 15ab56685b0b9204697ff473121f7226, type: 3}
     singleton: 1
@@ -41,6 +86,21 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 4
+      duration: 0.24
+      ease: 9
+      offset: 100
+      startScale: 0.94
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.16
+      ease: 8
+      offset: 40
+      startScale: 0.99
+      fade: 1
   - layerType: 1
     prefab: {fileID: 830820297401448628, guid: 7cef013643cf00c4bb9d993bd42aedc1, type: 3}
     singleton: 1
@@ -48,6 +108,21 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.12
+      ease: 9
+      offset: 20
+      startScale: 1
+      fade: 0
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.12
+      ease: 8
+      offset: 20
+      startScale: 1
+      fade: 0
   - layerType: 2
     prefab: {fileID: 5453402992543493149, guid: 4a3a1b694f36bcd4995dafcb3cd7a5aa, type: 3}
     singleton: 1
@@ -55,3 +130,40 @@ MonoBehaviour:
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 6
+      duration: 0.22
+      ease: 9
+      offset: 60
+      startScale: 0.96
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.16
+      ease: 8
+      offset: 40
+      startScale: 0.99
+      fade: 1
+  - layerType: 3
+    prefab: {fileID: 3816208830851736021, guid: 56e7c02e901575f41b6af872ba0cec50, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.16
+      ease: 9
+      offset: 20
+      startScale: 1
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.14
+      ease: 8
+      offset: 20
+      startScale: 1
+      fade: 1

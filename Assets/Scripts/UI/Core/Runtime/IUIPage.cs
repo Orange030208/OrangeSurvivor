@@ -8,4 +8,6 @@ public interface IUIPage
     void HandleClose();
     void HandleFocusChanged(bool hasFocus);
     void HandleTick(float deltaTime);
+    void PlayOpenTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime);
+    void PlayCloseTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime, System.Action onCompleted);
 }

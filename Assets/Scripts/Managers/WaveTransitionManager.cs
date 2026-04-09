@@ -13,7 +13,7 @@ public enum TransitionPhase
 /// <summary>
 /// 波次过渡管理器，负责在波次之间提供玩家属性升级选项。
 /// </summary>
-public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, IGameStateListener
+public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
 {
     //TODO:后续修改掉
     [SerializeField] private AccessoryManager accessoryManager;
@@ -44,6 +44,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         GameEventBus.Subscribe<WaveTransitionSnapshot>(PublishSnapshot);
         GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void OnDisable()
@@ -51,15 +52,12 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         GameEventBus.Unsubscribe<WaveTransitionSnapshot>(PublishSnapshot);
         GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
-    public void BeforeGameStateChanged(GameState oldState, GameState newState)
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-    }
-
-    public void AfterGameStateChanged(GameState oldState, GameState newState)
-    {
-        if (newState == GameState.WaveTransition)
+        if (eventData.NewState == GameState.WaveTransition)
         {
             StartTransitionFlow();
         }
@@ -172,7 +170,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>, I
         else
         {
             CurrentPhase = TransitionPhase.None;
-            GameManager.Instance.EnterShop();
+            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.Shop));
         }
     }
 

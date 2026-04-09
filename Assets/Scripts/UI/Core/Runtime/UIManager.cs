@@ -14,6 +14,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     private readonly Dictionary<string, RuntimePage> openedByInstance = new Dictionary<string, RuntimePage>();
     private readonly Dictionary<Type, Queue<UIPageBase>> pooledByPageType = new Dictionary<Type, Queue<UIPageBase>>();
     private readonly UIRuntimeState runtimeState = new UIRuntimeState();
+    private readonly HashSet<string> closingInstanceIds = new HashSet<string>();
 
     public event EventHandler<UIPageEventArgs> PageOpened;
     public event EventHandler<UIPageEventArgs> PageClosed;
@@ -65,6 +66,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
         UIPageOpenContext context = new UIPageOpenContext(pageType, instanceId, payload);
         page.HandleOpen(context);
+        page.PlayOpenTransition(ResolveOpenTransition(entry), settings.UseUnscaledTime);
         FocusPage(runtimePage);
         RaisePageOpened(pageType, instanceId);
         return page;
@@ -93,16 +95,21 @@ public sealed class UIManager : MonoBehaviour, IUIManager
             throw new ArgumentException("ClosePageByInstanceId failed: instanceId is null or empty.", nameof(instanceId));
         }
 
+        if (closingInstanceIds.Contains(instanceId))
+        {
+            return false;
+        }
+
         if (!openedByInstance.TryGetValue(instanceId, out RuntimePage runtimePage))
         {
             return false;
         }
 
-        runtimePage.Page.HandleClose();
-        openedByInstance.Remove(instanceId);
-        runtimeState.Remove(instanceId);
-        RecycleOrDestroy(runtimePage);
-        RaisePageClosed(runtimePage.PageType, instanceId);
+        closingInstanceIds.Add(instanceId);
+        runtimePage.Page.PlayCloseTransition(
+            ResolveCloseTransition(runtimePage.Entry),
+            settings.UseUnscaledTime,
+            () => FinalizeClose(runtimePage));
         return true;
     }
 
@@ -318,14 +325,63 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         target.SetAsLastSibling();
     }
 
+    private void FinalizeClose(RuntimePage runtimePage)
+    {
+        string instanceId = runtimePage.InstanceId;
+        closingInstanceIds.Remove(instanceId);
+
+        if (!openedByInstance.ContainsKey(instanceId))
+        {
+            return;
+        }
+
+        runtimePage.Page.HandleClose();
+        openedByInstance.Remove(instanceId);
+        runtimeState.Remove(instanceId);
+        RecycleOrDestroy(runtimePage);
+
+        RestoreFocusToTopPage();
+        RaisePageClosed(runtimePage.PageType, instanceId);
+    }
+
+    private UIPageTransitionSettings ResolveOpenTransition(UIPrefabEntry entry)
+    {
+        return entry.useCustomTransition ? entry.customOpenTransition : settings.DefaultOpenTransition;
+    }
+
+    private UIPageTransitionSettings ResolveCloseTransition(UIPrefabEntry entry)
+    {
+        return entry.useCustomTransition ? entry.customCloseTransition : settings.DefaultCloseTransition;
+    }
+
     private void FocusPage(RuntimePage runtimePage)
     {
         foreach (RuntimePage page in openedByInstance.Values)
         {
+            if (closingInstanceIds.Contains(page.InstanceId))
+            {
+                continue;
+            }
+
             bool hasFocus = page.InstanceId == runtimePage.InstanceId;
             page.Page.HandleFocusChanged(hasFocus);
             RaisePageFocusChanged(page.PageType, page.InstanceId);
         }
+    }
+
+    private void RestoreFocusToTopPage()
+    {
+        if (!runtimeState.TryGetTopOpenInstance(out string instanceId))
+        {
+            return;
+        }
+
+        if (!openedByInstance.TryGetValue(instanceId, out RuntimePage runtimePage))
+        {
+            return;
+        }
+
+        FocusPage(runtimePage);
     }
 
     private void RecycleOrDestroy(RuntimePage runtimePage)

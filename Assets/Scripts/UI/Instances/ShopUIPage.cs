@@ -135,15 +135,6 @@ public class ShopUIPage : UIPageBase
         }
     }
 
-    private void OnShopItemLockClicked(ShopItemContainer container)
-    {
-        int index = spawnedItems.IndexOf(container);
-        if (index >= 0)
-        {
-            GameEventBus.Publish(new OperateShopItemLockEvent(index));
-        }
-    }
-
     private void OnRerollButtonClicked()
     {
         GameEventBus.Publish(new ShopRerollRequestedEvent());
@@ -165,11 +156,6 @@ public class ShopUIPage : UIPageBase
     }
 
     private void OnCloseSidebarClicked(PointerEventData _)
-    {
-        HideCurrentSidebarPanel();
-    }
-
-    private void UnDisplayProperties()
     {
         HideCurrentSidebarPanel();
     }

@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 /// <summary>
 /// 敌波管理器：负责按配置的时间、频率生成敌人
 /// </summary>
-public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
+public class WaveManager : MonoSingletonBase<WaveManager>
 {
     // 单个波次的总持续时间（单位：秒）
     [SerializeField] private float waveDuration;
@@ -43,11 +43,13 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
     private void OnEnable()
     {
         GameEventBus.Subscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void Update()
@@ -124,7 +126,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         if (waveIndex >= waves.Length)
         {
             GameEventBus.Publish<AllWavesCompletedEvent>();
-            GameManager.Instance.EnterWaveTransition();
+            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.WaveTransition));
             return;
         }
 
@@ -181,13 +183,9 @@ public class WaveManager : MonoSingletonBase<WaveManager>, IGameStateListener
         GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
     }
 
-    public void BeforeGameStateChanged(GameState oldState, GameState newState)
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-    }
-
-    public void AfterGameStateChanged(GameState oldState, GameState newState)
-    {
-        switch (newState)
+        switch (eventData.NewState)
         {
             case GameState.Game:
                 // 每次进入Game状态时，从第0波重新开始

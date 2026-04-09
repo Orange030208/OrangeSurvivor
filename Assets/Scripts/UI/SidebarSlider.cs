@@ -22,6 +22,12 @@ public class SidebarSlider : MonoBehaviour
     [SerializeField] private float extraHideOffset = 0f;
     [SerializeField] private bool setInactiveOnHide = true;
 
+    public float SlideDuration
+    {
+        get => slideDuration;
+        set => slideDuration = value;
+    }
+
     public event Action<SidebarSlider> OnShowStarted;
     public event Action<SidebarSlider> OnShowCompleted;
     public event Action<SidebarSlider> OnHideStarted;
@@ -114,6 +120,7 @@ public class SidebarSlider : MonoBehaviour
         slideTween = panelRect
             .DOAnchorPos(shownPos, slideDuration)
             .SetEase(slideEase)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 IsShown = true;
@@ -137,6 +144,7 @@ public class SidebarSlider : MonoBehaviour
         slideTween = panelRect
             .DOAnchorPos(hiddenPos, slideDuration)
             .SetEase(slideEase)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 IsShown = false;

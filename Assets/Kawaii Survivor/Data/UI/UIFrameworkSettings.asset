@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instanceIdPrefix: UIInst_
   rootName: UIRoot
-  dontDestroyOnLoad: 1
+  dontDestroyOnLoading: 1
   useUnscaledTime: 1
   renderMode: 0
   rootSortingOrder: 0
@@ -22,13 +22,27 @@ MonoBehaviour:
   matchWidthOrHeight: 0.5
   enablePooling: 1
   maxCachedInstancesPerPage: 3
+  defaultOpenTransition:
+    transitionType: 1
+    duration: 0.22
+    ease: 9
+    offset: 60
+    startScale: 0.97
+    fade: 1
+  defaultCloseTransition:
+    transitionType: 1
+    duration: 0.16
+    ease: 8
+    offset: 40
+    startScale: 0.99
+    fade: 1
   layers:
   - layerType: 0
     sortingOrder: -300
     blocksRaycasts: 0
   - layerType: 1
     sortingOrder: -100
-    blocksRaycasts: 0
+    blocksRaycasts: 1
   - layerType: 2
     sortingOrder: 0
     blocksRaycasts: 1

@@ -97,6 +97,21 @@ public sealed class UIRuntimeState
         return true;
     }
 
+    public bool TryGetTopOpenInstance(out string instanceId)
+    {
+        instanceId = string.Empty;
+        foreach (string candidate in backStack)
+        {
+            if (instanceToPageType.ContainsKey(candidate))
+            {
+                instanceId = candidate;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public int GetOpenCount(Type pageType)
     {
         if (pageType == null)

@@ -1,2 +1,43 @@
-// 通用游戏事件结构体可以放置在此处
-// 例如：快照事件、系统事件等
+public struct GameStateChangeRequestEvent : IGameEvent
+{
+    public GameState TargetState;
+
+    public GameStateChangeRequestEvent(GameState targetState)
+    {
+        TargetState = targetState;
+    }
+}
+
+public struct GameStateChangedEvent : IGameEvent
+{
+    public GameState OldState;
+    public GameState NewState;
+
+    public GameStateChangedEvent(GameState oldState, GameState newState)
+    {
+        OldState = oldState;
+        NewState = newState;
+    }
+}
+
+public struct PauseGameRequestedEvent : IGameEvent
+{
+}
+
+public struct ResumeGameRequestedEvent : IGameEvent
+{
+}
+
+public struct ReturnToMenuRequestedEvent : IGameEvent
+{
+}
+
+public struct PauseStateChangedEvent : IGameEvent
+{
+    public bool IsPaused;
+
+    public PauseStateChangedEvent(bool isPaused)
+    {
+        IsPaused = isPaused;
+    }
+}

@@ -20,6 +20,18 @@ public sealed class UIFrameworkSettings : ScriptableObject
     [SerializeField] private bool enablePooling = true;
     [SerializeField] private int maxCachedInstancesPerPage = 3;
 
+    [Header("Default Transition")]
+    [SerializeField] private UIPageTransitionSettings defaultOpenTransition = new UIPageTransitionSettings();
+    [SerializeField] private UIPageTransitionSettings defaultCloseTransition = new UIPageTransitionSettings
+    {
+        transitionType = UITransitionType.Fade,
+        duration = 0.16f,
+        ease = DG.Tweening.Ease.InCubic,
+        offset = 60f,
+        startScale = 0.98f,
+        fade = true
+    };
+
     [Header("Layers")]
     [SerializeField] private List<UILayerDefinition> layers = CreateDefaultLayers();
 
@@ -33,6 +45,8 @@ public sealed class UIFrameworkSettings : ScriptableObject
     public float MatchWidthOrHeight => matchWidthOrHeight;
     public bool EnablePooling => enablePooling;
     public int MaxCachedInstancesPerPage => maxCachedInstancesPerPage;
+    public UIPageTransitionSettings DefaultOpenTransition => defaultOpenTransition;
+    public UIPageTransitionSettings DefaultCloseTransition => defaultCloseTransition;
     public IReadOnlyList<UILayerDefinition> Layers => layers;
 
     private static List<UILayerDefinition> CreateDefaultLayers()
