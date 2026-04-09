@@ -1,42 +1,32 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AccessoryOperateContainer : MonoBehaviour
+public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, UIPropertiesViewList>
 {
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI accessoryNameText;
     [SerializeField] private Button takeButton;
     [SerializeField] private Button recycleButton;
-    [SerializeField] private TextMeshProUGUI recyclePriceText;
-    [Header("根据稀有度改变颜色的组件")]
-    [SerializeField] private Graphic[] colorDependencyGraphics;
+    [SerializeField] private TextMeshProUGUI recycleText;
     [SerializeField] private Image outline;
 
-    [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
-
-    public void Configure(AccessoryDataSO accessoryData)
+    public override void Configure(AccessoryDataSO resource)
     {
-        iconImage.sprite = accessoryData.ItemIcon;
-        accessoryNameText.text = accessoryData.ItemName;
-        recyclePriceText.text = accessoryData.RecyclePrice.ToString();
-
-        Color color = ColorHelper.GetColorByRarity(accessoryData.Rarity);
-
-        foreach (var image in colorDependencyGraphics)
+        if (resource == null)
         {
-            image.color = color;
+            return;
         }
+
+        nameText.text = resource.ItemName;
+        recycleText.text = resource.RecyclePrice.ToString();
+        RenderColor(resource, resource.Rarity);
+        bottom.Render(ToPropEntries(resource.GetProps()));
 
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
 
-        takeButton.onClick.AddListener(() => OperateAccessory(accessoryData, true));
-        recycleButton.onClick.AddListener(() => OperateAccessory(accessoryData, false));
-
-        ConfigurePropContainer(accessoryData.GetProps());
+        takeButton.onClick.AddListener(() => OperateAccessory(resource, true));
+        recycleButton.onClick.AddListener(() => OperateAccessory(resource, false));
     }
 
     private void OperateAccessory(AccessoryDataSO accessoryData, bool selected)
@@ -44,14 +34,26 @@ public class AccessoryOperateContainer : MonoBehaviour
         GameEventBus.Publish(new AccessoryOperateEvent(accessoryData, selected));
     }
 
-    private void ConfigurePropContainer(Dictionary<PropType, float> calculatedProps)
+    public override void Dispose()
     {
-        PropContainerManager.GeneratePropContainers(calculatedProps, propContainersParent);
+        base.Dispose();
+        CleanUp();
     }
 
     public void CleanUp()
     {
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
+    }
+
+    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
+    {
+        List<PropEntry> entries = new();
+        foreach (var kv in props)
+        {
+            entries.Add(new PropEntry(kv.Key, kv.Value));
+        }
+
+        return entries;
     }
 }

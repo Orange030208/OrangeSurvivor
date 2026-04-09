@@ -17,24 +17,31 @@ public class WeaponsHolder : MonoBehaviour
         RebuildEquippedWeaponsCache();
     }
 
-    public void AddWeapon(WeaponDataSO weaponData, int level)
+    public bool AddWeapon(WeaponDataSO weaponData, int level)
     {
         if (weaponData == null)
         {
-            return;
+            return false;
         }
 
         if (weaponPositions == null || weaponPositions.Length == 0)
         {
             Debug.LogWarning("Weapon positions are not configured.");
-            return;
+            return false;
         }
 
-        int randomIndex = UnityEngine.Random.Range(0, weaponPositions.Length);
-        weaponPositions[randomIndex].AssignWeapon(weaponData.WeaponPrefab, level);
+        WeaponPosition emptyPosition = GetEmptyWeaponPosition();
+        if (emptyPosition == null)
+        {
+            Debug.LogWarning("No empty weapon position available.");
+            return false;
+        }
+
+        emptyPosition.AssignWeapon(weaponData.WeaponPrefab, WeaponLevelHelper.ClampLevel(level));
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
+        return true;
     }
 
     public bool RemoveWeapon(Weapon weapon)
@@ -64,10 +71,92 @@ public class WeaponsHolder : MonoBehaviour
         return true;
     }
 
+    public bool MergeWeapon(Weapon sourceWeapon, Weapon targetWeapon)
+    {
+        if (sourceWeapon == null || targetWeapon == null || sourceWeapon == targetWeapon)
+        {
+            return false;
+        }
+
+        if (sourceWeapon.WeaponData != targetWeapon.WeaponData || sourceWeapon.Level != targetWeapon.Level)
+        {
+            return false;
+        }
+
+        if (!WeaponLevelHelper.TryGetMergedLevel(sourceWeapon.Level, out int mergedLevel))
+        {
+            return false;
+        }
+
+        WeaponPosition sourcePosition = FindWeaponPosition(sourceWeapon);
+        WeaponPosition targetPosition = FindWeaponPosition(targetWeapon);
+        if (sourcePosition == null || targetPosition == null)
+        {
+            return false;
+        }
+
+        WeaponDataSO weaponData = sourceWeapon.WeaponData;
+
+        if (!sourcePosition.RemoveWeapon(sourceWeapon))
+        {
+            return false;
+        }
+
+        if (!targetPosition.RemoveWeapon(targetWeapon))
+        {
+            sourcePosition.AssignWeapon(weaponData.WeaponPrefab, sourceWeapon.Level);
+            RebuildEquippedWeaponsCache();
+            OnWeaponsChanged?.Invoke();
+            return false;
+        }
+
+        targetPosition.AssignWeapon(weaponData.WeaponPrefab, mergedLevel);
+
+        RebuildEquippedWeaponsCache();
+        OnWeaponsChanged?.Invoke();
+        return true;
+    }
+
     public void RefreshSnapshot()
     {
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
+    }
+
+    private WeaponPosition GetEmptyWeaponPosition()
+    {
+        if (weaponPositions == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            if (weaponPositions[i] != null && weaponPositions[i].Weapon == null)
+            {
+                return weaponPositions[i];
+            }
+        }
+
+        return null;
+    }
+
+    private WeaponPosition FindWeaponPosition(Weapon weapon)
+    {
+        if (weaponPositions == null || weapon == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            if (weaponPositions[i] != null && weaponPositions[i].Weapon == weapon)
+            {
+                return weaponPositions[i];
+            }
+        }
+
+        return null;
     }
 
     private void RebuildEquippedWeaponsCache()

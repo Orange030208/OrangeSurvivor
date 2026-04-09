@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ public class UIPropertiesViewList : MonoBehaviour
     [SerializeField] private Transform propContainersParent;
 
     private readonly List<PropContainer> propContainers = new();
+
+    private void Awake()
+    {
+        propContainersParent.Clear();
+    }
 
     public void Render(PropEntry[] propEntries)
     {

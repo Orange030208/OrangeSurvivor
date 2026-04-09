@@ -50,7 +50,7 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
             WeaponDataSO weaponData = ResourcesManager.GetRandomWeapon();
 
             SelectableWeapons[i].weaponData = weaponData;
-            SelectableWeapons[i].level = Random.Range(1, 7);
+            SelectableWeapons[i].level = WeaponLevelHelper.GetRandomLevelInclusiveMax();
         }
 
         PublishSnapshot();

@@ -17,6 +17,7 @@ public class ShopUIPage : UIPageBase
 
     [Header("属性面板(左)")]
     [SerializeField] private SidebarSlider propertiesSidebar;
+    [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
     [Header("背包面板(右)")]
     [SerializeField] private SidebarSlider inventorySidebar;
@@ -44,6 +45,8 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         BindButtonEvents();
+        InjectPropertiesDependencies();
+        propertiesViewSync?.StartSync();
         HideAllSidebarPanelsImmediately();
         GameEventBus.Publish(new RequestShopSnapshotEvent());
     }
@@ -56,6 +59,7 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         UnbindButtonEvents();
+        propertiesViewSync?.StopSync();
         KillPanelTweens();
         ClearShopItems();
     }
@@ -113,12 +117,10 @@ public class ShopUIPage : UIPageBase
         }
 
         ShopItemContainer container = Instantiate(shopItemPrefab, shopItemParent);
-        container.OnLockClicked += () => OnShopItemLockClicked(container);
-        container.OnItemClicked += () => OnShopItemClicked(container);
 
         if (itemData.ItemData != null)
         {
-            container.Configure(itemData.ItemData, itemData.Lock, itemData.Level);
+            container.Configure(new InfoAddIndex<ShopItemData>(itemData, spawnedItems.Count));
         }
 
         spawnedItems.Add(container);
@@ -276,5 +278,18 @@ public class ShopUIPage : UIPageBase
         }
 
         spawnedItems.Clear();
+    }
+
+    private void InjectPropertiesDependencies()
+    {
+        if (propertiesViewSync == null)
+        {
+            return;
+        }
+
+        Player player  = FindFirstObjectByType<Player>();
+
+        PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
+        propertiesViewSync.InjectDependencies(manager);
     }
 }

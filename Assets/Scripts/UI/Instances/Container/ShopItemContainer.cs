@@ -1,84 +1,41 @@
-using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopItemContainer : MonoBehaviour
+public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIPropertiesViewList>
 {
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI nameText;
+    [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
-    [Header("根据稀有度或者等级改变颜色的组件")]
-    [SerializeField] private Graphic[] colorDependencyGraphics;
-    [SerializeField] private Button itemButton;
-
     [SerializeField] private Button lockButton;
     [SerializeField] private Image lockImage;
     [SerializeField] private Sprite lockSprite, unlockSprite;
 
-    [Header("Prop管理")][SerializeField] private Transform propContainersParent;
-
-    public event Action OnItemClicked;
-    public event Action OnLockClicked;
-
-    private void OnEnable()
+    public override void Configure(InfoAddIndex<ShopItemData> resource)
     {
-        if (itemButton != null)
-        {
-            itemButton.onClick.AddListener(OnButtonClicked);
-        }
+        ShopItemData shopItem = resource.info;
+        ItemDataSO itemData = shopItem.ItemData;
 
-        if (lockButton != null)
-        {
-            lockButton.onClick.AddListener(OnButtonLockClicked);
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (itemButton != null)
-        {
-            itemButton.onClick.RemoveListener(OnButtonClicked);
-        }
-
-        if (lockButton != null)
-        {
-            lockButton.onClick.RemoveListener(OnButtonLockClicked);
-        }
-    }
-
-    private void OnButtonLockClicked()
-    {
-        OnLockClicked?.Invoke();
-    }
-
-    private void OnButtonClicked()
-    {
-        OnItemClicked?.Invoke();
-    }
-
-    public void Configure(ItemDataSO itemData, bool isLocked, int level = 1)
-    {
         if (itemData == null)
         {
             Debug.LogWarning("ItemDataSO is null in ShopItemContainer.Configure");
             return;
         }
 
-        Color color;
+        int colorDependency;
         Dictionary<PropType, float> props;
 
         if (itemData is AccessoryDataSO accessoryData)
         {
-            color = ColorHelper.GetColorByRarity(accessoryData.Rarity);
+            colorDependency = accessoryData.Rarity;
             props = accessoryData.GetProps();
+            nameText.text = itemData.ItemName;
         }
         else if (itemData is WeaponDataSO weaponData)
         {
-            color = ColorHelper.GetColorByLevel(level);
-            props = weaponData.GetPropsByLevel(level);
+            colorDependency = shopItem.Level;
+            props = weaponData.GetPropsByLevel(shopItem.Level);
+            nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
         }
         else
         {
@@ -86,28 +43,47 @@ public class ShopItemContainer : MonoBehaviour
             return;
         }
 
-        lockImage.sprite = isLocked ? lockSprite : unlockSprite;
+        lockImage.sprite = shopItem.Lock ? lockSprite : unlockSprite;
 
-        ConfigureCommon(itemData, color, props);
+        priceText.text = shopItem.GetPrice().ToString();
+        RenderColor(itemData, colorDependency);
+        bottom.Render(ToPropEntries(props));
+
+        CleanClickEvent();
+
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(() =>
+        {
+            GameEventBus.Publish(new ShopItemClickedEvent(resource.index));
+        });
+
+        lockButton.onClick.RemoveAllListeners();
+        lockButton.onClick.AddListener(() =>
+        {
+            GameEventBus.Publish(new OperateShopItemLockEvent(resource.index));
+        });
     }
 
-    private void ConfigureCommon(ItemDataSO itemData, Color color, Dictionary<PropType, float> props)
+    public override void Dispose()
     {
-        iconImage.sprite = itemData.ItemIcon;
-        nameText.text = itemData.ItemName;
-        priceText.text = itemData.ItemPrice.ToString();
-
-        foreach (var image in colorDependencyGraphics)
-        {
-            image.color = color;
-        }
-
-        PropContainerManager.GeneratePropContainers(props, propContainersParent);
+        base.Dispose();
+        CleanUp();
     }
 
     public void CleanUp()
     {
-        OnItemClicked = null;
-        OnLockClicked = null;
+        buyButton.onClick.RemoveAllListeners();
+        lockButton.onClick.RemoveAllListeners();
+    }
+
+    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
+    {
+        List<PropEntry> entries = new();
+        foreach (var kv in props)
+        {
+            entries.Add(new PropEntry(kv.Key, kv.Value));
+        }
+
+        return entries;
     }
 }

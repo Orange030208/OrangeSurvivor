@@ -4,7 +4,7 @@ public static class ColorHelper
 {
     public static Color GetColorByLevel(int level)
     {
-        return level switch
+        return WeaponLevelHelper.ClampLevel(level) switch
         {
             1 => new Color32(172, 172, 172, 255), // 灰
             2 => new Color32(86, 186, 105, 255),  // 绿

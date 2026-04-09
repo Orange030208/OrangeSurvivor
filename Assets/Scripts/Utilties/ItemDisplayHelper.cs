@@ -2,7 +2,7 @@ public static class ItemDisplayHelper
 {
     public static string GetLevelPrefix(int level)
     {
-        return level switch
+        return WeaponLevelHelper.ClampLevel(level) switch
         {
             1 => "灰",
             2 => "绿",
@@ -16,6 +16,7 @@ public static class ItemDisplayHelper
 
     public static string GetWeaponDisplayName(string weaponName, int level)
     {
-        return $"Lv.{level} [{GetLevelPrefix(level)}] {weaponName}";
+        int displayLevel = WeaponLevelHelper.ClampLevel(level);
+        return $"Lv.{displayLevel} [{GetLevelPrefix(displayLevel)}] {weaponName}";
     }
 }

@@ -92,8 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 5548966915103336753}
   nameText: {fileID: 3995660547274092577}
+  bottom: {fileID: 5468363905293622609}
   colorDependencyGraphics: []
-  upgradeValueText: {fileID: 5468363905293622609}
 --- !u!1 &551290617626141922
 GameObject:
   m_ObjectHideFlags: 0

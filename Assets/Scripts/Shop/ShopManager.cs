@@ -1,18 +1,35 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public struct ShopItemData
 {
     public ItemDataSO ItemData;
     public int Level;
     public bool Lock;
+
+    public int GetPrice()
+    {
+        if (ItemData == null)
+        {
+            return 0;
+        }
+
+        if (ItemData.ItemType == ItemType.Weapon)
+        {
+            return WeaponPriceHelper.GetPrice(ItemData.ItemPrice, Level);
+        }
+
+        return ItemData.ItemPrice;
+    }
 }
 
 public class ShopManager : MonoBehaviour
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 6;
     private const int BASE_REROLL_COST = 5;
+    private const int ACCESSORY_WEIGHT = 2;
+    private const int WEAPON_WEIGHT = 1;
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private int baseRerollCost = BASE_REROLL_COST;
@@ -57,13 +74,18 @@ public class ShopManager : MonoBehaviour
 
     private void OnItemClicked(ShopItemClickedEvent eventData)
     {
-        if (eventData.ItemIndex < 0 || eventData.ItemIndex >= currentItems.Length)
+        if (currentItems == null || eventData.ItemIndex < 0 || eventData.ItemIndex >= currentItems.Length)
         {
             GameEventBus.Publish(new ShopPurchaseFailedEvent("Invalid item index."));
             return;
         }
 
         ShopItemData itemData = currentItems[eventData.ItemIndex];
+        if (itemData.ItemData == null)
+        {
+            GameEventBus.Publish(new ShopPurchaseFailedEvent("Item data is null."));
+            return;
+        }
 
         if (itemData.ItemData.ItemType == ItemType.Accessory)
         {
@@ -84,23 +106,26 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        int price = accessoryData.ItemPrice;
+        int price = itemData.GetPrice();
         if (CurrencyManager.Instance.Currency < price)
         {
             GameEventBus.Publish(new ShopPurchaseFailedEvent("Not enough currency."));
             return;
         }
 
-        CurrencyManager.Instance.AddCurrency(-price);
-
         var player = FindFirstObjectByType<Survivors.Player.AccessoryManager>();
-        if (player != null)
+        if (player == null)
         {
-            player.EquipAccessory(accessoryData);
+            GameEventBus.Publish(new ShopPurchaseFailedEvent("Accessory manager not found."));
+            return;
         }
+
+        CurrencyManager.Instance.AddCurrency(-price);
+        player.EquipAccessory(accessoryData);
 
         GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
         RemoveItemFromShop(itemIndex);
+        PublishShopItems();
     }
 
     private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
@@ -112,23 +137,31 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        int price = weaponData.ItemPrice;
+        int price = itemData.GetPrice();
         if (CurrencyManager.Instance.Currency < price)
         {
             GameEventBus.Publish(new ShopPurchaseFailedEvent("Not enough currency."));
             return;
         }
 
-        CurrencyManager.Instance.AddCurrency(-price);
-
         var weaponsHolder = FindFirstObjectByType<WeaponsHolder>();
-        if (weaponsHolder != null)
+        if (weaponsHolder == null)
         {
-            weaponsHolder.AddWeapon(weaponData, itemData.Level);
+            GameEventBus.Publish(new ShopPurchaseFailedEvent("Weapons holder not found."));
+            return;
         }
+
+        if (!weaponsHolder.AddWeapon(weaponData, itemData.Level))
+        {
+            GameEventBus.Publish(new ShopPurchaseFailedEvent("No empty weapon slot available."));
+            return;
+        }
+
+        CurrencyManager.Instance.AddCurrency(-price);
 
         GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
         RemoveItemFromShop(itemIndex);
+        PublishShopItems();
     }
 
     private void RemoveItemFromShop(int index)
@@ -138,19 +171,19 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        var newItems = new ShopItemData[currentItems.Length - 1];
+        ShopItemData[] nextItems = new ShopItemData[Mathf.Max(0, currentItems.Length - 1)];
         int writeIndex = 0;
         for (int i = 0; i < currentItems.Length; i++)
         {
-            if (i != index)
+            if (i == index)
             {
-                newItems[writeIndex] = currentItems[i];
-                writeIndex++;
+                continue;
             }
+
+            nextItems[writeIndex++] = currentItems[i];
         }
 
-        currentItems = newItems;
-        PublishShopItems();
+        currentItems = nextItems;
     }
 
     private void OnRerollRequested()
@@ -178,21 +211,28 @@ public class ShopManager : MonoBehaviour
         rerollCount++;
         rerollCost = baseRerollCost + rerollCount;
 
-        if (currentItems == null || currentItems.Length == 0)
-        {
-            GenerateShopItems();
-            return;
-        }
+        int count = Mathf.Max(1, containersToAdd);
+        ShopItemData[] nextItems = new ShopItemData[count];
+        int writeIndex = 0;
 
-        for (int i = 0; i < currentItems.Length; i++)
+        if (currentItems != null)
         {
-            if (currentItems[i].Lock && currentItems[i].ItemData != null)
+            for (int i = 0; i < currentItems.Length && writeIndex < count; i++)
             {
-                continue;
+                if (currentItems[i].Lock && currentItems[i].ItemData != null)
+                {
+                    nextItems[writeIndex++] = currentItems[i];
+                }
             }
-
-            currentItems[i] = GenerateRandomShopItem();
         }
+
+        while (writeIndex < count)
+        {
+            nextItems[writeIndex] = GenerateRandomShopItem(nextItems, writeIndex);
+            writeIndex++;
+        }
+
+        currentItems = nextItems;
     }
 
     private void GenerateShopItems()
@@ -202,23 +242,61 @@ public class ShopManager : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            currentItems[i] = GenerateRandomShopItem();
+            currentItems[i] = GenerateRandomShopItem(currentItems, i);
         }
     }
 
-    private ShopItemData GenerateRandomShopItem()
+    private ShopItemData GenerateRandomShopItem(ShopItemData[] existingItems, int existingCount)
     {
-        int randomValue = Random.Range(0, 3);
-        switch (randomValue)
+        for (int attempt = 0; attempt < 8; attempt++)
         {
-            case 0:
-            case 1:
-                return GenerateAccessoryItem();
-            case 2:
-                return GenerateWeaponItem();
-            default:
-                return GenerateAccessoryItem();
+            ShopItemData item = GenerateWeightedRandomShopItem();
+            if (!ContainsDuplicate(existingItems, existingCount, item))
+            {
+                return item;
+            }
         }
+
+        return GenerateWeightedRandomShopItem();
+    }
+
+    private bool ContainsDuplicate(ShopItemData[] existingItems, int existingCount, ShopItemData item)
+    {
+        if (existingItems == null || item.ItemData == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < existingCount; i++)
+        {
+            if (existingItems[i].ItemData == null)
+            {
+                continue;
+            }
+
+            if (IsSameShopItem(existingItems[i], item))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsSameShopItem(ShopItemData a, ShopItemData b)
+    {
+        return a.ItemData == b.ItemData && a.Level == b.Level;
+    }
+
+    private ShopItemData GenerateWeightedRandomShopItem()
+    {
+        int randomValue = UnityEngine.Random.Range(0, ACCESSORY_WEIGHT + WEAPON_WEIGHT);
+        if (randomValue < ACCESSORY_WEIGHT)
+        {
+            return GenerateAccessoryItem();
+        }
+
+        return GenerateWeaponItem();
     }
 
     private ShopItemData GenerateAccessoryItem()
@@ -234,7 +312,7 @@ public class ShopManager : MonoBehaviour
         return new ShopItemData
         {
             ItemData = accessoryData,
-            Level = 1,
+            Level = WeaponLevelHelper.MinLevel,
             Lock = false
         };
     }
@@ -248,7 +326,7 @@ public class ShopManager : MonoBehaviour
             return default;
         }
 
-        int level = Random.Range(1, 7);
+        int level = WeaponLevelHelper.GetRandomLevelInclusiveMax();
         return new ShopItemData
         {
             ItemData = weaponData,
@@ -269,7 +347,7 @@ public class ShopManager : MonoBehaviour
 
     private void OnOperateShopItemLock(OperateShopItemLockEvent @event)
     {
-        if (@event.Index < 0 || @event.Index >= currentItems.Length)
+        if (currentItems == null || @event.Index < 0 || @event.Index >= currentItems.Length)
         {
             return;
         }

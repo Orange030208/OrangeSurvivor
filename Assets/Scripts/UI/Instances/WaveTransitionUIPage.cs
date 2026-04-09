@@ -5,7 +5,11 @@ public class WaveTransitionUIPage : UIPageBase
     [SerializeField] private UIUpgradeContainer[] upgradeContainers;
     [SerializeField] private Transform upgradeContainersParent;
 
-    [Header("宝箱")][SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
+    [Header("属性面板")]
+    [SerializeField] private UIPropertiesViewSync propertiesViewSync;
+
+    [Header("宝箱")]
+    [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
     [SerializeField] private Transform chestContainerParent;
 
     protected override void OnPageOpened(UIPageOpenContext context)
@@ -13,6 +17,9 @@ public class WaveTransitionUIPage : UIPageBase
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Subscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
+
+        InjectPropertiesDependencies();
+        propertiesViewSync?.StartSync();
 
         SetChestSelectionVisible(false);
         SetUpgradeSelectionVisible(false);
@@ -25,6 +32,7 @@ public class WaveTransitionUIPage : UIPageBase
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Unsubscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
 
+        propertiesViewSync?.StopSync();
         accessoryOperateContainer.CleanUp();
     }
 
@@ -68,7 +76,7 @@ public class WaveTransitionUIPage : UIPageBase
         for (int i = 0; i < count; i++)
         {
             PropEntry prop = eventData.PropEntries[i];
-            upgradeContainers[i].Configure(new InfoAddIndex<PropEntry>(prop,i));
+            upgradeContainers[i].Configure(new InfoAddIndex<PropEntry>(prop, i));
         }
     }
 
@@ -85,5 +93,18 @@ public class WaveTransitionUIPage : UIPageBase
     private void SetUpgradeSelectionVisible(bool visible)
     {
         upgradeContainersParent.gameObject.SetActive(visible);
+    }
+
+    private void InjectPropertiesDependencies()
+    {
+        if (propertiesViewSync == null)
+        {
+            return;
+        }
+
+        Player player = FindFirstObjectByType<Player>();
+
+        PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
+        propertiesViewSync.InjectDependencies(manager);
     }
 }

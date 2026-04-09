@@ -1239,6 +1239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 637596287653235374}
   - component: {fileID: 8425100075037077053}
+  - component: {fileID: 4098052821359033979}
   m_Layer: 0
   m_Name: Prop Section
   m_TagString: Untagged
@@ -1286,6 +1287,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4098052821359033979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322635900554587278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ec7e596224426eb8ab90821d5b5d16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  propContainerPrefab: {fileID: 8607981031944417474, guid: 575f8f0e15a473b4ead9a59bd97ced7d, type: 3}
+  propContainersParent: {fileID: 4089407953259059281}
 --- !u!1 &7651405234150359279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1640,16 +1655,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   iconImage: {fileID: 3357901763933813875}
-  accessoryNameText: {fileID: 1193572580388997180}
-  takeButton: {fileID: 1158301964515261112}
-  recycleButton: {fileID: 2757525760990209693}
-  recyclePriceText: {fileID: 0}
+  nameText: {fileID: 1193572580388997180}
+  bottom: {fileID: 4098052821359033979}
   colorDependencyGraphics:
   - {fileID: 965612355293811149}
   - {fileID: 1193572580388997180}
   - {fileID: 8942778340036820248}
+  takeButton: {fileID: 1158301964515261112}
+  recycleButton: {fileID: 2757525760990209693}
+  recycleText: {fileID: 8725144199400482148}
   outline: {fileID: 965612355293811149}
-  propContainersParent: {fileID: 4089407953259059281}
 --- !u!1 &8298279507354537692
 GameObject:
   m_ObjectHideFlags: 0
@@ -1817,7 +1832,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

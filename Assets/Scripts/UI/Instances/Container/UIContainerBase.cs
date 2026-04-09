@@ -2,16 +2,24 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class UIContainerBase<T,K> : MonoBehaviour,IContainerColorRender,IDisposable,IPointerClickHandler,IConfigurable<T> where K:MonoBehaviour
+public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRender, IDisposable, IPointerClickHandler, IConfigurable<T>
+    where K : MonoBehaviour
 {
     [Header("--")]
+    [FormerlySerializedAs("IconImage")]
     [SerializeField] protected Image iconImage;
+
+    [FormerlySerializedAs("accessoryNameText")]
     [SerializeField] protected TextMeshProUGUI nameText;
+
+    [FormerlySerializedAs("priceText")]
+    [FormerlySerializedAs("recyclePriceText")]
     [SerializeField] protected K bottom;
-    
+
     [SerializeField] protected Graphic[] colorDependencyGraphics;
 
     public event Action<PointerEventData> OnClicked;
@@ -25,7 +33,7 @@ public abstract class UIContainerBase<T,K> : MonoBehaviour,IContainerColorRender
     {
         OnClicked = null;
     }
-    
+
     public void RenderColor(ItemDataSO itemData, int colorDependency)
     {
         iconImage.sprite = itemData.ItemIcon;

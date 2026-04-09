@@ -1,79 +1,108 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemOperateContainer : MonoBehaviour
+public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, UIPropertiesViewList>
 {
-    [SerializeField] private Image iconImage;
-    [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI priceText;
-    [Header("根据稀有度或者等级改变颜色的组件")]
-    [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private Button sellButton;
     [SerializeField] private Button mergeButton;
+    [SerializeField] private TextMeshProUGUI sellPriceText;
 
-    [Header("Prop管理")] [SerializeField] private Transform propContainersParent;
-
-    public void Configure(
-        ItemDataSO itemData,
-        int colorDependencyNumber,
-        Dictionary<PropType, float> propDictionary,
-        Action onSell,
-        Action onMerge,
-        Action onClose)
+    public override void Configure(InventoryItemOperateResource resource)
     {
-        iconImage.sprite = itemData.ItemIcon;
-
-        if (itemData.ItemType == ItemType.Weapon)
+        if (resource.itemData == null)
         {
-            nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, colorDependencyNumber);
+            return;
+        }
+
+        if (resource.itemData.ItemType == ItemType.Weapon)
+        {
+            nameText.text = ItemDisplayHelper.GetWeaponDisplayName(resource.itemData.ItemName, resource.colorDependencyNumber);
         }
         else
         {
-            nameText.text = itemData.ItemName;
+            nameText.text = resource.itemData.ItemName;
         }
 
-        priceText.text = itemData.ItemPrice.ToString();
+        sellPriceText.text = resource.sellPrice.ToString();
 
-        foreach (Graphic g in colorDependencyGraphics)
-        {
-            switch (itemData.ItemType)
-            {
-                case ItemType.Accessory:
-                    g.color = ColorHelper.GetColorByRarity(colorDependencyNumber);
-                    break;
-                case ItemType.Weapon:
-                    g.color = ColorHelper.GetColorByLevel(colorDependencyNumber);
-                    break;
-                default:
-                    Debug.LogWarning($"需要配置{itemData.ItemType}的颜色");
-                    break;
-            }
-        }
-
-        if (propContainersParent != null && propDictionary != null)
-        {
-            PropContainerManager.GeneratePropContainers(propDictionary, propContainersParent);
-        }
+        RenderColor(resource.itemData, resource.colorDependencyNumber);
+        bottom.Render(ToPropEntries(resource.propDictionary));
 
         sellButton.onClick.RemoveAllListeners();
         mergeButton.onClick.RemoveAllListeners();
 
-        sellButton.onClick.AddListener(() => onSell?.Invoke());
+        sellButton.onClick.AddListener(() =>
+        {
+            GameEventBus.Publish(new InventoryItemSellClickedEvent(resource.itemIndex));
+        });
 
-        bool showMerge = itemData.ItemType == ItemType.Weapon;
+        bool showMerge = resource.itemData.ItemType == ItemType.Weapon && WeaponLevelHelper.CanMerge(resource.colorDependencyNumber);
         mergeButton.gameObject.SetActive(showMerge);
         if (showMerge)
         {
-            mergeButton.onClick.AddListener(() => onMerge?.Invoke());
+            mergeButton.onClick.AddListener(() =>
+            {
+                GameEventBus.Publish(new InventoryItemMergeClickedEvent(resource.itemIndex));
+            });
         }
+
+        CleanClickEvent();
+        OnClicked += _ =>
+        {
+            GameEventBus.Publish(new InventoryItemOperatePanelCloseClickedEvent(resource.itemIndex));
+        };
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        Cleanup();
     }
 
     public void Cleanup()
     {
         sellButton.onClick.RemoveAllListeners();
         mergeButton.onClick.RemoveAllListeners();
+    }
+
+    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
+    {
+        List<PropEntry> entries = new();
+        if (props == null)
+        {
+            return entries;
+        }
+
+        foreach (var kv in props)
+        {
+            entries.Add(new PropEntry(kv.Key, kv.Value));
+        }
+
+        return entries;
+    }
+}
+
+public readonly struct InventoryItemOperateResource
+{
+    public readonly int itemIndex;
+    public readonly ItemDataSO itemData;
+    public readonly int colorDependencyNumber;
+    public readonly int sellPrice;
+    public readonly Dictionary<PropType, float> propDictionary;
+
+    public InventoryItemOperateResource(
+        int itemIndex,
+        ItemDataSO itemData,
+        int colorDependencyNumber,
+        int sellPrice,
+        Dictionary<PropType, float> propDictionary)
+    {
+        this.itemIndex = itemIndex;
+        this.itemData = itemData;
+        this.colorDependencyNumber = colorDependencyNumber;
+        this.sellPrice = sellPrice;
+        this.propDictionary = propDictionary;
     }
 }

@@ -1,35 +1,26 @@
 using System.Collections.Generic;
-using Survivors.Player;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
-    [Header("绑定目标（可留空，运行时自动查找）")]
-    [SerializeField] private WeaponsHolder weaponsHolder;
-    [SerializeField] private AccessoryManager accessoryManager;
-
     [Header("容器与预制体")]
     [SerializeField] private InventoryItemContainer itemContainerPrefab;
     [SerializeField] private InventoryItemOperateContainer inventoryItemOperateContainer;
     [SerializeField] private SidebarSlider inventoryItemOperateContainerSidebar;
     [SerializeField] private Transform itemContainersParent;
-    
-    [SerializeField] private ClickOnlyHandler[] closeInventoryItemOperatePanelHandlers;    
+
+    [SerializeField] private ClickOnlyHandler[] closeInventoryItemOperatePanelHandlers;
 
     private readonly List<InventoryItemContainer> spawnedContainers = new();
     private bool subscribed;
-    private SelectedInventoryItem selectedItem;
+    private int currentOperateItemIndex = -1;
 
     private void OnEnable()
     {
-        if (weaponsHolder == null || accessoryManager == null)
-        {
-            Bind(FindFirstObjectByType<Player>());
-        }
-
         Subscribe();
         CloseOperatePanelImmediate();
-        RefreshAll();
+        GameEventBus.Publish(new RequestInventorySnapshotEvent());
     }
 
     private void OnDisable()
@@ -39,32 +30,6 @@ public class InventoryUI : MonoBehaviour
         inventoryItemOperateContainer?.Cleanup();
     }
 
-    public void Bind(Player player)
-    {
-        if (player == null)
-        {
-            return;
-        }
-
-        Bind(player.GetComponent<WeaponsHolder>(), player.GetComponent<AccessoryManager>());
-    }
-
-    public void Bind(WeaponsHolder newWeaponsHolder, AccessoryManager newAccessoryManager)
-    {
-        bool sameTarget = weaponsHolder == newWeaponsHolder && accessoryManager == newAccessoryManager;
-        if (sameTarget)
-        {
-            RefreshAll();
-            return;
-        }
-
-        Unsubscribe();
-        weaponsHolder = newWeaponsHolder;
-        accessoryManager = newAccessoryManager;
-        Subscribe();
-        RefreshAll();
-    }
-
     private void Subscribe()
     {
         if (subscribed)
@@ -72,24 +37,13 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        if (weaponsHolder != null)
-        {
-            weaponsHolder.OnWeaponsChanged += RefreshAll;
-        }
+        GameEventBus.Subscribe<InventorySnapshotChangedEvent>(OnInventorySnapshotChanged);
+        GameEventBus.Subscribe<InventoryItemClickedEvent>(OnInventoryItemClicked);
+        GameEventBus.Subscribe<InventoryItemOperatePanelDataEvent>(OnOperatePanelDataChanged);
+        GameEventBus.Subscribe<InventoryItemOperatePanelShouldCloseEvent>(OnOperatePanelShouldClose);
+        GameEventBus.Subscribe<InventoryItemOperatePanelCloseClickedEvent>(OnOperatePanelCloseClicked);
 
-        if (accessoryManager != null)
-        {
-            accessoryManager.OnAccessoryEquipped += OnAccessoryChanged;
-            accessoryManager.OnAccessoryUnequipped += OnAccessoryChanged;
-        }
-
-        foreach (var item in closeInventoryItemOperatePanelHandlers)
-        {
-            item.OnClick += _ =>
-            {
-                CloseOperatePanel();
-            };
-        }
+        BindClosePanelHandlers();
 
         subscribed = true;
     }
@@ -101,26 +55,18 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        if (weaponsHolder != null)
-        {
-            weaponsHolder.OnWeaponsChanged -= RefreshAll;
-        }
+        GameEventBus.Unsubscribe<InventorySnapshotChangedEvent>(OnInventorySnapshotChanged);
+        GameEventBus.Unsubscribe<InventoryItemClickedEvent>(OnInventoryItemClicked);
+        GameEventBus.Unsubscribe<InventoryItemOperatePanelDataEvent>(OnOperatePanelDataChanged);
+        GameEventBus.Unsubscribe<InventoryItemOperatePanelShouldCloseEvent>(OnOperatePanelShouldClose);
+        GameEventBus.Unsubscribe<InventoryItemOperatePanelCloseClickedEvent>(OnOperatePanelCloseClicked);
 
-        if (accessoryManager != null)
-        {
-            accessoryManager.OnAccessoryEquipped -= OnAccessoryChanged;
-            accessoryManager.OnAccessoryUnequipped -= OnAccessoryChanged;
-        }
+        UnbindClosePanelHandlers();
 
         subscribed = false;
     }
 
-    private void OnAccessoryChanged(AccessoryDataSO _)
-    {
-        RefreshAll();
-    }
-
-    private void RefreshAll()
+    private void OnInventorySnapshotChanged(InventorySnapshotChangedEvent eventData)
     {
         if (itemContainersParent == null)
         {
@@ -130,127 +76,113 @@ public class InventoryUI : MonoBehaviour
         CleanupSpawnedContainers();
         itemContainersParent.Clear();
 
-        if (itemContainerPrefab == null)
+        if (itemContainerPrefab == null || eventData.Items == null)
         {
             return;
         }
 
-        RefreshWeaponsInternal();
-        RefreshAccessoriesInternal();
-    }
-
-    private void RefreshWeaponsInternal()
-    {
-        if (weaponsHolder == null)
+        for (int i = 0; i < eventData.Items.Length; i++)
         {
-            return;
-        }
+            InventoryUIItemSnapshot item = eventData.Items[i];
+            if (item.ItemData == null)
+            {
+                continue;
+            }
 
-        var equippedWeapons = weaponsHolder.EquippedWeapons;
-        for (int i = 0; i < equippedWeapons.Count; i++)
-        {
-            var weaponInfo = equippedWeapons[i];
             InventoryItemContainer container = Instantiate(itemContainerPrefab, itemContainersParent);
-            container.Configure(weaponInfo.WeaponData, weaponInfo.RuntimeWeapon.Level);
-
-            SelectedInventoryItem clickItem = SelectedInventoryItem.CreateWeapon(
-                weaponInfo.WeaponData,
-                weaponInfo.RuntimeWeapon.Level,
-                weaponInfo.RuntimeWeapon);
-
-            container.AddClickListener(() => OpenOperatePanel(clickItem));
+            container.Configure(item.ItemData, item.ColorDependencyNumber, i);
             spawnedContainers.Add(container);
         }
     }
 
-    private void RefreshAccessoriesInternal()
+    private void OnInventoryItemClicked(InventoryItemClickedEvent eventData)
     {
-        if (accessoryManager == null)
-        {
-            return;
-        }
-
-        var accessories = accessoryManager.EquippedAccessories;
-        for (int i = 0; i < accessories.Count; i++)
-        {
-            AccessoryDataSO accessory = accessories[i];
-            InventoryItemContainer container = Instantiate(itemContainerPrefab, itemContainersParent);
-            container.Configure(accessory, accessory.Rarity);
-
-            SelectedInventoryItem clickItem = SelectedInventoryItem.CreateAccessory(accessory);
-
-            container.AddClickListener(() => OpenOperatePanel(clickItem));
-            spawnedContainers.Add(container);
-        }
+        GameEventBus.Publish(new RequestInventoryItemOperatePanelEvent(eventData.ItemIndex));
     }
 
-    private void OpenOperatePanel(SelectedInventoryItem item)
+    private void OnOperatePanelDataChanged(InventoryItemOperatePanelDataEvent eventData)
     {
         if (inventoryItemOperateContainer == null)
         {
             return;
         }
 
-        selectedItem = item;
-        inventoryItemOperateContainer.Configure(
-            item.ItemData,
-            item.ColorDependencyNumber,
-            item.GetProps(),
-            OnSellClicked,
-            OnMergeClicked,
-            CloseOperatePanel);
-
+        currentOperateItemIndex = eventData.Resource.itemIndex;
+        inventoryItemOperateContainer.Configure(eventData.Resource);
         inventoryItemOperateContainerSidebar?.Show();
     }
 
-    private void OnSellClicked()
+    private void OnOperatePanelShouldClose(InventoryItemOperatePanelShouldCloseEvent eventData)
     {
-        if (selectedItem.ItemData == null)
+        if (eventData.ItemIndex != currentOperateItemIndex)
         {
             return;
         }
 
-        bool sold = false;
-
-        if (selectedItem.ItemData.ItemType == ItemType.Weapon)
-        {
-            sold = weaponsHolder != null && weaponsHolder.RemoveWeapon(selectedItem.RuntimeWeapon);
-        }
-        else if (selectedItem.ItemData.ItemType == ItemType.Accessory)
-        {
-            sold = accessoryManager != null && accessoryManager.UnequipAccessory((AccessoryDataSO)selectedItem.ItemData);
-        }
-
-        if (!sold)
-        {
-            return;
-        }
-
-        CurrencyManager.Instance.AddCurrency(selectedItem.ItemData.ItemPrice);
         CloseOperatePanel();
-        RefreshAll();
     }
 
-    private void OnMergeClicked()
+    private void OnOperatePanelCloseClicked(InventoryItemOperatePanelCloseClickedEvent eventData)
     {
-        if (selectedItem.ItemData == null || selectedItem.ItemData.ItemType != ItemType.Weapon)
+        if (eventData.ItemIndex != currentOperateItemIndex)
         {
             return;
         }
 
-        Debug.Log($"[Inventory] 点击了合并（调试）: {selectedItem.ItemData.ItemName}, Lv.{selectedItem.ColorDependencyNumber}");
+        CloseOperatePanel();
+    }
+
+    private void BindClosePanelHandlers()
+    {
+        if (closeInventoryItemOperatePanelHandlers == null)
+        {
+            return;
+        }
+
+        foreach (var item in closeInventoryItemOperatePanelHandlers)
+        {
+            if (item == null)
+            {
+                continue;
+            }
+
+            item.OnClick += OnClosePanelBackgroundClicked;
+        }
+    }
+
+    private void UnbindClosePanelHandlers()
+    {
+        if (closeInventoryItemOperatePanelHandlers == null)
+        {
+            return;
+        }
+
+        foreach (var item in closeInventoryItemOperatePanelHandlers)
+        {
+            if (item == null)
+            {
+                continue;
+            }
+
+            item.OnClick -= OnClosePanelBackgroundClicked;
+        }
+    }
+
+    private void OnClosePanelBackgroundClicked(PointerEventData _)
+    {
+        CloseOperatePanel();
     }
 
     private void CloseOperatePanel()
     {
-        selectedItem = default;
+        currentOperateItemIndex = -1;
         inventoryItemOperateContainer?.Cleanup();
         inventoryItemOperateContainerSidebar?.Hide();
     }
 
     private void CloseOperatePanelImmediate()
     {
-        selectedItem = default;
+        currentOperateItemIndex = -1;
         inventoryItemOperateContainer?.Cleanup();
         inventoryItemOperateContainerSidebar?.HideImmediate();
     }
@@ -266,44 +198,5 @@ public class InventoryUI : MonoBehaviour
         }
 
         spawnedContainers.Clear();
-    }
-
-    private readonly struct SelectedInventoryItem
-    {
-        public ItemDataSO ItemData { get; }
-        public int ColorDependencyNumber { get; }
-        public Weapon RuntimeWeapon { get; }
-
-        private SelectedInventoryItem(ItemDataSO itemData, int colorDependencyNumber, Weapon runtimeWeapon)
-        {
-            ItemData = itemData;
-            ColorDependencyNumber = colorDependencyNumber;
-            RuntimeWeapon = runtimeWeapon;
-        }
-
-        public static SelectedInventoryItem CreateWeapon(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
-        {
-            return new SelectedInventoryItem(weaponData, level, runtimeWeapon);
-        }
-
-        public static SelectedInventoryItem CreateAccessory(AccessoryDataSO accessoryData)
-        {
-            return new SelectedInventoryItem(accessoryData, accessoryData.Rarity, null);
-        }
-
-        public Dictionary<PropType, float> GetProps()
-        {
-            if (ItemData == null)
-            {
-                return null;
-            }
-
-            if (ItemData.ItemType == ItemType.Weapon)
-            {
-                return ((WeaponDataSO)ItemData).GetPropsByLevel(ColorDependencyNumber);
-            }
-
-            return ((AccessoryDataSO)ItemData).GetProps();
-        }
     }
 }
