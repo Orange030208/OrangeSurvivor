@@ -5,80 +5,55 @@ using UnityEngine.UI;
 
 public class WeaponSelectionUIPage : UIPageBase
 {
-    [SerializeField] private WeaponSelectionContainer[] weaponContainers;
-    private SelectionWeapon[] currentSelectionWeapons;
+    [SerializeField] private UIWeaponSelectionContainer[] weaponContainers;
     [SerializeField] private Button startButton;
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        GameEventBus.Subscribe<WeaponSelectionChangedEvent>(OnSelectionWeaponsChanged);
-        GameEventBus.Subscribe<WeaponSelectionContainerClickedEvent>(OnWeaponContainerClicked);
+        GameEventBus.Subscribe<SelectableWeaponsSnapshotEvent>(OnSelectableWeaponsChanged);
 
         startButton.onClick.AddListener(() =>
         {
-            if (HasWeaponSelected) GameManager.Instance.StartGame();
+            GameEventBus.Publish(new SelectedWeaponConfirmEvent());
         });
 
-        GameEventBus.Publish<RequestWeaponSelectionSnapshotEvent>();
+        GameEventBus.Publish<UISelectableWeaponsSnapshotEvent>();
+
+        InitWeaponContainersClickAction();
     }
 
     protected override void OnPageClosed()
     {
-        GameEventBus.Unsubscribe<WeaponSelectionChangedEvent>(OnSelectionWeaponsChanged);
-        GameEventBus.Unsubscribe<WeaponSelectionContainerClickedEvent>(OnWeaponContainerClicked);
-
-        foreach (var container in weaponContainers)
-        {
-            container.Cleanup();
-        }
-
+        GameEventBus.Unsubscribe<SelectableWeaponsSnapshotEvent>(OnSelectableWeaponsChanged);
         startButton.onClick.RemoveAllListeners();
     }
 
-    private void OnSelectionWeaponsChanged(WeaponSelectionChangedEvent e)
+    private void OnSelectableWeaponsChanged(SelectableWeaponsSnapshotEvent e)
     {
-        currentSelectionWeapons = e.SelectionWeapons;
-        if (currentSelectionWeapons == null) return;
-        ApplySelectionWeapons(currentSelectionWeapons);
-    }
-
-    private void ApplySelectionWeapons(SelectionWeapon[] selectionWeapons)
-    {
-        int count = Mathf.Min(weaponContainers.Length, selectionWeapons.Length);
+        int count = Mathf.Min(weaponContainers.Length, e.SelectableWeapons.Length);
         for (int i = 0; i < count; i++)
         {
             weaponContainers[i].Configure(
-                i,
-                selectionWeapons[i].weaponData,
-                selectionWeapons[i].level
+                new InfoAddIndex<WeaponInfo>(new WeaponInfo(e.SelectableWeapons[i].weaponData,e.SelectableWeapons[i].level),i)
             );
         }
     }
 
-    private void OnWeaponContainerClicked(WeaponSelectionContainerClickedEvent e)
+    private void InitWeaponContainersClickAction()
     {
-        GameEventBus.Publish(new WeaponSelectionOptionClickedEvent(e.ContainerIndex));
-
         for (int i = 0; i < weaponContainers.Length; i++)
         {
-            if (i == e.ContainerIndex)
-                weaponContainers[i].Select();
-            else
-                weaponContainers[i].Deselect();
-        }
-    }
-
-    private bool HasWeaponSelected
-    {
-        get
-        {
-            foreach (var container in weaponContainers)
+            int temp = i;
+            weaponContainers[i].OnClicked += (_) =>
             {
-                if (container.isSelected)
-                    return true;
-            }
-
-            return false;
+                GameEventBus.Publish(new SelectWeaponEvent(temp));
+                weaponContainers[temp].Select();
+                for (int j = 0; j < weaponContainers.Length; ++j)
+                {
+                    if (j == temp) continue;
+                    weaponContainers[j].Unselect();
+                }
+            };
         }
     }
 }

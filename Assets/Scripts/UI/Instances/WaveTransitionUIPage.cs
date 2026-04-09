@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WaveTransitionUIPage : UIPageBase
 {
-    [SerializeField] private UpgradeContainerUI[] upgradeContainers;
+    [SerializeField] private UIUpgradeContainer[] upgradeContainers;
     [SerializeField] private Transform upgradeContainersParent;
 
     [Header("宝箱")][SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
@@ -68,7 +68,7 @@ public class WaveTransitionUIPage : UIPageBase
         for (int i = 0; i < count; i++)
         {
             PropEntry prop = eventData.PropEntries[i];
-            upgradeContainers[i].Configure(new UpgradeContainerUI.UpgradeContainerUIConfigure(prop,i));
+            upgradeContainers[i].Configure(new InfoAddIndex<PropEntry>(prop,i));
         }
     }
 

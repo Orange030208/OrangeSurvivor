@@ -5,11 +5,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class ContainerBaseUI<T> : MonoBehaviour,IContainerColorRender,IDisposable,IPointerClickHandler,IConfigurable<T>
+public abstract class UIContainerBase<T,K> : MonoBehaviour,IContainerColorRender,IDisposable,IPointerClickHandler,IConfigurable<T> where K:MonoBehaviour
 {
     [Header("--")]
     [SerializeField] protected Image iconImage;
     [SerializeField] protected TextMeshProUGUI nameText;
+    [SerializeField] protected K bottom;
     
     [SerializeField] protected Graphic[] colorDependencyGraphics;
 

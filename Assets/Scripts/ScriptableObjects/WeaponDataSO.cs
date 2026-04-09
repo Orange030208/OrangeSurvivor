@@ -22,16 +22,18 @@ public class WeaponDataSO : ItemDataSO
         itemType = ItemType.Weapon;
     }
 
-    public Dictionary<PropType, float> GetBaseProps()
+    public List<PropEntry> GetPropsList()
     {
-        return new Dictionary<PropType, float>
-        {
-            { PropType.Attack, attack },
-            { PropType.AttackSpeed, attackSpeed },
-            { PropType.CriticalChance, criticalChance },
-            { PropType.CriticalPercent, criticalPercent },
-            { PropType.Range, range },
-        };
+        List<PropEntry> list =
+            new()
+            {
+                new PropEntry(PropType.Attack, attack),
+                new PropEntry(PropType.AttackSpeed, attackSpeed),
+                new PropEntry(PropType.CriticalChance, criticalChance),
+                new PropEntry(PropType.CriticalPercent, criticalPercent),
+                new PropEntry(PropType.Range, range)
+            };
+        return list;
     }
 
     public Dictionary<PropType, float> GetPropsByLevel(int level)

@@ -1,39 +1,41 @@
 using System;
 
-public struct WeaponSelectionChangedEvent : IGameEvent
+/// <summary>
+/// 武器候选快照更新后广播，供UI刷新列表显示。
+/// </summary>
+public struct SelectableWeaponsSnapshotEvent : IGameEvent
 {
-    public SelectionWeapon[] SelectionWeapons;
+    public WeaponInfo[] SelectableWeapons;
 
-    public WeaponSelectionChangedEvent(SelectionWeapon[] selectionWeapons)
+    public SelectableWeaponsSnapshotEvent(WeaponInfo[] selectableWeapons)
     {
-        SelectionWeapons = selectionWeapons;
+        SelectableWeapons = selectableWeapons;
     }
 }
 
-public struct WeaponSelectionOptionClickedEvent : IGameEvent
+/// <summary>
+/// 玩家选中了某个武器候选项，通知业务记录当前选择。
+/// </summary>
+public struct SelectWeaponEvent : IGameEvent
 {
     public int Index;
 
-    public WeaponSelectionOptionClickedEvent(int index)
+    public SelectWeaponEvent(int index)
     {
         Index = index;
     }
 }
 
-public struct WeaponSelectionContainerClickedEvent : IGameEvent
+/// <summary>
+/// 玩家点击“开始”确认武器选择，通知业务推进流程。
+/// </summary>
+public struct SelectedWeaponConfirmEvent : IGameEvent
 {
-    public int ContainerIndex;
-    public WeaponDataSO WeaponData;
-    public int Level;
-
-    public WeaponSelectionContainerClickedEvent(int containerIndex, WeaponDataSO weaponData, int level)
-    {
-        ContainerIndex = containerIndex;
-        WeaponData = weaponData;
-        Level = level;
-    }
 }
 
-public struct RequestWeaponSelectionSnapshotEvent : IGameEvent
+/// <summary>
+/// 请求武器候选快照，常用于UI打开后主动拉取当前状态。
+/// </summary>
+public struct UISelectableWeaponsSnapshotEvent : IGameEvent
 {
 }

@@ -9,12 +9,12 @@ public static class WeaponPropsCalculator
         float multiplier = 1 + (float)level / maxLevel;
 
         Dictionary<PropType, float> calculatedProps = new();
-        foreach (var kvp in weaponData.GetBaseProps())
+        foreach (var propEntry in weaponData.GetPropsList())
         {
-            if (weaponData.WeaponPrefab.GetType() != typeof(RangeWeapon) && kvp.Key == PropType.Range)
-                calculatedProps.Add(kvp.Key, kvp.Value);
+            if (weaponData.WeaponPrefab.GetType() != typeof(RangeWeapon) && propEntry.propType == PropType.Range)
+                calculatedProps.Add(propEntry.propType, propEntry.value);
             else
-                calculatedProps.Add(kvp.Key, kvp.Value * multiplier);
+                calculatedProps.Add(propEntry.propType, propEntry.value * multiplier);
         }
 
         return calculatedProps;
