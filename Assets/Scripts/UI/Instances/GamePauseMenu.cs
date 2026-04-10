@@ -1,7 +1,10 @@
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 暂停菜单页面本体：负责按钮绑定、属性同步以及 sidebar 特殊结构动画。
+/// 页面本身不直接管理暂停恢复流程，只发意图事件并接入基类关闭等待管线。
+/// </summary>
 public class GamePauseMenu : UIPageBase
 {
     [SerializeField] private Button continueButton;
@@ -15,8 +18,6 @@ public class GamePauseMenu : UIPageBase
     [SerializeField] private SidebarSlider inventorySidebar;
 
     [SerializeField] private float slideDuration = 0.25f;
-
-    private Tween pendingActionTween;
 
     protected override void Awake()
     {
@@ -38,8 +39,46 @@ public class GamePauseMenu : UIPageBase
     {
         UnbindButtonEvents();
         propertiesViewSync?.StopSync();
-        KillTweens();
+        KillSidebarTweens();
         HideAllSidebarPanelsImmediately();
+    }
+
+    protected override bool HasAdditionalCloseWaitActions()
+    {
+        return propertiesSidebar != null || inventorySidebar != null;
+    }
+
+    protected override void PlayAdditionalCloseWaitActions(bool useUnscaledTime, System.Action onCompleted)
+    {
+        KillSidebarTweens();
+
+        int pendingCount = 0;
+
+        void MarkCompleted()
+        {
+            pendingCount--;
+            if (pendingCount <= 0)
+            {
+                onCompleted?.Invoke();
+            }
+        }
+
+        if (propertiesSidebar != null)
+        {
+            pendingCount++;
+            propertiesSidebar.Hide(MarkCompleted);
+        }
+
+        if (inventorySidebar != null)
+        {
+            pendingCount++;
+            inventorySidebar.Hide(MarkCompleted);
+        }
+
+        if (pendingCount == 0)
+        {
+            onCompleted?.Invoke();
+        }
     }
 
     private void BindButtonEvents()
@@ -56,12 +95,12 @@ public class GamePauseMenu : UIPageBase
 
     private void OnContinueClicked()
     {
-        PlayExitAnimation(() => GameEventBus.Publish<ResumeGameRequestedEvent>());
+        GameEventBus.Publish<PauseMenuContinueClickedEvent>();
     }
 
     private void OnMenuClicked()
     {
-        PlayExitAnimation(() => GameEventBus.Publish<ReturnToMenuRequestedEvent>());
+        GameEventBus.Publish<PauseMenuReturnToMenuClickedEvent>();
     }
 
     private void InitSidebarPanels()
@@ -76,13 +115,6 @@ public class GamePauseMenu : UIPageBase
         ApplySlideDuration();
         propertiesSidebar?.Show();
         inventorySidebar?.Show();
-    }
-
-    private void HideAllSidebarPanels()
-    {
-        ApplySlideDuration();
-        propertiesSidebar?.Hide();
-        inventorySidebar?.Hide();
     }
 
     private void HideAllSidebarPanelsImmediately()
@@ -104,19 +136,8 @@ public class GamePauseMenu : UIPageBase
         }
     }
 
-    private void PlayExitAnimation(TweenCallback callback)
+    private void KillSidebarTweens()
     {
-        KillTweens();
-        HideAllSidebarPanels();
-
-        pendingActionTween = DOVirtual.DelayedCall(slideDuration, callback).SetUpdate(true);
-    }
-
-    private void KillTweens()
-    {
-        pendingActionTween?.Kill();
-        pendingActionTween = null;
-
         propertiesSidebar?.KillTween();
         inventorySidebar?.KillTween();
     }

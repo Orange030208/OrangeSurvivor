@@ -5,16 +5,16 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 /// <summary>
-/// 敌波管理器：负责按配置的时间、频率生成敌人
+/// 敌波管理器：只负责波次数据推进、计时和刷怪。
+/// 状态切换与流程编排交给 GameManager。
 /// </summary>
 public class WaveManager : MonoSingletonBase<WaveManager>
 {
-    // 单个波次的总持续时间（单位：秒）
     [SerializeField] private float waveDuration;
 
-    // 配置的所有波次数据数组
     [OnValueChanged("AutoSetWaveNames")] [SerializeField]
     private Wave[] waves;
+
 #if UNITY_EDITOR
     private void AutoSetWaveNames()
     {
@@ -26,37 +26,35 @@ public class WaveManager : MonoSingletonBase<WaveManager>
     }
 #endif
 
-    // 每个波次分段的生成计数器列表：记录每个分段已生成的敌人数量，用于控制生成频率
-    private List<int> counterList = new List<int>();
-    private int currentWaveIndex;
-
-    public int CurrentWave => currentWaveIndex + 1;
-
-    public int TotalWaves => waves.Length;
-
-    // 波次运行计时器
+    private readonly List<int> counterList = new();
+    private int currentWaveIndex = -1;
     private float timer;
     private bool isTimerOn;
 
     [SerializeField] private Entity spawnAroundEntity;
 
+    public int CurrentWave => currentWaveIndex >= 0 ? currentWaveIndex + 1 : 0;
+    public int TotalWaves => waves?.Length ?? 0;
+    public bool HasStarted => currentWaveIndex >= 0;
+    public bool HasMoreWaves => currentWaveIndex >= 0 && currentWaveIndex < TotalWaves - 1;
+
     private void OnEnable()
     {
         GameEventBus.Subscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void Update()
     {
-        if (!isTimerOn) return;
+        if (!isTimerOn)
+        {
+            return;
+        }
 
-        // 计时器未超过波次总时长时，持续执行当前波次的敌人生成逻辑
         if (timer < waveDuration)
         {
             ProcessCurrentWaveSpawns();
@@ -64,47 +62,86 @@ public class WaveManager : MonoSingletonBase<WaveManager>
 
             float remaining = Mathf.Max(0, waveDuration - timer);
             GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
+            return;
         }
-        else
+
+        CompleteCurrentWave();
+    }
+
+    public void StartFirstWave()
+    {
+        StartWave(0);
+    }
+
+    public void StartNextWave()
+    {
+        if (TotalWaves == 0)
         {
-            CompleteCurrentWave();
+            Debug.LogWarning("WaveManager: 没有配置任何波次数据！");
+            return;
+        }
+
+        int nextWaveIndex = currentWaveIndex + 1;
+        if (nextWaveIndex < 0)
+        {
+            nextWaveIndex = 0;
+        }
+
+        if (nextWaveIndex >= TotalWaves)
+        {
+            Debug.LogWarning("WaveManager: 没有下一波可以开始。");
+            return;
+        }
+
+        StartWave(nextWaveIndex);
+    }
+
+    public void StopCurrentWave()
+    {
+        isTimerOn = false;
+    }
+
+    public void ResetWaves()
+    {
+        isTimerOn = false;
+        timer = 0f;
+        currentWaveIndex = -1;
+        counterList.Clear();
+    }
+
+    public void DefeatAllEnemies()
+    {
+        foreach (var enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        {
+            enemy.PassAwayAfterWave();
         }
     }
 
-    /// <summary>
-    /// 管理当前波次：遍历分段、计算时间、生成敌人
-    /// </summary>
     private void ProcessCurrentWaveSpawns()
     {
-        // 安全检查
-        if (waves == null || currentWaveIndex >= waves.Length) return;
+        if (waves == null || currentWaveIndex < 0 || currentWaveIndex >= waves.Length)
+        {
+            return;
+        }
 
-        // 获取当前激活的波次
         Wave currentWave = waves[currentWaveIndex];
 
-        // 遍历当前波次的所有分段
         for (int i = 0; i < currentWave.segments.Count; i++)
         {
             WaveSegment segment = currentWave.segments[i];
-
-            // 将百分比时间转换为实际秒数：分段的开始/结束时间
             float tStart = segment.timeStartEnd.x / 100f * waveDuration;
             float tEnd = segment.timeStartEnd.y / 100f * waveDuration;
 
-            // 不在当前分段的时间范围内，跳过该分段
             if (timer < tStart || timer > tEnd)
+            {
                 continue;
+            }
 
-            // 当前时间距离分段开始的已过时间
             float timeSinceSegmentStart = timer - tStart;
-
-            // 单个敌人的生成间隔（频率的倒数，单位：秒/个）
             float spawnDelay = 1f / segment.spawnFrequency;
 
-            // 满足生成间隔条件：生成敌人，并更新计数器
             if (timeSinceSegmentStart / spawnDelay >= counterList[i])
             {
-                // 在目标实体周围生成敌人，父物体为当前管理器
                 Instantiate(segment.enemy.gameObject, GetSpawnPosition(spawnAroundEntity), Quaternion.identity,
                     transform);
                 counterList[i]++;
@@ -112,9 +149,6 @@ public class WaveManager : MonoSingletonBase<WaveManager>
         }
     }
 
-    /// <summary>
-    /// 开始指定索引的波次
-    /// </summary>
     private void StartWave(int waveIndex)
     {
         if (waves == null || waves.Length == 0)
@@ -123,10 +157,9 @@ public class WaveManager : MonoSingletonBase<WaveManager>
             return;
         }
 
-        if (waveIndex >= waves.Length)
+        if (waveIndex < 0 || waveIndex >= waves.Length)
         {
-            GameEventBus.Publish<AllWavesCompletedEvent>();
-            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.WaveTransition));
+            Debug.LogWarning($"WaveManager: 非法波次索引 {waveIndex}");
             return;
         }
 
@@ -136,31 +169,18 @@ public class WaveManager : MonoSingletonBase<WaveManager>
 
         for (int i = 0; i < waves[waveIndex].segments.Count; i++)
         {
-            counterList.Add(0); // 从0开始计数，确保分段开始时能立刻生成第一个敌人
+            counterList.Add(0);
         }
 
         isTimerOn = true;
-        GameEventBus.Publish(new WaveStartedEvent(currentWaveIndex + 1, waves.Length));
+        GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
+        GameEventBus.Publish(new WaveProgressEvent(waveDuration, waveDuration));
     }
 
-    /// <summary>
-    /// 完成当前波次并准备进入下一波
-    /// </summary>
     private void CompleteCurrentWave()
     {
         isTimerOn = false;
-        GameEventBus.Publish(new WaveCompletedEvent(currentWaveIndex + 1));
-
-        // 尝试开启下一波
-        int nextWaveIndex = currentWaveIndex + 1;
-        if (nextWaveIndex < waves.Length)
-        {
-            StartWave(nextWaveIndex);
-        }
-        else
-        {
-            GameEventBus.Publish<AllWavesCompletedEvent>();
-        }
+        GameEventBus.Publish(new WaveCompletedEvent(CurrentWave));
     }
 
     private Vector3 GetSpawnPosition(IEntity entity)
@@ -178,36 +198,14 @@ public class WaveManager : MonoSingletonBase<WaveManager>
 
     private void PublishWaveHudSnapshot()
     {
+        if (!HasStarted || TotalWaves == 0)
+        {
+            return;
+        }
+
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
         float remaining = isTimerOn ? Mathf.Max(0, waveDuration - timer) : waveDuration;
         GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
-    }
-
-    private void OnGameStateChanged(GameStateChangedEvent eventData)
-    {
-        switch (eventData.NewState)
-        {
-            case GameState.Game:
-                // 每次进入Game状态时，从第0波重新开始
-                StartWave(0);
-                break;
-            case GameState.WaveTransition:
-            case GameState.Shop:
-                DefeatAllEnemies();
-                break;
-            case GameState.GameOver:
-                isTimerOn = false;
-                DefeatAllEnemies();
-                break;
-        }
-    }
-
-    private void DefeatAllEnemies()
-    {
-        foreach (var enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
-        {
-            enemy.PassAwayAfterWave();
-        }
     }
 }
 
@@ -217,10 +215,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>
 [Serializable]
 public struct Wave
 {
-    // 波次名称（用于编辑器区分）
     public string name;
-
-    // 波次包含的所有分段列表
     public List<WaveSegment> segments;
 }
 
@@ -230,12 +225,8 @@ public struct Wave
 [Serializable]
 public struct WaveSegment
 {
-    // 当前分段要生成的敌人预制体
     public Enemy enemy;
-
-    // 敌人生成频率（单位：个/秒）
     public float spawnFrequency;
 
-    // 分段生效的时间区间（0-100百分比，对应波次总时长）
     [MinMaxSlider(0, 100)] public Vector2 timeStartEnd;
 }

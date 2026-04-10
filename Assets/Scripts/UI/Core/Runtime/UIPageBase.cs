@@ -1,9 +1,17 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
+/// <summary>
+/// 所有 UI 页面公共基类：负责页面壳体状态、开关过渡、内容导演自动接入以及关闭等待管线。
+/// 子类通常只需要关心业务绑定和少量特殊动画扩展。
+/// </summary>
 [RequireComponent(typeof(CanvasGroup))]
 public abstract class UIPageBase : MonoBehaviour, IUIPage
 {
+    private UISequenceDirector sequenceDirector;
+    [SerializeField] private bool autoPlaySequenceDirector = true;
+
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
     private Tween transitionTween;
@@ -13,15 +21,21 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     private string instanceId = string.Empty;
     private bool isVisible;
+    private bool closeWaitRunning;
+    private bool closeWaitCompleted;
+    private System.Action closeWaitCallbacks;
 
     public System.Type PageType => GetType();
     public string InstanceId => instanceId;
     public bool IsVisible => isVisible;
 
+    protected UISequenceDirector SequenceDirector => sequenceDirector;
+
     protected virtual void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
+        ResolveSequenceDirector();
         CacheDefaultTransform();
     }
 
@@ -40,34 +54,37 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         ValidateCanvasGroup();
         CacheDefaultTransform();
         KillTransition();
+        ResetCloseWaitState();
         gameObject.SetActive(true);
         canvasGroup.alpha = 1f;
-        canvasGroup.interactable = true;
-        canvasGroup.blocksRaycasts = true;
         isVisible = true;
         ResetTransformState();
+        PrepareContentForOpen();
         OnPageOpened(context);
+        ApplyActivationState(visualActive: true, inputActive: true);
     }
 
     public void HandleClose()
     {
         ValidateCanvasGroup();
         KillTransition();
+        sequenceDirector?.Kill();
+        sequenceDirector?.SetHiddenImmediate();
         OnPageClosed();
         isVisible = false;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0f;
         ResetTransformState();
+        ResetCloseWaitState();
         gameObject.SetActive(false);
     }
 
-    public void HandleFocusChanged(bool hasFocus)
+    public void HandleActivationChanged(bool visualActive, bool inputActive)
     {
         ValidateCanvasGroup();
-        canvasGroup.interactable = hasFocus;
-        canvasGroup.blocksRaycasts = hasFocus;
-        OnFocusChanged(hasFocus);
+        ApplyActivationState(visualActive, inputActive);
+        OnActivationChanged(visualActive, inputActive);
     }
 
     public void HandleTick(float deltaTime)
@@ -90,11 +107,13 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         if (transitionSettings == null || transitionSettings.transitionType == UITransitionType.None || transitionSettings.duration <= 0f)
         {
             canvasGroup.alpha = 1f;
+            PlayContentEnter();
             return;
         }
 
         ApplyTransitionStartState(transitionSettings);
         transitionTween = CreateTransitionTween(transitionSettings, true, useUnscaledTime, null);
+        PlayContentEnter();
     }
 
     public void PlayCloseTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime, System.Action onCompleted)
@@ -105,14 +124,61 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        if (transitionSettings == null || transitionSettings.transitionType == UITransitionType.None || transitionSettings.duration <= 0f)
+        RunCloseWaitPipeline(useUnscaledTime, () => StartCloseTransition(transitionSettings, useUnscaledTime, onCompleted));
+    }
+
+    protected void RunCloseWaitPipeline(bool useUnscaledTime, System.Action onCompleted)
+    {
+        if (closeWaitCompleted)
         {
             onCompleted?.Invoke();
             return;
         }
 
-        ResetTransformState();
-        transitionTween = CreateTransitionTween(transitionSettings, false, useUnscaledTime, onCompleted);
+        closeWaitCallbacks += onCompleted;
+        if (closeWaitRunning)
+        {
+            return;
+        }
+
+        closeWaitRunning = true;
+        int pendingCount = 0;
+
+        void MarkCompleted()
+        {
+            pendingCount--;
+            if (pendingCount <= 0)
+            {
+                CompleteCloseWaitPipeline();
+            }
+        }
+
+        if (ShouldAutoPlaySequenceDirector() && sequenceDirector != null)
+        {
+            pendingCount++;
+            sequenceDirector.PlayExit(MarkCompleted);
+        }
+
+        if (HasAdditionalCloseWaitActions())
+        {
+            pendingCount++;
+            PlayAdditionalCloseWaitActions(useUnscaledTime, MarkCompleted);
+        }
+
+        if (pendingCount == 0)
+        {
+            CompleteCloseWaitPipeline();
+        }
+    }
+
+    protected virtual bool HasAdditionalCloseWaitActions()
+    {
+        return false;
+    }
+
+    protected virtual void PlayAdditionalCloseWaitActions(bool useUnscaledTime, System.Action onCompleted)
+    {
+        onCompleted?.Invoke();
     }
 
     protected virtual void OnPageOpened(UIPageOpenContext context)
@@ -123,12 +189,76 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
     {
     }
 
-    protected virtual void OnFocusChanged(bool hasFocus)
+    protected virtual void OnActivationChanged(bool visualActive, bool inputActive)
     {
     }
 
     protected virtual void OnPageTick(float deltaTime)
     {
+    }
+
+    protected virtual bool ShouldAutoPlaySequenceDirector()
+    {
+        return autoPlaySequenceDirector;
+    }
+
+    private void StartCloseTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime, System.Action onCompleted)
+    {
+        if (transitionSettings == null || transitionSettings.transitionType == UITransitionType.None || transitionSettings.duration <= 0f)
+        {
+            onCompleted?.Invoke();
+            return;
+        }
+
+        ResetTransformState();
+        transitionTween = CreateTransitionTween(transitionSettings, false, useUnscaledTime, onCompleted);
+    }
+
+    private void PrepareContentForOpen()
+    {
+        if (!ShouldAutoPlaySequenceDirector() || sequenceDirector == null)
+        {
+            return;
+        }
+
+        sequenceDirector.SetHiddenImmediate();
+    }
+
+    private void PlayContentEnter()
+    {
+        if (!ShouldAutoPlaySequenceDirector() || sequenceDirector == null)
+        {
+            return;
+        }
+
+        sequenceDirector.PlayEnter();
+    }
+
+    private void CompleteCloseWaitPipeline()
+    {
+        closeWaitRunning = false;
+        closeWaitCompleted = true;
+
+        System.Action callbacks = closeWaitCallbacks;
+        closeWaitCallbacks = null;
+        callbacks?.Invoke();
+    }
+
+    private void ResetCloseWaitState()
+    {
+        closeWaitRunning = false;
+        closeWaitCompleted = false;
+        closeWaitCallbacks = null;
+    }
+
+    private void ResolveSequenceDirector()
+    {
+        if (sequenceDirector != null)
+        {
+            return;
+        }
+
+        sequenceDirector = GetComponentInChildren<UISequenceDirector>(true);
     }
 
     private void CacheDefaultTransform()
@@ -256,6 +386,21 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
     {
         transitionTween?.Kill();
         transitionTween = null;
+    }
+
+    private void ApplyActivationState(bool visualActive, bool inputActive)
+    {
+        if (!visualActive)
+        {
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            return;
+        }
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = inputActive;
+        canvasGroup.blocksRaycasts = inputActive;
     }
 
     private void ValidateCanvasGroup()

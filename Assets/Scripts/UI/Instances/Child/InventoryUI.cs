@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private SidebarSlider inventoryItemOperateContainerSidebar;
     [SerializeField] private Transform itemContainersParent;
 
-    [SerializeField] private ClickOnlyHandler[] closeInventoryItemOperatePanelHandlers;
+    [SerializeField] private Button[] closeInventoryItemOperatePanelButtons;
 
     private readonly List<InventoryItemContainer> spawnedContainers = new();
     private bool subscribed;
@@ -134,41 +135,41 @@ public class InventoryUI : MonoBehaviour
 
     private void BindClosePanelHandlers()
     {
-        if (closeInventoryItemOperatePanelHandlers == null)
+        if (closeInventoryItemOperatePanelButtons == null)
         {
             return;
         }
 
-        foreach (var item in closeInventoryItemOperatePanelHandlers)
+        foreach (var item in closeInventoryItemOperatePanelButtons)
         {
             if (item == null)
             {
                 continue;
             }
 
-            item.OnClick += OnClosePanelBackgroundClicked;
+            item.onClick.AddListener(OnClosePanelBackgroundClicked);
         }
     }
 
     private void UnbindClosePanelHandlers()
     {
-        if (closeInventoryItemOperatePanelHandlers == null)
+        if (closeInventoryItemOperatePanelButtons == null)
         {
             return;
         }
 
-        foreach (var item in closeInventoryItemOperatePanelHandlers)
+        foreach (var item in closeInventoryItemOperatePanelButtons)
         {
             if (item == null)
             {
                 continue;
             }
 
-            item.OnClick -= OnClosePanelBackgroundClicked;
+            item.onClick.RemoveListener(OnClosePanelBackgroundClicked);
         }
     }
 
-    private void OnClosePanelBackgroundClicked(PointerEventData _)
+    private void OnClosePanelBackgroundClicked()
     {
         CloseOperatePanel();
     }

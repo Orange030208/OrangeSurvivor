@@ -2,8 +2,7 @@ using System;
 
 public struct UpgradeOptionsChangedEvent : IGameEvent
 {
-    public PropEntry[] PropEntries
-        ;
+    public PropEntry[] PropEntries;
 
     public UpgradeOptionsChangedEvent(PropEntry[] propEntries)
     {
@@ -19,4 +18,8 @@ public struct UpgradeContainerClickedEvent : IGameEvent
     {
         ContainerIndex = containerIndex;
     }
+}
+
+public struct UpgradeSelectionCompletedEvent : IGameEvent
+{
 }

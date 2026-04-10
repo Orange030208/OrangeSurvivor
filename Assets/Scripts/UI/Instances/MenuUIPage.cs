@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class MenuUIPage : UIPageBase
 {
     [SerializeField] private Button startButton;
+    [SerializeField] private Button characterSelectButton;
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
@@ -17,6 +18,6 @@ public class MenuUIPage : UIPageBase
 
     private void OnStartButtonClicked()
     {
-        GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.WeaponSelection));
+        GameEventBus.Publish<MenuStartClickedEvent>();
     }
 }

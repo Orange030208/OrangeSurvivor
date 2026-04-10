@@ -1,29 +1,25 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ShopUIPage : UIPageBase
 {
-
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
     [SerializeField] private Button showPropertiesButton;
     [SerializeField] private Button showInventoryButton;
     [SerializeField] private Button rerollButton;
     [SerializeField] private Button watchVideoRerollButton;
+    [SerializeField] private Button continueButton;
     [SerializeField] private TextMeshProUGUI rerollCostText;
 
-    [Header("属性面板(左)")]
-    [SerializeField] private SidebarSlider propertiesSidebar;
+    [Header("属性面板(左)")] [SerializeField] private SidebarSlider propertiesSidebar;
     [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
-    [Header("背包面板(右)")]
-    [SerializeField] private SidebarSlider inventorySidebar;
+    [Header("背包面板(右)")] [SerializeField] private SidebarSlider inventorySidebar;
 
-    [Header("侧边遮罩")]
-    [SerializeField] private ClickOnlyHandler closeSidebarPanel;
+    [Header("侧边遮罩")] [SerializeField] private Button closeSidebarButton;
 
     private readonly List<ShopItemContainer> spawnedItems = new();
     private int currentRerollCost;
@@ -68,27 +64,22 @@ public class ShopUIPage : UIPageBase
     {
         rerollButton?.onClick.AddListener(OnRerollButtonClicked);
         watchVideoRerollButton?.onClick.AddListener(OnWatchVideoRerollButtonClicked);
+        continueButton?.onClick.AddListener(OnContinueButtonClicked);
         showPropertiesButton?.onClick.AddListener(DisplayProperties);
         showInventoryButton?.onClick.AddListener(DisplayInventory);
 
-        if (closeSidebarPanel != null)
-        {
-            closeSidebarPanel.OnClick += OnCloseSidebarClicked;
-        }
+        closeSidebarButton.onClick.AddListener(OnCloseSidebarClicked);
     }
 
     private void UnbindButtonEvents()
     {
         rerollButton?.onClick.RemoveListener(OnRerollButtonClicked);
         watchVideoRerollButton?.onClick.RemoveListener(OnWatchVideoRerollButtonClicked);
+        continueButton?.onClick.RemoveListener(OnContinueButtonClicked);
         showPropertiesButton?.onClick.RemoveListener(DisplayProperties);
         showInventoryButton?.onClick.RemoveListener(DisplayInventory);
 
-        if (closeSidebarPanel != null)
-        {
-            closeSidebarPanel.OnClick -= OnCloseSidebarClicked;
-            closeSidebarPanel.Dispose();
-        }
+        closeSidebarButton.onClick.RemoveListener(OnCloseSidebarClicked);
     }
 
     private void OnShopItemsChanged(ShopItemsChangedEvent eventData)
@@ -126,14 +117,7 @@ public class ShopUIPage : UIPageBase
         spawnedItems.Add(container);
     }
 
-    private void OnShopItemClicked(ShopItemContainer container)
-    {
-        int index = spawnedItems.IndexOf(container);
-        if (index >= 0)
-        {
-            GameEventBus.Publish(new ShopItemClickedEvent(index));
-        }
-    }
+
 
     private void OnRerollButtonClicked()
     {
@@ -143,6 +127,11 @@ public class ShopUIPage : UIPageBase
     private void OnWatchVideoRerollButtonClicked()
     {
         GameEventBus.Publish(new ShopVideoAdRerollRequestedEvent());
+    }
+
+    private void OnContinueButtonClicked()
+    {
+        GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
     private void DisplayProperties()
@@ -155,7 +144,7 @@ public class ShopUIPage : UIPageBase
         ShowPanel(inventorySidebar);
     }
 
-    private void OnCloseSidebarClicked(PointerEventData _)
+    private void OnCloseSidebarClicked()
     {
         HideCurrentSidebarPanel();
     }
@@ -181,10 +170,7 @@ public class ShopUIPage : UIPageBase
         panel.Show();
         currentOpenPanel = panel;
 
-        if (closeSidebarPanel != null)
-        {
-            closeSidebarPanel.gameObject.SetActive(true);
-        }
+        closeSidebarButton.gameObject.SetActive(true);
     }
 
     private void HideCurrentSidebarPanel()
@@ -195,10 +181,7 @@ public class ShopUIPage : UIPageBase
             currentOpenPanel = null;
         }
 
-        if (closeSidebarPanel != null)
-        {
-            closeSidebarPanel.gameObject.SetActive(false);
-        }
+        closeSidebarButton.gameObject.SetActive(false);
     }
 
     private void HideAllSidebarPanelsImmediately()
@@ -207,10 +190,7 @@ public class ShopUIPage : UIPageBase
         inventorySidebar?.HideImmediate();
         currentOpenPanel = null;
 
-        if (closeSidebarPanel != null)
-        {
-            closeSidebarPanel.gameObject.SetActive(false);
-        }
+        closeSidebarButton.gameObject.SetActive(false);
     }
 
     private void KillPanelTweens()
@@ -273,7 +253,7 @@ public class ShopUIPage : UIPageBase
             return;
         }
 
-        Player player  = FindFirstObjectByType<Player>();
+        Player player = FindFirstObjectByType<Player>();
 
         PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
         propertiesViewSync.InjectDependencies(manager);

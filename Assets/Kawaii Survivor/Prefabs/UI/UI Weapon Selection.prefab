@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7493525865056039011}
   - component: {fileID: 8628290202133949783}
+  - component: {fileID: 7156431729277224332}
+  - component: {fileID: 2684868490449696417}
   m_Layer: 0
   m_Name: Weapon Selection Containers
   m_TagString: Untagged
@@ -36,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 1100, y: 515}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8628290202133949783
@@ -65,6 +67,48 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!225 &7156431729277224332
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685512754203404592}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2684868490449696417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685512754203404592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: 6
+  applyPresetOnAwake: 1
+  motionIntensity: 2
+  fadeOnEnter: 1
+  moveOnEnter: 1
+  enterOffset: {x: 0, y: 40}
+  scaleOnEnter: 1
+  enterStartScale: 0.92
+  enterDuration: 0.3
+  enterEase: 9
+  fadeOnExit: 1
+  moveOnExit: 1
+  exitOffset: {x: 0, y: -24}
+  scaleOnExit: 1
+  exitTargetScale: 0.94
+  exitDuration: 0.2
+  exitEase: 8
+  useUnscaledTime: 1
 --- !u!1 &3816208830851736021
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,6 +122,7 @@ GameObject:
   - component: {fileID: 8804049532772253868}
   - component: {fileID: 8811404232182784892}
   - component: {fileID: 8661459377711058621}
+  - component: {fileID: 8338867956356767419}
   m_Layer: 5
   m_Name: UI Weapon Selection
   m_TagString: Untagged
@@ -170,11 +215,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6337452abbb4418ca6cc112afaf5ef39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoPlaySequenceDirector: 1
   weaponContainers:
   - {fileID: 2790551009956621146}
   - {fileID: 7534565203874959776}
   - {fileID: 2191975940943330387}
   startButton: {fileID: 3078116771429291416}
+--- !u!114 &8338867956356767419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enterGroups:
+  - name: 
+    motions:
+    - {fileID: 2684868490449696417}
+    startDelay: 0
+    stagger: 0
+    playTogether: 0
+  - name: 
+    motions:
+    - {fileID: 2994946764764944007}
+    - {fileID: 7021924321434067410}
+    startDelay: 0
+    stagger: 0
+    playTogether: 1
+  exitGroups: []
+  reverseExitOrder: 1
+  useUnscaledTime: 1
+  timeScale: 1
 --- !u!1001 &3681290771762878083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -459,8 +535,61 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2215124819933001492, guid: 6a63bfcc33785b14890f729429eca391, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8496485393150049424}
+    - targetCorrespondingSourceObject: {fileID: 2215124819933001492, guid: 6a63bfcc33785b14890f729429eca391, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7021924321434067410}
   m_SourcePrefab: {fileID: 100100000, guid: 6a63bfcc33785b14890f729429eca391, type: 3}
+--- !u!1 &3271870768387822820 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2215124819933001492, guid: 6a63bfcc33785b14890f729429eca391, type: 3}
+  m_PrefabInstance: {fileID: 3735086532348634096}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &8496485393150049424
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3271870768387822820}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &7021924321434067410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3271870768387822820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: 1
+  applyPresetOnAwake: 1
+  motionIntensity: 1
+  fadeOnEnter: 1
+  moveOnEnter: 1
+  enterOffset: {x: 0, y: 52}
+  scaleOnEnter: 0
+  enterStartScale: 1
+  enterDuration: 0.34
+  enterEase: 9
+  fadeOnExit: 1
+  moveOnExit: 1
+  exitOffset: {x: 0, y: -26}
+  scaleOnExit: 0
+  exitTargetScale: 1
+  exitDuration: 0.22
+  exitEase: 8
+  useUnscaledTime: 1
 --- !u!224 &8575567318919437809 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4960495516222242305, guid: 6a63bfcc33785b14890f729429eca391, type: 3}
@@ -743,6 +872,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1668017513405430657, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+      propertyPath: m_fontSize
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 3623396138096017967, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
       propertyPath: m_Name
       value: Start Game Button
@@ -750,19 +883,72 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3623396138096017967, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8802093313000039967}
+    - targetCorrespondingSourceObject: {fileID: 3623396138096017967, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2994946764764944007}
   m_SourcePrefab: {fileID: 100100000, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
 --- !u!114 &3078116771429291416 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5221007245473822840, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
   m_PrefabInstance: {fileID: 7116554412100824544}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5804004258751606735}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5804004258751606735 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3623396138096017967, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+  m_PrefabInstance: {fileID: 7116554412100824544}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &8802093313000039967
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5804004258751606735}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2994946764764944007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5804004258751606735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: 5
+  applyPresetOnAwake: 1
+  motionIntensity: 2
+  fadeOnEnter: 1
+  moveOnEnter: 1
+  enterOffset: {x: 0, y: 58}
+  scaleOnEnter: 1
+  enterStartScale: 0.72
+  enterDuration: 0.28
+  enterEase: 27
+  fadeOnExit: 1
+  moveOnExit: 1
+  exitOffset: {x: 0, y: -34}
+  scaleOnExit: 1
+  exitTargetScale: 0.82
+  exitDuration: 0.18
+  exitEase: 26
+  useUnscaledTime: 1
 --- !u!224 &8141234772744999094 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1312919602413714774, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}

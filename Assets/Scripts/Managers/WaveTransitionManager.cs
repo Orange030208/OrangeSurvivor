@@ -170,7 +170,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
         else
         {
             CurrentPhase = TransitionPhase.None;
-            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.Shop));
+            GameEventBus.Publish<UpgradeSelectionCompletedEvent>();
         }
     }
 

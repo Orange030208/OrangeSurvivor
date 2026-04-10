@@ -6,7 +6,7 @@ public interface IUIPage
 
     void HandleOpen(UIPageOpenContext context);
     void HandleClose();
-    void HandleFocusChanged(bool hasFocus);
+    void HandleActivationChanged(bool visualActive, bool inputActive);
     void HandleTick(float deltaTime);
     void PlayOpenTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime);
     void PlayCloseTransition(UIPageTransitionSettings transitionSettings, bool useUnscaledTime, System.Action onCompleted);

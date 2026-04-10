@@ -27,14 +27,9 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-        switch (eventData.NewState)
+        if (eventData.NewState == GameState.WeaponSelection)
         {
-            case GameState.Game:
-                weaponsHolder.AddWeapon(SelectableWeapons[selectIndex].weaponData, SelectableWeapons[selectIndex].level);
-                break;
-            case GameState.WeaponSelection:
-                ConfigureSelectionWeapons();
-                break;
+            ConfigureSelectionWeapons();
         }
     }
 
@@ -43,6 +38,8 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
     {
         int selectionCount = 3;
         SelectableWeapons = new WeaponInfo[selectionCount];
+        selectIndex = -1;
+
         for (int i = 0; i < selectionCount; i++)
         {
             WeaponDataSO weaponData = ResourcesManager.GetRandomWeapon();
@@ -64,15 +61,33 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
 
     private void OnSelectedWeaponConfirm(SelectedWeaponConfirmEvent e)
     {
-        if (selectIndex >= 0 && selectIndex < SelectableWeapons.Length)
-        {
-            print($"选择了武器{SelectableWeapons[selectIndex].weaponData.ItemName}");
-            GameEventBus.Publish(new GameStateChangeRequestEvent(GameState.Game));
-        }
-        else
+        if (SelectableWeapons == null || selectIndex < 0 || selectIndex >= SelectableWeapons.Length)
         {
             Debug.LogError($"非法的武器下标{selectIndex}");
+            return;
         }
+
+        WeaponInfo selectedWeapon = SelectableWeapons[selectIndex];
+        if (selectedWeapon.weaponData == null)
+        {
+            Debug.LogError("选择的武器数据为空");
+            return;
+        }
+
+        if (weaponsHolder == null)
+        {
+            Debug.LogError("WeaponsHolder 未绑定");
+            return;
+        }
+
+        if (!weaponsHolder.AddWeapon(selectedWeapon.weaponData, selectedWeapon.level))
+        {
+            Debug.LogError($"添加武器失败: {selectedWeapon.weaponData.ItemName}");
+            return;
+        }
+
+        print($"选择了武器{selectedWeapon.weaponData.ItemName}");
+        GameEventBus.Publish<WeaponSelectionCompletedEvent>();
     }
 
     private void PublishSnapshot()

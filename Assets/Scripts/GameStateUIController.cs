@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// UI 状态控制器：监听游戏状态与暂停状态事件，并把它们翻译成具体页面的打开/关闭行为。
+/// 它是业务状态层与 UI 页面层之间的桥梁。
+/// </summary>
 public class GameStateUIController : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;

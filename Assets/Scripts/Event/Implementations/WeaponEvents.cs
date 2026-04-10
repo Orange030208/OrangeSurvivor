@@ -33,6 +33,10 @@ public struct SelectedWeaponConfirmEvent : IGameEvent
 {
 }
 
+public struct WeaponSelectionCompletedEvent : IGameEvent
+{
+}
+
 /// <summary>
 /// 请求武器候选快照，常用于UI打开后主动拉取当前状态。
 /// </summary>

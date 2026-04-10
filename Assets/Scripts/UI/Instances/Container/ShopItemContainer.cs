@@ -52,10 +52,7 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIP
         CleanClickEvent();
 
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() =>
-        {
-            GameEventBus.Publish(new ShopItemClickedEvent(resource.index));
-        });
+
 
         lockButton.onClick.RemoveAllListeners();
         lockButton.onClick.AddListener(() =>

@@ -32,7 +32,7 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
         GameEventBus.Publish<RequestPlayerHudSnapshotEvent>();
         
-        menuButton.onClick.AddListener(() => GameEventBus.Publish(new PauseGameRequestedEvent()));
+        menuButton?.onClick.AddListener(() => GameEventBus.Publish(new PauseGameRequestedEvent()));
     }
 
     protected override void OnPageClosed()
@@ -44,7 +44,7 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
         
-        menuButton.onClick.RemoveAllListeners();
+        menuButton?.onClick.RemoveAllListeners();
     }
 
     private void OnWaveStarted(WaveStartedEvent e)

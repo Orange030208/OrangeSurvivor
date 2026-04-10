@@ -10,6 +10,10 @@ public enum SidebarType
     Bottom
 }
 
+/// <summary>
+/// SidebarSlider 用于左右/上下结构面板的滑入滑出，不负责业务，只负责位置动画和完成回调。
+/// 常用于暂停菜单、抽屉、属性栏等大块结构动画。
+/// </summary>
 public class SidebarSlider : MonoBehaviour
 {
     [Header("基础")]
@@ -38,7 +42,8 @@ public class SidebarSlider : MonoBehaviour
     private Vector2 shownPos;
     private Vector2 hiddenPos;
     private Tween slideTween;
-    
+    private Action pendingCompleteCallback;
+
     private bool posCached = false;
 
     private void Awake()
@@ -105,14 +110,16 @@ public class SidebarSlider : MonoBehaviour
         posCached = true;
     }
 
-    public void Show()
+    public void Show(Action onCompleted = null)
     {
         if (panelRect == null)
         {
+            onCompleted?.Invoke();
             return;
         }
 
         KillTween();
+        pendingCompleteCallback = onCompleted;
         panelRect.gameObject.SetActive(true);
 
         OnShowStarted?.Invoke(this);
@@ -125,18 +132,21 @@ public class SidebarSlider : MonoBehaviour
             {
                 IsShown = true;
                 OnShowCompleted?.Invoke(this);
+                InvokePendingCompleteCallback();
             });
     }
 
-    public void Hide()
+    public void Hide(Action onCompleted = null)
     {
         if (panelRect == null)
         {
+            onCompleted?.Invoke();
             return;
         }
-        
+
         KillTween();
-        
+        pendingCompleteCallback = onCompleted;
+
         CachePositionsByCurrentState();
 
         OnHideStarted?.Invoke(this);
@@ -154,6 +164,7 @@ public class SidebarSlider : MonoBehaviour
                 }
 
                 OnHideCompleted?.Invoke(this);
+                InvokePendingCompleteCallback();
             });
     }
 
@@ -163,11 +174,11 @@ public class SidebarSlider : MonoBehaviour
         {
             return;
         }
-        
+
         KillTween();
-        
+
         CachePositionsByCurrentState();
-        
+
         panelRect.anchoredPosition = hiddenPos;
         if (setInactiveOnHide)
         {
@@ -181,6 +192,7 @@ public class SidebarSlider : MonoBehaviour
     {
         slideTween?.Kill();
         slideTween = null;
+        pendingCompleteCallback = null;
     }
 
     public void ClearEvents()
@@ -189,5 +201,12 @@ public class SidebarSlider : MonoBehaviour
         OnShowCompleted = null;
         OnHideStarted = null;
         OnHideCompleted = null;
+    }
+
+    private void InvokePendingCompleteCallback()
+    {
+        Action callback = pendingCompleteCallback;
+        pendingCompleteCallback = null;
+        callback?.Invoke();
     }
 }

@@ -4,6 +4,10 @@ using UnityEngine;
 public abstract class Collection : Entity
 {
     [SerializeField] protected float contactRadius = 0.8f;
+    [SerializeField] private float initialCollectSpeed = 2f;
+    [SerializeField] private float maxCollectSpeed = 10f;
+    [SerializeField] private float collectAcceleration = 20f;
+
     protected Coroutine _collectRoutine;
 
     public virtual void TryCollect(IEntity target)
@@ -15,26 +19,27 @@ public abstract class Collection : Entity
 
     protected IEnumerator MoveTowardsPlayer(IEntity target)
     {
-        float timer = 0;
-        Vector2 initPosition = transform.position;
+        float currentSpeed = initialCollectSpeed;
 
-        while (timer < 1)
+        while (target != null)
         {
-            if (target == null)
+            Vector2 currentPosition = transform.position;
+            Vector2 targetPosition = target.Center;
+            float distance = Vector2.Distance(currentPosition, targetPosition);
+
+            if (distance <= contactRadius)
             {
-                break;
+                Collect(target);
+                yield break;
             }
 
-            if (target.Distance(this) < contactRadius)
-            {
-                break;
-            }
-            transform.position = Vector2.Lerp(initPosition, target.Center, timer);
-            timer += Time.deltaTime;
+            currentSpeed = Mathf.MoveTowards(currentSpeed, maxCollectSpeed, collectAcceleration * Time.deltaTime);
+            float step = currentSpeed * Time.deltaTime;
+            transform.position = Vector2.MoveTowards(currentPosition, targetPosition, step);
             yield return null;
         }
 
-        Collect(target);
+        _collectRoutine = null;
     }
 
     protected void Collect(IEntity entity)

@@ -32,6 +32,10 @@ public struct RequestShopSnapshotEvent : IGameEvent
 {
 }
 
+public struct ShopContinueClickedEvent : IGameEvent
+{
+}
+
 public struct ShopPurchaseFailedEvent : IGameEvent
 {
     public string Message;
@@ -57,6 +61,7 @@ public struct ShopPurchaseSuccessEvent : IGameEvent
 public struct OperateShopItemLockEvent : IGameEvent
 {
     public int Index;
+
     public OperateShopItemLockEvent(int index)
     {
         Index = index;

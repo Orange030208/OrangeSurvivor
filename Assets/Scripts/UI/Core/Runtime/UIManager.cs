@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// UI 运行时总调度器：负责页面实例化、打开关闭、层级挂载、焦点切换以及池化回收。
+/// 这个类不关心页面内部具体表现，只通过统一生命周期接口驱动各页面。
+/// </summary>
 public sealed class UIManager : MonoBehaviour, IUIManager
 {
     [SerializeField] private UIFrameworkSettings settings;
@@ -18,10 +22,11 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
     public event EventHandler<UIPageEventArgs> PageOpened;
     public event EventHandler<UIPageEventArgs> PageClosed;
-    public event EventHandler<UIPageEventArgs> PageFocusChanged;
+    public event EventHandler<UIPageEventArgs> PageActivationChanged;
 
     private void Awake()
     {
+        // 启动时完成运行时字典构建、根节点创建、层级创建与对象池预热。
         ValidateSettings();
         BuildEntryMap();
         EnsureRootCanvas();
@@ -46,13 +51,14 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
     private IUIPage OpenPageByType(Type pageType, object payload)
     {
+        // 打开流程：校验类型 -> 查配置 -> 复用单例/取实例 -> 注册运行时状态 -> 调页面生命周期。
         ValidatePageType(pageType);
         UIPrefabEntry entry = ResolveEntry(pageType);
 
         if (entry.singleton && runtimeState.TryGetLastInstance(pageType, out string singletonInstanceId))
         {
             RuntimePage openedSingleton = openedByInstance[singletonInstanceId];
-            FocusPage(openedSingleton);
+            ApplyPageActivation(openedSingleton);
             return openedSingleton.Page;
         }
 
@@ -67,7 +73,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         UIPageOpenContext context = new UIPageOpenContext(pageType, instanceId, payload);
         page.HandleOpen(context);
         page.PlayOpenTransition(ResolveOpenTransition(entry), settings.UseUnscaledTime);
-        FocusPage(runtimePage);
+        ApplyPageActivation(runtimePage);
         RaisePageOpened(pageType, instanceId);
         return page;
     }
@@ -90,6 +96,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
     private bool ClosePageByInstanceId(string instanceId)
     {
+        // 关闭流程只负责发起，不立即销毁页面；真正收尾要等页面自己的关闭管线完成后回调 FinalizeClose。
         if (string.IsNullOrWhiteSpace(instanceId))
         {
             throw new ArgumentException("ClosePageByInstanceId failed: instanceId is null or empty.", nameof(instanceId));
@@ -106,6 +113,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         }
 
         closingInstanceIds.Add(instanceId);
+        ApplyActivationForAllPages();
         runtimePage.Page.PlayCloseTransition(
             ResolveCloseTransition(runtimePage.Entry),
             settings.UseUnscaledTime,
@@ -340,7 +348,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         runtimeState.Remove(instanceId);
         RecycleOrDestroy(runtimePage);
 
-        RestoreFocusToTopPage();
+        ApplyActivationForAllPages();
         RaisePageClosed(runtimePage.PageType, instanceId);
     }
 
@@ -354,22 +362,19 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         return entry.useCustomTransition ? entry.customCloseTransition : settings.DefaultCloseTransition;
     }
 
-    private void FocusPage(RuntimePage runtimePage)
+    private void ApplyPageActivation(RuntimePage topRuntimePage)
     {
         foreach (RuntimePage page in openedByInstance.Values)
         {
-            if (closingInstanceIds.Contains(page.InstanceId))
-            {
-                continue;
-            }
-
-            bool hasFocus = page.InstanceId == runtimePage.InstanceId;
-            page.Page.HandleFocusChanged(hasFocus);
-            RaisePageFocusChanged(page.PageType, page.InstanceId);
+            bool visualActive = true;
+            bool inputActive = !closingInstanceIds.Contains(page.InstanceId)
+                               && page.InstanceId == topRuntimePage.InstanceId;
+            page.Page.HandleActivationChanged(visualActive, inputActive);
+            RaisePageActivationChanged(page.PageType, page.InstanceId);
         }
     }
 
-    private void RestoreFocusToTopPage()
+    private void ApplyActivationForAllPages()
     {
         if (!runtimeState.TryGetTopOpenInstance(out string instanceId))
         {
@@ -381,7 +386,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
             return;
         }
 
-        FocusPage(runtimePage);
+        ApplyPageActivation(runtimePage);
     }
 
     private void RecycleOrDestroy(RuntimePage runtimePage)
@@ -450,9 +455,9 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         PageClosed?.Invoke(this, new UIPageEventArgs(pageType, instanceId));
     }
 
-    private void RaisePageFocusChanged(Type pageType, string instanceId)
+    private void RaisePageActivationChanged(Type pageType, string instanceId)
     {
-        PageFocusChanged?.Invoke(this, new UIPageEventArgs(pageType, instanceId));
+        PageActivationChanged?.Invoke(this, new UIPageEventArgs(pageType, instanceId));
     }
 
     private sealed class RuntimePage
