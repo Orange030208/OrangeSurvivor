@@ -190,7 +190,7 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        CurrencyManager.Instance.AddCurrency(item.GetSellPrice());
+        GameEventBus.Publish(new CurrencyChangeRequestedEvent(CurrencyType.Currency, item.GetSellPrice()));
         GameEventBus.Publish(new InventoryItemOperatePanelShouldCloseEvent(eventData.ItemIndex));
     }
 

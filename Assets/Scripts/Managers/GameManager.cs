@@ -9,19 +9,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoSingletonBase<GameManager>
 {
     [SerializeField] private Player player;
-    [SerializeField] private WaveManager waveManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
 
     private GameState currentGameState = GameState.None;
     private bool isPaused;
-
-    private void Awake()
-    {
-        if (waveManager == null)
-        {
-            waveManager = FindFirstObjectByType<WaveManager>();
-        }
-    }
+    private bool hasMoreWaves;
 
     private void OnEnable()
     {
@@ -36,6 +28,8 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Subscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
         GameEventBus.Subscribe<ResumeGameRequestedEvent>(OnResumeGameRequested);
         GameEventBus.Subscribe<ReturnToMenuRequestedEvent>(OnReturnToMenuRequested);
+        GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        GameEventBus.Publish(new RequestWaveRuntimeSnapshotEvent());
     }
 
     private void OnDisable()
@@ -51,6 +45,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Unsubscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
         GameEventBus.Unsubscribe<ResumeGameRequestedEvent>(OnResumeGameRequested);
         GameEventBus.Unsubscribe<ReturnToMenuRequestedEvent>(OnReturnToMenuRequested);
+        GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
     }
 
     private void Start()
@@ -58,6 +53,11 @@ public class GameManager : MonoSingletonBase<GameManager>
         Application.targetFrameRate = 60;
         ChangeGameState(initialGameState);
         SetPaused(false);
+    }
+
+    private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
+    {
+        hasMoreWaves = eventData.HasMoreWaves;
     }
 
     private void OnWaveCompleted(WaveCompletedEvent _)
@@ -180,7 +180,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private GameState GetNextStateAfterWaveCompleted()
     {
-        if (waveManager != null && !waveManager.HasMoreWaves)
+        if (!hasMoreWaves)
         {
             GameEventBus.Publish<AllWavesCompletedEvent>();
         }
@@ -197,31 +197,25 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         return targetState == GameState.Game
                && (currentGameState == GameState.Shop || currentGameState == GameState.WaveTransition)
-               && waveManager != null
-               && !waveManager.HasMoreWaves;
+               && !hasMoreWaves;
     }
 
     private void ExitState(GameState oldState, GameState newState)
     {
-        if (waveManager == null)
-        {
-            return;
-        }
-
         if (oldState == GameState.Game && newState != GameState.Game)
         {
-            waveManager.StopCurrentWave();
+            GameEventBus.Publish(new StopCurrentWaveRequestedEvent());
         }
 
         if (newState == GameState.Shop || newState == GameState.WaveTransition)
         {
-            waveManager.DefeatAllEnemies();
+            GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
         }
 
         if (newState == GameState.Menu || newState == GameState.GameOver || newState == GameState.StageComplete)
         {
-            waveManager.ResetWaves();
-            waveManager.DefeatAllEnemies();
+            GameEventBus.Publish(new ResetWavesRequestedEvent());
+            GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
         }
     }
 
@@ -241,18 +235,13 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void EnterGameState(GameState oldState)
     {
-        if (waveManager == null)
-        {
-            return;
-        }
-
         if (oldState == GameState.Shop || oldState == GameState.WaveTransition)
         {
-            waveManager.StartNextWave();
+            GameEventBus.Publish(new StartNextWaveRequestedEvent());
             return;
         }
 
-        waveManager.StartFirstWave();
+        GameEventBus.Publish(new StartFirstWaveRequestedEvent());
     }
 
     private void SetPaused(bool paused)

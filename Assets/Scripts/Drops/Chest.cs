@@ -13,6 +13,6 @@ public class Chest : Collection
 
     protected override void OnCollected(IEntity entity)
     {
-        WaveTransitionManager.Instance.CollectChest();
+        GameEventBus.Publish(new ChestCollectedEvent());
     }
 }

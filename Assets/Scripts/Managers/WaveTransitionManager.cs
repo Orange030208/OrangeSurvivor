@@ -13,46 +13,56 @@ public enum TransitionPhase
 /// <summary>
 /// 波次过渡管理器，负责在波次之间提供玩家属性升级选项。
 /// </summary>
-public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
+public class WaveTransitionManager : MonoBehaviour
 {
-    //TODO:后续修改掉
     [SerializeField] private AccessoryManager accessoryManager;
 
     private readonly PropEntry[] propEntries = new PropEntry[3];
     private AccessoryDataSO currentAccessoryData;
-    private int _collectChestCount;
-    private TransitionPhase _currentPhase = TransitionPhase.None;
+    private int collectChestCount;
+    private TransitionPhase currentPhase = TransitionPhase.None;
 
-    public TransitionPhase CurrentPhase
+    private TransitionPhase CurrentPhase
     {
-        get => _currentPhase;
-        private set
+        get => currentPhase;
+        set
         {
-            if (_currentPhase == value)
+            if (currentPhase == value)
             {
                 return;
             }
 
-            TransitionPhase oldPhase = _currentPhase;
-            _currentPhase = value;
-            GameEventBus.Publish(new WaveTransitionPhaseChanged(oldPhase, _currentPhase));
+            TransitionPhase oldPhase = currentPhase;
+            currentPhase = value;
+            GameEventBus.Publish(new WaveTransitionPhaseChangedEvent(oldPhase, currentPhase));
+        }
+    }
+
+    private void Awake()
+    {
+        if (accessoryManager == null)
+        {
+            Player player = FindFirstObjectByType<Player>();
+            accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
         }
     }
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<WaveTransitionSnapshot>(PublishSnapshot);
+        GameEventBus.Subscribe<RequestWaveTransitionStateSnapshotEvent>(PublishSnapshot);
         GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<WaveTransitionSnapshot>(PublishSnapshot);
+        GameEventBus.Unsubscribe<RequestWaveTransitionStateSnapshotEvent>(PublishSnapshot);
         GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -61,6 +71,11 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
         {
             StartTransitionFlow();
         }
+    }
+
+    private void OnChestCollected()
+    {
+        collectChestCount++;
     }
 
     private void StartTransitionFlow()
@@ -72,7 +87,7 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
 
     private void TryEnterNextPhase()
     {
-        if (_collectChestCount > 0)
+        if (collectChestCount > 0)
         {
             EnterChestSelection();
             return;
@@ -88,9 +103,6 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
         GameEventBus.Publish(new AccessorySelectionStartedEvent(currentAccessoryData));
     }
 
-    /// <summary>
-    /// 玩家对饰品做完选择后的回调
-    /// </summary>
     private void OnAccessoryOperated(AccessoryOperateEvent eventData)
     {
         if (CurrentPhase != TransitionPhase.ChestSelection)
@@ -105,16 +117,16 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
 
         if (eventData.selected)
         {
-            accessoryManager.EquipAccessory(eventData.accessoryData);
+            accessoryManager?.EquipAccessory(eventData.accessoryData);
             print($"选择了{eventData.accessoryData.ItemName}");
         }
         else
         {
-            CurrencyManager.Instance.AddCurrency(eventData.accessoryData.RecyclePrice);
+            GameEventBus.Publish(new CurrencyChangeRequestedEvent(CurrencyType.Currency, eventData.accessoryData.RecyclePrice));
             print($"回收了{eventData.accessoryData.ItemName},回收价格:{eventData.accessoryData.RecyclePrice}");
         }
 
-        _collectChestCount = Mathf.Max(0, _collectChestCount - 1);
+        collectChestCount = Mathf.Max(0, collectChestCount - 1);
         currentAccessoryData = null;
         TryEnterNextPhase();
     }
@@ -174,29 +186,27 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
         }
     }
 
-    private void OnUpgradeContainerClicked(UpgradeContainerClickedEvent e)
+    private void OnUpgradeContainerClicked(UpgradeContainerClickedEvent eventData)
     {
         if (CurrentPhase != TransitionPhase.UpgradeSelection)
         {
             return;
         }
 
-        // 应用属性加成
         PropertiesManager propsManager = FindObjectOfType<PropertiesManager>();
         if (propsManager != null)
         {
             string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-            PropEntry propEntry = propEntries[e.ContainerIndex];
+            PropEntry propEntry = propEntries[eventData.ContainerIndex];
             propsManager.AddBonusModifier(upgradeId, propEntry.propType, propEntry.value);
         }
 
-        // 触发升级回调
         UpgradeBonusCallback();
     }
 
     private void PublishSnapshot()
     {
-        GameEventBus.Publish(new WaveTransitionPhaseChanged(TransitionPhase.None, CurrentPhase));
+        GameEventBus.Publish(new WaveTransitionPhaseChangedEvent(TransitionPhase.None, CurrentPhase));
 
         switch (CurrentPhase)
         {
@@ -210,11 +220,5 @@ public class WaveTransitionManager : MonoSingletonBase<WaveTransitionManager>
                 GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
                 break;
         }
-    }
-
-    //TODO:后续修改掉
-    public void CollectChest()
-    {
-        _collectChestCount++;
     }
 }

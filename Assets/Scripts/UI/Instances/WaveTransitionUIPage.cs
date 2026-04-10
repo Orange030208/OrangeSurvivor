@@ -16,27 +16,27 @@ public class WaveTransitionUIPage : UIPageBase
     {
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
-        GameEventBus.Subscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
+        GameEventBus.Subscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
         InjectPropertiesDependencies();
         propertiesViewSync?.StartSync();
 
         SetChestSelectionVisible(false);
         SetUpgradeSelectionVisible(false);
-        GameEventBus.Publish<WaveTransitionSnapshot>();
+        GameEventBus.Publish(new RequestWaveTransitionStateSnapshotEvent());
     }
 
     protected override void OnPageClosed()
     {
         GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
-        GameEventBus.Unsubscribe<WaveTransitionPhaseChanged>(OnWaveTransitionPhaseChanged);
+        GameEventBus.Unsubscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
         propertiesViewSync?.StopSync();
         accessoryOperateContainer.CleanUp();
     }
 
-    private void OnWaveTransitionPhaseChanged(WaveTransitionPhaseChanged eventData)
+    private void OnWaveTransitionPhaseChanged(WaveTransitionPhaseChangedEvent eventData)
     {
         switch (eventData.newPhase)
         {

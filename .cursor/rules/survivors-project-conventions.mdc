@@ -1,37 +1,43 @@
----
-description: Survivors 项目开发范式与职责边界
-alwaysApply: true
----
-
-# Survivors 项目规则
-
-## 事件与职责边界
-- UIPage、UI 容器、UI 控件层只负责发 UI 意图事件、业务完成事件、快照请求事件，不直接切 `GameState`，不直接打开/关闭页面，不直接改 `Time.timeScale`。
-- `GameManager` 负责全局游戏状态切换、暂停恢复、返回菜单、波次推进等状态级决策。
-- `GameStateUIController` 只负责把 `GameStateChangedEvent` / `PauseStateChangedEvent` 翻译成页面开关，不承载业务规则。
-- 需要“先关 UI 再执行业务”的流程，放到独立 flow controller / coordinator 中处理，例如 `PauseMenuFlowController`。
-- 业务管理器负责消费 UI 意图事件，例如商店点击、reroll、确认选择，不让 UIPage 直接改业务对象。
-
-## UI 系统约束
-- 页面激活分为两层：`VisualActive` 与 `InputActive`。
-- `VisualActive` 表示页面视觉保持活跃；`InputActive` 表示页面能接收输入。
-- 页面是否可交互由 `UIManager` + `UIPageBase` 统一控制，子节点动画组件不得自行篡改页面级交互语义。
-- `UIRevealMotion` 只负责 reveal 动画，不负责决定业务交互状态。
-- `UISequenceDirector` 负责页面内容序列动画，允许通过 `timeScale` 调试动画节奏。
-
-## 事件设计原则
-- 能表达明确业务完成的事件，就使用完成事件，例如 `WeaponSelectionCompletedEvent`、`UpgradeSelectionCompletedEvent`。
-- 不为简单状态跳转滥加事件；如果只是“请求切到某状态”，优先复用已有请求事件或让管理层直接消费更明确的 UI 意图事件。
-- UI 点击事件命名优先使用 `*ClickedEvent`；快照请求使用 `Request*SnapshotEvent`；真正业务动作请求使用 `*RequestedEvent`。
-
-## 代码修改原则
-- 修改前先读相关文件，确认现有职责边界与风格。
-- 优先做最小必要修改，不顺手重构无关区域。
-- 不新增为了抽象而抽象的 helper；只在重复真实出现时再抽。
-- 发现职责越界时，优先把逻辑往管理层/协调层收，而不是继续堆在 UIPage。
-
-## 当前项目约定示例
-- `MenuUIPage` 只发 `MenuStartClickedEvent`，由 `GameManager` 决定进入 `WeaponSelection`。
-- `ShopUIPage` 只发 `ShopContinueClickedEvent`、`ShopRerollRequestedEvent`、`ShopItemClickedEvent` 等事件。
-- `GamingUIPage` 可以发 `PauseGameRequestedEvent`，但不直接处理暂停结果。
-- `GamePauseMenu` 只发 `PauseMenuContinueClickedEvent` / `PauseMenuReturnToMenuClickedEvent`，由 `PauseMenuFlowController` 负责“先关闭再执行”。
+---
+description: Survivors 项目开发范式与职责边界
+alwaysApply: true
+---
+
+# Survivors 项目规则
+
+## 事件与职责边界
+- UIPage、UI 容器、UI 控件层只负责发 UI 意图事件、业务完成事件、快照请求事件，不直接切 `GameState`，不直接打开/关闭页面，不直接改 `Time.timeScale`。
+- `GameManager` 负责全局游戏状态切换、暂停恢复、返回菜单、波次推进等状态级决策。
+- `GameStateUIController` 只负责把 `GameStateChangedEvent` / `PauseStateChangedEvent` 翻译成页面开关，不承载业务规则。
+- 需要“先关 UI 再执行业务”的流程，放到独立 flow controller / coordinator 中处理，例如 `PauseMenuFlowController`。
+- 业务管理器负责消费 UI 意图事件，例如商店点击、reroll、确认选择，不让 UIPage 直接改业务对象。
+
+## UI 系统约束
+- 页面激活分为两层：`VisualActive` 与 `InputActive`。
+- `VisualActive` 表示页面视觉保持活跃；`InputActive` 表示页面能接收输入。
+- 页面是否可交互由 `UIManager` + `UIPageBase` 统一控制，子节点动画组件不得自行篡改页面级交互语义。
+- `UIRevealMotion` 只负责 reveal 动画，不负责决定业务交互状态。
+- `UISequenceDirector` 负责页面内容序列动画，允许通过 `timeScale` 调试动画节奏。
+- UI 只响应事件并更新表现，不缓存业务态作为页面内部状态；需要当前业务值时，应通过快照事件向管理层请求，再在事件回调里直接刷新表现。
+
+## 事件设计原则
+- 能表达明确业务完成的事件，就使用完成事件，例如 `WeaponSelectionCompletedEvent`、`UpgradeSelectionCompletedEvent`。
+- 不为简单状态跳转滥加事件；如果只是“请求切到某状态”，优先复用已有请求事件或让管理层直接消费更明确的 UI 意图事件。
+- UI 点击事件命名优先使用 `*ClickedEvent`；快照请求使用 `Request*SnapshotEvent`；真正业务动作请求使用 `*RequestedEvent`。
+- 状态变化广播统一使用 `*ChangedEvent` 命名，避免同一语义下混用 `*Changed` / `*StateChangedEvent` / `*PhaseChanged` 等不一致形式。
+- 货币、资源、背包槽位等可扩展业务数据，事件模型必须携带类型信息，不为每一种具体类型复制一套事件结构。
+- 同类业务事件优先做成通用载荷事件，例如 `CurrencyType + Amount`，避免出现 `GoldChangedEvent`、`DiamondChangedEvent` 这类平铺式冗余事件。
+
+## 代码修改原则
+- 修改前先读相关文件，确认现有职责边界与风格。
+- 优先做最小必要修改，不顺手重构无关区域。
+- 不新增为了抽象而抽象的 helper；只在重复真实出现时再抽。
+- 发现职责越界时，优先把逻辑往管理层/协调层收，而不是继续堆在 UIPage。
+- 当发现这类高频架构约束被违反时，要把规则沉淀进项目规则，避免同类问题重复出现。
+
+## 当前项目约定示例
+- `MenuUIPage` 只发 `MenuStartClickedEvent`，由 `GameManager` 决定进入 `WeaponSelection`。
+- `ShopUIPage` 只发 `ShopContinueClickedEvent`、`ShopRerollRequestedEvent`、`ShopItemClickedEvent` 等事件。
+- `GamingUIPage` 可以发 `PauseGameRequestedEvent`，但不直接处理暂停结果。
+- `GamePauseMenu` 只发 `PauseMenuContinueClickedEvent` / `PauseMenuReturnToMenuClickedEvent`，由 `PauseMenuFlowController` 负责“先关闭再执行”。
+- `CurrencyUI` 这类展示控件只订阅 `CurrencyChangedEvent` 并按 `CurrencyType` 刷新显示，不在 UI 内保存货币业务数据。

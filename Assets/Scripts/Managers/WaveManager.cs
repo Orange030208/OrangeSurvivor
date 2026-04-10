@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 /// 敌波管理器：只负责波次数据推进、计时和刷怪。
 /// 状态切换与流程编排交给 GameManager。
 /// </summary>
-public class WaveManager : MonoSingletonBase<WaveManager>
+public class WaveManager : MonoBehaviour
 {
     [SerializeField] private float waveDuration;
 
@@ -33,19 +33,32 @@ public class WaveManager : MonoSingletonBase<WaveManager>
 
     [SerializeField] private Entity spawnAroundEntity;
 
-    public int CurrentWave => currentWaveIndex >= 0 ? currentWaveIndex + 1 : 0;
-    public int TotalWaves => waves?.Length ?? 0;
-    public bool HasStarted => currentWaveIndex >= 0;
-    public bool HasMoreWaves => currentWaveIndex >= 0 && currentWaveIndex < TotalWaves - 1;
+    private int CurrentWave => currentWaveIndex >= 0 ? currentWaveIndex + 1 : 0;
+    private int TotalWaves => waves?.Length ?? 0;
+    private bool HasStarted => currentWaveIndex >= 0;
+    private bool HasMoreWaves => currentWaveIndex >= 0 && currentWaveIndex < TotalWaves - 1;
 
     private void OnEnable()
     {
         GameEventBus.Subscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+        GameEventBus.Subscribe<RequestWaveRuntimeSnapshotEvent>(PublishWaveRuntimeSnapshot);
+        GameEventBus.Subscribe<StartFirstWaveRequestedEvent>(OnStartFirstWaveRequested);
+        GameEventBus.Subscribe<StartNextWaveRequestedEvent>(OnStartNextWaveRequested);
+        GameEventBus.Subscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
+        GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
+        GameEventBus.Subscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
+        PublishWaveRuntimeSnapshot();
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<RequestWaveHudSnapshotEvent>(PublishWaveHudSnapshot);
+        GameEventBus.Unsubscribe<RequestWaveRuntimeSnapshotEvent>(PublishWaveRuntimeSnapshot);
+        GameEventBus.Unsubscribe<StartFirstWaveRequestedEvent>(OnStartFirstWaveRequested);
+        GameEventBus.Unsubscribe<StartNextWaveRequestedEvent>(OnStartNextWaveRequested);
+        GameEventBus.Unsubscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
+        GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
+        GameEventBus.Unsubscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
     }
 
     private void Update()
@@ -68,12 +81,12 @@ public class WaveManager : MonoSingletonBase<WaveManager>
         CompleteCurrentWave();
     }
 
-    public void StartFirstWave()
+    private void OnStartFirstWaveRequested()
     {
         StartWave(0);
     }
 
-    public void StartNextWave()
+    private void OnStartNextWaveRequested()
     {
         if (TotalWaves == 0)
         {
@@ -96,20 +109,22 @@ public class WaveManager : MonoSingletonBase<WaveManager>
         StartWave(nextWaveIndex);
     }
 
-    public void StopCurrentWave()
+    private void OnStopCurrentWaveRequested()
     {
         isTimerOn = false;
+        PublishWaveRuntimeSnapshot();
     }
 
-    public void ResetWaves()
+    private void OnResetWavesRequested()
     {
         isTimerOn = false;
         timer = 0f;
         currentWaveIndex = -1;
         counterList.Clear();
+        PublishWaveRuntimeSnapshot();
     }
 
-    public void DefeatAllEnemies()
+    private void OnDefeatAllEnemiesRequested()
     {
         foreach (var enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
         {
@@ -173,6 +188,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>
         }
 
         isTimerOn = true;
+        PublishWaveRuntimeSnapshot();
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
         GameEventBus.Publish(new WaveProgressEvent(waveDuration, waveDuration));
     }
@@ -180,6 +196,7 @@ public class WaveManager : MonoSingletonBase<WaveManager>
     private void CompleteCurrentWave()
     {
         isTimerOn = false;
+        PublishWaveRuntimeSnapshot();
         GameEventBus.Publish(new WaveCompletedEvent(CurrentWave));
     }
 
@@ -206,6 +223,11 @@ public class WaveManager : MonoSingletonBase<WaveManager>
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
         float remaining = isTimerOn ? Mathf.Max(0, waveDuration - timer) : waveDuration;
         GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
+    }
+
+    private void PublishWaveRuntimeSnapshot()
+    {
+        GameEventBus.Publish(new WaveRuntimeChangedEvent(CurrentWave, TotalWaves, HasStarted, HasMoreWaves, isTimerOn));
     }
 }
 
