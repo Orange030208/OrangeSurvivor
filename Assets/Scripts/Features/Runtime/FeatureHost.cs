@@ -48,7 +48,7 @@ public class FeatureHost : MonoBehaviour
         }
     }
 
-    public bool InstallSource(string sourceId, IFeatureSource source)
+    public bool InstallSource(string sourceId, IRuntimeFeatureSource source)
     {
         if (string.IsNullOrWhiteSpace(sourceId) || source == null || featureContext == null || ownerEntity == null)
         {
@@ -69,7 +69,7 @@ public class FeatureHost : MonoBehaviour
             effect.OnInstall(featureContext);
         }
 
-        installedSources[sourceId] = new FeatureHostSourceHandle(sourceId, source, runtimeEffects);
+        installedSources[sourceId] = new FeatureHostSourceHandle(sourceId, runtimeEffects);
         return true;
     }
 
@@ -110,13 +110,11 @@ public class FeatureHost : MonoBehaviour
 public sealed class FeatureHostSourceHandle
 {
     public string SourceId { get; }
-    public IFeatureSource Source { get; }
     public List<FeatureEffectBase> RuntimeEffects { get; }
 
-    public FeatureHostSourceHandle(string sourceId, IFeatureSource source, List<FeatureEffectBase> runtimeEffects)
+    public FeatureHostSourceHandle(string sourceId, List<FeatureEffectBase> runtimeEffects)
     {
         SourceId = sourceId;
-        Source = source;
         RuntimeEffects = runtimeEffects;
     }
 }

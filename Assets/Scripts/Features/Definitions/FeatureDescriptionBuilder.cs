@@ -22,46 +22,9 @@ public static class FeatureDescriptionBuilder
         }
     }
 
-    public static void AddSpecialFeatureDescriptions(List<string> descriptions, IReadOnlyList<IFeatureDefinition> featureDefinitions)
+    public static void AddFeatureDescriptions(List<string> descriptions, IReadOnlyList<FeatureEffectBase> featureEffects)
     {
-        if (descriptions == null || featureDefinitions == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < featureDefinitions.Count; i++)
-        {
-            IFeatureDefinition definition = featureDefinitions[i];
-            if (definition == null)
-            {
-                continue;
-            }
-
-            descriptions.Add(definition.FeatureDescription);
-        }
-    }
-
-    public static void AddPropFeatureViews(List<FeatureViewData> features, IReadOnlyList<PropEntry> propEntries)
-    {
-        if (features == null || propEntries == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < propEntries.Count; i++)
-        {
-            PropEntry entry = propEntries[i];
-            features.Add(new FeatureViewData(
-                entry.GetDisplayName(),
-                entry.GetAutoDescription(),
-                FeatureCategory.Property,
-                entry.value >= 0 ? FeaturePolarity.Positive : FeaturePolarity.Negative));
-        }
-    }
-
-    public static void AddFeatureEffectViews(List<FeatureViewData> features, IReadOnlyList<FeatureEffectBase> featureEffects)
-    {
-        if (features == null || featureEffects == null)
+        if (descriptions == null || featureEffects == null)
         {
             return;
         }
@@ -69,16 +32,12 @@ public static class FeatureDescriptionBuilder
         for (int i = 0; i < featureEffects.Count; i++)
         {
             FeatureEffectBase effect = featureEffects[i];
-            if (effect == null)
+            if (effect == null || string.IsNullOrEmpty(effect.FeatureDescription))
             {
                 continue;
             }
 
-            features.Add(new FeatureViewData(
-                effect.FeatureTitle,
-                effect.FeatureDescription,
-                effect.FeatureCategory,
-                effect.FeaturePolarity));
+            descriptions.Add(effect.FeatureDescription);
         }
     }
 

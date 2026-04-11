@@ -1,32 +1,19 @@
 using TMPro;
 using UnityEngine;
 
-public class CharacterExtraInfoDisplayer : MonoBehaviour
+public class DescriptionListDisplayer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI infoRichText;
 
-    public void DisplayInfo(IFeatureSource featureSource)
+    public void DisplaySource(IDescriptionSource descriptionSource)
     {
-        if (featureSource == null)
+        if (descriptionSource == null)
         {
             DisplayDescriptions(null);
             return;
         }
 
-        var features = featureSource.GetFeatureViewData();
-        if (features == null || features.Count == 0)
-        {
-            DisplayDescriptions(null);
-            return;
-        }
-
-        string[] descriptions = new string[features.Count];
-        for (int i = 0; i < features.Count; i++)
-        {
-            descriptions[i] = features[i].Description;
-        }
-
-        DisplayDescriptions(descriptions);
+        DisplayDescriptions(descriptionSource.GetDescriptions());
     }
 
     public void DisplayDescriptions(System.Collections.Generic.IReadOnlyList<string> descriptions)

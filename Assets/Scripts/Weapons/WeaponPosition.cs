@@ -4,14 +4,18 @@ public class WeaponPosition : MonoBehaviour
 {
     public Weapon Weapon { get; private set; }
 
-    public void AssignWeapon(Weapon weapon, int level)
+    public Weapon AssignWeapon(Weapon weaponPrefab, int level)
     {
-        Weapon = Instantiate(weapon, transform);
+        if (weaponPrefab == null)
+        {
+            return null;
+        }
 
+        Weapon = Instantiate(weaponPrefab, transform);
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
-
-        Weapon.UpgradeTo(level);
+        Weapon.SetLevel(level);
+        return Weapon;
     }
 
     public bool RemoveWeapon(Weapon weapon)

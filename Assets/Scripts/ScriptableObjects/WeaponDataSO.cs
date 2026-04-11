@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = "SO/WeaponData", order = 0)]
-public class WeaponDataSO : ItemDataSO, IFeatureSource
+public class WeaponDataSO : ItemDataSO, IDescriptionSource
 {
     [SerializeField] protected Weapon weaponPrefab;
+    [SerializeField] private AttackSequenceDefinitionSO attackSequence;
 
     [Header("属性")]
     [Tooltip("攻击力：固定值，直接加到武器伤害。")]
@@ -19,8 +20,7 @@ public class WeaponDataSO : ItemDataSO, IFeatureSource
     [SerializeField] protected float range;
 
     public Weapon WeaponPrefab => weaponPrefab;
-    public string FeatureSourceName => ItemName;
-    public Sprite FeatureSourceIcon => ItemIcon;
+    public AttackSequenceDefinitionSO AttackSequence => attackSequence;
 
     private void OnValidate()
     {
@@ -43,43 +43,15 @@ public class WeaponDataSO : ItemDataSO, IFeatureSource
         };
     }
 
-    public List<string> GetAutoDescriptions(int level = 1)
+    public IReadOnlyList<string> GetDescriptions()
+    {
+        return GetDescriptions(1);
+    }
+
+    public List<string> GetDescriptions(int level)
     {
         List<PropEntry> entries = GetPropEntriesByLevel(level);
         return FeatureDescriptionBuilder.BuildPropDescriptions(entries);
-    }
-
-    public IReadOnlyList<PropEntry> GetFeaturePropEntries()
-    {
-        return GetPropsList();
-    }
-
-    public IReadOnlyList<IFeatureDefinition> GetSpecialFeatureDefinitions()
-    {
-        return System.Array.Empty<IFeatureDefinition>();
-    }
-
-    public IReadOnlyList<FeatureViewData> GetFeatureViewData()
-    {
-        List<PropEntry> props = GetPropsList();
-        List<FeatureViewData> features = new(props.Count);
-        FeatureDescriptionBuilder.AddPropFeatureViews(features, props);
-        return features;
-    }
-
-    public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
-    {
-        List<PropEntry> props = GetPropsList();
-        List<FeatureEffectBase> effects = new(props.Count);
-
-        for (int i = 0; i < props.Count; i++)
-        {
-            PropEntry modifier = props[i];
-            string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
-            effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
-        }
-
-        return effects;
     }
 
     public List<PropEntry> GetPropEntriesByLevel(int level)

@@ -221,7 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 1622031969949295272}
   nameText: {fileID: 5581180839980433120}
-  bottom: {fileID: 7042876912394062295}
+  bottom: {fileID: 5050589081258512246}
   colorDependencyGraphics:
   - {fileID: 228215656435397713}
   - {fileID: 5581180839980433120}
@@ -2478,7 +2478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2848029378625503248, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000076293945
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2848029378625503248, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2501,15 +2501,15 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
---- !u!114 &7042876912394062295 stripped
+--- !u!114 &5050589081258512246 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4571093689799769469, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1785068414086577116, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
   m_PrefabInstance: {fileID: 6832693189972276394}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03a3ab5923ca4a5abbe1667915ecab4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4baf271be0366904788416cfdf4d7f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &8742790760369140922 stripped

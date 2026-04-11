@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
-public class AccessoryDataSO : ItemDataSO, IFeatureSource
+public class AccessoryDataSO : ItemDataSO, IDescriptionSource, IRuntimeFeatureSource
 {
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
@@ -22,8 +22,6 @@ public class AccessoryDataSO : ItemDataSO, IFeatureSource
     public string AccessoryId => accessoryId;
     public int RecyclePrice => recyclePrice;
     public int Rarity => rarity;
-    public string FeatureSourceName => ItemName;
-    public Sprite FeatureSourceIcon => ItemIcon;
 
     private void OnValidate()
     {
@@ -39,30 +37,12 @@ public class AccessoryDataSO : ItemDataSO, IFeatureSource
         return propertyModifiers;
     }
 
-    public List<string> GetAutoDescriptions()
+    public IReadOnlyList<string> GetDescriptions()
     {
         List<string> descriptions = new(propertyModifiers.Count + specialFeatures.Count);
         FeatureDescriptionBuilder.AddPropDescriptions(descriptions, propertyModifiers);
-        FeatureDescriptionBuilder.AddSpecialFeatureDescriptions(descriptions, GetSpecialFeatureDefinitions());
+        FeatureDescriptionBuilder.AddFeatureDescriptions(descriptions, specialFeatures);
         return descriptions;
-    }
-
-    public IReadOnlyList<PropEntry> GetFeaturePropEntries()
-    {
-        return propertyModifiers;
-    }
-
-    public IReadOnlyList<IFeatureDefinition> GetSpecialFeatureDefinitions()
-    {
-        return specialFeatures;
-    }
-
-    public IReadOnlyList<FeatureViewData> GetFeatureViewData()
-    {
-        List<FeatureViewData> features = new(propertyModifiers.Count + specialFeatures.Count);
-        FeatureDescriptionBuilder.AddPropFeatureViews(features, propertyModifiers);
-        FeatureDescriptionBuilder.AddFeatureEffectViews(features, specialFeatures);
-        return features;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, CharacterExtraInfoDisplayer>
+public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, DescriptionListDisplayer>
 {
     [SerializeField] private Button sellButton;
     [SerializeField] private Button mergeButton;

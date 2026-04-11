@@ -1,115 +1,169 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeWeapon : Weapon
 {
-    enum State
-    {
-        Idle,
-        Attack
-    }
-
-    private State _state;
-
     [SerializeField] private Transform hitDetectionTransform;
     [SerializeField] private BoxCollider2D hitCollider;
-    [SerializeField] private float hitDetectionRadius;
-    private List<Enemy> damagedEnemies = new List<Enemy>();
+    [SerializeField] private AttackSequenceDefinitionSO attackSequence;
+    [SerializeField] private WeaponSequenceBridge sequenceBridge;
 
-    protected override void Start()
-    {
-        _state = State.Idle;
-    }
+    private readonly Dictionary<int, HashSet<HealthComponent>> hitWindowTargets = new();
+    private readonly HashSet<int> activeHitWindows = new();
+    private MeleeWeaponAttackExecutor attackExecutor;
+    private Enemy pendingTarget;
 
-    private void Update()
+    protected override void Awake()
     {
-        switch (_state)
+        base.Awake();
+        attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform, hitCollider, enemyLayerMask);
+
+        if (sequenceBridge == null)
         {
-            case State.Idle:
-                AutoAim();
-                break;
-            case State.Attack:
-                Attacking();
-                break;
+            sequenceBridge = GetComponentInChildren<WeaponSequenceBridge>();
+        }
+
+        if (attackSequence == null && WeaponData != null)
+        {
+            attackSequence = WeaponData.AttackSequence;
+        }
+
+        if (sequenceBridge != null)
+        {
+            sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
+            sequenceBridge.SequenceCompleted += FinishAttackSequence;
         }
     }
 
-    [NaughtyAttributes.Button]
-    private void StartAttack()
+    protected override void OnDisable()
     {
-        _animator.Play("Attack");
-        _state = State.Attack;
-        damagedEnemies.Clear();
-
-        _animator.speed = 1f / attackDelay;
+        base.OnDisable();
+        ForceResetAttackState();
     }
 
-    private void Attacking()
+    private void OnDestroy()
     {
-        Attack();
-    }
-
-    private void StopAttack()
-    {
-        _state = State.Idle;
-        damagedEnemies.Clear();
-    }
-
-    private void AutoAim()
-    {
-        Enemy closestEnemy = GetClosestEnemy();
-
-        Vector2 targetUpVector = Vector3.up;
-
-        if (closestEnemy != null)
+        if (sequenceBridge == null)
         {
-            targetUpVector = (closestEnemy.transform.position - transform.position).normalized;
-            transform.up = targetUpVector;
-            ManageAttack();
+            return;
         }
 
-        transform.up = Vector3.Lerp(transform.up, targetUpVector, aimLerp * Time.deltaTime);
-        IncrementAttackTimer();
+        sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted -= FinishAttackSequence;
     }
 
-    private void ManageAttack()
+    protected override bool CanStartAttack()
     {
-        if (attackTimer >= attackDelay)
+        return !IsAttacking && (sequenceBridge == null || !sequenceBridge.IsPlaying);
+    }
+
+    protected override void TickWeapon(float deltaTime)
+    {
+        base.TickWeapon(deltaTime);
+
+        if (activeHitWindows.Count == 0)
         {
-            attackTimer = 0;
-            StartAttack();
+            return;
         }
-    }
 
-    private void IncrementAttackTimer()
-    {
-        attackTimer += Time.deltaTime;
-    }
-
-    private void Attack()
-    {
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(hitDetectionTransform.position, hitCollider.bounds.size,
-            hitDetectionTransform.localEulerAngles.z, enemyLayerMask);
-
-        for (int i = 0; i < colliders.Length; i++)
+        foreach (int windowId in activeHitWindows)
         {
-            Enemy enemy = colliders[i].GetComponent<Enemy>();
-            if (!damagedEnemies.Contains(enemy) && enemy != null && enemy.TryGetComponent(out HealthComponent healthComponent))
+            if (!hitWindowTargets.TryGetValue(windowId, out HashSet<HealthComponent> hitTargets))
             {
-                float finalDamage = GetDamage(out bool isCriticalHit);
-                healthComponent.TakeDamage(new DamageInfo(finalDamage, enemy.transform.position, isCriticalHit));
-                damagedEnemies.Add(enemy);
+                continue;
             }
+
+            attackExecutor.ExecuteAttack(BuildAttackContext(pendingTarget, hitDetectionTransform), hitTargets);
         }
+    }
+
+    protected override void BeginAttack(Enemy target)
+    {
+        IsAttacking = true;
+        pendingTarget = target;
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+
+        if (sequenceBridge != null && attackSequence != null)
+        {
+            sequenceBridge.Play(attackSequence);
+            return;
+        }
+
+        OpenHitWindow(0);
+        CloseHitWindow(0);
+        FinishAttackSequence();
+    }
+
+    public void OpenHitWindow(int windowId)
+    {
+        activeHitWindows.Add(windowId);
+        if (!hitWindowTargets.TryGetValue(windowId, out HashSet<HealthComponent> hitTargets))
+        {
+            hitTargets = new HashSet<HealthComponent>();
+            hitWindowTargets[windowId] = hitTargets;
+        }
+        else
+        {
+            hitTargets.Clear();
+        }
+    }
+
+    public void CloseHitWindow(int windowId)
+    {
+        activeHitWindows.Remove(windowId);
+    }
+
+    public void FinishAttackSequence()
+    {
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+        pendingTarget = null;
+        CompleteAttackCycle();
+    }
+
+    private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
+    {
+        switch (eventContext.EventType)
+        {
+            case WeaponSequenceEventType.OpenHitWindow:
+                OpenHitWindow(eventContext.WindowId);
+                break;
+            case WeaponSequenceEventType.CloseHitWindow:
+                CloseHitWindow(eventContext.WindowId);
+                break;
+            case WeaponSequenceEventType.PlaySfx:
+                break;
+            case WeaponSequenceEventType.PlayVfx:
+                break;
+        }
+    }
+
+    private void ForceResetAttackState()
+    {
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+        pendingTarget = null;
+        CompleteAttackCycle();
+        sequenceBridge?.Stop(true);
     }
 
     private void OnDrawGizmosSelected()
     {
+        if (hitDetectionTransform == null || hitCollider == null)
+        {
+            return;
+        }
+
+        float range = Application.isPlaying ? RuntimeStats.Range : 0.5f;
+
         Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, range);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(hitDetectionTransform.position, hitDetectionRadius);
+        Matrix4x4 previous = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(hitDetectionTransform.position, hitDetectionTransform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, hitCollider.size);
+        Gizmos.matrix = previous;
     }
 }

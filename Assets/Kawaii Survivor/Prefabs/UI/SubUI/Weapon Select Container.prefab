@@ -490,7 +490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iconImage: {fileID: 4605485118363638198}
   nameText: {fileID: 5015721679588425894}
-  bottom: {fileID: 3452827858588736685}
+  bottom: {fileID: 594747394079070732}
   colorDependencyGraphics:
   - {fileID: 5015721679588425894}
   - {fileID: 5609453739847822997}
@@ -749,20 +749,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Description
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4571093689799769469, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
---- !u!114 &3452827858588736685 stripped
+--- !u!114 &594747394079070732 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4571093689799769469, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1785068414086577116, guid: 777c7a533114ea14b9a6383a321b0452, type: 3}
   m_PrefabInstance: {fileID: 1190394893513155024}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03a3ab5923ca4a5abbe1667915ecab4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4baf271be0366904788416cfdf4d7f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &3964041200194019776 stripped

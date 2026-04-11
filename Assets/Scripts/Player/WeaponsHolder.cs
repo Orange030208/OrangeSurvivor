@@ -5,12 +5,11 @@ using UnityEngine;
 public class WeaponsHolder : MonoBehaviour
 {
     [SerializeField] private WeaponPosition[] weaponPositions;
-    [SerializeField] private Transform weaponsParentTransform; // 武器实例化的父节点
 
-    private readonly List<EquippedWeaponInfo> _equippedWeapons = new();
+    private readonly List<EquippedWeaponInfo> equippedWeapons = new();
 
     public event Action OnWeaponsChanged;
-    public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => _equippedWeapons.AsReadOnly();
+    public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => equippedWeapons.AsReadOnly();
 
     private void Awake()
     {
@@ -24,12 +23,6 @@ public class WeaponsHolder : MonoBehaviour
             return false;
         }
 
-        if (weaponPositions == null || weaponPositions.Length == 0)
-        {
-            Debug.LogWarning("Weapon positions are not configured.");
-            return false;
-        }
-
         WeaponPosition emptyPosition = GetEmptyWeaponPosition();
         if (emptyPosition == null)
         {
@@ -37,7 +30,11 @@ public class WeaponsHolder : MonoBehaviour
             return false;
         }
 
-        emptyPosition.AssignWeapon(weaponData.WeaponPrefab, WeaponLevelHelper.ClampLevel(level));
+        Weapon runtimeWeapon = emptyPosition.AssignWeapon(weaponData.WeaponPrefab, WeaponLevelHelper.ClampLevel(level));
+        if (runtimeWeapon == null)
+        {
+            return false;
+        }
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
@@ -161,14 +158,14 @@ public class WeaponsHolder : MonoBehaviour
 
     private void RebuildEquippedWeaponsCache()
     {
-        _equippedWeapons.Clear();
+        equippedWeapons.Clear();
 
         if (weaponPositions == null)
         {
             return;
         }
 
-        foreach (var weaponPosition in weaponPositions)
+        foreach (WeaponPosition weaponPosition in weaponPositions)
         {
             if (weaponPosition == null || weaponPosition.Weapon == null)
             {
@@ -181,7 +178,7 @@ public class WeaponsHolder : MonoBehaviour
                 continue;
             }
 
-            _equippedWeapons.Add(new EquippedWeaponInfo(weapon.WeaponData, weapon.Level, weapon));
+            equippedWeapons.Add(new EquippedWeaponInfo(weapon.WeaponData, weapon.Level, weapon));
         }
     }
 }
@@ -189,11 +186,13 @@ public class WeaponsHolder : MonoBehaviour
 public readonly struct EquippedWeaponInfo
 {
     public WeaponDataSO WeaponData { get; }
+    public int Level { get; }
     public Weapon RuntimeWeapon { get; }
 
     public EquippedWeaponInfo(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
     {
         WeaponData = weaponData;
+        Level = level;
         RuntimeWeapon = runtimeWeapon;
     }
 }

@@ -1,26 +1,25 @@
-using System;
 using UnityEngine;
 
 public class RangeEnemyAttack : MonoBehaviour
 {
     [SerializeField] private Transform shootingPoint;
     [SerializeField] private EnemyBullet bulletPrefab;
-    private Player _target;
-
-    [SerializeField]private int damage;
+    [SerializeField] private int damage;
     [SerializeField] private float attackFrequency;
+
+    private Player target;
     private float attackDelay;
     private float attackTimer;
 
     private void Start()
     {
-        attackDelay = 1 / attackFrequency;
+        attackDelay = 1f / attackFrequency;
         attackTimer = attackDelay;
     }
 
     public void SetTarget(Player target)
     {
-        _target = target;
+        this.target = target;
     }
 
     public void AutoAim()
@@ -30,19 +29,30 @@ public class RangeEnemyAttack : MonoBehaviour
 
     private void ManageShoot()
     {
-        attackTimer += Time.deltaTime;
-        if (attackTimer >= attackDelay)
+        if (target == null)
         {
-            attackTimer = 0;
-            Shoot();
+            return;
         }
+
+        attackTimer += Time.deltaTime;
+        if (attackTimer < attackDelay)
+        {
+            return;
+        }
+
+        attackTimer = 0f;
+        Shoot();
     }
 
     private void Shoot()
     {
-        Vector2 direction = (_target.Center - (Vector2)shootingPoint.position).normalized;
-        
-        EnemyBullet enemyBullet = Instantiate(bulletPrefab,shootingPoint.position, Quaternion.identity);
-        enemyBullet.Shoot(direction,damage,false);
+        if (bulletPrefab == null || shootingPoint == null)
+        {
+            return;
+        }
+
+        Vector2 direction = (target.Center - (Vector2)shootingPoint.position).normalized;
+        EnemyBullet enemyBullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
+        enemyBullet.Launch(new ProjectileLaunchContext(shootingPoint.position, direction, new ResolvedWeaponHit(damage, false), 0, 0, 0, ProjectileFiringMode.Default));
     }
 }

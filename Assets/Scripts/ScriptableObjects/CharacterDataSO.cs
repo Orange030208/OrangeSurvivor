@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Character Data", menuName = "SO/CharacterData", order = 0)]
-public class CharacterDataSO : ScriptableObject, IFeatureSource
+public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureSource
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
@@ -25,9 +25,6 @@ public class CharacterDataSO : ScriptableObject, IFeatureSource
     public IReadOnlyList<WeaponLevelEntry> InitialWeapons => initialWeapons;
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
 
-    public string FeatureSourceName => CharacterName;
-    public Sprite FeatureSourceIcon => CharacterIcon;
-
     public Dictionary<PropType, float> GetBaseProps()
     {
         return CreateSharedBaseProps();
@@ -38,7 +35,7 @@ public class CharacterDataSO : ScriptableObject, IFeatureSource
         return new List<PropEntry>(extraProps);
     }
 
-    public List<string> GetAutoDescriptions()
+    public IReadOnlyList<string> GetDescriptions()
     {
         List<string> descriptions = new(extraProps.Count + specialFeatures.Count + initialWeapons.Count + initialAccessories.Count);
         FeatureDescriptionBuilder.AddPropDescriptions(descriptions, extraProps);
@@ -65,57 +62,8 @@ public class CharacterDataSO : ScriptableObject, IFeatureSource
             descriptions.Add(FeatureDescriptionBuilder.BuildAccessoryOwnedDescription(accessory));
         }
 
-        FeatureDescriptionBuilder.AddSpecialFeatureDescriptions(descriptions, GetSpecialFeatureDefinitions());
+        FeatureDescriptionBuilder.AddFeatureDescriptions(descriptions, specialFeatures);
         return descriptions;
-    }
-
-    public IReadOnlyList<PropEntry> GetFeaturePropEntries()
-    {
-        return extraProps;
-    }
-
-    public IReadOnlyList<IFeatureDefinition> GetSpecialFeatureDefinitions()
-    {
-        return specialFeatures;
-    }
-
-    public IReadOnlyList<FeatureViewData> GetFeatureViewData()
-    {
-        List<FeatureViewData> features = new(extraProps.Count + specialFeatures.Count + initialWeapons.Count + initialAccessories.Count);
-        FeatureDescriptionBuilder.AddPropFeatureViews(features, extraProps);
-
-        for (int i = 0; i < initialWeapons.Count; i++)
-        {
-            WeaponLevelEntry entry = initialWeapons[i];
-            if (entry.weaponData == null)
-            {
-                continue;
-            }
-
-            features.Add(new FeatureViewData(
-                entry.weaponData.ItemName,
-                FeatureDescriptionBuilder.BuildInitialWeaponDescription(entry.weaponData, entry.level),
-                FeatureCategory.Passive,
-                FeaturePolarity.Positive));
-        }
-
-        for (int i = 0; i < initialAccessories.Count; i++)
-        {
-            AccessoryDataSO accessory = initialAccessories[i];
-            if (accessory == null)
-            {
-                continue;
-            }
-
-            features.Add(new FeatureViewData(
-                accessory.ItemName,
-                FeatureDescriptionBuilder.BuildAccessoryOwnedDescription(accessory),
-                FeatureCategory.Passive,
-                FeaturePolarity.Positive));
-        }
-
-        FeatureDescriptionBuilder.AddFeatureEffectViews(features, specialFeatures);
-        return features;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)

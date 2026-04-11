@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, CharacterExtraInfoDisplayer>
+public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, DescriptionListDisplayer>
 {
     [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
@@ -23,19 +23,19 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Cha
         }
 
         int colorDependency;
-        List<string> descriptions;
+        IReadOnlyList<string> descriptions;
 
         if (itemData is AccessoryDataSO accessoryData)
         {
             colorDependency = accessoryData.Rarity;
-            descriptions = accessoryData.GetAutoDescriptions();
+            descriptions = accessoryData.GetDescriptions();
             nameText.text = itemData.ItemName;
             bottom.DisplayDescriptions(descriptions);
         }
         else if (itemData is WeaponDataSO weaponData)
         {
             colorDependency = shopItem.Level;
-            descriptions = weaponData.GetAutoDescriptions(shopItem.Level);
+            descriptions = weaponData.GetDescriptions(shopItem.Level);
             nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
             bottom.DisplayDescriptions(descriptions);
         }

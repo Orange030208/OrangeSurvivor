@@ -2,21 +2,15 @@ using System.Collections.Generic;
 
 public static class WeaponPropsCalculator
 {
-    private const int maxLevel = 6;
+    private const int MaxLevel = 6;
 
     public static List<PropEntry> GetPropEntries(WeaponDataSO weaponData, int level)
     {
-        float multiplier = 1 + (float)level / maxLevel;
+        float multiplier = 1f + (float)level / MaxLevel;
 
         List<PropEntry> calculatedProps = new();
-        foreach (var propEntry in weaponData.GetPropsList())
+        foreach (PropEntry propEntry in weaponData.GetPropsList())
         {
-            if (weaponData.WeaponPrefab.GetType() != typeof(RangeWeapon) && propEntry.propType == PropType.Range)
-            {
-                calculatedProps.Add(new PropEntry(propEntry.propType, propEntry.modifierType, propEntry.value));
-                continue;
-            }
-
             calculatedProps.Add(new PropEntry(propEntry.propType, propEntry.modifierType, propEntry.value * multiplier));
         }
 

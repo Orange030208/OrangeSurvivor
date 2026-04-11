@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
+  m_Name: Weapon Attack Sequence
+  m_EditorClassIdentifier: 
+  duration: 0.25
+  restoreDefaultPoseOnComplete: 1
+  motionKeyframes:
+  - normalizedTime: 0
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.35
+    localPosition: {x: 0, y: 0.18, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: -30}
+    ease: 1
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.55
+    localPosition: {x: 0, y: 0.28, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 40}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 1
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  eventKeyframes:
+  - normalizedTime: 0.4
+    eventType: 0
+    payload: 0
+  - normalizedTime: 0.62
+    eventType: 1
+    payload: 0
+  - normalizedTime: 0.5
+    eventType: 2
+    payload: 0
+  - normalizedTime: 0.5
+    eventType: 3
+    payload: 0
+  - normalizedTime: 0.5
+    eventType: 4
+    payload: 0

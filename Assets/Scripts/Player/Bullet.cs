@@ -1,53 +1,66 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    private Rigidbody2D _rb;
-    private Collider2D _collider;
-    protected float _moveSpeed = 5;
-    protected float _damage;
-    protected bool _isCritical;
-    [SerializeField]protected LayerMask targetsLayerMask;
+    [SerializeField] protected float moveSpeed = 5f;
+    [SerializeField] protected LayerMask targetsLayerMask;
+    [SerializeField] protected float maxLifetime = 5f;
 
-    private void Awake()
+    private Rigidbody2D rb;
+    private float lifetimeTimer;
+    protected ProjectileLaunchContext launchContext;
+
+    protected virtual void Awake()
     {
-        _collider =  GetComponent<Collider2D>();
-        _rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Shoot(Vector2 direction, float damage,bool isCritical)
+    protected virtual void OnEnable()
     {
-        _damage = damage;
-        _isCritical = isCritical;
-        transform.right = direction;
-        _rb.velocity = direction * _moveSpeed;
+        lifetimeTimer = 0f;
     }
 
-    public void Configure()
+    protected virtual void Update()
     {
-        
-    }
-
-    protected virtual void OnTrigger(Collider2D collider)
-    {
-        if (IsInLayerMask(collider.gameObject.layer, targetsLayerMask) && collider.TryGetComponent(out HealthComponent healthComponent))
+        lifetimeTimer += Time.deltaTime;
+        if (lifetimeTimer >= maxLifetime)
         {
-            Attack(healthComponent);
             Destroy(gameObject);
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    public virtual void Launch(ProjectileLaunchContext context)
     {
-        OnTrigger(collider);
+        launchContext = context;
+        transform.position = context.SpawnPosition;
+        transform.right = context.Direction;
+        rb.velocity = context.Direction * moveSpeed;
+        OnLaunched(context);
     }
 
-    private void Attack(HealthComponent healthComponent)
+    protected virtual void OnLaunched(ProjectileLaunchContext context)
     {
-        healthComponent.TakeDamage(new DamageInfo(_damage, healthComponent.transform.position, _isCritical));
+    }
+
+    protected virtual void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask))
+        {
+            return;
+        }
+
+        if (!collider.TryGetComponent(out HealthComponent healthComponent))
+        {
+            return;
+        }
+
+        ApplyImpact(healthComponent);
+        Destroy(gameObject);
+    }
+
+    protected virtual void ApplyImpact(HealthComponent healthComponent)
+    {
+        healthComponent.TakeDamage(launchContext.Hit.ToDamageInfo(healthComponent.transform.position));
     }
 
     private bool IsInLayerMask(int layer, LayerMask layerMask)

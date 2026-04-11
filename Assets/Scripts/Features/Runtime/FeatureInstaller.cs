@@ -14,7 +14,7 @@ public static class FeatureInstaller
         return featureHost.InstallSource(CharacterSourceId, characterData);
     }
 
-    public static bool InstallSource(FeatureHost featureHost, string sourceId, IFeatureSource source)
+    public static bool InstallSource(FeatureHost featureHost, string sourceId, IRuntimeFeatureSource source)
     {
         if (featureHost == null || source == null)
         {

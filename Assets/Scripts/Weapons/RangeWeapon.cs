@@ -1,47 +1,210 @@
-using System;
+using System.Collections;
 using UnityEngine;
 
 public class RangeWeapon : Weapon
 {
     [SerializeField] private Transform shootingPoint;
-    [SerializeField] private Bullet bulletPrefab;
+    [SerializeField] private Transform[] additionalShootingPoints;
+    [SerializeField] private Bullet[] projectileVariants;
+    [SerializeField] private AttackSequenceDefinitionSO attackSequence;
+    [SerializeField] private WeaponSequenceBridge sequenceBridge;
 
-    private void Update()
+    private Enemy pendingTarget;
+    private int activeBurstId = -1;
+
+    protected override void Awake()
     {
-        AutoAim();
+        base.Awake();
+
+        if (sequenceBridge == null)
+        {
+            sequenceBridge = GetComponentInChildren<WeaponSequenceBridge>();
+        }
+
+        if (attackSequence == null && WeaponData != null)
+        {
+            attackSequence = WeaponData.AttackSequence;
+        }
+
+        if (sequenceBridge != null)
+        {
+            sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
+            sequenceBridge.SequenceCompleted += FinishAttackSequence;
+        }
     }
 
-    private void AutoAim()
+    protected override void OnDisable()
     {
-        Enemy closestEnemy = GetClosestEnemy();
+        base.OnDisable();
+        FinishAttackSequence();
+        sequenceBridge?.Stop(true);
+        StopAllCoroutines();
+    }
 
-        Vector2 targetUpVector = Vector3.up;
-
-        if (closestEnemy != null)
+    private void OnDestroy()
+    {
+        if (sequenceBridge == null)
         {
-            targetUpVector = (closestEnemy.transform.position - transform.position).normalized;
-            transform.up = targetUpVector;
-            ManageShooting();
             return;
         }
 
-        transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
+        sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted -= FinishAttackSequence;
     }
 
-    private void ManageShooting()
+    protected override bool CanStartAttack()
     {
-        attackTimer += Time.deltaTime;
-        if (attackTimer >= attackDelay)
+        return !IsAttacking && (sequenceBridge == null || !sequenceBridge.IsPlaying);
+    }
+
+    protected override void BeginAttack(Enemy target)
+    {
+        IsAttacking = true;
+        pendingTarget = target;
+        activeBurstId = -1;
+
+        if (sequenceBridge != null && attackSequence != null)
         {
-            attackTimer = 0;
-            Shoot();
+            sequenceBridge.Play(attackSequence);
+            return;
+        }
+
+        FireProjectiles(ProjectileSpawnPayload.Default);
+        FinishAttackSequence();
+    }
+
+    private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
+    {
+        switch (eventContext.EventType)
+        {
+            case WeaponSequenceEventType.SpawnProjectile:
+                FireProjectiles(eventContext.ProjectileSpawnPayload);
+                break;
+            case WeaponSequenceEventType.PlaySfx:
+                break;
+            case WeaponSequenceEventType.PlayVfx:
+                break;
         }
     }
 
-    private void Shoot()
+    private void FireProjectiles(ProjectileSpawnPayload payload)
     {
-        float finalDamage = GetDamage(out bool isCriticalHit);
-        Bullet bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
-        bullet.Shoot(transform.up, finalDamage, isCriticalHit);
+        if (pendingTarget == null)
+        {
+            return;
+        }
+
+        switch (payload.FiringMode)
+        {
+            case ProjectileFiringMode.Burst:
+                TryStartBurst(payload);
+                break;
+            case ProjectileFiringMode.Spread:
+                FireSpread(payload);
+                break;
+            case ProjectileFiringMode.Nova:
+                FireNova(payload);
+                break;
+            default:
+                FireSingle(payload, Vector2.zero);
+                break;
+        }
+    }
+
+    private void TryStartBurst(ProjectileSpawnPayload payload)
+    {
+        if (activeBurstId == payload.BurstId)
+        {
+            return;
+        }
+
+        activeBurstId = payload.BurstId;
+        StartCoroutine(BurstRoutine(payload));
+    }
+
+    private IEnumerator BurstRoutine(ProjectileSpawnPayload payload)
+    {
+        const int burstCount = 3;
+        const float burstInterval = 0.06f;
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            if (pendingTarget == null)
+            {
+                break;
+            }
+
+            FireSingle(payload, Vector2.zero);
+            if (i < burstCount - 1)
+            {
+                yield return new WaitForSeconds(burstInterval);
+            }
+        }
+
+        activeBurstId = -1;
+    }
+
+    private void FireSpread(ProjectileSpawnPayload payload)
+    {
+        FireSingle(payload, Quaternion.Euler(0f, 0f, -12f) * Vector2.right);
+        FireSingle(payload, Vector2.zero);
+        FireSingle(payload, Quaternion.Euler(0f, 0f, 12f) * Vector2.right);
+    }
+
+    private void FireNova(ProjectileSpawnPayload payload)
+    {
+        const int projectileCount = 8;
+        for (int i = 0; i < projectileCount; i++)
+        {
+            float angle = 360f / projectileCount * i;
+            Vector2 overrideDirection = Quaternion.Euler(0f, 0f, angle) * Vector2.right;
+            FireSingle(payload, overrideDirection);
+        }
+    }
+
+    private void FireSingle(ProjectileSpawnPayload payload, Vector2 overrideDirection)
+    {
+        ProjectileWeaponAttackExecutor executor = BuildExecutor(payload.ProjectileVariantIndex);
+        if (executor == null)
+        {
+            return;
+        }
+
+        WeaponAttackContext context = BuildAttackContext(pendingTarget, ResolvePrimaryOrigin());
+        if (overrideDirection != Vector2.zero)
+        {
+            context = new WeaponAttackContext(context.Weapon, context.Origin, context.Target, overrideDirection.normalized, context.Stats, context.Hit);
+        }
+
+        executor.ExecuteAttack(context, payload);
+    }
+
+    private ProjectileWeaponAttackExecutor BuildExecutor(int projectileVariantIndex)
+    {
+        if (projectileVariants == null || projectileVariants.Length == 0)
+        {
+            return null;
+        }
+
+        int variantIndex = Mathf.Clamp(projectileVariantIndex, 0, projectileVariants.Length - 1);
+        Bullet projectilePrefab = projectileVariants[variantIndex];
+        if (projectilePrefab == null)
+        {
+            return null;
+        }
+
+        return new ProjectileWeaponAttackExecutor(projectilePrefab, shootingPoint, additionalShootingPoints);
+    }
+
+    private Transform ResolvePrimaryOrigin()
+    {
+        return shootingPoint != null ? shootingPoint : transform;
+    }
+
+    private void FinishAttackSequence()
+    {
+        pendingTarget = null;
+        activeBurstId = -1;
+        CompleteAttackCycle();
     }
 }

@@ -1,25 +1,21 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public abstract class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
-    [SerializeField] protected float attackDelay;
-    protected float attackTimer;
-    [SerializeField] protected float damage;
-    [SerializeField] protected float aimLerp;
+    [SerializeField] protected float aimLerp = 12f;
     [SerializeField] protected LayerMask enemyLayerMask;
-    [SerializeField] protected float range;
-    [SerializeField] protected Animator _animator;
+    [SerializeField] protected Animator animator;
 
     public int Level { get; private set; }
-
-    [Header("暴击")]
-    protected float criticalChance;
-    protected float criticalMultiplier;
+    public WeaponRuntimeStats RuntimeStats { get; private set; }
+    public bool IsAttacking { get; protected set; }
 
     protected PropertiesManager propertiesManager;
+    protected Enemy currentTarget;
+    private float attackCooldownTimer;
 
     protected virtual void Awake()
     {
@@ -30,7 +26,7 @@ public abstract class Weapon : MonoBehaviour
     {
         if (propertiesManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged += UpdateStatus;
+            propertiesManager.OnAllPropertiesChanged += RefreshRuntimeStats;
             propertiesManager.OnPropertyChanged += OnPropertyChanged;
         }
     }
@@ -39,46 +35,103 @@ public abstract class Weapon : MonoBehaviour
     {
         if (propertiesManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= UpdateStatus;
+            propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
             propertiesManager.OnPropertyChanged -= OnPropertyChanged;
         }
     }
 
     protected virtual void Start()
     {
-        UpdateStatus();
+        RefreshRuntimeStats();
     }
 
-    private void OnPropertyChanged(PropType propType, float newValue)
+    protected virtual void Update()
     {
-        if (propType == PropType.Attack ||
-            propType == PropType.AttackSpeed ||
-            propType == PropType.CriticalChance ||
-            propType == PropType.CriticalPercent ||
-            propType == PropType.Range)
+        TickTargeting();
+        TickWeapon(Time.deltaTime);
+    }
+
+    public void SetLevel(int targetLevel)
+    {
+        Level = Mathf.Max(1, targetLevel);
+        RefreshRuntimeStats();
+    }
+
+    public virtual void RefreshRuntimeStats()
+    {
+        RuntimeStats = BuildRuntimeStats();
+    }
+
+    protected virtual void TickWeapon(float deltaTime)
+    {
+        attackCooldownTimer += deltaTime;
+
+        if (currentTarget == null)
         {
-            UpdateStatus();
+            return;
+        }
+
+        if (!CanStartAttack())
+        {
+            return;
+        }
+
+        if (attackCooldownTimer < RuntimeStats.AttackInterval)
+        {
+            return;
+        }
+
+        attackCooldownTimer = 0f;
+        BeginAttack(currentTarget);
+    }
+
+    protected virtual bool CanStartAttack()
+    {
+        return !IsAttacking;
+    }
+
+    protected abstract void BeginAttack(Enemy target);
+
+    protected void CompleteAttackCycle()
+    {
+        IsAttacking = false;
+    }
+
+    protected Enemy GetCurrentTarget()
+    {
+        return currentTarget;
+    }
+
+    protected virtual void TickTargeting()
+    {
+        currentTarget = FindClosestEnemyInRange(RuntimeStats.Range);
+
+        Vector2 targetUpVector = Vector2.up;
+        if (currentTarget != null)
+        {
+            targetUpVector = ((Vector2)currentTarget.transform.position - (Vector2)transform.position).normalized;
+        }
+
+        if (targetUpVector.sqrMagnitude > 0.0001f)
+        {
+            transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
         }
     }
 
-    protected Enemy GetClosestEnemy()
+    protected Enemy FindClosestEnemyInRange(float searchRange)
     {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, searchRange, enemyLayerMask);
         Enemy closestEnemy = null;
+        float minDistance = searchRange;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, range, enemyLayerMask);
-
-        if (colliders.Length <= 0)
-        {
-            return null;
-        }
-
-        float minDistance = range;
         for (int i = 0; i < colliders.Length; i++)
         {
-            Enemy enemyChecked = colliders[i].GetComponent<Enemy>();
+            if (!colliders[i].TryGetComponent(out Enemy enemyChecked))
+            {
+                continue;
+            }
 
             float distanceToEnemy = Vector2.Distance(transform.position, enemyChecked.transform.position);
-
             if (distanceToEnemy < minDistance)
             {
                 closestEnemy = enemyChecked;
@@ -89,20 +142,24 @@ public abstract class Weapon : MonoBehaviour
         return closestEnemy;
     }
 
-    protected float GetDamage(out bool isCriticalHit)
+    protected ResolvedWeaponHit ResolveHit()
     {
-        isCriticalHit = false;
-
-        if (Random.value <= criticalChance)
-        {
-            isCriticalHit = true;
-            return damage * criticalMultiplier;
-        }
-
-        return damage;
+        bool isCritical = Random.value <= RuntimeStats.CriticalChance;
+        float damage = isCritical ? RuntimeStats.Damage * RuntimeStats.CriticalMultiplier : RuntimeStats.Damage;
+        return new ResolvedWeaponHit(damage, isCritical);
     }
 
-    protected virtual void ConfigureProps()
+    protected WeaponAttackContext BuildAttackContext(Enemy target, Transform origin = null)
+    {
+        Transform sourceTransform = origin != null ? origin : transform;
+        Vector2 aimDirection = target != null
+            ? ((Vector2)target.transform.position - (Vector2)sourceTransform.position).normalized
+            : (Vector2)transform.up;
+
+        return new WeaponAttackContext(this, sourceTransform, target, aimDirection, RuntimeStats, ResolveHit());
+    }
+
+    protected virtual WeaponRuntimeStats BuildRuntimeStats()
     {
         var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData, Level);
 
@@ -118,23 +175,25 @@ public abstract class Weapon : MonoBehaviour
         float playerCriticalBonus = propertiesManager != null ? propertiesManager.GetPropValue(PropType.CriticalPercent) : 0f;
         float playerRange = propertiesManager != null ? propertiesManager.GetPropValue(PropType.Range) : 0f;
 
-        damage = weaponAttack + playerAttack;
+        float damage = weaponAttack + playerAttack;
         float finalAttackSpeed = Mathf.Max(weaponAttackSpeed * playerAttackSpeedMultiplier, 0.01f);
-        attackDelay = 1f / finalAttackSpeed;
-        criticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
-        criticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
-        range = Mathf.Max(0.1f, weaponRange + playerRange);
+        float attackInterval = 1f / finalAttackSpeed;
+        float criticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
+        float criticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
+        float range = Mathf.Max(0.1f, weaponRange + playerRange);
+
+        return new WeaponRuntimeStats(damage, attackInterval, range, criticalChance, criticalMultiplier);
     }
 
-    public virtual void UpdateStatus()
+    private void OnPropertyChanged(PropType propType, float _)
     {
-        ConfigureProps();
-    }
-
-    public void UpgradeTo(int targetLevel)
-    {
-        Level = targetLevel;
-        ConfigureProps();
-        UpdateStatus();
+        if (propType == PropType.Attack ||
+            propType == PropType.AttackSpeed ||
+            propType == PropType.CriticalChance ||
+            propType == PropType.CriticalPercent ||
+            propType == PropType.Range)
+        {
+            RefreshRuntimeStats();
+        }
     }
 }

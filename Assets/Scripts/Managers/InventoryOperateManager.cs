@@ -276,12 +276,12 @@ public class InventoryOperateManager : MonoBehaviour
     {
         if (item.ItemData is WeaponDataSO weaponData)
         {
-            return weaponData.GetAutoDescriptions(item.ColorDependencyNumber);
+            return weaponData.GetDescriptions(item.ColorDependencyNumber);
         }
 
         if (item.ItemData is AccessoryDataSO accessoryData)
         {
-            return accessoryData.GetAutoDescriptions();
+            return accessoryData.GetDescriptions();
         }
 
         return System.Array.Empty<string>();

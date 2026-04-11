@@ -40,6 +40,24 @@ alwaysApply: true
 
 - UI 只响应事件并更新表现，不缓存业务态作为页面内部状态；需要当前业务值时，应通过快照事件向管理层请求，再在事件回调里直接刷新表现。
 
+- 详情类 UI 统一只消费描述列表，不直接读取 `PropEntry`、不依赖运行时 feature 安装接口；角色/武器/饰品详情统一通过 `GetDescriptions()` 驱动展示。
+
+
+
+## 描述来源与运行时特性接口
+
+- `IDescriptionSource` 只负责“给 UI 提供描述文本列表”，语义是展示来源，不承担运行时安装职责。
+
+- `IRuntimeFeatureSource` 只负责“给运行时系统创建并安装 `FeatureEffectBase` 列表”，语义是效果来源，不承担 UI 展示职责。
+
+- `DescriptionListDisplayer`、角色详情、商店条目、背包操作面板、武器选择条目等展示层，只依赖 `IDescriptionSource` 或直接消费 `IReadOnlyList<string>`。
+
+- `FeatureHost`、`FeatureInstaller` 这类运行时特性系统，只依赖 `IRuntimeFeatureSource`，不读取描述文本。
+
+- `WeaponDataSO` 当前约定为“描述来源”，默认不作为 `IRuntimeFeatureSource` 使用；武器的运行时行为仍由武器本身与既有战斗系统负责。
+
+- `CharacterDataSO`、`AccessoryDataSO` 这类既要展示描述、又要提供运行时特性的对象，可以同时实现 `IDescriptionSource` 与 `IRuntimeFeatureSource`，但两种职责在代码上必须保持分离。
+
 
 
 ## 事件设计原则

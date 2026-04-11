@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, CharacterExtraInfoDisplayer>
+public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, DescriptionListDisplayer>
 {
     [SerializeField] private Button takeButton;
     [SerializeField] private Button recycleButton;
@@ -19,7 +19,7 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Charac
         nameText.text = resource.ItemName;
         recycleText.text = resource.RecyclePrice.ToString();
         RenderColor(resource, resource.Rarity);
-        bottom.DisplayDescriptions(resource.GetAutoDescriptions());
+        bottom.DisplayDescriptions(resource.GetDescriptions());
 
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
