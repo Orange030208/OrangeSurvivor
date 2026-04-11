@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIPropertiesViewList>
+public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, CharacterExtraInfoDisplayer>
 {
     [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
@@ -23,19 +23,21 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIP
         }
 
         int colorDependency;
-        Dictionary<PropType, float> props;
+        List<string> descriptions;
 
         if (itemData is AccessoryDataSO accessoryData)
         {
             colorDependency = accessoryData.Rarity;
-            props = accessoryData.GetProps();
+            descriptions = accessoryData.GetAutoDescriptions();
             nameText.text = itemData.ItemName;
+            bottom.DisplayDescriptions(descriptions);
         }
         else if (itemData is WeaponDataSO weaponData)
         {
             colorDependency = shopItem.Level;
-            props = weaponData.GetPropsByLevel(shopItem.Level);
+            descriptions = weaponData.GetAutoDescriptions(shopItem.Level);
             nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
+            bottom.DisplayDescriptions(descriptions);
         }
         else
         {
@@ -47,12 +49,10 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIP
 
         priceText.text = shopItem.GetPrice().ToString();
         RenderColor(itemData, colorDependency);
-        bottom.Render(ToPropEntries(props));
 
         CleanClickEvent();
 
         buyButton.onClick.RemoveAllListeners();
-
 
         lockButton.onClick.RemoveAllListeners();
         lockButton.onClick.AddListener(() =>
@@ -71,16 +71,5 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, UIP
     {
         buyButton.onClick.RemoveAllListeners();
         lockButton.onClick.RemoveAllListeners();
-    }
-
-    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
-    {
-        List<PropEntry> entries = new();
-        foreach (var kv in props)
-        {
-            entries.Add(new PropEntry(kv.Key, kv.Value));
-        }
-
-        return entries;
     }
 }

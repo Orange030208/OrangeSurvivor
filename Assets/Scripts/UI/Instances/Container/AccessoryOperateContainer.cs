@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, UIPropertiesViewList>
+public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, CharacterExtraInfoDisplayer>
 {
     [SerializeField] private Button takeButton;
     [SerializeField] private Button recycleButton;
@@ -20,7 +19,7 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, UIProp
         nameText.text = resource.ItemName;
         recycleText.text = resource.RecyclePrice.ToString();
         RenderColor(resource, resource.Rarity);
-        bottom.Render(ToPropEntries(resource.GetProps()));
+        bottom.DisplayDescriptions(resource.GetAutoDescriptions());
 
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
@@ -44,16 +43,5 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, UIProp
     {
         takeButton.onClick.RemoveAllListeners();
         recycleButton.onClick.RemoveAllListeners();
-    }
-
-    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
-    {
-        List<PropEntry> entries = new();
-        foreach (var kv in props)
-        {
-            entries.Add(new PropEntry(kv.Key, kv.Value));
-        }
-
-        return entries;
     }
 }

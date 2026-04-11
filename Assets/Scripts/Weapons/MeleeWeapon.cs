@@ -95,11 +95,10 @@ public class MeleeWeapon : Weapon
         for (int i = 0; i < colliders.Length; i++)
         {
             Enemy enemy = colliders[i].GetComponent<Enemy>();
-            if (!damagedEnemies.Contains(enemy))
+            if (!damagedEnemies.Contains(enemy) && enemy != null && enemy.TryGetComponent(out HealthComponent healthComponent))
             {
                 float finalDamage = GetDamage(out bool isCriticalHit);
-
-                enemy.TakeDamage(new DamageInfo(finalDamage, enemy.transform.position, isCriticalHit));
+                healthComponent.TakeDamage(new DamageInfo(finalDamage, enemy.transform.position, isCriticalHit));
                 damagedEnemies.Add(enemy);
             }
         }

@@ -6,12 +6,12 @@ public static class ColorHelper
     {
         return WeaponLevelHelper.ClampLevel(level) switch
         {
-            1 => new Color32(172, 172, 172, 255), // 灰
-            2 => new Color32(86, 186, 105, 255),  // 绿
-            3 => new Color32(77, 140, 255, 255),  // 蓝
-            4 => new Color32(163, 104, 255, 255), // 紫
-            5 => new Color32(255, 166, 52, 255),  // 橙
-            6 => new Color32(255, 86, 86, 255),   // 红
+            1 => new Color32(172, 172, 172, 255),
+            2 => new Color32(86, 186, 105, 255),
+            3 => new Color32(77, 140, 255, 255),
+            4 => new Color32(163, 104, 255, 255),
+            5 => new Color32(255, 166, 52, 255),
+            6 => new Color32(255, 86, 86, 255),
             _ => Color.white
         };
     }
@@ -20,10 +20,10 @@ public static class ColorHelper
     {
         return rarity switch
         {
-            0 => new Color32(180, 210, 255, 255),  // 淡蓝
-            1 => new Color32(210, 180, 255, 255),  // 淡紫
-            2 => new Color32(255, 220, 180, 255), // 淡橙
-            3 => new Color32(255, 190, 190, 255), // 淡红
+            0 => new Color32(180, 210, 255, 255),
+            1 => new Color32(210, 180, 255, 255),
+            2 => new Color32(255, 220, 180, 255),
+            3 => new Color32(255, 190, 190, 255),
             _ => Color.white
         };
     }
@@ -31,7 +31,12 @@ public static class ColorHelper
     public static Color GetColorByValue(float value)
     {
         if (value < 0) return Color.red;
-        if (value > 0)return Color.green;
+        if (value > 0) return Color.green;
         return Color.white;
+    }
+
+    public static string WrapRichTextColor(string text, Color color)
+    {
+        return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
     }
 }

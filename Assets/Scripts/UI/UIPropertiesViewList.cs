@@ -44,7 +44,8 @@ public class UIPropertiesViewList : MonoBehaviour
 
             container.Configure(
                 ResourcesManager.GetPropIcon(entry.propType),
-                entry.propType.GetChineseName(),
+                entry.GetDisplayName(),
+                entry.GetDisplayValueText(),
                 entry.value);
         }
     }

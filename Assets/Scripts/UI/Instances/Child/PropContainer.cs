@@ -20,20 +20,29 @@ public class PropContainer : MonoBehaviour
         propValueText.fontSizeMax = propValueMaxSize;
         propValueText.fontSizeMin = propValueMinSize;
         propText.ForceMeshUpdate();
-        // propText.SetLayoutDirty();
     }
 
-    public void Configure(Sprite icon,string propName,float propValue)
+    public void Configure(Sprite icon, string propName, float propValue)
+    {
+        Configure(icon, propName, propValue.ToString("F1"), propValue);
+    }
+
+    public void Configure(Sprite icon, string propName, string propValueTextValue, float rawValue)
     {
         propImage.sprite = icon;
         propText.text = propName;
-        SetValue(propValue);
+        SetValue(propValueTextValue, rawValue);
     }
 
     public void SetValue(float propValue)
     {
-        propValueText.color = ColorHelper.GetColorByValue(propValue);
-        propValueText.text = propValue.ToString("F1");
+        SetValue(propValue.ToString("F1"), propValue);
+    }
+
+    public void SetValue(string displayText, float rawValue)
+    {
+        propValueText.color = ColorHelper.GetColorByValue(rawValue);
+        propValueText.text = displayText;
     }
 
     public float GetFontSize()

@@ -59,14 +59,14 @@ public class DropsDetector : MonoBehaviour
     {
         if (propType == PropType.PickupRadius)
         {
-            UpdateRadius();
+            detectRadius = Mathf.Max(0f, newValue);
         }
     }
 
     private void UpdateRadius()
     {
         if (propertiesManager == null) return;
-        detectRadius = propertiesManager.GetPropValue(PropType.PickupRadius);
+        detectRadius = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.PickupRadius));
     }
 
     private void Detect()

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Survivors.Player;
 using UnityEngine;
 
 public class InventoryOperateManager : MonoBehaviour
@@ -163,7 +162,7 @@ public class InventoryOperateManager : MonoBehaviour
             item.ItemData,
             item.ColorDependencyNumber,
             item.GetSellPrice(),
-            item.GetProps());
+            BuildDescriptions(item));
 
         GameEventBus.Publish(new InventoryItemOperatePanelDataEvent(resource));
     }
@@ -273,57 +272,62 @@ public class InventoryOperateManager : MonoBehaviour
         return true;
     }
 
-    private readonly struct InventoryRuntimeItem
+    private static IReadOnlyList<string> BuildDescriptions(InventoryRuntimeItem item)
     {
-        public ItemDataSO ItemData { get; }
-        public int ColorDependencyNumber { get; }
-        public Weapon RuntimeWeapon { get; }
-
-        private InventoryRuntimeItem(ItemDataSO itemData, int colorDependencyNumber, Weapon runtimeWeapon)
+        if (item.ItemData is WeaponDataSO weaponData)
         {
-            ItemData = itemData;
-            ColorDependencyNumber = colorDependencyNumber;
-            RuntimeWeapon = runtimeWeapon;
+            return weaponData.GetAutoDescriptions(item.ColorDependencyNumber);
         }
 
-        public static InventoryRuntimeItem CreateWeapon(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
+        if (item.ItemData is AccessoryDataSO accessoryData)
         {
-            return new InventoryRuntimeItem(weaponData, level, runtimeWeapon);
+            return accessoryData.GetAutoDescriptions();
         }
 
-        public static InventoryRuntimeItem CreateAccessory(AccessoryDataSO accessoryData)
+        return System.Array.Empty<string>();
+    }
+}
+
+public readonly struct InventoryRuntimeItem
+{
+    public ItemDataSO ItemData { get; }
+    public int ColorDependencyNumber { get; }
+    public Weapon RuntimeWeapon { get; }
+
+    private InventoryRuntimeItem(ItemDataSO itemData, int colorDependencyNumber, Weapon runtimeWeapon)
+    {
+        ItemData = itemData;
+        ColorDependencyNumber = colorDependencyNumber;
+        RuntimeWeapon = runtimeWeapon;
+    }
+
+    public static InventoryRuntimeItem CreateWeapon(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
+    {
+        return new InventoryRuntimeItem(weaponData, level, runtimeWeapon);
+    }
+
+    public static InventoryRuntimeItem CreateAccessory(AccessoryDataSO accessoryData)
+    {
+        return new InventoryRuntimeItem(accessoryData, accessoryData != null ? accessoryData.Rarity : 0, null);
+    }
+
+    public int GetSellPrice()
+    {
+        if (ItemData == null)
         {
-            return new InventoryRuntimeItem(accessoryData, accessoryData.Rarity, null);
+            return 0;
         }
 
-        public int GetSellPrice()
+        if (ItemData is WeaponDataSO)
         {
-            if (ItemData == null)
-            {
-                return 0;
-            }
-
-            if (ItemData.ItemType == ItemType.Weapon)
-            {
-                return WeaponPriceHelper.GetPrice(ItemData.ItemPrice, ColorDependencyNumber);
-            }
-
-            return ((AccessoryDataSO)ItemData).RecyclePrice;
+            return WeaponPriceHelper.GetPrice(ItemData.ItemPrice, ColorDependencyNumber);
         }
 
-        public Dictionary<PropType, float> GetProps()
+        if (ItemData is AccessoryDataSO accessoryData)
         {
-            if (ItemData == null)
-            {
-                return null;
-            }
-
-            if (ItemData.ItemType == ItemType.Weapon)
-            {
-                return ((WeaponDataSO)ItemData).GetPropsByLevel(ColorDependencyNumber);
-            }
-
-            return ((AccessoryDataSO)ItemData).GetProps();
+            return accessoryData.RecyclePrice;
         }
+
+        return ItemData.ItemPrice;
     }
 }

@@ -34,7 +34,7 @@ public class WeaponSelectionUIPage : UIPageBase
         for (int i = 0; i < count; i++)
         {
             weaponContainers[i].Configure(
-                new InfoAddIndex<WeaponInfo>(new WeaponInfo(e.SelectableWeapons[i].weaponData,e.SelectableWeapons[i].level),i)
+                new InfoAddIndex<WeaponLevelEntry>(e.SelectableWeapons[i], i)
             );
         }
     }

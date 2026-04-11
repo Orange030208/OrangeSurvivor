@@ -532,8 +532,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoPlaySequenceDirector: 1
-  startButton: {fileID: 0}
-  characterSelectButton: {fileID: 0}
+  startButton: {fileID: 7392819972535720005}
+  characterSelectButton: {fileID: 6231565526810655093}
 --- !u!114 &4401061136781019396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1168,6 +1168,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1312919602413714774, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
   m_PrefabInstance: {fileID: 2165749533624713485}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6231565526810655093 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5221007245473822840, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+  m_PrefabInstance: {fileID: 2165749533624713485}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3381126854840852541
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1274,3 +1285,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1312919602413714774, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
   m_PrefabInstance: {fileID: 3381126854840852541}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7392819972535720005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5221007245473822840, guid: c2ba15cf42db63045a437b37a9b0bc5d, type: 3}
+  m_PrefabInstance: {fileID: 3381126854840852541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

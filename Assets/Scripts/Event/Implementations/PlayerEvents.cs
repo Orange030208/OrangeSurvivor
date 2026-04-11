@@ -1,17 +1,5 @@
 using System;
 
-public struct PlayerHealthChangedEvent : IGameEvent
-{
-    public float CurrentHealth;
-    public float MaxHealth;
-
-    public PlayerHealthChangedEvent(float currentHealth, float maxHealth)
-    {
-        CurrentHealth = currentHealth;
-        MaxHealth = maxHealth;
-    }
-}
-
 public struct PlayerLevelChangedEvent : IGameEvent
 {
     public int currentLevel;
@@ -32,8 +20,4 @@ public struct PlayerXpChangedEvent : IGameEvent
         this.currentXP = currentXP;
         this.requiredXP = requiredXP;
     }
-}
-
-public struct RequestPlayerHudSnapshotEvent : IGameEvent
-{
 }

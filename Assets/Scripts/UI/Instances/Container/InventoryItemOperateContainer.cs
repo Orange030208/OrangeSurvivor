@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, UIPropertiesViewList>
+public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, CharacterExtraInfoDisplayer>
 {
     [SerializeField] private Button sellButton;
     [SerializeField] private Button mergeButton;
@@ -28,7 +27,7 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
         sellPriceText.text = resource.sellPrice.ToString();
 
         RenderColor(resource.itemData, resource.colorDependencyNumber);
-        bottom.Render(ToPropEntries(resource.propDictionary));
+        bottom.DisplayDescriptions(resource.descriptions);
 
         sellButton.onClick.RemoveAllListeners();
         mergeButton.onClick.RemoveAllListeners();
@@ -61,22 +60,6 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
         sellButton.onClick.RemoveAllListeners();
         mergeButton.onClick.RemoveAllListeners();
     }
-
-    private List<PropEntry> ToPropEntries(Dictionary<PropType, float> props)
-    {
-        List<PropEntry> entries = new();
-        if (props == null)
-        {
-            return entries;
-        }
-
-        foreach (var kv in props)
-        {
-            entries.Add(new PropEntry(kv.Key, kv.Value));
-        }
-
-        return entries;
-    }
 }
 
 public readonly struct InventoryItemOperateResource
@@ -85,19 +68,19 @@ public readonly struct InventoryItemOperateResource
     public readonly ItemDataSO itemData;
     public readonly int colorDependencyNumber;
     public readonly int sellPrice;
-    public readonly Dictionary<PropType, float> propDictionary;
+    public readonly System.Collections.Generic.IReadOnlyList<string> descriptions;
 
     public InventoryItemOperateResource(
         int itemIndex,
         ItemDataSO itemData,
         int colorDependencyNumber,
         int sellPrice,
-        Dictionary<PropType, float> propDictionary)
+        System.Collections.Generic.IReadOnlyList<string> descriptions)
     {
         this.itemIndex = itemIndex;
         this.itemData = itemData;
         this.colorDependencyNumber = colorDependencyNumber;
         this.sellPrice = sellPrice;
-        this.propDictionary = propDictionary;
+        this.descriptions = descriptions;
     }
 }

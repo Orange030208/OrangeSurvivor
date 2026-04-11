@@ -7,8 +7,8 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<PropEntry>,TextMe
     public override void Configure(InfoAddIndex<PropEntry> resource)
     {
         iconImage.sprite = ResourcesManager.GetPropIcon(resource.info.propType);
-        nameText.text = resource.info.propType.GetChineseName();
-        bottom.text = resource.info.value.ToString();
+        nameText.text = resource.info.GetDisplayName();
+        bottom.text = resource.info.GetDisplayValueText();
         CleanClickEvent();
         OnClicked += _ =>
         {

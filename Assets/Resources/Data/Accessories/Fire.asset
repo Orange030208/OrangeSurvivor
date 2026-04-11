@@ -19,12 +19,8 @@ MonoBehaviour:
   accessoryId: 988f0418
   recyclePrice: 10
   rarity: 0
-  propertyModifiers:
-  - propType: 0
-    value: 2
-  - propType: 5
-    value: -1
-  customEffects: []
+  propertyModifiers: []
+  specialFeatures: []
   references:
     version: 2
     RefIds: []

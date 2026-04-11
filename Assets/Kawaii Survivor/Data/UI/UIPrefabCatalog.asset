@@ -167,3 +167,25 @@ MonoBehaviour:
       offset: 20
       startScale: 1
       fade: 1
+  - layerType: 2
+    prefab: {fileID: 3816208830851736021, guid: 02f7f2fe1141a9b4cb409ce8b556f135, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+    useCustomTransition: 1
+    customOpenTransition:
+      transitionType: 1
+      duration: 0.16
+      ease: 9
+      offset: 20
+      startScale: 1
+      fade: 1
+    customCloseTransition:
+      transitionType: 1
+      duration: 0.14
+      ease: 8
+      offset: 20
+      startScale: 1
+      fade: 1

@@ -18,7 +18,7 @@ MonoBehaviour:
   itemType: 0
   weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
   attack: 10
-  attackSpeed: 2
-  criticalChance: 5
-  criticalPercent: 200
+  attackSpeed: 1
+  criticalChance: 0.05
+  criticalPercent: 2
   range: 8

@@ -5,9 +5,9 @@ using System;
 /// </summary>
 public struct SelectableWeaponsSnapshotEvent : IGameEvent
 {
-    public WeaponInfo[] SelectableWeapons;
+    public WeaponLevelEntry[] SelectableWeapons;
 
-    public SelectableWeaponsSnapshotEvent(WeaponInfo[] selectableWeapons)
+    public SelectableWeaponsSnapshotEvent(WeaponLevelEntry[] selectableWeapons)
     {
         SelectableWeapons = selectableWeapons;
     }

@@ -24,6 +24,8 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     public event EventHandler<UIPageEventArgs> PageClosed;
     public event EventHandler<UIPageEventArgs> PageActivationChanged;
 
+    public IReadOnlyList<UIPrefabEntry> RegisteredEntries => catalog != null ? catalog.Entries : Array.Empty<UIPrefabEntry>();
+
     private void Awake()
     {
         // 启动时完成运行时字典构建、根节点创建、层级创建与对象池预热。
@@ -47,6 +49,30 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     {
         IUIPage page = OpenPageByType(typeof(TPage), payload);
         return (TPage)page;
+    }
+
+    public bool OpenPageByCatalogIndex(int catalogIndex, object payload = null)
+    {
+        IReadOnlyList<UIPrefabEntry> entries = RegisteredEntries;
+        if (catalogIndex < 0 || catalogIndex >= entries.Count)
+        {
+            return false;
+        }
+
+        UIPrefabEntry entry = entries[catalogIndex];
+        if (entry == null || entry.prefab == null)
+        {
+            return false;
+        }
+
+        UIPageBase page = entry.prefab.GetComponent<UIPageBase>();
+        if (page == null)
+        {
+            return false;
+        }
+
+        OpenPageByType(page.GetType(), payload);
+        return true;
     }
 
     private IUIPage OpenPageByType(Type pageType, object payload)

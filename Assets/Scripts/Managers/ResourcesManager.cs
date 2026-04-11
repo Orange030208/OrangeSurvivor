@@ -9,10 +9,12 @@ public static class ResourcesManager
     private const string PROP_ICONS_DATA_PATH = "Data/Prop Icons";
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
+    private const string CHARACTER_DATA_PATH = "Data/Characters";
 
     private static PropIcon[] propIcons;
     private static AccessoryDataSO[] Accessories;
     private static WeaponDataSO[] Weapons;
+    private static CharacterDataSO[] characters;
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -38,6 +40,17 @@ public static class ResourcesManager
         if (Weapons == null)
         {
             Weapons = Resources.Load<WeaponDataListSO>(WEAPON_DATA_PATH).Weapons;
+        }
+    }
+
+    private static void LoadCharacterData()
+    {
+        if (characters == null)
+        {
+            characters = Resources.LoadAll<CharacterDataSO>(CHARACTER_DATA_PATH)
+                .Where(character => character != null)
+                .OrderBy(character => character.name)
+                .ToArray();
         }
     }
 
@@ -69,6 +82,12 @@ public static class ResourcesManager
     {
         LoadWeaponData();
         return Weapons ?? Array.Empty<WeaponDataSO>();
+    }
+
+    public static CharacterDataSO[] GetAllCharacters()
+    {
+        LoadCharacterData();
+        return characters ?? Array.Empty<CharacterDataSO>();
     }
 
     public static AccessoryDataSO GetAccessory(string accessoryId)

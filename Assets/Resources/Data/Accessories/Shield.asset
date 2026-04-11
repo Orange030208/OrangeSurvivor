@@ -21,7 +21,8 @@ MonoBehaviour:
   rarity: 0
   propertyModifiers:
   - propType: 8
-    value: 1
+    modifierType: 0
+    value: 0.1
   customEffects: []
   references:
     version: 2

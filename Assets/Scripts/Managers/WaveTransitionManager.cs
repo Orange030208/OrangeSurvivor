@@ -1,5 +1,4 @@
 using System;
-using Survivors.Player;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -148,23 +147,45 @@ public class WaveTransitionManager : MonoBehaviour
 
         for (int i = 0; i < propEntries.Length; i++)
         {
-            propEntries[i].propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
-            propEntries[i].value = GetRandomValueForPropType(propEntries[i].propType);
+            PropType propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
+            PropModifierType modifierType = GetRandomModifierTypeForProp(propType);
+            propEntries[i] = new PropEntry(propType, modifierType, GetRandomValueFor(propType, modifierType));
         }
 
         GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
     }
 
-    private float GetRandomValueForPropType(PropType propType)
+    private PropModifierType GetRandomModifierTypeForProp(PropType propType)
     {
-        switch (propType)
+        return propType switch
         {
-            case PropType.Attack:
-            case PropType.MaxHealth:
-                return Random.Range(1, 5);
-            default:
-                return Random.Range(1, 3);
-        }
+            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value > 0.5f ? PropModifierType.Flat : PropModifierType.BasePercent,
+            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.Range => Random.value > 0.5f ? PropModifierType.BasePercent : PropModifierType.FinalPercent,
+            _ => PropModifierType.Flat
+        };
+    }
+
+    private float GetRandomValueFor(PropType propType, PropModifierType modifierType)
+    {
+        return modifierType switch
+        {
+            PropModifierType.Flat => GetRandomFlatValue(propType),
+            PropModifierType.FinalFlat => GetRandomFlatValue(propType),
+            PropModifierType.BasePercent => Random.Range(0.05f, 0.2f),
+            PropModifierType.FinalPercent => Random.Range(0.05f, 0.15f),
+            _ => 0f
+        };
+    }
+
+    private float GetRandomFlatValue(PropType propType)
+    {
+        return propType switch
+        {
+            PropType.Attack => Random.Range(2f, 6f),
+            PropType.MaxHealth => Random.Range(10f, 30f),
+            PropType.MoveSpeed => Random.Range(0.5f, 2f),
+            _ => Random.Range(1f, 3f)
+        };
     }
 
     private void UpgradeBonusCallback()
@@ -198,7 +219,7 @@ public class WaveTransitionManager : MonoBehaviour
         {
             string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
             PropEntry propEntry = propEntries[eventData.ContainerIndex];
-            propsManager.AddBonusModifier(upgradeId, propEntry.propType, propEntry.value);
+            propsManager.AddModifier(upgradeId, propEntry);
         }
 
         UpgradeBonusCallback();

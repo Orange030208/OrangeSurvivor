@@ -7,16 +7,22 @@ public class DamageTextManager:MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.onDamageTaken += InstantiateDamageText;
+        GameEventBus.Subscribe<EntityDamagedEvent>(InstantiateDamageText);
     }
 
     private void OnDisable()
     {
-        Enemy.onDamageTaken -= InstantiateDamageText;
+        GameEventBus.Unsubscribe<EntityDamagedEvent>(InstantiateDamageText);
     }
 
-    public void InstantiateDamageText(DamageInfo damageInfo)
+    public void InstantiateDamageText(EntityDamagedEvent damageEvent)
     {
+        if (damageEvent.Entity is not Enemy)
+        {
+            return;
+        }
+
+        DamageInfo damageInfo = damageEvent.DamageInfo;
         DamageTextFlow damageText = Instantiate(DamageTextPrefab, damageInfo.position + Vector2.up * 1.5f, Quaternion.identity,transform);
         damageText.SetDamage(damageInfo.damage,damageInfo.isCritical);
     }

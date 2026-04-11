@@ -5,7 +5,6 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Survivors.Accessory;
 
 [CreateAssetMenu(fileName = "Accessory Data List", menuName = "SO/Accessory Data List", order = 0)]
 public class AccessoryDataListSO : ScriptableObject

@@ -2,16 +2,16 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class UIWeaponSelectionContainer:UIContainerBase<InfoAddIndex<WeaponInfo>,UIPropertiesViewList>
+public class UIWeaponSelectionContainer : UIContainerBase<InfoAddIndex<WeaponLevelEntry>, CharacterExtraInfoDisplayer>
 {
     private bool _isSelected;
     public bool IsSelected => _isSelected;
     
-    public override void Configure(InfoAddIndex<WeaponInfo> resource)
+    public override void Configure(InfoAddIndex<WeaponLevelEntry> resource)
     {
         iconImage.sprite = resource.info.weaponData.ItemIcon;
         nameText.text = ItemDisplayHelper.GetWeaponDisplayName(resource.info.weaponData.ItemName, resource.info.level);
-        bottom.Render(resource.info.weaponData.GetPropsList());
+        bottom.DisplayDescriptions(resource.info.weaponData.GetAutoDescriptions(resource.info.level));
         RenderColor(resource.info.weaponData, resource.info.level);
     }
 

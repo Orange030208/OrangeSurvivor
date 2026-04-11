@@ -33,10 +33,9 @@ public class Bullet : MonoBehaviour
 
     protected virtual void OnTrigger(Collider2D collider)
     {
-        //TODO:后续修改，子弹不可以同时命中多个目标
-        if (IsInLayerMask(collider.gameObject.layer, targetsLayerMask))
+        if (IsInLayerMask(collider.gameObject.layer, targetsLayerMask) && collider.TryGetComponent(out HealthComponent healthComponent))
         {
-            Attack(collider.GetComponent<Enemy>());
+            Attack(healthComponent);
             Destroy(gameObject);
         }
     }
@@ -46,9 +45,9 @@ public class Bullet : MonoBehaviour
         OnTrigger(collider);
     }
 
-    private void Attack(Enemy enemy)
+    private void Attack(HealthComponent healthComponent)
     {
-        enemy.TakeDamage(new DamageInfo(_damage,enemy.transform.position,_isCritical));
+        healthComponent.TakeDamage(new DamageInfo(_damage, healthComponent.transform.position, _isCritical));
     }
 
     private bool IsInLayerMask(int layer, LayerMask layerMask)

@@ -10,16 +10,21 @@ public class DropManager:MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.onDeath += EnemyPassAwayCallback;
+        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
     }
 
     private void OnDisable()
     {
-        Enemy.onDeath -= EnemyPassAwayCallback;
+        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
     }
     
-    private void EnemyPassAwayCallback(DeadInfo deadInfo)
+    private void OnEntityDied(EntityDiedEvent deadEvent)
     {
+        if (deadEvent.Entity is not Enemy)
+        {
+            return;
+        }
+
         Collection dropItem;
         int random = Random.Range(1, 101);
         if (random <= 60)
@@ -34,6 +39,6 @@ public class DropManager:MonoBehaviour
         {
             dropItem = chestPrefab;
         }
-        Instantiate(dropItem,deadInfo.deadPosition,Quaternion.identity,transform);
+        Instantiate(dropItem, deadEvent.Position, Quaternion.identity, transform);
     }
 }

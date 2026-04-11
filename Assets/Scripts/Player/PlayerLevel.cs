@@ -20,13 +20,11 @@ public class PlayerLevel : MonoBehaviour
     private void OnEnable()
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Subscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Unsubscribe<RequestPlayerHudSnapshotEvent>(PublishSnapshot);
     }
 
     private void Start()

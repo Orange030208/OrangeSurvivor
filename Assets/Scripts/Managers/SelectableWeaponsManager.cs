@@ -5,7 +5,7 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
 {
     [SerializeField] private WeaponsHolder weaponsHolder;
 
-    public WeaponInfo[] SelectableWeapons { get; private set; }
+    public WeaponLevelEntry[] SelectableWeapons { get; private set; }
 
     private int selectIndex = -1;
 
@@ -37,15 +37,13 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
     private void ConfigureSelectionWeapons()
     {
         int selectionCount = 3;
-        SelectableWeapons = new WeaponInfo[selectionCount];
+        SelectableWeapons = new WeaponLevelEntry[selectionCount];
         selectIndex = -1;
 
         for (int i = 0; i < selectionCount; i++)
         {
             WeaponDataSO weaponData = ResourcesManager.GetRandomWeapon();
-
-            SelectableWeapons[i].weaponData = weaponData;
-            SelectableWeapons[i].level = WeaponLevelHelper.GetRandomLevelInclusiveMax();
+            SelectableWeapons[i] = new WeaponLevelEntry(weaponData, WeaponLevelHelper.GetRandomLevelInclusiveMax());
         }
 
         PublishSnapshot();
@@ -67,7 +65,7 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
             return;
         }
 
-        WeaponInfo selectedWeapon = SelectableWeapons[selectIndex];
+        WeaponLevelEntry selectedWeapon = SelectableWeapons[selectIndex];
         if (selectedWeapon.weaponData == null)
         {
             Debug.LogError("选择的武器数据为空");
@@ -94,17 +92,5 @@ public class SelectableWeaponsManager : MonoSingletonBase<SelectableWeaponsManag
     {
         if (SelectableWeapons == null) return;
         GameEventBus.Publish(new SelectableWeaponsSnapshotEvent(SelectableWeapons));
-    }
-}
-
-public struct WeaponInfo
-{
-    public WeaponDataSO weaponData;
-    public int level;
-
-    public WeaponInfo(WeaponDataSO weaponData, int level)
-    {
-        this.weaponData = weaponData;
-        this.level = level;
     }
 }

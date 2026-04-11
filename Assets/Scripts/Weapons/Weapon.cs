@@ -17,7 +17,7 @@ public abstract class Weapon : MonoBehaviour
 
     [Header("暴击")]
     protected float criticalChance;
-    protected float criticalPercent;
+    protected float criticalMultiplier;
 
     protected PropertiesManager propertiesManager;
 
@@ -93,36 +93,42 @@ public abstract class Weapon : MonoBehaviour
     {
         isCriticalHit = false;
 
-        int rand = Random.Range(0, 101);
-        if (rand <= criticalChance)
+        if (Random.value <= criticalChance)
         {
             isCriticalHit = true;
-            return damage * (criticalPercent / 100);
+            return damage * criticalMultiplier;
         }
 
         return damage;
     }
 
-    protected void ConfigureProps()
+    protected virtual void ConfigureProps()
     {
         var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData, Level);
-        damage = calculatedProps[PropType.Attack];
-        attackDelay = 1f / calculatedProps[PropType.AttackSpeed];
-        criticalChance = (int)calculatedProps[PropType.CriticalChance];
-        criticalPercent = calculatedProps[PropType.CriticalPercent];
-        range = calculatedProps[PropType.Range];
+
+        float weaponAttack = calculatedProps[PropType.Attack];
+        float weaponAttackSpeed = Mathf.Max(calculatedProps[PropType.AttackSpeed], 0.01f);
+        float weaponCriticalChance = Mathf.Clamp01(calculatedProps[PropType.CriticalChance]);
+        float weaponCriticalMultiplier = Mathf.Max(1f, calculatedProps[PropType.CriticalPercent]);
+        float weaponRange = calculatedProps[PropType.Range];
+
+        float playerAttack = propertiesManager != null ? propertiesManager.GetPropValue(PropType.Attack) : 0f;
+        float playerAttackSpeedMultiplier = propertiesManager != null ? Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f) : 1f;
+        float playerCriticalChance = propertiesManager != null ? propertiesManager.GetPropValue(PropType.CriticalChance) : 0f;
+        float playerCriticalBonus = propertiesManager != null ? propertiesManager.GetPropValue(PropType.CriticalPercent) : 0f;
+        float playerRange = propertiesManager != null ? propertiesManager.GetPropValue(PropType.Range) : 0f;
+
+        damage = weaponAttack + playerAttack;
+        float finalAttackSpeed = Mathf.Max(weaponAttackSpeed * playerAttackSpeedMultiplier, 0.01f);
+        attackDelay = 1f / finalAttackSpeed;
+        criticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
+        criticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
+        range = Mathf.Max(0.1f, weaponRange + playerRange);
     }
 
     public virtual void UpdateStatus()
     {
-        if (propertiesManager == null) return;
-
         ConfigureProps();
-        damage += propertiesManager.GetPropValue(PropType.Attack);
-        attackDelay = attackDelay / (1 + propertiesManager.GetPropValue(PropType.AttackSpeed) / 100);
-        criticalChance += propertiesManager.GetPropValue(PropType.CriticalChance);
-        criticalPercent += propertiesManager.GetPropValue(PropType.CriticalPercent);
-        range += propertiesManager.GetPropValue(PropType.Range);
     }
 
     public void UpgradeTo(int targetLevel)

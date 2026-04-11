@@ -18,20 +18,26 @@ public class GamingUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI levelText;
 
     [SerializeField] private Button menuButton;
+
+    private HealthComponent playerHealthComponent;
     
     protected override void OnPageOpened(UIPageOpenContext context)
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
         GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
-        GameEventBus.Subscribe<PlayerHealthChangedEvent>(OnPlayerHealthChanged);
         GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
 
-        // 请求快照，避免 UI 打开时错过早先事件
+        Player player = FindObjectOfType<Player>();
+        playerHealthComponent = player != null ? player.GetComponent<HealthComponent>() : null;
+        if (playerHealthComponent != null)
+        {
+            playerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
+            OnPlayerHealthChanged(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
+        }
+
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
-        GameEventBus.Publish<RequestPlayerHudSnapshotEvent>();
-        
         menuButton?.onClick.AddListener(() => GameEventBus.Publish(new PauseGameRequestedEvent()));
     }
 
@@ -40,9 +46,14 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
         GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
-        GameEventBus.Unsubscribe<PlayerHealthChangedEvent>(OnPlayerHealthChanged);
         GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+
+        if (playerHealthComponent != null)
+        {
+            playerHealthComponent.OnHealthChanged -= OnPlayerHealthChanged;
+            playerHealthComponent = null;
+        }
         
         menuButton?.onClick.RemoveAllListeners();
     }
@@ -66,12 +77,12 @@ public class GamingUIPage : UIPageBase
         timerText.text = $"{Mathf.RoundToInt(e.RemainingTime)}s / {Mathf.RoundToInt(e.TotalTime)}s";
     }
 
-    private void OnPlayerHealthChanged(PlayerHealthChangedEvent e)
+    private void OnPlayerHealthChanged(float currentHealth, float maxHealth)
     {
         if (healthSlider != null)
-            healthSlider.value = e.MaxHealth <= 0 ? 0 : e.CurrentHealth / e.MaxHealth;
+            healthSlider.value = maxHealth <= 0 ? 0 : currentHealth / maxHealth;
         if (healthText != null)
-            healthText.text = $"{(int)e.CurrentHealth} / {(int)e.MaxHealth}";
+            healthText.text = $"{(int)currentHealth} / {(int)maxHealth}";
     }
 
     private void OnPlayerLevelChanged(PlayerLevelChangedEvent e)

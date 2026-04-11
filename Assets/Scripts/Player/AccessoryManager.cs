@@ -1,136 +1,117 @@
 using System;
 using System.Collections.Generic;
-using Survivors.Accessory;
 using UnityEngine;
 
-namespace Survivors.Player
+[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(FeatureHost))]
+public class AccessoryManager : MonoBehaviour
 {
-    [RequireComponent(typeof(PropertiesManager))]
-    public class AccessoryManager : MonoBehaviour
+    private FeatureHost featureHost;
+    private readonly Dictionary<string, List<EquippedAccessory>> equippedAccessories = new();
+    private readonly List<AccessoryDataSO> accessories = new();
+
+    public event Action<AccessoryDataSO> OnAccessoryEquipped;
+    public event Action<AccessoryDataSO> OnAccessoryUnequipped;
+
+    public IReadOnlyList<AccessoryDataSO> EquippedAccessories => accessories.AsReadOnly();
+
+    private void Awake()
     {
-        [SerializeField] private List<AccessoryDataSO> initialAccessories = new();
+        featureHost = GetComponent<FeatureHost>();
+    }
 
-        private PropertiesManager propertiesManager;
-        private readonly Dictionary<string, List<EquippedAccessory>> equippedAccessories = new();
-        private readonly List<IAccessoryEffect> _activeEffects = new();
-        [SerializeField] private readonly List<AccessoryDataSO> _accessories = new();
+    private void OnDisable()
+    {
+        ClearEquippedAccessories();
+    }
 
-        public event Action<AccessoryDataSO> OnAccessoryEquipped;
-        public event Action<AccessoryDataSO> OnAccessoryUnequipped;
-
-        public IReadOnlyList<AccessoryDataSO> EquippedAccessories => _accessories.AsReadOnly();
-
-        private void Awake()
+    public bool EquipAccessory(AccessoryDataSO accessoryData)
+    {
+        if (accessoryData == null || featureHost == null)
         {
-            propertiesManager = GetComponent<PropertiesManager>();
+            return false;
         }
 
-        private void Start()
+        var equipped = new EquippedAccessory(accessoryData);
+        if (!equippedAccessories.TryGetValue(accessoryData.AccessoryId, out var list))
         {
-            foreach (var accessory in initialAccessories)
+            list = new List<EquippedAccessory>();
+            equippedAccessories[accessoryData.AccessoryId] = list;
+        }
+
+        list.Add(equipped);
+        accessories.Add(accessoryData);
+
+        FeatureInstaller.InstallSource(featureHost, equipped.RuntimeSourceId, accessoryData);
+
+        OnAccessoryEquipped?.Invoke(accessoryData);
+        return true;
+    }
+
+    public bool UnequipAccessory(string accessoryId)
+    {
+        if (!equippedAccessories.TryGetValue(accessoryId, out var list)) return false;
+        if (list.Count == 0)
+        {
+            equippedAccessories.Remove(accessoryId);
+            return false;
+        }
+
+        var equipped = list[list.Count - 1];
+        list.RemoveAt(list.Count - 1);
+        if (list.Count == 0)
+        {
+            equippedAccessories.Remove(accessoryId);
+        }
+
+        FeatureInstaller.RemoveSource(featureHost, equipped.RuntimeSourceId);
+        int index = accessories.LastIndexOf(equipped.Data);
+        if (index >= 0) accessories.RemoveAt(index);
+
+        OnAccessoryUnequipped?.Invoke(equipped.Data);
+        return true;
+    }
+
+    public bool UnequipAccessory(AccessoryDataSO accessoryData)
+    {
+        if (accessoryData == null) return false;
+        return UnequipAccessory(accessoryData.AccessoryId);
+    }
+
+    public IReadOnlyList<AccessoryDataSO> GetEquippedAccessories()
+    {
+        return accessories.AsReadOnly();
+    }
+
+    public bool IsEquipped(string accessoryId)
+    {
+        return equippedAccessories.TryGetValue(accessoryId, out var list) && list.Count > 0;
+    }
+
+    private void ClearEquippedAccessories()
+    {
+        foreach (var pair in equippedAccessories)
+        {
+            List<EquippedAccessory> list = pair.Value;
+            for (int i = 0; i < list.Count; i++)
             {
-                if (accessory != null)
-                {
-                    EquipAccessory(accessory);
-                }
+                FeatureInstaller.RemoveSource(featureHost, list[i].RuntimeSourceId);
             }
         }
 
-        private void Update()
+        equippedAccessories.Clear();
+        accessories.Clear();
+    }
+
+    private class EquippedAccessory
+    {
+        public AccessoryDataSO Data { get; }
+        public string RuntimeSourceId { get; }
+
+        public EquippedAccessory(AccessoryDataSO data)
         {
-            float deltaTime = Time.deltaTime;
-            foreach (var effect in _activeEffects)
-            {
-                effect.OnUpdate(gameObject, propertiesManager, deltaTime);
-            }
-        }
-
-        public bool EquipAccessory(AccessoryDataSO accessoryData)
-        {
-            if (accessoryData == null) return false;
-
-            var equipped = new EquippedAccessory(accessoryData);
-            if (!equippedAccessories.TryGetValue(accessoryData.AccessoryId, out var list))
-            {
-                list = new List<EquippedAccessory>();
-                equippedAccessories[accessoryData.AccessoryId] = list;
-            }
-            list.Add(equipped);
-            _accessories.Add(accessoryData);
-
-            ApplyAccessoryEffects(equipped);
-
-            OnAccessoryEquipped?.Invoke(accessoryData);
-            return true;
-        }
-
-        public bool UnequipAccessory(string accessoryId)
-        {
-            if (!equippedAccessories.TryGetValue(accessoryId, out var list)) return false;
-            if (list.Count == 0)
-            {
-                equippedAccessories.Remove(accessoryId);
-                return false;
-            }
-            var equipped = list[list.Count - 1];
-            list.RemoveAt(list.Count - 1);
-            if (list.Count == 0)
-            {
-                equippedAccessories.Remove(accessoryId);
-            }
-
-            RemoveAccessoryEffects(equipped);
-            int index = _accessories.LastIndexOf(equipped.Data);
-            if (index >= 0) _accessories.RemoveAt(index);
-
-            OnAccessoryUnequipped?.Invoke(equipped.Data);
-            return true;
-        }
-
-        public bool UnequipAccessory(AccessoryDataSO accessoryData)
-        {
-            if (accessoryData == null) return false;
-            return UnequipAccessory(accessoryData.AccessoryId);
-        }
-
-        private void ApplyAccessoryEffects(EquippedAccessory equipped)
-        {
-            foreach (var effect in equipped.Effects)
-            {
-                effect.OnEquip(gameObject, propertiesManager);
-                _activeEffects.Add(effect);
-            }
-        }
-
-        private void RemoveAccessoryEffects(EquippedAccessory equipped)
-        {
-            foreach (var effect in equipped.Effects)
-            {
-                effect.OnUnequip(gameObject, propertiesManager);
-                _activeEffects.Remove(effect);
-            }
-        }
-
-        public IReadOnlyList<AccessoryDataSO> GetEquippedAccessories()
-        {
-            return _accessories.AsReadOnly();
-        }
-
-        public bool IsEquipped(string accessoryId)
-        {
-            return equippedAccessories.TryGetValue(accessoryId, out var list) && list.Count > 0;
-        }
-
-        private class EquippedAccessory
-        {
-            public AccessoryDataSO Data { get; }
-            public List<IAccessoryEffect> Effects { get; }
-
-            public EquippedAccessory(AccessoryDataSO data)
-            {
-                Data = data;
-                Effects = data.CreateEffects(Guid.NewGuid().ToString("N"));
-            }
+            Data = data;
+            RuntimeSourceId = $"ACC_{data.AccessoryId}_{Guid.NewGuid():N}";
         }
     }
 }

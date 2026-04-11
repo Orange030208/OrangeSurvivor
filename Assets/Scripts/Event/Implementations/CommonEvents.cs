@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public struct GameStateChangeRequestEvent : IGameEvent
 {
     public GameState TargetState;
@@ -34,6 +36,30 @@ public struct GameOverRestartClickedEvent : IGameEvent
 
 public struct GameOverReturnToMenuClickedEvent : IGameEvent
 {
+}
+
+public struct EntityDamagedEvent : IGameEvent
+{
+    public Entity Entity;
+    public DamageInfo DamageInfo;
+
+    public EntityDamagedEvent(Entity entity, DamageInfo damageInfo)
+    {
+        Entity = entity;
+        DamageInfo = damageInfo;
+    }
+}
+
+public struct EntityDiedEvent : IGameEvent
+{
+    public Entity Entity;
+    public Vector2 Position;
+
+    public EntityDiedEvent(Entity entity, Vector2 position)
+    {
+        Entity = entity;
+        Position = position;
+    }
 }
 
 // 暂停菜单页面内部点击“继续”后的意图事件，交给流程协调器处理。

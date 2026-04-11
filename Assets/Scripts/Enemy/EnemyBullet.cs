@@ -5,9 +5,9 @@ public class EnemyBullet:Bullet
 {
     protected override void OnTrigger(Collider2D collider)
     {
-        if (collider.TryGetComponent(out Player player))
+        if (collider.TryGetComponent(out HealthComponent healthComponent))
         {
-            player.TakeDamage(_damage);
+            healthComponent.TakeDamage(_damage);
             Destroy(gameObject);
         }
     }

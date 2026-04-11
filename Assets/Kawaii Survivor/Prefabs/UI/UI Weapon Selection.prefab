@@ -1064,6 +1064,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7493525865056039011}
     m_Modifications:
+    - target: {fileID: 1893383579226697882, guid: 60cd1f6b325c3bf499bb6b296dd6a426, type: 3}
+      propertyPath: propContainersParent
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2333721568564791602, guid: 60cd1f6b325c3bf499bb6b296dd6a426, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1225,7 +1229,8 @@ PrefabInstance:
       value: Weapon Select Container
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2298376656802879629, guid: 60cd1f6b325c3bf499bb6b296dd6a426, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60cd1f6b325c3bf499bb6b296dd6a426, type: 3}

@@ -7,113 +7,241 @@ public class PropertiesManager : MonoBehaviour
     [SerializeField] private CharacterDataSO basePropsData;
 
     private Dictionary<PropType, float> baseProps = new();
-    private readonly Dictionary<PropType, float> bonusProps = new();
-    private readonly Dictionary<string, Dictionary<PropType, float>> bonusSources = new();
+    private readonly Dictionary<PropType, float> calculatedProps = new();
+    private readonly Dictionary<string, List<PropEntry>> modifierSources = new();
+    private FeatureHost featureHost;
+
+    public CharacterDataSO CharacterData => basePropsData;
 
     public event Action<PropType, float> OnPropertyChanged;
     public event Action OnAllPropertiesChanged;
 
     private void Awake()
     {
+        featureHost = GetComponent<FeatureHost>();
         InitializeBaseProps();
     }
 
     private void Start()
     {
+        ApplyCharacterFeatures();
+        ApplyInitialLoadout();
         NotifyAllPropertiesChanged();
+    }
+
+    private void OnDisable()
+    {
+        if (featureHost != null)
+        {
+            FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
+        }
     }
 
     private void InitializeBaseProps()
     {
         baseProps = basePropsData != null
             ? basePropsData.GetBaseProps()
-            : new Dictionary<PropType, float>();
+            : CharacterDataSO.CreateSharedBaseProps();
 
-        bonusProps.Clear();
-        foreach (var prop in baseProps)
+        RecalculateAllProps(false);
+    }
+
+    private void ApplyCharacterFeatures()
+    {
+        if (basePropsData == null || featureHost == null)
         {
-            bonusProps[prop.Key] = 0;
+            return;
+        }
+
+        FeatureInstaller.InstallCharacter(featureHost, basePropsData);
+    }
+
+    private void ApplyInitialLoadout()
+    {
+        if (basePropsData == null)
+        {
+            return;
+        }
+
+        WeaponsHolder weaponsHolder = GetComponent<WeaponsHolder>();
+        if (weaponsHolder != null)
+        {
+            foreach (var entry in basePropsData.InitialWeapons)
+            {
+                if (entry.weaponData == null)
+                {
+                    continue;
+                }
+
+                weaponsHolder.AddWeapon(entry.weaponData, entry.level);
+            }
+        }
+
+        AccessoryManager accessoryManager = GetComponent<AccessoryManager>();
+        if (accessoryManager != null)
+        {
+            foreach (var accessory in basePropsData.InitialAccessories)
+            {
+                if (accessory == null)
+                {
+                    continue;
+                }
+
+                accessoryManager.EquipAccessory(accessory);
+            }
         }
     }
 
     public void AddBonusModifier(string sourceId, PropType propType, float value)
     {
+        AddModifier(sourceId, new PropEntry(propType, value));
+    }
+
+    public void AddModifier(string sourceId, PropEntry modifier)
+    {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
-            Debug.LogWarning("[PropertiesManager] AddBonusModifier: sourceId is null or empty");
+            Debug.LogWarning("[PropertiesManager] AddModifier: sourceId is null or empty");
             return;
         }
 
-        Debug.Log($"[PropertiesManager] AddBonusModifier: sourceId={sourceId}, propType={propType}, value={value}");
+        AddModifiers(sourceId, new List<PropEntry> { modifier });
+    }
 
-        if (!bonusSources.ContainsKey(sourceId))
+    public void AddModifiers(string sourceId, IReadOnlyList<PropEntry> modifiers)
+    {
+        if (string.IsNullOrWhiteSpace(sourceId))
         {
-            bonusSources[sourceId] = new Dictionary<PropType, float>();
+            Debug.LogWarning("[PropertiesManager] AddModifiers: sourceId is null or empty");
+            return;
         }
 
-        bonusSources[sourceId][propType] = value;
-        RecalculateBonus(propType);
+        if (modifiers == null || modifiers.Count == 0)
+        {
+            return;
+        }
+
+        modifierSources[sourceId] = new List<PropEntry>(modifiers);
+        RecalculateAllProps();
     }
 
     public void RemoveBonusModifier(string sourceId, PropType propType)
     {
-        if (string.IsNullOrWhiteSpace(sourceId))
+        RemoveModifier(sourceId, propType, PropModifierType.Flat);
+    }
+
+    public void RemoveModifier(string sourceId, PropType propType, PropModifierType modifierType)
+    {
+        if (string.IsNullOrWhiteSpace(sourceId) || !modifierSources.TryGetValue(sourceId, out List<PropEntry> modifiers))
         {
             return;
         }
 
-        if (bonusSources.ContainsKey(sourceId))
+        modifiers.RemoveAll(entry => entry.propType == propType && entry.modifierType == modifierType);
+        if (modifiers.Count == 0)
         {
-            bonusSources[sourceId].Remove(propType);
-            if (bonusSources[sourceId].Count == 0)
-            {
-                bonusSources.Remove(sourceId);
-            }
+            modifierSources.Remove(sourceId);
         }
 
-        RecalculateBonus(propType);
+        RecalculateAllProps();
     }
 
     public void RemoveAllBonusModifiers(string sourceId)
     {
+        RemoveAllModifiers(sourceId);
+    }
+
+    public void RemoveAllModifiers(string sourceId)
+    {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (!bonusSources.ContainsKey(sourceId))
+        if (!modifierSources.Remove(sourceId))
         {
             return;
         }
 
-        var affectedTypes = new List<PropType>(bonusSources[sourceId].Keys);
-        bonusSources.Remove(sourceId);
-
-        foreach (var propType in affectedTypes)
-        {
-            RecalculateBonus(propType);
-        }
+        RecalculateAllProps();
     }
 
-    private void RecalculateBonus(PropType propType)
+    private void RecalculateAllProps(bool notifyChanges = true)
     {
-        float oldValue = bonusProps.GetValueOrDefault(propType, 0);
-        float newValue = 0;
+        var changedProps = notifyChanges ? new List<PropType>() : null;
 
-        foreach (var source in bonusSources.Values)
+        Array values = Enum.GetValues(typeof(PropType));
+        for (int i = 0; i < values.Length; i++)
         {
-            if (source.TryGetValue(propType, out float value))
+            PropType propType = (PropType)values.GetValue(i);
+            float oldValue = calculatedProps.GetValueOrDefault(propType, 0f);
+            float newValue = CalculateFinalValue(propType);
+            calculatedProps[propType] = newValue;
+
+            if (notifyChanges && Mathf.Abs(oldValue - newValue) > Mathf.Epsilon)
             {
-                newValue += value;
+                changedProps.Add(propType);
             }
         }
 
-        bonusProps[propType] = newValue;
-
-        if (Mathf.Abs(oldValue - newValue) > Mathf.Epsilon)
+        if (!notifyChanges)
         {
-            OnPropertyChanged?.Invoke(propType, GetPropValue(propType));
+            return;
         }
+
+        for (int i = 0; i < changedProps.Count; i++)
+        {
+            PropType propType = changedProps[i];
+            OnPropertyChanged?.Invoke(propType, calculatedProps[propType]);
+        }
+
+        if (changedProps.Count > 0)
+        {
+            NotifyAllPropertiesChanged();
+        }
+    }
+
+    private float CalculateFinalValue(PropType propType)
+    {
+        float baseValue = baseProps.GetValueOrDefault(propType, 0f);
+        float flat = 0f;
+        float basePercent = 0f;
+        float finalFlat = 0f;
+        float finalPercent = 0f;
+
+        foreach (var source in modifierSources.Values)
+        {
+            for (int i = 0; i < source.Count; i++)
+            {
+                PropEntry entry = source[i];
+                if (entry.propType != propType)
+                {
+                    continue;
+                }
+
+                switch (entry.modifierType)
+                {
+                    case PropModifierType.Flat:
+                        flat += entry.value;
+                        break;
+                    case PropModifierType.BasePercent:
+                        basePercent += entry.value;
+                        break;
+                    case PropModifierType.FinalFlat:
+                        finalFlat += entry.value;
+                        break;
+                    case PropModifierType.FinalPercent:
+                        finalPercent += entry.value;
+                        break;
+                }
+            }
+        }
+
+        float result = baseValue + flat;
+        result += baseValue * basePercent;
+        result += finalFlat;
+        result *= 1f + finalPercent;
+        return result;
     }
 
     private void NotifyAllPropertiesChanged()
@@ -123,25 +251,25 @@ public class PropertiesManager : MonoBehaviour
 
     public float GetPropValue(PropType propType)
     {
-        return GetBaseValue(propType) + GetBonusValue(propType);
+        return calculatedProps.GetValueOrDefault(propType, baseProps.GetValueOrDefault(propType, 0f));
     }
 
     public float GetBaseValue(PropType propType)
     {
-        return baseProps.GetValueOrDefault(propType, 0);
+        return baseProps.GetValueOrDefault(propType, 0f);
     }
 
     public float GetBonusValue(PropType propType)
     {
-        return bonusProps.GetValueOrDefault(propType, 0);
+        return GetPropValue(propType) - GetBaseValue(propType);
     }
 
     public Dictionary<PropType, float> GetAllPropValues()
     {
-        var result = new Dictionary<PropType, float>(baseProps.Count);
-        foreach (var prop in baseProps)
+        var result = new Dictionary<PropType, float>(calculatedProps.Count);
+        foreach (var prop in calculatedProps)
         {
-            result[prop.Key] = GetPropValue(prop.Key);
+            result[prop.Key] = prop.Value;
         }
 
         return result;

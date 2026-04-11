@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 
+[RequireComponent(typeof(HealthComponent))]
 public abstract class Enemy : Entity
 {
     [Header("组件")] protected EnemyMovement _movement;
@@ -10,21 +11,44 @@ public abstract class Enemy : Entity
     [SerializeField] protected SpriteRenderer spawnIndicator;
     [SerializeField] protected new Collider2D collider;
 
-    [Header("生命值")] [SerializeField] protected float maxHealth;
-    protected float health;
+    [Header("生命值")]
+    [SerializeField] protected float maxHealth = 1f;
 
     protected Player _player;
+    protected HealthComponent healthComponent;
 
     [SerializeField] protected float attackDetectionRadius;
 
-    public static Action<DamageInfo> onDamageTaken;
-    public static Action<DeadInfo> onDeath;
-
     public override Vector2 Center => transform.position;
+
+    protected virtual void Awake()
+    {
+        healthComponent = GetComponent<HealthComponent>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        if (healthComponent != null)
+        {
+            healthComponent.OnDied += PassAway;
+        }
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (healthComponent != null)
+        {
+            healthComponent.OnDied -= PassAway;
+        }
+    }
 
     protected virtual void Start()
     {
-        health = maxHealth;
+        if (healthComponent != null)
+        {
+            healthComponent.Initialize(maxHealth);
+        }
+
         _player = FindObjectOfType<Player>();
         _movement = GetComponent<EnemyMovement>();
         if (_player == null)
@@ -63,21 +87,9 @@ public abstract class Enemy : Entity
         spawnIndicator.enabled = !visible;
     }
 
-    public void TakeDamage(DamageInfo damageInfo)
-    {
-        float realDamage = Math.Min(health, damageInfo.damage);
-        health -= realDamage;
-        onDamageTaken?.Invoke(damageInfo);
-
-        if (health <= 0)
-        {
-            PassAway();
-        }
-    }
-
     public void PassAway()
     {
-        onDeath.Invoke(new DeadInfo(transform.position));
+        GameEventBus.Publish(new EntityDiedEvent(this, transform.position));
         PassAwayAfterWave();
     }
 

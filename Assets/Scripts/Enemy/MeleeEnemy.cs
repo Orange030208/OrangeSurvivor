@@ -50,7 +50,11 @@ public class MeleeEnemy : Enemy
     
     private void Attack()
     {
-        _player.TakeDamage(damage);
+        HealthComponent healthComponent = _player.GetComponent<HealthComponent>();
+        if (healthComponent != null)
+        {
+            healthComponent.TakeDamage(damage);
+        }
         attackTimer = 0;
     }
 }
