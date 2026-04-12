@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 3595262277328222610}
   - component: {fileID: 8093913012144903216}
   - component: {fileID: 744321419412424706}
+  - component: {fileID: 3977488090093624418}
   m_Layer: 7
   m_Name: Dave
   m_TagString: Untagged
@@ -381,7 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd93cf85a5544a44bcd5e54362b37c3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePropsData: {fileID: 11400000, guid: 565d64a0296b26d4aa7beac1e6be315e, type: 2}
+  basePropsData: {fileID: 11400000, guid: 7392f5eb0ebee2b4d95e5c6b84adcc9d, type: 2}
 --- !u!114 &1901290702684836562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +395,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 307b4bfb990b4d32bc9a964b81c6db11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialAccessories: []
 --- !u!114 &3595262277328222610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,7 +414,9 @@ MonoBehaviour:
   - {fileID: 3040434302157985702}
   - {fileID: 8554928470139022826}
   - {fileID: 7099042734224352948}
-  weaponsParentTransform: {fileID: 3187044280391910348}
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!50 &8093913012144903216
 Rigidbody2D:
   serializedVersion: 4
@@ -477,6 +479,18 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.5214381}
   serializedVersion: 2
   m_Radius: 0.4935627
+--- !u!114 &3977488090093624418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7496115378131242144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062db910b01a17c4d9e14fc6472a5a7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8473914789015488600
 GameObject:
   m_ObjectHideFlags: 0

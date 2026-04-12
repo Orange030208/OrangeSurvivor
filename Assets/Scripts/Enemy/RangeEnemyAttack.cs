@@ -53,6 +53,13 @@ public class RangeEnemyAttack : MonoBehaviour
 
         Vector2 direction = (target.Center - (Vector2)shootingPoint.position).normalized;
         EnemyBullet enemyBullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
-        enemyBullet.Launch(new ProjectileLaunchContext(shootingPoint.position, direction, new ResolvedWeaponHit(damage, false), 0, 0, 0, ProjectileFiringMode.Default));
+        enemyBullet.Launch(new ProjectileLaunchContext(
+            shootingPoint.position,
+            direction,
+            new ResolvedWeaponHit(damage, false),
+            0,
+            null,
+            0,
+            ProjectileFiringMode.Default));
     }
 }

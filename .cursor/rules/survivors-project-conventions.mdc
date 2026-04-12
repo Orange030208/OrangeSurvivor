@@ -90,6 +90,32 @@ alwaysApply: true
 
 
 
+## 武器系统当前约定
+
+- `Weapon` 负责通用索敌、攻击冷却、攻击朝向更新、运行时属性计算，不承载近战命中窗口、远程发射细节，也不保留运行时调试日志职责。
+
+- `MeleeWeapon` / `RangeWeapon` 只负责各自攻击实现与序列事件消费；不要把子类攻击细节重新塞回 `Weapon` 基类。
+
+- 武器索敌统一以持有武器的 `Entity` 为主体，通过 `EntityExtensions.FindClosestTargetInRange(...)` 查询；不要让 `Weapon` 自己伪装成实体语义主体。
+
+- 武器无目标时的朝向回退，只依赖持有者 `Entity` 的 `IsMoving` 与 `CurrentFacingDirection`；不要让武器直接依赖 `PlayerController`、输入源或玩家专用控制组件。
+
+- `Entity` 基类只保留最小朝向契约：`IsMoving` 与 `CurrentFacingDirection`；具体状态缓存与更新由子类自己实现。
+
+- `PlayerController` 只负责读取输入并把方向写给 `Player.ApplyMoveDirection(...)`，不作为武器系统的朝向状态源。
+
+- `WeaponSequenceBridge` 只负责桥接场景中的动画目标与 `WeaponMotionSequencePlayer`，不承载索敌、命中或发射决策。
+
+- `WeaponMotionSequencePlayer` 只负责动作关键帧采样与事件推进；固定帧按写死的 `localPosition` 播放，不受 `RuntimeStats.Range` 影响。
+
+- `DynamicFromTarget` 关键帧才允许结合当前目标位置与 `RuntimeStats.Range` 解算真实落点；当前动态策略仅保留 `TowardTargetClampedRadius`。
+
+- 固定帧语义是“本地绝对位移轨迹”，动态帧语义是“按目标方向与攻击半径解算的轨迹”；两套语义不得混用。
+
+- 武器进入 `IsAttacking` 后，应保持当前攻击方向，不因目标暂时离开范围而瞬间大角度跳转；攻击结束后再平滑过渡到新的目标或持有者朝向。
+
+
+
 ## 当前项目约定示例
 
 - `MenuUIPage` 只发 `MenuStartClickedEvent`，由 `GameManager` 决定进入 `WeaponSelection`。
@@ -101,4 +127,3 @@ alwaysApply: true
 - `GamePauseMenu` 只发 `PauseMenuContinueClickedEvent` / `PauseMenuReturnToMenuClickedEvent`，由 `PauseMenuFlowController` 负责“先关闭再执行”。
 
 - `CurrencyUI` 这类展示控件只订阅 `CurrencyChangedEvent` 并按 `CurrencyType` 刷新显示，不在 UI 内保存货币业务数据。
-

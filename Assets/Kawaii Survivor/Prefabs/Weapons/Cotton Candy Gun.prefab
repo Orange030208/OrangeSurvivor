@@ -72,8 +72,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 884889363274573011}
-  - component: {fileID: 8055205760204629517}
   - component: {fileID: 7505507847465373314}
+  - component: {fileID: 5846400266714924165}
   m_Layer: 0
   m_Name: Cotton Candy Gun
   m_TagString: Untagged
@@ -97,27 +97,6 @@ Transform:
   - {fileID: 7103185840168797530}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &8055205760204629517
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2593951351652654266}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1ea1ee99e8673c5478bbf60c6b30c6fc, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7505507847465373314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,16 +110,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <WeaponData>k__BackingField: {fileID: 11400000, guid: f2018ac17db5ab4499e404c85919bb44, type: 2}
-  attackDelay: 0.2
-  damage: 10
-  aimLerp: 6
-  enemyLayerMask:
+  aimLerp: 10
+  targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
-  range: 6
-  _animator: {fileID: 0}
+    m_Bits: 0
+  enableDebugLogs: 1
   shootingPoint: {fileID: 9091141546960401188}
-  bulletPrefab: {fileID: 8268274851253466228, guid: 01a667670e740be44b2a304b4e6c058f, type: 3}
+  additionalShootingPoints: []
+  attackSequence: {fileID: 0}
+  sequenceBridge: {fileID: 5846400266714924165}
+--- !u!114 &5846400266714924165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2593951351652654266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a31b7393b39f34ba191a00685a56d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animatedTransform: {fileID: 7103185840168797530}
 --- !u!1 &5370423613001079563
 GameObject:
   m_ObjectHideFlags: 0

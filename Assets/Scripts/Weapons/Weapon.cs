@@ -2,24 +2,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// 武器运行时基类：
+/// 1. 负责索敌；
+/// 2. 负责根据属性计算攻击间隔与伤害；
+/// 3. 在冷却完成后触发具体武器的攻击实现。
+/// 子类只需要关心“如何攻击”，例如近战开命中窗口、远程发射投射物。
+/// </summary>
 public abstract class Weapon : MonoBehaviour
 {
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
-    [SerializeField] protected float aimLerp = 12f;
-    [SerializeField] protected LayerMask enemyLayerMask;
-    [SerializeField] protected Animator animator;
+
+    [Header("Aim")]
+    [Tooltip("平时自动转向目标的插值速度。")]
+    [SerializeField] protected float aimLerp = 10f;
+
+    [Header("Runtime")]
+    [Tooltip("武器攻击会命中的目标层。由武器持有器/挂点在初始化时设置；这里仅作为运行时查询使用。")]
+    [SerializeField] protected LayerMask targetLayerMask;
 
     public int Level { get; private set; }
     public WeaponRuntimeStats RuntimeStats { get; private set; }
     public bool IsAttacking { get; protected set; }
 
     protected PropertiesManager propertiesManager;
-    protected Enemy currentTarget;
+    protected Entity ownerEntity;
+    protected Entity currentTarget;
     private float attackCooldownTimer;
+    private Vector2 lastAimDirection = Vector2.up;
 
     protected virtual void Awake()
     {
         propertiesManager = GetComponentInParent<PropertiesManager>();
+        ownerEntity = GetComponentInParent<Entity>();
     }
 
     protected virtual void OnEnable()
@@ -57,6 +72,11 @@ public abstract class Weapon : MonoBehaviour
         RefreshRuntimeStats();
     }
 
+    public void SetTargetLayerMask(LayerMask layerMask)
+    {
+        targetLayerMask = layerMask;
+    }
+
     public virtual void RefreshRuntimeStats()
     {
         RuntimeStats = BuildRuntimeStats();
@@ -90,56 +110,167 @@ public abstract class Weapon : MonoBehaviour
         return !IsAttacking;
     }
 
-    protected abstract void BeginAttack(Enemy target);
+    protected abstract void BeginAttack(Entity target);
 
     protected void CompleteAttackCycle()
     {
         IsAttacking = false;
     }
 
-    protected Enemy GetCurrentTarget()
+    protected Entity GetCurrentTarget()
     {
         return currentTarget;
     }
 
-    protected virtual void TickTargeting()
+    protected float ResolveAttackSequenceDuration(AttackSequenceDefinitionSO sequence)
     {
-        currentTarget = FindClosestEnemyInRange(RuntimeStats.Range);
-
-        Vector2 targetUpVector = Vector2.up;
-        if (currentTarget != null)
+        if (sequence == null)
         {
-            targetUpVector = ((Vector2)currentTarget.transform.position - (Vector2)transform.position).normalized;
+            return 0.01f;
         }
 
-        if (targetUpVector.sqrMagnitude > 0.0001f)
+        float sequenceDuration = Mathf.Max(0.01f, sequence.Duration);
+        float attackInterval = Mathf.Max(0.01f, RuntimeStats.AttackInterval);
+        float occupancy = WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f;
+        float reservedWindow = Mathf.Max(0.01f, attackInterval * occupancy);
+
+        // 只在序列长于本次攻击节奏窗口时压缩，短序列维持原时长，
+        // 这样既能避免“3 秒动画拖垮 1 秒攻速”，也能保留原本短动作的利落感。
+        return Mathf.Min(sequenceDuration, reservedWindow);
+    }
+
+    public float GetDebugAttackInterval()
+    {
+        return RuntimeStats.AttackInterval;
+    }
+
+    public float GetDebugSequenceWindowDuration()
+    {
+        float attackInterval = Mathf.Max(0.01f, RuntimeStats.AttackInterval);
+        float occupancy = WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f;
+        return attackInterval * occupancy;
+    }
+
+    public float GetDebugOriginalSequenceDuration()
+    {
+        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
+        return sequence != null ? sequence.Duration : 0f;
+    }
+
+    public float GetDebugEffectiveSequenceDuration()
+    {
+        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
+        return sequence != null ? ResolveAttackSequenceDuration(sequence) : 0f;
+    }
+
+    public float GetDebugSequenceCompressionRatio()
+    {
+        float original = GetDebugOriginalSequenceDuration();
+        if (original <= 0.0001f)
         {
-            transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
+            return 1f;
+        }
+
+        return GetDebugEffectiveSequenceDuration() / original;
+    }
+
+    protected void DrawSharedWeaponDebugGizmos()
+    {
+        float range = Application.isPlaying ? RuntimeStats.Range : 0.5f;
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position, range);
+
+        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
+        if (sequence == null)
+        {
+            return;
+        }
+
+        float effectiveDuration = Application.isPlaying ? GetDebugEffectiveSequenceDuration() : sequence.Duration;
+        float radius = Mathf.Clamp(range * 0.35f, 0.35f, 0.9f);
+        var events = sequence.EventKeyframes;
+        for (int i = 0; i < events.Count; i++)
+        {
+            WeaponSequenceEventKeyframe keyframe = events[i];
+            float angle = -90f + keyframe.normalizedTime * 360f;
+            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up * radius;
+
+            Gizmos.color = GetEventDebugColor(keyframe.eventType);
+            Gizmos.DrawWireSphere(transform.position + offset, 0.06f);
+
+            if (keyframe.eventType == WeaponSequenceEventType.SpawnProjectile)
+            {
+                Gizmos.DrawLine(transform.position, transform.position + offset);
+            }
         }
     }
 
-    protected Enemy FindClosestEnemyInRange(float searchRange)
+    private Color GetEventDebugColor(WeaponSequenceEventType eventType)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, searchRange, enemyLayerMask);
-        Enemy closestEnemy = null;
-        float minDistance = searchRange;
-
-        for (int i = 0; i < colliders.Length; i++)
+        return eventType switch
         {
-            if (!colliders[i].TryGetComponent(out Enemy enemyChecked))
+            WeaponSequenceEventType.OpenHitWindow => Color.green,
+            WeaponSequenceEventType.CloseHitWindow => new Color(1f, 0.5f, 0f, 1f),
+            WeaponSequenceEventType.SpawnProjectile => Color.cyan,
+            WeaponSequenceEventType.PlaySfx => Color.yellow,
+            WeaponSequenceEventType.PlayVfx => new Color(0.7f, 0.3f, 1f, 1f),
+            _ => Color.white
+        };
+    }
+
+    protected virtual AttackSequenceDefinitionSO GetEquippedAttackSequence()
+    {
+        return null;
+    }
+
+    protected virtual void TickTargeting()
+    {
+        Entity previousTarget = currentTarget;
+        currentTarget = ownerEntity != null
+            ? ownerEntity.FindClosestTargetInRange(RuntimeStats.Range, targetLayerMask)
+            : null;
+
+        bool stopAimingWhenAttackReady = WeaponData == null || WeaponData.StopAimingWhenAttackReady;
+        bool holdCurrentAim = IsAttacking || (stopAimingWhenAttackReady && currentTarget != null && attackCooldownTimer >= RuntimeStats.AttackInterval);
+        if (holdCurrentAim)
+        {
+            return;
+        }
+
+        Vector2 desiredAimDirection = ResolveDesiredAimDirection();
+        if (desiredAimDirection.sqrMagnitude > 0.0001f)
+        {
+            lastAimDirection = desiredAimDirection.normalized;
+            transform.up = Vector3.Lerp(transform.up, lastAimDirection, Time.deltaTime * aimLerp);
+        }
+        else if (previousTarget != null && currentTarget == null)
+        {
+            transform.up = Vector3.Lerp(transform.up, lastAimDirection, Time.deltaTime * aimLerp);
+        }
+    }
+
+    protected Vector2 ResolveDesiredAimDirection()
+    {
+        if (currentTarget != null)
+        {
+            return (currentTarget.Center - (Vector2)transform.position).normalized;
+        }
+
+        if (ownerEntity != null)
+        {
+            if (ownerEntity.IsMoving && ownerEntity.CurrentFacingDirection.sqrMagnitude > 0.0001f)
             {
-                continue;
+                return ownerEntity.CurrentFacingDirection.normalized;
             }
 
-            float distanceToEnemy = Vector2.Distance(transform.position, enemyChecked.transform.position);
-            if (distanceToEnemy < minDistance)
+            if (ownerEntity.CurrentFacingDirection.sqrMagnitude > 0.0001f)
             {
-                closestEnemy = enemyChecked;
-                minDistance = distanceToEnemy;
+                return ownerEntity.CurrentFacingDirection.normalized;
             }
         }
 
-        return closestEnemy;
+        return lastAimDirection;
     }
 
     protected ResolvedWeaponHit ResolveHit()
@@ -149,11 +280,11 @@ public abstract class Weapon : MonoBehaviour
         return new ResolvedWeaponHit(damage, isCritical);
     }
 
-    protected WeaponAttackContext BuildAttackContext(Enemy target, Transform origin = null)
+    protected WeaponAttackContext BuildAttackContext(Entity target, Transform origin = null)
     {
         Transform sourceTransform = origin != null ? origin : transform;
         Vector2 aimDirection = target != null
-            ? ((Vector2)target.transform.position - (Vector2)sourceTransform.position).normalized
+            ? (target.Center - (Vector2)sourceTransform.position).normalized
             : (Vector2)transform.up;
 
         return new WeaponAttackContext(this, sourceTransform, target, aimDirection, RuntimeStats, ResolveHit());

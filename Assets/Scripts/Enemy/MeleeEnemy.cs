@@ -57,4 +57,7 @@ public class MeleeEnemy : Enemy
         }
         attackTimer = 0;
     }
+
+    public override bool IsMoving { get; }
+    public override Vector2 CurrentFacingDirection { get; }
 }

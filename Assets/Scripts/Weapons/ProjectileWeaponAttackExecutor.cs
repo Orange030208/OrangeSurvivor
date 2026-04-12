@@ -1,5 +1,11 @@
 using UnityEngine;
 
+/// <summary>
+/// 远程攻击执行器：
+/// 只做一件事——把已经解析好的攻击上下文，转换成一个实际生成的 Bullet。
+/// 它不关心索敌、冷却、序列，也不关心多弹模式；
+/// 那些由 RangeWeapon 决定，这里只负责“从哪里发、发什么、带什么上下文”。
+/// </summary>
 public sealed class ProjectileWeaponAttackExecutor : IWeaponAttackExecutor
 {
     private readonly Bullet bulletPrefab;
@@ -15,9 +21,12 @@ public sealed class ProjectileWeaponAttackExecutor : IWeaponAttackExecutor
 
     public void ExecuteAttack(in WeaponAttackContext context)
     {
-        ExecuteAttack(context, new ProjectileSpawnPayload(0, 0, 0, ProjectileFiringMode.Default));
+        ExecuteAttack(context, ProjectileSpawnPayload.Default);
     }
 
+    /// <summary>
+    /// 根据 payload 解析发射点，然后实例化并发射对应子弹。
+    /// </summary>
     public void ExecuteAttack(in WeaponAttackContext context, ProjectileSpawnPayload payload)
     {
         Transform firingPoint = ResolveFiringPoint(payload.SpawnPointIndex);
@@ -26,18 +35,21 @@ public sealed class ProjectileWeaponAttackExecutor : IWeaponAttackExecutor
             return;
         }
 
-        Vector2 direction = ResolveDirection(context, payload.FiringMode);
         Bullet bullet = Object.Instantiate(bulletPrefab, firingPoint.position, Quaternion.identity);
         bullet.Launch(new ProjectileLaunchContext(
             firingPoint.position,
-            direction,
+            context.AimDirection,
             context.Hit,
             payload.SpawnPointIndex,
-            payload.ProjectileVariantIndex,
+            payload.ProjectileDefinition,
             payload.BurstId,
-            payload.FiringMode));
+            payload.FiringMode,
+            payload.PatternConfig));
     }
 
+    /// <summary>
+    /// 先尝试使用 payload 指定的发射点；没有命中时再回退到默认发射点。
+    /// </summary>
     private Transform ResolveFiringPoint(int spawnPointIndex)
     {
         if (firingPoints != null && spawnPointIndex >= 0 && spawnPointIndex < firingPoints.Length && firingPoints[spawnPointIndex] != null)
@@ -46,18 +58,5 @@ public sealed class ProjectileWeaponAttackExecutor : IWeaponAttackExecutor
         }
 
         return defaultFiringPoint;
-    }
-
-    private Vector2 ResolveDirection(in WeaponAttackContext context, ProjectileFiringMode firingMode)
-    {
-        switch (firingMode)
-        {
-            case ProjectileFiringMode.Spread:
-                return Quaternion.Euler(0f, 0f, 12f) * context.AimDirection;
-            case ProjectileFiringMode.Nova:
-                return context.Origin.right;
-            default:
-                return context.AimDirection;
-        }
     }
 }

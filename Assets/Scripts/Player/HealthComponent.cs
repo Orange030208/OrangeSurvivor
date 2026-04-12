@@ -2,8 +2,19 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// 通用生命组件：
+/// - 维护当前生命值与最大生命值；
+/// - 处理受伤、治疗、死亡、闪避、回血；
+/// - 与 PropertiesManager 同步防御、吸血、恢复等属性；
+/// - 对外广播生命变化和受伤事件。
+/// 当前它既承担基础生命逻辑，也承担一部分事件桥接职责；
+/// 如果以后战斗系统继续复杂化，可以再把部分责任拆到更细的系统中。
+/// </summary>
 public class HealthComponent : MonoBehaviour
 {
+    [Header("Inspector")]
+    [Tooltip("没有 PropertiesManager 时使用的默认最大生命值。")]
     [SerializeField] private float defaultMaxHealth = 1f;
 
     private float maxHealth;
@@ -116,6 +127,9 @@ public class HealthComponent : MonoBehaviour
         PublishHealthChanged();
     }
 
+    /// <summary>
+    /// 统一处理一次伤害：闪避、减伤、事件广播、死亡判定都在这里完成。
+    /// </summary>
     private void ApplyDamage(DamageInfo damageInfo)
     {
         if (health <= 0f)
@@ -153,6 +167,9 @@ public class HealthComponent : MonoBehaviour
         return propertiesManager != null ? propertiesManager.GetPropValue(PropType.DamageReduction) : 0f;
     }
 
+    /// <summary>
+    /// 按每秒恢复值累积回血，使用 buffer 处理小数恢复量。
+    /// </summary>
     private void RecoveryHealth()
     {
         if (healthRecoveryPerSecond <= 0f)
@@ -192,6 +209,11 @@ public class HealthComponent : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 监听别的实体受伤事件，用于实现吸血。
+    /// 当前逻辑比较直接：自己只要没满血，就按 lifeStealRatio 从造成的伤害里吸回生命。
+    /// 如果以后要区分来源、队伍或伤害类型，建议在事件层补充更多上下文。
+    /// </summary>
     private void OnEntityDamaged(EntityDamagedEvent damageEvent)
     {
         if (damageEvent.Entity == ownerEntity)
@@ -262,6 +284,9 @@ public class HealthComponent : MonoBehaviour
         SetMaxHealth(propertiesManager.GetPropValue(PropType.MaxHealth), true);
     }
 
+    /// <summary>
+    /// 更新最大生命值，并决定是否按当前血量比例保留生命。
+    /// </summary>
     private void SetMaxHealth(float value, bool preserveRatio)
     {
         float oldMaxHealth = Mathf.Max(maxHealth, 1f);

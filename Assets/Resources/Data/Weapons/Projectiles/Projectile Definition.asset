@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f21ea603ecfe74f8c2bbd0188a6bbc, type: 3}
+  m_Name: Projectile Definition
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  bulletPrefab: {fileID: 8268274851253466228, guid: 01a667670e740be44b2a304b4e6c058f, type: 3}
+  damageMultiplier: 1
+  speedMultiplier: 1
+  lifetimeMultiplier: 1
+  icon: {fileID: 0}
+  debugColor: {r: 1, g: 1, b: 1, a: 1}
+  launchSfx: {fileID: 0}
+  launchVfxPrefab: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  note: 

@@ -19,7 +19,7 @@ public abstract class Enemy : Entity
 
     [SerializeField] protected float attackDetectionRadius;
 
-    public override Vector2 Center => transform.position;
+    public override Vector2 Center => transform.position + new Vector3(0, collider.offset.y, 0);
 
     protected virtual void Awake()
     {

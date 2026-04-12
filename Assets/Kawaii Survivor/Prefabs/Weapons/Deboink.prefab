@@ -87,7 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6272589886515006277}
   - component: {fileID: 6802585226729800489}
-  - component: {fileID: 1323557202551703819}
+  - component: {fileID: 8643157438015149344}
   m_Layer: 0
   m_Name: Deboink
   m_TagString: Untagged
@@ -124,38 +124,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <WeaponData>k__BackingField: {fileID: 11400000, guid: 2d0d680f76ec4664cb6a9c9cc2f20e43, type: 2}
-  attackDelay: 0.5
-  damage: 10
   aimLerp: 10
-  enemyLayerMask:
+  targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
-  range: 2
-  _animator: {fileID: 1323557202551703819}
+    m_Bits: 0
+  enableDebugLogs: 1
   hitDetectionTransform: {fileID: 5478093807400225299}
   hitCollider: {fileID: 8903076585288573420}
-  hitDetectionRadius: 0.3
---- !u!95 &1323557202551703819
-Animator:
-  serializedVersion: 5
+  attackSequence: {fileID: 0}
+  sequenceBridge: {fileID: 8643157438015149344}
+--- !u!114 &8643157438015149344
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3280234043680127104}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1ea1ee99e8673c5478bbf60c6b30c6fc, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a31b7393b39f34ba191a00685a56d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animatedTransform: {fileID: 8142188886591454919}
 --- !u!1 &6959299625153703311
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,8 +18,11 @@ MonoBehaviour:
   itemType: 0
   weaponPrefab: {fileID: 6802585226729800489, guid: 5f0f9962ee61b9642856089e224a9d22, type: 3}
   attackSequence: {fileID: 11400000, guid: 6b5ccdd247519dc4c97d40553a8f3aaa, type: 2}
+  stopAimingWhenAttackReady: 1
+  attackSequenceOccupancy: 0.85
+  projectileDefinitions: []
   attack: 10
   attackSpeed: 1
   criticalChance: 0.05
   criticalPercent: 2
-  range: 4
+  range: 3

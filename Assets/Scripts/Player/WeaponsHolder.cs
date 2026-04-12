@@ -2,9 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 玩家武器容器：
+/// - 管理所有武器槽位；
+/// - 负责添加/移除/合并武器；
+/// - 对外提供当前已装备武器快照。
+/// UI 或业务层通常不直接操作 WeaponPosition，而是通过 WeaponsHolder 完成装备变更。
+/// </summary>
 public class WeaponsHolder : MonoBehaviour
 {
+    [Header("Inspector")]
+    [Tooltip("玩家身上的武器槽位列表。每个槽位对应一个 WeaponPosition。")]
     [SerializeField] private WeaponPosition[] weaponPositions;
+    [Tooltip("由武器容器显式决定这些武器默认攻击哪些层。")]
+    [SerializeField] private LayerMask targetLayerMask;
 
     private readonly List<EquippedWeaponInfo> equippedWeapons = new();
 
@@ -16,6 +27,9 @@ public class WeaponsHolder : MonoBehaviour
         RebuildEquippedWeaponsCache();
     }
 
+    /// <summary>
+    /// 往第一个空槽位添加一把武器。
+    /// </summary>
     public bool AddWeapon(WeaponDataSO weaponData, int level)
     {
         if (weaponData == null)
@@ -35,6 +49,8 @@ public class WeaponsHolder : MonoBehaviour
         {
             return false;
         }
+
+        runtimeWeapon.SetTargetLayerMask(targetLayerMask);
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
@@ -68,6 +84,10 @@ public class WeaponsHolder : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 合并两把同类型同等级武器，生成更高一级的新武器。
+    /// 当前实现采用“先移除两把，再在目标槽位生成合并后武器”的方式。
+    /// </summary>
     public bool MergeWeapon(Weapon sourceWeapon, Weapon targetWeapon)
     {
         if (sourceWeapon == null || targetWeapon == null || sourceWeapon == targetWeapon)
@@ -102,18 +122,30 @@ public class WeaponsHolder : MonoBehaviour
         if (!targetPosition.RemoveWeapon(targetWeapon))
         {
             sourcePosition.AssignWeapon(weaponData.WeaponPrefab, sourceWeapon.Level);
+            if (sourcePosition.Weapon != null)
+            {
+                sourcePosition.Weapon.SetTargetLayerMask(targetLayerMask);
+            }
             RebuildEquippedWeaponsCache();
             OnWeaponsChanged?.Invoke();
             return false;
         }
 
-        targetPosition.AssignWeapon(weaponData.WeaponPrefab, mergedLevel);
+        Weapon mergedWeapon = targetPosition.AssignWeapon(weaponData.WeaponPrefab, mergedLevel);
+        if (mergedWeapon != null)
+        {
+            mergedWeapon.SetTargetLayerMask(targetLayerMask);
+        }
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
         return true;
     }
 
+    /// <summary>
+    /// 强制刷新一次对外快照。
+    /// 常用于外部数据和实际武器实例发生了重新同步后，通知 UI 更新。
+    /// </summary>
     public void RefreshSnapshot()
     {
         RebuildEquippedWeaponsCache();
@@ -183,6 +215,10 @@ public class WeaponsHolder : MonoBehaviour
     }
 }
 
+/// <summary>
+/// 已装备武器快照。
+/// UI、背包面板或调试面板可以读取它，而不直接依赖具体的 WeaponPosition。
+/// </summary>
 public readonly struct EquippedWeaponInfo
 {
     public WeaponDataSO WeaponData { get; }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D), typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb;
@@ -9,11 +9,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private MobileJoystick playerJoystick;
 
     private PropertiesManager propertiesManager;
+    private Player player;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         propertiesManager = GetComponent<PropertiesManager>();
+        player = GetComponent<Player>();
     }
 
     private void OnEnable()
@@ -47,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         Vector2 moveDirection = playerJoystick.GetMoveVector();
+        player?.ApplyMoveDirection(moveDirection);
         _rb.velocity = moveDirection * Time.deltaTime * speed;
     }
 
