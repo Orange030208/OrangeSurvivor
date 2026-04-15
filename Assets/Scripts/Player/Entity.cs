@@ -6,6 +6,7 @@ public interface IEntity
     Vector2 Center { get; }
     bool IsMoving { get; }
     Vector2 CurrentFacingDirection { get; }
+    EntityRenderer EntityRenderer { get; }
 
     /// <summary>
     /// 事件总线用的实体运行时唯一ID（单机主线程场景）。
@@ -20,6 +21,7 @@ public abstract class Entity : MonoBehaviour, IEntity
     public virtual Vector2 Center => transform.position;
     public virtual bool IsMoving { get; }
     public virtual Vector2 CurrentFacingDirection { get; }
+    public virtual EntityRenderer EntityRenderer { get; }
     public int EventBusId => gameObject.GetInstanceID();
 }
 

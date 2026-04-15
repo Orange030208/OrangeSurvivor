@@ -32,7 +32,12 @@ public class WeaponSequenceBridge : MonoBehaviour
 
     private void Update()
     {
-        sequencePlayer?.Tick(Time.deltaTime);
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
+        sequencePlayer.Tick(Time.deltaTime);
     }
 
     /// <summary>
@@ -41,22 +46,22 @@ public class WeaponSequenceBridge : MonoBehaviour
     /// </summary>
     public void CacheDefaultPose()
     {
-        sequencePlayer?.CacheDefaultPose();
+        sequencePlayer.CacheDefaultPose();
     }
 
     public void Play(AttackSequenceDefinitionSO sequence, float durationOverride = -1f, float reachScale = 1f)
     {
-        sequencePlayer?.Play(sequence, durationOverride, reachScale);
+        sequencePlayer.Play(sequence, durationOverride, reachScale);
     }
 
     public void Play(AttackSequenceDefinitionSO sequence, IReadOnlyDictionary<int, Vector3> localPositionOverrides, float durationOverride = -1f, float reachScale = 1f)
     {
-        sequencePlayer?.Play(sequence, localPositionOverrides, durationOverride, reachScale);
+        sequencePlayer.Play(sequence, localPositionOverrides, durationOverride, reachScale);
     }
 
     public void Stop(bool restoreDefaultPose = true)
     {
-        sequencePlayer?.Stop(restoreDefaultPose);
+        sequencePlayer.Stop(restoreDefaultPose);
     }
 
     private void OnDestroy()

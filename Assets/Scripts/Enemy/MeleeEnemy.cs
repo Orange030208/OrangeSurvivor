@@ -20,6 +20,11 @@ public class MeleeEnemy : Enemy
 
     private void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         if (!CanAttack) return;
         if (attackTimer >= attackDelay)
         {

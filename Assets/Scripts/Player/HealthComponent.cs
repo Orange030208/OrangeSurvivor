@@ -84,6 +84,11 @@ public class HealthComponent : MonoBehaviour
 
     private void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         if (health < maxHealth)
         {
             RecoveryHealth();

@@ -1,22 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class MenuUIPage : UIPageBase
 {
-    [SerializeField] private Button startButton;
-    [SerializeField] private Button characterSelectButton;
+    [SerializeField] private UIClickTarget startButton;
+    [SerializeField] private UIClickTarget characterSelectButton;
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        startButton.onClick.AddListener(OnStartButtonClicked);
+        startButton.OnClicked += OnStartButtonOnClicked;
     }
 
     protected override void OnPageClosed()
     {
-        startButton.onClick.RemoveListener(OnStartButtonClicked);
+        startButton.OnClicked -= OnStartButtonOnClicked;
     }
 
-    private void OnStartButtonClicked()
+    private void OnStartButtonOnClicked()
     {
         GameEventBus.Publish<MenuStartClickedEvent>();
     }

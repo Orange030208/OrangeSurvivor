@@ -1,12 +1,13 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, DescriptionListDisplayer>
 {
-    [SerializeField] private Button sellButton;
-    [SerializeField] private Button mergeButton;
+    [SerializeField] private UIClickTarget sellButton;
+    [SerializeField] private UIClickTarget mergeButton;
     [SerializeField] private TextMeshProUGUI sellPriceText;
+
+    private int currentItemIndex = -1;
 
     public override void Configure(InventoryItemOperateResource resource)
     {
@@ -29,22 +30,18 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
         RenderColor(resource.itemData, resource.colorDependencyNumber);
         bottom.DisplayDescriptions(resource.descriptions);
 
-        sellButton.onClick.RemoveAllListeners();
-        mergeButton.onClick.RemoveAllListeners();
+        currentItemIndex = resource.itemIndex;
 
-        sellButton.onClick.AddListener(() =>
-        {
-            GameEventBus.Publish(new InventoryItemSellClickedEvent(resource.itemIndex));
-        });
+        sellButton.OnClicked -= OnSellClicked;
+        mergeButton.OnClicked -= OnMergeClicked;
+
+        sellButton.OnClicked += OnSellClicked;
 
         bool showMerge = resource.itemData.ItemType == ItemType.Weapon && WeaponLevelHelper.CanMerge(resource.colorDependencyNumber);
         mergeButton.gameObject.SetActive(showMerge);
         if (showMerge)
         {
-            mergeButton.onClick.AddListener(() =>
-            {
-                GameEventBus.Publish(new InventoryItemMergeClickedEvent(resource.itemIndex));
-            });
+            mergeButton.OnClicked += OnMergeClicked;
         }
 
         CleanClickEvent();
@@ -57,8 +54,19 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
     public override void Dispose()
     {
         base.Dispose();
-        sellButton.onClick.RemoveAllListeners();
-        mergeButton.onClick.RemoveAllListeners();
+        sellButton.OnClicked -= OnSellClicked;
+        mergeButton.OnClicked -= OnMergeClicked;
+        currentItemIndex = -1;
+    }
+
+    private void OnSellClicked()
+    {
+        GameEventBus.Publish(new InventoryItemSellClickedEvent(currentItemIndex));
+    }
+
+    private void OnMergeClicked()
+    {
+        GameEventBus.Publish(new InventoryItemMergeClickedEvent(currentItemIndex));
     }
 }
 

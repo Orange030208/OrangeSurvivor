@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, DescriptionListDisplayer>
 {
-    [SerializeField] private Button buyButton;
+    [SerializeField] private UIClickTarget buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
-    [SerializeField] private Button lockButton;
+    [SerializeField] private UIClickTarget lockButton;
     [SerializeField] private Image lockImage;
     [SerializeField] private Sprite lockSprite, unlockSprite;
+
+    private int currentIndex = -1;
 
     public override void Configure(InfoAddIndex<ShopItemData> resource)
     {
@@ -52,13 +54,13 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
 
         CleanClickEvent();
 
-        buyButton.onClick.RemoveAllListeners();
+        buyButton.OnClicked -= OnBuyButtonClicked;
+        lockButton.OnClicked -= OnLockButtonClicked;
 
-        lockButton.onClick.RemoveAllListeners();
-        lockButton.onClick.AddListener(() =>
-        {
-            GameEventBus.Publish(new OperateShopItemLockEvent(resource.index));
-        });
+        currentIndex = resource.index;
+
+        buyButton.OnClicked += OnBuyButtonClicked;
+        lockButton.OnClicked += OnLockButtonClicked;
     }
 
     public override void Dispose()
@@ -69,7 +71,18 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
 
     public void CleanUp()
     {
-        buyButton.onClick.RemoveAllListeners();
-        lockButton.onClick.RemoveAllListeners();
+        buyButton.OnClicked -= OnBuyButtonClicked;
+        lockButton.OnClicked -= OnLockButtonClicked;
+        currentIndex = -1;
+    }
+
+    private void OnBuyButtonClicked()
+    {
+        GameEventBus.Publish(new ShopItemClickedEvent(currentIndex));
+    }
+
+    private void OnLockButtonClicked()
+    {
+        GameEventBus.Publish(new OperateShopItemLockEvent(currentIndex));
     }
 }

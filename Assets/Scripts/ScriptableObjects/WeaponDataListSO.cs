@@ -12,12 +12,16 @@ public class WeaponDataListSO : ScriptableObject
     [field: SerializeField] public WeaponDataSO[] Weapons { get; private set; }
 
 #if UNITY_EDITOR
-    private const string WEAPONS_DATA_PATH = "Assets/Resources/Data/Weapons";
+    private static readonly string[] WEAPONS_DATA_PATH = new string[]
+    {
+        "Assets/Resources/Data/Weapons/Melee",
+        "Assets/Resources/Data/Weapons/Range"
+    };
 
     [NaughtyAttributes.Button]
     public void RefreshWeapons()
     {
-        string[] guids = AssetDatabase.FindAssets("t:WeaponDataSO", new[] { WEAPONS_DATA_PATH });
+        string[] guids = AssetDatabase.FindAssets("t:WeaponDataSO", WEAPONS_DATA_PATH);
 
         if (guids.Length == 0)
         {

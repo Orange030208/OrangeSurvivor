@@ -6,7 +6,7 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
-    [SerializeField] private Button button;
+    [SerializeField] private UIClickTarget button;
 
     private int itemIndex = -1;
 
@@ -37,8 +37,8 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable
             }
         }
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnItemClicked);
+        button.OnClicked -= OnItemClicked;
+        button.OnClicked += OnItemClicked;
     }
 
     private void OnItemClicked()
@@ -53,7 +53,7 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable
 
     public void Dispose()
     {
-        button.onClick.RemoveAllListeners();
+        button.OnClicked -= OnItemClicked;
         itemIndex = -1;
     }
 }

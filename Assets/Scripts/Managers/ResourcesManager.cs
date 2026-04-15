@@ -10,6 +10,8 @@ public static class ResourcesManager
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
+    private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
+    private const string DEFAULT_PLAYER_PREFAB_NAME = "Dave";
 
     private static PropIcon[] propIcons;
     private static AccessoryDataSO[] Accessories;
@@ -88,6 +90,21 @@ public static class ResourcesManager
     {
         LoadCharacterData();
         return characters ?? Array.Empty<CharacterDataSO>();
+    }
+
+    public static Player GetPlayerPrefab(string prefabName)
+    {
+        if (string.IsNullOrWhiteSpace(prefabName))
+        {
+            return null;
+        }
+
+        return Resources.Load<Player>($"{PLAYER_PREFAB_PATH}/{prefabName}");
+    }
+
+    public static Player GetDefaultPlayerPrefab()
+    {
+        return GetPlayerPrefab(DEFAULT_PLAYER_PREFAB_NAME);
     }
 
     public static AccessoryDataSO GetAccessory(string accessoryId)

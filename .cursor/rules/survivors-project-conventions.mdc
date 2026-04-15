@@ -1,129 +1,62 @@
 ---
-
-description: Survivors 项目开发范式与职责边界
-
-alwaysApply: true
-
+description: 仅在涉及游戏状态、UI 分层、事件职责、运行时配置、模拟暂停或武器系统时使用；用于约束系统边界，不用于一般代码风格或通用开发规范。
+alwaysApply: false
 ---
 
-
-
-# Survivors 项目规则
-
-
-
-## 事件与职责边界
-
-- UIPage、UI 容器、UI 控件层只负责发 UI 意图事件、业务完成事件、快照请求事件，不直接切 `GameState`，不直接打开/关闭页面，不直接改 `Time.timeScale`。
-
-- `GameManager` 负责全局游戏状态切换、暂停恢复、返回菜单、波次推进等状态级决策。
-
-- `GameStateUIController` 只负责把 `GameStateChangedEvent` / `PauseStateChangedEvent` 翻译成页面开关，不承载业务规则。
-
-- 需要“先关 UI 再执行业务”的流程，放到独立 flow controller / coordinator 中处理，例如 `PauseMenuFlowController`。
-
-- 业务管理器负责消费 UI 意图事件，例如商店点击、reroll、确认选择，不让 UIPage 直接改业务对象。
-
-
-
-## UI 系统约束
-
-- 页面激活分为两层：`VisualActive` 与 `InputActive`。
-
-- `VisualActive` 表示页面视觉保持活跃；`InputActive` 表示页面能接收输入。
-
-- 页面是否可交互由 `UIManager` + `UIPageBase` 统一控制，子节点动画组件不得自行篡改页面级交互语义。
-
-- `UIRevealMotion` 只负责 reveal 动画，不负责决定业务交互状态。
-
-- `UISequenceDirector` 负责页面内容序列动画，允许通过 `timeScale` 调试动画节奏。
-
-- UI 只响应事件并更新表现，不缓存业务态作为页面内部状态；需要当前业务值时，应通过快照事件向管理层请求，再在事件回调里直接刷新表现。
-
-- 详情类 UI 统一只消费描述列表，不直接读取 `PropEntry`、不依赖运行时 feature 安装接口；角色/武器/饰品详情统一通过 `GetDescriptions()` 驱动展示。
-
-
-
-## 描述来源与运行时特性接口
-
-- `IDescriptionSource` 只负责“给 UI 提供描述文本列表”，语义是展示来源，不承担运行时安装职责。
-
-- `IRuntimeFeatureSource` 只负责“给运行时系统创建并安装 `FeatureEffectBase` 列表”，语义是效果来源，不承担 UI 展示职责。
-
-- `DescriptionListDisplayer`、角色详情、商店条目、背包操作面板、武器选择条目等展示层，只依赖 `IDescriptionSource` 或直接消费 `IReadOnlyList<string>`。
-
-- `FeatureHost`、`FeatureInstaller` 这类运行时特性系统，只依赖 `IRuntimeFeatureSource`，不读取描述文本。
-
-- `WeaponDataSO` 当前约定为“描述来源”，默认不作为 `IRuntimeFeatureSource` 使用；武器的运行时行为仍由武器本身与既有战斗系统负责。
-
-- `CharacterDataSO`、`AccessoryDataSO` 这类既要展示描述、又要提供运行时特性的对象，可以同时实现 `IDescriptionSource` 与 `IRuntimeFeatureSource`，但两种职责在代码上必须保持分离。
-
-
-
-## 事件设计原则
-
-- 能表达明确业务完成的事件，就使用完成事件，例如 `WeaponSelectionCompletedEvent`、`UpgradeSelectionCompletedEvent`。
-
-- 不为简单状态跳转滥加事件；如果只是“请求切到某状态”，优先复用已有请求事件或让管理层直接消费更明确的 UI 意图事件。
-
-- UI 点击事件命名优先使用 `*ClickedEvent`；快照请求使用 `Request*SnapshotEvent`；真正业务动作请求使用 `*RequestedEvent`。
-
-- 状态变化广播统一使用 `*ChangedEvent` 命名，避免同一语义下混用 `*Changed` / `*StateChangedEvent` / `*PhaseChanged` 等不一致形式。
-
-- 货币、资源、背包槽位等可扩展业务数据，事件模型必须携带类型信息，不为每一种具体类型复制一套事件结构。
-
-- 同类业务事件优先做成通用载荷事件，例如 `CurrencyType + Amount`，避免出现 `GoldChangedEvent`、`DiamondChangedEvent` 这类平铺式冗余事件。
-
-
-
-## 代码修改原则
-
-- 修改前先读相关文件，确认现有职责边界与风格。
-
-- 优先做最小必要修改，不顺手重构无关区域。
-
-- 不新增为了抽象而抽象的 helper；只在重复真实出现时再抽。
-
-- 发现职责越界时，优先把逻辑往管理层/协调层收，而不是继续堆在 UIPage。
-
-- 当发现这类高频架构约束被违反时，要把规则沉淀进项目规则，避免同类问题重复出现。
-
-
-
-## 武器系统当前约定
-
-- `Weapon` 负责通用索敌、攻击冷却、攻击朝向更新、运行时属性计算，不承载近战命中窗口、远程发射细节，也不保留运行时调试日志职责。
-
-- `MeleeWeapon` / `RangeWeapon` 只负责各自攻击实现与序列事件消费；不要把子类攻击细节重新塞回 `Weapon` 基类。
-
-- 武器索敌统一以持有武器的 `Entity` 为主体，通过 `EntityExtensions.FindClosestTargetInRange(...)` 查询；不要让 `Weapon` 自己伪装成实体语义主体。
-
-- 武器无目标时的朝向回退，只依赖持有者 `Entity` 的 `IsMoving` 与 `CurrentFacingDirection`；不要让武器直接依赖 `PlayerController`、输入源或玩家专用控制组件。
-
-- `Entity` 基类只保留最小朝向契约：`IsMoving` 与 `CurrentFacingDirection`；具体状态缓存与更新由子类自己实现。
-
-- `PlayerController` 只负责读取输入并把方向写给 `Player.ApplyMoveDirection(...)`，不作为武器系统的朝向状态源。
-
-- `WeaponSequenceBridge` 只负责桥接场景中的动画目标与 `WeaponMotionSequencePlayer`，不承载索敌、命中或发射决策。
-
-- `WeaponMotionSequencePlayer` 只负责动作关键帧采样与事件推进；固定帧按写死的 `localPosition` 播放，不受 `RuntimeStats.Range` 影响。
-
-- `DynamicFromTarget` 关键帧才允许结合当前目标位置与 `RuntimeStats.Range` 解算真实落点；当前动态策略仅保留 `TowardTargetClampedRadius`。
-
-- 固定帧语义是“本地绝对位移轨迹”，动态帧语义是“按目标方向与攻击半径解算的轨迹”；两套语义不得混用。
-
-- 武器进入 `IsAttacking` 后，应保持当前攻击方向，不因目标暂时离开范围而瞬间大角度跳转；攻击结束后再平滑过渡到新的目标或持有者朝向。
-
-
-
-## 当前项目约定示例
-
-- `MenuUIPage` 只发 `MenuStartClickedEvent`，由 `GameManager` 决定进入 `WeaponSelection`。
-
-- `ShopUIPage` 只发 `ShopContinueClickedEvent`、`ShopRerollRequestedEvent`、`ShopItemClickedEvent` 等事件。
-
-- `GamingUIPage` 可以发 `PauseGameRequestedEvent`，但不直接处理暂停结果。
-
-- `GamePauseMenu` 只发 `PauseMenuContinueClickedEvent` / `PauseMenuReturnToMenuClickedEvent`，由 `PauseMenuFlowController` 负责“先关闭再执行”。
-
-- `CurrencyUI` 这类展示控件只订阅 `CurrencyChangedEvent` 并按 `CurrencyType` 刷新显示，不在 UI 内保存货币业务数据。
+# Survivors 系统规则
+
+## 职责边界
+
+- UI 只发事件、收快照、更新表现；不直接切 `GameState`、开关页面或修改 `Time.timeScale`。
+- `GameManager` 负责全局状态、暂停恢复、返回菜单、波次推进等状态决策。
+- `GameStateUIController` 只把状态事件翻译为页面开关，不承载业务。
+- 需要“先关 UI 再执行业务”的流程，放到独立 flow/coordinator。
+- 业务管理器消费 UI 意图事件，UIPage 不直接改业务对象。
+
+## UI 系统
+
+- 页面激活分为 `VisualActive` 与 `InputActive`。
+- 页面交互语义由 `UIManager` + `UIPageBase` 统一控制，动画组件不得改页面级交互状态。
+- `UIRevealMotion` 只负责 reveal；`UISequenceDirector` 只负责序列动画。
+- UI 不缓存业务态；需要当前值时通过快照事件请求并直接刷新。
+- 详情类 UI 统一消费描述列表，不直接依赖运行时 feature 安装接口。
+
+## 描述与运行时特性
+
+- `IDescriptionSource` 只负责提供展示描述。
+- `IRuntimeFeatureSource` 只负责提供运行时特性。
+- 展示层只依赖描述；运行时特性系统只依赖 feature source。
+- `WeaponDataSO` 默认只作描述来源，不作 `IRuntimeFeatureSource`。
+- 同时承担展示与运行时特性的对象，代码职责必须分离。
+
+## 事件约定
+
+- 明确业务完成优先使用完成事件，如 `*CompletedEvent`。
+- UI 点击用 `*ClickedEvent`；快照请求用 `Request*SnapshotEvent`；业务动作请求用 `*RequestedEvent`。
+- 状态变化统一使用 `*ChangedEvent`。
+- 可扩展业务数据事件必须带类型信息，优先使用通用载荷事件。
+
+## 运行时配置
+
+- 外部装配/注入决定的值视为运行时可变配置。
+- 运行时可变配置不要在构造、字段初始化或 `Awake()` 中缓存最终值。
+- 优先在实际使用点读取；必须提前注入时，由装配层在实例化后显式下发。
+- 辅助对象默认只缓存稳定引用，不缓存后续可能变化的配置。
+
+## 模拟暂停
+
+- 只有 `GameState.Game` 且未暂停时，游戏模拟才允许推进。
+- 是否推进模拟由 `GameManager` 统一决定；其他系统不直接改 `Time.timeScale`。
+- 非战斗界面允许继续播放的内容仅限 UI/转场表现，并应使用 unscaled time。
+- 发现系统在 `Game` 外继续推进时，优先修正时间源或状态门禁。
+
+## 武器系统
+
+- `Weapon` 负责通用索敌、攻击冷却、朝向更新、运行时属性计算。
+- `MeleeWeapon` / `RangeWeapon` 只负责各自攻击实现，不把细节塞回基类。
+- 武器索敌以持有者 `Entity` 为主体，通过 `EntityExtensions.FindClosestTargetInRange(...)` 查询。
+- 无目标时，武器朝向只依赖持有者 `Entity.IsMoving` 与 `CurrentFacingDirection`。
+- `PlayerController` 只负责输入并写入 `Player.ApplyMoveDirection(...)`。
+- `WeaponSequenceBridge` 只负责桥接；`WeaponMotionSequencePlayer` 只负责关键帧采样与事件推进。
+- 固定帧是本地绝对位移；动态帧才按目标方向与攻击半径解算，二者不得混用。
+- 武器进入 `IsAttacking` 后保持当前攻击方向，攻击结束后再过渡到新方向。

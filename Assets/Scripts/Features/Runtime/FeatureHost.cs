@@ -27,6 +27,11 @@ public class FeatureHost : MonoBehaviour
 
     private void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         if (featureContext == null || installedSources.Count == 0)
         {
             return;

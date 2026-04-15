@@ -6,8 +6,12 @@ using UnityEngine.UI;
 /// <summary>
 /// UI 运行时总调度器：负责页面实例化、打开关闭、层级挂载、焦点切换以及池化回收。
 /// 这个类不关心页面内部具体表现，只通过统一生命周期接口驱动各页面。
+/// 事件语义：
+/// - PageOpened：页面已注册并触发进入流程，不等待 UISequenceDirector 的 enter 完成。
+/// - PageClosed：页面离开流程已完成；若页面启用了 UISequenceDirector，会等待其 exit 完成后再触发。
+/// - PageActivationChanged：页面 VisualActive / InputActive 已被重新计算并应用。
 /// </summary>
-public sealed class UIManager : MonoBehaviour, IUIManager
+public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHost
 {
     [SerializeField] private UIFrameworkSettings settings;
     [SerializeField] private UIPrefabCatalog catalog;
@@ -20,6 +24,8 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     private readonly UIRuntimeState runtimeState = new UIRuntimeState();
     private readonly HashSet<string> closingInstanceIds = new HashSet<string>();
 
+    private UITransitionRunner transitionRunner;
+
     public event EventHandler<UIPageEventArgs> PageOpened;
     public event EventHandler<UIPageEventArgs> PageClosed;
     public event EventHandler<UIPageEventArgs> PageActivationChanged;
@@ -28,6 +34,8 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
     private void Awake()
     {
+        transitionRunner = new UITransitionRunner(this);
+
         // 启动时完成运行时字典构建、根节点创建、层级创建与对象池预热。
         ValidateSettings();
         BuildEntryMap();
@@ -45,10 +53,34 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         }
     }
 
+    // 立即打开页面；不等待其他页面的退场完成。
     public TPage OpenPage<TPage>(object payload = null) where TPage : UIPageBase
     {
         IUIPage page = OpenPageByType(typeof(TPage), payload);
         return (TPage)page;
+    }
+
+    // 用于“当前顶层页面 -> 新页面”的切换语义；内部统一走链式过渡序列。
+    public void ReplaceTopPage<TPage>(object payload = null) where TPage : UIPageBase
+    {
+        BeginTransition()
+            .CloseTopPage()
+            .OpenPage<TPage>(payload)
+            .Play();
+    }
+
+    // 用于“清空当前页面集合 -> 打开目标页面”的重置语义；内部统一走链式过渡序列。
+    public void ResetToPage<TPage>(object payload = null) where TPage : UIPageBase
+    {
+        BeginTransition()
+            .CloseAllPages()
+            .OpenPage<TPage>(payload)
+            .Play();
+    }
+
+    public IUITransitionSequence BeginTransition()
+    {
+        return new UITransitionSequence(transitionRunner);
     }
 
     public bool OpenPageByCatalogIndex(int catalogIndex, object payload = null)
@@ -78,6 +110,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     private IUIPage OpenPageByType(Type pageType, object payload)
     {
         // 打开流程：校验类型 -> 查配置 -> 复用单例/取实例 -> 注册运行时状态 -> 调页面生命周期。
+        // 注意：这里只触发页面进入流程，不等待 UISequenceDirector 的 enter 完成；PageOpened 会立即广播。
         ValidatePageType(pageType);
         UIPrefabEntry entry = ResolveEntry(pageType);
 
@@ -98,7 +131,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
         UIPageOpenContext context = new UIPageOpenContext(pageType, instanceId, payload);
         page.HandleOpen(context);
-        page.PlayOpenTransition(ResolveOpenTransition(entry), settings.UseUnscaledTime);
+        page.PlayOpenTransition(settings.UseUnscaledTime);
         ApplyPageActivation(runtimePage);
         RaisePageOpened(pageType, instanceId);
         return page;
@@ -123,6 +156,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager
     private bool ClosePageByInstanceId(string instanceId)
     {
         // 关闭流程只负责发起，不立即销毁页面；真正收尾要等页面自己的关闭管线完成后回调 FinalizeClose。
+        // 若页面启用了 UISequenceDirector，这里的关闭完成会等待 director 的 exit 完成。
         if (string.IsNullOrWhiteSpace(instanceId))
         {
             throw new ArgumentException("ClosePageByInstanceId failed: instanceId is null or empty.", nameof(instanceId));
@@ -141,7 +175,6 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         closingInstanceIds.Add(instanceId);
         ApplyActivationForAllPages();
         runtimePage.Page.PlayCloseTransition(
-            ResolveCloseTransition(runtimePage.Entry),
             settings.UseUnscaledTime,
             () => FinalizeClose(runtimePage));
         return true;
@@ -376,16 +409,10 @@ public sealed class UIManager : MonoBehaviour, IUIManager
 
         ApplyActivationForAllPages();
         RaisePageClosed(runtimePage.PageType, instanceId);
-    }
-
-    private UIPageTransitionSettings ResolveOpenTransition(UIPrefabEntry entry)
-    {
-        return entry.useCustomTransition ? entry.customOpenTransition : settings.DefaultOpenTransition;
-    }
-
-    private UIPageTransitionSettings ResolveCloseTransition(UIPrefabEntry entry)
-    {
-        return entry.useCustomTransition ? entry.customCloseTransition : settings.DefaultCloseTransition;
+        if (closingInstanceIds.Count == 0)
+        {
+            transitionRunner.NotifyTransitionClosuresCompleted();
+        }
     }
 
     private void ApplyPageActivation(RuntimePage topRuntimePage)
@@ -449,6 +476,26 @@ public sealed class UIManager : MonoBehaviour, IUIManager
         }
 
         return pool;
+    }
+
+    void IUITransitionRunnerHost.OpenPage(Type pageType, object payload)
+    {
+        OpenPageByType(pageType, payload);
+    }
+
+    bool IUITransitionRunnerHost.ClosePage(Type pageType)
+    {
+        return ClosePageByType(pageType);
+    }
+
+    bool IUITransitionRunnerHost.CloseTopPage()
+    {
+        return CloseTopPage();
+    }
+
+    int IUITransitionRunnerHost.CloseAllPages()
+    {
+        return CloseAllPages();
     }
 
     private string CreateInstanceId()

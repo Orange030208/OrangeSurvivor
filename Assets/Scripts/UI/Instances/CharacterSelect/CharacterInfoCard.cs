@@ -14,4 +14,11 @@ public class CharacterInfoCard : MonoBehaviour
         characterNameText.text = characterData.CharacterName;
         descriptionListDisplayer.DisplaySource(characterData);
     }
+
+    public void ClearInfo()
+    {
+        characterIconImage.sprite = null;
+        characterNameText.text = string.Empty;
+        descriptionListDisplayer.DisplayDescriptions(null);
+    }
 }

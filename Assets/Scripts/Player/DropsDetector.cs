@@ -47,6 +47,11 @@ public class DropsDetector : MonoBehaviour
 
     private void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         detectTimer -= Time.deltaTime;
         if (detectTimer <= 0)
         {

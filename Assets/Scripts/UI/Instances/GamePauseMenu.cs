@@ -1,5 +1,5 @@
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// 暂停菜单页面本体：负责按钮绑定、属性同步以及 sidebar 特殊结构动画。
@@ -7,17 +7,19 @@ using UnityEngine.UI;
 /// </summary>
 public class GamePauseMenu : UIPageBase
 {
-    [SerializeField] private Button continueButton;
-    [SerializeField] private Button menuButton;
+    private const float DEFAULT_SLIDE_DURATION = 0.25f;
+
+    [SerializeField] private UIClickTarget continueButton;
+    [SerializeField] private UIClickTarget menuButton;
 
     [Header("属性面板(左)")]
-    [SerializeField] private SidebarSlider propertiesSidebar;
+    [SerializeField] private UISidebarRevealMotion propertiesSidebar;
     [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
     [Header("背包面板(右)")]
-    [SerializeField] private SidebarSlider inventorySidebar;
+    [SerializeField] private UISidebarRevealMotion inventorySidebar;
 
-    [SerializeField] private float slideDuration = 0.25f;
+    [SerializeField] private float slideDuration = DEFAULT_SLIDE_DURATION;
 
     protected override void Awake()
     {
@@ -29,7 +31,7 @@ public class GamePauseMenu : UIPageBase
     {
         BindButtonEvents();
         InjectPropertiesDependencies();
-        propertiesViewSync?.StartSync();
+        propertiesViewSync.StartSync();
 
         HideAllSidebarPanelsImmediately();
         ShowAllSidebarPanels();
@@ -38,7 +40,7 @@ public class GamePauseMenu : UIPageBase
     protected override void OnPageClosed()
     {
         UnbindButtonEvents();
-        propertiesViewSync?.StopSync();
+        propertiesViewSync.StopSync();
         KillSidebarTweens();
         HideAllSidebarPanelsImmediately();
     }
@@ -66,13 +68,15 @@ public class GamePauseMenu : UIPageBase
         if (propertiesSidebar != null)
         {
             pendingCount++;
-            propertiesSidebar.Hide(MarkCompleted);
+            Tween propertiesTween = propertiesSidebar.Hide();
+            propertiesTween?.OnComplete(MarkCompleted);
         }
 
         if (inventorySidebar != null)
         {
             pendingCount++;
-            inventorySidebar.Hide(MarkCompleted);
+            Tween inventoryTween = inventorySidebar.Hide();
+            inventoryTween?.OnComplete(MarkCompleted);
         }
 
         if (pendingCount == 0)
@@ -83,14 +87,14 @@ public class GamePauseMenu : UIPageBase
 
     private void BindButtonEvents()
     {
-        continueButton?.onClick.AddListener(OnContinueClicked);
-        menuButton?.onClick.AddListener(OnMenuClicked);
+        continueButton.OnClicked += OnContinueClicked;
+        menuButton.OnClicked += OnMenuClicked;
     }
 
     private void UnbindButtonEvents()
     {
-        continueButton?.onClick.RemoveListener(OnContinueClicked);
-        menuButton?.onClick.RemoveListener(OnMenuClicked);
+        continueButton.OnClicked -= OnContinueClicked;
+        menuButton.OnClicked -= OnMenuClicked;
     }
 
     private void OnContinueClicked()
@@ -106,8 +110,8 @@ public class GamePauseMenu : UIPageBase
     private void InitSidebarPanels()
     {
         ApplySlideDuration();
-        propertiesSidebar?.CachePositionsByCurrentState();
-        inventorySidebar?.CachePositionsByCurrentState();
+        RefreshSidebarDefaults(propertiesSidebar);
+        RefreshSidebarDefaults(inventorySidebar);
     }
 
     private void ShowAllSidebarPanels()
@@ -119,27 +123,20 @@ public class GamePauseMenu : UIPageBase
 
     private void HideAllSidebarPanelsImmediately()
     {
-        propertiesSidebar?.HideImmediate();
-        inventorySidebar?.HideImmediate();
+        HideSidebarImmediate(propertiesSidebar);
+        HideSidebarImmediate(inventorySidebar);
     }
 
     private void ApplySlideDuration()
     {
-        if (propertiesSidebar != null)
-        {
-            propertiesSidebar.SlideDuration = slideDuration;
-        }
-
-        if (inventorySidebar != null)
-        {
-            inventorySidebar.SlideDuration = slideDuration;
-        }
+        ApplySidebarTimings(propertiesSidebar);
+        ApplySidebarTimings(inventorySidebar);
     }
 
     private void KillSidebarTweens()
     {
-        propertiesSidebar?.KillTween();
-        inventorySidebar?.KillTween();
+        KillSidebarTween(propertiesSidebar);
+        KillSidebarTween(inventorySidebar);
     }
 
     private void InjectPropertiesDependencies()
@@ -152,5 +149,45 @@ public class GamePauseMenu : UIPageBase
         Player player = FindFirstObjectByType<Player>();
         PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
         propertiesViewSync.InjectDependencies(manager);
+    }
+
+    private void ApplySidebarTimings(UISidebarRevealMotion sidebar)
+    {
+        if (sidebar == null)
+        {
+            return;
+        }
+
+        sidebar.ConfigureTimings(slideDuration, Ease.OutCubic, slideDuration, Ease.InCubic);
+    }
+
+    private static void RefreshSidebarDefaults(UISidebarRevealMotion sidebar)
+    {
+        if (sidebar == null)
+        {
+            return;
+        }
+
+        sidebar.RefreshDefaults();
+    }
+
+    private static void HideSidebarImmediate(UISidebarRevealMotion sidebar)
+    {
+        if (sidebar == null)
+        {
+            return;
+        }
+
+        sidebar.SetExitImmediate();
+    }
+
+    private static void KillSidebarTween(UISidebarRevealMotion sidebar)
+    {
+        if (sidebar == null)
+        {
+            return;
+        }
+
+        sidebar.Kill();
     }
 }

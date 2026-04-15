@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>
 {
-    [SerializeField] private int defaultSelectedIndex;
-
     private CharacterDataSO[] characters = Array.Empty<CharacterDataSO>();
     private int selectedIndex = -1;
+
+    public int SelectedIndex => selectedIndex;
+    public CharacterDataSO SelectedCharacter =>
+        selectedIndex >= 0 && selectedIndex < characters.Length ? characters[selectedIndex] : null;
 
     private void OnEnable()
     {
@@ -24,14 +26,7 @@ public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionMan
     private void RefreshCharacters()
     {
         characters = ResourcesManager.GetAllCharacters();
-
-        if (characters.Length == 0)
-        {
-            selectedIndex = -1;
-            return;
-        }
-
-        selectedIndex = Mathf.Clamp(defaultSelectedIndex, 0, characters.Length - 1);
+        selectedIndex = -1;
     }
 
     private void OnCharacterItemClicked(CharacterItemClickedEvent eventData)

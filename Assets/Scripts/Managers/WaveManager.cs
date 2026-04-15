@@ -47,6 +47,17 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Subscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
         GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Subscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
+        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+
+        if (spawnAroundEntity == null)
+        {
+            Player player = FindFirstObjectByType<Player>();
+            if (player != null)
+            {
+                spawnAroundEntity = player;
+            }
+        }
+
         PublishWaveRuntimeSnapshot();
     }
 
@@ -59,10 +70,16 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Unsubscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
         GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Unsubscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
+        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
     private void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         if (!isTimerOn)
         {
             return;
@@ -79,6 +96,11 @@ public class WaveManager : MonoBehaviour
         }
 
         CompleteCurrentWave();
+    }
+
+    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    {
+        spawnAroundEntity = eventData.Player;
     }
 
     private void OnStartFirstWaveRequested()

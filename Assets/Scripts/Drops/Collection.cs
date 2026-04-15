@@ -23,6 +23,12 @@ public abstract class Collection : Entity
 
         while (target != null)
         {
+            if (!GameSimulation.IsRunning)
+            {
+                yield return null;
+                continue;
+            }
+
             Vector2 currentPosition = transform.position;
             Vector2 targetPosition = target.Center;
             float distance = Vector2.Distance(currentPosition, targetPosition);

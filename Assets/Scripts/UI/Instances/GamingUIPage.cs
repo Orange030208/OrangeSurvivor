@@ -17,10 +17,11 @@ public class GamingUIPage : UIPageBase
 
     [SerializeField] private TextMeshProUGUI levelText;
 
-    [SerializeField] private Button menuButton;
+    [SerializeField] private UIClickTarget menuButton;
+    [SerializeField] private MobileJoystick moveJoystick;
 
     private HealthComponent playerHealthComponent;
-    
+
     protected override void OnPageOpened(UIPageOpenContext context)
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
@@ -28,17 +29,13 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
         GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
 
-        Player player = FindObjectOfType<Player>();
-        playerHealthComponent = player != null ? player.GetComponent<HealthComponent>() : null;
-        if (playerHealthComponent != null)
-        {
-            playerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
-            OnPlayerHealthChanged(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
-        }
+        CacheMoveJoystick();
+        BindPlayerHealth(FindFirstObjectByType<Player>());
 
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
-        menuButton?.onClick.AddListener(() => GameEventBus.Publish(new PauseGameRequestedEvent()));
+        menuButton.OnClicked += OnPauseClicked;
     }
 
     protected override void OnPageClosed()
@@ -48,14 +45,59 @@ public class GamingUIPage : UIPageBase
         GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
         GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
         GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
+        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
 
-        if (playerHealthComponent != null)
+        PublishMoveInput(Vector2.zero);
+        UnbindPlayerHealth();
+        menuButton.OnClicked -= OnPauseClicked;
+    }
+
+    protected override void OnPageTick(float deltaTime)
+    {
+
+        PublishMoveInput(moveJoystick.GetMoveDirection());
+    }
+
+    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    {
+        BindPlayerHealth(eventData.Player);
+    }
+
+    private void BindPlayerHealth(Player player)
+    {
+        UnbindPlayerHealth();
+        playerHealthComponent = player.GetComponent<HealthComponent>();
+        playerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
+        OnPlayerHealthChanged(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
+    }
+
+    private void UnbindPlayerHealth()
+    {
+        if (playerHealthComponent == null)
         {
-            playerHealthComponent.OnHealthChanged -= OnPlayerHealthChanged;
-            playerHealthComponent = null;
+            return;
         }
-        
-        menuButton?.onClick.RemoveAllListeners();
+
+        playerHealthComponent.OnHealthChanged -= OnPlayerHealthChanged;
+        playerHealthComponent = null;
+    }
+
+    private void OnPauseClicked()
+    {
+        GameEventBus.Publish(new PauseGameRequestedEvent());
+    }
+
+    private void CacheMoveJoystick()
+    {
+        if (moveJoystick == null)
+        {
+            moveJoystick = GetComponentInChildren<MobileJoystick>(true);
+        }
+    }
+
+    private void PublishMoveInput(Vector2 moveDirection)
+    {
+        GameEventBus.Publish(new PlayerMoveInputChangedEvent(moveDirection));
     }
 
     private void OnWaveStarted(WaveStartedEvent e)

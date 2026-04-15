@@ -29,6 +29,11 @@ public class RangeEnemyAttack : MonoBehaviour
 
     private void ManageShoot()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         if (target == null)
         {
             return;

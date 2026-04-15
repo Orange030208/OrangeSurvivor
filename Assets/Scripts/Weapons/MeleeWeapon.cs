@@ -12,26 +12,30 @@ public class MeleeWeapon : Weapon
     [Header("Inspector")]
     [Tooltip("近战命中盒的参考原点。通常是武器前端、棍头或刀刃附近。")]
     [SerializeField] private Transform hitDetectionTransform;
-    [Tooltip("命中检测使用的碰撞盒。建议只作为检测范围使用，不依赖物理碰撞回调。")]
-    [SerializeField] private BoxCollider2D hitCollider;
-    [Tooltip("攻击序列资源。为空时会在运行时生成默认的重棍挥击序列。")]
-    [SerializeField] private AttackSequenceDefinitionSO attackSequence;
+    private AttackSequenceDefinitionSO attackSequence;
     [Tooltip("必需组件：负责驱动攻击动作，并在关键帧时开关命中窗口。")]
     [SerializeField] private WeaponSequenceBridge sequenceBridge;
 
     private readonly Dictionary<int, HashSet<HealthComponent>> hitWindowTargets = new();
+    private readonly Dictionary<int, MeleeHitDetectionPose> hitWindowLastPoses = new();
     private readonly HashSet<int> activeHitWindows = new();
     private MeleeWeaponAttackExecutor attackExecutor;
     private Entity pendingTarget;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
 
+    private Vector2 HitBoxSize => WeaponData != null ? WeaponData.MeleeHitBoxSize : Vector2.one;
+
     protected override void Awake()
     {
         base.Awake();
-        attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform, hitCollider, targetLayerMask);
-
+        attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform);
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
+        sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted += FinishAttackSequence;
+    }
 
+    protected override void OnConfiguredFromData()
+    {
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -39,12 +43,11 @@ public class MeleeWeapon : Weapon
 
         if (attackSequence == null)
         {
-            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.TitanMaulOverheadBreak);
+            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.MeleeHeavySwing);
             attackSequence = runtimeDefaultSequence;
         }
 
-        sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
-        sequenceBridge.SequenceCompleted += FinishAttackSequence;
+        ApplyHitDetectionOffset();
     }
 
     protected override void OnDisable()
@@ -78,6 +81,7 @@ public class MeleeWeapon : Weapon
             return;
         }
 
+        MeleeHitDetectionPose currentPose = attackExecutor.CaptureCurrentPose();
         foreach (int windowId in activeHitWindows)
         {
             if (!hitWindowTargets.TryGetValue(windowId, out HashSet<HealthComponent> hitTargets))
@@ -85,7 +89,20 @@ public class MeleeWeapon : Weapon
                 continue;
             }
 
-            attackExecutor.ExecuteAttack(BuildAttackContext(pendingTarget, hitDetectionTransform), hitTargets);
+            if (!hitWindowLastPoses.TryGetValue(windowId, out MeleeHitDetectionPose previousPose))
+            {
+                previousPose = currentPose;
+            }
+
+            attackExecutor.ExecuteAttack(
+                BuildAttackContext(pendingTarget, hitDetectionTransform),
+                HitBoxSize,
+                hitTargets,
+                targetLayerMask,
+                previousPose,
+                currentPose);
+
+            hitWindowLastPoses[windowId] = currentPose;
         }
     }
 
@@ -95,6 +112,7 @@ public class MeleeWeapon : Weapon
         pendingTarget = target;
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
 
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
         // 动态帧不是在播放过程中实时追目标，
@@ -116,17 +134,21 @@ public class MeleeWeapon : Weapon
         {
             hitTargets.Clear();
         }
+
+        hitWindowLastPoses[windowId] = attackExecutor.CaptureCurrentPose();
     }
 
     public void CloseHitWindow(int windowId)
     {
         activeHitWindows.Remove(windowId);
+        hitWindowLastPoses.Remove(windowId);
     }
 
     public void FinishAttackSequence()
     {
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
         pendingTarget = null;
         CompleteAttackCycle();
     }
@@ -151,7 +173,8 @@ public class MeleeWeapon : Weapon
         for (int i = 0; i < keyframes.Count; i++)
         {
             WeaponMotionKeyframe keyframe = keyframes[i];
-            if (keyframe.positionMode != WeaponMotionPositionMode.DynamicFromTarget)
+            if (keyframe.xPositionMode != WeaponMotionPositionMode.DynamicFromTarget &&
+                keyframe.yPositionMode != WeaponMotionPositionMode.DynamicFromTarget)
             {
                 continue;
             }
@@ -164,27 +187,39 @@ public class MeleeWeapon : Weapon
         return overrides;
     }
 
-    private static Vector3 ResolveDynamicKeyframePosition(WeaponMotionKeyframe keyframe, Vector2 localTarget, float attackRange)
+    private static Vector2 ResolveDynamicKeyframePosition(WeaponMotionKeyframe keyframe, Vector2 localTarget, float attackRange)
     {
-        float targetDistance = localTarget.magnitude;
-        Vector2 direction = targetDistance > 0.0001f ? localTarget.normalized : Vector2.right;
+        float normalizedTargetDistance = Mathf.Clamp01(localTarget.magnitude / attackRange);
 
-        float normalizedTargetDistance = Mathf.Clamp01(targetDistance / attackRange);
-        float minReach = Mathf.Clamp01(keyframe.dynamicMinNormalizedReach);
-        float maxReach = Mathf.Clamp(keyframe.dynamicMaxNormalizedReach, minReach, 1f);
-
-        // 当前仅保留 TowardTargetClampedRadius：
-        // - dynamicMinNormalizedReach / dynamicMaxNormalizedReach 表示 0~1 的“归一化攻击半径区间”；
-        // - 1 表示恰好到达当前武器 RuntimeStats.Range 的边界；
-        // - 运行时只在最后一步乘 attackRange，避免再把 Range 当倍率重复放大。
-        float normalizedResolvedDistance = keyframe.dynamicPositionStrategy switch
+        float resolvedX = keyframe.localPositionX;
+        if (keyframe.xPositionMode == WeaponMotionPositionMode.DynamicFromTarget)
         {
-            WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius => Mathf.Clamp(normalizedTargetDistance, minReach, maxReach),
-            _ => Mathf.Clamp01(keyframe.localPosition.magnitude)
-        };
+            float minReach = Mathf.Clamp01(keyframe.xDynamicMinNormalizedReach);
+            float maxReach = Mathf.Clamp(keyframe.xDynamicMaxNormalizedReach, minReach, 1f);
+            float normalizedResolvedDistance = keyframe.dynamicPositionStrategy switch
+            {
+                WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius => Mathf.Clamp(normalizedTargetDistance, minReach, maxReach),
+                _ => Mathf.Clamp01(Mathf.Abs(keyframe.localPositionX))
+            };
 
-        float resolvedDistance = normalizedResolvedDistance * attackRange;
-        return new Vector3(direction.x * resolvedDistance, direction.y * resolvedDistance, keyframe.localPosition.z);
+            resolvedX = normalizedResolvedDistance * attackRange * Mathf.Sign(keyframe.localPositionX == 0f ? 1f : keyframe.localPositionX);
+        }
+
+        float resolvedY = keyframe.localPositionY;
+        if (keyframe.yPositionMode == WeaponMotionPositionMode.DynamicFromTarget)
+        {
+            float minReach = Mathf.Clamp01(keyframe.yDynamicMinNormalizedReach);
+            float maxReach = Mathf.Clamp(keyframe.yDynamicMaxNormalizedReach, minReach, 1f);
+            float normalizedResolvedDistance = keyframe.dynamicPositionStrategy switch
+            {
+                WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius => Mathf.Clamp(normalizedTargetDistance, minReach, maxReach),
+                _ => Mathf.Clamp01(Mathf.Abs(keyframe.localPositionY))
+            };
+
+            resolvedY = normalizedResolvedDistance * attackRange * Mathf.Sign(keyframe.localPositionY == 0f ? 1f : keyframe.localPositionY);
+        }
+
+        return new Vector2(resolvedX, resolvedY);
     }
 
     private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
@@ -208,24 +243,47 @@ public class MeleeWeapon : Weapon
     {
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
         pendingTarget = null;
         CompleteAttackCycle();
         sequenceBridge.Stop(true);
     }
 
+    private void ApplyHitDetectionOffset()
+    {
+        if (hitDetectionTransform == null || WeaponData == null)
+        {
+            return;
+        }
+
+        Vector3 localPosition = hitDetectionTransform.localPosition;
+        Vector2 hitOffset = WeaponData.MeleeHitOffset;
+        localPosition.x = hitOffset.x;
+        localPosition.y = hitOffset.y;
+        hitDetectionTransform.localPosition = localPosition;
+    }
+
     private void OnDrawGizmosSelected()
     {
-        DrawSharedWeaponDebugGizmos();
-
-        if (hitDetectionTransform == null || hitCollider == null)
+        if (hitDetectionTransform == null)
         {
             return;
         }
 
         Gizmos.color = Color.red;
-        Matrix4x4 previous = Gizmos.matrix;
-        Gizmos.matrix = Matrix4x4.TRS(hitDetectionTransform.position, hitDetectionTransform.rotation, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, hitCollider.size);
-        Gizmos.matrix = previous;
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+
+        Vector3 previewPosition = hitDetectionTransform.position;
+        Quaternion previewRotation = hitDetectionTransform.rotation;
+        if (!Application.isPlaying && WeaponData != null)
+        {
+            Vector2 previewOffset = WeaponData.MeleeHitOffset;
+            previewPosition = transform.TransformPoint(new Vector3(previewOffset.x, previewOffset.y, hitDetectionTransform.localPosition.z));
+            previewRotation = transform.rotation * Quaternion.Euler(0f, 0f, hitDetectionTransform.localEulerAngles.z);
+        }
+
+        Gizmos.matrix = Matrix4x4.TRS(previewPosition, previewRotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, HitBoxSize);
+        Gizmos.matrix = previousMatrix;
     }
 }

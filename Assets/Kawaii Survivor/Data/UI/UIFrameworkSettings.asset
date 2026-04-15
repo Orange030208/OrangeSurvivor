@@ -54,4 +54,4 @@ MonoBehaviour:
     blocksRaycasts: 1
   - layerType: 5
     sortingOrder: 800
-    blocksRaycasts: 0
+    blocksRaycasts: 1

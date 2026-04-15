@@ -11,9 +11,4 @@ public sealed class UIPrefabEntry
     public bool trackInBackStack = true;
     public int warmupCount;
     public int maxCachedInstancesOverride = -1;
-
-    [Header("Transition")]
-    public bool useCustomTransition;
-    public UIPageTransitionSettings customOpenTransition = new UIPageTransitionSettings();
-    public UIPageTransitionSettings customCloseTransition = new UIPageTransitionSettings();
 }

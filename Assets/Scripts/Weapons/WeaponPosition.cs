@@ -13,16 +13,18 @@ public class WeaponPosition : MonoBehaviour
     /// <summary>
     /// 在当前挂点下实例化武器 prefab，并设置初始等级。
     /// </summary>
-    public Weapon AssignWeapon(Weapon weaponPrefab, int level)
+    public Weapon AssignWeapon(WeaponDataSO weaponData, int level)
     {
-        if (weaponPrefab == null)
+        if (weaponData == null || weaponData.WeaponPrefab == null)
         {
             return null;
         }
 
-        Weapon = Instantiate(weaponPrefab, transform);
+        Weapon = Instantiate(weaponData.WeaponPrefab, transform);
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
+        Weapon.SetWeaponData(weaponData);
+        Weapon.ConfigureFromData();
         Weapon.SetLevel(level);
         return Weapon;
     }

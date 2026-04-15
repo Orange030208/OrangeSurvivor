@@ -2,31 +2,44 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterButton : MonoBehaviour
+[RequireComponent(typeof(UIClickTarget), typeof(UIRevealMotion))]
+public class CharacterButton : UIScrollListItemBase
 {
     [SerializeField] private Image characterIconImage;
-    [SerializeField] private Button iconButton;
-    [SerializeField] private float selectedScale = 1.08f;
+    [SerializeField] private UIClickTarget clickTarget;
 
-    public event Action OnClick;
+    private bool isSelected;
 
-    public void Configure(Sprite characterIcon, bool isSelected)
+    protected override void Awake()
+    {
+        base.Awake();
+        clickTarget = GetComponent<UIClickTarget>();
+    }
+
+    public void Configure(Sprite characterIcon, bool selected, Action onClick)
     {
         characterIconImage.sprite = characterIcon;
-        iconButton.onClick.RemoveAllListeners();
-        iconButton.onClick.AddListener(() => OnClick?.Invoke());
-        SetSelected(isSelected);
+        isSelected = selected;
+        clickTarget.ClearListeners();
+        clickTarget.OnClicked += () => onClick?.Invoke();
+        SetSelectedImmediate(isSelected);
     }
 
-    public void SetSelected(bool isSelected)
+    public void SetSelected(bool selected)
     {
-        transform.localScale = isSelected ? Vector3.one * selectedScale : Vector3.one;
+        isSelected = selected;
+        RuntimeMotion?.Kill();
+        RuntimeMotion?.Play(isSelected ? UIMotionAction.Highlight : UIMotionAction.Show);
     }
 
-    public void CleanUp()
+    protected override void OnPresentationRefreshed()
     {
-        OnClick = null;
-        iconButton.onClick.RemoveAllListeners();
-        transform.localScale = Vector3.one;
+        SetSelectedImmediate(isSelected);
+    }
+
+    private void SetSelectedImmediate(bool selected)
+    {
+        RuntimeMotion?.Kill();
+        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Highlight : UIMotionAction.Show);
     }
 }

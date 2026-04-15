@@ -6,16 +6,11 @@ public static class WeaponAnimationSequencePresets
 {
     private static readonly WeaponAnimationSequencePresetDefinition[] All =
     {
-        new(WeaponAnimationSequencePresetId.LancePiercingDrive, "Lance Piercing Drive", "近战倾向：长枪戳刺 / 归一化前送",
-            BuildLancePiercingDrive),
-        new(WeaponAnimationSequencePresetId.SaberSweepingCut, "Saber Sweeping Cut", "近战倾向：中型挥舞击打 / 归一化横扫",
-            BuildSaberSweepingCut),
-        new(WeaponAnimationSequencePresetId.RifleReactorKick, "Rifle Reactor Kick", "远程倾向：单发枪械射击",
-            BuildRifleReactorKick),
-        new(WeaponAnimationSequencePresetId.TitanMaulOverheadBreak, "Titan Maul Overhead Break", "近战倾向：重型挥舞击打 / 归一化重砸",
-            BuildTitanMaulOverheadBreak),
-        new(WeaponAnimationSequencePresetId.BrotatoStickWhack, "Brotato Stick Whack", "近战倾向：木棍横扫 / 归一化横扫（Brotato 风格）",
-            BuildBrotatoStickWhack),
+        new(WeaponAnimationSequencePresetId.MeleeHeavySwing, "Melee Heavy Swing", "近战倾向：重型横甩 / 蓄力后爆发", BuildMeleeHeavySwing),
+        new(WeaponAnimationSequencePresetId.MeleeArcSweepChargedWide, "Melee Arc Sweep Charged Wide", "近战倾向：蓄力大横扫 / 左侧重蓄后强力甩出", BuildMeleeArcSweepChargedWide),
+        new(WeaponAnimationSequencePresetId.MeleeArcSweepHalfMoon, "Melee Arc Sweep Half Moon", "近战倾向：完整半圆弧 / 左右摆幅更对称", BuildMeleeArcSweepHalfMoon),
+        new(WeaponAnimationSequencePresetId.MeleeArcSweep, "Melee Arc Sweep", "近战倾向：弧形扫击 / 连续圆弧轨迹", BuildMeleeArcSweep),
+        new(WeaponAnimationSequencePresetId.RangedRifleKick, "Ranged Rifle Kick", "远程倾向：单发枪械射击", BuildRangedRifleKick),
     };
 
     public static IReadOnlyList<WeaponAnimationSequencePresetDefinition> GetAllPresets() => All;
@@ -31,133 +26,163 @@ public static class WeaponAnimationSequencePresets
 
     public static void ApplyPreset(AttackSequenceDefinitionSO target, WeaponAnimationSequencePresetId id)
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            return;
+        }
+
         WeaponAnimationSequencePresetData data = GetData(id);
         target.Overwrite(data.Duration, true, data.MotionKeyframes, data.EventKeyframes);
     }
 
     private static WeaponAnimationSequencePresetData GetData(WeaponAnimationSequencePresetId id)
     {
-        foreach (var preset in All)
-            if (preset.Id == id)
-                return preset.Builder();
+        for (int i = 0; i < All.Length; i++)
+        {
+            if (All[i].Id == id)
+            {
+                return All[i].Builder();
+            }
+        }
+
         return All[0].Builder();
     }
 
-    // ==================== 原有预设保留 ====================
-
-    private static WeaponAnimationSequencePresetData BuildLancePiercingDrive() => D(
-        "Lance Piercing Drive", 1.02f,
+    private static WeaponAnimationSequencePresetData BuildMeleeHeavySwing() => D(
+        "Melee Heavy Swing", 1.14f,
         new()
         {
             K(0f, 0f, 0f, 0f, 0),
-            K(0.08f, -0.03f, -0.08f, 8f, 3),
-            K(0.16f, -0.05f, -0.16f, 18f, 5),
-            K(0.24f, -0.06f, -0.22f, 28f, 7),
-            KDClamp(0.34f, 0.01f, 0.14f, 18f, 10, 0.12f, 0.24f),
-            KDClamp(0.46f, 0.03f, 0.30f, 8f, 11, 0.16f, 0.40f),
-            KDClamp(0.58f, 0.03f, 0.50f, -6f, 12, 0.18f, 0.62f),
-            KDClamp(0.70f, 0.02f, 0.76f, -28f, 13, 0.20f, 0.84f),
-            KDClamp(0.80f, 0.02f, 0.98f, -52f, 14, 0.18f, 1.00f),
-            KDClamp(0.90f, 0.01f, 0.56f, -24f, 6, 0.16f, 0.58f),
+
+            // 左拉蓄力阶段：峰值更高，整体停留更久，强化“先拉满再砍”
+            K(0.06f, -0.86f, 0.05f, 18f, 4),
+            K(0.13f, -1.68f, 0.13f, 42f, 7),
+            K(0.20f, -2.42f, 0.22f, 72f, 9),
+            K(0.27f, -2.96f, 0.31f, 98f, 10),
+
+            // 蓄力停顿：在左侧极限姿态保持更久
+            K(0.36f, -2.98f, 0.33f, 104f, 2),
+            K(0.45f, -2.92f, 0.32f, 102f, 2),
+            K(0.52f, -2.78f, 0.30f, 96f, 2),
+
+            // 快速挥砍：缩短总挥砍时间，但保留多帧以维持平滑感
+            KDClamp(0.58f, -1.64f, 0.38f, 70f, 11, 0.05f, 0.46f),
+            KDClamp(0.64f, -0.34f, 0.54f, 24f, 12, 0.05f, 0.62f),
+            KDClamp(0.70f, 0.82f, 0.74f, -22f, 13, 0.05f, 0.84f),
+            KDClamp(0.75f, 1.42f, 0.94f, -58f, 14, 0.05f, 1.00f),
+
+            // 命中后小停顿，然后快速收回
+            KDClamp(0.80f, 1.34f, 0.86f, -62f, 2, 0.05f, 0.90f),
+            K(0.88f, 0.76f, 0.34f, -38f, 8),
+            K(0.95f, 0.28f, 0.09f, -16f, 6),
             K(1f, 0f, 0f, 0f, 3)
         },
-        new() { O(0.52f), C(0.80f), S(0.52f), V(0.62f) });
+        new() { O(0.58f), C(0.84f), S(0.73f), V(0.77f) });
 
-    private static WeaponAnimationSequencePresetData BuildSaberSweepingCut() => D(
-        "Saber Sweeping Cut", 1.00f,
+    private static WeaponAnimationSequencePresetData BuildMeleeArcSweepChargedWide() => D(
+        "Melee Arc Sweep Charged Wide", 1.04f,
         new()
         {
             K(0f, 0f, 0f, 0f, 0),
-            K(0.08f, -0.06f, -0.04f, 10f, 3),
-            K(0.16f, -0.14f, -0.02f, 24f, 5),
-            K(0.24f, -0.24f, 0.02f, 58f, 7),
-            KDClamp(0.34f, -0.22f, 0.14f, 86f, 10, 0.18f, 0.32f),
-            KDClamp(0.46f, -0.10f, 0.28f, 108f, 11, 0.22f, 0.44f),
-            KDClamp(0.58f, 0.10f, 0.40f, 38f, 12, 0.30f, 0.56f),
-            KDClamp(0.70f, 0.34f, 0.34f, -28f, 13, 0.40f, 0.66f),
-            KDClamp(0.80f, 0.46f, 0.22f, -76f, 14, 0.48f, 0.78f),
-            K(0.90f, 0.24f, 0.10f, -52f, 6),
+
+            // 更强调左侧蓄力停顿：左拉接近 -3，但右侧不追求完全对称，突出“蓄力后甩出”
+            K(0.06f, -0.64f, 0.08f, 16f, 4),
+            K(0.12f, -1.46f, 0.18f, 38f, 7),
+            K(0.19f, -2.24f, 0.28f, 66f, 9),
+            K(0.26f, -2.82f, 0.38f, 90f, 10),
+            K(0.34f, -3.02f, 0.46f, 104f, 2),
+            K(0.42f, -2.96f, 0.48f, 102f, 2),
+
+            // 中后段快速横扫出去，右侧保留力量感但不做完整对称半圆
+            KDClamp(0.50f, -2.18f, 0.64f, 82f, 11, 0.05f, 0.58f),
+            KDClamp(0.58f, -1.10f, 0.86f, 38f, 11, 0.05f, 0.76f),
+            KDClamp(0.66f, 0.24f, 1.02f, -8f, 11, 0.05f, 0.90f),
+            KDClamp(0.73f, 1.18f, 1.00f, -34f, 13, 0.05f, 0.88f),
+            KDClamp(0.79f, 1.86f, 0.88f, -58f, 13, 0.05f, 0.80f),
+
+            // 末端收势偏快，让它更像一记爆发横扫
+            K(0.86f, 1.42f, 0.44f, -46f, 8),
+            K(0.92f, 0.72f, 0.16f, -22f, 8),
+            K(0.97f, 0.24f, 0.04f, -8f, 6),
             K(1f, 0f, 0f, 0f, 3)
         },
-        new() { O(0.56f), C(0.80f), S(0.54f), V(0.62f) });
+        new() { O(0.50f), C(0.83f), S(0.64f), V(0.69f) });
 
-    private static WeaponAnimationSequencePresetData BuildRifleReactorKick() => D(
-        "Rifle Reactor Kick", 0.94f,
+    private static WeaponAnimationSequencePresetData BuildMeleeArcSweepHalfMoon() => D(
+        "Melee Arc Sweep Half Moon", 1.00f,
         new()
         {
             K(0f, 0f, 0f, 0f, 0),
-            K(0.07f, -0.01f, 0.05f, 6f, 3),
-            K(0.14f, -0.02f, 0.11f, 12f, 5),
-            K(0.22f, -0.03f, 0.17f, 20f, 7),
-            K(0.30f, -0.04f, 0.22f, 30f, 10),
+
+            // 左侧起势同样拉满，但随后向右侧走出更完整、更对称的半圆轨迹
+            K(0.06f, -0.62f, 0.08f, 16f, 4),
+            K(0.12f, -1.36f, 0.18f, 36f, 7),
+            K(0.18f, -2.10f, 0.30f, 60f, 9),
+            K(0.25f, -2.72f, 0.42f, 84f, 10),
+            K(0.32f, -2.98f, 0.50f, 102f, 2),
+
+            // 左右摆幅更对称，强调完整半月感
+            KDClamp(0.40f, -2.58f, 0.66f, 86f, 11, 0.05f, 0.60f),
+            KDClamp(0.48f, -1.58f, 0.86f, 52f, 11, 0.05f, 0.74f),
+            KDClamp(0.56f, -0.26f, 1.02f, 14f, 11, 0.05f, 0.86f),
+            KDClamp(0.64f, 1.12f, 1.06f, -24f, 11, 0.05f, 0.94f),
+            KDClamp(0.72f, 2.18f, 0.98f, -54f, 13, 0.05f, 0.88f),
+            KDClamp(0.79f, 2.94f, 0.82f, -78f, 13, 0.05f, 0.76f),
+
+            // 右侧也保留更明显尾迹，形成完整半圆收尾
+            K(0.86f, 2.32f, 0.46f, -62f, 8),
+            K(0.92f, 1.20f, 0.18f, -34f, 8),
+            K(0.97f, 0.36f, 0.04f, -10f, 6),
+            K(1f, 0f, 0f, 0f, 3)
+        },
+        new() { O(0.40f), C(0.83f), S(0.60f), V(0.66f) });
+
+    private static WeaponAnimationSequencePresetData BuildMeleeArcSweep() => D(
+        "Melee Arc Sweep", 0.96f,
+        new()
+        {
+            K(0f, 0f, 0f, 0f, 0),
+
+            // 起手抬刀并向左后侧收势，为后续圆弧扫击蓄势
+            K(0.06f, -0.58f, 0.08f, 14f, 4),
+            K(0.12f, -1.28f, 0.18f, 34f, 7),
+            K(0.18f, -2.02f, 0.30f, 58f, 9),
+            K(0.24f, -2.62f, 0.42f, 82f, 10),
+            K(0.30f, -2.98f, 0.52f, 100f, 2),
+
+            // 开始沿弧线前送，保持横向扫击感，同时让前伸按目标距离动态变化
+            KDClamp(0.38f, -2.72f, 0.64f, 88f, 3, 0.05f, 0.56f),
+            KDClamp(0.46f, -1.86f, 0.82f, 62f, 11, 0.05f, 0.70f),
+            KDClamp(0.54f, -0.72f, 0.98f, 24f, 11, 0.05f, 0.82f),
+            KDClamp(0.62f, 0.74f, 1.06f, -12f, 11, 0.05f, 0.92f),
+            KDClamp(0.70f, 1.78f, 0.98f, -42f, 13, 0.05f, 0.88f),
+            KDClamp(0.77f, 2.34f, 0.84f, -66f, 13, 0.05f, 0.78f),
+
+            // 弧线末端略停顿，再顺势回收到待机
+            K(0.84f, 1.86f, 0.46f, -52f, 8),
+            K(0.90f, 1.02f, 0.18f, -28f, 8),
+            K(0.96f, 0.34f, 0.05f, -10f, 6),
+            K(1f, 0f, 0f, 0f, 3)
+        },
+        new() { O(0.38f), C(0.81f), S(0.56f), V(0.62f) });
+
+    private static WeaponAnimationSequencePresetData BuildRangedRifleKick() => D(
+        "Ranged Rifle Kick", 0.94f,
+        new()
+        {
+            K(0f, 0f, 0f, 0f, 0),
+            K(0.07f, -0.01f, 0.03f, 6f, 3),
+            K(0.14f, -0.02f, 0.07f, 12f, 5),
+            K(0.22f, -0.03f, 0.11f, 18f, 7),
+            K(0.30f, -0.04f, 0.24f, 20f, 10),
             K(0.38f, 0.01f, 0.02f, 4f, 11),
-            K(0.44f, 0.05f, -0.18f, -24f, 12),
-            K(0.52f, 0.07f, -0.30f, -48f, 13),
-            K(0.64f, 0.05f, -0.18f, -24f, 9),
+            K(0.44f, 0.05f, -0.06f, -12f, 12),
+            K(0.52f, 0.07f, -0.12f, -18f, 13),
+            K(0.64f, 0.05f, -0.06f, -12f, 9),
             K(0.78f, 0.01f, 0.02f, 4f, 5),
             K(1f, 0f, 0f, 0f, 3)
         },
         new() { P(0.36f, ProjectileSpawnPayload.Default), S(0.36f), V(0.37f) });
-
-    private static WeaponAnimationSequencePresetData BuildTitanMaulOverheadBreak() => D(
-        "Titan Maul Overhead Break", 1.24f,
-        new()
-        {
-            K(0f, 0f, 0f, 0f, 0),
-            K(0.08f, 0.03f, -0.05f, -8f, 1),
-            K(0.16f, 0.06f, -0.12f, -18f, 3),
-            K(0.26f, 0.11f, -0.22f, -38f, 5),
-            K(0.38f, 0.18f, -0.30f, -78f, 7),
-            KDClamp(0.50f, 0.14f, 0.10f, -42f, 10, 0.22f, 0.38f),
-            KDClamp(0.60f, 0.04f, 0.28f, -6f, 11, 0.28f, 0.50f),
-            KDClamp(0.70f, -0.08f, 0.52f, 30f, 12, 0.34f, 0.66f),
-            KDClamp(0.80f, -0.14f, 0.78f, 72f, 13, 0.46f, 0.86f),
-            KDClamp(0.90f, -0.08f, 0.42f, 96f, 9, 0.30f, 0.58f),
-            K(1f, 0f, 0f, 0f, 3)
-        },
-        new() { O(0.62f), C(0.84f), S(0.46f), V(0.66f) });
-
-    // 2. 在原有 BuildTitanMaulOverheadBreak() 方法之后、辅助方法之前，插入以下新的构建函数
-//     （建议直接复制粘贴到 // ==================== 原有预设保留 ==================== 区域的末尾）
-
-private static WeaponAnimationSequencePresetData BuildBrotatoStickWhack() => D(
-    "Brotato Stick Whack", 1.08f,  // 总时长微增到 1.08s（增加 0.13s 呼吸空间），保证多帧也能保持“脆快”手感
-    new()
-    {
-        // 0. 起始姿态（完全归零）
-        K(0f, 0f, 0f, 0f, 0),
-
-        // ==================== 预备阶段（更明显的后拉蓄力，共 4 帧，增加平滑度） ====================
-        K(0.05f, -0.22f, 0.04f, 18f, 4),      // 轻微后拉
-        K(0.12f, -0.41f, 0.11f, 47f, 7),      // 后拉加深（x 幅度已大幅提升）
-        K(0.19f, -0.58f, 0.19f, 79f, 9),      // 后拉峰值（x=-0.58，为后续大横扫预留空间）
-        K(0.26f, -0.49f, 0.26f, 98f, 8),      // 蓄力顶点，略微上抬，准备爆发
-
-        // ==================== 核心横扫爆发阶段（共 6 帧，大幅增加 x 轴幅度 + 平滑过渡） ====================
-        // 目标：x 轴最大值 2.18（比上一版 1.05 翻倍以上），横扫弧线极具冲击力
-        KDClamp(0.34f, -0.12f, 0.31f, 134f, 10, 0.16f, 0.39f),   // 爆发起点（左→右快速启动）
-
-        KDClamp(0.42f, 0.71f, 0.33f, 92f, 11, 0.28f, 0.61f),   // 中段加速，x 已大幅拉伸
-
-        // 命中瞬间“鞭打过冲”关键帧（新增第 3 帧专门强化“打中怪物”弹性）
-        KDClamp(0.51f, 1.46f, 0.24f, 41f, 12, 0.33f, 0.69f),   // x=1.46，过冲开始
-
-        KDClamp(0.61f, 2.18f, 0.09f, -27f, 13, 0.44f, 0.72f),         // 峰值横扫！x=2.18（翻倍达成）
-
-        // 继续横扫右侧跟进（两帧平滑过渡）
-        KDClamp(0.72f, 1.89f, -0.06f, -68f, 14, 0.51f, 0.81f),
-        KDClamp(0.81f, 1.37f, -0.14f, -103f, 11, 0.48f, 0.76f),
-
-        // ==================== 回收阶段（共 3 帧，快速但平滑回中立） ====================
-        K(0.90f, 0.62f, -0.09f, -61f, 7),
-        K(0.98f, 0.21f, -0.03f, -29f, 5),
-        K(1f, 0f, 0f, 0f, 3)
-    },
-    new() { O(0.48f), C(0.79f), S(0.47f), V(0.58f) });   // 命中窗口跟随新爆发节奏略微后移，特效更贴合鞭打峰值
-
-
-    // ==================== 辅助方法 ====================
 
     private static WeaponAnimationSequencePresetData D(string name, float duration,
         List<WeaponMotionKeyframe> motions, List<WeaponSequenceEventKeyframe> events)
@@ -173,10 +198,11 @@ private static WeaponAnimationSequencePresetData BuildBrotatoStickWhack() => D(
         float maxReach)
     {
         var keyframe = K(time, x, y, z, ease);
-        keyframe.positionMode = WeaponMotionPositionMode.DynamicFromTarget;
+        keyframe.xPositionMode = WeaponMotionPositionMode.Fixed;
+        keyframe.yPositionMode = WeaponMotionPositionMode.DynamicFromTarget;
         keyframe.dynamicPositionStrategy = WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius;
-        keyframe.dynamicMinNormalizedReach = Mathf.Clamp01(Mathf.Min(minReach, maxReach));
-        keyframe.dynamicMaxNormalizedReach = Mathf.Clamp01(Mathf.Max(minReach, maxReach));
+        keyframe.yDynamicMinNormalizedReach = Mathf.Clamp01(Mathf.Min(minReach, maxReach));
+        keyframe.yDynamicMaxNormalizedReach = Mathf.Clamp01(Mathf.Max(minReach, maxReach));
         return keyframe;
     }
 
@@ -198,11 +224,11 @@ private static WeaponAnimationSequencePresetData BuildBrotatoStickWhack() => D(
 
 public enum WeaponAnimationSequencePresetId
 {
-    LancePiercingDrive,
-    SaberSweepingCut,
-    RifleReactorKick,
-    TitanMaulOverheadBreak,
-    BrotatoStickWhack // 新增
+    MeleeHeavySwing,
+    MeleeArcSweepChargedWide,
+    MeleeArcSweepHalfMoon,
+    MeleeArcSweep,
+    RangedRifleKick,
 }
 
 public readonly struct WeaponAnimationSequencePresetDefinition

@@ -4,92 +4,28 @@ using UnityEngine;
 
 public class PropertiesManager : MonoBehaviour
 {
-    [SerializeField] private CharacterDataSO basePropsData;
-
     private Dictionary<PropType, float> baseProps = new();
     private readonly Dictionary<PropType, float> calculatedProps = new();
     private readonly Dictionary<string, List<PropEntry>> modifierSources = new();
-    private FeatureHost featureHost;
-
-    public CharacterDataSO CharacterData => basePropsData;
 
     public event Action<PropType, float> OnPropertyChanged;
     public event Action OnAllPropertiesChanged;
 
     private void Awake()
     {
-        featureHost = GetComponent<FeatureHost>();
         InitializeBaseProps();
     }
 
     private void Start()
     {
-        ApplyCharacterFeatures();
-        ApplyInitialLoadout();
         NotifyAllPropertiesChanged();
-    }
-
-    private void OnDisable()
-    {
-        if (featureHost != null)
-        {
-            FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
-        }
     }
 
     private void InitializeBaseProps()
     {
-        baseProps = basePropsData != null
-            ? basePropsData.GetBaseProps()
-            : CharacterDataSO.CreateSharedBaseProps();
+        baseProps = PropDefaults.CreateBaseProps();
 
         RecalculateAllProps(false);
-    }
-
-    private void ApplyCharacterFeatures()
-    {
-        if (basePropsData == null || featureHost == null)
-        {
-            return;
-        }
-
-        FeatureInstaller.InstallCharacter(featureHost, basePropsData);
-    }
-
-    private void ApplyInitialLoadout()
-    {
-        if (basePropsData == null)
-        {
-            return;
-        }
-
-        WeaponsHolder weaponsHolder = GetComponent<WeaponsHolder>();
-        if (weaponsHolder != null)
-        {
-            foreach (var entry in basePropsData.InitialWeapons)
-            {
-                if (entry.weaponData == null)
-                {
-                    continue;
-                }
-
-                weaponsHolder.AddWeapon(entry.weaponData, entry.level);
-            }
-        }
-
-        AccessoryManager accessoryManager = GetComponent<AccessoryManager>();
-        if (accessoryManager != null)
-        {
-            foreach (var accessory in basePropsData.InitialAccessories)
-            {
-                if (accessory == null)
-                {
-                    continue;
-                }
-
-                accessoryManager.EquipAccessory(accessory);
-            }
-        }
     }
 
     public void AddBonusModifier(string sourceId, PropType propType, float value)

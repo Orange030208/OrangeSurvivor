@@ -9,13 +9,18 @@ using Random = UnityEngine.Random;
 /// 3. 在冷却完成后触发具体武器的攻击实现。
 /// 子类只需要关心“如何攻击”，例如近战开命中窗口、远程发射投射物。
 /// </summary>
-public abstract class Weapon : MonoBehaviour
+public abstract class Weapon : Entity
 {
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
+
+    [Header("Components")]
+    [SerializeField] private EntityRenderer entityRenderer;
 
     [Header("Aim")]
     [Tooltip("平时自动转向目标的插值速度。")]
     [SerializeField] protected float aimLerp = 10f;
+    [Tooltip("允许发起攻击前，武器当前朝向与目标朝向之间的最大夹角。超过这个角度时会先继续转向，再等待下一帧攻击。")]
+    [SerializeField] private float attackStartAimToleranceDegrees = 8f;
 
     [Header("Runtime")]
     [Tooltip("武器攻击会命中的目标层。由武器持有器/挂点在初始化时设置；这里仅作为运行时查询使用。")]
@@ -24,6 +29,7 @@ public abstract class Weapon : MonoBehaviour
     public int Level { get; private set; }
     public WeaponRuntimeStats RuntimeStats { get; private set; }
     public bool IsAttacking { get; protected set; }
+    public override EntityRenderer EntityRenderer => entityRenderer;
 
     protected PropertiesManager propertiesManager;
     protected Entity ownerEntity;
@@ -35,6 +41,11 @@ public abstract class Weapon : MonoBehaviour
     {
         propertiesManager = GetComponentInParent<PropertiesManager>();
         ownerEntity = GetComponentInParent<Entity>();
+
+        if (entityRenderer == null)
+        {
+            entityRenderer = GetComponentInChildren<EntityRenderer>();
+        }
     }
 
     protected virtual void OnEnable()
@@ -57,11 +68,17 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void Start()
     {
+        ConfigureFromData();
         RefreshRuntimeStats();
     }
 
     protected virtual void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         TickTargeting();
         TickWeapon(Time.deltaTime);
     }
@@ -72,14 +89,70 @@ public abstract class Weapon : MonoBehaviour
         RefreshRuntimeStats();
     }
 
+    public void SetWeaponData(WeaponDataSO weaponData)
+    {
+        WeaponData = weaponData;
+    }
+
     public void SetTargetLayerMask(LayerMask layerMask)
     {
         targetLayerMask = layerMask;
     }
 
+    public void ConfigureFromData()
+    {
+        if (WeaponData == null)
+        {
+            return;
+        }
+
+        switch (WeaponData.ConstructionScheme)
+        {
+            case WeaponConstructionScheme.Default:
+            default:
+                ApplyDefaultConstructionScheme();
+                break;
+        }
+
+        OnConfiguredFromData();
+    }
+
+    protected virtual void OnConfiguredFromData()
+    {
+    }
+
     public virtual void RefreshRuntimeStats()
     {
         RuntimeStats = BuildRuntimeStats();
+    }
+
+    public void ApplyVisualForwardAngle()
+    {
+        if (EntityRenderer == null)
+        {
+            return;
+        }
+
+        Transform visualTransform = EntityRenderer.transform;
+        Vector3 localEulerAngles = visualTransform.localEulerAngles;
+        localEulerAngles.z = WeaponData != null ? WeaponData.VisualForwardAngle : 0f;
+        visualTransform.localEulerAngles = localEulerAngles;
+    }
+
+    private void ApplyDefaultConstructionScheme()
+    {
+        ApplyDataIcon();
+        ApplyVisualForwardAngle();
+    }
+
+    private void ApplyDataIcon()
+    {
+        if (EntityRenderer == null || WeaponData == null)
+        {
+            return;
+        }
+
+        EntityRenderer.SetSprite(WeaponData.ItemIcon);
     }
 
     protected virtual void TickWeapon(float deltaTime)
@@ -97,6 +170,11 @@ public abstract class Weapon : MonoBehaviour
         }
 
         if (attackCooldownTimer < RuntimeStats.AttackInterval)
+        {
+            return;
+        }
+
+        if (!HasReachedAttackAimDirection())
         {
             return;
         }
@@ -174,51 +252,6 @@ public abstract class Weapon : MonoBehaviour
         return GetDebugEffectiveSequenceDuration() / original;
     }
 
-    protected void DrawSharedWeaponDebugGizmos()
-    {
-        float range = Application.isPlaying ? RuntimeStats.Range : 0.5f;
-
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position, range);
-
-        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
-        if (sequence == null)
-        {
-            return;
-        }
-
-        float effectiveDuration = Application.isPlaying ? GetDebugEffectiveSequenceDuration() : sequence.Duration;
-        float radius = Mathf.Clamp(range * 0.35f, 0.35f, 0.9f);
-        var events = sequence.EventKeyframes;
-        for (int i = 0; i < events.Count; i++)
-        {
-            WeaponSequenceEventKeyframe keyframe = events[i];
-            float angle = -90f + keyframe.normalizedTime * 360f;
-            Vector3 offset = Quaternion.Euler(0f, 0f, angle) * Vector3.up * radius;
-
-            Gizmos.color = GetEventDebugColor(keyframe.eventType);
-            Gizmos.DrawWireSphere(transform.position + offset, 0.06f);
-
-            if (keyframe.eventType == WeaponSequenceEventType.SpawnProjectile)
-            {
-                Gizmos.DrawLine(transform.position, transform.position + offset);
-            }
-        }
-    }
-
-    private Color GetEventDebugColor(WeaponSequenceEventType eventType)
-    {
-        return eventType switch
-        {
-            WeaponSequenceEventType.OpenHitWindow => Color.green,
-            WeaponSequenceEventType.CloseHitWindow => new Color(1f, 0.5f, 0f, 1f),
-            WeaponSequenceEventType.SpawnProjectile => Color.cyan,
-            WeaponSequenceEventType.PlaySfx => Color.yellow,
-            WeaponSequenceEventType.PlayVfx => new Color(0.7f, 0.3f, 1f, 1f),
-            _ => Color.white
-        };
-    }
-
     protected virtual AttackSequenceDefinitionSO GetEquippedAttackSequence()
     {
         return null;
@@ -231,14 +264,15 @@ public abstract class Weapon : MonoBehaviour
             ? ownerEntity.FindClosestTargetInRange(RuntimeStats.Range, targetLayerMask)
             : null;
 
+        Vector2 desiredAimDirection = ResolveDesiredAimDirection();
         bool stopAimingWhenAttackReady = WeaponData == null || WeaponData.StopAimingWhenAttackReady;
-        bool holdCurrentAim = IsAttacking || (stopAimingWhenAttackReady && currentTarget != null && attackCooldownTimer >= RuntimeStats.AttackInterval);
+        bool hasReachedAttackAim = HasReachedAttackAimDirection(desiredAimDirection);
+        bool holdCurrentAim = IsAttacking || (stopAimingWhenAttackReady && currentTarget != null && attackCooldownTimer >= RuntimeStats.AttackInterval && hasReachedAttackAim);
         if (holdCurrentAim)
         {
             return;
         }
 
-        Vector2 desiredAimDirection = ResolveDesiredAimDirection();
         if (desiredAimDirection.sqrMagnitude > 0.0001f)
         {
             lastAimDirection = desiredAimDirection.normalized;
@@ -271,6 +305,28 @@ public abstract class Weapon : MonoBehaviour
         }
 
         return lastAimDirection;
+    }
+
+    protected bool HasReachedAttackAimDirection()
+    {
+        return HasReachedAttackAimDirection(ResolveDesiredAimDirection());
+    }
+
+    private bool HasReachedAttackAimDirection(Vector2 desiredAimDirection)
+    {
+        if (desiredAimDirection.sqrMagnitude <= 0.0001f)
+        {
+            return true;
+        }
+
+        Vector2 currentAimDirection = transform.up;
+        if (currentAimDirection.sqrMagnitude <= 0.0001f)
+        {
+            return true;
+        }
+
+        float angle = Vector2.Angle(currentAimDirection, desiredAimDirection.normalized);
+        return angle <= attackStartAimToleranceDegrees;
     }
 
     protected ResolvedWeaponHit ResolveHit()

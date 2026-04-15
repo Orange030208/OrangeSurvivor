@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Character Data", menuName = "SO/CharacterData", order = 0)]
 public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureSource
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
-    [field: SerializeField] public int PurchasePrice { get; private set; }
 
     [Header("角色额外属性")]
     [Tooltip("所有角色会先拥有全部 PropType 的默认值。这里配置的属性会在默认值基础上额外叠加，可用于后续自动描述。概率/比例统一使用 0~1，倍率类通常使用 1 代表 100%。")]
@@ -24,11 +21,6 @@ public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFea
     public IReadOnlyList<PropEntry> ExtraProps => extraProps;
     public IReadOnlyList<WeaponLevelEntry> InitialWeapons => initialWeapons;
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
-
-    public Dictionary<PropType, float> GetBaseProps()
-    {
-        return CreateSharedBaseProps();
-    }
 
     public List<PropEntry> GetCharacterModifiers()
     {
@@ -90,20 +82,6 @@ public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFea
         }
 
         return effects;
-    }
-
-    public static Dictionary<PropType, float> CreateSharedBaseProps()
-    {
-        Dictionary<PropType, float> props = new();
-        Array values = Enum.GetValues(typeof(PropType));
-
-        for (int i = 0; i < values.Length; i++)
-        {
-            PropType propType = (PropType)values.GetValue(i);
-            props[propType] = propType.GetDefaultValue();
-        }
-
-        return props;
     }
 
     private void OnValidate()

@@ -1,0 +1,133 @@
+using UnityEngine;
+
+/// <summary>
+/// 单局统计管理器：
+/// - 监听运行时事件，汇总本局基础结算数据；
+/// - 在结算页打开时通过快照事件提供只读结果；
+/// - 只负责统计，不负责切状态与页面开关。
+/// </summary>
+public class StageCompleteSummaryManager : MonoBehaviour
+{
+    private int completedWaves;
+    private float survivalTime;
+    private int killCount;
+    private int goldEarned;
+    private string characterName = string.Empty;
+    private string mainWeaponName = string.Empty;
+
+    private bool isRunActive;
+
+    private void OnEnable()
+    {
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        GameEventBus.Subscribe<RequestStageCompleteSnapshotEvent>(PublishSnapshot);
+    }
+
+    private void OnDisable()
+    {
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        GameEventBus.Unsubscribe<RequestStageCompleteSnapshotEvent>(PublishSnapshot);
+    }
+
+    private void Update()
+    {
+        if (!isRunActive)
+        {
+            return;
+        }
+
+        survivalTime += Time.unscaledDeltaTime;
+    }
+
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    {
+        if (eventData.NewState == GameState.Game && eventData.OldState != GameState.Shop && eventData.OldState != GameState.WaveTransition)
+        {
+            ResetSummary();
+            CaptureLoadoutSummary();
+            isRunActive = true;
+            return;
+        }
+
+        if (eventData.NewState == GameState.GameOver || eventData.NewState == GameState.StageComplete || eventData.NewState == GameState.Menu)
+        {
+            isRunActive = false;
+        }
+    }
+
+    private void OnWaveCompleted(WaveCompletedEvent eventData)
+    {
+        completedWaves = Mathf.Max(completedWaves, eventData.WaveNumber);
+    }
+
+    private void OnEntityDied(EntityDiedEvent eventData)
+    {
+        if (!isRunActive || eventData.Entity is not Enemy)
+        {
+            return;
+        }
+
+        killCount++;
+    }
+
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    {
+        if (!isRunActive || eventData.CurrencyType != CurrencyType.Currency || eventData.ChangeAmount <= 0)
+        {
+            return;
+        }
+
+        goldEarned += eventData.ChangeAmount;
+    }
+
+    private void PublishSnapshot()
+    {
+        CaptureLoadoutSummary();
+        GameEventBus.Publish(new StageCompleteSnapshotEvent(
+            completedWaves,
+            survivalTime,
+            killCount,
+            goldEarned,
+            characterName,
+            mainWeaponName));
+    }
+
+    private void ResetSummary()
+    {
+        completedWaves = 0;
+        survivalTime = 0f;
+        killCount = 0;
+        goldEarned = 0;
+        characterName = string.Empty;
+        mainWeaponName = string.Empty;
+    }
+
+    private void CaptureLoadoutSummary()
+    {
+        CharacterDataSO selectedCharacter = CharacterSelectionManager.Instance != null
+            ? CharacterSelectionManager.Instance.SelectedCharacter
+            : null;
+        characterName = selectedCharacter != null ? selectedCharacter.CharacterName : string.Empty;
+
+        Player player = FindFirstObjectByType<Player>();
+        if (player == null)
+        {
+            return;
+        }
+
+        WeaponsHolder weaponsHolder = player.GetComponent<WeaponsHolder>();
+        if (weaponsHolder == null || weaponsHolder.EquippedWeapons.Count == 0)
+        {
+            return;
+        }
+
+        WeaponDataSO weaponData = weaponsHolder.EquippedWeapons[0].WeaponData;
+        mainWeaponName = weaponData != null ? weaponData.ItemName : string.Empty;
+    }
+}

@@ -6,6 +6,10 @@ using UnityEngine;
 /// 它不直接维护子弹行为，只负责把攻击意图转换成 projectile 发射。
 /// 正式弹射物配置优先由序列事件直接引用 ProjectileDefinitionSO，
 /// WeaponDataSO.ProjectileDefinitions 则作为武器级共享清单与回退来源。
+/// 
+/// 运行时可变配置约定：
+/// - 发射点、额外枪口、ProjectileDefinition 等可能在装配后才稳定；
+/// - 因此不要在 Awake 缓存 ProjectileWeaponAttackExecutor，发射时再按当前配置解析。
 /// </summary>
 [RequireComponent(typeof(WeaponSequenceBridge))]
 public class RangeWeapon : Weapon
@@ -28,7 +32,10 @@ public class RangeWeapon : Weapon
     {
         base.Awake();
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
+    }
 
+    protected override void OnConfiguredFromData()
+    {
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -36,7 +43,7 @@ public class RangeWeapon : Weapon
 
         if (attackSequence == null)
         {
-            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.RifleReactorKick);
+            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.RangedRifleKick);
             attackSequence = runtimeDefaultSequence;
         }
     }
@@ -141,6 +148,11 @@ public class RangeWeapon : Weapon
             if (pendingTarget == null)
             {
                 break;
+            }
+
+            while (!GameSimulation.IsRunning)
+            {
+                yield return null;
             }
 
             FireSingle(payload, null);
@@ -256,8 +268,6 @@ public class RangeWeapon : Weapon
 
     private void OnDrawGizmosSelected()
     {
-        DrawSharedWeaponDebugGizmos();
-
         if (shootingPoint == null)
         {
             return;

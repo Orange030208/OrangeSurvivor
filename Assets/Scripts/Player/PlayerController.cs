@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Player))]
@@ -6,10 +5,10 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb;
     [SerializeField] private float speed;
-    [SerializeField] private MobileJoystick playerJoystick;
 
     private PropertiesManager propertiesManager;
     private Player player;
+    private Vector2 moveDirection;
 
     private void Awake()
     {
@@ -20,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        GameEventBus.Subscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         if (propertiesManager != null)
         {
             propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
+        GameEventBus.Unsubscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         if (propertiesManager != null)
         {
             propertiesManager.OnAllPropertiesChanged -= UpdateSpeed;
@@ -43,14 +44,25 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            moveDirection = Vector2.zero;
+            _rb.velocity = Vector2.zero;
+            return;
+        }
+
         Move();
     }
 
     private void Move()
     {
-        Vector2 moveDirection = playerJoystick.GetMoveVector();
-        player?.ApplyMoveDirection(moveDirection);
+        player.ApplyMoveDirection(moveDirection);
         _rb.velocity = moveDirection * Time.deltaTime * speed;
+    }
+
+    private void OnMoveInputChanged(PlayerMoveInputChangedEvent eventData)
+    {
+        moveDirection = eventData.MoveDirection;
     }
 
     private void OnPropertyChanged(PropType propType, float newValue)

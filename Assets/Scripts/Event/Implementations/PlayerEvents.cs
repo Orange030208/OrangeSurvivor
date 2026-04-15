@@ -21,3 +21,13 @@ public struct PlayerXpChangedEvent : IGameEvent
         this.requiredXP = requiredXP;
     }
 }
+
+public struct PlayerMoveInputChangedEvent : IGameEvent
+{
+    public UnityEngine.Vector2 MoveDirection;
+
+    public PlayerMoveInputChangedEvent(UnityEngine.Vector2 moveDirection)
+    {
+        MoveDirection = moveDirection;
+    }
+}

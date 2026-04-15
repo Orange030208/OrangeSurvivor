@@ -187,6 +187,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3f8780c49fe4ef4295ee85aec84b33f, type: 3}
+--- !u!1 &154255284 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7496115378131242144, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
+  m_PrefabInstance: {fileID: 2299192825866581704}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &214015681
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3725aa447f4b05967362c38519e395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1375590279}
+  player: {fileID: 0}
   initialGameState: 1
 --- !u!1 &519420028
 GameObject:
@@ -698,17 +703,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4148873388665774737, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
   m_PrefabInstance: {fileID: 2299192825866581704}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1375590279 stripped
+--- !u!114 &1375590290
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5359458450767791847, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
-  m_PrefabInstance: {fileID: 2299192825866581704}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 154255284}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06d669e316794633af379ed77ffe37bc, type: 3}
+  m_Script: {fileID: 11500000, guid: 78b9c68d9d6e4c8e9c35b65a39301ea7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterData: {fileID: 11400000, guid: 7392f5eb0ebee2b4d95e5c6b84adcc9d, type: 2}
 --- !u!1 &1432474698
 GameObject:
   m_ObjectHideFlags: 0
@@ -840,7 +847,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.09, y: 0.21}
+  m_Size: {x: 10.24, y: 10.24}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -1801,10 +1808,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dave
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1122334455667788990, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7496115378131242144, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1375590290}
   m_SourcePrefab: {fileID: 100100000, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

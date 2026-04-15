@@ -14,14 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CharacterName>k__BackingField: "\u6234\u592B"
   <CharacterIcon>k__BackingField: {fileID: -7888902146871769836, guid: 95cd4e99917ba734bafe9d543625fe72, type: 3}
-  <PurchasePrice>k__BackingField: 1
   extraProps:
   - propType: 7
     modifierType: 0
     value: 1
   specialFeatures:
   - rid: 451546610942607360
-  initialWeapons: []
+  initialWeapons:
+  - weaponData: {fileID: 11400000, guid: d9159d0b490caa1468c9f776cd665de7, type: 2}
+    level: 1
+  - weaponData: {fileID: 11400000, guid: 8d945004c944501419f6476a244d413b, type: 2}
+    level: 2
+  - weaponData: {fileID: 11400000, guid: 5aef04cf1c1edfa44a13d748613d99a1, type: 2}
+    level: 4
+  - weaponData: {fileID: 11400000, guid: 686074d3d1c8acb40836d8fa2511dec8, type: 2}
+    level: 6
+  - weaponData: {fileID: 11400000, guid: a3f9136a37dd79c49a038ad1d9a6a563, type: 2}
+    level: 5
   initialAccessories: []
   references:
     version: 2

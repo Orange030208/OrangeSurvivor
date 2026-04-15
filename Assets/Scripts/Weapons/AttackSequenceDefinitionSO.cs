@@ -12,13 +12,13 @@ using UnityEngine;
 public class AttackSequenceDefinitionSO : ScriptableObject
 {
     [Header("Inspector")]
-    [Tooltip("一次完整攻击序列的总时长。所有关键帧时间都是基于 0~1 的归一化时间，再乘以这个时长得到实际秒数。")]
+    [Tooltip("一次完整攻击序列的总时长。所有关键帧时间都是基于 0~1 的归一化时间，再乘以这个时长得到实际秒数。")] 
     [SerializeField] private float duration = 0.25f;
-    [Tooltip("序列播放完成后，是否自动恢复到初始待机姿态。大部分武器建议保持开启。")]
+    [Tooltip("序列播放完成后，是否自动恢复到初始待机姿态。大部分武器建议保持开启。")] 
     [SerializeField] private bool restoreDefaultPoseOnComplete = true;
 
     [Header("Motion")]
-    [Tooltip("动作关键帧列表：定义这次攻击中武器如何位移、如何旋转。")]
+    [Tooltip("动作关键帧列表：定义这次攻击中武器如何位移、如何旋转。")] 
     [SerializeField] private List<WeaponMotionKeyframe> motionKeyframes = new()
     {
         new WeaponMotionKeyframe(0f, Vector3.zero, Vector3.zero),
@@ -28,7 +28,7 @@ public class AttackSequenceDefinitionSO : ScriptableObject
     };
 
     [Header("Events")]
-    [Tooltip("事件关键帧列表：在攻击过程中的某些时间点触发命中窗口、发射、SFX、VFX 等逻辑。")]
+    [Tooltip("事件关键帧列表：在攻击过程中的某些时间点触发命中窗口、发射、SFX、VFX 等逻辑事件。")] 
     [SerializeField] private List<WeaponSequenceEventKeyframe> eventKeyframes = new()
     {
         WeaponSequenceEventKeyframe.CreateWindowEvent(0.4f, WeaponSequenceEventType.OpenHitWindow, 0),
@@ -92,8 +92,7 @@ public enum WeaponMotionDynamicPositionStrategy
 {
     None,
     /// <summary>
-    /// 朝目标方向，并把这帧落点限制在 dynamicMinNormalizedReach ~ dynamicMaxNormalizedReach 对应的真实攻击半径之间。
-    /// 例如最大值为 1 时，表示这一帧最多打到整把武器的攻击半径边界。
+    /// 按目标相关位置解算动态轴，并把结果限制在当前轴自己的 Min/Max Reach 对应的真实攻击半径范围内。
     /// </summary>
     TowardTargetClampedRadius
 }
@@ -102,11 +101,15 @@ public enum WeaponMotionDynamicPositionStrategy
 public struct WeaponMotionKeyframe
 {
     [Range(0f, 1f)] public float normalizedTime;
-    public WeaponMotionPositionMode positionMode;
-    public Vector3 localPosition;
+    public WeaponMotionPositionMode xPositionMode;
+    public WeaponMotionPositionMode yPositionMode;
     public WeaponMotionDynamicPositionStrategy dynamicPositionStrategy;
-    [Range(0f, 1f)] public float dynamicMinNormalizedReach;
-    [Range(0f, 1f)] public float dynamicMaxNormalizedReach;
+    public float localPositionX;
+    [Range(0f, 1f)] public float xDynamicMinNormalizedReach;
+    [Range(0f, 1f)] public float xDynamicMaxNormalizedReach;
+    public float localPositionY;
+    [Range(0f, 1f)] public float yDynamicMinNormalizedReach;
+    [Range(0f, 1f)] public float yDynamicMaxNormalizedReach;
     public Vector3 localEulerAngles;
     public WeaponMotionEase ease;
     public AnimationCurve customCurve;
@@ -114,16 +117,15 @@ public struct WeaponMotionKeyframe
     public WeaponMotionKeyframe(float normalizedTime, Vector3 localPosition, Vector3 localEulerAngles, WeaponMotionEase ease = WeaponMotionEase.Linear)
     {
         this.normalizedTime = Mathf.Clamp01(normalizedTime);
-        positionMode = WeaponMotionPositionMode.Fixed;
-        // 固定帧按武器本地空间中的写死坐标解释，不受 RuntimeStats.Range 影响。
-        this.localPosition = localPosition;
+        xPositionMode = WeaponMotionPositionMode.Fixed;
+        yPositionMode = WeaponMotionPositionMode.Fixed;
+        localPositionX = localPosition.x;
+        localPositionY = localPosition.y;
         dynamicPositionStrategy = WeaponMotionDynamicPositionStrategy.None;
-        // 固定帧与动态帧都改用“归一化攻击空间”表达：
-        // 1 = 恰好到达当前武器的攻击半径边界；
-        // 0.5 = 到达一半攻击半径；
-        // 这样运行时只需要乘 RuntimeStats.Range，就能统一得到真实落点。
-        dynamicMinNormalizedReach = Mathf.Clamp01(localPosition.magnitude * 0.35f);
-        dynamicMaxNormalizedReach = Mathf.Clamp01(localPosition.magnitude);
+        xDynamicMinNormalizedReach = Mathf.Clamp01(Mathf.Abs(localPosition.x) * 0.35f);
+        xDynamicMaxNormalizedReach = Mathf.Clamp01(Mathf.Abs(localPosition.x));
+        yDynamicMinNormalizedReach = Mathf.Clamp01(Mathf.Abs(localPosition.y) * 0.35f);
+        yDynamicMaxNormalizedReach = Mathf.Clamp01(Mathf.Abs(localPosition.y));
         this.localEulerAngles = localEulerAngles;
         this.ease = ease;
         customCurve = ease == WeaponMotionEase.CustomCurve ? AnimationCurve.EaseInOut(0f, 0f, 1f, 1f) : null;

@@ -192,9 +192,9 @@ public sealed class WeaponMotionSequencePlayer
             return overridePosition;
         }
 
-        // 固定帧始终按配置里的 localPosition 直接播放，不受武器 Range 影响。
-        // 只有动态帧才会在外部先结合当前目标和攻击半径解出真实落点，再通过 override 传进来。
-        return keyframe.localPosition;
+        // 固定帧始终按配置里的分离 X/Y 位置直接播放，不受武器 Range 影响。
+        // 只有动态轴才会在外部先结合当前目标和攻击半径解出真实落点，再通过 override 传进来。
+        return new Vector3(keyframe.localPositionX, keyframe.localPositionY, 0f);
     }
 
     private float EvaluateEase(float t, WeaponMotionEase ease, AnimationCurve customCurve)

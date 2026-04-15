@@ -46,6 +46,11 @@ public class Bullet : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!GameSimulation.IsRunning)
+        {
+            return;
+        }
+
         lifetimeTimer += Time.deltaTime;
         if (lifetimeTimer >= currentMaxLifetime)
         {

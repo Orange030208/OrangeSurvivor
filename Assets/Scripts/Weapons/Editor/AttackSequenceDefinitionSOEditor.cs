@@ -32,15 +32,15 @@ public class AttackSequenceDefinitionSOEditor : Editor
             "Motion Keyframes 使用归一化攻击空间：\n" +
             "• 当前项目约定武器模型默认是竖着放的，待机时沿 local +Y / transform.up 指向前方。\n" +
             "• 因此 y 表示沿武器朝向的前后伸缩，x 表示横向偏移；写动画时不要把 x 当作前伸轴。\n" +
-            "• DynamicFromTarget 也使用 0~1 的归一化半径区间，再在运行时乘当前 Range。",
+            "• 现在 x / y 两个轴可以各自独立选择 Fixed 或 DynamicFromTarget。",
             MessageType.Info);
 
         EditorGUILayout.HelpBox(
             "动态位置策略说明：\n" +
             "• 当前仅保留 TowardTargetClampedRadius。\n" +
-            "• 它会朝目标方向取距离，并把落点限制在 Min/Max Normalized Reach 对应的真实攻击半径区间内。\n" +
-            "• DynamicFromTarget 下不再区分其他长度混合策略；需要不同长短效果时，直接调 Min/Max Reach 与关键帧时序。\n" +
-            "• 建议把主攻击方向上的最大前伸控制在 1 以内；x 可以为负表示后拉，侧向摆动请尽量收敛。",
+            "• 你可以让 x 轴和 y 轴分别选择是否动态。\n" +
+            "• 例如：x = Fixed 保留横甩，y = Dynamic 让前伸跟目标远近变化。\n" +
+            "• 也可以反过来，或者两个轴都固定。",
             MessageType.None);
 
         EditorGUILayout.HelpBox(
@@ -102,12 +102,15 @@ public class AttackSequenceDefinitionSOEditor : Editor
     {
         SerializedProperty element = motionKeyframes.GetArrayElementAtIndex(index);
         SerializedProperty normalizedTime = element.FindPropertyRelative("normalizedTime");
-        SerializedProperty positionMode = element.FindPropertyRelative("positionMode");
-        SerializedProperty localPosition = element.FindPropertyRelative("localPosition");
+        SerializedProperty xPositionMode = element.FindPropertyRelative("xPositionMode");
+        SerializedProperty yPositionMode = element.FindPropertyRelative("yPositionMode");
+        SerializedProperty localPositionX = element.FindPropertyRelative("localPositionX");
+        SerializedProperty localPositionY = element.FindPropertyRelative("localPositionY");
         SerializedProperty dynamicPositionStrategy = element.FindPropertyRelative("dynamicPositionStrategy");
-        SerializedProperty dynamicMinNormalizedReach = element.FindPropertyRelative("dynamicMinNormalizedReach");
-        SerializedProperty dynamicMaxNormalizedReach = element.FindPropertyRelative("dynamicMaxNormalizedReach");
-        SerializedProperty dynamicWeight = element.FindPropertyRelative("dynamicWeight");
+        SerializedProperty xDynamicMinNormalizedReach = element.FindPropertyRelative("xDynamicMinNormalizedReach");
+        SerializedProperty xDynamicMaxNormalizedReach = element.FindPropertyRelative("xDynamicMaxNormalizedReach");
+        SerializedProperty yDynamicMinNormalizedReach = element.FindPropertyRelative("yDynamicMinNormalizedReach");
+        SerializedProperty yDynamicMaxNormalizedReach = element.FindPropertyRelative("yDynamicMaxNormalizedReach");
         SerializedProperty localEulerAngles = element.FindPropertyRelative("localEulerAngles");
         SerializedProperty ease = element.FindPropertyRelative("ease");
         SerializedProperty customCurve = element.FindPropertyRelative("customCurve");
@@ -127,24 +130,28 @@ public class AttackSequenceDefinitionSOEditor : Editor
         if (element.isExpanded)
         {
             EditorGUILayout.PropertyField(normalizedTime);
-            EditorGUILayout.PropertyField(positionMode);
 
-            WeaponMotionPositionMode currentMode = (WeaponMotionPositionMode)positionMode.enumValueIndex;
-            if (currentMode == WeaponMotionPositionMode.Fixed)
-            {
-                float forwardReach = localPosition.vector3Value.y;
-                if (forwardReach > 1f)
-                {
-                    EditorGUILayout.HelpBox($"固定帧前伸较大：当前 y = {forwardReach:0.##}。固定帧现在按本地写死坐标播放，不再受 Range 缩放；请确认这就是你想要的绝对位移。", MessageType.Warning);
-                }
+            DrawAxisSection(
+                "X Axis",
+                xPositionMode,
+                localPositionX,
+                xDynamicMinNormalizedReach,
+                xDynamicMaxNormalizedReach,
+                "横向基础位移。X 轴如果是 Dynamic，会按 X 轴自己的 Reach 配置解算；只有 Fixed 时才直接使用这个值。");
 
-                EditorGUILayout.PropertyField(localPosition);
-            }
-            else
+            DrawAxisSection(
+                "Y Axis",
+                yPositionMode,
+                localPositionY,
+                yDynamicMinNormalizedReach,
+                yDynamicMaxNormalizedReach,
+                "前伸基础位移。Y 轴如果是 Dynamic，会按 Y 轴自己的 Reach 配置解算；只有 Fixed 时才直接使用这个值。");
+
+            bool hasDynamicAxis = (WeaponMotionPositionMode)xPositionMode.enumValueIndex == WeaponMotionPositionMode.DynamicFromTarget ||
+                                  (WeaponMotionPositionMode)yPositionMode.enumValueIndex == WeaponMotionPositionMode.DynamicFromTarget;
+            if (hasDynamicAxis)
             {
                 EditorGUILayout.PropertyField(dynamicPositionStrategy);
-                EditorGUILayout.Slider(dynamicMinNormalizedReach, 0f, 1f, new GUIContent("Min Normalized Reach"));
-                EditorGUILayout.Slider(dynamicMaxNormalizedReach, 0f, 1f, new GUIContent("Max Normalized Reach"));
             }
 
             EditorGUILayout.PropertyField(localEulerAngles);
@@ -160,20 +167,33 @@ public class AttackSequenceDefinitionSOEditor : Editor
 
     private static string BuildMotionFrameHeader(int index, SerializedProperty element)
     {
-        WeaponMotionPositionMode positionMode = (WeaponMotionPositionMode)element.FindPropertyRelative("positionMode").enumValueIndex;
+        WeaponMotionPositionMode xMode = (WeaponMotionPositionMode)element.FindPropertyRelative("xPositionMode").enumValueIndex;
+        WeaponMotionPositionMode yMode = (WeaponMotionPositionMode)element.FindPropertyRelative("yPositionMode").enumValueIndex;
         float normalizedTime = element.FindPropertyRelative("normalizedTime").floatValue;
-        string summary = positionMode == WeaponMotionPositionMode.Fixed
-            ? "Fixed"
-            : BuildDynamicSummary(element);
+        string summary = $"X:{(xMode == WeaponMotionPositionMode.Fixed ? "Fixed" : "Dynamic")}  Y:{(yMode == WeaponMotionPositionMode.Fixed ? "Fixed" : "Dynamic")}";
         return $"Motion Frame {index}  [t={normalizedTime:0.00}]  {summary}";
     }
 
-    private static string BuildDynamicSummary(SerializedProperty element)
+    private static void DrawAxisSection(string label, SerializedProperty axisMode, SerializedProperty localPosition,
+        SerializedProperty minReach, SerializedProperty maxReach, string fixedValueTooltip)
     {
-        WeaponMotionDynamicPositionStrategy strategy = (WeaponMotionDynamicPositionStrategy)element.FindPropertyRelative("dynamicPositionStrategy").enumValueIndex;
-        float minReach = element.FindPropertyRelative("dynamicMinNormalizedReach").floatValue;
-        float maxReach = element.FindPropertyRelative("dynamicMaxNormalizedReach").floatValue;
-        return $"Dynamic/Clamp  Reach[{minReach:0.##}-{maxReach:0.##}]";
+        EditorGUILayout.Space(2f);
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(axisMode, new GUIContent("Position Mode"));
+
+        WeaponMotionPositionMode currentMode = (WeaponMotionPositionMode)axisMode.enumValueIndex;
+        if (currentMode == WeaponMotionPositionMode.Fixed)
+        {
+            EditorGUILayout.PropertyField(localPosition, new GUIContent("Local Position", fixedValueTooltip));
+        }
+        else
+        {
+            EditorGUILayout.Slider(minReach, 0f, 1f, new GUIContent("Min Normalized Reach"));
+            EditorGUILayout.Slider(maxReach, 0f, 1f, new GUIContent("Max Normalized Reach"));
+        }
+
+        EditorGUILayout.EndVertical();
     }
 
     private static void InitializeMotionKeyframe(SerializedProperty newElement, SerializedProperty sourceElement)
@@ -183,11 +203,15 @@ public class AttackSequenceDefinitionSOEditor : Editor
         if (sourceElement == null)
         {
             newElement.FindPropertyRelative("normalizedTime").floatValue = 1f;
-            newElement.FindPropertyRelative("positionMode").enumValueIndex = (int)WeaponMotionPositionMode.Fixed;
-            newElement.FindPropertyRelative("localPosition").vector3Value = Vector3.zero;
+            newElement.FindPropertyRelative("xPositionMode").enumValueIndex = (int)WeaponMotionPositionMode.Fixed;
+            newElement.FindPropertyRelative("yPositionMode").enumValueIndex = (int)WeaponMotionPositionMode.Fixed;
+            newElement.FindPropertyRelative("localPositionX").floatValue = 0f;
+            newElement.FindPropertyRelative("localPositionY").floatValue = 0f;
             newElement.FindPropertyRelative("dynamicPositionStrategy").enumValueIndex = (int)WeaponMotionDynamicPositionStrategy.None;
-            newElement.FindPropertyRelative("dynamicMinNormalizedReach").floatValue = 0f;
-            newElement.FindPropertyRelative("dynamicMaxNormalizedReach").floatValue = 0f;
+            newElement.FindPropertyRelative("xDynamicMinNormalizedReach").floatValue = 0f;
+            newElement.FindPropertyRelative("xDynamicMaxNormalizedReach").floatValue = 0f;
+            newElement.FindPropertyRelative("yDynamicMinNormalizedReach").floatValue = 0f;
+            newElement.FindPropertyRelative("yDynamicMaxNormalizedReach").floatValue = 0f;
             newElement.FindPropertyRelative("localEulerAngles").vector3Value = Vector3.zero;
             newElement.FindPropertyRelative("ease").enumValueIndex = (int)WeaponMotionEase.Linear;
             newElement.FindPropertyRelative("customCurve").animationCurveValue = null;
@@ -195,11 +219,15 @@ public class AttackSequenceDefinitionSOEditor : Editor
         }
 
         newElement.FindPropertyRelative("normalizedTime").floatValue = Mathf.Clamp01(sourceElement.FindPropertyRelative("normalizedTime").floatValue);
-        newElement.FindPropertyRelative("positionMode").enumValueIndex = sourceElement.FindPropertyRelative("positionMode").enumValueIndex;
-        newElement.FindPropertyRelative("localPosition").vector3Value = sourceElement.FindPropertyRelative("localPosition").vector3Value;
+        newElement.FindPropertyRelative("xPositionMode").enumValueIndex = sourceElement.FindPropertyRelative("xPositionMode").enumValueIndex;
+        newElement.FindPropertyRelative("yPositionMode").enumValueIndex = sourceElement.FindPropertyRelative("yPositionMode").enumValueIndex;
+        newElement.FindPropertyRelative("localPositionX").floatValue = sourceElement.FindPropertyRelative("localPositionX").floatValue;
+        newElement.FindPropertyRelative("localPositionY").floatValue = sourceElement.FindPropertyRelative("localPositionY").floatValue;
         newElement.FindPropertyRelative("dynamicPositionStrategy").enumValueIndex = sourceElement.FindPropertyRelative("dynamicPositionStrategy").enumValueIndex;
-        newElement.FindPropertyRelative("dynamicMinNormalizedReach").floatValue = sourceElement.FindPropertyRelative("dynamicMinNormalizedReach").floatValue;
-        newElement.FindPropertyRelative("dynamicMaxNormalizedReach").floatValue = sourceElement.FindPropertyRelative("dynamicMaxNormalizedReach").floatValue;
+        newElement.FindPropertyRelative("xDynamicMinNormalizedReach").floatValue = sourceElement.FindPropertyRelative("xDynamicMinNormalizedReach").floatValue;
+        newElement.FindPropertyRelative("xDynamicMaxNormalizedReach").floatValue = sourceElement.FindPropertyRelative("xDynamicMaxNormalizedReach").floatValue;
+        newElement.FindPropertyRelative("yDynamicMinNormalizedReach").floatValue = sourceElement.FindPropertyRelative("yDynamicMinNormalizedReach").floatValue;
+        newElement.FindPropertyRelative("yDynamicMaxNormalizedReach").floatValue = sourceElement.FindPropertyRelative("yDynamicMaxNormalizedReach").floatValue;
         newElement.FindPropertyRelative("localEulerAngles").vector3Value = sourceElement.FindPropertyRelative("localEulerAngles").vector3Value;
         newElement.FindPropertyRelative("ease").enumValueIndex = sourceElement.FindPropertyRelative("ease").enumValueIndex;
         newElement.FindPropertyRelative("customCurve").animationCurveValue = sourceElement.FindPropertyRelative("customCurve").animationCurveValue;

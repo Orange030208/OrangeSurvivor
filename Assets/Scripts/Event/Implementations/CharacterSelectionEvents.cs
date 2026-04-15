@@ -37,3 +37,7 @@ public struct CharacterSelectionChangedEvent : IGameEvent
         CharacterData = characterData;
     }
 }
+
+public struct CharacterSelectionCompletedEvent : IGameEvent
+{
+}

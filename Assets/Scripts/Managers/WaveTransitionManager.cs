@@ -37,15 +37,6 @@ public class WaveTransitionManager : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        if (accessoryManager == null)
-        {
-            Player player = FindFirstObjectByType<Player>();
-            accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
-        }
-    }
-
     private void OnEnable()
     {
         GameEventBus.Subscribe<RequestWaveTransitionStateSnapshotEvent>(PublishSnapshot);
@@ -53,6 +44,16 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+
+        if (accessoryManager == null)
+        {
+            Player player = FindFirstObjectByType<Player>();
+            if (player != null)
+            {
+                accessoryManager = player.GetComponent<AccessoryManager>();
+            }
+        }
     }
 
     private void OnDisable()
@@ -62,6 +63,7 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -69,12 +71,24 @@ public class WaveTransitionManager : MonoBehaviour
         if (eventData.NewState == GameState.WaveTransition)
         {
             StartTransitionFlow();
+            return;
+        }
+
+        if (eventData.OldState == GameState.WaveTransition)
+        {
+            currentAccessoryData = null;
+            CurrentPhase = TransitionPhase.None;
         }
     }
 
     private void OnChestCollected()
     {
         collectChestCount++;
+    }
+
+    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    {
+        accessoryManager = eventData.Player != null ? eventData.Player.GetComponent<AccessoryManager>() : null;
     }
 
     private void StartTransitionFlow()
@@ -196,6 +210,11 @@ public class WaveTransitionManager : MonoBehaviour
         }
 
         Player player = FindFirstObjectByType<Player>();
+        if (player == null)
+        {
+            return;
+        }
+
         if (player.UseUpgradePoints() > 0)
         {
             ConfigureUpgradeProps();

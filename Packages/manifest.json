@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.coplaydev.unity-mcp": "file:E:/unity/Packages/MCPForUnity",
     "com.dbrizov.naughtyattributes": "file:E:/unity/Packages/NaughtyAttributes",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.feature.2d": "2.0.1",

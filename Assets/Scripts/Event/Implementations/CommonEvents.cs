@@ -1,15 +1,5 @@
 using UnityEngine;
 
-public struct GameStateChangeRequestEvent : IGameEvent
-{
-    public GameState TargetState;
-
-    public GameStateChangeRequestEvent(GameState targetState)
-    {
-        TargetState = targetState;
-    }
-}
-
 public struct GameStateChangedEvent : IGameEvent
 {
     public GameState OldState;
@@ -30,12 +20,54 @@ public struct MenuStartClickedEvent : IGameEvent
 {
 }
 
+public struct PlayerSpawnedEvent : IGameEvent
+{
+    public Player Player;
+
+    public PlayerSpawnedEvent(Player player)
+    {
+        Player = player;
+    }
+}
+
 public struct GameOverRestartClickedEvent : IGameEvent
 {
 }
 
 public struct GameOverReturnToMenuClickedEvent : IGameEvent
 {
+}
+
+public struct StageCompleteRestartClickedEvent : IGameEvent
+{
+}
+
+public struct StageCompleteReturnToMenuClickedEvent : IGameEvent
+{
+}
+
+public struct RequestStageCompleteSnapshotEvent : IGameEvent
+{
+}
+
+public struct StageCompleteSnapshotEvent : IGameEvent
+{
+    public int CompletedWaves;
+    public float SurvivalTime;
+    public int KillCount;
+    public int GoldEarned;
+    public string CharacterName;
+    public string MainWeaponName;
+
+    public StageCompleteSnapshotEvent(int completedWaves, float survivalTime, int killCount, int goldEarned, string characterName, string mainWeaponName)
+    {
+        CompletedWaves = completedWaves;
+        SurvivalTime = survivalTime;
+        KillCount = killCount;
+        GoldEarned = goldEarned;
+        CharacterName = characterName;
+        MainWeaponName = mainWeaponName;
+    }
 }
 
 public struct EntityDamagedEvent : IGameEvent
@@ -62,32 +94,12 @@ public struct EntityDiedEvent : IGameEvent
     }
 }
 
-// 暂停菜单页面内部点击“继续”后的意图事件，交给流程协调器处理。
+// 暂停菜单页面内部点击“继续”后的意图事件，交给 GameManager 统一处理。
 public struct PauseMenuContinueClickedEvent : IGameEvent
 {
 }
 
-// 暂停菜单页面内部点击“返回菜单”后的意图事件，交给流程协调器处理。
+// 暂停菜单页面内部点击“返回菜单”后的意图事件，交给 GameManager 统一处理。
 public struct PauseMenuReturnToMenuClickedEvent : IGameEvent
 {
-}
-
-// 真正恢复游戏的业务事件，通常在暂停菜单完全关闭后再发出。
-public struct ResumeGameRequestedEvent : IGameEvent
-{
-}
-
-// 真正返回主菜单的业务事件，通常在暂停菜单完全关闭后再发出。
-public struct ReturnToMenuRequestedEvent : IGameEvent
-{
-}
-
-public struct PauseStateChangedEvent : IGameEvent
-{
-    public bool IsPaused;
-
-    public PauseStateChangedEvent(bool isPaused)
-    {
-        IsPaused = isPaused;
-    }
 }

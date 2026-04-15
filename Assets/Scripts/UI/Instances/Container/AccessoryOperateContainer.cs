@@ -4,10 +4,12 @@ using UnityEngine.UI;
 
 public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, DescriptionListDisplayer>
 {
-    [SerializeField] private Button takeButton;
-    [SerializeField] private Button recycleButton;
+    [SerializeField] private UIClickTarget takeButton;
+    [SerializeField] private UIClickTarget recycleButton;
     [SerializeField] private TextMeshProUGUI recycleText;
     [SerializeField] private Image outline;
+
+    private AccessoryDataSO currentAccessory;
 
     public override void Configure(AccessoryDataSO resource)
     {
@@ -21,16 +23,28 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Descri
         RenderColor(resource, resource.Rarity);
         bottom.DisplayDescriptions(resource.GetDescriptions());
 
-        takeButton.onClick.RemoveAllListeners();
-        recycleButton.onClick.RemoveAllListeners();
+        takeButton.OnClicked -= OnTakeButtonClicked;
+        recycleButton.OnClicked -= OnRecycleButtonClicked;
 
-        takeButton.onClick.AddListener(() => OperateAccessory(resource, true));
-        recycleButton.onClick.AddListener(() => OperateAccessory(resource, false));
+        currentAccessory = resource;
+
+        takeButton.OnClicked += OnTakeButtonClicked;
+        recycleButton.OnClicked += OnRecycleButtonClicked;
     }
 
     private void OperateAccessory(AccessoryDataSO accessoryData, bool selected)
     {
         GameEventBus.Publish(new AccessoryOperateEvent(accessoryData, selected));
+    }
+
+    private void OnTakeButtonClicked()
+    {
+        OperateAccessory(currentAccessory, true);
+    }
+
+    private void OnRecycleButtonClicked()
+    {
+        OperateAccessory(currentAccessory, false);
     }
 
     public override void Dispose()
@@ -41,7 +55,8 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Descri
 
     public void CleanUp()
     {
-        takeButton.onClick.RemoveAllListeners();
-        recycleButton.onClick.RemoveAllListeners();
+        takeButton.OnClicked -= OnTakeButtonClicked;
+        recycleButton.OnClicked -= OnRecycleButtonClicked;
+        currentAccessory = null;
     }
 }
