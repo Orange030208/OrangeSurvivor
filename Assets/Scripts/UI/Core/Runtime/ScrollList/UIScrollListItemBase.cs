@@ -6,14 +6,14 @@ using UnityEngine;
 public abstract class UIScrollListItemBase : MonoBehaviour, IUIScrollListItem
 {
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private MonoBehaviour runtimeMotionBehaviour;
+    [SerializeField] private UIRuntimeMotionBase runtimeMotionBehaviour;
 
     private RectTransform itemRectTransform;
-    private IUIRuntimeMotion runtimeMotion;
+    private UIRuntimeMotionBase runtimeMotion;
 
     public RectTransform ItemRectTransform => itemRectTransform;
     public GameObject ItemGameObject => gameObject;
-    protected IUIRuntimeMotion RuntimeMotion => runtimeMotion;
+    protected UIRuntimeMotionBase RuntimeMotion => runtimeMotion;
 
     protected virtual void Awake()
     {
@@ -82,13 +82,13 @@ public abstract class UIScrollListItemBase : MonoBehaviour, IUIScrollListItem
 
         if (runtimeMotion == null)
         {
-            runtimeMotion = runtimeMotionBehaviour as IUIRuntimeMotion;
+            runtimeMotion = runtimeMotionBehaviour;
             if (runtimeMotion == null && runtimeMotionBehaviour != null)
             {
-                runtimeMotion = runtimeMotionBehaviour.GetComponent<IUIRuntimeMotion>();
+                runtimeMotion = runtimeMotionBehaviour.GetComponent<UIRuntimeMotionBase>();
             }
 
-            runtimeMotion ??= GetComponent<IUIRuntimeMotion>();
+            runtimeMotion ??= GetComponent<UIRuntimeMotionBase>();
         }
     }
 }

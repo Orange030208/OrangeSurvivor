@@ -27,6 +27,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
+        GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Subscribe<MenuStartClickedEvent>(OnMenuStartClicked);
         GameEventBus.Subscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
         GameEventBus.Subscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
@@ -46,6 +47,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
+        GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Unsubscribe<MenuStartClickedEvent>(OnMenuStartClicked);
         GameEventBus.Unsubscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
         GameEventBus.Unsubscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
@@ -104,6 +106,16 @@ public class GameManager : MonoSingletonBase<GameManager>
         }
 
         TransitionToState(GameState.Game);
+    }
+
+    private void OnCharacterSelectionBackClicked()
+    {
+        if (currentGameState != GameState.CharacterSelection)
+        {
+            return;
+        }
+
+        TransitionToState(GameState.Menu);
     }
 
     private void OnMenuStartClicked()

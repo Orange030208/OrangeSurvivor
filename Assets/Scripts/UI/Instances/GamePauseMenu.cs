@@ -99,11 +99,13 @@ public class GamePauseMenu : UIPageBase
 
     private void OnContinueClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<PauseMenuContinueClickedEvent>();
     }
 
     private void OnMenuClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<PauseMenuReturnToMenuClickedEvent>();
     }
 

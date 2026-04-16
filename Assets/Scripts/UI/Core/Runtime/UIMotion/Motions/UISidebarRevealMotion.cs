@@ -14,32 +14,19 @@ public class UISidebarRevealMotion : UIRevealMotion
     [SerializeField] private bool setInactiveOnHide = true;
     [SerializeField] private List<UIMotionClip> actionClips = new()
     {
-        new UIMotionClip { action = UIMotionAction.Show, duration = 0.24f, ease = Ease.OutCubic },
+        new UIMotionClip { action = UIMotionAction.Normal, duration = 0.24f, ease = Ease.OutCubic },
         new UIMotionClip { action = UIMotionAction.Hide, duration = 0.22f, ease = Ease.InCubic },
         new UIMotionClip { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.02f }, duration = 0.1f, ease = Ease.OutQuad }
     };
 
-    private readonly Dictionary<UIMotionAction, UIMotionClip> clipMap = new();
-
-    protected override void Awake()
-    {
-        RebuildClipMap();
-        base.Awake();
-    }
-
-    private void OnValidate()
-    {
-        RebuildClipMap();
-    }
-
     /// <summary>侧边栏显示。</summary>
-    public Tween Show(float delay = 0f) => Play(UIMotionAction.Show, delay);
+    public Tween Show(float delay = 0f) => Play(UIMotionAction.Normal, delay);
 
     /// <summary>侧边栏隐藏。</summary>
     public Tween Hide(float delay = 0f) => Play(UIMotionAction.Hide, delay);
 
     /// <summary>侧边栏入场播放。</summary>
-    public override Tween PlayEnter(float delay = 0f) => Play(UIMotionAction.Show, delay);
+    public override Tween PlayEnter(float delay = 0f) => Play(UIMotionAction.Normal, delay);
 
     /// <summary>侧边栏退场播放。</summary>
     public override Tween PlayExit(float delay = 0f) => Play(UIMotionAction.Hide, delay);
@@ -47,8 +34,8 @@ public class UISidebarRevealMotion : UIRevealMotion
     /// <summary>立即设为侧边栏隐藏位。</summary>
     public void SetExitImmediate() => SetImmediate(UIMotionAction.Hide);
 
-    /// <summary>立即设为入场前隐藏位。</summary>
-    public override void SetHiddenImmediate() => SetImmediate(UIMotionAction.Show);
+    /// <summary>立即设为隐藏状态。</summary>
+    public override void SetHiddenImmediate() => SetImmediate(UIMotionAction.Hide);
 
     public void ConfigureSidebar(EdgeDirection direction, float extraOffset = 0f, bool inactiveOnHide = true)
     {
@@ -59,37 +46,34 @@ public class UISidebarRevealMotion : UIRevealMotion
 
     public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
     {
-        SetClipTiming(UIMotionAction.Show, showDuration, showEase);
+        SetClipTiming(UIMotionAction.Normal, showDuration, showEase);
         SetClipTiming(UIMotionAction.Hide, hideDuration, hideEase);
     }
 
     protected override UIMotionClip GetClip(UIMotionAction action)
     {
-        if (clipMap.TryGetValue(action, out UIMotionClip clip))
+        for (int i = 0; i < actionClips.Count; i++)
         {
-            return clip;
+            UIMotionClip clip = actionClips[i];
+            if (clip != null && clip.action == action)
+            {
+                return clip;
+            }
         }
 
-        UIMotionClip created = new() { action = action };
-        actionClips.Add(created);
-        clipMap[action] = created;
-        return created;
+        return new UIMotionClip { action = action };
     }
 
-    protected override UIMotionPose GetPreparePose(UIMotionAction action)
+    // 扩展说明：侧边栏的隐藏态由当前尺寸和边缘方向动态计算，Normal 始终回到默认布局位。
+    protected override UIMotionPose GetPose(UIMotionAction action)
     {
-        return CreateSidebarPose(false, 1f);
-    }
-
-    protected override UIMotionPose GetActionPose(UIMotionAction action)
-    {
-        UIMotionClip clip = GetClip(action);
         if (action == UIMotionAction.Hide)
         {
+            UIMotionClip clip = GetClip(action);
             return CreateSidebarPose(clip.pose.fade, clip.pose.alpha);
         }
 
-        return clip.pose;
+        return base.GetPose(action);
     }
 
     protected override bool ShouldDeactivateOnComplete(UIMotionAction action)
@@ -113,21 +97,29 @@ public class UISidebarRevealMotion : UIRevealMotion
         return new UIMotionPose { fade = fade, alpha = alpha, move = true, offset = dir * distance };
     }
 
-    private void RebuildClipMap()
+    private UIMotionClip FindClip(UIMotionAction action)
     {
-        clipMap.Clear();
-        foreach (UIMotionClip clip in actionClips)
+        for (int i = 0; i < actionClips.Count; i++)
         {
-            if (clip != null)
+            UIMotionClip clip = actionClips[i];
+            if (clip != null && clip.action == action)
             {
-                clipMap[clip.action] = clip;
+                return clip;
             }
         }
+
+        return null;
     }
 
     private void SetClipTiming(UIMotionAction action, float duration, Ease ease)
     {
-        UIMotionClip clip = GetClip(action);
+        UIMotionClip clip = FindClip(action);
+        if (clip == null)
+        {
+            Debug.LogWarning($"{GetType().Name} missing motion clip for action '{action}'.", this);
+            return;
+        }
+
         clip.duration = duration;
         clip.ease = ease;
     }

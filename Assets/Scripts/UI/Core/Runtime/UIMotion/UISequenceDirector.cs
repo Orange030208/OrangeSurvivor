@@ -185,12 +185,31 @@ public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
             throw new MissingReferenceException($"UISequenceDirector '{name}' contains a missing motion reference.");
         }
 
-        IUISequenceMotion motion = behaviour.GetComponent<IUISequenceMotion>();
-        if (motion == null)
+        if (ReferenceEquals(behaviour, this))
         {
-            throw new MissingComponentException($"UISequenceDirector '{name}' expects motion '{behaviour.name}' to implement IUISequenceMotion.");
+            throw new InvalidOperationException($"UISequenceDirector '{name}' cannot reference itself as a motion.");
         }
 
-        return motion;
+        if (behaviour is IUISequenceMotion directMotion)
+        {
+            return directMotion;
+        }
+
+        MonoBehaviour[] siblingBehaviours = behaviour.GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour siblingBehaviour in siblingBehaviours)
+        {
+            if (ReferenceEquals(siblingBehaviour, this))
+            {
+                continue;
+            }
+
+            if (siblingBehaviour is IUISequenceMotion siblingMotion)
+            {
+                return siblingMotion;
+            }
+        }
+
+        throw new MissingComponentException(
+            $"UISequenceDirector '{name}' expects reference '{behaviour.name}' to implement IUISequenceMotion, or share a GameObject with another IUISequenceMotion component that is not the director itself.");
     }
 }

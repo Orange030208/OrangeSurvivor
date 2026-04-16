@@ -78,11 +78,13 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
 
     private void OnBuyButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new ShopItemClickedEvent(currentIndex));
     }
 
     private void OnLockButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new OperateShopItemLockEvent(currentIndex));
     }
 }

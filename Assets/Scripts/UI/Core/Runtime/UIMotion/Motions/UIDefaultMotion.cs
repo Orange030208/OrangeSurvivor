@@ -5,10 +5,10 @@ using UnityEngine;
 /// <summary>
 /// 通用默认动效：适合标题、按钮、卡片等常规 UI 元素。
 /// 约定：
-/// - Show：从“预备姿态”进入正常展示态
-/// - Hide：从当前状态退出到隐藏姿态
+/// - Normal：正常展示态
+/// - Hide：隐藏态
 /// - Highlight：进入 hover / 选中 / focus 的高亮态
-/// - Press：进入按下态，抬起后通常回到 Show 或 Highlight
+/// - Press：进入按下态，抬起后通常回到 Normal 或 Highlight
 /// - Emphasis：播放一次性强调反馈
 /// </summary>
 public class UIDefaultMotion : UIRevealMotion
@@ -17,13 +17,10 @@ public class UIDefaultMotion : UIRevealMotion
     {
         new UIMotionClip
         {
-            action = UIMotionAction.Show,
-            pose = new UIMotionPose
-            {
-                fade = true, alpha = 0f, move = true, offset = new Vector2(0f, 32f), scale = true,
-                scaleMultiplier = 0.94f
-            },
-            duration = 0.24f, ease = Ease.OutCubic
+            action = UIMotionAction.Normal,
+            pose = new UIMotionPose(),
+            duration = 0.18f,
+            ease = Ease.OutCubic
         },
         new UIMotionClip
         {
@@ -55,30 +52,17 @@ public class UIDefaultMotion : UIRevealMotion
         }
     };
 
-    private readonly Dictionary<UIMotionAction, UIMotionClip> clipMap = new();
-
-    protected override void Awake()
-    {
-        RebuildClipMap();
-        base.Awake();
-    }
-
-    private void OnValidate()
-    {
-        RebuildClipMap();
-    }
-
     /// <summary>常规元素入场预备。</summary>
-    public void PrepareEnter() => Play(UIMotionAction.Show);
+    public new void PrepareEnter() => SetImmediate(UIMotionAction.Hide);
 
     /// <summary>常规元素入场播放。</summary>
-    public Tween PlayEnter(float delay = 0f) => Play(UIMotionAction.Show, delay);
+    public new Tween PlayEnter(float delay = 0f) => Play(UIMotionAction.Normal, delay);
 
     /// <summary>常规元素退场播放。</summary>
-    public Tween PlayExit(float delay = 0f) => Play(UIMotionAction.Hide, delay);
+    public new Tween PlayExit(float delay = 0f) => Play(UIMotionAction.Hide, delay);
 
     /// <summary>常规元素显示。</summary>
-    public Tween Show(float delay = 0f) => Play(UIMotionAction.Show, delay);
+    public Tween Show(float delay = 0f) => Play(UIMotionAction.Normal, delay);
 
     /// <summary>常规元素隐藏。</summary>
     public Tween Hide(float delay = 0f) => Play(UIMotionAction.Hide, delay);
@@ -92,34 +76,21 @@ public class UIDefaultMotion : UIRevealMotion
     /// <summary>常规元素点击强调。</summary>
     public Tween PlayEmphasis(float delay = 0f) => Play(UIMotionAction.Emphasis, delay);
 
-    /// <summary>立即设为入场前状态。</summary>
-    public void SetHiddenImmediate() => SetImmediate(UIMotionAction.Show);
-
     /// <summary>立即设为隐藏状态。</summary>
-    public void SetExitImmediate() => SetImmediate(UIMotionAction.Hide);
+    public new void SetHiddenImmediate() => SetImmediate(UIMotionAction.Hide);
 
     protected override UIMotionClip GetClip(UIMotionAction action)
     {
-        if (clipMap.TryGetValue(action, out UIMotionClip clip))
+        for (int i = 0; i < actionClips.Count; i++)
         {
-            return clip;
-        }
-
-        UIMotionClip created = new() { action = action };
-        actionClips.Add(created);
-        clipMap[action] = created;
-        return created;
-    }
-
-    private void RebuildClipMap()
-    {
-        clipMap.Clear();
-        foreach (UIMotionClip clip in actionClips)
-        {
-            if (clip != null)
+            UIMotionClip clip = actionClips[i];
+            if (clip != null && clip.action == action)
             {
-                clipMap[clip.action] = clip;
+                return clip;
             }
         }
+
+        Debug.LogWarning($"{GetType().Name} missing motion clip for action '{action}'.", this);
+        return new UIMotionClip { action = action };
     }
 }

@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [DisallowMultipleComponent]
@@ -7,7 +7,7 @@ public class UIClickTarget : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private bool interactable = true;
 
-    public event Action OnClicked;
+    public event UnityAction OnClicked;
 
     public bool Interactable
     {

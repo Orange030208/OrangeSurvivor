@@ -1,0 +1,246 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3623396138096017967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1312919602413714774}
+  - component: {fileID: 3168617681139976041}
+  - component: {fileID: 949713136473417128}
+  - component: {fileID: 2738362673911831729}
+  - component: {fileID: -484795988758975153}
+  - component: {fileID: 2126647607020705311}
+  - component: {fileID: 2443277875605788429}
+  - component: {fileID: 3291148694776631573}
+  m_Layer: 5
+  m_Name: Arrow Left Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1312919602413714774
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -93.4668, y: 48.4375}
+  m_SizeDelta: {x: 53.125, y: 96.875}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3168617681139976041
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_CullTransparentMesh: 1
+--- !u!114 &949713136473417128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08e0a993b1b728548909c4d0b5ae4fba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactable: 1
+--- !u!114 &2738362673911831729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!225 &-484795988758975153
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2126647607020705311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab32df935b83c62429e04183b836a38e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetImage: {fileID: 2738362673911831729}
+  useUnscaledTime: 1
+  keepLastFrameOnComplete: 1
+  actionClips:
+  - action: 4
+    frameSourceMode: 0
+    sourceAction: 4
+    frames:
+    - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+    - {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+    timingMode: 0
+    framesPerSecond: 12
+    totalDuration: 0.5
+    reverse: 0
+    deactivateOnComplete: 0
+    frameEvents: []
+  - action: 0
+    frameSourceMode: 1
+    sourceAction: 4
+    frames: []
+    timingMode: 0
+    framesPerSecond: 12
+    totalDuration: 0.5
+    reverse: 1
+    deactivateOnComplete: 0
+    frameEvents: []
+--- !u!114 &2443277875605788429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  motionIntensity: 1
+  useUnscaledTime: 1
+  actionClips:
+  - action: 0
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.12
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 1
+    pose:
+      fade: 1
+      alpha: 0
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 1
+      scaleMultiplier: 0.96
+      rotate: 0
+      rotationZ: 0
+    duration: 0.14
+    ease: 8
+    deactivateOnComplete: 0
+  - action: 2
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 1
+      scaleMultiplier: 1.1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.16
+    ease: 27
+    deactivateOnComplete: 0
+  - action: 3
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: 2}
+      scale: 1
+      scaleMultiplier: 1.02
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 4
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: -4}
+      scale: 1
+      scaleMultiplier: 0.96
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+--- !u!114 &3291148694776631573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3623396138096017967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c185814a58a85f49b9c59e5ff79f5c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  motionSource: {fileID: 2126647607020705311}
+  playEnterOnEnable: 0
+  bindings:
+  - motionEvent: 2
+    action: 4
+  - motionEvent: 3
+    action: 0
+  - motionEvent: 4
+    action: 2

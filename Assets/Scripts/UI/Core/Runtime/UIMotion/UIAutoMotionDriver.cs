@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(UIRevealMotion))]
+[RequireComponent(typeof(Graphic))]
 public class UIAutoMotionDriver : MonoBehaviour,
     IPointerEnterHandler,
     IPointerExitHandler,
@@ -15,14 +16,14 @@ public class UIAutoMotionDriver : MonoBehaviour,
     [Serializable]
     private class MotionBinding
     {
-        [Tooltip("触发该动效的 UI 事件。")]
+        [Tooltip("触发该动效的 UI 事件。")] 
         public UIMotionEvent motionEvent;
 
         [Tooltip("该事件发生时要播放的动效动作。")]
-        public UIMotionAction action = UIMotionAction.Show;
+        public UIMotionAction action = UIMotionAction.Normal;
     }
 
-    [SerializeField] private UIRevealMotion motion;
+    [SerializeField] private UIRuntimeMotionBase motionSource;
 
     [Header("Lifecycle")]
     [SerializeField] private bool playEnterOnEnable;
@@ -31,31 +32,29 @@ public class UIAutoMotionDriver : MonoBehaviour,
     [SerializeField] private List<MotionBinding> bindings = new()
     {
         new MotionBinding { motionEvent = UIMotionEvent.PointerEnter, action = UIMotionAction.Highlight },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, action = UIMotionAction.Show },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, action = UIMotionAction.Normal },
         new MotionBinding { motionEvent = UIMotionEvent.PointerDown, action = UIMotionAction.Press },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, action = UIMotionAction.Show },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, action = UIMotionAction.Normal },
         new MotionBinding { motionEvent = UIMotionEvent.PointerClick, action = UIMotionAction.Emphasis }
     };
 
-    private IUIRuntimeMotion runtimeMotion;
+    private readonly List<UIRuntimeMotionBase> runtimeMotions = new();
 
     private void Awake()
     {
-        motion ??= GetComponent<UIRevealMotion>();
-        runtimeMotion = motion;
+        RebuildRuntimeMotions();
     }
 
     private void OnEnable()
     {
         if (playEnterOnEnable)
         {
-            runtimeMotion.Play(UIMotionAction.Show);
+            PlayAll(UIMotionAction.Normal);
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        print("111111");
         PlayBoundAction(UIMotionEvent.PointerEnter, requireLeftButton: false, eventData);
     }
 
@@ -81,7 +80,11 @@ public class UIAutoMotionDriver : MonoBehaviour,
 
     public void RefreshDefaults()
     {
-        runtimeMotion.RefreshDefaults();
+        RebuildRuntimeMotions();
+        foreach (UIRuntimeMotionBase runtimeMotion in runtimeMotions)
+        {
+            runtimeMotion.RefreshDefaults();
+        }
     }
 
     private void PlayBoundAction(UIMotionEvent motionEvent, bool requireLeftButton, PointerEventData eventData)
@@ -92,10 +95,44 @@ public class UIAutoMotionDriver : MonoBehaviour,
         }
 
         MotionBinding binding = GetBinding(motionEvent);
-        if (binding != null)
+        if (binding == null)
         {
-            runtimeMotion.Play(binding.action);
+            return;
         }
+
+        PlayAll(binding.action);
+    }
+
+    private void PlayAll(UIMotionAction action)
+    {
+        EnsureRuntimeMotions();
+        foreach (UIRuntimeMotionBase runtimeMotion in runtimeMotions)
+        {
+            runtimeMotion.Play(action);
+        }
+    }
+
+    private void EnsureRuntimeMotions()
+    {
+        if (runtimeMotions.Count > 0)
+        {
+            return;
+        }
+
+        RebuildRuntimeMotions();
+    }
+
+    private void RebuildRuntimeMotions()
+    {
+        runtimeMotions.Clear();
+
+        UIRuntimeMotionBase source = motionSource != null ? motionSource : GetComponent<UIRuntimeMotionBase>();
+        if (source == null)
+        {
+            return;
+        }
+
+        source.GetComponents(runtimeMotions);
     }
 
     private MotionBinding GetBinding(UIMotionEvent motionEvent)

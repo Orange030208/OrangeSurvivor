@@ -70,11 +70,13 @@ public class StageCompleteUIPage : UIPageBase
 
     private void OnRestartClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<StageCompleteRestartClickedEvent>();
     }
 
     private void OnMenuClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<StageCompleteReturnToMenuClickedEvent>();
     }
 }

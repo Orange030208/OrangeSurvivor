@@ -19,11 +19,13 @@ public class GameOverUIPage : UIPageBase
 
     private void OnRestartClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<GameOverRestartClickedEvent>();
     }
 
     private void OnMenuClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<GameOverReturnToMenuClickedEvent>();
     }
 }

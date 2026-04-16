@@ -16,38 +16,27 @@ public class UIEmphasisOnlyMotion : UIRevealMotion
     [SerializeField] [Range(0f, 1f)] private float emphasisElasticity = 0.8f;
     [SerializeField] private List<UIMotionClip> actionClips = new()
     {
-        new UIMotionClip { action = UIMotionAction.Show },
+        new UIMotionClip { action = UIMotionAction.Normal },
         new UIMotionClip { action = UIMotionAction.Hide },
         new UIMotionClip { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.08f }, duration = 0.14f, ease = Ease.OutBack }
     };
-
-    private readonly Dictionary<UIMotionAction, UIMotionClip> clipMap = new();
-
-    protected override void Awake()
-    {
-        RebuildClipMap();
-        base.Awake();
-    }
-
-    private void OnValidate()
-    {
-        RebuildClipMap();
-    }
 
     /// <summary>播放局部强化动画。</summary>
     public Tween PlayEmphasis(float delay = 0f) => Play(UIMotionAction.Emphasis, delay);
 
     protected override UIMotionClip GetClip(UIMotionAction action)
     {
-        if (clipMap.TryGetValue(action, out UIMotionClip clip))
+        for (int i = 0; i < actionClips.Count; i++)
         {
-            return clip;
+            UIMotionClip clip = actionClips[i];
+            if (clip != null && clip.action == action)
+            {
+                return clip;
+            }
         }
 
-        UIMotionClip created = new() { action = action };
-        actionClips.Add(created);
-        clipMap[action] = created;
-        return created;
+        Debug.LogWarning($"{GetType().Name} missing motion clip for action '{action}'.", this);
+        return new UIMotionClip { action = action };
     }
 
     protected override Tween PlaySpecial(UIMotionAction action, float delay)
@@ -72,7 +61,7 @@ public class UIEmphasisOnlyMotion : UIRevealMotion
         }
         else
         {
-            sequence.Append(TargetRect.DOScale(DefaultScale * ScaleValue(clip.pose.scaleMultiplier), clip.duration).SetEase(clip.ease));
+            sequence.Append(TargetRect.DOScale(TargetRect.localScale * ScaleValue(clip.pose.scaleMultiplier), clip.duration).SetEase(clip.ease));
             sequence.Append(TargetRect.DOScale(DefaultScale, clip.duration).SetEase(Ease.OutCubic));
         }
 
@@ -82,17 +71,5 @@ public class UIEmphasisOnlyMotion : UIRevealMotion
             RestoreInteractionState();
         });
         return sequence;
-    }
-
-    private void RebuildClipMap()
-    {
-        clipMap.Clear();
-        foreach (UIMotionClip clip in actionClips)
-        {
-            if (clip != null)
-            {
-                clipMap[clip.action] = clip;
-            }
-        }
     }
 }

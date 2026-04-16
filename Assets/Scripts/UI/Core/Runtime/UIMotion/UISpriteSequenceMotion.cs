@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Image))]
-public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRuntimeMotion
+public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
 {
     private enum SequenceTimingMode
     {
@@ -37,7 +37,7 @@ public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRunti
     {
         public UIMotionAction action;
         public FrameSourceMode frameSourceMode = FrameSourceMode.Self;
-        public UIMotionAction sourceAction = UIMotionAction.Show;
+        public UIMotionAction sourceAction = UIMotionAction.Normal;
         public List<Sprite> frames = new();
         public SequenceTimingMode timingMode = SequenceTimingMode.FramesPerSecond;
         [Min(1f)] public float framesPerSecond = 12f;
@@ -52,8 +52,8 @@ public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRunti
     [SerializeField] private bool keepLastFrameOnComplete = true;
     [SerializeField] private List<SpriteSequenceClip> actionClips = new()
     {
-        new SpriteSequenceClip { action = UIMotionAction.Show, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f },
-        new SpriteSequenceClip { action = UIMotionAction.Hide, frameSourceMode = FrameSourceMode.UseOtherActionFrames, sourceAction = UIMotionAction.Show, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f, reverse = true }
+        new SpriteSequenceClip { action = UIMotionAction.Normal, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f },
+        new SpriteSequenceClip { action = UIMotionAction.Hide, frameSourceMode = FrameSourceMode.UseOtherActionFrames, sourceAction = UIMotionAction.Normal, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f, reverse = true }
     };
 
     private readonly Dictionary<UIMotionAction, SpriteSequenceClip> clipMap = new();
@@ -78,12 +78,12 @@ public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRunti
 
     public void PrepareEnter()
     {
-        Prepare(UIMotionAction.Show);
+        SetImmediate(UIMotionAction.Hide);
     }
 
     public Tween PlayEnter(float delay = 0f)
     {
-        return Play(UIMotionAction.Show, delay);
+        return Play(UIMotionAction.Normal, delay);
     }
 
     public Tween PlayExit(float delay = 0f)
@@ -93,16 +93,27 @@ public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRunti
 
     public void SetHiddenImmediate()
     {
-        SetImmediate(UIMotionAction.Show);
+        SetImmediate(UIMotionAction.Hide);
     }
 
     public void CompleteImmediate()
     {
-        SampleImmediate(UIMotionAction.Show, useLastFrame: true);
+        SampleImmediate(UIMotionAction.Normal, useLastFrame: true);
     }
 
-    public Tween Play(UIMotionAction action, float delay = 0f)
+    public override bool SupportsAction(UIMotionAction action)
     {
+        SpriteSequenceClip clip = GetClip(action);
+        return HasFrames(ResolveFrames(clip));
+    }
+
+    public override Tween Play(UIMotionAction action, float delay = 0f)
+    {
+        if (!SupportsAction(action))
+        {
+            return null;
+        }
+
         SpriteSequenceClip clip = GetClip(action);
         IReadOnlyList<Sprite> frames = ResolveFrames(clip);
         if (!HasFrames(frames))
@@ -154,41 +165,21 @@ public class UISpriteSequenceMotion : MonoBehaviour, IUISequenceMotion, IUIRunti
         return sequence;
     }
 
-    public void SetImmediate(UIMotionAction action)
+    public override void SetImmediate(UIMotionAction action)
     {
-        if (action == UIMotionAction.Show)
-        {
-            Prepare(action);
-            return;
-        }
-
         SampleImmediate(action, useLastFrame: true);
     }
 
-    public void RefreshDefaults()
+    public override void RefreshDefaults()
     {
         targetImage ??= GetComponent<Image>();
         RebuildClipMap();
     }
 
-    public void Kill()
+    public override void Kill()
     {
         currentTween?.Kill();
         currentTween = null;
-    }
-
-    private void Prepare(UIMotionAction action)
-    {
-        SpriteSequenceClip clip = GetClip(action);
-        IReadOnlyList<Sprite> frames = ResolveFrames(clip);
-        if (!HasFrames(frames))
-        {
-            return;
-        }
-
-        gameObject.SetActive(true);
-        targetImage.enabled = true;
-        SetFrame(frames, GetStartFrameIndex(clip, frames.Count));
     }
 
     private void SampleImmediate(UIMotionAction action, bool useLastFrame)

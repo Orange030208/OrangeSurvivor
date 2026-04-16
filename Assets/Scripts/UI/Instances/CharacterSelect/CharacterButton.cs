@@ -16,20 +16,22 @@ public class CharacterButton : UIScrollListItemBase
         clickTarget = GetComponent<UIClickTarget>();
     }
 
-    public void Configure(Sprite characterIcon, bool selected, Action onClick)
+    public void Configure(Sprite characterIcon, Action onClick)
     {
         characterIconImage.sprite = characterIcon;
-        isSelected = selected;
         clickTarget.ClearListeners();
-        clickTarget.OnClicked += () => onClick?.Invoke();
-        SetSelectedImmediate(isSelected);
+        clickTarget.OnClicked += () =>
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+            onClick?.Invoke();
+        };
     }
 
     public void SetSelected(bool selected)
     {
         isSelected = selected;
         RuntimeMotion?.Kill();
-        RuntimeMotion?.Play(isSelected ? UIMotionAction.Highlight : UIMotionAction.Show);
+        RuntimeMotion?.Play(isSelected ? UIMotionAction.Highlight : UIMotionAction.Normal);
     }
 
     protected override void OnPresentationRefreshed()
@@ -40,6 +42,6 @@ public class CharacterButton : UIScrollListItemBase
     private void SetSelectedImmediate(bool selected)
     {
         RuntimeMotion?.Kill();
-        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Highlight : UIMotionAction.Show);
+        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Highlight : UIMotionAction.Normal);
     }
 }

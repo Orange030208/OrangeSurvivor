@@ -12,6 +12,7 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<PropEntry>,TextMe
         CleanClickEvent();
         OnClicked += _ =>
         {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
             GameEventBus.Publish<UpgradeContainerClickedEvent>(new UpgradeContainerClickedEvent(resource.index));
         };
     }

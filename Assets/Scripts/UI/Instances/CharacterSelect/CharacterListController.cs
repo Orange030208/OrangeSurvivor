@@ -47,7 +47,7 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
 
     protected override void BindItem(CharacterButton item, CharacterDataSO data, int index)
     {
-        item.Configure(data.CharacterIcon, index == selectedIndex, () =>
+        item.Configure(data.CharacterIcon, () =>
         {
             GameEventBus.Publish(new CharacterItemClickedEvent(index));
         });

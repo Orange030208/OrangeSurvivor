@@ -39,11 +39,13 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Descri
 
     private void OnTakeButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         OperateAccessory(currentAccessory, true);
     }
 
     private void OnRecycleButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         OperateAccessory(currentAccessory, false);
     }
 

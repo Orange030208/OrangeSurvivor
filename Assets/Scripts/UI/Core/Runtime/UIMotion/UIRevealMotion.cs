@@ -27,7 +27,7 @@ public class UIMotionClip
 
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(RectTransform))]
-public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRuntimeMotion
+public abstract class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 {
     [SerializeField] [Min(0f)] private float motionIntensity = 1f;
     [SerializeField] private bool useUnscaledTime = true;
@@ -42,8 +42,7 @@ public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRunt
     private bool interactionCached;
     private bool defaultInteractable;
     private bool defaultBlocksRaycasts;
-    private bool highlightShown;
-    private bool pressShown;
+    private UIMotionAction currentStableAction = UIMotionAction.Normal;
 
     protected CanvasGroup CanvasGroup => canvasGroup;
     protected RectTransform TargetRect => targetRect;
@@ -63,12 +62,12 @@ public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRunt
 
     public virtual void PrepareEnter()
     {
-        Prepare(UIMotionAction.Show);
+        SetImmediate(UIMotionAction.Hide);
     }
 
     public virtual Tween PlayEnter(float delay = 0f)
     {
-        return Play(UIMotionAction.Show, delay);
+        return Play(UIMotionAction.Normal, delay);
     }
 
     public virtual Tween PlayExit(float delay = 0f)
@@ -78,99 +77,92 @@ public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRunt
 
     public virtual void SetHiddenImmediate()
     {
-        SetImmediate(UIMotionAction.Show);
+        SetImmediate(UIMotionAction.Hide);
     }
 
     /// <summary>
     /// 统一的高层语义入口：
-    /// - Show：进入正常展示态
+    /// - Normal：进入正常展示态
     /// - Hide：进入隐藏态
-    /// - Emphasis：播放一次性强调反馈
+    /// - Emphasis：播放一次性强调反馈，结束后回到当前稳定态
     /// - Highlight：进入高亮态
-    /// - Press：进入按下态；结束后会回到高亮态或普通展示态
+    /// - Press：进入按下态
+    /// 所有状态型动作都从“当前状态”过渡到目标状态，而不是先回默认态。
     /// </summary>
-    public Tween Play(UIMotionAction action, float delay = 0f)
+    public override Tween Play(UIMotionAction action, float delay = 0f)
     {
         return action switch
         {
-            UIMotionAction.Show => PlayToShown(action, delay),
-            UIMotionAction.Hide => PlayToPose(action, delay),
-            UIMotionAction.Emphasis => PlaySpecial(action, delay),
-            UIMotionAction.Highlight => PlayToHighlight(delay),
-            UIMotionAction.Press => PlayToPress(delay),
+            UIMotionAction.Normal => PlayToAction(action, delay),
+            UIMotionAction.Hide => PlayToAction(action, delay),
+            UIMotionAction.Highlight => SupportsAction(UIMotionAction.Highlight) ? PlayToAction(action, delay) : null,
+            UIMotionAction.Press => SupportsAction(UIMotionAction.Press) ? PlayToAction(action, delay) : null,
+            UIMotionAction.Emphasis => SupportsAction(UIMotionAction.Emphasis) ? PlaySpecial(action, delay) : null,
             _ => null
         };
     }
 
-    public void SetImmediate(UIMotionAction action)
+    public override void SetImmediate(UIMotionAction action)
     {
-        if (action == UIMotionAction.Show)
+        PrepareForPlay();
+        if (action == UIMotionAction.Emphasis)
         {
-            Prepare(action);
+            ApplyCurrentStableStateImmediate();
             return;
         }
 
-        if (action == UIMotionAction.Hide)
-        {
-            PrepareForPlay();
-            ApplyPoseImmediate(GetActionPose(action));
-            if (ShouldDeactivateOnComplete(action))
-            {
-                gameObject.SetActive(false);
-            }
-
-            return;
-        }
-
-        if (action == UIMotionAction.Highlight)
-        {
-            PrepareForPlay();
-            ApplyPoseImmediate(GetHighlightPose());
-            highlightShown = true;
-            pressShown = false;
-            return;
-        }
-
-        if (action == UIMotionAction.Press)
-        {
-            PrepareForPlay();
-            ApplyPoseImmediate(GetPressPose());
-            pressShown = true;
-            return;
-        }
-
-        CompleteImmediate();
+        ApplyActionImmediate(action);
     }
 
     public void CompleteImmediate()
     {
         PrepareForPlay();
-        highlightShown = false;
-        pressShown = false;
-        ApplyShownImmediate();
+        ApplyCurrentStableStateImmediate();
     }
 
-    public void RefreshDefaults()
+    public override void RefreshDefaults()
     {
         EnsureReferences();
         cached = false;
         CacheDefaults();
     }
 
-    public void Kill()
+    public override void Kill()
     {
         currentTween?.Kill();
         currentTween = null;
     }
 
+    public override bool SupportsAction(UIMotionAction action)
+    {
+        return action switch
+        {
+            UIMotionAction.Normal => true,
+            UIMotionAction.Hide => true,
+            UIMotionAction.Highlight => HasClip(UIMotionAction.Highlight),
+            UIMotionAction.Press => HasClip(UIMotionAction.Press),
+            UIMotionAction.Emphasis => HasClip(UIMotionAction.Emphasis),
+            _ => false
+        };
+    }
+
+    protected bool HasClip(UIMotionAction action)
+    {
+        return TryGetClip(action, out _);
+    }
+
+    protected bool TryGetClip(UIMotionAction action, out UIMotionClip clip)
+    {
+        clip = GetClip(action);
+        return clip != null;
+    }
+
     protected abstract UIMotionClip GetClip(UIMotionAction action);
 
-    protected virtual UIMotionPose GetPreparePose(UIMotionAction action) => GetClip(action).pose;
-    protected virtual UIMotionPose GetActionPose(UIMotionAction action) => GetClip(action).pose;
+    // 扩展说明：子类可覆盖以提供动态目标姿态，例如侧边栏根据尺寸计算隐藏位。
+    protected virtual UIMotionPose GetPose(UIMotionAction action) => GetClip(action).pose;
     protected virtual bool ShouldDeactivateOnComplete(UIMotionAction action) => GetClip(action).deactivateOnComplete;
     protected virtual Tween PlaySpecial(UIMotionAction action, float delay) => null;
-    protected virtual UIMotionPose GetHighlightPose() => GetClip(UIMotionAction.Highlight).pose;
-    protected virtual UIMotionPose GetPressPose() => GetClip(UIMotionAction.Press).pose;
 
     protected void PrepareForPlay()
     {
@@ -192,7 +184,7 @@ public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRunt
     protected float ScaleValue(float value) => 1f + ((value - 1f) * motionIntensity);
     protected float ScaleRotation(float zRotation) => zRotation * motionIntensity;
 
-    protected void ApplyShownImmediate()
+    protected void ApplyDefaultStateImmediate()
     {
         canvasGroup.alpha = 1f;
         targetRect.anchoredPosition = defaultAnchoredPosition;
@@ -208,109 +200,85 @@ public abstract class UIRevealMotion : MonoBehaviour, IUISequenceMotion, IUIRunt
         targetRect.localEulerAngles = pose.rotate ? defaultEulerAngles + new Vector3(0f, 0f, ScaleRotation(pose.rotationZ)) : defaultEulerAngles;
     }
 
-    protected Tween TweenToShown(float duration, Ease ease, float delay, Action onCompleted)
-    {
-        Sequence sequence = DOTween.Sequence().SetUpdate(useUnscaledTime).SetDelay(delay);
-        sequence.Join(canvasGroup.DOFade(1f, duration));
-        sequence.Join(targetRect.DOAnchorPos(defaultAnchoredPosition, duration));
-        sequence.Join(targetRect.DOScale(defaultScale, duration));
-        sequence.Join(targetRect.DOLocalRotate(defaultEulerAngles, duration));
-        sequence.SetEase(ease).OnComplete(() => onCompleted?.Invoke());
-        return sequence;
-    }
-
     protected Tween TweenToPose(UIMotionPose pose, float duration, Ease ease, float delay, Action onCompleted)
     {
         Sequence sequence = DOTween.Sequence().SetUpdate(useUnscaledTime).SetDelay(delay);
         if (pose.fade) sequence.Join(canvasGroup.DOFade(pose.alpha, duration));
-        if (pose.move) sequence.Join(targetRect.DOAnchorPos(defaultAnchoredPosition + ScaleOffset(pose.offset), duration));
-        if (pose.scale) sequence.Join(targetRect.DOScale(defaultScale * ScaleValue(pose.scaleMultiplier), duration));
-        if (pose.rotate) sequence.Join(targetRect.DOLocalRotate(defaultEulerAngles + new Vector3(0f, 0f, ScaleRotation(pose.rotationZ)), duration));
+        else sequence.Join(canvasGroup.DOFade(1f, duration));
+
+        Vector2 targetPosition = pose.move ? defaultAnchoredPosition + ScaleOffset(pose.offset) : defaultAnchoredPosition;
+        Vector3 targetScale = pose.scale ? defaultScale * ScaleValue(pose.scaleMultiplier) : defaultScale;
+        Vector3 targetRotation = pose.rotate ? defaultEulerAngles + new Vector3(0f, 0f, ScaleRotation(pose.rotationZ)) : defaultEulerAngles;
+
+        sequence.Join(targetRect.DOAnchorPos(targetPosition, duration));
+        sequence.Join(targetRect.DOScale(targetScale, duration));
+        sequence.Join(targetRect.DOLocalRotate(targetRotation, duration));
         sequence.SetEase(ease).OnComplete(() => onCompleted?.Invoke());
         return sequence;
     }
 
-    private void Prepare(UIMotionAction action)
+    protected void ApplyActionImmediate(UIMotionAction action)
     {
-        PrepareForPlay();
-        if (action == UIMotionAction.Show)
+        UIMotionPose pose = ResolvePose(action);
+        ApplyPoseImmediate(pose);
+        UpdateStableAction(action);
+        if (ShouldDeactivateOnComplete(action))
         {
-            ApplyPoseImmediate(GetPreparePose(action));
-            return;
+            gameObject.SetActive(false);
         }
-
-        if (action == UIMotionAction.Hide)
-        {
-            ApplyPoseImmediate(GetActionPose(action));
-            return;
-        }
-
-        if (action == UIMotionAction.Highlight)
-        {
-            ApplyPoseImmediate(GetHighlightPose());
-            highlightShown = true;
-            return;
-        }
-
-        if (action == UIMotionAction.Press)
-        {
-            ApplyPoseImmediate(GetPressPose());
-            pressShown = true;
-            return;
-        }
-
-        ApplyShownImmediate();
     }
 
-    private Tween PlayToShown(UIMotionAction action, float delay)
+    protected void ApplyCurrentStableStateImmediate()
     {
-        PrepareForPlay();
-        highlightShown = false;
-        pressShown = false;
-        UIMotionClip clip = GetClip(action);
-        currentTween = TweenToShown(clip.duration, clip.ease, delay, RestoreInteractionState);
-        return currentTween;
+        UIMotionAction stableAction = currentStableAction;
+        if (stableAction == UIMotionAction.Emphasis)
+        {
+            stableAction = UIMotionAction.Normal;
+        }
+
+        UIMotionPose pose = ResolvePose(stableAction);
+        ApplyPoseImmediate(pose);
     }
 
-    private Tween PlayToPose(UIMotionAction action, float delay)
+    protected Tween PlayToAction(UIMotionAction action, float delay)
     {
         PrepareForPlay();
-        highlightShown = false;
-        pressShown = false;
         UIMotionClip clip = GetClip(action);
-        currentTween = TweenToPose(GetActionPose(action), clip.duration, clip.ease, delay, () =>
+        UIMotionPose pose = ResolvePose(action);
+        currentTween = TweenToPose(pose, clip.duration, clip.ease, delay, () =>
         {
+            UpdateStableAction(action);
             if (ShouldDeactivateOnComplete(action))
             {
                 gameObject.SetActive(false);
             }
-        });
-        return currentTween;
-    }
 
-    private Tween PlayToHighlight(float delay)
-    {
-        PrepareForPlay();
-        pressShown = false;
-        UIMotionClip clip = GetClip(UIMotionAction.Highlight);
-        currentTween = TweenToPose(GetHighlightPose(), clip.duration, clip.ease, delay, () =>
-        {
-            highlightShown = true;
             RestoreInteractionState();
         });
         return currentTween;
     }
 
-    private Tween PlayToPress(float delay)
+    protected UIMotionPose ResolvePose(UIMotionAction action)
     {
-        PrepareForPlay();
-        UIMotionClip clip = GetClip(UIMotionAction.Press);
-        currentTween = TweenToPose(GetPressPose(), clip.duration, clip.ease, delay, () =>
+        if (action == UIMotionAction.Normal)
         {
-            pressShown = true;
-            RestoreInteractionState();
-        });
-        return currentTween;
+            return CreateDefaultPose();
+        }
+
+        return GetPose(action);
+    }
+
+    protected void UpdateStableAction(UIMotionAction action)
+    {
+        if (action != UIMotionAction.Emphasis)
+        {
+            currentStableAction = action;
+        }
+    }
+
+    private UIMotionPose CreateDefaultPose()
+    {
+        return new UIMotionPose();
     }
 
     private void EnsureReferences()

@@ -6,6 +6,7 @@ public class CharacterSelectUIPage : UIPageBase
     [SerializeField] private CharacterInfoCard characterInfoCard;
     [SerializeField] private CharacterListController characterListController;
     [SerializeField] private UIClickTarget confirm;
+    [SerializeField] private UIClickTarget back;
 
     private int selectedCharacterIndex = -1;
 
@@ -14,6 +15,7 @@ public class CharacterSelectUIPage : UIPageBase
         GameEventBus.Subscribe<CharacterSelectionSnapshotEvent>(OnCharacterSelectionSnapshot);
         GameEventBus.Subscribe<CharacterSelectionChangedEvent>(OnCharacterSelectionChanged);
         confirm.OnClicked += OnConfirmOnClicked;
+        back.OnClicked += OnBackOnClicked;
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
@@ -25,6 +27,7 @@ public class CharacterSelectUIPage : UIPageBase
         GameEventBus.Unsubscribe<CharacterSelectionSnapshotEvent>(OnCharacterSelectionSnapshot);
         GameEventBus.Unsubscribe<CharacterSelectionChangedEvent>(OnCharacterSelectionChanged);
         confirm.OnClicked -= OnConfirmOnClicked;
+        back.OnClicked -= OnBackOnClicked;
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
@@ -62,7 +65,15 @@ public class CharacterSelectUIPage : UIPageBase
             return;
         }
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<CharacterSelectionCompletedEvent>();
+    }
+
+    private void OnBackOnClicked()
+    {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        GameEventBus.Publish<CharacterSelectionBackClickedEvent>();
+
     }
 
     private void SetConfirmButtonInteractable(bool interactable)

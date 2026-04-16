@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ShopUIPage : UIPageBase
 {
@@ -119,40 +121,46 @@ public class ShopUIPage : UIPageBase
 
     private void OnRerollButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new ShopRerollRequestedEvent());
     }
 
     private void OnWatchVideoRerollButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new ShopVideoAdRerollRequestedEvent());
     }
 
     private void OnContinueButtonClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
     private void DisplayProperties()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         ShowPanel(propertiesSidebar);
     }
 
     private void DisplayInventory()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         ShowPanel(inventorySidebar);
     }
 
     private void OnCloseSidebarClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         HideCurrentSidebarPanel();
     }
 
-    private static void BindClick(UIClickTarget clickTarget, System.Action handler)
+    private static void BindClick(UIClickTarget clickTarget, UnityAction handler)
     {
         clickTarget.OnClicked += handler;
     }
 
-    private static void UnbindClick(UIClickTarget clickTarget, System.Action handler)
+    private static void UnbindClick(UIClickTarget clickTarget, UnityAction handler)
     {
         clickTarget.OnClicked -= handler;
     }

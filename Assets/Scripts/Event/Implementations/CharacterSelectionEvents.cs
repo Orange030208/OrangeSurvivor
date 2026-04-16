@@ -41,3 +41,7 @@ public struct CharacterSelectionChangedEvent : IGameEvent
 public struct CharacterSelectionCompletedEvent : IGameEvent
 {
 }
+
+public struct CharacterSelectionBackClickedEvent : IGameEvent
+{
+}
