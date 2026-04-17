@@ -12,7 +12,7 @@ public sealed class UIScrollListRevealConfig
     [SerializeField] [Min(0f)] private float itemStagger = 0.04f;
     [SerializeField] private Ease sequenceEase = Ease.OutCubic;
     [SerializeField] private UIMotionAction initialAction = UIMotionAction.Hide;
-    [SerializeField] private UIMotionAction revealAction = UIMotionAction.Normal;
+    [SerializeField] private UIMotionAction revealAction = UIMotionAction.Show;
 
     public bool PlayOnRefresh => playOnRefresh;
     public bool UseUnscaledTime => useUnscaledTime;

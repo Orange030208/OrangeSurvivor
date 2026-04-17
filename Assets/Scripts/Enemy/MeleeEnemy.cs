@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyMovement))]
@@ -56,11 +55,18 @@ public class MeleeEnemy : Enemy
     private void Attack()
     {
         HealthComponent healthComponent = _player.GetComponent<HealthComponent>();
-        if (healthComponent != null)
+        if (healthComponent != null && healthComponent.OwnerEntity != null)
         {
-            healthComponent.TakeDamage(damage);
+            HitService.Apply(new HitRequest(
+                this,
+                healthComponent.OwnerEntity,
+                new HitSpec(damage, 0f, 1f),
+                healthComponent.transform.position,
+                HitSourceKind.Direct,
+                GetType().Name));
         }
-        attackTimer = 0;
+
+        attackTimer = 0f;
     }
 
     public override bool IsMoving { get; }

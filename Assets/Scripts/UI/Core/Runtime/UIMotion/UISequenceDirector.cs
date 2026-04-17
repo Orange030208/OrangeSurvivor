@@ -4,7 +4,8 @@ using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
-/// 页面内容导演：按组编排多个 UI 动作播放器的入场和退场顺序。
+/// 页面内容导演：按组编排多个 UI 动作播放器的展示入场与隐藏退场顺序。
+/// `PlayEnter()` 统一驱动 `Show` 语义，`PlayExit()` 统一驱动 `Hide` 语义。
 /// </summary>
 public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
 {

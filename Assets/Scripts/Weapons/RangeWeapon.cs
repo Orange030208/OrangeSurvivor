@@ -83,6 +83,7 @@ public class RangeWeapon : Weapon
     {
         IsAttacking = true;
         pendingTarget = target;
+        LockAttackDirection(ResolveAttackDirection(target));
         activeBurstId = -1;
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
         float reachScale = Mathf.Max(0.1f, RuntimeStats.Range);
@@ -206,7 +207,7 @@ public class RangeWeapon : Weapon
         if (angleOffset.HasValue)
         {
             Vector2 rotatedDirection = Quaternion.Euler(0f, 0f, angleOffset.Value) * context.AimDirection;
-            context = new WeaponAttackContext(context.Weapon, context.Origin, context.Target, rotatedDirection.normalized, context.Stats, context.Hit);
+            context = new WeaponAttackContext(context.Weapon, context.SourceEntity, context.Origin, context.Target, rotatedDirection.normalized, context.Stats, context.HitSpec);
         }
 
         executor.ExecuteAttack(context, payload);

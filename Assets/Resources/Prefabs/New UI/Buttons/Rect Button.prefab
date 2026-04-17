@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.1592}
-  m_SizeDelta: {x: -40, y: -38.5419}
+  m_AnchoredPosition: {x: 0.1579895, y: 4.6016006}
+  m_SizeDelta: {x: -26.9662, y: -35.657}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4293336736725213785
 CanvasRenderer:
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46.95
+  m_fontSize: 19.6
   m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -174,8 +174,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 250, y: 100}
+  m_AnchoredPosition: {x: -3.3748932, y: 50}
+  m_SizeDelta: {x: 243.2504, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3168617681139976041
 CanvasRenderer:
@@ -219,8 +219,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 753869430, guid: 0784d7e1b3208534abbe759f174f4c2d, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 1
+  m_Type: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -252,11 +252,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab32df935b83c62429e04183b836a38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   targetImage: {fileID: 2738362673911831729}
   useUnscaledTime: 1
   keepLastFrameOnComplete: 1
   actionClips:
-  - action: 4
+  - action: 2
     frameSourceMode: 0
     sourceAction: 0
     frames:
@@ -268,10 +269,21 @@ MonoBehaviour:
     reverse: 0
     deactivateOnComplete: 0
     frameEvents: []
-  - action: 0
+  - action: 3
     frameSourceMode: 1
-    sourceAction: 4
+    sourceAction: 2
     frames: []
+    timingMode: 0
+    framesPerSecond: 12
+    totalDuration: 0.5
+    reverse: 1
+    deactivateOnComplete: 0
+    frameEvents: []
+  - action: 0
+    frameSourceMode: 0
+    sourceAction: 2
+    frames:
+    - {fileID: 753869430, guid: 0784d7e1b3208534abbe759f174f4c2d, type: 3}
     timingMode: 0
     framesPerSecond: 12
     totalDuration: 0.5
@@ -290,22 +302,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: Button
   motionIntensity: 1
   useUnscaledTime: 1
   actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.12
-    ease: 6
-    deactivateOnComplete: 0
   - action: 1
     pose:
       fade: 1
@@ -314,25 +314,16 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 0.96
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.14
     ease: 8
     deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
-  - action: 3
+  - action: 5
     pose:
       fade: 0
       alpha: 1
@@ -340,6 +331,61 @@ MonoBehaviour:
       offset: {x: 0, y: 2}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 6
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 3
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: 1}
+      scale: 1
+      scaleMultiplier: 1.03
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.1
+    ease: 27
+    deactivateOnComplete: 0
+  - action: 2
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: -4}
+      scale: 1
+      scaleMultiplier: 0.96
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.08
@@ -349,14 +395,18 @@ MonoBehaviour:
     pose:
       fade: 0
       alpha: 1
-      move: 1
-      offset: {x: 0, y: -4}
+      move: 0
+      offset: {x: 0, y: 0}
       scale: 1
-      scaleMultiplier: 0.96
+      scaleMultiplier: 1.16
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.08
-    ease: 6
+    duration: 0.18
+    ease: 27
     deactivateOnComplete: 0
 --- !u!114 &3291148694776631573
 MonoBehaviour:
@@ -370,12 +420,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c185814a58a85f49b9c59e5ff79f5c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 2126647607020705311}
+  motionSource: {fileID: 0}
   playEnterOnEnable: 0
   bindings:
+  - motionEvent: 0
+    action: 5
+  - motionEvent: 1
+    action: 6
   - motionEvent: 2
-    action: 4
-  - motionEvent: 3
-    action: 0
-  - motionEvent: 4
     action: 2
+  - motionEvent: 3
+    action: 3
+  - motionEvent: 4
+    action: 4

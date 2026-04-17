@@ -31,7 +31,7 @@ public class CharacterButton : UIScrollListItemBase
     {
         isSelected = selected;
         RuntimeMotion?.Kill();
-        RuntimeMotion?.Play(isSelected ? UIMotionAction.Highlight : UIMotionAction.Normal);
+        RuntimeMotion?.Play(isSelected ? UIMotionAction.Enter : UIMotionAction.Exit);
     }
 
     protected override void OnPresentationRefreshed()
@@ -42,6 +42,6 @@ public class CharacterButton : UIScrollListItemBase
     private void SetSelectedImmediate(bool selected)
     {
         RuntimeMotion?.Kill();
-        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Highlight : UIMotionAction.Normal);
+        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Enter : UIMotionAction.Exit);
     }
 }

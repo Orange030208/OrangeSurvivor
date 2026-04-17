@@ -2,24 +2,32 @@ using System;
 
 public struct PlayerLevelChangedEvent : IGameEvent
 {
-    public int currentLevel;
+    public int CurrentLevel;
+    public int UnspentUpgradePoints;
 
-    public PlayerLevelChangedEvent(int currentLevel)
+    public PlayerLevelChangedEvent(int currentLevel, int unspentUpgradePoints)
     {
-        this.currentLevel = currentLevel;
+        CurrentLevel = currentLevel;
+        UnspentUpgradePoints = unspentUpgradePoints;
     }
 }
 
 public struct PlayerXpChangedEvent : IGameEvent
 {
-    public int currentXP;
-    public int requiredXP;
+    public int CurrentXP;
+    public int RequiredXP;
+    public int UnspentUpgradePoints;
 
-    public PlayerXpChangedEvent(int currentXP, int requiredXP)
+    public PlayerXpChangedEvent(int currentXP, int requiredXP, int unspentUpgradePoints)
     {
-        this.currentXP = currentXP;
-        this.requiredXP = requiredXP;
+        CurrentXP = currentXP;
+        RequiredXP = requiredXP;
+        UnspentUpgradePoints = unspentUpgradePoints;
     }
+}
+
+public struct RequestPlayerLevelSnapshotEvent : IGameEvent
+{
 }
 
 public struct PlayerMoveInputChangedEvent : IGameEvent

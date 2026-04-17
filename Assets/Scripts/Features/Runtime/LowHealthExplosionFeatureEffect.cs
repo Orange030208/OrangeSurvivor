@@ -12,17 +12,13 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
 
     private float cooldownEndTime;
     private HealthComponent healthComponent;
-    private FeatureContext context;
 
     public override string FeatureTitle => "低血量爆炸";
     public override string FeatureDescription => "生命低于阈值时触发一次范围爆炸，受冷却限制。";
-    public override FeatureCategory FeatureCategory => FeatureCategory.Trigger;
-    public override FeaturePolarity FeaturePolarity => FeaturePolarity.Positive;
 
-    public override void OnInstall(FeatureContext context)
+    public override void OnInstall()
     {
-        this.context = context;
-        healthComponent = context?.HealthComponent;
+        healthComponent = Context?.HealthComponent;
         cooldownEndTime = 0f;
 
         if (healthComponent != null)
@@ -31,14 +27,13 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
         }
     }
 
-    public override void OnUninstall(FeatureContext context)
+    public override void OnUninstall()
     {
         if (healthComponent != null)
         {
             healthComponent.OnHealthChanged -= OnHealthChanged;
         }
-
-        this.context = null;
+        
         healthComponent = null;
         cooldownEndTime = 0f;
     }
@@ -50,7 +45,7 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
 
     private void TryTrigger(float currentHealth, float maxHealth)
     {
-        if (context?.OwnerEntity == null || healthComponent == null)
+        if (Context?.OwnerEntity == null || healthComponent == null)
         {
             return;
         }
@@ -73,12 +68,18 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
         
         UnityEngine.Debug.Log("爆炸了");
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(context.Transform.position, explosionRadius, enemyLayerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(Context.Transform.position, explosionRadius, enemyLayerMask);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].TryGetComponent(out HealthComponent targetHealth))
             {
-                targetHealth.TakeDamage(new DamageInfo(explosionDamage, targetHealth.transform.position, false));
+                HitService.Apply(new HitRequest(
+                    Context.OwnerEntity,
+                    targetHealth.GetComponent<Entity>(),
+                    new HitSpec(explosionDamage, 0f, 1f),
+                    targetHealth.transform.position,
+                    HitSourceKind.Explosion,
+                    GetType().Name));
             }
         }
 

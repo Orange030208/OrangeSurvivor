@@ -37,9 +37,10 @@ public sealed class ProjectileWeaponAttackExecutor : IWeaponAttackExecutor
 
         Bullet bullet = Object.Instantiate(bulletPrefab, firingPoint.position, Quaternion.identity);
         bullet.Launch(new ProjectileLaunchContext(
+            context.SourceEntity,
             firingPoint.position,
             context.AimDirection,
-            context.Hit,
+            context.HitSpec,
             payload.SpawnPointIndex,
             payload.ProjectileDefinition,
             payload.BurstId,

@@ -176,10 +176,10 @@ public class ShopUIPage : UIPageBase
 
         if (currentOpenPanel != null && currentOpenPanel != panel)
         {
-            currentOpenPanel.Hide();
+            currentOpenPanel.Play(UIMotionAction.Hide);
         }
 
-        panel.Show();
+        panel.Play(UIMotionAction.Show);
         currentOpenPanel = panel;
 
         closeSidebarButton.gameObject.SetActive(true);
@@ -189,7 +189,7 @@ public class ShopUIPage : UIPageBase
     {
         if (currentOpenPanel != null)
         {
-            currentOpenPanel.Hide();
+            currentOpenPanel.Play(UIMotionAction.Hide);
             currentOpenPanel = null;
         }
 
@@ -252,7 +252,7 @@ public class ShopUIPage : UIPageBase
 
     private static void HideSidebarImmediate(UISidebarRevealMotion sidebar)
     {
-        sidebar.SetExitImmediate();
+        sidebar.SetImmediate(UIMotionAction.Hide);
     }
 
     private static void KillSidebarTween(UISidebarRevealMotion sidebar)

@@ -57,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5685012939520073704, guid: e4e8e4b44f6747d48951d24bcf6c62df, type: 2}
+  - {fileID: 7981332528746002955, guid: e0a7ff4ad34f407409715e0046ac5a5b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -101,8 +101,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 21
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e4e8e4b44f6747d48951d24bcf6c62df, type: 2}
-  m_sharedMaterial: {fileID: 5685012939520073704, guid: e4e8e4b44f6747d48951d24bcf6c62df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e0a7ff4ad34f407409715e0046ac5a5b, type: 2}
+  m_sharedMaterial: {fileID: 7981332528746002955, guid: e0a7ff4ad34f407409715e0046ac5a5b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -220,14 +220,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0aacf390a0252d428c5a11c46e6375f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatHeight: 1.2
   floatTime: 0.8
-  randomOffsetX: 0.3
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   startScale: 0.5
   useFade: 1
   criticalColor: {r: 1, g: 0.6, b: 0, a: 1}
   criticalStartScale: 1.2
-  criticalFloatHeight: 1.8
   criticalShakeStrength: 0.3
   _damageText: {fileID: 1028213186881388137}

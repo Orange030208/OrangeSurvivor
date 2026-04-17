@@ -12,9 +12,10 @@ using UnityEngine;
 /// </summary>
 public readonly struct ProjectileLaunchContext
 {
+    public Entity Source { get; }
     public Vector2 SpawnPosition { get; }
     public Vector2 Direction { get; }
-    public ResolvedWeaponHit Hit { get; }
+    public HitSpec HitSpec { get; }
     public int SpawnPointIndex { get; }
     public ProjectileDefinitionSO ProjectileDefinition { get; }
     public int BurstId { get; }
@@ -22,18 +23,20 @@ public readonly struct ProjectileLaunchContext
     public ProjectilePatternConfig PatternConfig { get; }
 
     public ProjectileLaunchContext(
+        Entity source,
         Vector2 spawnPosition,
         Vector2 direction,
-        ResolvedWeaponHit hit,
+        HitSpec hitSpec,
         int spawnPointIndex = 0,
         ProjectileDefinitionSO projectileDefinition = null,
         int burstId = 0,
         ProjectileFiringMode firingMode = ProjectileFiringMode.Default,
         ProjectilePatternConfig patternConfig = default)
     {
+        Source = source;
         SpawnPosition = spawnPosition;
         Direction = direction.normalized;
-        Hit = hit;
+        HitSpec = hitSpec;
         SpawnPointIndex = Mathf.Max(0, spawnPointIndex);
         ProjectileDefinition = projectileDefinition;
         BurstId = Mathf.Max(0, burstId);

@@ -16,9 +16,12 @@ public class GamingUIPage : UIPageBase
     private Slider xpBar;
 
     [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI upgradePointText;
 
     [SerializeField] private UIClickTarget menuButton;
     [SerializeField] private MobileJoystick moveJoystick;
+    [SerializeField] private BuffBarUI buffBarUI;
+    [SerializeField] private UITooltipPresenter tooltipPresenter;
 
     private HealthComponent playerHealthComponent;
 
@@ -34,7 +37,18 @@ public class GamingUIPage : UIPageBase
         CacheMoveJoystick();
         BindPlayerHealth(FindFirstObjectByType<Player>());
 
+        if (buffBarUI != null)
+        {
+            buffBarUI.gameObject.SetActive(true);
+        }
+
+        if (tooltipPresenter != null)
+        {
+            tooltipPresenter.gameObject.SetActive(true);
+        }
+
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
+        GameEventBus.Publish<RequestPlayerLevelSnapshotEvent>();
         menuButton.OnClicked += OnPauseClicked;
     }
 
@@ -49,12 +63,12 @@ public class GamingUIPage : UIPageBase
 
         PublishMoveInput(Vector2.zero);
         UnbindPlayerHealth();
+        GameEventBus.Publish<HideTooltipRequestedEvent>();
         menuButton.OnClicked -= OnPauseClicked;
     }
 
     protected override void OnPageTick(float deltaTime)
     {
-
         PublishMoveInput(moveJoystick.GetMoveDirection());
     }
 
@@ -66,7 +80,17 @@ public class GamingUIPage : UIPageBase
     private void BindPlayerHealth(Player player)
     {
         UnbindPlayerHealth();
+        if (player == null)
+        {
+            return;
+        }
+
         playerHealthComponent = player.GetComponent<HealthComponent>();
+        if (playerHealthComponent == null)
+        {
+            return;
+        }
+
         playerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
         OnPlayerHealthChanged(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
     }
@@ -131,12 +155,32 @@ public class GamingUIPage : UIPageBase
     private void OnPlayerLevelChanged(PlayerLevelChangedEvent e)
     {
         if (levelText != null)
-            levelText.text = "lvl" + e.currentLevel;
+        {
+            levelText.text = "lvl" + e.CurrentLevel;
+        }
+
+        UpdateUpgradePointText(e.UnspentUpgradePoints);
     }
 
     private void OnPlayerXpChanged(PlayerXpChangedEvent e)
     {
         if (xpBar != null)
-            xpBar.value = e.requiredXP <= 0 ? 0 : (float)e.currentXP / e.requiredXP;
+        {
+            xpBar.value = e.RequiredXP <= 0 ? 0 : (float)e.CurrentXP / e.RequiredXP;
+        }
+
+        UpdateUpgradePointText(e.UnspentUpgradePoints);
+    }
+
+    private void UpdateUpgradePointText(int unspentUpgradePoints)
+    {
+        if (upgradePointText == null)
+        {
+            return;
+        }
+
+        upgradePointText.text = unspentUpgradePoints > 0
+            ? $"UP {unspentUpgradePoints}"
+            : string.Empty;
     }
 }

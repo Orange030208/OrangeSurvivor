@@ -110,6 +110,7 @@ public class MeleeWeapon : Weapon
     {
         IsAttacking = true;
         pendingTarget = target;
+        LockAttackDirection(ResolveAttackDirection(target));
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
         hitWindowLastPoses.Clear();

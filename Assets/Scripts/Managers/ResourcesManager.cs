@@ -10,6 +10,7 @@ public static class ResourcesManager
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
+    private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Dave";
 
@@ -17,6 +18,7 @@ public static class ResourcesManager
     private static AccessoryDataSO[] Accessories;
     private static WeaponDataSO[] Weapons;
     private static CharacterDataSO[] characters;
+    private static PlayerLevelConfigSO playerLevelConfig;
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -53,6 +55,14 @@ public static class ResourcesManager
                 .Where(character => character != null)
                 .OrderBy(character => character.name)
                 .ToArray();
+        }
+    }
+
+    private static void LoadPlayerLevelConfig()
+    {
+        if (playerLevelConfig == null)
+        {
+            playerLevelConfig = Resources.Load<PlayerLevelConfigSO>(PLAYER_LEVEL_CONFIG_DATA_PATH);
         }
     }
 
@@ -105,6 +115,12 @@ public static class ResourcesManager
     public static Player GetDefaultPlayerPrefab()
     {
         return GetPlayerPrefab(DEFAULT_PLAYER_PREFAB_NAME);
+    }
+
+    public static PlayerLevelConfigSO GetPlayerLevelConfig()
+    {
+        LoadPlayerLevelConfig();
+        return playerLevelConfig;
     }
 
     public static AccessoryDataSO GetAccessory(string accessoryId)

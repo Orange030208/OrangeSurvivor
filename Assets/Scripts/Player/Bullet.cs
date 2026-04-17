@@ -5,7 +5,7 @@ using UnityEngine;
 /// 当前负责：
 /// - 按发射上下文设置方向与速度；
 /// - 处理寿命；
-/// - 命中目标时结算伤害；
+/// - 命中目标时发起统一 hit 流程；
 /// - 根据弹射物定义和变体覆盖值应用基础倍率。
 /// 后续如果要做穿透、弹射、分裂、持续伤害等，可以在子类里扩展。
 /// </summary>
@@ -58,9 +58,6 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 初始化一颗子弹，并根据弹射物定义应用基础速度/寿命/伤害倍率。
-    /// </summary>
     public virtual void Launch(ProjectileLaunchContext context)
     {
         launchContext = context;
@@ -71,10 +68,6 @@ public class Bullet : MonoBehaviour
         OnLaunched(context);
     }
 
-    /// <summary>
-    /// 提供给子类的扩展点。
-    /// 例如：根据 burstId 做不同特效，或根据 firingMode 改变拖尾表现。
-    /// </summary>
     protected virtual void OnLaunched(ProjectileLaunchContext context)
     {
     }
@@ -97,9 +90,26 @@ public class Bullet : MonoBehaviour
 
     protected virtual void ApplyImpact(HealthComponent healthComponent)
     {
-        DamageInfo damageInfo = launchContext.Hit.ToDamageInfo(healthComponent.transform.position);
-        damageInfo.damage = Mathf.Max(0f, damageInfo.damage * currentDamageMultiplier);
-        healthComponent.TakeDamage(damageInfo);
+        Entity target = healthComponent != null ? healthComponent.GetComponent<Entity>() : null;
+        if (target == null)
+        {
+            return;
+        }
+
+        HitSpec hitSpec = new HitSpec(
+            launchContext.HitSpec.BaseDamage * currentDamageMultiplier,
+            launchContext.HitSpec.CritChance,
+            launchContext.HitSpec.CritMultiplier);
+
+        HitRequest request = new HitRequest(
+            launchContext.Source,
+            target,
+            hitSpec,
+            healthComponent.transform.position,
+            HitSourceKind.Projectile,
+            GetType().Name);
+
+        HitService.Apply(request);
     }
 
     private void ApplyProjectileDefinition(ProjectileDefinitionSO projectileDefinition)

@@ -26,23 +26,23 @@ public sealed class PropertyModifierEffect : FeatureEffectBase
 
     public override string FeatureDescription => string.Empty;
 
-    public override void OnInstall(FeatureContext context)
+    public override void OnInstall()
     {
-        if (context?.PropertiesManager == null)
+        if (Context?.PropertiesManager == null)
         {
             return;
         }
 
-        context.PropertiesManager.AddModifier(sourceId, modifier);
+        Context.PropertiesManager.AddModifier(sourceId, modifier);
     }
 
-    public override void OnUninstall(FeatureContext context)
+    public override void OnUninstall()
     {
-        if (context?.PropertiesManager == null)
+        if (Context?.PropertiesManager == null)
         {
             return;
         }
 
-        context.PropertiesManager.RemoveModifier(sourceId, modifier.propType, modifier.modifierType);
+        Context.PropertiesManager.RemoveModifier(sourceId, modifier.propType, modifier.modifierType);
     }
 }

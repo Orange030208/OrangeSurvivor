@@ -111,7 +111,7 @@ public class InventoryUI : MonoBehaviour
 
         currentOperateItemIndex = eventData.Resource.itemIndex;
         inventoryItemOperateContainer.Configure(eventData.Resource);
-        inventoryItemOperateContainerSidebar?.Show();
+        inventoryItemOperateContainerSidebar?.Play(UIMotionAction.Show);
     }
 
     private void OnOperatePanelShouldClose(InventoryItemOperatePanelShouldCloseEvent eventData)
@@ -179,14 +179,14 @@ public class InventoryUI : MonoBehaviour
     {
         currentOperateItemIndex = -1;
         inventoryItemOperateContainer.Dispose();
-        inventoryItemOperateContainerSidebar?.Hide();
+        inventoryItemOperateContainerSidebar?.Play(UIMotionAction.Hide);
     }
 
     private void CloseOperatePanelImmediate()
     {
         currentOperateItemIndex = -1;
         inventoryItemOperateContainer.Dispose();
-        inventoryItemOperateContainerSidebar?.SetExitImmediate();
+        inventoryItemOperateContainerSidebar?.SetImmediate(UIMotionAction.Hide);
     }
 
     private void CleanupSpawnedContainers()

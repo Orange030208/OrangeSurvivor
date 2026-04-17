@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: d2937b0aea51a524183fe265c025bdf3, type: 2}
-  catalog: {fileID: 11400000, guid: 69c7ec2391fd2814fb0597097768e8e5, type: 2}
+  catalog: {fileID: 11400000, guid: e87a28c74ab5eb14a902ec67d925f8e1, type: 2}
   rootCanvas: {fileID: 459962035}
 --- !u!4 &138867724
 Transform:

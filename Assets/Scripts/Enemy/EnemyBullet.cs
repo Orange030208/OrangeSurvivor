@@ -9,7 +9,7 @@ public class EnemyBullet : Bullet
             return;
         }
 
-        healthComponent.TakeDamage(launchContext.Hit.Damage);
+        ApplyImpact(healthComponent);
         Destroy(gameObject);
     }
 }

@@ -14,6 +14,7 @@ internal static class UIRuntimeMotionInspectorGUI
 
     public static void Draw(Editor editor)
     {
+        DrawStringConfig(editor);
         editor.DrawDefaultInspector();
 
         if (editor.targets == null || editor.targets.Length != 1)
@@ -63,6 +64,37 @@ internal static class UIRuntimeMotionInspectorGUI
                 }
             }
         }
+    }
+
+    private static void DrawStringConfig(Editor editor)
+    {
+        if (editor.targets == null || editor.targets.Length != 1)
+        {
+            return;
+        }
+
+        if (editor.target is not UIRuntimeMotionBase runtimeMotion)
+        {
+            return;
+        }
+
+        List<string> options = runtimeMotion.GetOptionList();
+        if (options == null || options.Count == 0)
+        {
+            return;
+        }
+
+        int currentIndex = Mathf.Max(0, options.IndexOf(runtimeMotion.CurrentConfigOption));
+        int nextIndex = EditorGUILayout.Popup("Config Preset", currentIndex, options.ToArray());
+        if (nextIndex == currentIndex)
+        {
+            return;
+        }
+
+        string selectedOption = options[nextIndex];
+        Undo.RecordObject(runtimeMotion, "Apply Motion Config Preset");
+        runtimeMotion.ApplyConfigByString(selectedOption);
+        EditorUtility.SetDirty(runtimeMotion);
     }
 
     private static void DrawPlayButtons(UIRuntimeMotionBase runtimeMotion, IReadOnlyList<UIMotionAction> supportedActions)

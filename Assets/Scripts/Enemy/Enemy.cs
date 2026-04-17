@@ -136,8 +136,8 @@ public abstract class Enemy : Entity
             return;
         }
 
-        Color flashColor = eventData.DamageInfo.isCritical ? criticalHitFlashColor : hitFlashColor;
-        float punchStrength = eventData.DamageInfo.isCritical ? criticalHitPunchScale : hitPunchScale;
+        Color flashColor = eventData.HitResult.IsCritical ? criticalHitFlashColor : hitFlashColor;
+        float punchStrength = eventData.HitResult.IsCritical ? criticalHitPunchScale : hitPunchScale;
 
         hitFlashTween?.Kill();
         hitPunchTween?.Kill();

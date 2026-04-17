@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1164300000000000001}
   - component: {fileID: 9009843185414534451}
   - component: {fileID: 6894086736604712297}
-  - component: {fileID: 176027325880008253}
+  - component: {fileID: 180024802848824995}
   m_Layer: 5
   m_Name: Character Item
   m_TagString: Untagged
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 6894086736604712297}
-  runtimeMotionBehaviour: {fileID: 0}
+  runtimeMotionBehaviour: {fileID: 180024802848824995}
   characterIconImage: {fileID: 8779231363884387445}
   clickTarget: {fileID: 1164300000000000001}
 --- !u!225 &6894086736604712297
@@ -121,7 +121,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &176027325880008253
+--- !u!114 &180024802848824995
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,16 +130,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 2682593309240125380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2c7dacbe2800154ba1ab27257650734, type: 3}
+  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: Sidebar/Button
   motionIntensity: 1
   useUnscaledTime: 1
-  inspectorPreviewAction: 0
-  hiddenDirection: 3
-  extraHideOffset: 0
-  setInactiveOnHide: 1
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.22
+    ease: 9
+    deactivateOnComplete: 0
   - action: 0
     pose:
       fade: 0
@@ -148,9 +162,13 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.24
+    duration: 0.22
     ease: 9
     deactivateOnComplete: 0
   - action: 1
@@ -161,12 +179,16 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
     ease: 8
     deactivateOnComplete: 0
-  - action: 3
+  - action: 5
     pose:
       fade: 0
       alpha: 1
@@ -174,19 +196,27 @@ MonoBehaviour:
       offset: {x: 0, y: 2}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.08
     ease: 6
     deactivateOnComplete: 0
-  - action: 4
+  - action: 6
     pose:
       fade: 0
       alpha: 1
-      move: 1
-      offset: {x: 0, y: -4}
-      scale: 1
-      scaleMultiplier: 0.96
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.08
@@ -196,15 +226,43 @@ MonoBehaviour:
     pose:
       fade: 0
       alpha: 1
+      move: 1
+      offset: {x: 0, y: -4}
+      scale: 1
+      scaleMultiplier: 0.96
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 4
+    pose:
+      fade: 0
+      alpha: 1
       move: 0
       offset: {x: 0, y: 0}
       scale: 1
-      scaleMultiplier: 1.08
+      scaleMultiplier: 1.1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.14
+    duration: 0.16
     ease: 27
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &8242989274008083701
 GameObject:
   m_ObjectHideFlags: 0

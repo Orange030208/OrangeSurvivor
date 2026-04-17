@@ -41,9 +41,9 @@ public class HitFeedbackManager : MonoBehaviour
         }
 
         CreateHitMarker(
-            eventData.DamageInfo.position,
-            eventData.DamageInfo.isCritical ? criticalHitColor : hitMarkerColor,
-            eventData.DamageInfo.isCritical ? criticalHitScale : hitMarkerStartScale,
+            eventData.HitResult.HitPoint,
+            eventData.HitResult.IsCritical ? criticalHitColor : hitMarkerColor,
+            eventData.HitResult.IsCritical ? criticalHitScale : hitMarkerStartScale,
             hitMarkerDuration);
     }
 

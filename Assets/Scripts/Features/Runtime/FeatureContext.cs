@@ -6,18 +6,12 @@ public sealed class FeatureContext
     public Transform Transform => OwnerEntity.Transform;
     public PropertiesManager PropertiesManager { get; }
     public HealthComponent HealthComponent { get; }
-    public WeaponsHolder WeaponsHolder { get; }
-    public AccessoryManager AccessoryManager { get; }
-    public PlayerLevel PlayerLevel { get; }
 
     public FeatureContext(Entity ownerEntity, PropertiesManager propertiesManager)
     {
         OwnerEntity = ownerEntity;
         PropertiesManager = propertiesManager;
         HealthComponent = ownerEntity != null ? ownerEntity.GetComponent<HealthComponent>() : null;
-        WeaponsHolder = ownerEntity != null ? ownerEntity.GetComponent<WeaponsHolder>() : null;
-        AccessoryManager = ownerEntity != null ? ownerEntity.GetComponent<AccessoryManager>() : null;
-        PlayerLevel = ownerEntity != null ? ownerEntity.GetComponent<PlayerLevel>() : null;
     }
 
     public T GetComponent<T>() where T : Component

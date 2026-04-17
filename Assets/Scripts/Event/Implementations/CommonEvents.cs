@@ -73,12 +73,12 @@ public struct StageCompleteSnapshotEvent : IGameEvent
 public struct EntityDamagedEvent : IGameEvent
 {
     public Entity Entity;
-    public DamageInfo DamageInfo;
+    public HitResult HitResult;
 
-    public EntityDamagedEvent(Entity entity, DamageInfo damageInfo)
+    public EntityDamagedEvent(Entity entity, HitResult hitResult)
     {
         Entity = entity;
-        DamageInfo = damageInfo;
+        HitResult = hitResult;
     }
 }
 

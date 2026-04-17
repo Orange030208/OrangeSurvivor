@@ -1,0 +1,309 @@
+# 伤害结算流程说明
+
+本文档描述当前项目中 `HitRequest -> HitService -> HitResolver -> HealthComponent` 这一套伤害结算链路的职责边界、数据流和扩展规则。
+
+## 1. 目标
+
+当前伤害系统遵循以下原则：
+
+- 请求只描述输入，不描述结论。
+- 结论只在统一结算链中产生。
+- `HealthComponent` 只负责应用结果，不负责重新计算暴击、闪避、减伤。
+- UI 与反馈层只消费最终 `HitResult`，不参与业务计算。
+- Feature 对命中的修饰统一通过 `IHitModifier` 接入。
+
+这意味着：
+
+- `HitSpec` 表达攻击输入规格。
+- `HitRequest` 表达一次命中意图。
+- `HitContext` 是可变计算上下文。
+- `HitResult` 是统一结算结果，也是事件层使用的最终伤害快照。
+
+## 2. 核心类型
+
+### 2.1 `HitSpec`
+
+职责：描述攻击输入规格。
+
+包含：
+
+- `BaseDamage`
+- `CritChance`
+- `CritMultiplier`
+
+注意：
+
+- 不包含 `IsCritical`
+- 不包含 `IsDodged`
+- 不包含 `FinalDamage`
+
+这些都不是输入，而是结算产物。
+
+### 2.2 `HitRequest`
+
+职责：描述一次命中请求。
+
+包含：
+
+- `Source`
+- `Target`
+- `Spec`
+- `HitPoint`
+- `SourceKind`
+- `SourceId`
+
+注意：
+
+- `HitRequest` 不存目标闪避率。
+- 目标侧运行时属性在 modifier 阶段读取。
+
+### 2.3 `HitContext`
+
+职责：结算过程中的工作台。
+
+包含：
+
+- 当前伤害值
+- 暴击率 / 暴击倍率
+- 闪避率 / 减伤率
+- `IsCritical`
+- `IsDodged`
+- `IsCancelled`
+
+它只在结算链内部使用，不向表现层暴露。
+
+### 2.4 `HitResult`
+
+职责：统一结算输出。
+
+包含：
+
+- `FinalDamage`
+- `HitPoint`
+- `IsCritical`
+- `IsDodged`
+- `IsCancelled`
+- 来源信息
+
+`HealthComponent`、事件层、表现层都统一消费 `HitResult`。
+
+## 3. 运行流程
+
+### 3.1 生成命中输入
+
+攻击发起方先构造 `HitSpec`，然后构造 `HitRequest`。
+
+示例来源：
+
+- 近战武器
+- 投射物
+- 敌人近战
+- Feature 触发伤害
+
+### 3.2 调用 `HitService`
+
+所有命中统一调用：
+
+- `HitService.Resolve(...)`：只计算，不应用。
+- `HitService.Apply(...)`：先计算，再把结果应用到目标 `HealthComponent`。
+
+项目中大多数业务路径使用 `Apply(...)`。
+
+### 3.3 `HitService` 收集 Feature modifiers
+
+在进入 `HitResolver` 前，`HitService` 会自动收集：
+
+- `CoreHitModifier`
+- 来源实体 `FeatureHost` 上的 `IHitModifier`
+- 目标实体 `FeatureHost` 上的 `IHitModifier`
+- 额外手动传入的 modifiers
+
+这意味着角色、饰品、Buff、被动效果只要最终安装在 `FeatureHost` 上，并实现了 `IHitModifier`，就可以自动接入命中链。
+
+### 3.4 `HitResolver` 执行 modifier 链
+
+modifier 按优先级顺序执行。
+
+当前默认包含：
+
+- `CoreHitModifier`
+
+`CoreHitModifier` 负责：
+
+- 校验目标合法性
+- 读取目标 `HealthComponent`
+- 读取目标 `PropertiesManager`
+- 从目标属性中提取 `Dodge`、`Armor`、`DamageReduction`
+- 做基础暴击判定
+- 做基础闪避判定
+
+这里特别注意：
+
+- 闪避率不在 `HitRequest` 中传递。
+- 它是在 modifier 中根据目标当前状态读取。
+
+### 3.5 统一收口
+
+modifier 都执行完后，由 `HitResolver` 统一生成最终伤害。
+
+当前规则：
+
+1. 如果 `IsCancelled == true`，最终伤害为 0。
+2. 如果 `IsDodged == true`，最终伤害为 0。
+3. 否则先取 `Damage`。
+4. 如果 `IsCritical == true`，乘以 `CritMultiplier`。
+5. 最后乘以 `(1 - DamageReduction)`。
+6. 输出 `HitResult`。
+
+这样可以保证：
+
+- 暴击判定与暴击乘算分离。
+- 闪避判定与最终归零分离。
+- 所有结果都在统一位置收口。
+
+## 4. `HealthComponent` 的职责
+
+`HealthComponent` 当前只负责：
+
+- 接收 `HitResult`
+- 判断是否已死亡或结果是否取消
+- 处理闪避事件
+- 扣除生命
+- 发出 `OnDamaged`
+- 发布 `EntityDamagedEvent`
+- 处理死亡
+
+它不再负责：
+
+- 自己计算闪避
+- 自己计算减伤
+- 自己决定暴击
+- 直接接受旧的 `TakeDamage(...)` 输入
+
+旧接口已经移除，统一改为通过 `HitService` 进入。
+
+## 5. 典型调用链
+
+### 5.1 近战武器
+
+1. `Weapon` 构造 `HitSpec`
+2. `MeleeWeaponAttackExecutor` 命中目标
+3. 构造 `HitRequest`
+4. `HitService.Apply(...)`
+5. `HealthComponent.ApplyHitResult(...)`
+
+### 5.2 投射物
+
+1. 武器或敌人发射时把 `HitSpec` 填进 `ProjectileLaunchContext`
+2. `Bullet` 命中目标
+3. 结合投射物倍率构造新的 `HitSpec`
+4. 构造 `HitRequest`
+5. `HitService.Apply(...)`
+
+### 5.3 Feature 伤害
+
+1. Feature 拿到目标 `Entity`
+2. 直接构造 `HitRequest`
+3. `HitService.Apply(...)`
+
+## 6. Feature 与 `IHitModifier`
+
+### 6.1 接入方式
+
+Feature 运行时实例只要同时满足：
+
+- 继承 `FeatureEffectBase`
+- 实现 `IHitModifier`
+
+就会在安装到 `FeatureHost` 后自动参与命中计算。
+
+### 6.2 当前实现
+
+当前新增了一个示例效果：`DamageScaleHitModifierEffect`。
+
+它支持：
+
+- `Outgoing`：放大或缩小该实体造成的伤害
+- `Incoming`：放大或缩小该实体承受的伤害
+
+它通过 `FeatureContext` 记录安装宿主，然后在 `Apply(HitContext context)` 阶段判断：
+
+- 本次命中的 `Source` 是否是自己
+- 或本次命中的 `Target` 是否是自己
+
+如果匹配，就修改 `context.Damage`。
+
+### 6.3 扩展建议
+
+后续可以按同样模式继续实现：
+
+- 强制暴击 modifier
+- 强制不暴击 modifier
+- 额外暴击倍率 modifier
+- 特定来源增伤 modifier
+- 免疫某类来源伤害 modifier
+
+统一通过 `IHitModifier`，不要把命中逻辑塞回 `HealthComponent` 或 UI。
+
+## 7. 优先级约定
+
+建议按下面思路扩展：
+
+- Priority 0：基础判定层
+- Priority 1：覆盖判定层
+- Priority 2：参数修正层
+- Priority 3：伤害值修正层
+- Resolver 收口：最终伤害计算
+
+这样后续不会出现多个系统在不同位置重复结算。
+
+## 8. 表现层约束
+
+表现层只能消费：
+
+- `HitResult`
+- `EntityDamagedEvent`
+- `EntityDiedEvent`
+
+禁止：
+
+- UI 直接参与暴击/闪避逻辑
+- 表现层直接修改目标生命
+- 表现层绕过 `HitService` 直接做扣血
+
+## 9. 当前边界总结
+
+### 输入层
+
+- `HitSpec`
+- `HitRequest`
+
+### 计算层
+
+- `HitContext`
+- `IHitModifier`
+- `CoreHitModifier`
+- `HitResolver`
+- `HitService`
+- `FeatureHost` 上安装的 hit modifiers
+
+### 应用层
+
+- `HealthComponent.ApplyHitResult(...)`
+
+### 事件 / 表现层
+
+- `HitResult`
+- `EntityDamagedEvent`
+- `DamageTextManager`
+- `HitFeedbackManager`
+- `Enemy` 受击表现
+
+## 10. 后续建议
+
+后续如果继续演进，优先按下面顺序推进：
+
+1. 为常用 Feature 补充更多 `IHitModifier` 实现。
+2. 让不同来源伤害拥有稳定的 `SourceId` 规范。
+3. 如果需要只计算不应用的场景，优先使用 `HitService.Resolve(...)`。
+4. 若未来要记录更多命中结果，可继续扩展 `HitResult`，而不是把字段塞回 `HitRequest`。

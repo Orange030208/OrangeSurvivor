@@ -25,8 +25,8 @@ MonoBehaviour:
   projectileDefinitions: []
   meleeHitBoxSize: {x: 0.6, y: 1.4}
   meleeHitOffset: {x: 0, y: 0.7}
-  attack: 10
-  attackSpeed: 1
-  criticalChance: 0.05
+  attack: 1
+  attackSpeed: 0.5
+  criticalChance: 0
   criticalPercent: 2
-  range: 3
+  range: 4

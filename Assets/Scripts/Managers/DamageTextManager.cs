@@ -22,8 +22,8 @@ public class DamageTextManager:MonoBehaviour
             return;
         }
 
-        DamageInfo damageInfo = damageEvent.DamageInfo;
-        DamageTextFlow damageText = Instantiate(DamageTextPrefab, damageInfo.position + Vector2.up * 1.5f, Quaternion.identity,transform);
-        damageText.SetDamage(damageInfo.damage,damageInfo.isCritical);
+        HitResult hitResult = damageEvent.HitResult;
+        DamageTextFlow damageText = Instantiate(DamageTextPrefab, hitResult.HitPoint + Vector2.up * 1.5f, Quaternion.identity, transform);
+        damageText.SetDamage(hitResult.FinalDamage, hitResult.IsCritical);
     }
 }

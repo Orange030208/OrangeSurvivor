@@ -21,10 +21,6 @@ public sealed class MeleeWeaponAttackExecutor
         this.innerCompensationRadius = Mathf.Max(0.05f, innerCompensationRadius);
     }
 
-    /// <summary>
-    /// 检测命中盒从上一帧姿态扫到当前帧姿态所覆盖到的所有敌人，
-    /// 并对本窗口内尚未命中过的目标结算伤害。
-    /// </summary>
     public void ExecuteAttack(in WeaponAttackContext context, Vector2 hitBoxSize, HashSet<HealthComponent> hitTargets,
         LayerMask targetLayerMask, in MeleeHitDetectionPose fromPose, in MeleeHitDetectionPose toPose)
     {
@@ -76,8 +72,21 @@ public sealed class MeleeWeaponAttackExecutor
                 continue;
             }
 
+            Entity target = healthComponent.GetComponent<Entity>();
+            if (target == null)
+            {
+                continue;
+            }
+
             hitTargets.Add(healthComponent);
-            healthComponent.TakeDamage(context.Hit.ToDamageInfo(healthComponent.transform.position));
+            HitRequest request = new HitRequest(
+                context.SourceEntity,
+                target,
+                context.HitSpec,
+                healthComponent.transform.position,
+                HitSourceKind.Weapon,
+                context.Weapon.GetType().Name);
+            HitService.Apply(request);
         }
     }
 }
@@ -93,4 +102,3 @@ public readonly struct MeleeHitDetectionPose
         RotationZ = rotationZ;
     }
 }
-

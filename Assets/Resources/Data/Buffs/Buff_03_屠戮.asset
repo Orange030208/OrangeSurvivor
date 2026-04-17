@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa7e9ce7c0c8c24b9a8b29e701e2d88, type: 3}
+  m_Name: "Buff_03_\u5C60\u622E"
+  m_EditorClassIdentifier: 
+  buffId: Buff_Slaughter
+  displayName: "\u5C60\u622E"
+  icon: {fileID: 593942049, guid: 80d9c25e3fb5718428929790d5add98f, type: 3}
+  polarity: 0
+  durationPolicy: 1
+  durationSeconds: 10
+  maxStackCount: 1
+  refreshMode: 1
+  overflowMode: 1
+  descriptionLines:
+  - "\u5BF9\u666E\u901A\u654C\u4EBA\u4F24\u5BB3 + 80%"
+  propertyModifiers: []
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

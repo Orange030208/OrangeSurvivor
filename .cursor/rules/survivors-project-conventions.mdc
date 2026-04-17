@@ -20,6 +20,8 @@ alwaysApply: false
 - `UIRevealMotion` 只负责 reveal；`UISequenceDirector` 只负责序列动画。
 - UI 不缓存业务态；需要当前值时通过快照事件请求并直接刷新。
 - 详情类 UI 统一消费描述列表，不直接依赖运行时 feature 安装接口。
+- 动画系统调用统一直接使用 `Play(UIMotionAction.Xxx)`、`SetImmediate(UIMotionAction.Xxx)` 等核心接口，不要新增 `Show()`、`Hide()`、`PlayCommon()`、`SetExitImmediate()` 这类语义包装方法。
+- 若现有核心接口已能表达意图，禁止再添加一层同义包装方法；新增动画语义应优先落在 `UIMotionAction` 与对应 motion 实现上，而不是新增快捷方法。
 
 ## 描述与运行时特性
 

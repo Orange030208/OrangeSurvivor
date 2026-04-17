@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Sprite 序列版 UI motion：直接播放一组图片帧，不依赖 Animator。
-/// 通过把 UIMotionAction 映射到 Sprite 列表，实现与 UISequenceDirector 的统一编排。
+/// `Show` 用于展示/入场播放，默认可复用 `Common` 帧资源但保留独立覆盖入口；`Common` 用于回到稳定常态，`Hide` 用于隐藏/退场。
+/// 通过把 `UIMotionAction` 映射到 Sprite 列表，实现与 `UISequenceDirector` 的统一编排。
 /// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Image))]
@@ -37,7 +38,7 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
     {
         public UIMotionAction action;
         public FrameSourceMode frameSourceMode = FrameSourceMode.Self;
-        public UIMotionAction sourceAction = UIMotionAction.Normal;
+        public UIMotionAction sourceAction = UIMotionAction.Show;
         public List<Sprite> frames = new();
         public SequenceTimingMode timingMode = SequenceTimingMode.FramesPerSecond;
         [Min(1f)] public float framesPerSecond = 12f;
@@ -52,8 +53,9 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
     [SerializeField] private bool keepLastFrameOnComplete = true;
     [SerializeField] private List<SpriteSequenceClip> actionClips = new()
     {
-        new SpriteSequenceClip { action = UIMotionAction.Normal, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f },
-        new SpriteSequenceClip { action = UIMotionAction.Hide, frameSourceMode = FrameSourceMode.UseOtherActionFrames, sourceAction = UIMotionAction.Normal, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f, reverse = true }
+        new SpriteSequenceClip { action = UIMotionAction.Common, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f },
+        new SpriteSequenceClip { action = UIMotionAction.Show, frameSourceMode = FrameSourceMode.UseOtherActionFrames, sourceAction = UIMotionAction.Common, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f },
+        new SpriteSequenceClip { action = UIMotionAction.Hide, frameSourceMode = FrameSourceMode.UseOtherActionFrames, sourceAction = UIMotionAction.Common, timingMode = SequenceTimingMode.FramesPerSecond, framesPerSecond = 12f, totalDuration = 0.5f, reverse = true }
     };
 
     private readonly Dictionary<UIMotionAction, SpriteSequenceClip> clipMap = new();
@@ -83,7 +85,7 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public Tween PlayEnter(float delay = 0f)
     {
-        return Play(UIMotionAction.Normal, delay);
+        return Play(UIMotionAction.Show, delay);
     }
 
     public Tween PlayExit(float delay = 0f)
@@ -98,7 +100,7 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public void CompleteImmediate()
     {
-        SampleImmediate(UIMotionAction.Normal, useLastFrame: true);
+        SampleImmediate(UIMotionAction.Common, useLastFrame: true);
     }
 
     public override bool SupportsAction(UIMotionAction action)

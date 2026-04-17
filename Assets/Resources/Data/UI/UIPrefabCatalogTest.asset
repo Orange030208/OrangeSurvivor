@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b1b23b9d9856849aa26735d85e65a4, type: 3}
+  m_Name: UIPrefabCatalogTest
+  m_EditorClassIdentifier: 
+  entries:
+  - layerType: 2
+    prefab: {fileID: 5453402992543493149, guid: 89a6afc08e4358d49a6203418c889fc3, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 3816208830851736021, guid: e5958a3e181b13e439375b903b3e0d9f, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 3
+    prefab: {fileID: 3816208830851736021, guid: e6ab8e1c786b9d4409cedc1cc5d99d58, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 1
+    prefab: {fileID: 830820297401448628, guid: 7cef013643cf00c4bb9d993bd42aedc1, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 5453402992543493149, guid: 4a3a1b694f36bcd4995dafcb3cd7a5aa, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 3
+    prefab: {fileID: 3816208830851736021, guid: a3b9b07b8f661b249b31e24e92419cff, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 3816208830851736021, guid: 02f7f2fe1141a9b4cb409ce8b556f135, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 3816208830851736021, guid: f8f792afbabf75f4fa3cbfdb6318da5c, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 7343879705630972211, guid: 151de15897bd1e04ead2c9dda7a1ee16, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0

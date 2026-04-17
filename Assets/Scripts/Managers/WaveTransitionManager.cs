@@ -15,6 +15,8 @@ public enum TransitionPhase
 public class WaveTransitionManager : MonoBehaviour
 {
     [SerializeField] private AccessoryManager accessoryManager;
+    [SerializeField] private Player player;
+    [SerializeField] private PropertiesManager propertiesManager;
 
     private readonly PropEntry[] propEntries = new PropEntry[3];
     private AccessoryDataSO currentAccessoryData;
@@ -46,14 +48,7 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
 
-        if (accessoryManager == null)
-        {
-            Player player = FindFirstObjectByType<Player>();
-            if (player != null)
-            {
-                accessoryManager = player.GetComponent<AccessoryManager>();
-            }
-        }
+        TryBindPlayerReferences();
     }
 
     private void OnDisable()
@@ -88,13 +83,16 @@ public class WaveTransitionManager : MonoBehaviour
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
-        accessoryManager = eventData.Player != null ? eventData.Player.GetComponent<AccessoryManager>() : null;
+        player = eventData.Player;
+        accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
+        propertiesManager = player != null ? player.GetComponent<PropertiesManager>() : null;
     }
 
     private void StartTransitionFlow()
     {
         currentAccessoryData = null;
         CurrentPhase = TransitionPhase.None;
+        TryBindPlayerReferences();
         TryEnterNextPhase();
     }
 
@@ -209,13 +207,12 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        Player player = FindFirstObjectByType<Player>();
         if (player == null)
         {
             return;
         }
 
-        if (player.UseUpgradePoints() > 0)
+        if (player.ConsumeUpgradePoint() > 0)
         {
             ConfigureUpgradeProps();
         }
@@ -233,12 +230,11 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        PropertiesManager propsManager = FindObjectOfType<PropertiesManager>();
-        if (propsManager != null)
+        if (propertiesManager != null)
         {
             string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
             PropEntry propEntry = propEntries[eventData.ContainerIndex];
-            propsManager.AddModifier(upgradeId, propEntry);
+            propertiesManager.AddModifier(upgradeId, propEntry);
         }
 
         UpgradeBonusCallback();
@@ -259,6 +255,29 @@ public class WaveTransitionManager : MonoBehaviour
             case TransitionPhase.UpgradeSelection:
                 GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
                 break;
+        }
+    }
+
+    private void TryBindPlayerReferences()
+    {
+        if (player == null)
+        {
+            player = FindFirstObjectByType<Player>();
+        }
+
+        if (player == null)
+        {
+            return;
+        }
+
+        if (accessoryManager == null)
+        {
+            accessoryManager = player.GetComponent<AccessoryManager>();
+        }
+
+        if (propertiesManager == null)
+        {
+            propertiesManager = player.GetComponent<PropertiesManager>();
         }
     }
 }

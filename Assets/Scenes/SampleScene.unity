@@ -431,7 +431,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.7433963, g: 0.31278744, b: 0.31278744, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -546,7 +546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a54c4f8c3d6e84eae6f17b7980263b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveDuration: 10
+  waveDuration: 999
   waves:
   - name: Wave 1
     segments:
@@ -742,6 +742,9 @@ MonoBehaviour:
   audioCueCatalog: {fileID: 11400000, guid: 0c318312232f94242977a97c25e8fda3, type: 2}
   audioSfxCatalog: {fileID: 11400000, guid: 17540f462dd474642a87cb6a0ce70d6d, type: 2}
   runtimeSettings: {fileID: 11400000, guid: 738bb7b2e49572f4fb8fd2386bc778ef, type: 2}
+  masterVolume: 1
+  musicVolume: 1
+  sfxVolume: 1
 --- !u!1 &889382726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1805,7 +1808,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_Origin: {x: -8, y: -4, z: 0}
   m_Size: {x: 16, y: 8, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}

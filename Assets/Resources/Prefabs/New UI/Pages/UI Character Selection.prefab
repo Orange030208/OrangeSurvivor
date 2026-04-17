@@ -293,6 +293,7 @@ MonoBehaviour:
     motions:
     - {fileID: 5028659938424160367}
     - {fileID: 7129777176377492296}
+    - {fileID: 8718368499556981394}
     startDelay: 0
     stagger: 0
     playTogether: 0
@@ -671,12 +672,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: Sidebar/Panel
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 3
-  extraHideOffset: 0
-  setInactiveOnHide: 1
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.22
+    ease: 9
+    deactivateOnComplete: 0
   - action: 0
     pose:
       fade: 0
@@ -685,37 +701,39 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.24
+    duration: 0.22
     ease: 9
     deactivateOnComplete: 0
   - action: 1
     pose:
-      fade: 0
-      alpha: 1
-      move: 0
+      fade: 1
+      alpha: 0
+      move: 1
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
     ease: 8
     deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.02
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
+  hiddenDirection: 3
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &8098750875393023848
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,7 +747,7 @@ GameObject:
   - component: {fileID: 7129777176377492296}
   - component: {fileID: 7430751627697373610}
   - component: {fileID: 2836150192426863821}
-  - component: {fileID: 2159798258466472680}
+  - component: {fileID: 1073940139809380046}
   m_Layer: 5
   m_Name: Character Detail
   m_TagString: Untagged
@@ -822,7 +840,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2159798258466472680
+--- !u!114 &1073940139809380046
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -831,9 +849,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8098750875393023848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 902114c470f3fa1498fa522a7de1f0d4, type: 3}
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: Default
   motionIntensity: 1
   useUnscaledTime: 1
   actionClips:
@@ -845,6 +864,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.18
@@ -858,6 +881,10 @@ MonoBehaviour:
       offset: {x: 0, y: -18}
       scale: 1
       scaleMultiplier: 0.96
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.18
@@ -871,6 +898,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.06
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.14
@@ -884,6 +915,10 @@ MonoBehaviour:
       offset: {x: 0, y: 4}
       scale: 1
       scaleMultiplier: 1.03
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.12
@@ -897,6 +932,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 0.97
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.08
@@ -1658,6 +1697,66 @@ PrefabInstance:
       propertyPath: m_Name
       value: Title Container
       objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: currentConfigOption
+      value: Sidebar/Panel Soft
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[0].ease
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[1].ease
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].ease
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[0].action
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[1].action
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].action
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[0].duration
+      value: 0.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[1].duration
+      value: 0.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].duration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].pose.fade
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].pose.move
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].pose.alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].pose.scale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: actionClips.Array.data[2].pose.scaleMultiplier
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4120371565884543557, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
       propertyPath: m_text
       value: "\u9009\u62E9\u4F60\u7684\u89D2\u8272"
@@ -1752,6 +1851,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4960495516222242305, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
   m_PrefabInstance: {fileID: 5911918164701434561}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8718368499556981394 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3095811099161380947, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+  m_PrefabInstance: {fileID: 5911918164701434561}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6215697683250865265
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(HealthComponent), typeof(PlayerLevel))]
+[RequireComponent(typeof(HealthComponent), typeof(PlayerLevel), typeof(BuffController))]
 public class Player : Entity
 {
     [Header("组件")]
@@ -19,8 +19,9 @@ public class Player : Entity
     public override EntityRenderer EntityRenderer => entityRenderer;
 
     public bool IsLevelUpInCurrentWave => playerLevel.IsLevelUpInCurrentWave;
-
     public int LevelUpValue => playerLevel.LevelUpValue;
+    public int UnspentUpgradePoints => playerLevel != null ? playerLevel.UnspentUpgradePoints : 0;
+    public PlayerLevel LevelComponent => playerLevel;
 
     private void Awake()
     {
@@ -40,5 +41,8 @@ public class Player : Entity
         }
     }
 
-    public int UseUpgradePoints() => playerLevel.UseUpgradePoints();
+    public int ConsumeUpgradePoint()
+    {
+        return playerLevel != null ? playerLevel.ConsumeUpgradePoint() : 0;
+    }
 }

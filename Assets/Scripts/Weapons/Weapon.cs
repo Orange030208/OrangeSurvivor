@@ -11,6 +11,8 @@ using Random = UnityEngine.Random;
 /// </summary>
 public abstract class Weapon : Entity
 {
+    private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
+
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
     [Header("Components")]
@@ -29,6 +31,7 @@ public abstract class Weapon : Entity
     public int Level { get; private set; }
     public WeaponRuntimeStats RuntimeStats { get; private set; }
     public bool IsAttacking { get; protected set; }
+    public Entity OwnerEntity => ownerEntity;
     public override EntityRenderer EntityRenderer => entityRenderer;
 
     protected PropertiesManager propertiesManager;
@@ -36,11 +39,12 @@ public abstract class Weapon : Entity
     protected Entity currentTarget;
     private float attackCooldownTimer;
     private Vector2 lastAimDirection = Vector2.up;
+    private Vector2 lockedAttackDirection = Vector2.up;
 
     protected virtual void Awake()
     {
         propertiesManager = GetComponentInParent<PropertiesManager>();
-        ownerEntity = GetComponentInParent<Entity>();
+        ownerEntity = ResolveOwnerEntity();
 
         if (entityRenderer == null)
         {
@@ -190,9 +194,45 @@ public abstract class Weapon : Entity
 
     protected abstract void BeginAttack(Entity target);
 
+    protected void LockAttackDirection(Vector2 attackDirection)
+    {
+        if (attackDirection.sqrMagnitude <= MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        {
+            lockedAttackDirection = ResolveFallbackAttackDirection();
+            return;
+        }
+
+        lockedAttackDirection = attackDirection.normalized;
+    }
+
+    protected Vector2 GetLockedAttackDirection()
+    {
+        if (lockedAttackDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        {
+            return lockedAttackDirection;
+        }
+
+        return ResolveFallbackAttackDirection();
+    }
+
     protected void CompleteAttackCycle()
     {
         IsAttacking = false;
+    }
+
+    private Entity ResolveOwnerEntity()
+    {
+        Entity[] entities = GetComponentsInParent<Entity>(true);
+        for (int i = 0; i < entities.Length; i++)
+        {
+            Entity entity = entities[i];
+            if (entity != null && entity != this)
+            {
+                return entity;
+            }
+        }
+
+        return null;
     }
 
     protected Entity GetCurrentTarget()
@@ -273,7 +313,7 @@ public abstract class Weapon : Entity
             return;
         }
 
-        if (desiredAimDirection.sqrMagnitude > 0.0001f)
+        if (desiredAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
             lastAimDirection = desiredAimDirection.normalized;
             transform.up = Vector3.Lerp(transform.up, lastAimDirection, Time.deltaTime * aimLerp);
@@ -293,12 +333,12 @@ public abstract class Weapon : Entity
 
         if (ownerEntity != null)
         {
-            if (ownerEntity.IsMoving && ownerEntity.CurrentFacingDirection.sqrMagnitude > 0.0001f)
+            if (ownerEntity.IsMoving && ownerEntity.CurrentFacingDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
             {
                 return ownerEntity.CurrentFacingDirection.normalized;
             }
 
-            if (ownerEntity.CurrentFacingDirection.sqrMagnitude > 0.0001f)
+            if (ownerEntity.CurrentFacingDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
             {
                 return ownerEntity.CurrentFacingDirection.normalized;
             }
@@ -314,13 +354,13 @@ public abstract class Weapon : Entity
 
     private bool HasReachedAttackAimDirection(Vector2 desiredAimDirection)
     {
-        if (desiredAimDirection.sqrMagnitude <= 0.0001f)
+        if (desiredAimDirection.sqrMagnitude <= MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
             return true;
         }
 
         Vector2 currentAimDirection = transform.up;
-        if (currentAimDirection.sqrMagnitude <= 0.0001f)
+        if (currentAimDirection.sqrMagnitude <= MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
             return true;
         }
@@ -329,21 +369,57 @@ public abstract class Weapon : Entity
         return angle <= attackStartAimToleranceDegrees;
     }
 
-    protected ResolvedWeaponHit ResolveHit()
+    protected Vector2 ResolveAttackDirection(Entity target, Transform origin = null)
     {
-        bool isCritical = Random.value <= RuntimeStats.CriticalChance;
-        float damage = isCritical ? RuntimeStats.Damage * RuntimeStats.CriticalMultiplier : RuntimeStats.Damage;
-        return new ResolvedWeaponHit(damage, isCritical);
+        Transform sourceTransform = origin != null ? origin : transform;
+        if (target != null)
+        {
+            Vector2 targetDirection = target.Center - (Vector2)sourceTransform.position;
+            if (targetDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+            {
+                return targetDirection.normalized;
+            }
+        }
+
+        return ResolveFallbackAttackDirection();
+    }
+
+    private Vector2 ResolveFallbackAttackDirection()
+    {
+        Vector2 currentAimDirection = transform.up;
+        if (currentAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        {
+            return currentAimDirection.normalized;
+        }
+
+        if (lastAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        {
+            return lastAimDirection.normalized;
+        }
+
+        return Vector2.up;
+    }
+
+    protected HitSpec BuildHitSpec()
+    {
+        return new HitSpec(RuntimeStats.Damage, RuntimeStats.CriticalChance, RuntimeStats.CriticalMultiplier);
     }
 
     protected WeaponAttackContext BuildAttackContext(Entity target, Transform origin = null)
     {
-        Transform sourceTransform = origin != null ? origin : transform;
-        Vector2 aimDirection = target != null
-            ? (target.Center - (Vector2)sourceTransform.position).normalized
-            : (Vector2)transform.up;
+        return BuildAttackContext(target, GetLockedAttackDirection(), origin);
+    }
 
-        return new WeaponAttackContext(this, sourceTransform, target, aimDirection, RuntimeStats, ResolveHit());
+    protected WeaponAttackContext BuildAttackContext(Entity target, Vector2 aimDirection, Transform origin = null)
+    {
+        Transform sourceTransform = origin != null ? origin : transform;
+        Vector2 resolvedAimDirection = aimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE
+            ? aimDirection.normalized
+            : ResolveFallbackAttackDirection();
+
+        Entity sourceEntity = ownerEntity != null ? ownerEntity : this;
+
+        return new WeaponAttackContext(this, sourceEntity, sourceTransform, target, resolvedAimDirection, RuntimeStats, BuildHitSpec());
     }
 
     protected virtual WeaponRuntimeStats BuildRuntimeStats()

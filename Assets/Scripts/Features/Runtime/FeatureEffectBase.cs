@@ -4,14 +4,15 @@ using UnityEngine;
 public interface IRuntimeFeatureEffect
 {
     string RuntimeFeatureId { get; set; }
-    void OnInstall(FeatureContext context);
-    void OnUninstall(FeatureContext context);
-    void OnUpdate(FeatureContext context, float deltaTime);
+    FeatureContext Context { get; set; }
+    void OnInstall();
+    void OnUninstall();
+    void OnUpdate(float deltaTime);
 }
 
 [HideInFeatureMenu]
 [Serializable]
-public abstract class FeatureEffectBase : IRuntimeFeatureEffect, IFeatureDefinition
+public abstract class FeatureEffectBase : IRuntimeFeatureEffect, IFeatureDefinition,IHitModifier
 {
     [HideInInspector]
     [SerializeField] private string runtimeFeatureId;
@@ -22,15 +23,26 @@ public abstract class FeatureEffectBase : IRuntimeFeatureEffect, IFeatureDefinit
         set => runtimeFeatureId = value;
     }
 
+    public FeatureContext Context { get; set; }
+
     public virtual string FeatureTitle => GetType().Name;
     public abstract string FeatureDescription { get; }
-    public virtual FeatureCategory FeatureCategory => FeatureCategory.Passive;
-    public virtual FeaturePolarity FeaturePolarity => FeaturePolarity.Positive;
+    
+    public virtual void OnInstall(){}
+    public virtual void OnUninstall(){}
 
-    public abstract void OnInstall(FeatureContext context);
-    public abstract void OnUninstall(FeatureContext context);
+    public virtual void OnUpdate(float deltaTime)
+    {
+    }
 
-    public virtual void OnUpdate(FeatureContext context, float deltaTime)
+    //命中管线参与能力默认关闭，仅需要影响命中结算的 feature 重写以下成员
+    public virtual bool CanModifyHit => false;
+    public virtual int HitPriority => int.MaxValue;
+
+    public virtual HitModifierTiming HitModifierTiming => HitModifierTiming.Deal;
+
+    public virtual void ModifyHit(HitContext hitContext)
     {
     }
 }
+

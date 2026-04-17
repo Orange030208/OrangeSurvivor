@@ -8,8 +8,14 @@ public class RangeEnemyAttack : MonoBehaviour
     [SerializeField] private float attackFrequency;
 
     private Player target;
+    private Entity ownerEntity;
     private float attackDelay;
     private float attackTimer;
+
+    private void Awake()
+    {
+        ownerEntity = GetComponent<Entity>();
+    }
 
     private void Start()
     {
@@ -59,9 +65,10 @@ public class RangeEnemyAttack : MonoBehaviour
         Vector2 direction = (target.Center - (Vector2)shootingPoint.position).normalized;
         EnemyBullet enemyBullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
         enemyBullet.Launch(new ProjectileLaunchContext(
+            ownerEntity,
             shootingPoint.position,
             direction,
-            new ResolvedWeaponHit(damage, false),
+            new HitSpec(damage, 0f, 1f),
             0,
             null,
             0,

@@ -20,7 +20,7 @@ public class UIAutoMotionDriver : MonoBehaviour,
         public UIMotionEvent motionEvent;
 
         [Tooltip("该事件发生时要播放的动效动作。")]
-        public UIMotionAction action = UIMotionAction.Normal;
+        public UIMotionAction action = UIMotionAction.Show;
     }
 
     [SerializeField] private UIRuntimeMotionBase motionSource;
@@ -31,10 +31,10 @@ public class UIAutoMotionDriver : MonoBehaviour,
     [Header("Pointer Event Bindings")]
     [SerializeField] private List<MotionBinding> bindings = new()
     {
-        new MotionBinding { motionEvent = UIMotionEvent.PointerEnter, action = UIMotionAction.Highlight },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, action = UIMotionAction.Normal },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerEnter, action = UIMotionAction.Enter },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, action = UIMotionAction.Exit },
         new MotionBinding { motionEvent = UIMotionEvent.PointerDown, action = UIMotionAction.Press },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, action = UIMotionAction.Normal },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, action = UIMotionAction.Release },
         new MotionBinding { motionEvent = UIMotionEvent.PointerClick, action = UIMotionAction.Emphasis }
     };
 
@@ -49,7 +49,7 @@ public class UIAutoMotionDriver : MonoBehaviour,
     {
         if (playEnterOnEnable)
         {
-            PlayAll(UIMotionAction.Normal);
+            PlayAll(UIMotionAction.Show);
         }
     }
 

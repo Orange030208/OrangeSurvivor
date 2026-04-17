@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Entity), typeof(PropertiesManager))]
-public class FeatureHost : MonoBehaviour
+public class FeatureHost : MonoBehaviour,IHitModifierProvider
 {
     private Entity ownerEntity;
     private PropertiesManager propertiesManager;
     private FeatureContext featureContext;
     private readonly Dictionary<string, FeatureHostSourceHandle> installedSources = new();
 
-    public Entity OwnerEntity => ownerEntity;
     public FeatureContext Context => featureContext;
+
+    public FeatureHostSourceHandle GetInstalledSourceHandle(string sourceId)
+    {
+        installedSources.TryGetValue(sourceId, out FeatureHostSourceHandle handle);
+        return handle;
+    }
 
     private void Awake()
     {
@@ -48,7 +53,7 @@ public class FeatureHost : MonoBehaviour
                     continue;
                 }
 
-                effect.OnUpdate(featureContext, deltaTime);
+                effect.OnUpdate(deltaTime);
             }
         }
     }
@@ -71,7 +76,8 @@ public class FeatureHost : MonoBehaviour
                 continue;
             }
 
-            effect.OnInstall(featureContext);
+            effect.Context = featureContext;
+            effect.OnInstall();
         }
 
         installedSources[sourceId] = new FeatureHostSourceHandle(sourceId, runtimeEffects);
@@ -93,7 +99,8 @@ public class FeatureHost : MonoBehaviour
                 continue;
             }
 
-            effect.OnUninstall(featureContext);
+            effect.OnUninstall();
+            effect.Context =  null;
         }
 
         installedSources.Remove(sourceId);
@@ -108,6 +115,25 @@ public class FeatureHost : MonoBehaviour
         {
             RemoveSource(sourceIds[i]);
         }
+    }
+
+    public IEnumerable<IHitModifier> GetHitModifiers(HitModifierTiming modifierTiming)
+    {
+        List<IHitModifier> results = new List<IHitModifier>();
+        foreach (FeatureHostSourceHandle handle in installedSources.Values)
+        {
+            for (int i = 0; i < handle.RuntimeEffects.Count; i++)
+            {
+                FeatureEffectBase effect = handle.RuntimeEffects[i];
+                if (effect == null || !effect.CanModifyHit || effect.HitModifierTiming != modifierTiming)
+                {
+                    continue;
+                }
+
+                results.Add(effect);
+            }
+        }
+        return results;
     }
 }
 

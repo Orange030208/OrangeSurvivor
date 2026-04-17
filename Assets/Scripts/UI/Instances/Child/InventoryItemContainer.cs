@@ -2,23 +2,22 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemContainer : MonoBehaviour, IDisposable
+public class InventoryItemContainer : MonoBehaviour, IDisposable, ITooltipDataSource
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private UIClickTarget button;
+    [SerializeField] private TooltipHoverTarget tooltipHoverTarget;
 
     private int itemIndex = -1;
+    private ItemDataSO currentItemData;
+    private int currentColorDependencyNumber;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="itemData"></param>
-    /// <param name="colorDependencyNumber">武器传等级，饰品传稀有度</param>
-    /// <param name="itemIndex">背包UI中的下标</param>
     public void Configure(ItemDataSO itemData, int colorDependencyNumber, int itemIndex)
     {
         this.itemIndex = itemIndex;
+        currentItemData = itemData;
+        currentColorDependencyNumber = colorDependencyNumber;
 
         iconImage.sprite = itemData.ItemIcon;
         foreach (Graphic g in colorDependencyGraphics)
@@ -37,8 +36,15 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable
             }
         }
 
+        tooltipHoverTarget?.SetTooltipDataSource(this);
+
         button.OnClicked -= OnItemClicked;
         button.OnClicked += OnItemClicked;
+    }
+
+    public TooltipDisplayData BuildTooltipData()
+    {
+        return TooltipDataFactory.CreateFromItem(currentItemData, currentColorDependencyNumber);
     }
 
     private void OnItemClicked()
@@ -54,6 +60,8 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable
     public void Dispose()
     {
         button.OnClicked -= OnItemClicked;
+        currentItemData = null;
+        currentColorDependencyNumber = 0;
         itemIndex = -1;
     }
 }

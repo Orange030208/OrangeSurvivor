@@ -35,7 +35,16 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
     {
         new TypewriterMotionClip
         {
-            action = UIMotionAction.Normal,
+            action = UIMotionAction.Common,
+            duration = 0.36f,
+            ease = Ease.Linear,
+            restartFromBeginning = false,
+            durationMode = TypewriterDurationMode.CharactersPerSecond,
+            charactersPerSecond = 24f
+        },
+        new TypewriterMotionClip
+        {
+            action = UIMotionAction.Show,
             duration = 0.36f,
             ease = Ease.Linear,
             restartFromBeginning = true,
@@ -88,7 +97,7 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public virtual Tween PlayEnter(float delay = 0f)
     {
-        return Play(UIMotionAction.Normal, delay);
+        return Play(UIMotionAction.Show, delay);
     }
 
     public virtual Tween PlayExit(float delay = 0f)
@@ -103,14 +112,15 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public virtual void CompleteImmediate()
     {
-        SetImmediate(UIMotionAction.Normal);
+        SetImmediate(UIMotionAction.Common);
     }
 
     public override bool SupportsAction(UIMotionAction action)
     {
         return action switch
         {
-            UIMotionAction.Normal => HasClip(UIMotionAction.Normal),
+            UIMotionAction.Show => HasClip(UIMotionAction.Show),
+            UIMotionAction.Common => HasClip(UIMotionAction.Common),
             UIMotionAction.Hide => HasClip(UIMotionAction.Hide),
             UIMotionAction.Emphasis => HasClip(UIMotionAction.Emphasis),
             _ => false
@@ -121,7 +131,8 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
     {
         return action switch
         {
-            UIMotionAction.Normal => SupportsAction(action) ? PlayTypewriter(action, delay) : null,
+            UIMotionAction.Show => SupportsAction(action) ? PlayTypewriter(action, delay) : null,
+            UIMotionAction.Common => SupportsAction(action) ? PlayTypewriter(action, delay) : null,
             UIMotionAction.Hide => SupportsAction(action) ? PlayTypewriter(action, delay) : null,
             UIMotionAction.Emphasis => SupportsAction(action) ? PlayTypewriter(action, delay) : null,
             _ => null
