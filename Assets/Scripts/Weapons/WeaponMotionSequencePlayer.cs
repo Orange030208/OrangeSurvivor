@@ -125,10 +125,10 @@ public sealed class WeaponMotionSequencePlayer
             WeaponSequenceEventKeyframe keyframe = events[nextEventIndex];
             WeaponSequenceEventContext eventContext = keyframe.eventType switch
             {
-                WeaponSequenceEventType.OpenHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.windowId),
-                WeaponSequenceEventType.CloseHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.windowId),
-                WeaponSequenceEventType.SpawnProjectile => WeaponSequenceEventContext.CreateProjectileEvent(keyframe.projectileSpawnPayload),
-                _ => WeaponSequenceEventContext.CreateSimpleEvent(keyframe.eventType)
+                WeaponSequenceEventType.OpenHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.eventKey),
+                WeaponSequenceEventType.CloseHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.eventKey),
+                WeaponSequenceEventType.SpawnProjectile => WeaponSequenceEventContext.CreateProjectileEvent(keyframe.eventKey),
+                _ => WeaponSequenceEventContext.CreateSimpleEvent(keyframe.eventType, keyframe.eventKey)
             };
 
             EventTriggered?.Invoke(eventContext);

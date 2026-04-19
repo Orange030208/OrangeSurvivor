@@ -20,7 +20,7 @@ public class AudioBusPlayer : MonoBehaviour
     private float currentCueVolume = AudioConstants.DEFAULT_VOLUME;
     private string currentCueId;
 
-    public bool IsPlaying => audioSource != null && audioSource.isPlaying;
+    public bool IsPlaying => audioSource.isPlaying;
     public string CurrentCueId => currentCueId;
 
     private void Awake()
@@ -46,10 +46,7 @@ public class AudioBusPlayer : MonoBehaviour
     /// </summary>
     public void Play(AudioCueData cueData, bool restartIfPlaying)
     {
-        if (!TryGetAudioSource(out AudioSource source))
-        {
-            return;
-        }
+        AudioSource source = audioSource;
 
         if (cueData.PlaybackMode == AudioPlaybackMode.OneShot)
         {
@@ -71,10 +68,7 @@ public class AudioBusPlayer : MonoBehaviour
     /// </summary>
     public void PlayWithFade(AudioCueData cueData, float fadeDuration, bool restartIfPlaying)
     {
-        if (!TryGetAudioSource(out AudioSource source))
-        {
-            return;
-        }
+        AudioSource source = audioSource;
 
         if (cueData.PlaybackMode != AudioPlaybackMode.Loop)
         {
@@ -116,10 +110,7 @@ public class AudioBusPlayer : MonoBehaviour
     /// </summary>
     public void StopPlayback()
     {
-        if (!TryGetAudioSource(out AudioSource source))
-        {
-            return;
-        }
+        AudioSource source = audioSource;
 
         volumeTween?.Kill();
         source.Stop();
@@ -132,10 +123,7 @@ public class AudioBusPlayer : MonoBehaviour
     /// </summary>
     public void StopPlaybackWithFade(float fadeDuration)
     {
-        if (!TryGetAudioSource(out AudioSource source))
-        {
-            return;
-        }
+        AudioSource source = audioSource;
 
         if (!source.isPlaying)
         {
@@ -155,8 +143,9 @@ public class AudioBusPlayer : MonoBehaviour
     /// </summary>
     public void SetBusVolume(float volume)
     {
+        AudioSource source = audioSource;
         busVolume = Mathf.Clamp(volume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
-        if (!TryGetAudioSource(out AudioSource source) || !source.isPlaying)
+        if (!source.isPlaying)
         {
             return;
         }
@@ -183,11 +172,6 @@ public class AudioBusPlayer : MonoBehaviour
 
     private void CopyOneShotSettings(AudioSource targetSource)
     {
-        if (audioSource == null || targetSource == null)
-        {
-            return;
-        }
-
         targetSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
         targetSource.priority = audioSource.priority;
         targetSource.panStereo = audioSource.panStereo;
@@ -246,12 +230,5 @@ public class AudioBusPlayer : MonoBehaviour
         audioSource.playOnAwake = false;
         audioSource.loop = false;
         audioSource.spatialBlend = 0f;
-    }
-
-    private bool TryGetAudioSource(out AudioSource source)
-    {
-        EnsureAudioSource();
-        source = audioSource;
-        return source != null;
     }
 }

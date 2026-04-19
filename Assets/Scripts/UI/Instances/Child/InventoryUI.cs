@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -16,6 +15,34 @@ public class InventoryUI : MonoBehaviour
     private bool subscribed;
     private int currentOperateItemIndex = -1;
 
+    private void Awake()
+    {
+        if (itemContainerPrefab == null)
+        {
+            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(InventoryItemContainer)} prefab.");
+        }
+
+        if (inventoryItemOperateContainer == null)
+        {
+            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(InventoryItemOperateContainer)}.");
+        }
+
+        if (inventoryItemOperateContainerSidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(UISidebarRevealMotion)}.");
+        }
+
+        if (itemContainersParent == null)
+        {
+            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing item containers parent.");
+        }
+
+        if (closeInventoryItemOperatePanelButtons == null)
+        {
+            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing close panel buttons.");
+        }
+    }
+
     private void OnEnable()
     {
         Subscribe();
@@ -29,7 +56,7 @@ public class InventoryUI : MonoBehaviour
         Unsubscribe();
         CleanupSpawnedContainers();
         inventoryItemOperateContainer.Dispose();
-        inventoryItemOperateContainerSidebar?.Kill();
+        inventoryItemOperateContainerSidebar.Kill();
     }
 
     private void Subscribe()
@@ -70,18 +97,8 @@ public class InventoryUI : MonoBehaviour
 
     private void OnInventorySnapshotChanged(InventorySnapshotChangedEvent eventData)
     {
-        if (itemContainersParent == null)
-        {
-            return;
-        }
-
         CleanupSpawnedContainers();
         itemContainersParent.Clear();
-
-        if (itemContainerPrefab == null || eventData.Items == null)
-        {
-            return;
-        }
 
         for (int i = 0; i < eventData.Items.Length; i++)
         {
@@ -104,14 +121,9 @@ public class InventoryUI : MonoBehaviour
 
     private void OnOperatePanelDataChanged(InventoryItemOperatePanelDataEvent eventData)
     {
-        if (inventoryItemOperateContainer == null)
-        {
-            return;
-        }
-
         currentOperateItemIndex = eventData.Resource.itemIndex;
         inventoryItemOperateContainer.Configure(eventData.Resource);
-        inventoryItemOperateContainerSidebar?.Play(UIMotionAction.Show);
+        inventoryItemOperateContainerSidebar.Play(UIMotionAction.Show);
     }
 
     private void OnOperatePanelShouldClose(InventoryItemOperatePanelShouldCloseEvent eventData)
@@ -136,36 +148,16 @@ public class InventoryUI : MonoBehaviour
 
     private void BindClosePanelHandlers()
     {
-        if (closeInventoryItemOperatePanelButtons == null)
+        foreach (UIClickTarget item in closeInventoryItemOperatePanelButtons)
         {
-            return;
-        }
-
-        foreach (var item in closeInventoryItemOperatePanelButtons)
-        {
-            if (item == null)
-            {
-                continue;
-            }
-
             item.OnClicked += OnClosePanelBackgroundClicked;
         }
     }
 
     private void UnbindClosePanelHandlers()
     {
-        if (closeInventoryItemOperatePanelButtons == null)
+        foreach (UIClickTarget item in closeInventoryItemOperatePanelButtons)
         {
-            return;
-        }
-
-        foreach (var item in closeInventoryItemOperatePanelButtons)
-        {
-            if (item == null)
-            {
-                continue;
-            }
-
             item.OnClicked -= OnClosePanelBackgroundClicked;
         }
     }
@@ -179,24 +171,21 @@ public class InventoryUI : MonoBehaviour
     {
         currentOperateItemIndex = -1;
         inventoryItemOperateContainer.Dispose();
-        inventoryItemOperateContainerSidebar?.Play(UIMotionAction.Hide);
+        inventoryItemOperateContainerSidebar.Play(UIMotionAction.Hide);
     }
 
     private void CloseOperatePanelImmediate()
     {
         currentOperateItemIndex = -1;
         inventoryItemOperateContainer.Dispose();
-        inventoryItemOperateContainerSidebar?.SetImmediate(UIMotionAction.Hide);
+        inventoryItemOperateContainerSidebar.SetImmediate(UIMotionAction.Hide);
     }
 
     private void CleanupSpawnedContainers()
     {
         for (int i = 0; i < spawnedContainers.Count; i++)
         {
-            if (spawnedContainers[i] != null)
-            {
-                spawnedContainers[i].Dispose();
-            }
+            spawnedContainers[i].Dispose();
         }
 
         spawnedContainers.Clear();
@@ -204,6 +193,6 @@ public class InventoryUI : MonoBehaviour
 
     private void RefreshOperatePanelSidebar()
     {
-        inventoryItemOperateContainerSidebar?.RefreshDefaults();
+        inventoryItemOperateContainerSidebar.RefreshDefaults();
     }
 }

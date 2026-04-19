@@ -12,42 +12,40 @@ public class GamePauseMenu : UIPageBase
     [SerializeField] private UIClickTarget continueButton;
     [SerializeField] private UIClickTarget menuButton;
 
-    [Header("属性面板(左)")]
-    [SerializeField] private UISidebarRevealMotion propertiesSidebar;
+    [Header("属性面板(左)")] [SerializeField] private UISidebarRevealMotion propertiesSidebar;
     [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
-    [Header("背包面板(右)")]
-    [SerializeField] private UISidebarRevealMotion inventorySidebar;
+    [Header("背包面板(右)")] [SerializeField] private UISidebarRevealMotion inventorySidebar;
 
     [SerializeField] private float slideDuration = DEFAULT_SLIDE_DURATION;
 
-    // protected override void Awake()
-    // {
-    //     base.Awake();
-    //     InitSidebarPanels();
-    // }
-    //
-    // protected override void OnPageOpened(UIPageOpenContext context)
-    // {
-    //     BindButtonEvents();
-    //     InjectPropertiesDependencies();
-    //     propertiesViewSync.StartSync();
-    //
-    //     HideAllSidebarPanelsImmediately();
-    //     ShowAllSidebarPanels();
-    // }
-    //
-    // protected override void OnPageClosed()
-    // {
-    //     UnbindButtonEvents();
-    //     propertiesViewSync.StopSync();
-    //     KillSidebarTweens();
-    //     HideAllSidebarPanelsImmediately();
-    // }
+    protected override void Awake()
+    {
+        base.Awake();
+        ValidateConfiguration();
+        InitSidebarPanels();
+    }
+
+    protected override void OnPageOpened(UIPageOpenContext context)
+    {
+        BindButtonEvents();
+        InjectPropertiesDependencies();
+        propertiesViewSync.StartSync();
+        HideAllSidebarPanelsImmediately();
+        ShowAllSidebarPanels();
+    }
+
+    protected override void OnPageClosed()
+    {
+        UnbindButtonEvents();
+        propertiesViewSync.StopSync();
+        KillSidebarTweens();
+        HideAllSidebarPanelsImmediately();
+    }
 
     protected override bool HasAdditionalCloseWaitActions()
     {
-        return propertiesSidebar != null || inventorySidebar != null;
+        return true;
     }
 
     protected override void PlayAdditionalCloseWaitActions(bool useUnscaledTime, System.Action onCompleted)
@@ -65,19 +63,13 @@ public class GamePauseMenu : UIPageBase
             }
         }
 
-        if (propertiesSidebar != null)
-        {
-            pendingCount++;
-            Tween propertiesTween = propertiesSidebar.Play(UIMotionAction.Hide);
-            propertiesTween?.OnComplete(MarkCompleted);
-        }
+        pendingCount++;
+        Tween propertiesTween = propertiesSidebar.Play(UIMotionAction.Hide);
+        propertiesTween.OnComplete(MarkCompleted);
 
-        if (inventorySidebar != null)
-        {
-            pendingCount++;
-            Tween inventoryTween = inventorySidebar.Play(UIMotionAction.Hide);
-            inventoryTween?.OnComplete(MarkCompleted);
-        }
+        pendingCount++;
+        Tween inventoryTween = inventorySidebar.Play(UIMotionAction.Hide);
+        inventoryTween.OnComplete(MarkCompleted);
 
         if (pendingCount == 0)
         {
@@ -119,8 +111,8 @@ public class GamePauseMenu : UIPageBase
     private void ShowAllSidebarPanels()
     {
         ApplySlideDuration();
-        propertiesSidebar?.Play(UIMotionAction.Show);
-        inventorySidebar?.Play(UIMotionAction.Show);
+        propertiesSidebar.Play(UIMotionAction.Show);
+        inventorySidebar.Play(UIMotionAction.Show);
     }
 
     private void HideAllSidebarPanelsImmediately()
@@ -143,53 +135,56 @@ public class GamePauseMenu : UIPageBase
 
     private void InjectPropertiesDependencies()
     {
-        if (propertiesViewSync == null)
-        {
-            return;
-        }
-
         Player player = FindFirstObjectByType<Player>();
-        PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
+        PropertiesManager manager = player.GetComponent<PropertiesManager>();
         propertiesViewSync.InjectDependencies(manager);
     }
 
     private void ApplySidebarTimings(UISidebarRevealMotion sidebar)
     {
-        if (sidebar == null)
-        {
-            return;
-        }
-
         sidebar.ConfigureTimings(slideDuration, Ease.OutCubic, slideDuration, Ease.InCubic);
     }
 
     private static void RefreshSidebarDefaults(UISidebarRevealMotion sidebar)
     {
-        if (sidebar == null)
-        {
-            return;
-        }
-
         sidebar.RefreshDefaults();
     }
 
     private static void HideSidebarImmediate(UISidebarRevealMotion sidebar)
     {
-        if (sidebar == null)
-        {
-            return;
-        }
-
         sidebar.SetImmediate(UIMotionAction.Hide);
     }
 
     private static void KillSidebarTween(UISidebarRevealMotion sidebar)
     {
-        if (sidebar == null)
+        sidebar.Kill();
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (continueButton == null)
         {
-            return;
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing continue button.");
         }
 
-        sidebar.Kill();
+        if (menuButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing menu button.");
+        }
+
+        if (propertiesSidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing properties sidebar.");
+        }
+
+        if (propertiesViewSync == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing properties view sync.");
+        }
+
+        if (inventorySidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing inventory sidebar.");
+        }
     }
 }

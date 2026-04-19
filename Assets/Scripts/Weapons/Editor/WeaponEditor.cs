@@ -35,10 +35,11 @@ public class WeaponEditor : Editor
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField("Sequence Timing", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Original Duration", weapon.GetDebugOriginalSequenceDuration().ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Effective Duration", weapon.GetDebugEffectiveSequenceDuration().ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Timing Window", weapon.GetDebugSequenceWindowDuration().ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Compression Ratio", (weapon.GetDebugSequenceCompressionRatio() * 100f).ToString("0.#") + "%");
+            WeaponSequenceDebugInfo debugInfo = WeaponSequenceDebugInfoBuilder.Build(weapon, GetCurrentSequence(weapon));
+            EditorGUILayout.LabelField("Original Duration", debugInfo.OriginalDuration.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Effective Duration", debugInfo.EffectiveDuration.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Timing Window", debugInfo.TimingWindowDuration.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Compression Ratio", (debugInfo.CompressionRatio * 100f).ToString("0.#") + "%");
 
             if (weapon is RangeWeapon)
             {
@@ -85,6 +86,21 @@ public class WeaponEditor : Editor
                 EditorUtility.SetDirty(weapon);
             }
         }
+    }
+
+    private static AttackSequenceDefinitionSO GetCurrentSequence(Weapon weapon)
+    {
+        if (weapon is MeleeWeapon meleeWeapon)
+        {
+            return meleeWeapon.DebugAttackSequence;
+        }
+
+        if (weapon is RangeWeapon rangeWeapon)
+        {
+            return rangeWeapon.DebugAttackSequence;
+        }
+
+        return null;
     }
 
     private static void TryForceAttackCurrentTarget(Weapon weapon)

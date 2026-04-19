@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// 远程武器：负责索敌、进入攻击、播放攻击序列，并在合适时机发射投射物。
@@ -27,6 +30,9 @@ public class RangeWeapon : Weapon
     private Entity pendingTarget;
     private int activeBurstId = -1;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
+    private WeaponSequenceResourceResolver sequenceResourceResolver;
+
+    public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
     protected override void Awake()
     {
@@ -36,6 +42,8 @@ public class RangeWeapon : Weapon
 
     protected override void OnConfiguredFromData()
     {
+        sequenceResourceResolver = new WeaponSequenceResourceResolver(WeaponData);
+
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -74,11 +82,6 @@ public class RangeWeapon : Weapon
         return !IsAttacking && !sequenceBridge.IsPlaying;
     }
 
-    protected override AttackSequenceDefinitionSO GetEquippedAttackSequence()
-    {
-        return attackSequence;
-    }
-
     protected override void BeginAttack(Entity target)
     {
         IsAttacking = true;
@@ -95,13 +98,25 @@ public class RangeWeapon : Weapon
         switch (eventContext.EventType)
         {
             case WeaponSequenceEventType.SpawnProjectile:
-                FireProjectiles(eventContext.ProjectileSpawnPayload);
+                FireProjectiles(eventContext.EventKey);
                 break;
             case WeaponSequenceEventType.PlaySfx:
+                PlaySequenceSfx(eventContext.EventKey);
                 break;
             case WeaponSequenceEventType.PlayVfx:
+                PlaySequenceVfx(eventContext.EventKey);
                 break;
         }
+    }
+
+    private void FireProjectiles(int eventKey)
+    {
+        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetProjectile(eventKey, out ProjectileSpawnPayload payload))
+        {
+            return;
+        }
+
+        FireProjectiles(payload);
     }
 
     private void FireProjectiles(ProjectileSpawnPayload payload)
@@ -197,11 +212,6 @@ public class RangeWeapon : Weapon
     private void FireSingle(ProjectileSpawnPayload payload, float? angleOffset)
     {
         ProjectileWeaponAttackExecutor executor = BuildExecutor(payload.ProjectileDefinition);
-        if (executor == null)
-        {
-            return;
-        }
-
         Transform origin = ResolveOrigin(payload.SpawnPointIndex);
         WeaponAttackContext context = BuildAttackContext(pendingTarget, origin);
         if (angleOffset.HasValue)
@@ -215,39 +225,18 @@ public class RangeWeapon : Weapon
 
     private ProjectileWeaponAttackExecutor BuildExecutor(ProjectileDefinitionSO projectileDefinition)
     {
-        Bullet projectilePrefab = ResolveProjectilePrefab(projectileDefinition);
-        if (projectilePrefab == null)
-        {
-            return null;
-        }
-
+        Projectile projectilePrefab = ResolveProjectilePrefab(projectileDefinition);
         return new ProjectileWeaponAttackExecutor(projectilePrefab, shootingPoint, additionalShootingPoints);
     }
 
-    private Bullet ResolveProjectilePrefab(ProjectileDefinitionSO projectileDefinition)
+    private Projectile ResolveProjectilePrefab(ProjectileDefinitionSO projectileDefinition)
     {
-        if (projectileDefinition != null && projectileDefinition.BulletPrefab != null)
+        if (projectileDefinition == null)
         {
-            return projectileDefinition.BulletPrefab;
+            throw new ArgumentNullException(nameof(projectileDefinition), $"{nameof(RangeWeapon)} requires {nameof(ProjectileDefinitionSO)} for projectile attacks.");
         }
 
-        if (WeaponData != null)
-        {
-            var projectileDefinitions = WeaponData.ProjectileDefinitions;
-            if (projectileDefinitions != null)
-            {
-                for (int i = 0; i < projectileDefinitions.Count; i++)
-                {
-                    ProjectileDefinitionSO definition = projectileDefinitions[i];
-                    if (definition != null && definition.BulletPrefab != null)
-                    {
-                        return definition.BulletPrefab;
-                    }
-                }
-            }
-        }
-
-        return GetComponentInChildren<Bullet>(true);
+        return ResourcesManager.GetProjectilePrefab(projectileDefinition.TemplateKind);
     }
 
     private Transform ResolveOrigin(int spawnPointIndex)
@@ -258,6 +247,36 @@ public class RangeWeapon : Weapon
         }
 
         return shootingPoint != null ? shootingPoint : transform;
+    }
+
+    private void PlaySequenceSfx(int eventKey)
+    {
+        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetSfx(eventKey, out WeaponSequenceSfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.SfxKey != AudioSfxKey.None)
+        {
+            AudioSfxBridge.RequestPlay(definition.SfxKey);
+        }
+    }
+
+    private void PlaySequenceVfx(int eventKey)
+    {
+        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetVfx(eventKey, out WeaponSequenceVfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.VfxPrefab != null)
+        {
+            Transform spawnAnchor = ResolveOrigin(definition.SpawnPointIndex);
+            Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
+            Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
+            GameObject instance =  Instantiate(definition.VfxPrefab, spawnPosition, spawnRotation);
+            Destroy(instance, definition.VfxLifetime);
+        }
     }
 
     private void FinishAttackSequence()
@@ -294,12 +313,13 @@ public class RangeWeapon : Weapon
             }
         }
 
-        AttackSequenceDefinitionSO sequence = attackSequence != null ? attackSequence : runtimeDefaultSequence;
+        AttackSequenceDefinitionSO sequence = DebugAttackSequence;
         if (sequence == null)
         {
             return;
         }
 
+        WeaponSequenceResourceResolver previewResolver = new WeaponSequenceResourceResolver(WeaponData);
         var events = sequence.EventKeyframes;
         for (int i = 0; i < events.Count; i++)
         {
@@ -309,13 +329,19 @@ public class RangeWeapon : Weapon
                 continue;
             }
 
-            Transform origin = ResolveOrigin(keyframe.projectileSpawnPayload.SpawnPointIndex);
+            Transform origin = null;
+            if (!previewResolver.TryGetProjectile(keyframe.eventKey, out ProjectileSpawnPayload payload))
+            {
+                continue;
+            }
+
+            origin = ResolveOrigin(payload.SpawnPointIndex);
             if (origin == null)
             {
                 continue;
             }
 
-            DrawProjectilePatternGizmo(origin, keyframe.projectileSpawnPayload);
+            DrawProjectilePatternGizmo(origin, payload);
         }
     }
 

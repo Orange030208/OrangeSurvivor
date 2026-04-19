@@ -14,8 +14,7 @@ public class WeaponDataListSO : ScriptableObject
 #if UNITY_EDITOR
     private static readonly string[] WEAPONS_DATA_PATH = new string[]
     {
-        "Assets/Resources/Data/Weapons/Melee",
-        "Assets/Resources/Data/Weapons/Range"
+        "Assets/Resources/Data/Weapons"
     };
 
     [NaughtyAttributes.Button]

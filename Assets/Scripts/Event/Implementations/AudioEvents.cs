@@ -1,10 +1,12 @@
-public struct AudioPlayRequestedEvent : IGameEvent
+public struct AudioBgmPlayRequestedEvent : IGameEvent
 {
-    public AudioPlaybackRequest Request;
+    public AudioBgmKey BgmKey;
+    public bool RestartIfPlaying;
 
-    public AudioPlayRequestedEvent(AudioPlaybackRequest request)
+    public AudioBgmPlayRequestedEvent(AudioBgmKey bgmKey, bool restartIfPlaying)
     {
-        Request = request;
+        BgmKey = bgmKey;
+        RestartIfPlaying = restartIfPlaying;
     }
 }
 

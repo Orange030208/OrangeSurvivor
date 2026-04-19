@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 /// <summary>
 /// 武器运行时基类：
@@ -11,7 +10,9 @@ using Random = UnityEngine.Random;
 /// </summary>
 public abstract class Weapon : Entity
 {
+    private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
+    private static readonly WeaponRuntimeStats DefaultRuntimeStats = new(0f, 1f, 0.1f, 0f, 1f);
 
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
@@ -28,8 +29,8 @@ public abstract class Weapon : Entity
     [Tooltip("武器攻击会命中的目标层。由武器持有器/挂点在初始化时设置；这里仅作为运行时查询使用。")]
     [SerializeField] protected LayerMask targetLayerMask;
 
-    public int Level { get; private set; }
-    public WeaponRuntimeStats RuntimeStats { get; private set; }
+    public int Level { get; private set; } = DEFAULT_WEAPON_LEVEL;
+    public WeaponRuntimeStats RuntimeStats { get; private set; } = DefaultRuntimeStats;
     public bool IsAttacking { get; protected set; }
     public Entity OwnerEntity => ownerEntity;
     public override EntityRenderer EntityRenderer => entityRenderer;
@@ -72,7 +73,7 @@ public abstract class Weapon : Entity
 
     protected virtual void Start()
     {
-        ConfigureFromData();
+        ApplyCurrentConfiguration();
         RefreshRuntimeStats();
     }
 
@@ -83,19 +84,27 @@ public abstract class Weapon : Entity
             return;
         }
 
-        TickTargeting();
-        TickWeapon(Time.deltaTime);
+        float deltaTime = Time.deltaTime;
+        TickTargeting(deltaTime);
+        TickWeapon(deltaTime);
     }
 
     public void SetLevel(int targetLevel)
     {
-        Level = Mathf.Max(1, targetLevel);
+        Level = Mathf.Max(DEFAULT_WEAPON_LEVEL, targetLevel);
         RefreshRuntimeStats();
     }
 
     public void SetWeaponData(WeaponDataSO weaponData)
     {
+        if (weaponData == null)
+        {
+            throw new ArgumentNullException(nameof(weaponData), $"{nameof(Weapon)} requires a non-null {nameof(WeaponDataSO)}.");
+        }
+
         WeaponData = weaponData;
+        ApplyCurrentConfiguration();
+        RefreshRuntimeStats();
     }
 
     public void SetTargetLayerMask(LayerMask layerMask)
@@ -103,23 +112,7 @@ public abstract class Weapon : Entity
         targetLayerMask = layerMask;
     }
 
-    public void ConfigureFromData()
-    {
-        if (WeaponData == null)
-        {
-            return;
-        }
-
-        switch (WeaponData.ConstructionScheme)
-        {
-            case WeaponConstructionScheme.Default:
-            default:
-                ApplyDefaultConstructionScheme();
-                break;
-        }
-
-        OnConfiguredFromData();
-    }
+    public LayerMask TargetLayerMask => targetLayerMask;
 
     protected virtual void OnConfiguredFromData()
     {
@@ -141,6 +134,24 @@ public abstract class Weapon : Entity
         Vector3 localEulerAngles = visualTransform.localEulerAngles;
         localEulerAngles.z = WeaponData != null ? WeaponData.VisualForwardAngle : 0f;
         visualTransform.localEulerAngles = localEulerAngles;
+    }
+
+    private void ApplyCurrentConfiguration()
+    {
+        if (WeaponData == null)
+        {
+            return;
+        }
+
+        switch (WeaponData.ConstructionScheme)
+        {
+            case WeaponConstructionScheme.Default:
+            default:
+                ApplyDefaultConstructionScheme();
+                break;
+        }
+
+        OnConfiguredFromData();
     }
 
     private void ApplyDefaultConstructionScheme()
@@ -220,6 +231,26 @@ public abstract class Weapon : Entity
         IsAttacking = false;
     }
 
+    public HitResult ApplyHit(HitRequest request)
+    {
+        HitResult result = HitService.Apply(request);
+        return result;
+    }
+
+    protected virtual AudioSfxKey ResolveHitSfxKey(WeaponHitEvent hitEvent)
+    {
+        return WeaponData.HitSfxKey;
+    }
+
+    private void PlayHitSfx(WeaponHitEvent hitEvent)
+    {
+        AudioSfxKey sfxKey = ResolveHitSfxKey(hitEvent);
+        if (sfxKey != AudioSfxKey.None)
+        {
+            AudioSfxBridge.RequestPlay(sfxKey);
+        }
+    }
+
     private Entity ResolveOwnerEntity()
     {
         Entity[] entities = GetComponentsInParent<Entity>(true);
@@ -233,11 +264,6 @@ public abstract class Weapon : Entity
         }
 
         return null;
-    }
-
-    protected Entity GetCurrentTarget()
-    {
-        return currentTarget;
     }
 
     protected float ResolveAttackSequenceDuration(AttackSequenceDefinitionSO sequence)
@@ -257,147 +283,59 @@ public abstract class Weapon : Entity
         return Mathf.Min(sequenceDuration, reservedWindow);
     }
 
-    public float GetDebugAttackInterval()
+    protected virtual void TickTargeting(float deltaTime)
     {
-        return RuntimeStats.AttackInterval;
-    }
-
-    public float GetDebugSequenceWindowDuration()
-    {
-        float attackInterval = Mathf.Max(0.01f, RuntimeStats.AttackInterval);
-        float occupancy = WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f;
-        return attackInterval * occupancy;
-    }
-
-    public float GetDebugOriginalSequenceDuration()
-    {
-        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
-        return sequence != null ? sequence.Duration : 0f;
-    }
-
-    public float GetDebugEffectiveSequenceDuration()
-    {
-        AttackSequenceDefinitionSO sequence = GetEquippedAttackSequence();
-        return sequence != null ? ResolveAttackSequenceDuration(sequence) : 0f;
-    }
-
-    public float GetDebugSequenceCompressionRatio()
-    {
-        float original = GetDebugOriginalSequenceDuration();
-        if (original <= 0.0001f)
-        {
-            return 1f;
-        }
-
-        return GetDebugEffectiveSequenceDuration() / original;
-    }
-
-    protected virtual AttackSequenceDefinitionSO GetEquippedAttackSequence()
-    {
-        return null;
-    }
-
-    protected virtual void TickTargeting()
-    {
+        WeaponTargetingSnapshot targetingSnapshot = BuildTargetingSnapshot();
         Entity previousTarget = currentTarget;
-        currentTarget = ownerEntity != null
-            ? ownerEntity.FindClosestTargetInRange(RuntimeStats.Range, targetLayerMask)
-            : null;
+        currentTarget = WeaponTargetingLogic.ResolveTarget(targetingSnapshot);
 
-        Vector2 desiredAimDirection = ResolveDesiredAimDirection();
-        bool stopAimingWhenAttackReady = WeaponData == null || WeaponData.StopAimingWhenAttackReady;
-        bool hasReachedAttackAim = HasReachedAttackAimDirection(desiredAimDirection);
-        bool holdCurrentAim = IsAttacking || (stopAimingWhenAttackReady && currentTarget != null && attackCooldownTimer >= RuntimeStats.AttackInterval && hasReachedAttackAim);
-        if (holdCurrentAim)
+        WeaponAimUpdate aimUpdate = WeaponTargetingLogic.BuildAimUpdate(targetingSnapshot, currentTarget);
+        if (!aimUpdate.ShouldApplyAim)
         {
             return;
         }
 
-        if (desiredAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-        {
-            lastAimDirection = desiredAimDirection.normalized;
-            transform.up = Vector3.Lerp(transform.up, lastAimDirection, Time.deltaTime * aimLerp);
-        }
-        else if (previousTarget != null && currentTarget == null)
-        {
-            transform.up = Vector3.Lerp(transform.up, lastAimDirection, Time.deltaTime * aimLerp);
-        }
+        lastAimDirection = aimUpdate.LastAimDirection;
+        Vector3 targetAimDirection = aimUpdate.AimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE
+            ? (Vector3)aimUpdate.AimDirection
+            : (previousTarget != null && currentTarget == null ? (Vector3)lastAimDirection : transform.up);
+        transform.up = Vector3.Lerp(transform.up, targetAimDirection, deltaTime * aimLerp);
     }
 
-    protected Vector2 ResolveDesiredAimDirection()
+    private WeaponTargetingSnapshot BuildTargetingSnapshot()
     {
-        if (currentTarget != null)
-        {
-            return (currentTarget.Center - (Vector2)transform.position).normalized;
-        }
-
-        if (ownerEntity != null)
-        {
-            if (ownerEntity.IsMoving && ownerEntity.CurrentFacingDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-            {
-                return ownerEntity.CurrentFacingDirection.normalized;
-            }
-
-            if (ownerEntity.CurrentFacingDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-            {
-                return ownerEntity.CurrentFacingDirection.normalized;
-            }
-        }
-
-        return lastAimDirection;
+        bool stopAimingWhenAttackReady = WeaponData == null || WeaponData.StopAimingWhenAttackReady;
+        return new WeaponTargetingSnapshot(
+            ownerEntity,
+            currentTarget,
+            RuntimeStats.Range,
+            targetLayerMask,
+            transform.position,
+            transform.up,
+            lastAimDirection,
+            attackCooldownTimer,
+            RuntimeStats.AttackInterval,
+            IsAttacking,
+            stopAimingWhenAttackReady,
+            attackStartAimToleranceDegrees);
     }
 
     protected bool HasReachedAttackAimDirection()
     {
-        return HasReachedAttackAimDirection(ResolveDesiredAimDirection());
-    }
-
-    private bool HasReachedAttackAimDirection(Vector2 desiredAimDirection)
-    {
-        if (desiredAimDirection.sqrMagnitude <= MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-        {
-            return true;
-        }
-
-        Vector2 currentAimDirection = transform.up;
-        if (currentAimDirection.sqrMagnitude <= MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-        {
-            return true;
-        }
-
-        float angle = Vector2.Angle(currentAimDirection, desiredAimDirection.normalized);
-        return angle <= attackStartAimToleranceDegrees;
+        WeaponTargetingSnapshot targetingSnapshot = BuildTargetingSnapshot();
+        Vector2 desiredAimDirection = WeaponTargetingLogic.ResolveDesiredAimDirection(targetingSnapshot, currentTarget);
+        return WeaponTargetingLogic.HasReachedAttackAimDirection(targetingSnapshot, desiredAimDirection);
     }
 
     protected Vector2 ResolveAttackDirection(Entity target, Transform origin = null)
     {
-        Transform sourceTransform = origin != null ? origin : transform;
-        if (target != null)
-        {
-            Vector2 targetDirection = target.Center - (Vector2)sourceTransform.position;
-            if (targetDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-            {
-                return targetDirection.normalized;
-            }
-        }
-
-        return ResolveFallbackAttackDirection();
+        Vector2 originPosition = origin != null ? (Vector2)origin.position : (Vector2)transform.position;
+        return WeaponTargetingLogic.ResolveAttackDirection(BuildTargetingSnapshot(), target, originPosition);
     }
 
     private Vector2 ResolveFallbackAttackDirection()
     {
-        Vector2 currentAimDirection = transform.up;
-        if (currentAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-        {
-            return currentAimDirection.normalized;
-        }
-
-        if (lastAimDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
-        {
-            return lastAimDirection.normalized;
-        }
-
-        return Vector2.up;
+        return WeaponTargetingLogic.ResolveFallbackAttackDirection(BuildTargetingSnapshot());
     }
 
     protected HitSpec BuildHitSpec()
@@ -424,6 +362,11 @@ public abstract class Weapon : Entity
 
     protected virtual WeaponRuntimeStats BuildRuntimeStats()
     {
+        if (WeaponData == null)
+        {
+            return DefaultRuntimeStats;
+        }
+
         var calculatedProps = WeaponPropsCalculator.GetProps(WeaponData, Level);
 
         float weaponAttack = calculatedProps[PropType.Attack];

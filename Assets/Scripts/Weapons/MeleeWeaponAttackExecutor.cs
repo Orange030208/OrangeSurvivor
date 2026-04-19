@@ -86,7 +86,7 @@ public sealed class MeleeWeaponAttackExecutor
                 healthComponent.transform.position,
                 HitSourceKind.Weapon,
                 context.Weapon.GetType().Name);
-            HitService.Apply(request);
+            context.Weapon.ApplyHit(request);
         }
     }
 }

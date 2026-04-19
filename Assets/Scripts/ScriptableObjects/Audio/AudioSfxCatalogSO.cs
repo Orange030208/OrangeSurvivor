@@ -3,32 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 语义音效映射总表：
-/// - 维护 AudioSfxKey 到 cueId 的映射；
-/// - 让 UI 与业务层不再直接依赖音频资源字符串；
+/// 音效配置总表：
+/// - 直接维护 AudioSfxKey 到具体音频配置的映射；
+/// - 让 UI 与业务层只依赖强类型枚举；
 /// - 只负责配置索引与缓存，不参与实际播放。
 /// </summary>
 [CreateAssetMenu(fileName = "Audio Sfx Catalog", menuName = AudioConstants.AUDIO_SFX_CATALOG_MENU_PATH, order = 2)]
 public class AudioSfxCatalogSO : ScriptableObject
 {
-    [Tooltip("语义音效映射列表。每个键最终会映射到一个具体 cueId。")]
+    [Tooltip("音效配置列表。每个枚举键直接对应一个具体音频配置。")]
     [SerializeField] private AudioSfxEntry[] entries = Array.Empty<AudioSfxEntry>();
 
-    private Dictionary<AudioSfxKey, string> cache;
+    private Dictionary<AudioSfxKey, AudioCueData> cache;
 
     /// <summary>
-    /// 按语义音效键查询具体 cueId。
+    /// 按语义音效键查询具体音频配置。
     /// </summary>
-    public bool TryGetCueId(AudioSfxKey sfxKey, out string cueId)
+    public bool TryGetCue(AudioSfxKey sfxKey, out AudioCueData cueData)
     {
-        cueId = null;
+        cueData = default;
         if (sfxKey == AudioSfxKey.None)
         {
             return false;
         }
 
         EnsureCache();
-        return cache.TryGetValue(sfxKey, out cueId) && !string.IsNullOrWhiteSpace(cueId);
+        return cache.TryGetValue(sfxKey, out cueData);
     }
 
     private void OnValidate()
@@ -55,16 +55,16 @@ public class AudioSfxCatalogSO : ScriptableObject
             return;
         }
 
-        cache = new Dictionary<AudioSfxKey, string>();
+        cache = new Dictionary<AudioSfxKey, AudioCueData>();
         for (int i = 0; i < entries.Length; i++)
         {
             AudioSfxEntry entry = entries[i];
-            if (entry == null || !entry.TryBuild(out AudioSfxKey key, out string cueId))
+            if (entry == null || !entry.TryBuild(out AudioCueData cueData))
             {
                 continue;
             }
 
-            cache[key] = cueId;
+            cache[entry.SfxKey] = cueData;
         }
     }
 }

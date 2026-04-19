@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Descri
     {
         if (resource == null)
         {
-            return;
+            throw new ArgumentNullException(nameof(resource), $"{nameof(AccessoryOperateContainer)} '{name}' received a null accessory resource.");
         }
 
         nameText.text = resource.ItemName;

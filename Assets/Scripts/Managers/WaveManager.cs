@@ -1,42 +1,63 @@
-using System;
-using System.Collections.Generic;
-using NaughtyAttributes;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 /// <summary>
 /// 敌波管理器：只负责波次数据推进、计时和刷怪。
-/// 状态切换与流程编排交给 GameManager。
+/// 状态切换与流程编排交给 WaveFlowCoordinator / GameManager。
 /// </summary>
 public class WaveManager : MonoBehaviour
 {
-    [SerializeField] private float waveDuration;
+    private StageDefinitionSO stageDefinition;
+    private SpawnPositionResolver spawnPositionResolver;
+    private WaveCompletionService waveCompletionService;
+    private WaveSpawnExecutionService waveSpawnExecutionService;
+    private EnemyRuntimeRegistry enemyRuntimeRegistry;
+    private EnemyFactory enemyFactory;
+    private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
+    private Wave[] runtimeWaves = System.Array.Empty<Wave>();
 
-    [OnValueChanged("AutoSetWaveNames")] [SerializeField]
-    private Wave[] waves;
+    [SerializeField]
+    private Entity spawnAroundEntity;
 
-#if UNITY_EDITOR
-    private void AutoSetWaveNames()
+    private int CurrentWaveIndex => runtimeState.CurrentWaveIndex;
+    private float CurrentTimer => runtimeState.Timer;
+    private bool IsTimerOn => runtimeState.IsRunning;
+    private int CurrentWave => CurrentWaveIndex >= 0 ? CurrentWaveIndex + 1 : 0;
+    private int TotalWaves => runtimeWaves.Length;
+    private bool HasStarted => CurrentWaveIndex >= 0;
+    private bool HasMoreWaves => CurrentWaveIndex >= 0 && CurrentWaveIndex < TotalWaves - 1;
+    private float CurrentWaveDuration => GetWaveDuration(CurrentWaveIndex);
+
+    private void Awake()
     {
-        if (waves == null) return;
-        for (int i = 0; i < waves.Length; i++)
+        stageDefinition = ResourcesManager.GetStageDefinition();
+        if (stageDefinition == null)
         {
-            waves[i].name = $"Wave {i + 1}";
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(StageDefinitionSO)} resource at Data/Waves/Stage Definition.");
         }
+
+        runtimeWaves = WaveDefinitionMapper.ToRuntimeWaves(stageDefinition);
+        if (runtimeWaves.Length == 0)
+        {
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires at least one valid wave in {stageDefinition.name}.");
+        }
+
+        enemyRuntimeRegistry = FindFirstObjectByType<EnemyRuntimeRegistry>();
+        if (enemyRuntimeRegistry == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRuntimeRegistry)} in the scene.");
+        }
+
+        EnemyTemplateCatalogSO enemyTemplateCatalog = ResourcesManager.GetEnemyTemplateCatalog();
+        if (enemyTemplateCatalog == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires an {nameof(EnemyTemplateCatalogSO)} resource at Data/Enemies/Enemy Template Catalog.");
+        }
+
+        enemyFactory = new EnemyFactory(enemyTemplateCatalog);
+        waveCompletionService = new WaveCompletionService(enemyRuntimeRegistry);
+        waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory);
+        ApplySpawnPositionPolicy(0);
     }
-#endif
-
-    private readonly List<int> counterList = new();
-    private int currentWaveIndex = -1;
-    private float timer;
-    private bool isTimerOn;
-
-    [SerializeField] private Entity spawnAroundEntity;
-
-    private int CurrentWave => currentWaveIndex >= 0 ? currentWaveIndex + 1 : 0;
-    private int TotalWaves => waves?.Length ?? 0;
-    private bool HasStarted => currentWaveIndex >= 0;
-    private bool HasMoreWaves => currentWaveIndex >= 0 && currentWaveIndex < TotalWaves - 1;
 
     private void OnEnable()
     {
@@ -48,16 +69,9 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Subscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
 
-        if (spawnAroundEntity == null)
-        {
-            Player player = FindFirstObjectByType<Player>();
-            if (player != null)
-            {
-                spawnAroundEntity = player;
-            }
-        }
-
+        TryBindSpawnAnchor();
         PublishWaveRuntimeSnapshot();
     }
 
@@ -71,31 +85,31 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Unsubscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
     }
 
     private void Update()
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameSimulation.IsRunning || !IsTimerOn)
         {
             return;
         }
 
-        if (!isTimerOn)
+        if (runtimeState.CompletionTriggered)
         {
             return;
         }
 
-        if (timer < waveDuration)
+        WaveCompletionCheckResult completionResult = waveCompletionService.EvaluatePerFrame(runtimeState, CurrentWaveDuration);
+        if (completionResult.ShouldComplete)
         {
-            ProcessCurrentWaveSpawns();
-            timer += Time.deltaTime;
-
-            float remaining = Mathf.Max(0, waveDuration - timer);
-            GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
+            CompleteCurrentWave(completionResult.CompletionReason);
             return;
         }
 
-        CompleteCurrentWave();
+        ProcessCurrentWaveSpawns();
+        runtimeState.Timer += Time.deltaTime;
+        PublishWaveProgress();
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -116,7 +130,7 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        int nextWaveIndex = currentWaveIndex + 1;
+        int nextWaveIndex = CurrentWaveIndex + 1;
         if (nextWaveIndex < 0)
         {
             nextWaveIndex = 0;
@@ -133,106 +147,156 @@ public class WaveManager : MonoBehaviour
 
     private void OnStopCurrentWaveRequested()
     {
-        isTimerOn = false;
+        runtimeState.IsRunning = false;
         PublishWaveRuntimeSnapshot();
     }
 
     private void OnResetWavesRequested()
     {
-        isTimerOn = false;
-        timer = 0f;
-        currentWaveIndex = -1;
-        counterList.Clear();
+        runtimeState = WaveRuntimeState.CreateIdle();
         PublishWaveRuntimeSnapshot();
     }
 
     private void OnDefeatAllEnemiesRequested()
     {
-        foreach (var enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        GameEventBus.Publish<DefeatAllTrackedEnemiesRequestedEvent>();
+    }
+
+    private void OnEntityDied(EntityDiedEvent eventData)
+    {
+        if (!IsTimerOn || runtimeState.CompletionTriggered)
         {
-            enemy.PassAwayAfterWave();
+            return;
+        }
+
+        WaveCompletionCheckResult completionResult = waveCompletionService.EvaluateEntityDeath(runtimeState, eventData);
+        if (completionResult.ShouldComplete)
+        {
+            CompleteCurrentWave(completionResult.CompletionReason);
         }
     }
 
     private void ProcessCurrentWaveSpawns()
     {
-        if (waves == null || currentWaveIndex < 0 || currentWaveIndex >= waves.Length)
+        if (CurrentWaveIndex < 0 || CurrentWaveIndex >= runtimeWaves.Length)
         {
             return;
         }
 
-        Wave currentWave = waves[currentWaveIndex];
-
-        for (int i = 0; i < currentWave.segments.Count; i++)
+        Wave currentWave = runtimeWaves[CurrentWaveIndex];
+        WaveSegment[] segments = currentWave.Segments;
+        if (segments == null || runtimeState.SegmentStates == null || segments.Length != runtimeState.SegmentStates.Length)
         {
-            WaveSegment segment = currentWave.segments[i];
-            float tStart = segment.timeStartEnd.x / 100f * waveDuration;
-            float tEnd = segment.timeStartEnd.y / 100f * waveDuration;
+            return;
+        }
 
-            if (timer < tStart || timer > tEnd)
-            {
-                continue;
-            }
-
-            float timeSinceSegmentStart = timer - tStart;
-            float spawnDelay = 1f / segment.spawnFrequency;
-
-            if (timeSinceSegmentStart / spawnDelay >= counterList[i])
-            {
-                Instantiate(segment.enemy.gameObject, GetSpawnPosition(spawnAroundEntity), Quaternion.identity,
-                    transform);
-                counterList[i]++;
-            }
+        float waveDuration = CurrentWaveDuration;
+        for (int i = 0; i < segments.Length; i++)
+        {
+            WaveSpawnExecutionRequest request = new WaveSpawnExecutionRequest(
+                segments[i],
+                i,
+                CurrentTimer,
+                waveDuration,
+                CurrentWaveIndex,
+                spawnAroundEntity,
+                transform);
+            WaveSegmentRuntimeState segmentState = runtimeState.SegmentStates[i];
+            WaveSpawnExecutionResult result = waveSpawnExecutionService.Execute(request, segmentState, spawnPositionResolver);
+            runtimeState.SegmentStates[i] = result.SegmentState;
         }
     }
 
     private void StartWave(int waveIndex)
     {
-        if (waves == null || waves.Length == 0)
-        {
-            Debug.LogWarning("WaveManager: 没有配置任何波次数据！");
-            return;
-        }
-
-        if (waveIndex < 0 || waveIndex >= waves.Length)
+        if (waveIndex < 0 || waveIndex >= runtimeWaves.Length)
         {
             Debug.LogWarning($"WaveManager: 非法波次索引 {waveIndex}");
             return;
         }
 
-        currentWaveIndex = waveIndex;
-        timer = 0f;
-        counterList.Clear();
+        TryBindSpawnAnchor();
+        ApplySpawnPositionPolicy(waveIndex);
+        Wave wave = runtimeWaves[waveIndex];
+        runtimeState = new WaveRuntimeState(
+            waveIndex,
+            0f,
+            true,
+            CreateSegmentStates(wave),
+            wave.CompletionType,
+            wave.WaveTags,
+            wave.RewardSnapshot,
+            wave.FlowSnapshot,
+            false);
 
-        for (int i = 0; i < waves[waveIndex].segments.Count; i++)
-        {
-            counterList.Add(0);
-        }
-
-        isTimerOn = true;
         PublishWaveRuntimeSnapshot();
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
-        GameEventBus.Publish(new WaveProgressEvent(waveDuration, waveDuration));
+        GameEventBus.Publish(new WaveProgressEvent(CurrentWaveDuration, CurrentWaveDuration));
     }
 
-    private void CompleteCurrentWave()
+    private void CompleteCurrentWave(WaveCompletionReason completionReason)
     {
-        isTimerOn = false;
+        if (runtimeState.CompletionTriggered)
+        {
+            return;
+        }
+
+        runtimeState.IsRunning = false;
+        runtimeState.CompletionTriggered = true;
         PublishWaveRuntimeSnapshot();
-        GameEventBus.Publish(new WaveCompletedEvent(CurrentWave));
+        WaveCompletedEvent completedEvent = new WaveCompletedEvent(
+            CurrentWave,
+            TotalWaves,
+            completionReason,
+            CurrentTimer,
+            HasMoreWaves);
+        GameEventBus.Publish(completedEvent);
+        GameEventBus.Publish(new WaveRewardGrantedEvent(
+            CurrentWave,
+            completedEvent,
+            runtimeState.RewardSnapshot,
+            runtimeState.FlowSnapshot));
     }
 
-    private Vector3 GetSpawnPosition(IEntity entity)
+    private WaveSegmentRuntimeState[] CreateSegmentStates(Wave wave)
     {
-        if (entity == null) return Vector3.zero;
+        WaveSegment[] segments = wave.Segments;
+        if (segments == null || segments.Length == 0)
+        {
+            return System.Array.Empty<WaveSegmentRuntimeState>();
+        }
 
-        Vector2 direction = Random.onUnitSphere;
-        Vector2 offset = direction.normalized * Random.Range(6f, 10f);
-        Vector2 targetPos = (Vector2)entity.Center + offset;
-        targetPos.x = Mathf.Clamp(targetPos.x, -10f, 10f);
-        targetPos.y = Mathf.Clamp(targetPos.y, -10f, 10f);
+        WaveSegmentRuntimeState[] states = new WaveSegmentRuntimeState[segments.Length];
+        for (int i = 0; i < states.Length; i++)
+        {
+            states[i] = WaveSegmentRuntimeState.CreateDefault();
+        }
 
-        return targetPos;
+        return states;
+    }
+
+    private float GetWaveDuration(int waveIndex)
+    {
+        if (waveIndex < 0 || waveIndex >= runtimeWaves.Length)
+        {
+            return 0f;
+        }
+
+        return runtimeWaves[waveIndex].Duration;
+    }
+
+    private void TryBindSpawnAnchor()
+    {
+        if (spawnAroundEntity != null)
+        {
+            return;
+        }
+
+        Player player = FindFirstObjectByType<Player>();
+        if (player != null)
+        {
+            spawnAroundEntity = player;
+        }
     }
 
     private void PublishWaveHudSnapshot()
@@ -243,34 +307,55 @@ public class WaveManager : MonoBehaviour
         }
 
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
-        float remaining = isTimerOn ? Mathf.Max(0, waveDuration - timer) : waveDuration;
+        PublishWaveProgress();
+    }
+
+    private void PublishWaveProgress()
+    {
+        float waveDuration = CurrentWaveDuration;
+        float remaining = IsTimerOn ? Mathf.Max(0, waveDuration - CurrentTimer) : waveDuration;
         GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
     }
 
     private void PublishWaveRuntimeSnapshot()
     {
-        GameEventBus.Publish(new WaveRuntimeChangedEvent(CurrentWave, TotalWaves, HasStarted, HasMoreWaves, isTimerOn));
+        GameEventBus.Publish(new WaveRuntimeChangedEvent(
+            CurrentWave,
+            TotalWaves,
+            HasStarted,
+            HasMoreWaves,
+            IsTimerOn,
+            CurrentTimer,
+            HasStarted ? CurrentWaveDuration : 0f,
+            runtimeState.CompletionType,
+            runtimeState.WaveTags));
     }
-}
 
-/// <summary>
-/// 波次数据结构：存储一个完整波次的配置
-/// </summary>
-[Serializable]
-public struct Wave
-{
-    public string name;
-    public List<WaveSegment> segments;
-}
+    private void ApplySpawnPositionPolicy(int waveIndex)
+    {
+        SpawnLocationPolicySO policy = GetRequiredSpawnLocationPolicy(waveIndex);
+        spawnPositionResolver = SpawnPositionResolver.FromPolicy(policy);
+    }
 
-/// <summary>
-/// 波次分段数据：单个分段的敌人生成配置
-/// </summary>
-[Serializable]
-public struct WaveSegment
-{
-    public Enemy enemy;
-    public float spawnFrequency;
+    private SpawnLocationPolicySO GetRequiredSpawnLocationPolicy(int waveIndex)
+    {
+        WaveDefinitionSO[] definitionWaves = stageDefinition.Waves;
+        if (definitionWaves == null || waveIndex < 0 || waveIndex >= definitionWaves.Length)
+        {
+            throw new MissingReferenceException($"{nameof(StageDefinitionSO)} does not contain a valid wave at index {waveIndex}.");
+        }
 
-    [MinMaxSlider(0, 100)] public Vector2 timeStartEnd;
+        WaveDefinitionSO waveDefinition = definitionWaves[waveIndex];
+        if (waveDefinition == null)
+        {
+            throw new MissingReferenceException($"Wave definition at index {waveIndex} is missing.");
+        }
+
+        if (waveDefinition.SpawnLocationPolicy == null)
+        {
+            throw new MissingReferenceException($"{waveDefinition.name} is missing {nameof(SpawnLocationPolicySO)}.");
+        }
+
+        return waveDefinition.SpawnLocationPolicy;
+    }
 }

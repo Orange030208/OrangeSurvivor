@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.besty.unity-skills": "https://github.com/Besty0728/Unity-Skills.git?path=/SkillsForUnity",
     "com.coplaydev.unity-mcp": "file:E:/unity/Packages/MCPForUnity",
     "com.dbrizov.naughtyattributes": "file:E:/unity/Packages/NaughtyAttributes",
     "com.unity.collab-proxy": "2.12.4",

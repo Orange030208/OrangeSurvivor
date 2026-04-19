@@ -25,6 +25,13 @@ public class GamingUIPage : UIPageBase
 
     private HealthComponent playerHealthComponent;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        ValidateConfiguration();
+        CacheMoveJoystick();
+    }
+
     protected override void OnPageOpened(UIPageOpenContext context)
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
@@ -37,15 +44,8 @@ public class GamingUIPage : UIPageBase
         CacheMoveJoystick();
         BindPlayerHealth(FindFirstObjectByType<Player>());
 
-        if (buffBarUI != null)
-        {
-            buffBarUI.gameObject.SetActive(true);
-        }
-
-        if (tooltipPresenter != null)
-        {
-            tooltipPresenter.gameObject.SetActive(true);
-        }
+        buffBarUI.gameObject.SetActive(true);
+        tooltipPresenter.gameObject.SetActive(true);
 
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
         GameEventBus.Publish<RequestPlayerLevelSnapshotEvent>();
@@ -75,6 +75,7 @@ public class GamingUIPage : UIPageBase
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         BindPlayerHealth(eventData.Player);
+        GameEventBus.Publish<RequestPlayerLevelSnapshotEvent>();
     }
 
     private void BindPlayerHealth(Player player)
@@ -86,11 +87,6 @@ public class GamingUIPage : UIPageBase
         }
 
         playerHealthComponent = player.GetComponent<HealthComponent>();
-        if (playerHealthComponent == null)
-        {
-            return;
-        }
-
         playerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
         OnPlayerHealthChanged(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
     }
@@ -127,60 +123,95 @@ public class GamingUIPage : UIPageBase
 
     private void OnWaveStarted(WaveStartedEvent e)
     {
-        if (waveText == null) return;
         waveText.text = $"波次 {e.CurrentWave}/{e.TotalWaves}";
     }
 
     private void OnAllWavesCompleted()
     {
-        if (waveText == null) return;
         waveText.text = "所有波次已完成!";
-        if (timerText != null) timerText.text = "";
+        timerText.text = string.Empty;
     }
 
     private void OnWaveProgress(WaveProgressEvent e)
     {
-        if (timerText == null) return;
         timerText.text = $"{Mathf.RoundToInt(e.RemainingTime)}s / {Mathf.RoundToInt(e.TotalTime)}s";
     }
 
     private void OnPlayerHealthChanged(float currentHealth, float maxHealth)
     {
-        if (healthSlider != null)
-            healthSlider.value = maxHealth <= 0 ? 0 : currentHealth / maxHealth;
-        if (healthText != null)
-            healthText.text = $"{(int)currentHealth} / {(int)maxHealth}";
+        healthSlider.value = maxHealth <= 0 ? 0 : currentHealth / maxHealth;
+        healthText.text = $"{(int)currentHealth} / {(int)maxHealth}";
     }
 
     private void OnPlayerLevelChanged(PlayerLevelChangedEvent e)
     {
-        if (levelText != null)
-        {
-            levelText.text = "lvl" + e.CurrentLevel;
-        }
-
+        levelText.text = "lvl" + e.CurrentLevel;
         UpdateUpgradePointText(e.UnspentUpgradePoints);
     }
 
     private void OnPlayerXpChanged(PlayerXpChangedEvent e)
     {
-        if (xpBar != null)
-        {
-            xpBar.value = e.RequiredXP <= 0 ? 0 : (float)e.CurrentXP / e.RequiredXP;
-        }
-
+        xpBar.value = e.RequiredXP <= 0 ? 0 : (float)e.CurrentXP / e.RequiredXP;
         UpdateUpgradePointText(e.UnspentUpgradePoints);
     }
 
     private void UpdateUpgradePointText(int unspentUpgradePoints)
     {
-        if (upgradePointText == null)
-        {
-            return;
-        }
-
         upgradePointText.text = unspentUpgradePoints > 0
             ? $"UP {unspentUpgradePoints}"
             : string.Empty;
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (waveText == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing wave text.");
+        }
+
+        if (timerText == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing timer text.");
+        }
+
+        if (healthSlider == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing health slider.");
+        }
+
+        if (healthText == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing health text.");
+        }
+
+        if (xpBar == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing xp bar.");
+        }
+
+        if (levelText == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing level text.");
+        }
+
+        if (upgradePointText == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing upgrade point text.");
+        }
+
+        if (menuButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing menu button.");
+        }
+
+        if (buffBarUI == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing buff bar UI.");
+        }
+
+        if (tooltipPresenter == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing tooltip presenter.");
+        }
     }
 }

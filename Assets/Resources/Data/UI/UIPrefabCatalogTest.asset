@@ -35,7 +35,7 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 1
-    prefab: {fileID: 830820297401448628, guid: 7cef013643cf00c4bb9d993bd42aedc1, type: 3}
+    prefab: {fileID: 830820297401448628, guid: 75c86628c871ecb47b8145cd95a3dd60, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1

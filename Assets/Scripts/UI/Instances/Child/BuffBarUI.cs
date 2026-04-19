@@ -10,6 +10,19 @@ public class BuffBarUI : MonoBehaviour
     private Player player;
     private int subscribedPlayerEventBusId = -1;
 
+    private void Awake()
+    {
+        if (buffIconItemPrefab == null)
+        {
+            throw new MissingReferenceException($"{nameof(BuffBarUI)} '{name}' is missing {nameof(BuffIconItem)} prefab.");
+        }
+
+        if (itemParent == null)
+        {
+            throw new MissingReferenceException($"{nameof(BuffBarUI)} '{name}' is missing item parent.");
+        }
+    }
+
     private void OnEnable()
     {
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
@@ -58,14 +71,8 @@ public class BuffBarUI : MonoBehaviour
 
     private void OnActiveBuffSnapshotChanged(ActiveBuffSnapshotChangedEvent eventData)
     {
-        if (player == null || itemParent == null)
+        if (player == null)
         {
-            return;
-        }
-
-        if (buffIconItemPrefab == null || eventData.Buffs == null)
-        {
-            SetVisibleItemCount(0);
             return;
         }
 
@@ -97,10 +104,7 @@ public class BuffBarUI : MonoBehaviour
         for (int i = 0; i < spawnedItems.Count; i++)
         {
             bool isVisible = i < visibleCount;
-            if (spawnedItems[i] != null)
-            {
-                spawnedItems[i].gameObject.SetActive(isVisible);
-            }
+            spawnedItems[i].gameObject.SetActive(isVisible);
         }
     }
 }

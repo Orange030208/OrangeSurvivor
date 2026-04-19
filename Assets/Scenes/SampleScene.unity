@@ -512,6 +512,9 @@ GameObject:
   m_Component:
   - component: {fileID: 542457225}
   - component: {fileID: 542457226}
+  - component: {fileID: 542457229}
+  - component: {fileID: 542457228}
+  - component: {fileID: 542457227}
   m_Layer: 0
   m_Name: Wave Manager
   m_TagString: Untagged
@@ -546,28 +549,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a54c4f8c3d6e84eae6f17b7980263b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveDuration: 999
-  waves:
-  - name: Wave 1
-    segments:
-    - enemy: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
-      spawnFrequency: 4
-      timeStartEnd: {x: 0, y: 100}
-  - name: Wave 2
-    segments:
-    - enemy: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
-      spawnFrequency: 4
-      timeStartEnd: {x: 0, y: 68.91831}
-    - enemy: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
-      spawnFrequency: 4
-      timeStartEnd: {x: 0, y: 68.91831}
-    - enemy: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
-      spawnFrequency: 4
-      timeStartEnd: {x: 0, y: 68.91831}
-    - enemy: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
-      spawnFrequency: 4
-      timeStartEnd: {x: 0, y: 68.91831}
   spawnAroundEntity: {fileID: 0}
+--- !u!114 &542457227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542457224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361fc90fb589191499c91296c60cb371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &542457228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542457224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed3feb4fc0325d045a4267241a6fc3f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+--- !u!114 &542457229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542457224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28115ad5cecd1a24e9ba31fde518d90c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,11 +758,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646ce4f9b4c26e6479e9d924390ced94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioCueCatalog: {fileID: 11400000, guid: 0c318312232f94242977a97c25e8fda3, type: 2}
   audioSfxCatalog: {fileID: 11400000, guid: 17540f462dd474642a87cb6a0ce70d6d, type: 2}
   runtimeSettings: {fileID: 11400000, guid: 738bb7b2e49572f4fb8fd2386bc778ef, type: 2}
   masterVolume: 1
-  musicVolume: 1
+  musicVolume: 0.305
   sfxVolume: 1
 --- !u!1 &889382726
 GameObject:
@@ -1051,6 +1069,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   accessoryManager: {fileID: 0}
+  player: {fileID: 0}
+  propertiesManager: {fileID: 0}
 --- !u!1 &1566269876
 GameObject:
   m_ObjectHideFlags: 0
@@ -1957,7 +1977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: d2937b0aea51a524183fe265c025bdf3, type: 2}
-  catalog: {fileID: 11400000, guid: 69c7ec2391fd2814fb0597097768e8e5, type: 2}
+  catalog: {fileID: 11400000, guid: e87a28c74ab5eb14a902ec67d925f8e1, type: 2}
   rootCanvas: {fileID: 1318571376}
 --- !u!1 &2120666736
 GameObject:

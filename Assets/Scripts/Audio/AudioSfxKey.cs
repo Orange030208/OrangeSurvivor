@@ -5,14 +5,18 @@
 /// </summary>
 public enum AudioSfxKey
 {
-    None = 0,
-    UiClick = 1,
-    UiBack = 2,
-    UiConfirm = 3,
-    ShopPurchaseSuccess = 4,
-    ShopPurchaseFailed = 5,
-    EnemyHit = 6,
-    EnemyCriticalHit = 7,
-    DropPickup = 8,
-    WoodenButtonClicked
+    None,
+
+    #region UI音效
+
+    WoodenButtonClicked,
+
+    #endregion
+
+    #region 武器音效
+
+    Swipe,
+    Slap,
+
+    #endregion
 }

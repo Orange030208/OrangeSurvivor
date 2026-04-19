@@ -30,7 +30,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
     public event EventHandler<UIPageEventArgs> PageClosed;
     public event EventHandler<UIPageEventArgs> PageActivationChanged;
 
-    public IReadOnlyList<UIPrefabEntry> RegisteredEntries => catalog != null ? catalog.Entries : Array.Empty<UIPrefabEntry>();
+    public IReadOnlyList<UIPrefabEntry> RegisteredEntries => catalog.Entries;
 
     private void Awake()
     {
@@ -92,16 +92,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
         }
 
         UIPrefabEntry entry = entries[catalogIndex];
-        if (entry == null || entry.prefab == null)
-        {
-            return false;
-        }
-
         UIPageBase page = entry.prefab.GetComponent<UIPageBase>();
-        if (page == null)
-        {
-            return false;
-        }
 
         OpenPageByType(page.GetType(), payload);
         return true;
@@ -246,11 +237,6 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
             }
 
             UIPageBase page = entry.prefab.GetComponent<UIPageBase>();
-            if (page == null)
-            {
-                continue;
-            }
-
             Type pageType = page.GetType();
             entryMap[pageType] = entry;
         }
@@ -353,11 +339,8 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
             while (pool.Count > 0)
             {
                 UIPageBase pooled = pool.Dequeue();
-                if (pooled != null)
-                {
-                    AttachToLayer(pooled.transform, entry.layerType);
-                    return pooled;
-                }
+                AttachToLayer(pooled.transform, entry.layerType);
+                return pooled;
             }
         }
 
@@ -434,11 +417,7 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
             return;
         }
 
-        if (!openedByInstance.TryGetValue(instanceId, out RuntimePage runtimePage))
-        {
-            return;
-        }
-
+        RuntimePage runtimePage = openedByInstance[instanceId];
         ApplyPageActivation(runtimePage);
     }
 

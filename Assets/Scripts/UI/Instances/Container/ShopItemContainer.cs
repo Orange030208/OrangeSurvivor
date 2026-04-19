@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -20,8 +21,7 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
 
         if (itemData == null)
         {
-            Debug.LogWarning("ItemDataSO is null in ShopItemContainer.Configure");
-            return;
+            throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' received a shop item without {nameof(ItemDataSO)}.");
         }
 
         int colorDependency;
@@ -43,8 +43,7 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
         }
         else
         {
-            Debug.LogWarning($"Unsupported ItemDataSO type: {itemData.GetType().Name}");
-            return;
+            throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' does not support item type '{itemData.GetType().Name}'.");
         }
 
         lockImage.sprite = shopItem.Lock ? lockSprite : unlockSprite;

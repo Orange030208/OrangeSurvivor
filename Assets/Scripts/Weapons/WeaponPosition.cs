@@ -24,7 +24,6 @@ public class WeaponPosition : MonoBehaviour
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
         Weapon.SetWeaponData(weaponData);
-        Weapon.ConfigureFromData();
         Weapon.SetLevel(level);
         return Weapon;
     }

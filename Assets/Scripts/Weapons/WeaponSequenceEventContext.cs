@@ -13,37 +13,31 @@ public readonly struct WeaponSequenceEventContext
     public WeaponSequenceEventType EventType { get; }
 
     /// <summary>
-    /// 近战窗口 id。
-    /// 仅 OpenHitWindow / CloseHitWindow 有意义，其它事件固定为 0。
+    /// 事件键。
+    /// - 对 OpenHitWindow / CloseHitWindow：表示命中窗口编号；
+    /// - 对 SpawnProjectile / PlaySfx / PlayVfx：表示 WeaponDataSO 对应配置列表的下标。
     /// </summary>
-    public int WindowId { get; }
+    public int EventKey { get; }
 
-    /// <summary>
-    /// 弹射物发射载荷。
-    /// 仅 SpawnProjectile 事件有意义，其它事件使用默认值。
-    /// </summary>
-    public ProjectileSpawnPayload ProjectileSpawnPayload { get; }
-
-    public WeaponSequenceEventContext(WeaponSequenceEventType eventType, int windowId, ProjectileSpawnPayload projectileSpawnPayload)
+    public WeaponSequenceEventContext(WeaponSequenceEventType eventType, int eventKey)
     {
         EventType = eventType;
-        WindowId = Mathf.Max(0, windowId);
-        ProjectileSpawnPayload = projectileSpawnPayload;
+        EventKey = Mathf.Max(0, eventKey);
     }
 
-    public static WeaponSequenceEventContext CreateWindowEvent(WeaponSequenceEventType eventType, int windowId)
+    public static WeaponSequenceEventContext CreateWindowEvent(WeaponSequenceEventType eventType, int eventKey)
     {
-        return new WeaponSequenceEventContext(eventType, windowId, ProjectileSpawnPayload.Default);
+        return new WeaponSequenceEventContext(eventType, eventKey);
     }
 
-    public static WeaponSequenceEventContext CreateProjectileEvent(ProjectileSpawnPayload projectileSpawnPayload)
+    public static WeaponSequenceEventContext CreateProjectileEvent(int eventKey)
     {
-        return new WeaponSequenceEventContext(WeaponSequenceEventType.SpawnProjectile, 0, projectileSpawnPayload);
+        return new WeaponSequenceEventContext(WeaponSequenceEventType.SpawnProjectile, eventKey);
     }
 
-    public static WeaponSequenceEventContext CreateSimpleEvent(WeaponSequenceEventType eventType)
+    public static WeaponSequenceEventContext CreateSimpleEvent(WeaponSequenceEventType eventType, int eventKey = 0)
     {
-        return new WeaponSequenceEventContext(eventType, 0, ProjectileSpawnPayload.Default);
+        return new WeaponSequenceEventContext(eventType, eventKey);
     }
 }
 
@@ -65,7 +59,6 @@ public readonly struct ProjectileSpawnPayload
     /// <summary>
     /// 直接引用要发射的弹射物定义资源。
     /// 这样序列不再依赖 WeaponDataSO 的列表顺序，配置会稳定得多。
-    /// 如果为空，运行时仍会尝试回退到 WeaponDataSO 的 Projectile List 第一个可用定义或子节点 Bullet。
     /// </summary>
     public ProjectileDefinitionSO ProjectileDefinition { get; }
 

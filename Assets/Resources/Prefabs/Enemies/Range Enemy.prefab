@@ -9,10 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6429692057025159145}
-  - component: {fileID: 2414116616791825980}
-  - component: {fileID: 3593132658138694424}
   - component: {fileID: 2576062534117598723}
-  - component: {fileID: 2592315780417269165}
+  - component: {fileID: 3593132658138694424}
+  - component: {fileID: 924096642633410394}
+  - component: {fileID: 2859848195627263458}
+  - component: {fileID: 7069794003575033586}
+  - component: {fileID: 8789505283319296176}
   m_Layer: 6
   m_Name: Range Enemy
   m_TagString: Untagged
@@ -39,37 +41,6 @@ Transform:
   - {fileID: 271397300980425612}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2414116616791825980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1234637727428497752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17083a81889b4715b2fc45facceb8d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  passAwayParticles: {fileID: 3288861038422361531}
-  spriteRenderer: {fileID: 862181768189889689}
-  spawnIndicator: {fileID: 4700152490462672118}
-  collider: {fileID: 2576062534117598723}
-  maxHealth: 10
-  attackDetectionRadius: 5
---- !u!114 &3593132658138694424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1234637727428497752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 382f2d00e4cc42a7801941c84732f42d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
 --- !u!58 &2576062534117598723
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -105,7 +76,7 @@ CircleCollider2D:
   m_Offset: {x: -0.042283654, y: 0.41578913}
   serializedVersion: 2
   m_Radius: 0.3801967
---- !u!114 &2592315780417269165
+--- !u!114 &3593132658138694424
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,13 +85,73 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234637727428497752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4afe9ce965d4e6a835d2cb0cab5d84d, type: 3}
+  m_Script: {fileID: 11500000, guid: 382f2d00e4cc42a7801941c84732f42d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootingPoint: {fileID: 271397300980425612}
-  bulletPrefab: {fileID: 6868546096281704275, guid: c6bd5914f8cc08249b86a9dee2d596e3, type: 3}
-  damage: 1
-  attackFrequency: 2
+  moveSpeed: 2
+--- !u!114 &924096642633410394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8270629898711cf408104abaeaeaf2ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultMaxHealth: 1
+--- !u!114 &2859848195627263458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b4231cfe8814000b02959b55462b3c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passAwayParticles: {fileID: 3288861038422361531}
+  spriteRenderer: {fileID: 862181768189889689}
+  spawnIndicator: {fileID: 4700152490462672118}
+  collider: {fileID: 2576062534117598723}
+  attackOrigin: {fileID: 271397300980425612}
+  maxHealth: 1
+  role: 0
+  attackDetectionRadius: 1
+  hitFlashColor: {r: 1, g: 0.92, b: 0.82, a: 1}
+  criticalHitFlashColor: {r: 1, g: 0.7, b: 0.3, a: 1}
+  hitFlashDuration: 0.08
+  hitPunchScale: 0.08
+  criticalHitPunchScale: 0.16
+--- !u!114 &7069794003575033586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b157b6cb72958a54790d6c5b79cd078d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackOrigin: {fileID: 0}
+--- !u!114 &8789505283319296176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62096519dabedb4f9ddd32b24e01499, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2464715893807307015
 GameObject:
   m_ObjectHideFlags: 0

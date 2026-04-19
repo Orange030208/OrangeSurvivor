@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using UniversalUI.Integration.Game.ScriptableObjects;
-using Random = UnityEngine.Random;
 
 public static class ResourcesManager
 {
@@ -11,6 +9,9 @@ public static class ResourcesManager
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
+    private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
+    private const string ENEMY_TEMPLATE_CATALOG_DATA_PATH = "Data/Enemies/Enemy Template Catalog";
+    private const string PROJECTILE_PREFAB_PATH = "Prefabs/Weapons/Projectile";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Dave";
 
@@ -19,6 +20,9 @@ public static class ResourcesManager
     private static WeaponDataSO[] Weapons;
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
+    private static StageDefinitionSO stageDefinition;
+    private static EnemyTemplateCatalogSO enemyTemplateCatalog;
+    private static Projectile projectilePrefab;
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -28,7 +32,16 @@ public static class ResourcesManager
             propIcons = data.PropIcons;
         }
 
-        return propIcons.FirstOrDefault(propIcon => propIcon.propType == propType).icon;
+        for (int i = 0; i < propIcons.Length; i++)
+        {
+            PropIcon propIcon = propIcons[i];
+            if (propIcon.propType == propType)
+            {
+                return propIcon.icon;
+            }
+        }
+
+        return null;
     }
 
     private static void LoadAccessoryData()
@@ -51,11 +64,17 @@ public static class ResourcesManager
     {
         if (characters == null)
         {
-            characters = Resources.LoadAll<CharacterDataSO>(CHARACTER_DATA_PATH)
-                .Where(character => character != null)
-                .OrderBy(character => character.name)
-                .ToArray();
+            CharacterDataSO[] loadedCharacters = Resources.LoadAll<CharacterDataSO>(CHARACTER_DATA_PATH);
+            Array.Sort(loadedCharacters, CompareCharacterNames);
+            characters = loadedCharacters;
         }
+    }
+
+    private static int CompareCharacterNames(CharacterDataSO left, CharacterDataSO right)
+    {
+        string leftName = left != null ? left.name : string.Empty;
+        string rightName = right != null ? right.name : string.Empty;
+        return string.Compare(leftName, rightName, StringComparison.Ordinal);
     }
 
     private static void LoadPlayerLevelConfig()
@@ -63,6 +82,22 @@ public static class ResourcesManager
         if (playerLevelConfig == null)
         {
             playerLevelConfig = Resources.Load<PlayerLevelConfigSO>(PLAYER_LEVEL_CONFIG_DATA_PATH);
+        }
+    }
+
+    private static void LoadStageDefinition()
+    {
+        if (stageDefinition == null)
+        {
+            stageDefinition = Resources.Load<StageDefinitionSO>(STAGE_DEFINITION_DATA_PATH);
+        }
+    }
+
+    private static void LoadEnemyTemplateCatalog()
+    {
+        if (enemyTemplateCatalog == null)
+        {
+            enemyTemplateCatalog = Resources.Load<EnemyTemplateCatalogSO>(ENEMY_TEMPLATE_CATALOG_DATA_PATH);
         }
     }
 
@@ -75,7 +110,16 @@ public static class ResourcesManager
             return null;
         }
 
-        return Weapons.FirstOrDefault(w => w != null && w.ItemName == weaponName);
+        for (int i = 0; i < Weapons.Length; i++)
+        {
+            WeaponDataSO weapon = Weapons[i];
+            if (weapon != null && weapon.ItemName == weaponName)
+            {
+                return weapon;
+            }
+        }
+
+        return null;
     }
 
     public static WeaponDataSO GetRandomWeapon()
@@ -87,7 +131,7 @@ public static class ResourcesManager
             return null;
         }
 
-        return Weapons[Random.Range(0, Weapons.Length)];
+        return Weapons[UnityEngine.Random.Range(0, Weapons.Length)];
     }
 
     public static WeaponDataSO[] GetAllWeapons()
@@ -100,6 +144,15 @@ public static class ResourcesManager
     {
         LoadCharacterData();
         return characters ?? Array.Empty<CharacterDataSO>();
+    }
+
+    public static Projectile GetProjectilePrefab(ProjectileTemplateKind templateKind)
+    {
+        return templateKind switch
+        {
+            ProjectileTemplateKind.Common => LoadProjectilePrefab(ref projectilePrefab, PROJECTILE_PREFAB_PATH),
+            _ => throw new ArgumentOutOfRangeException(nameof(templateKind), templateKind, "Unsupported projectile template kind.")
+        };
     }
 
     public static Player GetPlayerPrefab(string prefabName)
@@ -123,6 +176,18 @@ public static class ResourcesManager
         return playerLevelConfig;
     }
 
+    public static StageDefinitionSO GetStageDefinition()
+    {
+        LoadStageDefinition();
+        return stageDefinition;
+    }
+
+    public static EnemyTemplateCatalogSO GetEnemyTemplateCatalog()
+    {
+        LoadEnemyTemplateCatalog();
+        return enemyTemplateCatalog;
+    }
+
     public static AccessoryDataSO GetAccessory(string accessoryId)
     {
         LoadAccessoryData();
@@ -132,7 +197,16 @@ public static class ResourcesManager
             return null;
         }
 
-        return Accessories.FirstOrDefault(acc => acc != null && acc.AccessoryId == accessoryId);
+        for (int i = 0; i < Accessories.Length; i++)
+        {
+            AccessoryDataSO accessory = Accessories[i];
+            if (accessory != null && accessory.AccessoryId == accessoryId)
+            {
+                return accessory;
+            }
+        }
+
+        return null;
     }
 
     public static AccessoryDataSO GetRandomAccessory()
@@ -144,16 +218,15 @@ public static class ResourcesManager
             return null;
         }
 
-        return Accessories[Random.Range(0, Accessories.Length)];
+        return Accessories[UnityEngine.Random.Range(0, Accessories.Length)];
     }
 
     public static AccessoryDataSO GetRandomAccessoryByRarity(int rarity)
     {
         LoadAccessoryData();
-        var filteredAccessories = System.Array.FindAll(
+        AccessoryDataSO[] filteredAccessories = Array.FindAll(
             Accessories,
-            acc => acc != null && acc.Rarity == rarity
-        );
+            accessory => accessory != null && accessory.Rarity == rarity);
 
         if (filteredAccessories.Length == 0)
         {
@@ -162,5 +235,13 @@ public static class ResourcesManager
         }
 
         return filteredAccessories[UnityEngine.Random.Range(0, filteredAccessories.Length)];
+    }
+
+    private static Projectile LoadProjectilePrefab(ref Projectile cache, string resourcePath)
+    {
+        cache ??= Resources.Load<Projectile>(resourcePath);
+        return cache != null
+            ? cache
+            : throw new MissingReferenceException($"{nameof(ResourcesManager)} requires a {nameof(Projectile)} resource at {resourcePath}.");
     }
 }

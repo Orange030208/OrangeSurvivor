@@ -8,13 +8,12 @@ using UnityEngine;
 public static class WeaponAtlasBatchGenerator
 {
     private const string AtlasPath = "Assets/Kawaii Survivor/Sprites/Weapons/32x32_PixelWeapons_Free.png";
-    private const string MeleeDir = "Assets/Resources/Data/Weapons/Melee";
-    private const string RangeDir = "Assets/Resources/Data/Weapons/Range";
+    private const string WeaponsDir = "Assets/Resources/Data/Weapons";
     private const string MeleePrefabPath = "Assets/Resources/Prefabs/Weapons/Melee Weapon.prefab";
     private const string RangePrefabPath = "Assets/Resources/Prefabs/Weapons/Cotton Candy Gun.prefab";
-    private const string MeleeSequencePath = "Assets/Resources/Data/Weapons/Attack Sequence/Weapon Attack Sequence.asset";
-    private const string RangeSequencePath = "Assets/Resources/Data/Weapons/Attack Sequence/Gun Attack Sequence 1.asset";
-    private const string ProjectileDefinitionPath = "Assets/Resources/Data/Weapons/Projectiles/Projectile Definition.asset";
+    private const string MeleeSequencePath = "Assets/Resources/Data/Weapons/Weapon Attack Sequence.asset";
+    private const string RangeSequencePath = "Assets/Resources/Data/Weapons/Gun Attack Sequence 1.asset";
+    private const string ProjectileDefinitionPath = "Assets/Resources/Data/Projectiles/Projectile Common.asset";
 
     private static readonly string[] ArmorKeywords =
     {
@@ -29,8 +28,7 @@ public static class WeaponAtlasBatchGenerator
     [MenuItem("Tools/Weapons/Generate Kawaii Survivor Weapon SOs")]
     public static void Generate()
     {
-        EnsureDirectory(MeleeDir);
-        EnsureDirectory(RangeDir);
+        EnsureDirectory(WeaponsDir);
 
         Dictionary<int, Sprite> sprites = LoadSpritesByIndex();
         Weapon meleePrefab = AssetDatabase.LoadAssetAtPath<Weapon>(MeleePrefabPath);
@@ -56,8 +54,7 @@ public static class WeaponAtlasBatchGenerator
                 continue;
             }
 
-            string dir = kind == WeaponKind.Melee ? MeleeDir : RangeDir;
-            string path = $"{dir}/{entry.EnglishName}.asset";
+            string path = $"{WeaponsDir}/{entry.EnglishName}.asset";
             WeaponDataSO asset = AssetDatabase.LoadAssetAtPath<WeaponDataSO>(path);
             if (asset == null)
             {

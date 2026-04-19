@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739eb18a0daa4d24a92baa74a91a6809, type: 3}
+  m_Name: Melee Enemy Definition
+  m_EditorClassIdentifier: 
+  enemyId: Enemy_001
+  displayName: Melee Enemy
+  role: 0
+  templateKind: 0
+  maxHealth: 10
+  moveSpeed: 2
+  attackDetectionRadius: 1
+  movementDefinition: {fileID: 11400000, guid: 7767a7f011004c68b6e7fc8c1d84f100, type: 2}
+  attackDefinition: {fileID: 11400000, guid: b4f55e3ef3d11574eb5d48d3d4232350, type: 2}

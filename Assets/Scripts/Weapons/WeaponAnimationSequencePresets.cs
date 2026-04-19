@@ -182,7 +182,7 @@ public static class WeaponAnimationSequencePresets
             K(0.78f, 0.01f, 0.02f, 4f, 5),
             K(1f, 0f, 0f, 0f, 3)
         },
-        new() { P(0.36f, ProjectileSpawnPayload.Default), S(0.36f), V(0.37f) });
+        new() { P(0.36f, 0), S(0.36f), V(0.37f) });
 
     private static WeaponAnimationSequencePresetData D(string name, float duration,
         List<WeaponMotionKeyframe> motions, List<WeaponSequenceEventKeyframe> events)
@@ -218,8 +218,8 @@ public static class WeaponAnimationSequencePresets
     private static WeaponSequenceEventKeyframe V(float time)
         => WeaponSequenceEventKeyframe.CreateSimpleEvent(time, WeaponSequenceEventType.PlayVfx);
 
-    private static WeaponSequenceEventKeyframe P(float time, ProjectileSpawnPayload payload)
-        => WeaponSequenceEventKeyframe.CreateProjectileEvent(time, payload);
+    private static WeaponSequenceEventKeyframe P(float time, int eventKey)
+        => WeaponSequenceEventKeyframe.CreateSimpleEvent(time, WeaponSequenceEventType.SpawnProjectile, eventKey);
 }
 
 public enum WeaponAnimationSequencePresetId

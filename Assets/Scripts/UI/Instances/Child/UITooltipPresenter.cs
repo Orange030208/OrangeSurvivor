@@ -23,6 +23,36 @@ public class UITooltipPresenter : MonoBehaviour
             root = transform as RectTransform;
         }
 
+        if (root == null)
+        {
+            throw new MissingComponentException($"{nameof(UITooltipPresenter)} '{name}' requires a RectTransform root.");
+        }
+
+        if (canvasGroup == null)
+        {
+            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing CanvasGroup.");
+        }
+
+        if (iconImage == null)
+        {
+            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing icon image.");
+        }
+
+        if (titleText == null)
+        {
+            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing title text.");
+        }
+
+        if (footerText == null)
+        {
+            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing footer text.");
+        }
+
+        if (descriptionListDisplayer == null)
+        {
+            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing description list displayer.");
+        }
+
         parentCanvas = GetComponentInParent<Canvas>();
         if (parentCanvas != null)
         {
@@ -57,34 +87,17 @@ public class UITooltipPresenter : MonoBehaviour
 
     private void ApplyData(TooltipDisplayData data)
     {
-        if (titleText != null)
-        {
-            titleText.text = data.Title;
-        }
-
-        if (footerText != null)
-        {
-            footerText.text = data.Footer;
-            footerText.gameObject.SetActive(!string.IsNullOrWhiteSpace(data.Footer));
-        }
-
-        if (iconImage != null)
-        {
-            iconImage.sprite = data.Icon;
-            iconImage.enabled = data.Icon != null;
-        }
-
-        descriptionListDisplayer?.DisplayDescriptions(data.Descriptions);
+        titleText.text = data.Title;
+        footerText.text = data.Footer;
+        footerText.gameObject.SetActive(!string.IsNullOrWhiteSpace(data.Footer));
+        iconImage.sprite = data.Icon;
+        iconImage.enabled = data.Icon != null;
+        descriptionListDisplayer.DisplayDescriptions(data.Descriptions);
         LayoutRebuilder.ForceRebuildLayoutImmediate(root);
     }
 
     private void SetScreenPosition(Vector2 screenPosition)
     {
-        if (root == null)
-        {
-            return;
-        }
-
         RectTransform parentRect = root.parent as RectTransform;
         if (parentRect == null)
         {

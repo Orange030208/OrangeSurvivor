@@ -39,6 +39,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         rectTransform = GetComponent<RectTransform>();
         ResolveSequenceDirector();
         CacheDefaultTransform();
+        ValidateRectTransform();
     }
 
     public void SetupInstance(string newInstanceId)
@@ -146,7 +147,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
             }
         }
 
-        if (ShouldAutoPlaySequenceDirector() && sequenceDirector != null)
+        if (ShouldAutoPlaySequenceDirector())
         {
             pendingCount++;
             Tween exitTween = sequenceDirector.PlayExit();
@@ -198,7 +199,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     private void PrepareContentForOpen()
     {
-        if (!ShouldAutoPlaySequenceDirector() || sequenceDirector == null)
+        if (!ShouldAutoPlaySequenceDirector())
         {
             return;
         }
@@ -208,7 +209,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     private void PlayContentEnter()
     {
-        if (!ShouldAutoPlaySequenceDirector() || sequenceDirector == null)
+        if (!ShouldAutoPlaySequenceDirector())
         {
             return;
         }
@@ -250,16 +251,6 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
             return;
         }
 
-        if (rectTransform == null)
-        {
-            rectTransform = GetComponent<RectTransform>();
-        }
-
-        if (rectTransform == null)
-        {
-            return;
-        }
-
         defaultAnchoredPosition = rectTransform.anchoredPosition;
         defaultScale = rectTransform.localScale;
         transformCached = true;
@@ -267,11 +258,6 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     private void ResetTransformState()
     {
-        if (rectTransform == null)
-        {
-            return;
-        }
-
         rectTransform.anchoredPosition = defaultAnchoredPosition;
         rectTransform.localScale = defaultScale;
     }
@@ -296,6 +282,14 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         if (canvasGroup == null)
         {
             throw new MissingReferenceException($"UIPage '{name}' is missing CanvasGroup reference.");
+        }
+    }
+
+    private void ValidateRectTransform()
+    {
+        if (rectTransform == null)
+        {
+            throw new MissingComponentException($"UIPage '{name}' requires RectTransform.");
         }
     }
 }

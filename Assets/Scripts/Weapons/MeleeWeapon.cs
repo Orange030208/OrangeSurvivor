@@ -22,8 +22,11 @@ public class MeleeWeapon : Weapon
     private MeleeWeaponAttackExecutor attackExecutor;
     private Entity pendingTarget;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
+    private WeaponSequenceResourceResolver sequenceResourceResolver;
 
     private Vector2 HitBoxSize => WeaponData != null ? WeaponData.MeleeHitBoxSize : Vector2.one;
+
+    public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
     protected override void Awake()
     {
@@ -36,6 +39,8 @@ public class MeleeWeapon : Weapon
 
     protected override void OnConfiguredFromData()
     {
+        sequenceResourceResolver = new WeaponSequenceResourceResolver(WeaponData);
+
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -65,11 +70,6 @@ public class MeleeWeapon : Weapon
     protected override bool CanStartAttack()
     {
         return !IsAttacking && !sequenceBridge.IsPlaying;
-    }
-
-    protected override AttackSequenceDefinitionSO GetEquippedAttackSequence()
-    {
-        return attackSequence;
     }
 
     protected override void TickWeapon(float deltaTime)
@@ -123,26 +123,26 @@ public class MeleeWeapon : Weapon
         sequenceBridge.Play(attackSequence, dynamicPositionOverrides, sequenceDuration, reachScale);
     }
 
-    public void OpenHitWindow(int windowId)
+    public void OpenHitWindow(int eventKey)
     {
-        activeHitWindows.Add(windowId);
-        if (!hitWindowTargets.TryGetValue(windowId, out HashSet<HealthComponent> hitTargets))
+        activeHitWindows.Add(eventKey);
+        if (!hitWindowTargets.TryGetValue(eventKey, out HashSet<HealthComponent> hitTargets))
         {
             hitTargets = new HashSet<HealthComponent>();
-            hitWindowTargets[windowId] = hitTargets;
+            hitWindowTargets[eventKey] = hitTargets;
         }
         else
         {
             hitTargets.Clear();
         }
 
-        hitWindowLastPoses[windowId] = attackExecutor.CaptureCurrentPose();
+        hitWindowLastPoses[eventKey] = attackExecutor.CaptureCurrentPose();
     }
 
-    public void CloseHitWindow(int windowId)
+    public void CloseHitWindow(int eventKey)
     {
-        activeHitWindows.Remove(windowId);
-        hitWindowLastPoses.Remove(windowId);
+        activeHitWindows.Remove(eventKey);
+        hitWindowLastPoses.Remove(eventKey);
     }
 
     public void FinishAttackSequence()
@@ -228,14 +228,16 @@ public class MeleeWeapon : Weapon
         switch (eventContext.EventType)
         {
             case WeaponSequenceEventType.OpenHitWindow:
-                OpenHitWindow(eventContext.WindowId);
+                OpenHitWindow(eventContext.EventKey);
                 break;
             case WeaponSequenceEventType.CloseHitWindow:
-                CloseHitWindow(eventContext.WindowId);
+                CloseHitWindow(eventContext.EventKey);
                 break;
             case WeaponSequenceEventType.PlaySfx:
+                PlaySequenceSfx(eventContext.EventKey);
                 break;
             case WeaponSequenceEventType.PlayVfx:
+                PlaySequenceVfx(eventContext.EventKey);
                 break;
         }
     }
@@ -262,6 +264,36 @@ public class MeleeWeapon : Weapon
         localPosition.x = hitOffset.x;
         localPosition.y = hitOffset.y;
         hitDetectionTransform.localPosition = localPosition;
+    }
+
+    private void PlaySequenceSfx(int windowId)
+    {
+        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetSfx(windowId, out WeaponSequenceSfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.SfxKey != AudioSfxKey.None)
+        {
+            AudioSfxBridge.RequestPlay(definition.SfxKey);
+        }
+    }
+
+    private void PlaySequenceVfx(int windowId)
+    {
+        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetVfx(windowId, out WeaponSequenceVfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.VfxPrefab != null)
+        {
+            Transform spawnAnchor = hitDetectionTransform != null ? hitDetectionTransform : transform;
+            Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
+            Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
+            GameObject instance = Object.Instantiate(definition.VfxPrefab, spawnPosition, spawnRotation);
+            Object.Destroy(instance, definition.VfxLifetime);
+        }
     }
 
     private void OnDrawGizmosSelected()

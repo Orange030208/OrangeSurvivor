@@ -17,8 +17,7 @@ public class AudioGameStateController : MonoBehaviour
     {
         if (runtimeSettings == null)
         {
-            Debug.LogError($"{nameof(AudioGameStateController)} requires an {nameof(AudioRuntimeSettingsSO)} reference.", this);
-            enabled = false;
+            throw new MissingReferenceException($"{nameof(AudioGameStateController)} '{name}' is missing {nameof(AudioRuntimeSettingsSO)}.");
         }
     }
 
@@ -35,11 +34,6 @@ public class AudioGameStateController : MonoBehaviour
     private void Start()
     {
         GameManager gameManager = GameManager.Instance;
-        if (gameManager == null)
-        {
-            return;
-        }
-
         HandleStateChanged(gameManager.CurrentGameState);
     }
 
@@ -61,17 +55,17 @@ public class AudioGameStateController : MonoBehaviour
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(entry.CueId))
+        if (entry.BgmKey == AudioBgmKey.None)
         {
             AudioPlaybackBridge.RequestStop(AudioBusType.Music);
             return;
         }
 
-        if (!entry.RestartIfAlreadyPlaying && AudioManager.Instance != null && AudioManager.Instance.IsPlayingMusicCue(entry.CueId))
+        if (!entry.RestartIfAlreadyPlaying && AudioManager.Instance.IsPlayingMusicCue(entry.BgmKey))
         {
             return;
         }
 
-        AudioPlaybackBridge.RequestPlay(entry.CueId, entry.RestartIfAlreadyPlaying);
+        AudioPlaybackBridge.RequestPlay(entry.BgmKey, entry.RestartIfAlreadyPlaying);
     }
 }

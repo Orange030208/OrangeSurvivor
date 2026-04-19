@@ -2,40 +2,48 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// 单条语义音效映射：
-/// - 定义一个 AudioSfxKey；
-/// - 映射到具体 cueId；
-/// - 供 AudioSfxCatalogSO 在运行时查询。
+/// 单条音效配置：
+/// - 直接以 AudioSfxKey 作为唯一播放键；
+/// - 绑定具体 AudioClip；
+/// - 指定目标总线、播放模式、音量与音高。
+/// 它只负责数据描述，不直接参与播放。
 /// </summary>
 [Serializable]
 public class AudioSfxEntry
 {
-    [Tooltip("语义化音效键。调用方应依赖这个键，而不是直接依赖 cueId 字符串。")]
-    [SerializeField] private AudioSfxKey sfxKey = AudioSfxKey.UiClick;
-    [Tooltip("该语义音效对应的具体 cueId。")]
-    [SerializeField] private string cueId = AudioConstants.DEFAULT_UI_CLICK_CUE_ID;
+    [Tooltip("语义化音效键。调用方直接依赖该枚举播放。")]
+    [SerializeField] private AudioSfxKey sfxKey = AudioSfxKey.None;
+    [Tooltip("该音效对应的音频资源。")]
+    [SerializeField] private AudioClip clip;
+    [Tooltip("该音效默认输出到哪个音频总线。")]
+    [SerializeField] private AudioBusType busType = AudioBusType.Sfx;
+    [Tooltip("播放模式。OneShot 适合按钮/命中音效，Loop 适合少量循环音效。")]
+    [SerializeField] private AudioPlaybackMode playbackMode = AudioPlaybackMode.OneShot;
+    [Tooltip("该音效的基础音量。最终输出会再叠加总线音量。")]
+    [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float volume = AudioConstants.DEFAULT_VOLUME;
+    [Tooltip("该音效的基础音高。")]
+    [SerializeField] [Range(AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH)] private float pitch = AudioConstants.DEFAULT_PITCH;
 
     public AudioSfxKey SfxKey => sfxKey;
-    public string CueId => cueId;
 
-    public bool TryBuild(out AudioSfxKey key, out string resolvedCueId)
+    /// <summary>
+    /// 尝试把 Inspector 配置构造成运行时可用的 AudioCueData。
+    /// </summary>
+    public bool TryBuild(out AudioCueData cueData)
     {
-        key = sfxKey;
-        resolvedCueId = cueId;
-        return sfxKey != AudioSfxKey.None && !string.IsNullOrWhiteSpace(cueId);
+        cueData = default;
+        if (sfxKey == AudioSfxKey.None || clip == null)
+        {
+            return false;
+        }
+
+        cueData = new AudioCueData(sfxKey.ToString(), clip, busType, playbackMode, volume, pitch);
+        return true;
     }
 
     public void OnValidate()
     {
-        if (string.IsNullOrWhiteSpace(cueId))
-        {
-            cueId = AudioConstants.DEFAULT_UI_CLICK_CUE_ID;
-            return;
-        }
-
-        if (!cueId.StartsWith(AudioConstants.CUE_ID_PREFIX, StringComparison.Ordinal))
-        {
-            cueId = AudioConstants.CUE_ID_PREFIX + cueId;
-        }
+        volume = Mathf.Clamp(volume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        pitch = Mathf.Clamp(pitch, AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH);
     }
 }

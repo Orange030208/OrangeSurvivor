@@ -295,6 +295,7 @@ GameObject:
   - component: {fileID: 8093913012144903216}
   - component: {fileID: 744321419412424706}
   - component: {fileID: 3977488090093624418}
+  - component: {fileID: 5780936605003846148}
   m_Layer: 7
   m_Name: Dave
   m_TagString: Untagged
@@ -332,7 +333,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  playerJoystick: {fileID: 0}
 --- !u!114 &5359458450767791847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,6 +386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44205aa8461c81840917711321476dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
 --- !u!114 &1599788479870389316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,6 +518,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 062db910b01a17c4d9e14fc6472a5a7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5780936605003846148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7496115378131242144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58184e07f71b4c9499ee98420be334aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8473914789015488600

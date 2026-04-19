@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 音频总管理器：
 /// - 统一管理 BGM / SFX 播放；
-/// - 统一解析 cue 与语义音效键；
+/// - 直接根据强类型枚举解析配置；
 /// - 提供总音量、BGM 音量、SFX 音量控制；
 /// - 自动创建运行所需的总线播放器；
 /// - 作为跨场景持久对象存在。
@@ -18,9 +18,7 @@ public class AudioManager : MonoBehaviour
     private static AudioManager instance;
 
     [Header("Config")]
-    [Tooltip("音频 cue 总表。所有底层播放请求都会先在这里按 cueId 查询具体配置。")]
-    [SerializeField] private AudioCueCatalogSO audioCueCatalog;
-    [Tooltip("语义音效映射总表。把 AudioSfxKey 解析成具体 cueId。")]
+    [Tooltip("音效配置总表。所有 SFX 播放请求都会先在这里按枚举查询具体配置。")]
     [SerializeField] private AudioSfxCatalogSO audioSfxCatalog;
     [Tooltip("音频运行时设置。提供状态驱动的 BGM 配置与淡变时长。")]
     [SerializeField] private AudioRuntimeSettingsSO runtimeSettings;
@@ -32,7 +30,6 @@ public class AudioManager : MonoBehaviour
 
     private AudioBusPlayer musicBusPlayer;
     private AudioBusPlayer sfxBusPlayer;
-    private IAudioCueProvider audioCueProvider;
 
     public static AudioManager Instance => instance;
     public float MasterVolume => masterVolume;
@@ -41,6 +38,8 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        ValidateConfiguration();
+
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -50,87 +49,63 @@ public class AudioManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (audioCueCatalog == null)
-        {
-            Debug.LogError($"{nameof(AudioManager)} requires an {nameof(AudioCueCatalogSO)} reference.", this);
-            enabled = false;
-            return;
-        }
-
-        if (audioSfxCatalog == null)
-        {
-            Debug.LogError($"{nameof(AudioManager)} requires an {nameof(AudioSfxCatalogSO)} reference.", this);
-            enabled = false;
-            return;
-        }
-
-        if (runtimeSettings == null)
-        {
-            Debug.LogError($"{nameof(AudioManager)} requires an {nameof(AudioRuntimeSettingsSO)} reference.", this);
-            enabled = false;
-            return;
-        }
-
         EnsureBusPlayers();
-        audioCueProvider = new AudioCueCatalogProvider(audioCueCatalog);
         ApplyVolumeSettings();
     }
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<AudioPlayRequestedEvent>(OnAudioPlayRequested);
+        GameEventBus.Subscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
         GameEventBus.Subscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
         GameEventBus.Subscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<AudioPlayRequestedEvent>(OnAudioPlayRequested);
+        GameEventBus.Unsubscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
         GameEventBus.Unsubscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
         GameEventBus.Unsubscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
     }
 
-    public static AudioManager EnsureInstance(AudioCueCatalogSO cueCatalog, AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
+    public static AudioManager EnsureInstance(AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
     {
         if (instance != null)
         {
-            instance.AssignMissingReferences(cueCatalog, sfxCatalog, settings);
+            instance.AssignMissingReferences(sfxCatalog, settings);
             return instance;
         }
 
         GameObject rootObject = new(AUDIO_ROOT_OBJECT_NAME);
         AudioManager manager = rootObject.AddComponent<AudioManager>();
-        manager.audioCueCatalog = cueCatalog;
         manager.audioSfxCatalog = sfxCatalog;
         manager.runtimeSettings = settings;
         return manager;
     }
 
     /// <summary>
-    /// 处理一次底层音频播放请求。
+    /// 处理一次 BGM 播放请求。
     /// Music + Loop 会走淡入淡出，其余请求立即执行。
     /// </summary>
-    public void Play(AudioPlaybackRequest request)
+    public void PlayBgm(AudioBgmKey bgmKey, bool restartIfPlaying)
     {
-        if (!enabled)
+        if (!enabled || bgmKey == AudioBgmKey.None)
         {
             return;
         }
 
-        if (!audioCueProvider.TryGetCue(request.CueId, out AudioCueData cueData))
+        if (!runtimeSettings.TryGetBgmCue(bgmKey, out AudioCueData cueData))
         {
-            Debug.LogWarning($"Audio cue '{request.CueId}' was not found.", this);
+            Debug.LogWarning($"Audio bgm key '{bgmKey}' was not found.", this);
             return;
         }
 
-        AudioBusPlayer busPlayer = ResolveBusPlayer(cueData.BusType);
-        if (cueData.BusType == AudioBusType.Music && cueData.PlaybackMode == AudioPlaybackMode.Loop)
+        if (cueData.PlaybackMode == AudioPlaybackMode.Loop)
         {
-            busPlayer.PlayWithFade(cueData, runtimeSettings.MusicFadeDuration, request.RestartIfPlaying);
+            musicBusPlayer.PlayWithFade(cueData, runtimeSettings.MusicFadeDuration, restartIfPlaying);
             return;
         }
 
-        busPlayer.Play(cueData, request.RestartIfPlaying);
+        musicBusPlayer.Play(cueData, restartIfPlaying);
     }
 
     /// <summary>
@@ -143,13 +118,13 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        if (!audioSfxCatalog.TryGetCueId(sfxKey, out string cueId))
+        if (!audioSfxCatalog.TryGetCue(sfxKey, out AudioCueData cueData))
         {
             Debug.LogWarning($"Audio sfx key '{sfxKey}' was not found.", this);
             return;
         }
 
-        Play(new AudioPlaybackRequest(cueId, false));
+        sfxBusPlayer.Play(cueData, false);
     }
 
     /// <summary>
@@ -173,9 +148,22 @@ public class AudioManager : MonoBehaviour
         busPlayer.StopPlayback();
     }
 
-    public bool IsPlayingMusicCue(string cueId)
+    public bool IsPlayingMusicCue(AudioBgmKey bgmKey)
     {
-        return musicBusPlayer != null && musicBusPlayer.IsPlayingCue(cueId);
+        return musicBusPlayer.IsPlayingCue(bgmKey.ToString());
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (audioSfxCatalog == null)
+        {
+            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioSfxCatalogSO)}.");
+        }
+
+        if (runtimeSettings == null)
+        {
+            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioRuntimeSettingsSO)}.");
+        }
     }
 
     public void SetMasterVolume(float volume)
@@ -196,9 +184,9 @@ public class AudioManager : MonoBehaviour
         ApplyVolumeSettings();
     }
 
-    private void OnAudioPlayRequested(AudioPlayRequestedEvent eventData)
+    private void OnAudioBgmPlayRequested(AudioBgmPlayRequestedEvent eventData)
     {
-        Play(eventData.Request);
+        PlayBgm(eventData.BgmKey, eventData.RestartIfPlaying);
     }
 
     private void OnAudioStopRequested(AudioStopRequestedEvent eventData)
@@ -249,13 +237,8 @@ public class AudioManager : MonoBehaviour
         return busPlayer;
     }
 
-    private void AssignMissingReferences(AudioCueCatalogSO cueCatalog, AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
+    private void AssignMissingReferences(AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
     {
-        if (audioCueCatalog == null)
-        {
-            audioCueCatalog = cueCatalog;
-        }
-
         if (audioSfxCatalog == null)
         {
             audioSfxCatalog = sfxCatalog;
@@ -264,16 +247,6 @@ public class AudioManager : MonoBehaviour
         if (runtimeSettings == null)
         {
             runtimeSettings = settings;
-        }
-
-        if (audioCueProvider == null && audioCueCatalog != null)
-        {
-            audioCueProvider = new AudioCueCatalogProvider(audioCueCatalog);
-        }
-
-        if (enabled)
-        {
-            ApplyVolumeSettings();
         }
     }
 }

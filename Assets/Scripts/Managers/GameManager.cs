@@ -23,8 +23,12 @@ public class GameManager : MonoSingletonBase<GameManager>
     private void OnEnable()
     {
         uiManager = FindFirstObjectByType<UIManager>();
+        if (uiManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
+        }
 
-        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Subscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
         GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
@@ -44,7 +48,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
+        GameEventBus.Unsubscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
         GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
@@ -83,9 +87,9 @@ public class GameManager : MonoSingletonBase<GameManager>
         TransitionToState(GameState.GameOver);
     }
 
-    private void OnWaveCompleted(WaveCompletedEvent _)
+    private void OnWaveFlowDecision(WaveFlowDecisionEvent eventData)
     {
-        TransitionToState(GetNextStateAfterWaveCompleted());
+        TransitionToState(eventData.NextState);
     }
 
     private void OnUpgradeSelectionCompleted()
@@ -218,22 +222,6 @@ public class GameManager : MonoSingletonBase<GameManager>
 
         SetPaused(true);
         OpenPauseMenu();
-    }
-
-    private GameState GetNextStateAfterWaveCompleted()
-    {
-        if (!hasMoreWaves)
-        {
-            GameEventBus.Publish<AllWavesCompletedEvent>();
-            return GameState.StageComplete;
-        }
-
-        if (player.IsLevelUpInCurrentWave)
-        {
-            return GameState.WaveTransition;
-        }
-
-        return GameState.Shop;
     }
 
     private bool ShouldBlockGameplayRequest(GameState targetState)

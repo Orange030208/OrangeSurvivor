@@ -5,7 +5,8 @@ using UnityEngine;
 /// <summary>
 /// 音频运行时设置资源：
 /// - 提供 GameState 到 BGM 的映射；
-/// - 提供 BGM 淡入淡出时长。
+/// - 提供 BGM 淡入淡出时长；
+/// - 直接维护 AudioBgmKey 到具体音频配置的映射。
 /// 该资源只负责状态驱动的 BGM 配置，不负责音量控制。
 /// </summary>
 [CreateAssetMenu(fileName = "Audio Runtime Settings", menuName = AudioConstants.AUDIO_RUNTIME_SETTINGS_MENU_PATH, order = 1)]
@@ -16,8 +17,11 @@ public class AudioRuntimeSettingsSO : ScriptableObject
     [SerializeField] [Min(AudioConstants.MIN_FADE_DURATION)] private float musicFadeDuration = AudioConstants.DEFAULT_MUSIC_FADE_DURATION;
     [Tooltip("GameState 到 BGM 配置的映射表。可通过关闭 restartIfAlreadyPlaying 来跨界面延续当前音乐。")]
     [SerializeField] private AudioGameStateBgmEntry[] bgmEntries = Array.Empty<AudioGameStateBgmEntry>();
+    [Tooltip("BGM 配置列表。每个枚举键直接对应一个具体音频配置。")]
+    [SerializeField] private AudioBgmEntry[] bgmCues = Array.Empty<AudioBgmEntry>();
 
-    private Dictionary<GameState, AudioGameStateBgmEntry> bgmCache;
+    private Dictionary<GameState, AudioGameStateBgmEntry> bgmStateCache;
+    private Dictionary<AudioBgmKey, AudioCueData> bgmCueCache;
 
     public float MusicFadeDuration => musicFadeDuration;
 
@@ -26,8 +30,23 @@ public class AudioRuntimeSettingsSO : ScriptableObject
     /// </summary>
     public bool TryGetGameStateBgmEntry(GameState gameState, out AudioGameStateBgmEntry entry)
     {
-        EnsureBgmCache();
-        return bgmCache.TryGetValue(gameState, out entry) && entry != null;
+        EnsureStateCache();
+        return bgmStateCache.TryGetValue(gameState, out entry) && entry != null;
+    }
+
+    /// <summary>
+    /// 按 BGM 键查询具体音频配置。
+    /// </summary>
+    public bool TryGetBgmCue(AudioBgmKey bgmKey, out AudioCueData cueData)
+    {
+        cueData = default;
+        if (bgmKey == AudioBgmKey.None)
+        {
+            return false;
+        }
+
+        EnsureBgmCueCache();
+        return bgmCueCache.TryGetValue(bgmKey, out cueData);
     }
 
     private void OnValidate()
@@ -39,22 +58,28 @@ public class AudioRuntimeSettingsSO : ScriptableObject
             bgmEntries = Array.Empty<AudioGameStateBgmEntry>();
         }
 
-        for (int i = 0; i < bgmEntries.Length; i++)
+        if (bgmCues == null)
         {
-            bgmEntries[i]?.OnValidate();
+            bgmCues = Array.Empty<AudioBgmEntry>();
         }
 
-        bgmCache = null;
+        for (int i = 0; i < bgmCues.Length; i++)
+        {
+            bgmCues[i]?.OnValidate();
+        }
+
+        bgmStateCache = null;
+        bgmCueCache = null;
     }
 
-    private void EnsureBgmCache()
+    private void EnsureStateCache()
     {
-        if (bgmCache != null)
+        if (bgmStateCache != null)
         {
             return;
         }
 
-        bgmCache = new Dictionary<GameState, AudioGameStateBgmEntry>();
+        bgmStateCache = new Dictionary<GameState, AudioGameStateBgmEntry>();
         for (int i = 0; i < bgmEntries.Length; i++)
         {
             AudioGameStateBgmEntry entry = bgmEntries[i];
@@ -63,7 +88,27 @@ public class AudioRuntimeSettingsSO : ScriptableObject
                 continue;
             }
 
-            bgmCache[entry.GameState] = entry;
+            bgmStateCache[entry.GameState] = entry;
+        }
+    }
+
+    private void EnsureBgmCueCache()
+    {
+        if (bgmCueCache != null)
+        {
+            return;
+        }
+
+        bgmCueCache = new Dictionary<AudioBgmKey, AudioCueData>();
+        for (int i = 0; i < bgmCues.Length; i++)
+        {
+            AudioBgmEntry cueEntry = bgmCues[i];
+            if (cueEntry == null || !cueEntry.TryBuild(out AudioCueData cueData))
+            {
+                continue;
+            }
+
+            bgmCueCache[cueEntry.BgmKey] = cueData;
         }
     }
 }

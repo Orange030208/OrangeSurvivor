@@ -13,5 +13,21 @@ MonoBehaviour:
   m_Name: Audio Sfx Catalog
   m_EditorClassIdentifier: 
   entries:
-  - sfxKey: 9
-    cueId: Audio_Wooden Button Clicked
+  - sfxKey: 1
+    clip: {fileID: 8300000, guid: cff0754db910b26498e4d5c0d6b55a40, type: 3}
+    busType: 1
+    playbackMode: 0
+    volume: 1
+    pitch: 1
+  - sfxKey: 2
+    clip: {fileID: 8300000, guid: 557202cb1b6fb704197d31b7b5f24718, type: 3}
+    busType: 1
+    playbackMode: 0
+    volume: 1
+    pitch: 1
+  - sfxKey: 3
+    clip: {fileID: 8300000, guid: 62c801adc153d104a9d8b242217acccc, type: 3}
+    busType: 1
+    playbackMode: 0
+    volume: 1
+    pitch: 1

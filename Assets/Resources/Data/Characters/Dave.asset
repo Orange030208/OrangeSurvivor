@@ -20,12 +20,14 @@ MonoBehaviour:
     value: 1
   specialFeatures:
   - rid: 451546610942607360
-  - rid: 451546724597760002
+  - rid: 451546724597760003
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: d9159d0b490caa1468c9f776cd665de7, type: 2}
     level: 1
   - weaponData: {fileID: 11400000, guid: 8d945004c944501419f6476a244d413b, type: 2}
     level: 2
+  - weaponData: {fileID: 11400000, guid: b7b81d31d67a8614f90cd2f3c38e78d5, type: 2}
+    level: 3
   initialAccessories: []
   references:
     version: 2
@@ -41,8 +43,7 @@ MonoBehaviour:
         enemyLayerMask:
           serializedVersion: 2
           m_Bits: 64
-    - rid: 451546724597760002
-      type: {class: ForceCriticalHitModifierEffect, ns: , asm: Assembly-CSharp}
+    - rid: 451546724597760003
+      type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
       data:
-        runtimeFeatureId: 
-        priority: 100
+        runtimeFeatureId: CHARACTER_BASE_FEATURE_1

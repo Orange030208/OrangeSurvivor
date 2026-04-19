@@ -10,7 +10,8 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Awake()
     {
-        tooltipDataSource = tooltipDataSourceComponent as ITooltipDataSource;
+        ValidateConfiguration();
+        tooltipDataSource = (ITooltipDataSource)tooltipDataSourceComponent;
     }
 
     public void SetTooltipDataSource(ITooltipDataSource source)
@@ -57,12 +58,20 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        if (tooltipDataSource == null)
+        GameEventBus.Publish(new ShowTooltipRequestedEvent(tooltipDataSource.BuildTooltipData(), screenPosition));
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (tooltipDataSourceComponent == null)
         {
-            return;
+            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' is missing tooltip data source component.");
         }
 
-        GameEventBus.Publish(new ShowTooltipRequestedEvent(tooltipDataSource.BuildTooltipData(), screenPosition));
+        if (tooltipDataSourceComponent is not ITooltipDataSource)
+        {
+            throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(ITooltipDataSource)}.");
+        }
     }
 
     private void Hide()
