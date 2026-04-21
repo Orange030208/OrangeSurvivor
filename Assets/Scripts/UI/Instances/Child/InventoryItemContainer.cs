@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemContainer : MonoBehaviour, IDisposable, IDisplayDocumentSource
+public class InventoryItemContainer : MonoBehaviour, IDisposable, IDescribable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
@@ -12,6 +13,7 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, IDisplayDocume
     private int itemIndex = -1;
     private ItemDataSO currentItemData;
     private int currentColorDependencyNumber;
+    private IDescribable iDescribableImplementation;
 
     public void Configure(ItemDataSO itemData, int colorDependencyNumber, int itemIndex)
     {
@@ -42,11 +44,6 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, IDisplayDocume
         button.OnClicked += OnItemClicked;
     }
 
-    public DisplayDocument BuildDisplayDocument()
-    {
-        return TooltipDisplayDocumentBuilder.CreateFromItem(currentItemData, currentColorDependencyNumber);
-    }
-
     private void OnItemClicked()
     {
         if (itemIndex < 0)
@@ -63,5 +60,16 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, IDisplayDocume
         currentItemData = null;
         currentColorDependencyNumber = 0;
         itemIndex = -1;
+    }
+
+    public string Title => currentItemData.Title;
+
+    public Sprite Icon => currentItemData.Icon;
+
+    public string Description => currentItemData.Description;
+
+    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        return currentItemData.GetExtraInfos();
     }
 }

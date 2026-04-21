@@ -1,8 +1,10 @@
-using System;
-
-public static class PropTypeExtensions
+public static class PropDescriptionUtility
 {
-    public static string GetChineseName(this PropType propType)
+    public static string GetIcon(this PropType propType)
+    {
+        return RichTextStringUtility.GetSpriteTagByIconName(propType.ToString());
+    }
+   public static string GetChineseName(this PropType propType)
     {
         return propType switch
         {
@@ -125,5 +127,5 @@ public static class PropTypeExtensions
     {
         string formatted = value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
-    }
+    }   
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
 public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
 {
-    private static readonly FeatureDisplayBuilder featureDisplayBuilder = new();
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
 
@@ -36,15 +35,6 @@ public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
     public IReadOnlyList<PropEntry> GetPropEntries()
     {
         return propertyModifiers;
-    }
-
-    public DisplayDocument BuildDisplayDocument()
-    {
-        DisplayDocument document = featureDisplayBuilder.Build(propertyModifiers, specialFeatures, new DisplayContext { IsCompact = true });
-        document.Id = $"accessory_{accessoryId}";
-        document.Title = ItemName;
-        document.Icon = ItemIcon;
-        return document;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
@@ -89,5 +79,22 @@ public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
         }
 
         return dictionary;
+    }
+
+    public override IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        List<DescriptorInfo> infos = new List<DescriptorInfo>();
+        foreach (PropEntry propEntry in propertyModifiers)
+        {
+            infos.Add(new DescriptorInfo(propEntry.GetDisplayName(),
+                propEntry.propType.GetIcon() + propEntry.GetDisplayName() + propEntry.value));
+        }
+        
+        foreach (var feature in specialFeatures)
+        {
+            infos.Add(new DescriptorInfo(feature.Title, feature.Description));
+        }
+        
+        return infos;
     }
 }

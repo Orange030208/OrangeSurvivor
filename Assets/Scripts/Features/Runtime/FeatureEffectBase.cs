@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IRuntimeFeatureEffect
@@ -12,7 +13,7 @@ public interface IRuntimeFeatureEffect
 
 [HideInFeatureMenu]
 [Serializable]
-public abstract class FeatureEffectBase : IRuntimeFeatureEffect,IHitModifier
+public abstract class FeatureEffectBase : IRuntimeFeatureEffect,IHitModifier,IDescribable
 {
     [HideInInspector]
     [SerializeField] private string runtimeFeatureId;
@@ -42,6 +43,14 @@ public abstract class FeatureEffectBase : IRuntimeFeatureEffect,IHitModifier
 
     public virtual void ModifyHit(HitContext hitContext)
     {
+    }
+
+    public virtual string Title { get; set; }
+    public virtual Sprite Icon { get; set; }
+    public virtual string Description { get; set; }
+    public virtual IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        return new List<DescriptorInfo>();
     }
 }
 

@@ -55,10 +55,9 @@ public struct WeaponSequenceVfxDefinition
 }
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = "SO/WeaponData", order = 0)]
-public class WeaponDataSO : ItemDataSO
-{
-    private static readonly PropEntryDisplayBuilder propEntryDisplayBuilder = new();
 
+public class WeaponDataSO : ItemDataSO,IDescribable
+{
     [Header("Runtime")]
     [SerializeField] protected Weapon weaponPrefab;
     [SerializeField] private WeaponConstructionScheme constructionScheme = WeaponConstructionScheme.Default;
@@ -122,15 +121,6 @@ public class WeaponDataSO : ItemDataSO
         };
     }
 
-    public DisplayDocument BuildDisplayDocument(int level)
-    {
-        DisplayDocument document = propEntryDisplayBuilder.Build(GetPropEntriesByLevel(level), new DisplayContext { IsCompact = true });
-        document.Id = $"weapon_{ItemName}_{level}";
-        document.Title = ItemDisplayHelper.GetWeaponDisplayName(ItemName, level);
-        document.Icon = ItemIcon;
-        return document;
-    }
-
     public List<PropEntry> GetPropEntriesByLevel(int level)
     {
         float multiplier = 1f + (float)level / WeaponLevelScaling.MaxLevel;
@@ -190,6 +180,15 @@ public class WeaponDataSO : ItemDataSO
 
         definition = sequenceVfxList[eventKey];
         return true;
+    }
+
+    public override IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        List<DescriptorInfo> infos = new();
+        infos.Add(new DescriptorInfo("攻击力",attack.ToString()));
+        infos.Add(new DescriptorInfo("攻速", attackSpeed.ToString()));
+        infos.Add(new DescriptorInfo("描述",Description));
+        return infos;
     }
 }
 

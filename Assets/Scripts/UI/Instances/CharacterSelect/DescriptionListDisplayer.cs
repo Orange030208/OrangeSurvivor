@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -6,50 +7,29 @@ public class DescriptionListDisplayer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI infoRichText;
 
-    public void Display(DisplayDocument document)
+    public void Display(IDescribable describable)
     {
-        if (document == null)
+        if (describable == null)
         {
-            Display((TextListBlock)null);
+            Display((IEnumerable<DescriptorInfo>)null);
             return;
         }
 
-        Display(document.GetBlock<TextListBlock>());
+        Display(describable.GetExtraInfos());
     }
 
-    public void Display(TextListBlock block)
+    private void Display(IEnumerable<DescriptorInfo> descriptorInfos)
     {
-        if (infoRichText == null)
+        if (descriptorInfos == null)
         {
+            infoRichText.text = "";
             return;
         }
-
-        IReadOnlyList<TextLineItem> items = block != null ? block.Items : null;
-        if (items == null || items.Count == 0)
+        StringBuilder sb = new();
+        foreach (DescriptorInfo descriptorInfo in descriptorInfos)
         {
-            infoRichText.text = "暂无特殊特性";
-            return;
+            sb.AppendLine(descriptorInfo.value);
         }
-
-        infoRichText.richText = true;
-
-        System.Text.StringBuilder builder = new();
-        for (int i = 0; i < items.Count; i++)
-        {
-            TextLineItem item = items[i];
-            if (item == null || string.IsNullOrWhiteSpace(item.Text))
-            {
-                continue;
-            }
-
-            if (builder.Length > 0)
-            {
-                builder.Append('\n');
-            }
-
-            builder.Append(item.Text);
-        }
-
-        infoRichText.text = builder.Length > 0 ? builder.ToString() : "暂无特殊特性";
+        infoRichText.text = sb.ToString();
     }
 }

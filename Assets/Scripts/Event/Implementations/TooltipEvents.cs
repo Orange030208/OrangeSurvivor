@@ -2,12 +2,12 @@ using UnityEngine;
 
 public struct ShowTooltipRequestedEvent : IGameEvent
 {
-    public DisplayDocument Document;
+    public IDescribable Descriptor;
     public Vector2 ScreenPosition;
 
-    public ShowTooltipRequestedEvent(DisplayDocument document, Vector2 screenPosition)
+    public ShowTooltipRequestedEvent(IDescribable descriptor, Vector2 screenPosition)
     {
-        Document = document;
+        Descriptor = descriptor;
         ScreenPosition = screenPosition;
     }
 }

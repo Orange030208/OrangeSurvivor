@@ -13,7 +13,6 @@ public class GamePauseMenu : UIPageBase
     [SerializeField] private UIClickTarget menuButton;
 
     [Header("属性面板(左)")] [SerializeField] private UISidebarRevealMotion propertiesSidebar;
-    [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
     [Header("背包面板(右)")] [SerializeField] private UISidebarRevealMotion inventorySidebar;
 
@@ -30,7 +29,6 @@ public class GamePauseMenu : UIPageBase
     {
         BindButtonEvents();
         InjectPropertiesDependencies();
-        propertiesViewSync.StartSync();
         HideAllSidebarPanelsImmediately();
         ShowAllSidebarPanels();
     }
@@ -38,7 +36,6 @@ public class GamePauseMenu : UIPageBase
     protected override void OnPageClosed()
     {
         UnbindButtonEvents();
-        propertiesViewSync.StopSync();
         KillSidebarTweens();
         HideAllSidebarPanelsImmediately();
     }
@@ -137,7 +134,6 @@ public class GamePauseMenu : UIPageBase
     {
         Player player = FindFirstObjectByType<Player>();
         PropertiesManager manager = player.GetComponent<PropertiesManager>();
-        propertiesViewSync.InjectDependencies(manager);
     }
 
     private void ApplySidebarTimings(UISidebarRevealMotion sidebar)
@@ -175,11 +171,6 @@ public class GamePauseMenu : UIPageBase
         if (propertiesSidebar == null)
         {
             throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing properties sidebar.");
-        }
-
-        if (propertiesViewSync == null)
-        {
-            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing properties view sync.");
         }
 
         if (inventorySidebar == null)

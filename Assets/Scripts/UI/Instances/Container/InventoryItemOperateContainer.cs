@@ -28,7 +28,7 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
         sellPriceText.text = resource.sellPrice.ToString();
 
         RenderColor(resource.itemData, resource.colorDependencyNumber);
-        bottom.Display(resource.document);
+        bottom.Display(resource.itemData);
 
         currentItemIndex = resource.itemIndex;
 
@@ -76,19 +76,19 @@ public readonly struct InventoryItemOperateResource
     public readonly ItemDataSO itemData;
     public readonly int colorDependencyNumber;
     public readonly int sellPrice;
-    public readonly DisplayDocument document;
+    public readonly IDescribable describable;
 
     public InventoryItemOperateResource(
         int itemIndex,
         ItemDataSO itemData,
         int colorDependencyNumber,
         int sellPrice,
-        DisplayDocument document)
+        IDescribable describable)
     {
         this.itemIndex = itemIndex;
         this.itemData = itemData;
         this.colorDependencyNumber = colorDependencyNumber;
         this.sellPrice = sellPrice;
-        this.document = document;
+        this.describable = describable;
     }
 }

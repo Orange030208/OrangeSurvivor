@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffIconItem : MonoBehaviour, IDisplayDocumentSource
+public class BuffIconItem : MonoBehaviour,IDescribable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Image borderImage;
@@ -43,11 +44,6 @@ public class BuffIconItem : MonoBehaviour, IDisplayDocumentSource
         }
     }
 
-    public DisplayDocument BuildDisplayDocument()
-    {
-        return TooltipDisplayDocumentBuilder.CreateFromBuff(snapshot);
-    }
-
     private Color ResolveBorderColor(BuffPolarity polarity)
     {
         return polarity switch
@@ -56,5 +52,16 @@ public class BuffIconItem : MonoBehaviour, IDisplayDocumentSource
             BuffPolarity.Negative => negativeColor,
             _ => neutralColor
         };
+    }
+
+    public string Title => snapshot.Describable.Title;
+
+    public Sprite Icon => snapshot.Describable.Icon;
+
+    public string Description => snapshot.Describable.Description;
+
+    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        return snapshot.Describable.GetExtraInfos();
     }
 }

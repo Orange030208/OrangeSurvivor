@@ -9,7 +9,6 @@ public class UITooltipPresenter : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private TextMeshProUGUI footerText;
     [SerializeField] private DescriptionListDisplayer descriptionListDisplayer;
     [SerializeField] private Vector2 screenOffset = new(18f, -18f);
     [SerializeField] private Vector2 screenPadding = new(12f, 12f);
@@ -44,11 +43,6 @@ public class UITooltipPresenter : MonoBehaviour
             throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing title text.");
         }
 
-        if (footerText == null)
-        {
-            throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing footer text.");
-        }
-
         if (descriptionListDisplayer == null)
         {
             throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing description list displayer.");
@@ -74,15 +68,15 @@ public class UITooltipPresenter : MonoBehaviour
         GameEventBus.Unsubscribe<HideTooltipRequestedEvent>(OnHideTooltipRequested);
     }
 
-    public void Present(DisplayDocument document)
+    public void Present(IDescribable describable)
     {
-        ApplyDocument(document);
+        ApplyDocument(describable);
         SetVisible(true);
     }
 
     private void OnShowTooltipRequested(ShowTooltipRequestedEvent eventData)
     {
-        Present(eventData.Document);
+        Present(eventData.Descriptor);
         SetScreenPosition(eventData.ScreenPosition);
     }
 
@@ -91,11 +85,9 @@ public class UITooltipPresenter : MonoBehaviour
         HideImmediate();
     }
 
-    private void ApplyDocument(DisplayDocument document)
+    private void ApplyDocument(IDescribable document)
     {
         titleText.text = document != null ? document.Title : string.Empty;
-        footerText.text = document != null ? document.Footer : string.Empty;
-        footerText.gameObject.SetActive(document != null && !string.IsNullOrWhiteSpace(document.Footer));
         iconImage.sprite = document != null ? document.Icon : null;
         iconImage.enabled = document != null && document.Icon != null;
         descriptionListDisplayer.Display(document);

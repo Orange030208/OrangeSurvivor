@@ -16,7 +16,6 @@ public class ShopUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI rerollCostText;
 
     [Header("属性面板(左)")] [SerializeField] private UISidebarRevealMotion propertiesSidebar;
-    [SerializeField] private UIPropertiesViewSync propertiesViewSync;
 
     [Header("背包面板(右)")] [SerializeField] private UISidebarRevealMotion inventorySidebar;
 
@@ -41,7 +40,6 @@ public class ShopUIPage : UIPageBase
 
         BindButtonEvents();
         InjectPropertiesDependencies();
-        propertiesViewSync.StartSync();
         HideAllSidebarPanelsImmediately();
         GameEventBus.Publish(new RequestShopSnapshotEvent());
     }
@@ -53,7 +51,6 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Unsubscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
 
         UnbindButtonEvents();
-        propertiesViewSync.StopSync();
         KillPanelTweens();
         ClearShopItems();
     }
@@ -237,7 +234,6 @@ public class ShopUIPage : UIPageBase
         Player player = FindFirstObjectByType<Player>();
 
         PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
-        propertiesViewSync.InjectDependencies(manager);
     }
 
     private static void RefreshSidebarDefaults(UISidebarRevealMotion sidebar)

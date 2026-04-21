@@ -24,21 +24,17 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
         }
 
         int colorDependency;
-        DisplayDocument document;
-
         if (itemData is AccessoryDataSO accessoryData)
         {
             colorDependency = accessoryData.Rarity;
-            document = accessoryData.BuildDisplayDocument();
             nameText.text = itemData.ItemName;
-            bottom.Display(document);
+            bottom.Display(itemData);
         }
         else if (itemData is WeaponDataSO weaponData)
         {
             colorDependency = shopItem.Level;
-            document = weaponData.BuildDisplayDocument(shopItem.Level);
             nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
-            bottom.Display(document);
+            bottom.Display(weaponData);
         }
         else
         {

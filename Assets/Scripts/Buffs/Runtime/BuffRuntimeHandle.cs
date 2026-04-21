@@ -51,7 +51,7 @@ public sealed class BuffRuntimeHandle
     {
         if (buffData == null)
         {
-            return new ActiveBuffSnapshot(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, new DisplayDocument());
+            return new ActiveBuffSnapshot(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, IDescribable.Default);
         }
 
         bool hasDuration = totalDurationSeconds > 0f;
@@ -72,6 +72,6 @@ public sealed class BuffRuntimeHandle
             hasDuration,
             remainingDurationSeconds,
             totalDurationSeconds,
-            buffData.BuildDisplayDocument(descriptionContext));
+            buffData);
     }
 }
