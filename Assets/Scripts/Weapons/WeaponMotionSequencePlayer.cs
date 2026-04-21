@@ -21,7 +21,7 @@ public sealed class WeaponMotionSequencePlayer
     private int nextEventIndex;
 
     public bool IsPlaying { get; private set; }
-    public event Action<WeaponSequenceEventContext> EventTriggered;
+    public event Action<WeaponSequenceEventType, int> EventTriggered;
     public event Action Completed;
 
     public WeaponMotionSequencePlayer(Transform animatedTransform)
@@ -123,15 +123,7 @@ public sealed class WeaponMotionSequencePlayer
         while (nextEventIndex < events.Count && normalizedTime >= events[nextEventIndex].normalizedTime)
         {
             WeaponSequenceEventKeyframe keyframe = events[nextEventIndex];
-            WeaponSequenceEventContext eventContext = keyframe.eventType switch
-            {
-                WeaponSequenceEventType.OpenHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.eventKey),
-                WeaponSequenceEventType.CloseHitWindow => WeaponSequenceEventContext.CreateWindowEvent(keyframe.eventType, keyframe.eventKey),
-                WeaponSequenceEventType.SpawnProjectile => WeaponSequenceEventContext.CreateProjectileEvent(keyframe.eventKey),
-                _ => WeaponSequenceEventContext.CreateSimpleEvent(keyframe.eventType, keyframe.eventKey)
-            };
-
-            EventTriggered?.Invoke(eventContext);
+            EventTriggered?.Invoke(keyframe.eventType, keyframe.eventKey);
             nextEventIndex++;
         }
     }

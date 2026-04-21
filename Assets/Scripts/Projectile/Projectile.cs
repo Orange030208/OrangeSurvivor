@@ -1,15 +1,6 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// 玩家投射物基类。
-/// 当前负责：
-/// - 按发射上下文设置方向与速度；
-/// - 处理寿命；
-/// - 命中目标时发起统一 hit 流程；
-/// - 根据弹射物定义应用基础倍率。
-/// 后续如果要做穿透、弹射、分裂、持续伤害等，可以在子类里扩展。
-/// </summary>
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
 public class Projectile : Entity, IProjectile
 {
@@ -17,19 +8,41 @@ public class Projectile : Entity, IProjectile
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected LayerMask targetsLayerMask;
     [SerializeField] protected float maxLifetime = 5f;
+    [SerializeField] protected int maxHitCount = 1;
+    [SerializeField] protected EntityRenderer entityRenderer;
 
+    /// <summary>
+    /// 防止刚生成就接触一群敌人
+    /// </summary>
+    private int currentHitCount = 0;
     private Rigidbody2D rb;
     private float lifetimeTimer;
     protected ProjectileLaunchContext launchContext;
     private float currentMoveSpeed;
     private float currentMaxLifetime;
     private float currentDamageMultiplier = 1f;
+    private Vector3 baseLocalScale;
+    private Quaternion baseRotation;
+    private SpriteRenderer cachedSpriteRenderer;
+    private Animator cachedAnimator;
+
+    public override EntityRenderer EntityRenderer => entityRenderer;
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         currentMoveSpeed = moveSpeed;
         currentMaxLifetime = maxLifetime;
+        baseLocalScale = transform.localScale;
+        baseRotation = transform.rotation;
+
+        if (entityRenderer == null)
+        {
+            entityRenderer = GetComponentInChildren<EntityRenderer>();
+        }
+
+        cachedSpriteRenderer = entityRenderer != null ? entityRenderer.SpriteRenderer : GetComponentInChildren<SpriteRenderer>();
+        cachedAnimator = GetComponentInChildren<Animator>();
     }
 
     protected virtual void OnEnable()
@@ -57,17 +70,19 @@ public class Projectile : Entity, IProjectile
         targetsLayerMask = context.TargetLayerMask;
         ApplyProjectileDefinition(context.ProjectileDefinition);
         transform.position = context.SpawnPosition;
-        transform.right = context.Direction;
+        ApplyFacing(context.Direction, context.ProjectileDefinition);
         rb.velocity = context.Direction * currentMoveSpeed;
+        OnLaunched(context);
     }
 
     protected virtual void OnLaunched(ProjectileLaunchContext context)
     {
+        SpawnLaunchEffect(context.ProjectileDefinition);
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
-        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask))
+        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount>=maxHitCount)
         {
             return;
         }
@@ -77,6 +92,7 @@ public class Projectile : Entity, IProjectile
             return;
         }
 
+        currentHitCount++;
         ApplyImpact(healthComponent);
         Destroy(gameObject);
     }
@@ -102,16 +118,16 @@ public class Projectile : Entity, IProjectile
             HitSourceKind.Projectile,
             GetType().Name);
 
-        IProjectileLauncher projectileLauncher = launchContext.Launcher;
-
         HitService.Apply(request);
+        SpawnImpactEffect(healthComponent.transform.position, launchContext.ProjectileDefinition);
     }
 
-    private void ApplyProjectileDefinition(ProjectileDefinitionSO projectileDefinition)
+    public void ApplyProjectileDefinition(ProjectileDefinitionSO projectileDefinition)
     {
         currentMoveSpeed = moveSpeed;
         currentMaxLifetime = maxLifetime;
         currentDamageMultiplier = 1f;
+        transform.localScale = baseLocalScale;
 
         if (projectileDefinition == null)
         {
@@ -121,10 +137,106 @@ public class Projectile : Entity, IProjectile
         currentMoveSpeed *= projectileDefinition.SpeedMultiplier;
         currentMaxLifetime *= projectileDefinition.LifetimeMultiplier;
         currentDamageMultiplier *= projectileDefinition.DamageMultiplier;
+        transform.localScale = baseLocalScale * projectileDefinition.ScaleMultiplier;
+        ApplyPresentation(projectileDefinition);
+    }
+
+    private void ApplyPresentation(ProjectileDefinitionSO projectileDefinition)
+    {
+        if (cachedSpriteRenderer != null)
+        {
+            if (projectileDefinition.Sprite != null)
+            {
+                cachedSpriteRenderer.sprite = projectileDefinition.Sprite;
+            }
+
+            if (projectileDefinition.Material != null)
+            {
+                cachedSpriteRenderer.material = projectileDefinition.Material;
+            }
+
+            cachedSpriteRenderer.sortingOrder = projectileDefinition.SortingOrder;
+        }
+
+        if (cachedAnimator == null)
+        {
+            return;
+        }
+
+        cachedAnimator.runtimeAnimatorController = projectileDefinition.AnimatorController;
+        if (!string.IsNullOrWhiteSpace(projectileDefinition.LaunchAnimationTrigger) &&
+            cachedAnimator.HasParameter(projectileDefinition.LaunchAnimationTrigger, AnimatorControllerParameterType.Trigger))
+        {
+            cachedAnimator.SetTrigger(projectileDefinition.LaunchAnimationTrigger);
+        }
+    }
+
+    private void ApplyFacing(Vector2 direction, ProjectileDefinitionSO projectileDefinition)
+    {
+        if (projectileDefinition == null)
+        {
+            transform.right = direction;
+            return;
+        }
+
+        if (!projectileDefinition.UseDirectionFacing)
+        {
+            transform.rotation = baseRotation * Quaternion.Euler(0f, 0f, projectileDefinition.RotationOffset);
+            return;
+        }
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle + projectileDefinition.RotationOffset);
+    }
+
+    private void SpawnLaunchEffect(ProjectileDefinitionSO projectileDefinition)
+    {
+        if (projectileDefinition == null)
+        {
+            return;
+        }
+
+        RuntimeVfx.Spawn(projectileDefinition.LaunchVfxPrefab, transform.position, transform.rotation);
+    }
+
+    private void SpawnImpactEffect(Vector3 impactPosition, ProjectileDefinitionSO projectileDefinition)
+    {
+        if (projectileDefinition == null)
+        {
+            return;
+        }
+
+        if (projectileDefinition.ImpactSfxKey != AudioSfxKey.None)
+        {
+            AudioSfxBridge.RequestPlay(projectileDefinition.ImpactSfxKey);
+        }
+
+        RuntimeVfx.Spawn(projectileDefinition.ImpactVfxPrefab, impactPosition, transform.rotation);
     }
 
     private bool IsInLayerMask(int layer, LayerMask layerMask)
     {
         return (layerMask.value & (1 << layer)) != 0;
+    }
+}
+
+internal static class AnimatorExtensions
+{
+    public static bool HasParameter(this Animator animator, string parameterName, AnimatorControllerParameterType parameterType)
+    {
+        if (animator == null || string.IsNullOrWhiteSpace(parameterName))
+        {
+            return false;
+        }
+
+        foreach (AnimatorControllerParameter parameter in animator.parameters)
+        {
+            if (parameter.type == parameterType && string.Equals(parameter.name, parameterName, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

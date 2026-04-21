@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: GoldguardSword
+  m_EditorClassIdentifier: 
+  itemName: "\u91D1\u67C4\u957F\u5251"
+  itemIcon: {fileID: 21300000, guid: c3919b174e4021c4ca4cc987abc822a3, type: 3}
+  itemPrice: 26
+  itemType: 0
+  weaponPrefab: {fileID: 6802585226729800489, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: 9e340302b445e13449986dae827d8b27, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 1
+  attackSequenceOccupancy: 0.88
+  sequenceProjectileList: []
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 1, y: 1.55}
+  meleeHitOffset: {x: 0, y: 0.84}
+  attack: 24
+  attackSpeed: 0.72
+  criticalChance: 0.1
+  criticalPercent: 2.2
+  range: 3.6

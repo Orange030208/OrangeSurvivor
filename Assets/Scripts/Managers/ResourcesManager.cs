@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UniversalUI.Integration.Game.ScriptableObjects;
 
@@ -11,9 +12,9 @@ public static class ResourcesManager
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
     private const string ENEMY_TEMPLATE_CATALOG_DATA_PATH = "Data/Enemies/Enemy Template Catalog";
-    private const string PROJECTILE_PREFAB_PATH = "Prefabs/Weapons/Projectile";
+    private const string PROJECTILE_COMMON_PREFAB_PATH = "Prefabs/Projectiles/Projectile Common";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
-    private const string DEFAULT_PLAYER_PREFAB_NAME = "Dave";
+    private const string DEFAULT_PLAYER_PREFAB_NAME = "Character";
 
     private static PropIcon[] propIcons;
     private static AccessoryDataSO[] Accessories;
@@ -22,7 +23,7 @@ public static class ResourcesManager
     private static PlayerLevelConfigSO playerLevelConfig;
     private static StageDefinitionSO stageDefinition;
     private static EnemyTemplateCatalogSO enemyTemplateCatalog;
-    private static Projectile projectilePrefab;
+    private static readonly Dictionary<ProjectileTemplateKind, Projectile> projectilePrefabCache = new();
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -148,11 +149,23 @@ public static class ResourcesManager
 
     public static Projectile GetProjectilePrefab(ProjectileTemplateKind templateKind)
     {
-        return templateKind switch
+        if (projectilePrefabCache.TryGetValue(templateKind, out Projectile cachedPrefab) && cachedPrefab != null)
         {
-            ProjectileTemplateKind.Common => LoadProjectilePrefab(ref projectilePrefab, PROJECTILE_PREFAB_PATH),
+            return cachedPrefab;
+        }
+
+        Projectile loadedPrefab = templateKind switch
+        {
+            ProjectileTemplateKind.Common => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
+            ProjectileTemplateKind.Piercing => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
+            ProjectileTemplateKind.Homing => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
+            ProjectileTemplateKind.Explosive => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
+            ProjectileTemplateKind.Boomerang => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
             _ => throw new ArgumentOutOfRangeException(nameof(templateKind), templateKind, "Unsupported projectile template kind.")
         };
+
+        projectilePrefabCache[templateKind] = loadedPrefab;
+        return loadedPrefab;
     }
 
     public static Player GetPlayerPrefab(string prefabName)
@@ -237,11 +250,11 @@ public static class ResourcesManager
         return filteredAccessories[UnityEngine.Random.Range(0, filteredAccessories.Length)];
     }
 
-    private static Projectile LoadProjectilePrefab(ref Projectile cache, string resourcePath)
+    private static Projectile LoadProjectilePrefab(string resourcePath)
     {
-        cache ??= Resources.Load<Projectile>(resourcePath);
-        return cache != null
-            ? cache
+        Projectile prefab = Resources.Load<Projectile>(resourcePath);
+        return prefab != null
+            ? prefab
             : throw new MissingReferenceException($"{nameof(ResourcesManager)} requires a {nameof(Projectile)} resource at {resourcePath}.");
     }
 }

@@ -1,20 +1,24 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Player))]
-public class PlayerController : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D))]
+public class PlayerController : MonoBehaviour,IMovement
 {
     private Rigidbody2D _rb;
     [SerializeField] private float speed;
 
+    private bool moveDisabled = false;
+
     private PropertiesManager propertiesManager;
-    private Player player;
     private Vector2 moveDirection;
+
+    public Vector2 MoveDirection => moveDirection;
+    public bool IsMoving => moveDirection.sqrMagnitude > 0.0001f;
+    public float Speed => speed;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         propertiesManager = GetComponent<PropertiesManager>();
-        player = GetComponent<Player>();
     }
 
     private void OnEnable()
@@ -56,7 +60,7 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        player.ApplyMoveDirection(moveDirection);
+        if (moveDisabled) return;
         _rb.velocity = moveDirection * Time.deltaTime * speed;
     }
 
@@ -78,4 +82,15 @@ public class PlayerController : MonoBehaviour
         if (propertiesManager == null) return;
         speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
     }
+
+    public void EnableMovement()
+    {
+        moveDisabled = true;
+    }
+
+    public void DisableMovement()
+    {
+        moveDisabled = false;
+    }
+
 }

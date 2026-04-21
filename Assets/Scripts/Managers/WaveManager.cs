@@ -17,6 +17,7 @@ public class WaveManager : MonoBehaviour
 
     [SerializeField]
     private Entity spawnAroundEntity;
+    [SerializeField] private SpawnIndicator enemySpawnIndicatorPrefab;
 
     private int CurrentWaveIndex => runtimeState.CurrentWaveIndex;
     private float CurrentTimer => runtimeState.Timer;
@@ -53,7 +54,7 @@ public class WaveManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(WaveManager)} requires an {nameof(EnemyTemplateCatalogSO)} resource at Data/Enemies/Enemy Template Catalog.");
         }
 
-        enemyFactory = new EnemyFactory(enemyTemplateCatalog);
+        enemyFactory = new EnemyFactory(enemyTemplateCatalog, enemySpawnIndicatorPrefab);
         waveCompletionService = new WaveCompletionService(enemyRuntimeRegistry);
         waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory);
         ApplySpawnPositionPolicy(0);

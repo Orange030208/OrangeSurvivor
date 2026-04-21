@@ -1,36 +1,33 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 /// <summary>
 /// 远程武器：负责索敌、进入攻击、播放攻击序列，并在合适时机发射投射物。
 /// 它不直接维护子弹行为，只负责把攻击意图转换成 projectile 发射。
 /// 正式弹射物配置优先由序列事件直接引用 ProjectileDefinitionSO，
-/// WeaponDataSO.ProjectileDefinitions 则作为武器级共享清单与回退来源。
+/// WeaponDataSO 仅通过 sequenceProjectileList 提供对应事件 key 的发射配置。
 /// 
 /// 运行时可变配置约定：
 /// - 发射点、额外枪口、ProjectileDefinition 等可能在装配后才稳定；
-/// - 因此不要在 Awake 缓存 ProjectileWeaponAttackExecutor，发射时再按当前配置解析。
+/// - 因此投射物发射参数在开火时按当前配置直接解析，而不是提前缓存运行时执行器。
 /// </summary>
 [RequireComponent(typeof(WeaponSequenceBridge))]
-public class RangeWeapon : Weapon
+public class RangeWeapon : Weapon, IProjectileLauncher
 {
     [Header("Inspector")]
     [Tooltip("默认发射点。单枪口武器通常只需要配置这个点。")]
     [SerializeField] private Transform shootingPoint;
-    [Tooltip("额外发射点。用于双枪、多炮口或多枪管武器。索引由 ProjectileSpawnPayload.SpawnPointIndex 指定。")]
+    [Tooltip("额外发射点。用于双枪、多炮口或多枪管武器。索引由攻击序列中的生成配置指定。")]
     [SerializeField] private Transform[] additionalShootingPoints;
     [Tooltip("攻击序列资源。为空时会在运行时生成默认远程序列。")]
     [SerializeField] private AttackSequenceDefinitionSO attackSequence;
     [Tooltip("必需组件：负责驱动武器动作序列并把关键帧事件转发回本类。")]
     [SerializeField] private WeaponSequenceBridge sequenceBridge;
 
-    private Entity pendingTarget;
+    private Vector2 pendingTargetPosition;
     private int activeBurstId = -1;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
-    private WeaponSequenceResourceResolver sequenceResourceResolver;
 
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
@@ -42,8 +39,6 @@ public class RangeWeapon : Weapon
 
     protected override void OnConfiguredFromData()
     {
-        sequenceResourceResolver = new WeaponSequenceResourceResolver(WeaponData);
-
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -85,93 +80,83 @@ public class RangeWeapon : Weapon
     protected override void BeginAttack(Entity target)
     {
         IsAttacking = true;
-        pendingTarget = target;
-        LockAttackDirection(ResolveAttackDirection(target));
+        pendingTargetPosition = target.Center;
+        LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
         activeBurstId = -1;
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
-        float reachScale = Mathf.Max(0.1f, RuntimeStats.Range);
+        float reachScale = Mathf.Max(0.1f, Range);
         sequenceBridge.Play(attackSequence, sequenceDuration, reachScale);
     }
 
-    private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
+    private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)
     {
-        switch (eventContext.EventType)
+        switch (eventType)
         {
             case WeaponSequenceEventType.SpawnProjectile:
-                FireProjectiles(eventContext.EventKey);
+                FireProjectiles(eventKey);
                 break;
             case WeaponSequenceEventType.PlaySfx:
-                PlaySequenceSfx(eventContext.EventKey);
+                PlaySequenceSfx(eventKey);
                 break;
             case WeaponSequenceEventType.PlayVfx:
-                PlaySequenceVfx(eventContext.EventKey);
+                PlaySequenceVfx(eventKey);
                 break;
         }
     }
 
     private void FireProjectiles(int eventKey)
     {
-        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetProjectile(eventKey, out ProjectileSpawnPayload payload))
+        if (WeaponData == null || !WeaponData.TryGetSequenceProjectile(eventKey, out WeaponSequenceProjectileDefinition projectileConfig))
         {
             return;
         }
 
-        FireProjectiles(payload);
+        FireProjectiles(projectileConfig);
     }
 
-    private void FireProjectiles(ProjectileSpawnPayload payload)
+    private void FireProjectiles(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        if (pendingTarget == null)
-        {
-            return;
-        }
-
-        switch (payload.FiringMode)
+        switch (projectileConfig.FiringMode)
         {
             case ProjectileFiringMode.Burst:
-                TryStartBurst(payload);
+                TryStartBurst(projectileConfig);
                 break;
             case ProjectileFiringMode.Spread:
-                FireSpread(payload);
+                FireSpread(projectileConfig);
                 break;
             case ProjectileFiringMode.Nova:
-                FireNova(payload);
+                FireNova(projectileConfig);
                 break;
             default:
-                FireSingle(payload, null);
+                FireSingle(projectileConfig, null);
                 break;
         }
     }
 
-    private void TryStartBurst(ProjectileSpawnPayload payload)
+    private void TryStartBurst(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        if (activeBurstId == payload.BurstId)
+        if (activeBurstId == projectileConfig.BurstId)
         {
             return;
         }
 
-        activeBurstId = payload.BurstId;
-        StartCoroutine(BurstRoutine(payload));
+        activeBurstId = projectileConfig.BurstId;
+        StartCoroutine(BurstRoutine(projectileConfig));
     }
 
-    private IEnumerator BurstRoutine(ProjectileSpawnPayload payload)
+    private IEnumerator BurstRoutine(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        int burstCount = payload.PatternConfig.BurstCount;
-        float burstInterval = payload.PatternConfig.BurstInterval;
+        int burstCount = projectileConfig.PatternConfig.BurstCount;
+        float burstInterval = projectileConfig.PatternConfig.BurstInterval;
 
         for (int i = 0; i < burstCount; i++)
         {
-            if (pendingTarget == null)
-            {
-                break;
-            }
-
             while (!GameSimulation.IsRunning)
             {
                 yield return null;
             }
 
-            FireSingle(payload, null);
+            FireSingle(projectileConfig, null);
             if (i < burstCount - 1)
             {
                 yield return new WaitForSeconds(burstInterval);
@@ -181,62 +166,46 @@ public class RangeWeapon : Weapon
         activeBurstId = -1;
     }
 
-    private void FireSpread(ProjectileSpawnPayload payload)
+    private void FireSpread(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        int spreadCount = payload.PatternConfig.SpreadCount;
+        int spreadCount = projectileConfig.PatternConfig.SpreadCount;
         if (spreadCount <= 1)
         {
-            FireSingle(payload, null);
+            FireSingle(projectileConfig, null);
             return;
         }
 
-        float spreadAngle = payload.PatternConfig.SpreadAngle;
+        float spreadAngle = projectileConfig.PatternConfig.SpreadAngle;
         float step = spreadCount > 1 ? (spreadAngle * 2f) / (spreadCount - 1) : 0f;
         for (int i = 0; i < spreadCount; i++)
         {
             float angle = -spreadAngle + (step * i);
-            FireSingle(payload, angle);
+            FireSingle(projectileConfig, angle);
         }
     }
 
-    private void FireNova(ProjectileSpawnPayload payload)
+    private void FireNova(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        int novaCount = payload.PatternConfig.NovaCount;
+        int novaCount = projectileConfig.PatternConfig.NovaCount;
         for (int i = 0; i < novaCount; i++)
         {
             float angle = 360f / novaCount * i;
-            FireSingle(payload, angle);
+            FireSingle(projectileConfig, angle);
         }
     }
 
-    private void FireSingle(ProjectileSpawnPayload payload, float? angleOffset)
+    private void FireSingle(WeaponSequenceProjectileDefinition projectileConfig, float? angleOffset)
     {
-        ProjectileWeaponAttackExecutor executor = BuildExecutor(payload.ProjectileDefinition);
-        Transform origin = ResolveOrigin(payload.SpawnPointIndex);
-        WeaponAttackContext context = BuildAttackContext(pendingTarget, origin);
+        Transform origin = ResolveOrigin(projectileConfig.SpawnPointIndex);
+        Entity sourceEntity = ResolveAttackSourceEntity();
+        HitSpec hitSpec = BuildHitSpec();
+        Vector2 aimDirection = ResolveAttackDirection(pendingTargetPosition, origin);
         if (angleOffset.HasValue)
         {
-            Vector2 rotatedDirection = Quaternion.Euler(0f, 0f, angleOffset.Value) * context.AimDirection;
-            context = new WeaponAttackContext(context.Weapon, context.SourceEntity, context.Origin, context.Target, rotatedDirection.normalized, context.Stats, context.HitSpec);
+            aimDirection = (Quaternion.Euler(0f, 0f, angleOffset.Value) * aimDirection).normalized;
         }
 
-        executor.ExecuteAttack(context, payload);
-    }
-
-    private ProjectileWeaponAttackExecutor BuildExecutor(ProjectileDefinitionSO projectileDefinition)
-    {
-        Projectile projectilePrefab = ResolveProjectilePrefab(projectileDefinition);
-        return new ProjectileWeaponAttackExecutor(projectilePrefab, shootingPoint, additionalShootingPoints);
-    }
-
-    private Projectile ResolveProjectilePrefab(ProjectileDefinitionSO projectileDefinition)
-    {
-        if (projectileDefinition == null)
-        {
-            throw new ArgumentNullException(nameof(projectileDefinition), $"{nameof(RangeWeapon)} requires {nameof(ProjectileDefinitionSO)} for projectile attacks.");
-        }
-
-        return ResourcesManager.GetProjectilePrefab(projectileDefinition.TemplateKind);
+        ExecuteProjectileAttack(sourceEntity, origin, aimDirection, hitSpec, projectileConfig);
     }
 
     private Transform ResolveOrigin(int spawnPointIndex)
@@ -249,9 +218,46 @@ public class RangeWeapon : Weapon
         return shootingPoint != null ? shootingPoint : transform;
     }
 
+    public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
+    {
+        if (projectile == null)
+        {
+            throw new ArgumentNullException(nameof(projectile), $"{nameof(RangeWeapon)} requires a valid {nameof(IProjectile)} instance.");
+        }
+
+        if (context.ProjectileDefinition != null)
+        {
+            AudioSfxBridge.RequestPlay(context.ProjectileDefinition.LaunchSfxKey);
+        }
+
+        projectile.Launch(context);
+    }
+
+    private void ExecuteProjectileAttack(
+        Entity sourceEntity,
+        Transform origin,
+        Vector2 aimDirection,
+        HitSpec hitSpec,
+        WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        Projectile projectile = ProjectileFactory.CreateProjectile(projectileConfig.ProjectileDefinition, origin.position, Quaternion.identity);
+        LaunchProjectile(projectile, new ProjectileLaunchContext(
+            this,
+            sourceEntity,
+            origin.position,
+            aimDirection,
+            hitSpec,
+            TargetLayerMask,
+            projectileConfig.SpawnPointIndex,
+            projectileConfig.ProjectileDefinition,
+            projectileConfig.BurstId,
+            projectileConfig.FiringMode,
+            projectileConfig.PatternConfig));
+    }
+
     private void PlaySequenceSfx(int eventKey)
     {
-        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetSfx(eventKey, out WeaponSequenceSfxDefinition definition))
+        if (WeaponData == null || !WeaponData.TryGetSequenceSfx(eventKey, out WeaponSequenceSfxDefinition definition))
         {
             return;
         }
@@ -264,7 +270,7 @@ public class RangeWeapon : Weapon
 
     private void PlaySequenceVfx(int eventKey)
     {
-        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetVfx(eventKey, out WeaponSequenceVfxDefinition definition))
+        if (WeaponData == null || !WeaponData.TryGetSequenceVfx(eventKey, out WeaponSequenceVfxDefinition definition))
         {
             return;
         }
@@ -274,14 +280,13 @@ public class RangeWeapon : Weapon
             Transform spawnAnchor = ResolveOrigin(definition.SpawnPointIndex);
             Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
             Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
-            GameObject instance =  Instantiate(definition.VfxPrefab, spawnPosition, spawnRotation);
-            Destroy(instance, definition.VfxLifetime);
+            RuntimeVfx.Spawn(definition.VfxPrefab, spawnPosition, spawnRotation, null);
         }
     }
 
     private void FinishAttackSequence()
     {
-        pendingTarget = null;
+        pendingTargetPosition = Vector2.zero;
         activeBurstId = -1;
         CompleteAttackCycle();
     }
@@ -319,7 +324,6 @@ public class RangeWeapon : Weapon
             return;
         }
 
-        WeaponSequenceResourceResolver previewResolver = new WeaponSequenceResourceResolver(WeaponData);
         var events = sequence.EventKeyframes;
         for (int i = 0; i < events.Count; i++)
         {
@@ -330,32 +334,32 @@ public class RangeWeapon : Weapon
             }
 
             Transform origin = null;
-            if (!previewResolver.TryGetProjectile(keyframe.eventKey, out ProjectileSpawnPayload payload))
+            if (WeaponData == null || !WeaponData.TryGetSequenceProjectile(keyframe.eventKey, out WeaponSequenceProjectileDefinition projectileConfig))
             {
                 continue;
             }
 
-            origin = ResolveOrigin(payload.SpawnPointIndex);
+            origin = ResolveOrigin(projectileConfig.SpawnPointIndex);
             if (origin == null)
             {
                 continue;
             }
 
-            DrawProjectilePatternGizmo(origin, payload);
+            DrawProjectilePatternGizmo(origin, projectileConfig);
         }
     }
 
-    private void DrawProjectilePatternGizmo(Transform origin, ProjectileSpawnPayload payload)
+    private void DrawProjectilePatternGizmo(Transform origin, WeaponSequenceProjectileDefinition projectileConfig)
     {
-        Gizmos.color = payload.ProjectileDefinition != null ? payload.ProjectileDefinition.DebugColor : Color.cyan;
+        Gizmos.color = projectileConfig.ProjectileDefinition != null ? projectileConfig.ProjectileDefinition.DebugColor : Color.cyan;
 
-        switch (payload.FiringMode)
+        switch (projectileConfig.FiringMode)
         {
             case ProjectileFiringMode.Spread:
-                DrawSpreadPattern(origin, payload.PatternConfig.SpreadCount, payload.PatternConfig.SpreadAngle);
+                DrawSpreadPattern(origin, projectileConfig.PatternConfig.SpreadCount, projectileConfig.PatternConfig.SpreadAngle);
                 break;
             case ProjectileFiringMode.Nova:
-                DrawNovaPattern(origin, payload.PatternConfig.NovaCount);
+                DrawNovaPattern(origin, projectileConfig.PatternConfig.NovaCount);
                 break;
             default:
                 Gizmos.DrawRay(origin.position, origin.up * 1.1f);

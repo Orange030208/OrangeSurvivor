@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - sfxKey: 1
-    clip: {fileID: 8300000, guid: cff0754db910b26498e4d5c0d6b55a40, type: 3}
+    clip: {fileID: 8300000, guid: c2b92abc9ce719f428292c4272f10786, type: 3}
     busType: 1
     playbackMode: 0
     volume: 1

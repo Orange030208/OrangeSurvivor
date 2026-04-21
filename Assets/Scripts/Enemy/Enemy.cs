@@ -1,157 +1,109 @@
 using System;
-using DG.Tweening;
 using UnityEngine;
 
-[RequireComponent(typeof(HealthComponent), typeof(Movement), typeof(Attacker))]
+[RequireComponent(typeof(HealthComponent))]
+[RequireComponent(typeof(Movement))]
+[RequireComponent(typeof(Attacker))]
+[RequireComponent(typeof(EnemyCombatController))]
+[RequireComponent(typeof(EnemyRuntimeBridge))]
 public class Enemy : Entity
 {
     [Header("组件")]
-    [SerializeField] protected ParticleSystem passAwayParticles;
-    [SerializeField] protected SpriteRenderer spriteRenderer;
-    [SerializeField] protected SpriteRenderer spawnIndicator;
-    [SerializeField] protected new Collider2D collider;
-    [SerializeField] private Transform attackOrigin;
+    [SerializeField] private new Collider2D collider;
+    [SerializeField] private EntityRenderer entityRenderer;
 
     [Header("默认配置")]
     [SerializeField] private float maxHealth = 1f;
     [SerializeField] private EnemyRole role = EnemyRole.Normal;
     [SerializeField] private float attackDetectionRadius = 1f;
 
-    [Header("受击反馈")]
-    [SerializeField] private Color hitFlashColor = new(1f, 0.92f, 0.82f, 1f);
-    [SerializeField] private Color criticalHitFlashColor = new(1f, 0.7f, 0.3f, 1f);
-    [SerializeField] private float hitFlashDuration = 0.08f;
-    [SerializeField] private float hitPunchScale = 0.08f;
-    [SerializeField] private float criticalHitPunchScale = 0.16f;
+    private HealthComponent healthComponent;
+    private Movement movement;
+    private Attacker attacker;
+    private EnemyCombatController combatController;
+    private EnemyRuntimeBridge runtimeBridge;
 
-    protected Player _player;
-    protected HealthComponent healthComponent;
-    protected Movement _movement;
-
-    public override Vector2 Center => transform.position + new Vector3(0, collider.offset.y, 0);
-    public EnemyRole Role => role;
-    public float AttackDetectionRadius => attackDetectionRadius;
-    public bool HasAttackController => attacker != null && attacker.HasAttackController;
-    public bool CanExecuteAttack => spriteRenderer != null && spriteRenderer.enabled;
-
-    private Tween hitFlashTween;
-    private Tween hitPunchTween;
-    private Vector3 defaultScale;
-    private Color defaultSpriteColor = Color.white;
-    private bool runtimeRegistered;
+    private Entity targetEntity;
     private EnemyDefinitionSO runtimeDefinition;
     private AttackDefinitionSO runtimeAttackDefinition;
     private EnemyMovementDefinitionSO runtimeMovementDefinition;
-    private Attacker attacker;
-    private IEnemyMovementExecutor movementExecutor;
 
-    protected virtual void Awake()
+    public override IMovement MoveComponent => movement;
+    public override Vector2 Center => transform.position + new Vector3(0f, collider != null ? collider.offset.y : 0f, 0f);
+    public override EntityRenderer EntityRenderer => entityRenderer;
+
+    public EnemyRole Role => role;
+    public Entity TargetEntity => targetEntity;
+    public AttackDefinitionSO RuntimeAttackDefinition => runtimeAttackDefinition;
+    public EnemyMovementDefinitionSO RuntimeMovementDefinition => runtimeMovementDefinition;
+    public float AttackDetectionRadius => attackDetectionRadius;
+
+    private void Awake()
     {
         healthComponent = GetComponent<HealthComponent>();
-        _movement = GetComponent<Movement>();
+        movement = GetComponent<Movement>();
         attacker = GetComponent<Attacker>();
-        defaultScale = transform.localScale;
-        if (spriteRenderer != null)
+        combatController = GetComponent<EnemyCombatController>();
+        runtimeBridge = GetComponent<EnemyRuntimeBridge>();
+
+        if (entityRenderer == null)
         {
-            defaultSpriteColor = spriteRenderer.color;
+            entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
 
-        if (attackOrigin == null)
+        if (combatController != null)
         {
-            AttackOrigin attackOriginMarker = GetComponentInChildren<AttackOrigin>();
-            attackOrigin = attackOriginMarker != null ? attackOriginMarker.transform : transform;
+            combatController.Initialize(this, attacker);
         }
 
-        if (attacker != null)
+        if (runtimeBridge != null)
         {
-            attacker.Initialize(this, attackOrigin);
+            runtimeBridge.Initialize(this, healthComponent);
         }
     }
 
-    protected virtual void OnEnable()
+    private void Start()
     {
-        if (healthComponent != null)
+        if (runtimeDefinition == null)
         {
-            healthComponent.OnDied += PassAway;
+            throw new InvalidOperationException($"{nameof(Enemy)} must be configured by factory or spawner before runtime. Missing {nameof(EnemyDefinitionSO)}.");
         }
 
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
-        RegisterRuntime();
-    }
-
-    protected virtual void OnDisable()
-    {
-        UnregisterRuntime();
-
-        if (healthComponent != null)
+        if (targetEntity == null)
         {
-            healthComponent.OnDied -= PassAway;
-        }
-
-        GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
-        hitFlashTween?.Kill();
-        hitPunchTween?.Kill();
-
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = defaultSpriteColor;
-        }
-
-        transform.localScale = defaultScale;
-    }
-
-    protected virtual void Start()
-    {
-        if (_player == null)
-        {
-            _player = FindObjectOfType<Player>();
-        }
-
-        if (_player == null)
-        {
-            Debug.LogError("Player not found");
+            throw new InvalidOperationException($"{nameof(Enemy)} must receive an explicit target {nameof(Entity)} from factory or spawner before runtime.");
         }
 
         ApplyResolvedStats();
-        BuildMovementExecutorIfNeeded();
-        ConfigureAttackerIfNeeded();
-        StartSpawnSequence();
+        ConfigureCombat();
     }
 
-    protected virtual void Update()
+    public void Configure(EnemyDefinitionSO definition, Entity target)
     {
-        bool hasAttacked = attacker != null && attacker.Tick(Time.deltaTime);
-        if (!hasAttacked)
+        if (definition == null)
         {
-            TickMovement(Time.deltaTime);
+            throw new ArgumentNullException(nameof(definition), $"{nameof(Enemy)} requires a non-null {nameof(EnemyDefinitionSO)}.");
         }
 
-        UpdateFacing();
-    }
+        if (target == null)
+        {
+            throw new ArgumentNullException(nameof(target), $"{nameof(Enemy)} requires an explicit non-null {nameof(Entity)} target.");
+        }
 
-    public void Configure(EnemyRuntimeSetup setup)
-    {
-        runtimeDefinition = setup.Definition;
-        _player = setup.Player;
+        runtimeDefinition = definition;
+        targetEntity = target;
         ApplyResolvedStats();
-        BuildMovementExecutorIfNeeded();
-        ConfigureAttackerIfNeeded();
+        ConfigureCombat();
     }
 
     public void PassAway()
     {
-        PassAwayAfterWave();
+        runtimeBridge?.PassAway();
     }
 
     public void PassAwayAfterWave()
     {
-        if (passAwayParticles != null)
-        {
-            passAwayParticles.transform.SetParent(null);
-            passAwayParticles.Play();
-        }
-
-        Destroy(gameObject);
+        runtimeBridge?.PassAwayAfterWave();
     }
 
     private void ApplyResolvedStats()
@@ -167,156 +119,20 @@ public class Enemy : Entity
             healthComponent.Initialize(resolvedMaxHealth);
         }
 
-        if (_movement != null)
+        if (movement != null)
         {
-            float resolvedMoveSpeed = runtimeDefinition != null ? runtimeDefinition.MoveSpeed : _movement.MoveSpeed;
-            _movement.SetMoveSpeed(resolvedMoveSpeed);
+            float resolvedMoveSpeed = runtimeDefinition != null ? runtimeDefinition.MoveSpeed : movement.MoveSpeed;
+            movement.SetMoveSpeed(resolvedMoveSpeed);
         }
     }
 
-    private void BuildMovementExecutorIfNeeded()
+    private void ConfigureCombat()
     {
-        if (runtimeMovementDefinition == null)
-        {
-            movementExecutor = null;
-            return;
-        }
-
-        movementExecutor = EnemyMovementExecutorFactory.Create(new EnemyMovementExecutorBuildContext(this, runtimeMovementDefinition));
-    }
-
-    private void ConfigureAttackerIfNeeded()
-    {
-        if (attacker == null)
+        if (combatController == null || targetEntity == null)
         {
             return;
         }
 
-        if (runtimeAttackDefinition == null)
-        {
-            throw new InvalidOperationException($"{nameof(Enemy)} requires {nameof(AttackDefinitionSO)} from {nameof(EnemyDefinitionSO)} before configuring {nameof(Attacker)}.");
-        }
-
-        attacker.Configure(_player, runtimeAttackDefinition, attackDetectionRadius);
-    }
-
-    private void TickMovement(float deltaTime)
-    {
-        if (_movement == null || movementExecutor == null)
-        {
-            return;
-        }
-
-        EnemyMovementContext context = new EnemyMovementContext(this, _player, attackDetectionRadius, deltaTime);
-        movementExecutor.Execute(_movement, context);
-    }
-
-    private void RegisterRuntime()
-    {
-        if (runtimeRegistered)
-        {
-            return;
-        }
-
-        GameEventBus.Publish(new EnemyRuntimeRegisteredEvent(this, role));
-        runtimeRegistered = true;
-    }
-
-    private void UnregisterRuntime()
-    {
-        if (!runtimeRegistered)
-        {
-            return;
-        }
-
-        GameEventBus.Publish(new EnemyRuntimeUnregisteredEvent(this, role));
-        runtimeRegistered = false;
-    }
-
-    private void StartSpawnSequence()
-    {
-        SetRendersVisibility(false);
-        if (collider != null)
-        {
-            collider.enabled = false;
-        }
-
-        transform.DOScale(1.2f, 0.3f).SetLoops(5, LoopType.Yoyo).SetEase(Ease.InOutSine)
-            .OnComplete(OnSpawnSequenceCompleted);
-    }
-
-    private void OnSpawnSequenceCompleted()
-    {
-        SetRendersVisibility(true);
-        if (collider != null)
-        {
-            collider.enabled = true;
-        }
-    }
-
-    private void SetRendersVisibility(bool visible)
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.enabled = visible;
-        }
-
-        if (spawnIndicator != null)
-        {
-            spawnIndicator.enabled = !visible;
-        }
-    }
-
-    private void OnEntityDamaged(EntityDamagedEvent eventData)
-    {
-        if (eventData.Entity != this || spriteRenderer == null)
-        {
-            return;
-        }
-
-        FlashOnHit(eventData.HitResult.IsCritical);
-    }
-
-    private void UpdateFacing()
-    {
-        if (spriteRenderer == null || _player == null)
-        {
-            return;
-        }
-
-        Vector2 direction = _player.Center - Center;
-        if (Mathf.Abs(direction.x) <= Mathf.Epsilon)
-        {
-            return;
-        }
-
-        spriteRenderer.flipX = direction.x < 0f;
-    }
-
-    private void FlashOnHit(bool isCritical)
-    {
-        hitFlashTween?.Kill();
-        hitPunchTween?.Kill();
-
-        spriteRenderer.color = isCritical ? criticalHitFlashColor : hitFlashColor;
-        transform.localScale = defaultScale;
-
-        hitPunchTween = transform.DOPunchScale(
-            Vector3.one * (isCritical ? criticalHitPunchScale : hitPunchScale),
-            hitFlashDuration,
-            vibrato: 1,
-            elasticity: 0.5f);
-
-        hitFlashTween = spriteRenderer.DOColor(defaultSpriteColor, hitFlashDuration)
-            .SetEase(Ease.OutQuad)
-            .OnKill(() =>
-            {
-                if (spriteRenderer != null)
-                {
-                    spriteRenderer.color = defaultSpriteColor;
-                }
-
-                transform.localScale = defaultScale;
-            });
+        combatController.Configure(targetEntity, runtimeMovementDefinition, runtimeAttackDefinition, attackDetectionRadius);
     }
 }

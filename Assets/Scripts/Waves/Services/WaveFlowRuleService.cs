@@ -34,7 +34,7 @@ public class WaveFlowRuleService
         {
             WaveTransitionMode.AlwaysEnterTransition => true,
             WaveTransitionMode.NeverEnterTransition => false,
-            _ => player != null && player.IsLevelUpInCurrentWave
+            _ => player.GetComponent<PlayerLevel>().IsLevelUpInCurrentWave
         };
     }
 }

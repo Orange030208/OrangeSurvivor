@@ -1,48 +1,127 @@
-using System;
 using UnityEngine;
 
-[RequireComponent(typeof(HealthComponent), typeof(PlayerLevel), typeof(BuffController))]
+[RequireComponent(typeof(HealthComponent))]
+[RequireComponent(typeof(PlayerLevel))]
+[RequireComponent(typeof(BuffController))]
+[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(FeatureHost))]
+[RequireComponent(typeof(AccessoryManager))]
+[RequireComponent(typeof(WeaponsHolder))]
+[RequireComponent(typeof(PlayerAnimationController))]
 public class Player : Entity
 {
     [Header("组件")]
-    private PlayerLevel playerLevel;
     [SerializeField] private new CircleCollider2D collider;
-    [SerializeField] private EntityRenderer entityRenderer; 
-
-    private Vector2 currentFacingDirection = Vector2.up;
-    private bool isMoving;
-
+    [SerializeField] private EntityRenderer entityRenderer;
+    private PlayerLevel playerLevel;
+    private PlayerController playerController;
+    private FeatureHost featureHost;
+    private WeaponsHolder weaponsHolder;
+    private AccessoryManager accessoryManager;
+    private PlayerAnimationController playerAnimationController;
+    private bool hasInstalledLoadout;
+    public override IMovement MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
-    public override bool IsMoving => isMoving;
-    public override Vector2 CurrentFacingDirection => currentFacingDirection;
-
     public override EntityRenderer EntityRenderer => entityRenderer;
 
-    public bool IsLevelUpInCurrentWave => playerLevel.IsLevelUpInCurrentWave;
-    public int LevelUpValue => playerLevel.LevelUpValue;
-    public int UnspentUpgradePoints => playerLevel != null ? playerLevel.UnspentUpgradePoints : 0;
-    public PlayerLevel LevelComponent => playerLevel;
-
+    private CharacterDataSO characterData;
     private void Awake()
     {
         playerLevel = GetComponent<PlayerLevel>();
+        playerController = GetComponent<PlayerController>();
+        featureHost = GetComponent<FeatureHost>();
+        weaponsHolder = GetComponent<WeaponsHolder>();
+        accessoryManager = GetComponent<AccessoryManager>();
+        playerAnimationController =  GetComponent<PlayerAnimationController>();
         if (entityRenderer == null)
         {
             entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
     }
 
-    public void ApplyMoveDirection(Vector2 direction)
+    private void OnEnable()
     {
-        isMoving = direction.sqrMagnitude > 0.0001f;
-        if (isMoving)
-        {
-            currentFacingDirection = direction.normalized;
-        }
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
-    public int ConsumeUpgradePoint()
+    private void OnDisable()
     {
-        return playerLevel != null ? playerLevel.ConsumeUpgradePoint() : 0;
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        if (featureHost != null)
+        {
+            FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
+        }
+
+        hasInstalledLoadout = false;
+    }
+
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    {
+        if (eventData.NewState != GameState.Game || hasInstalledLoadout)
+        {
+            return;
+        }
+
+        CharacterDataSO selectedCharacter = CharacterSelectionManager.Instance.SelectedCharacter;
+        if (selectedCharacter != null)
+        {
+            characterData = selectedCharacter;
+        }
+
+        ApplyCharacterAnimator();
+        InstallRuntimeFeatures();
+        ApplyInitialLoadout();
+        hasInstalledLoadout = true;
+    }
+
+    private void ApplyCharacterAnimator()
+    {
+        playerAnimationController.Animator.runtimeAnimatorController = characterData.CharacterAnimatorController;
+    }
+
+    private void InstallRuntimeFeatures()
+    {
+        if (characterData == null || featureHost == null)
+        {
+            return;
+        }
+
+        FeatureInstaller.InstallCharacter(featureHost, characterData);
+    }
+
+    private void ApplyInitialLoadout()
+    {
+        if (characterData == null)
+        {
+            return;
+        }
+
+        if (weaponsHolder != null)
+        {
+            for (int i = 0; i < characterData.InitialWeapons.Count; i++)
+            {
+                WeaponLevelEntry entry = characterData.InitialWeapons[i];
+                if (entry.weaponData == null)
+                {
+                    continue;
+                }
+
+                weaponsHolder.AddWeapon(entry.weaponData, entry.level);
+            }
+        }
+
+        if (accessoryManager != null)
+        {
+            for (int i = 0; i < characterData.InitialAccessories.Count; i++)
+            {
+                AccessoryDataSO accessory = characterData.InitialAccessories[i];
+                if (accessory == null)
+                {
+                    continue;
+                }
+
+                accessoryManager.EquipAccessory(accessory);
+            }
+        }
     }
 }

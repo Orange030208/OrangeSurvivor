@@ -39,7 +39,7 @@ public class WaveSpawnExecutionService
         for (int i = 0; i < segment.SpawnCountPerBatch; i++)
         {
             Vector3 spawnPosition = spawnPositionResolver.Resolve(new SpawnContext(request.SpawnAnchor, request.CurrentTimer, request.CurrentWaveIndex));
-            enemyFactory.Spawn(new EnemyRuntimeSetup(segment.EnemyDefinition, player), spawnPosition, request.SpawnParent);
+            enemyFactory.Spawn(segment.EnemyDefinition, player, spawnPosition, request.SpawnParent);
         }
 
         WaveSegmentRuntimeState nextState = segmentState;

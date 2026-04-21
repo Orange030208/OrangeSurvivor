@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: VioletBlade
+  m_EditorClassIdentifier: 
+  itemName: "\u66AE\u7D2B\u957F\u5251"
+  itemIcon: {fileID: 21300000, guid: 0fa0a20224289e045b7e06f6b122e1e7, type: 3}
+  itemPrice: 18
+  itemType: 0
+  weaponPrefab: {fileID: 6802585226729800489, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: 8a1cae0602e95ab44aa0038e45285d49, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 1
+  attackSequenceOccupancy: 0.84
+  sequenceProjectileList: []
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 0.7, y: 1.15}
+  meleeHitOffset: {x: 0, y: 0.62}
+  attack: 14
+  attackSpeed: 1.2
+  criticalChance: 0.08
+  criticalPercent: 1.8
+  range: 3.4

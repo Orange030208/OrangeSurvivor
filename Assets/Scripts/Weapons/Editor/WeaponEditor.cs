@@ -26,20 +26,23 @@ public class WeaponEditor : Editor
 
         if (Application.isPlaying)
         {
-            WeaponRuntimeStats stats = weapon.RuntimeStats;
-            EditorGUILayout.LabelField("Damage", stats.Damage.ToString("0.##"));
-            EditorGUILayout.LabelField("Attack Interval", stats.AttackInterval.ToString("0.###"));
-            EditorGUILayout.LabelField("Range", stats.Range.ToString("0.##"));
-            EditorGUILayout.LabelField("Critical Chance", stats.CriticalChance.ToString("0.##"));
-            EditorGUILayout.LabelField("Critical Multiplier", stats.CriticalMultiplier.ToString("0.##"));
+            EditorGUILayout.LabelField("Damage", weapon.Damage.ToString("0.##"));
+            EditorGUILayout.LabelField("Attack Interval", weapon.AttackInterval.ToString("0.###"));
+            EditorGUILayout.LabelField("Range", weapon.Range.ToString("0.##"));
+            EditorGUILayout.LabelField("Critical Chance", weapon.CriticalChance.ToString("0.##"));
+            EditorGUILayout.LabelField("Critical Multiplier", weapon.CriticalMultiplier.ToString("0.##"));
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField("Sequence Timing", EditorStyles.boldLabel);
-            WeaponSequenceDebugInfo debugInfo = WeaponSequenceDebugInfoBuilder.Build(weapon, GetCurrentSequence(weapon));
-            EditorGUILayout.LabelField("Original Duration", debugInfo.OriginalDuration.ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Effective Duration", debugInfo.EffectiveDuration.ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Timing Window", debugInfo.TimingWindowDuration.ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Compression Ratio", (debugInfo.CompressionRatio * 100f).ToString("0.#") + "%");
+            AttackSequenceDefinitionSO sequence = GetCurrentSequence(weapon);
+            float originalDuration = sequence != null ? Mathf.Max(0f, sequence.Duration) : 0f;
+            float timingWindow = Mathf.Max(0f, weapon.AttackInterval * (weapon.WeaponData != null ? weapon.WeaponData.AttackSequenceOccupancy : 0.85f));
+            float effectiveDuration = sequence != null ? Mathf.Min(Mathf.Max(0.01f, sequence.Duration), Mathf.Max(0.01f, timingWindow)) : 0f;
+            float compressionRatio = originalDuration <= 0.0001f ? 1f : effectiveDuration / originalDuration;
+            EditorGUILayout.LabelField("Original Duration", originalDuration.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Effective Duration", effectiveDuration.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Timing Window", timingWindow.ToString("0.###") + "s");
+            EditorGUILayout.LabelField("Compression Ratio", (compressionRatio * 100f).ToString("0.#") + "%");
 
             if (weapon is RangeWeapon)
             {

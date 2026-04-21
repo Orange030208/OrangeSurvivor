@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// 近战武器：负责在命中窗口内持续做碰撞检测，并把命中的敌人结算为一次攻击。
@@ -20,9 +21,8 @@ public class MeleeWeapon : Weapon
     private readonly Dictionary<int, MeleeHitDetectionPose> hitWindowLastPoses = new();
     private readonly HashSet<int> activeHitWindows = new();
     private MeleeWeaponAttackExecutor attackExecutor;
-    private Entity pendingTarget;
+    private Vector2 pendingTargetPosition;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
-    private WeaponSequenceResourceResolver sequenceResourceResolver;
 
     private Vector2 HitBoxSize => WeaponData != null ? WeaponData.MeleeHitBoxSize : Vector2.one;
 
@@ -31,7 +31,7 @@ public class MeleeWeapon : Weapon
     protected override void Awake()
     {
         base.Awake();
-        attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform);
+        attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform, SpawnMeleeHitVfx);
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
         sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
         sequenceBridge.SequenceCompleted += FinishAttackSequence;
@@ -39,8 +39,6 @@ public class MeleeWeapon : Weapon
 
     protected override void OnConfiguredFromData()
     {
-        sequenceResourceResolver = new WeaponSequenceResourceResolver(WeaponData);
-
         if (attackSequence == null && WeaponData != null)
         {
             attackSequence = WeaponData.AttackSequence;
@@ -95,7 +93,9 @@ public class MeleeWeapon : Weapon
             }
 
             attackExecutor.ExecuteAttack(
-                BuildAttackContext(pendingTarget, hitDetectionTransform),
+                this,
+                ResolveAttackSourceEntity(),
+                BuildHitSpec(),
                 HitBoxSize,
                 hitTargets,
                 targetLayerMask,
@@ -109,8 +109,8 @@ public class MeleeWeapon : Weapon
     protected override void BeginAttack(Entity target)
     {
         IsAttacking = true;
-        pendingTarget = target;
-        LockAttackDirection(ResolveAttackDirection(target));
+        pendingTargetPosition = target.Center;
+        LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
         hitWindowLastPoses.Clear();
@@ -118,7 +118,7 @@ public class MeleeWeapon : Weapon
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
         // 动态帧不是在播放过程中实时追目标，
         // 而是在这次攻击开始时，结合当前目标位置 + 当前 RuntimeStats.Range 先解出一份本轮专属轨迹。
-        float reachScale = Mathf.Max(0.1f, RuntimeStats.Range);
+        float reachScale = Mathf.Max(0.1f, Range);
         IReadOnlyDictionary<int, Vector3> dynamicPositionOverrides = BuildDynamicPositionOverrides(target);
         sequenceBridge.Play(attackSequence, dynamicPositionOverrides, sequenceDuration, reachScale);
     }
@@ -150,7 +150,7 @@ public class MeleeWeapon : Weapon
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
         hitWindowLastPoses.Clear();
-        pendingTarget = null;
+        pendingTargetPosition = Vector2.zero;
         CompleteAttackCycle();
     }
 
@@ -168,7 +168,7 @@ public class MeleeWeapon : Weapon
         }
 
         Vector2 localTarget = transform.InverseTransformPoint(target.Center);
-        float attackRange = Mathf.Max(0.1f, RuntimeStats.Range);
+        float attackRange = Mathf.Max(0.1f, Range);
         Dictionary<int, Vector3> overrides = null;
 
         for (int i = 0; i < keyframes.Count; i++)
@@ -223,21 +223,21 @@ public class MeleeWeapon : Weapon
         return new Vector2(resolvedX, resolvedY);
     }
 
-    private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
+    private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)
     {
-        switch (eventContext.EventType)
+        switch (eventType)
         {
             case WeaponSequenceEventType.OpenHitWindow:
-                OpenHitWindow(eventContext.EventKey);
+                OpenHitWindow(eventKey);
                 break;
             case WeaponSequenceEventType.CloseHitWindow:
-                CloseHitWindow(eventContext.EventKey);
+                CloseHitWindow(eventKey);
                 break;
             case WeaponSequenceEventType.PlaySfx:
-                PlaySequenceSfx(eventContext.EventKey);
+                PlaySequenceSfx(eventKey);
                 break;
             case WeaponSequenceEventType.PlayVfx:
-                PlaySequenceVfx(eventContext.EventKey);
+                PlaySequenceVfx(eventKey);
                 break;
         }
     }
@@ -247,7 +247,7 @@ public class MeleeWeapon : Weapon
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
         hitWindowLastPoses.Clear();
-        pendingTarget = null;
+        pendingTargetPosition = Vector2.zero;
         CompleteAttackCycle();
         sequenceBridge.Stop(true);
     }
@@ -268,7 +268,7 @@ public class MeleeWeapon : Weapon
 
     private void PlaySequenceSfx(int windowId)
     {
-        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetSfx(windowId, out WeaponSequenceSfxDefinition definition))
+        if (WeaponData == null || !WeaponData.TryGetSequenceSfx(windowId, out WeaponSequenceSfxDefinition definition))
         {
             return;
         }
@@ -281,7 +281,7 @@ public class MeleeWeapon : Weapon
 
     private void PlaySequenceVfx(int windowId)
     {
-        if (sequenceResourceResolver == null || !sequenceResourceResolver.TryGetVfx(windowId, out WeaponSequenceVfxDefinition definition))
+        if (WeaponData == null || !WeaponData.TryGetSequenceVfx(windowId, out WeaponSequenceVfxDefinition definition))
         {
             return;
         }
@@ -291,9 +291,19 @@ public class MeleeWeapon : Weapon
             Transform spawnAnchor = hitDetectionTransform != null ? hitDetectionTransform : transform;
             Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
             Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
-            GameObject instance = Object.Instantiate(definition.VfxPrefab, spawnPosition, spawnRotation);
-            Object.Destroy(instance, definition.VfxLifetime);
+            RuntimeVfx.Spawn(definition.VfxPrefab, spawnPosition, spawnRotation, null);
         }
+    }
+
+    private void SpawnMeleeHitVfx(Vector2 hitPoint)
+    {
+        if (WeaponData == null || WeaponData.MeleeHitVfxPrefab == null)
+        {
+            return;
+        }
+
+        Quaternion spawnRotation = hitDetectionTransform != null ? hitDetectionTransform.rotation : transform.rotation;
+        RuntimeVfx.Spawn(WeaponData.MeleeHitVfxPrefab, hitPoint, spawnRotation, null);
     }
 
     private void OnDrawGizmosSelected()
@@ -318,5 +328,104 @@ public class MeleeWeapon : Weapon
         Gizmos.matrix = Matrix4x4.TRS(previewPosition, previewRotation, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, HitBoxSize);
         Gizmos.matrix = previousMatrix;
+    }
+}
+
+internal readonly struct MeleeHitDetectionPose
+{
+    public Vector2 Position { get; }
+    public float RotationZ { get; }
+
+    public MeleeHitDetectionPose(Vector2 position, float rotationZ)
+    {
+        Position = position;
+        RotationZ = rotationZ;
+    }
+}
+
+internal sealed class MeleeWeaponAttackExecutor
+{
+    private readonly Transform hitOrigin;
+    private readonly float innerCompensationRadius;
+    private readonly System.Action<Vector2> hitVfxCallback;
+
+    public MeleeWeaponAttackExecutor(Transform hitOrigin, System.Action<Vector2> hitVfxCallback, float innerCompensationRadius = 1.1f)
+    {
+        this.hitOrigin = hitOrigin;
+        this.hitVfxCallback = hitVfxCallback;
+        this.innerCompensationRadius = Mathf.Max(0.05f, innerCompensationRadius);
+    }
+
+    public void ExecuteAttack(Weapon weapon, Entity sourceEntity, HitSpec hitSpec, Vector2 hitBoxSize, HashSet<HealthComponent> hitTargets,
+        LayerMask targetLayerMask, in MeleeHitDetectionPose fromPose, in MeleeHitDetectionPose toPose)
+    {
+        if (hitOrigin == null || hitTargets == null)
+        {
+            return;
+        }
+
+        int sampleCount = CalculateSampleCount(hitBoxSize, fromPose, toPose);
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = sampleCount == 1 ? 1f : i / (sampleCount - 1f);
+            Vector2 sampledPosition = Vector2.Lerp(fromPose.Position, toPose.Position, t);
+            float sampledAngle = Mathf.LerpAngle(fromPose.RotationZ, toPose.RotationZ, t);
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(sampledPosition, hitBoxSize, sampledAngle, targetLayerMask);
+            ApplyDamage(colliders, weapon, sourceEntity, hitSpec, hitTargets, hitVfxCallback);
+        }
+    }
+
+    public MeleeHitDetectionPose CaptureCurrentPose()
+    {
+        return hitOrigin == null
+            ? default
+            : new MeleeHitDetectionPose(hitOrigin.position, hitOrigin.eulerAngles.z);
+    }
+
+    private int CalculateSampleCount(Vector2 hitBoxSize, in MeleeHitDetectionPose fromPose, in MeleeHitDetectionPose toPose)
+    {
+        float positionDelta = Vector2.Distance(fromPose.Position, toPose.Position);
+        float rotationDelta = Mathf.Abs(Mathf.DeltaAngle(fromPose.RotationZ, toPose.RotationZ));
+        float minHitExtent = Mathf.Max(0.05f, Mathf.Min(hitBoxSize.x, hitBoxSize.y) * 0.5f);
+        float positionStep = Mathf.Max(0.05f, minHitExtent / innerCompensationRadius);
+        int positionSamples = Mathf.Max(1, Mathf.CeilToInt(positionDelta / positionStep) + 1);
+        int rotationSamples = Mathf.Max(1, Mathf.CeilToInt(rotationDelta / 12f) + 1);
+        return Mathf.Max(positionSamples, rotationSamples);
+    }
+
+    private static void ApplyDamage(Collider2D[] colliders, Weapon weapon, Entity sourceEntity, HitSpec hitSpec, HashSet<HealthComponent> hitTargets, System.Action<Vector2> hitVfxCallback)
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (!colliders[i].TryGetComponent(out HealthComponent healthComponent))
+            {
+                continue;
+            }
+
+            if (hitTargets.Contains(healthComponent))
+            {
+                continue;
+            }
+
+            Entity target = healthComponent.GetComponent<Entity>();
+            if (target == null)
+            {
+                continue;
+            }
+
+            hitTargets.Add(healthComponent);
+            HitRequest request = new HitRequest(
+                sourceEntity,
+                target,
+                hitSpec,
+                healthComponent.transform.position,
+                HitSourceKind.Weapon,
+                weapon.GetType().Name);
+            HitResult hitResult = weapon.ApplyHit(request);
+            if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
+            {
+                hitVfxCallback?.Invoke(hitResult.HitPoint);
+            }
+        }
     }
 }

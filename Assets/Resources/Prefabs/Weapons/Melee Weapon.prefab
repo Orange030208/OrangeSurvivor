@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b2942a868c746a897554998f40d2469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponData>k__BackingField: {fileID: 11400000, guid: c7317d0eb1db1c7429a84cec9d1303a1, type: 2}
+  <WeaponData>k__BackingField: {fileID: 11400000, guid: daa6ae0cb705ebd4898b492c580d75d6, type: 2}
   entityRenderer: {fileID: 2223827726265095503}
   aimLerp: 16
   attackStartAimToleranceDegrees: 8
@@ -173,12 +173,12 @@ SpriteRenderer:
   m_SortingLayerID: 2002517321
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1427226467, guid: a18d70e51d64d4246b49050677716bc2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0a2388bf826964142aec65ef8694ce1e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 0.76}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

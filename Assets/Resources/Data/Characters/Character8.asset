@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
+  m_Name: Character8
+  m_EditorClassIdentifier: 
+  <CharacterName>k__BackingField: \\u5bd2\\u6f6e\\u5c11\\u5e74
+  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: ddd9ac0fc3948614dbd9ececf29db4eb, type: 3}
+  <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: faedc7a7e69b0314f924173817ded905, type: 2}
+  extraProps:
+  - propType: 0
+    modifierType: 0
+    value: 1.2
+  - propType: 6
+    modifierType: 0
+    value: 1
+  - propType: 18
+    modifierType: 0
+    value: 0.3
+  specialFeatures: []
+  initialWeapons:
+  - weaponData: {fileID: 11400000, guid: 47b68830b39862d439b223ece8a7df5f, type: 2}
+    level: 1
+  - weaponData: {fileID: 11400000, guid: 8fc79a9bbb1e0404593d55ec73c63a86, type: 2}
+    level: 1
+  initialAccessories:
+  - {fileID: 11400000, guid: 2c35fd36a60d0cb4194ed451ed23d89b, type: 2}
+  references:
+    version: 2
+    RefIds: []

@@ -10,6 +10,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
+    [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
@@ -23,6 +24,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private void OnEnable()
     {
         uiManager = FindFirstObjectByType<UIManager>();
+        mapGenerator = FindFirstObjectByType<MapGenerator>();
         if (uiManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
@@ -271,6 +273,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void EnterGameState(GameState oldState)
     {
+        EnsureMapGenerated();
         EnsurePlayerSpawned();
 
         if (oldState == GameState.Shop || oldState == GameState.WaveTransition)
@@ -346,6 +349,21 @@ public class GameManager : MonoSingletonBase<GameManager>
         }
 
         uiManager.OpenPage<GamePauseMenu>();
+    }
+
+    private void EnsureMapGenerated()
+    {
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
+
+        if (mapGenerator == null)
+        {
+            return;
+        }
+
+        mapGenerator.GenerateIfNeeded();
     }
 
     private void EnsurePlayerSpawned()

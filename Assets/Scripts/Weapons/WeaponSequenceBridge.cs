@@ -17,7 +17,7 @@ public class WeaponSequenceBridge : MonoBehaviour
     private WeaponMotionSequencePlayer sequencePlayer;
 
     public bool IsPlaying => sequencePlayer != null && sequencePlayer.IsPlaying;
-    public event Action<WeaponSequenceEventContext> SequenceEventTriggered;
+    public event Action<WeaponSequenceEventType, int> SequenceEventTriggered;
     public event Action SequenceCompleted;
 
     private void Awake()
@@ -75,9 +75,9 @@ public class WeaponSequenceBridge : MonoBehaviour
         sequencePlayer.Completed -= OnSequenceCompleted;
     }
 
-    private void OnSequenceEventTriggered(WeaponSequenceEventContext eventContext)
+    private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)
     {
-        SequenceEventTriggered?.Invoke(eventContext);
+        SequenceEventTriggered?.Invoke(eventType, eventKey);
     }
 
     private void OnSequenceCompleted()

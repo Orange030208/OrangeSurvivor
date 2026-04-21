@@ -110,11 +110,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <WeaponData>k__BackingField: {fileID: 11400000, guid: f2018ac17db5ab4499e404c85919bb44, type: 2}
+  entityRenderer: {fileID: 5216111028061925805}
   aimLerp: 10
+  attackStartAimToleranceDegrees: 8
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  enableDebugLogs: 1
   shootingPoint: {fileID: 9091141546960401188}
   additionalShootingPoints: []
   attackSequence: {fileID: 0}
@@ -142,6 +143,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5724003629659976428}
   - component: {fileID: 2009563338216685942}
+  - component: {fileID: 5216111028061925805}
   m_Layer: 0
   m_Name: Gun Render
   m_TagString: Untagged
@@ -217,3 +219,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5216111028061925805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5370423613001079563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2009563338216685942}

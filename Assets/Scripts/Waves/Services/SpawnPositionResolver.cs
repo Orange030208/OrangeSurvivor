@@ -33,6 +33,15 @@ public class SpawnPositionResolver
             throw new MissingReferenceException($"{nameof(SpawnContext)} is missing anchor entity.");
         }
 
+        Vector2 resolvedMinBounds = minBounds;
+        Vector2 resolvedMaxBounds = maxBounds;
+        if (MapGenerator.TryGetRuntimeBounds(out Bounds runtimeBounds))
+        {
+            Vector3 extents = runtimeBounds.extents;
+            resolvedMinBounds = new Vector2(runtimeBounds.center.x - extents.x, runtimeBounds.center.y - extents.y);
+            resolvedMaxBounds = new Vector2(runtimeBounds.center.x + extents.x, runtimeBounds.center.y + extents.y);
+        }
+
         Vector2 direction = Random.insideUnitCircle.normalized;
         if (direction == Vector2.zero)
         {
@@ -42,8 +51,8 @@ public class SpawnPositionResolver
         float spawnDistance = Random.Range(minDistance, maxDistance);
         Vector2 offset = direction * spawnDistance;
         Vector2 targetPos = (Vector2)context.AnchorEntity.Center + offset;
-        targetPos.x = Mathf.Clamp(targetPos.x, minBounds.x, maxBounds.x);
-        targetPos.y = Mathf.Clamp(targetPos.y, minBounds.y, maxBounds.y);
+        targetPos.x = Mathf.Clamp(targetPos.x, resolvedMinBounds.x, resolvedMaxBounds.x);
+        targetPos.y = Mathf.Clamp(targetPos.y, resolvedMinBounds.y, resolvedMaxBounds.y);
         return targetPos;
     }
 }

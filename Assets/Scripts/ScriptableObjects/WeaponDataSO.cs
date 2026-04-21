@@ -20,10 +20,12 @@ public struct WeaponSequenceProjectileDefinition
     [Tooltip("多弹模式参数。")]
     [SerializeField] private ProjectilePatternConfig patternConfig;
 
-    public ProjectileSpawnPayload ToPayload()
-    {
-        return new ProjectileSpawnPayload(Mathf.Max(0, spawnPointIndex), projectileDefinition, Mathf.Max(0, burstId), firingMode, patternConfig);
-    }
+    public int SpawnPointIndex => Mathf.Max(0, spawnPointIndex);
+    public ProjectileDefinitionSO ProjectileDefinition => projectileDefinition;
+    public int BurstId => Mathf.Max(0, burstId);
+    public ProjectileFiringMode FiringMode => firingMode;
+    public ProjectilePatternConfig PatternConfig => patternConfig;
+
 }
 
 [System.Serializable]
@@ -46,14 +48,11 @@ public struct WeaponSequenceVfxDefinition
     [SerializeField] private Vector3 localOffset;
     [Tooltip("相对锚点的局部旋转补偿。")]
     [SerializeField] private Vector3 localEulerAngles;
-    [Tooltip("特效实例的自动销毁时间。")]
-    [SerializeField] private float vfxLifetime;
 
     public GameObject VfxPrefab => vfxPrefab;
     public int SpawnPointIndex => Mathf.Max(0, spawnPointIndex);
     public Vector3 LocalOffset => localOffset;
     public Vector3 LocalEulerAngles => localEulerAngles;
-    public float VfxLifetime => Mathf.Max(0.01f, vfxLifetime);
 }
 
 /// <summary>
@@ -86,9 +85,6 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
     [Range(0.1f, 1f)]
     [SerializeField] private float attackSequenceOccupancy = 0.85f;
 
-    [Tooltip("该武器可使用的弹射物定义列表。序列里的 ProjectileVariantIndex 会映射到这里；近战武器也可以为命中后生成弹射物预留这些定义。")]
-    [SerializeField] private ProjectileDefinitionSO[] projectileDefinitions;
-
     [Tooltip("攻击序列对应的弹射物配置列表，SpawnProjectile 事件会使用 eventKey 作为这里的列表下标。")]
     [SerializeField] private WeaponSequenceProjectileDefinition[] sequenceProjectileList;
 
@@ -100,6 +96,8 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
 
     [Tooltip("武器命中目标后播放的命中音效。未配置时不播放。")]
     [SerializeField] private AudioSfxKey hitSfxKey = AudioSfxKey.None;
+    [Tooltip("近战武器命中时生成的特效预制体。未配置时不生成。")]
+    [SerializeField] private GameObject meleeHitVfxPrefab;
 
     [Tooltip("近战武器命中盒尺寸。仅近战武器使用；远程武器可忽略此字段。")]
     [SerializeField] private Vector2 meleeHitBoxSize = new(1f, 1f);
@@ -128,6 +126,7 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
     public IReadOnlyList<WeaponSequenceSfxDefinition> SequenceSfxList => sequenceSfxList;
     public IReadOnlyList<WeaponSequenceVfxDefinition> SequenceVfxList => sequenceVfxList;
     public AudioSfxKey HitSfxKey => hitSfxKey;
+    public GameObject MeleeHitVfxPrefab => meleeHitVfxPrefab;
     public Vector2 MeleeHitBoxSize => meleeHitBoxSize;
     public Vector2 MeleeHitOffset => meleeHitOffset;
 
@@ -145,7 +144,7 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
 
     /// <summary>
     /// 返回武器基础属性条目。
-    /// 等级修正不在这里做，而是交给 WeaponPropsCalculator 统一处理。
+    /// 等级修正统一在本资源内部处理，避免运行时逻辑散落到额外 helper。
     /// </summary>
     public List<PropEntry> GetPropsList()
     {
@@ -175,7 +174,14 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
 
     public List<PropEntry> GetPropEntriesByLevel(int level)
     {
-        return WeaponPropsCalculator.GetPropEntries(this, level);
+        float multiplier = 1f + (float)level / WeaponLevelScaling.MaxLevel;
+        List<PropEntry> calculatedProps = new();
+        foreach (PropEntry propEntry in GetPropsList())
+        {
+            calculatedProps.Add(new PropEntry(propEntry.propType, propEntry.modifierType, propEntry.value * multiplier));
+        }
+
+        return calculatedProps;
     }
 
     public Dictionary<PropType, float> GetPropsByLevel(int level)
@@ -189,5 +195,82 @@ public class WeaponDataSO : ItemDataSO, IDescriptionSource
         }
 
         return dictionary;
+    }
+
+    public bool TryGetSequenceProjectile(int eventKey, out WeaponSequenceProjectileDefinition definition)
+    {
+        definition = default;
+        if (eventKey < 0 || sequenceProjectileList == null || eventKey >= sequenceProjectileList.Length)
+        {
+            return false;
+        }
+
+        definition = sequenceProjectileList[eventKey];
+        return true;
+    }
+
+    public bool TryGetSequenceSfx(int eventKey, out WeaponSequenceSfxDefinition definition)
+    {
+        definition = default;
+        if (eventKey < 0 || sequenceSfxList == null || eventKey >= sequenceSfxList.Length)
+        {
+            return false;
+        }
+
+        definition = sequenceSfxList[eventKey];
+        return true;
+    }
+
+    public bool TryGetSequenceVfx(int eventKey, out WeaponSequenceVfxDefinition definition)
+    {
+        definition = default;
+        if (eventKey < 0 || sequenceVfxList == null || eventKey >= sequenceVfxList.Length)
+        {
+            return false;
+        }
+
+        definition = sequenceVfxList[eventKey];
+        return true;
+    }
+}
+
+internal static class WeaponLevelScaling
+{
+    public const int MaxLevel = 6;
+}
+
+public enum ProjectileFiringMode
+{
+    Default,
+    Spread,
+    Burst,
+    Charged,
+    Nova
+}
+
+[System.Serializable]
+public struct ProjectilePatternConfig
+{
+    public static ProjectilePatternConfig Default => new(3, 12f, 3, 0.06f, 8);
+
+    [SerializeField] private int spreadCount;
+    [SerializeField] private float spreadAngle;
+    [SerializeField] private int burstCount;
+    [SerializeField] private float burstInterval;
+    [SerializeField] private int novaCount;
+
+    public int SpreadCount => Mathf.Max(1, spreadCount);
+    public float SpreadAngle => Mathf.Max(0f, spreadAngle);
+    public int BurstCount => Mathf.Max(1, burstCount);
+    public float BurstInterval => Mathf.Max(0f, burstInterval);
+    public int NovaCount => Mathf.Max(1, novaCount);
+
+    public ProjectilePatternConfig(int spreadCount, float spreadAngle, int burstCount, float burstInterval, int novaCount)
+    {
+        this.spreadCount = Mathf.Max(1, spreadCount);
+        this.spreadAngle = Mathf.Max(0f, spreadAngle);
+        this.burstCount = Mathf.Max(1, burstCount);
+        this.burstInterval = Mathf.Max(0f, burstInterval);
+        this.novaCount = Mathf.Max(1, novaCount);
     }
 }

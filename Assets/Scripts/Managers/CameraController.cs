@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private Vector2 minXY;
     [SerializeField] private Vector2 maxXY;
+    [SerializeField] private bool useRuntimeMapBounds = true;
 
     private void OnEnable()
     {
@@ -34,10 +35,19 @@ public class CameraController : MonoBehaviour
             return;
         }
 
+        Vector2 minBounds = minXY;
+        Vector2 maxBounds = maxXY;
+        if (useRuntimeMapBounds && MapGenerator.TryGetRuntimeBounds(out Bounds runtimeBounds))
+        {
+            Vector3 extents = runtimeBounds.extents;
+            minBounds = new Vector2(runtimeBounds.center.x - extents.x, runtimeBounds.center.y - extents.y);
+            maxBounds = new Vector2(runtimeBounds.center.x + extents.x, runtimeBounds.center.y + extents.y);
+        }
+
         Vector3 targetPosition = target.position;
         targetPosition.z = -10;
-        targetPosition.x = Mathf.Clamp(targetPosition.x, minXY.x, maxXY.x);
-        targetPosition.y = Mathf.Clamp(targetPosition.y, minXY.y, maxXY.y);
+        targetPosition.x = Mathf.Clamp(targetPosition.x, minBounds.x, maxBounds.x);
+        targetPosition.y = Mathf.Clamp(targetPosition.y, minBounds.y, maxBounds.y);
         transform.position = targetPosition;
     }
 

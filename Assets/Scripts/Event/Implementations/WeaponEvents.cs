@@ -6,10 +6,12 @@
 /// </summary>
 public struct WeaponHitCompletedEvent : IGameEvent
 {
-    public WeaponHitEvent HitEvent;
+    public Weapon Weapon;
+    public HitResult HitResult;
 
-    public WeaponHitCompletedEvent(WeaponHitEvent hitEvent)
+    public WeaponHitCompletedEvent(Weapon weapon, HitResult hitResult)
     {
-        HitEvent = hitEvent;
+        Weapon = weapon;
+        HitResult = hitResult;
     }
 }

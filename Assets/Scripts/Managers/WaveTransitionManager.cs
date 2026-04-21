@@ -212,7 +212,7 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        if (player.ConsumeUpgradePoint() > 0)
+        if (player.GetComponent<PlayerLevel>().ConsumeUpgradePoint() > 0)
         {
             ConfigureUpgradeProps();
         }

@@ -1,0 +1,318 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
+  m_Name: Weapon Sequence - Melee Heavy Cleave
+  m_EditorClassIdentifier: 
+  duration: 1.14
+  restoreDefaultPoseOnComplete: 1
+  motionKeyframes:
+  - normalizedTime: 0
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: 0
+    xDynamicMinNormalizedReach: 0
+    xDynamicMaxNormalizedReach: 0
+    localPositionY: 0
+    yDynamicMinNormalizedReach: 0
+    yDynamicMaxNormalizedReach: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.06
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -0.86
+    xDynamicMinNormalizedReach: 0.301
+    xDynamicMaxNormalizedReach: 0.86
+    localPositionY: 0.05
+    yDynamicMinNormalizedReach: 0.0175
+    yDynamicMaxNormalizedReach: 0.05
+    localEulerAngles: {x: 0, y: 0, z: 18}
+    ease: 4
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.13
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -1.68
+    xDynamicMinNormalizedReach: 0.588
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.13
+    yDynamicMinNormalizedReach: 0.0455
+    yDynamicMaxNormalizedReach: 0.13
+    localEulerAngles: {x: 0, y: 0, z: 42}
+    ease: 7
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.2
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -2.42
+    xDynamicMinNormalizedReach: 0.847
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.22
+    yDynamicMinNormalizedReach: 0.077
+    yDynamicMaxNormalizedReach: 0.22
+    localEulerAngles: {x: 0, y: 0, z: 72}
+    ease: 9
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.27
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -2.96
+    xDynamicMinNormalizedReach: 1
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.31
+    yDynamicMinNormalizedReach: 0.1085
+    yDynamicMaxNormalizedReach: 0.31
+    localEulerAngles: {x: 0, y: 0, z: 98}
+    ease: 10
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.36
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -2.98
+    xDynamicMinNormalizedReach: 1
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.33
+    yDynamicMinNormalizedReach: 0.1155
+    yDynamicMaxNormalizedReach: 0.33
+    localEulerAngles: {x: 0, y: 0, z: 104}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.45
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -2.92
+    xDynamicMinNormalizedReach: 1
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.32
+    yDynamicMinNormalizedReach: 0.111999996
+    yDynamicMaxNormalizedReach: 0.32
+    localEulerAngles: {x: 0, y: 0, z: 102}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.52
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: -2.78
+    xDynamicMinNormalizedReach: 0.973
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.3
+    yDynamicMinNormalizedReach: 0.105000004
+    yDynamicMaxNormalizedReach: 0.3
+    localEulerAngles: {x: 0, y: 0, z: 96}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.58
+    xPositionMode: 0
+    yPositionMode: 1
+    dynamicPositionStrategy: 1
+    localPositionX: -1.64
+    xDynamicMinNormalizedReach: 0.574
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.38
+    yDynamicMinNormalizedReach: 0.05
+    yDynamicMaxNormalizedReach: 0.46
+    localEulerAngles: {x: 0, y: 0, z: 70}
+    ease: 11
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.64
+    xPositionMode: 0
+    yPositionMode: 1
+    dynamicPositionStrategy: 1
+    localPositionX: -0.34
+    xDynamicMinNormalizedReach: 0.119
+    xDynamicMaxNormalizedReach: 0.34
+    localPositionY: 0.54
+    yDynamicMinNormalizedReach: 0.05
+    yDynamicMaxNormalizedReach: 0.62
+    localEulerAngles: {x: 0, y: 0, z: 24}
+    ease: 12
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.7
+    xPositionMode: 0
+    yPositionMode: 1
+    dynamicPositionStrategy: 1
+    localPositionX: 0.82
+    xDynamicMinNormalizedReach: 0.287
+    xDynamicMaxNormalizedReach: 0.82
+    localPositionY: 0.74
+    yDynamicMinNormalizedReach: 0.05
+    yDynamicMaxNormalizedReach: 0.84
+    localEulerAngles: {x: 0, y: 0, z: -22}
+    ease: 13
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.75
+    xPositionMode: 0
+    yPositionMode: 1
+    dynamicPositionStrategy: 1
+    localPositionX: 1.42
+    xDynamicMinNormalizedReach: 0.49699998
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.94
+    yDynamicMinNormalizedReach: 0.05
+    yDynamicMaxNormalizedReach: 1
+    localEulerAngles: {x: 0, y: 0, z: -58}
+    ease: 14
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.8
+    xPositionMode: 0
+    yPositionMode: 1
+    dynamicPositionStrategy: 1
+    localPositionX: 1.34
+    xDynamicMinNormalizedReach: 0.469
+    xDynamicMaxNormalizedReach: 1
+    localPositionY: 0.86
+    yDynamicMinNormalizedReach: 0.05
+    yDynamicMaxNormalizedReach: 0.9
+    localEulerAngles: {x: 0, y: 0, z: -62}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.88
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: 0.76
+    xDynamicMinNormalizedReach: 0.266
+    xDynamicMaxNormalizedReach: 0.76
+    localPositionY: 0.34
+    yDynamicMinNormalizedReach: 0.119
+    yDynamicMaxNormalizedReach: 0.34
+    localEulerAngles: {x: 0, y: 0, z: -38}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.95
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: 0.28
+    xDynamicMinNormalizedReach: 0.098
+    xDynamicMaxNormalizedReach: 0.28
+    localPositionY: 0.09
+    yDynamicMinNormalizedReach: 0.0315
+    yDynamicMaxNormalizedReach: 0.09
+    localEulerAngles: {x: 0, y: 0, z: -16}
+    ease: 6
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 1
+    xPositionMode: 0
+    yPositionMode: 0
+    dynamicPositionStrategy: 0
+    localPositionX: 0
+    xDynamicMinNormalizedReach: 0
+    xDynamicMaxNormalizedReach: 0
+    localPositionY: 0
+    yDynamicMinNormalizedReach: 0
+    yDynamicMaxNormalizedReach: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  eventKeyframes:
+  - normalizedTime: 0.58
+    eventType: 0
+    eventKey: 0
+  - normalizedTime: 0.84
+    eventType: 1
+    eventKey: 0
+  - normalizedTime: 0.73
+    eventType: 3
+    eventKey: 0
+  - normalizedTime: 0.77
+    eventType: 4
+    eventKey: 0
