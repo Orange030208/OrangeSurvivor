@@ -12,13 +12,13 @@ public class CharacterInfoCard : MonoBehaviour
     {
         characterIconImage.sprite = characterData.CharacterIcon;
         characterNameText.text = characterData.CharacterName;
-        descriptionListDisplayer.DisplaySource(characterData);
+        descriptionListDisplayer.Display(characterData.BuildDisplayDocument());
     }
 
     public void ClearInfo()
     {
         characterIconImage.sprite = null;
         characterNameText.text = string.Empty;
-        descriptionListDisplayer.DisplayDescriptions(null);
+        descriptionListDisplayer.Display((DisplayDocument)null);
     }
 }

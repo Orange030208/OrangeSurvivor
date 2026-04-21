@@ -12,7 +12,7 @@ public interface IRuntimeFeatureEffect
 
 [HideInFeatureMenu]
 [Serializable]
-public abstract class FeatureEffectBase : IRuntimeFeatureEffect, IFeatureDefinition,IHitModifier
+public abstract class FeatureEffectBase : IRuntimeFeatureEffect,IHitModifier
 {
     [HideInInspector]
     [SerializeField] private string runtimeFeatureId;
@@ -25,7 +25,6 @@ public abstract class FeatureEffectBase : IRuntimeFeatureEffect, IFeatureDefinit
 
     public FeatureContext Context { get; set; }
 
-    public virtual string FeatureTitle => GetType().Name;
     public abstract string FeatureDescription { get; }
     
     public virtual void OnInstall(){}

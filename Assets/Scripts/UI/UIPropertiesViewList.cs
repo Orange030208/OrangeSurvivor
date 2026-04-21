@@ -10,10 +10,36 @@ public class UIPropertiesViewList : MonoBehaviour
     [SerializeField] private Transform propContainersParent;
 
     private readonly List<PropContainer> propContainers = new();
+    private readonly PropEntryDisplayBuilder propEntryDisplayBuilder = new();
 
     private void Awake()
     {
         propContainersParent.Clear();
+    }
+
+    public void Render(StatListBlock block)
+    {
+        if (propContainersParent == null || propContainerPrefab == null)
+        {
+            return;
+        }
+
+        IReadOnlyList<StatItem> items = block != null ? block.Items : null;
+        int count = items?.Count ?? 0;
+        EnsureContainerCount(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            StatItem item = items[i];
+            PropContainer container = propContainers[i];
+            float rawValue = item != null && item.NumericValue.HasValue ? item.NumericValue.Value : 0f;
+
+            container.Configure(
+                item != null ? item.Icon : null,
+                item != null ? item.Key : string.Empty,
+                item != null ? item.Value : string.Empty,
+                rawValue);
+        }
     }
 
     public void Render(PropEntry[] propEntries)
@@ -29,25 +55,13 @@ public class UIPropertiesViewList : MonoBehaviour
 
     public void Render(IReadOnlyList<PropEntry> propEntries)
     {
-        if (propContainersParent == null || propContainerPrefab == null)
+        if (propEntries == null)
         {
+            HideAll();
             return;
         }
 
-        int count = propEntries?.Count ?? 0;
-        EnsureContainerCount(count);
-
-        for (int i = 0; i < count; i++)
-        {
-            PropEntry entry = propEntries[i];
-            PropContainer container = propContainers[i];
-
-            container.Configure(
-                ResourcesManager.GetPropIcon(entry.propType),
-                entry.GetDisplayName(),
-                entry.GetDisplayValueText(),
-                entry.value);
-        }
+        Render(propEntryDisplayBuilder.BuildStatBlock(propEntries));
     }
 
     public void HideAll()

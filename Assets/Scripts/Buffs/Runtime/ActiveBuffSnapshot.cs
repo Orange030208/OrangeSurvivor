@@ -12,7 +12,7 @@ public readonly struct ActiveBuffSnapshot
     public readonly bool HasDuration;
     public readonly float RemainingDurationSeconds;
     public readonly float TotalDurationSeconds;
-    public readonly IReadOnlyList<string> Descriptions;
+    public readonly DisplayDocument Document;
 
     public ActiveBuffSnapshot(
         string buffId,
@@ -24,7 +24,7 @@ public readonly struct ActiveBuffSnapshot
         bool hasDuration,
         float remainingDurationSeconds,
         float totalDurationSeconds,
-        IReadOnlyList<string> descriptions)
+        DisplayDocument document)
     {
         BuffId = buffId;
         DisplayName = displayName;
@@ -35,6 +35,6 @@ public readonly struct ActiveBuffSnapshot
         HasDuration = hasDuration;
         RemainingDurationSeconds = remainingDurationSeconds;
         TotalDurationSeconds = totalDurationSeconds;
-        Descriptions = descriptions;
+        Document = document;
     }
 }

@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff Data", menuName = "SO/Buff", order = 0)]
-public class BuffDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureSource
+public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource
 {
+    private static readonly FeatureDisplayBuilder featureDisplayBuilder = new();
     private const string BUFF_ID_PREFIX = "Buff_";
     private const float MIN_DURATION_SECONDS = 0.01f;
     private const int MIN_STACK_COUNT = 1;
@@ -33,7 +34,6 @@ public class BuffDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureS
     [SerializeField] private List<PropEntry> propertyModifiers = new();
 
     [Header("特殊能力")]
-    // 扩展说明：如需扩展新的 buff 运行时能力，新增 FeatureEffectBase 子类即可，无需修改 BuffDataSO。
     [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
 
     public string BuffId => buffId;
@@ -62,18 +62,47 @@ public class BuffDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureS
         maxStackCount = Mathf.Max(MIN_STACK_COUNT, maxStackCount);
     }
 
-    public IReadOnlyList<string> GetDescriptions()
+    public DisplayDocument BuildDisplayDocument(BuffDescriptionContext context)
     {
-        return GetDescriptions(new BuffDescriptionContext(0, maxStackCount, durationPolicy == BuffDurationPolicy.Timed, DurationSeconds, DurationSeconds));
-    }
+        DisplayDocument document = featureDisplayBuilder.Build(propertyModifiers, specialFeatures, new DisplayContext { IsCompact = true });
+        List<TextLineItem> items = new();
 
-    public IReadOnlyList<string> GetDescriptions(BuffDescriptionContext context)
-    {
-        List<string> descriptions = new(descriptionLines.Count + propertyModifiers.Count + specialFeatures.Count);
-        AddCustomDescriptions(descriptions, context);
-        FeatureDescriptionBuilder.AddPropDescriptions(descriptions, propertyModifiers);
-        FeatureDescriptionBuilder.AddFeatureDescriptions(descriptions, specialFeatures);
-        return descriptions;
+        for (int i = 0; i < descriptionLines.Count; i++)
+        {
+            string line = BuffDescriptionFormatter.Format(descriptionLines[i], context);
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            items.Add(new TextLineItem
+            {
+                Text = line,
+                StyleKey = "default"
+            });
+        }
+
+        TextListBlock textBlock = document.GetBlock<TextListBlock>();
+        if (textBlock != null)
+        {
+            textBlock.Items = items;
+        }
+        else
+        {
+            document.Blocks = new DisplayBlock[]
+            {
+                new TextListBlock
+                {
+                    BlockId = "descriptions",
+                    Items = items
+                }
+            };
+        }
+
+        document.Id = $"buff_{buffId}";
+        document.Title = displayName;
+        document.Icon = icon;
+        return document;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
@@ -100,24 +129,5 @@ public class BuffDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureS
         }
 
         return effects;
-    }
-
-    private void AddCustomDescriptions(List<string> descriptions, BuffDescriptionContext context)
-    {
-        if (descriptions == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < descriptionLines.Count; i++)
-        {
-            string line = BuffDescriptionFormatter.Format(descriptionLines[i], context);
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                continue;
-            }
-
-            descriptions.Add(line);
-        }
     }
 }

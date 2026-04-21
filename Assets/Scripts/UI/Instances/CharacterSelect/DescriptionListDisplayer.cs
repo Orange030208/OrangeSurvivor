@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -5,25 +6,26 @@ public class DescriptionListDisplayer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI infoRichText;
 
-    public void DisplaySource(IDescriptionSource descriptionSource)
+    public void Display(DisplayDocument document)
     {
-        if (descriptionSource == null)
+        if (document == null)
         {
-            DisplayDescriptions(null);
+            Display((TextListBlock)null);
             return;
         }
 
-        DisplayDescriptions(descriptionSource.GetDescriptions());
+        Display(document.GetBlock<TextListBlock>());
     }
 
-    public void DisplayDescriptions(System.Collections.Generic.IReadOnlyList<string> descriptions)
+    public void Display(TextListBlock block)
     {
         if (infoRichText == null)
         {
             return;
         }
 
-        if (descriptions == null || descriptions.Count == 0)
+        IReadOnlyList<TextLineItem> items = block != null ? block.Items : null;
+        if (items == null || items.Count == 0)
         {
             infoRichText.text = "暂无特殊特性";
             return;
@@ -32,9 +34,10 @@ public class DescriptionListDisplayer : MonoBehaviour
         infoRichText.richText = true;
 
         System.Text.StringBuilder builder = new();
-        for (int i = 0; i < descriptions.Count; i++)
+        for (int i = 0; i < items.Count; i++)
         {
-            if (string.IsNullOrEmpty(descriptions[i]))
+            TextLineItem item = items[i];
+            if (item == null || string.IsNullOrWhiteSpace(item.Text))
             {
                 continue;
             }
@@ -44,7 +47,7 @@ public class DescriptionListDisplayer : MonoBehaviour
                 builder.Append('\n');
             }
 
-            builder.Append(descriptions[i]);
+            builder.Append(item.Text);
         }
 
         infoRichText.text = builder.Length > 0 ? builder.ToString() : "暂无特殊特性";

@@ -8,4 +8,5 @@ public abstract class EnemyMovementDefinitionSO : ScriptableObject
     public string MovementId => movementId;
 
     public abstract EnemyMovementType MovementType { get; }
+    public abstract IEnemyMovementStrategy CreateRuntimeStrategy();
 }

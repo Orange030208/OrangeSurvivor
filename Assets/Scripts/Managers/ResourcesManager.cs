@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UniversalUI.Integration.Game.ScriptableObjects;
 
 public static class ResourcesManager
 {
-    private const string PROP_ICONS_DATA_PATH = "Data/Prop Icons";
+    private const string PROP_ICON_SPRITES_PATH = "Sprites/Icons/PropIcons";
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
@@ -16,7 +15,7 @@ public static class ResourcesManager
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Character";
 
-    private static PropIcon[] propIcons;
+    private static readonly Dictionary<PropType, Sprite> propIcons = new();
     private static AccessoryDataSO[] Accessories;
     private static WeaponDataSO[] Weapons;
     private static CharacterDataSO[] characters;
@@ -27,18 +26,19 @@ public static class ResourcesManager
 
     public static Sprite GetPropIcon(PropType propType)
     {
-        if (propIcons == null)
+        if (propIcons.TryGetValue(propType, out Sprite cachedIcon))
         {
-            PropIconDataSO data = Resources.Load<PropIconDataSO>(PROP_ICONS_DATA_PATH);
-            propIcons = data.PropIcons;
+            return cachedIcon;
         }
 
-        for (int i = 0; i < propIcons.Length; i++)
+        Sprite[] loadedIcons = Resources.LoadAll<Sprite>(PROP_ICON_SPRITES_PATH);
+        for (int i = 0; i < loadedIcons.Length; i++)
         {
-            PropIcon propIcon = propIcons[i];
-            if (propIcon.propType == propType)
+            Sprite icon = loadedIcons[i];
+            if (icon != null && string.Equals(icon.name, propType.ToString(), StringComparison.Ordinal))
             {
-                return propIcon.icon;
+                propIcons[propType] = icon;
+                return icon;
             }
         }
 

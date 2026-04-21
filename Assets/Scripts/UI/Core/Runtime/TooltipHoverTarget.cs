@@ -5,16 +5,16 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 {
     [SerializeField] private MonoBehaviour tooltipDataSourceComponent;
 
-    private ITooltipDataSource tooltipDataSource;
+    private IDisplayDocumentSource tooltipDataSource;
     private bool isPointerDown;
 
     private void Awake()
     {
         ValidateConfiguration();
-        tooltipDataSource = (ITooltipDataSource)tooltipDataSourceComponent;
+        tooltipDataSource = (IDisplayDocumentSource)tooltipDataSourceComponent;
     }
 
-    public void SetTooltipDataSource(ITooltipDataSource source)
+    public void SetTooltipDataSource(IDisplayDocumentSource source)
     {
         tooltipDataSource = source;
         tooltipDataSourceComponent = source as MonoBehaviour;
@@ -58,7 +58,7 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        GameEventBus.Publish(new ShowTooltipRequestedEvent(tooltipDataSource.BuildTooltipData(), screenPosition));
+        GameEventBus.Publish(new ShowTooltipRequestedEvent(tooltipDataSource.BuildDisplayDocument(), screenPosition));
     }
 
     private void ValidateConfiguration()
@@ -68,9 +68,9 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
             throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' is missing tooltip data source component.");
         }
 
-        if (tooltipDataSourceComponent is not ITooltipDataSource)
+        if (tooltipDataSourceComponent is not IDisplayDocumentSource)
         {
-            throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(ITooltipDataSource)}.");
+            throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(IDisplayDocumentSource)}.");
         }
     }
 

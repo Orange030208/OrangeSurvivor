@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
-public class AccessoryDataSO : ItemDataSO, IDescriptionSource, IRuntimeFeatureSource
+public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
 {
+    private static readonly FeatureDisplayBuilder featureDisplayBuilder = new();
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
 
@@ -37,12 +38,13 @@ public class AccessoryDataSO : ItemDataSO, IDescriptionSource, IRuntimeFeatureSo
         return propertyModifiers;
     }
 
-    public IReadOnlyList<string> GetDescriptions()
+    public DisplayDocument BuildDisplayDocument()
     {
-        List<string> descriptions = new(propertyModifiers.Count + specialFeatures.Count);
-        FeatureDescriptionBuilder.AddPropDescriptions(descriptions, propertyModifiers);
-        FeatureDescriptionBuilder.AddFeatureDescriptions(descriptions, specialFeatures);
-        return descriptions;
+        DisplayDocument document = featureDisplayBuilder.Build(propertyModifiers, specialFeatures, new DisplayContext { IsCompact = true });
+        document.Id = $"accessory_{accessoryId}";
+        document.Title = ItemName;
+        document.Icon = ItemIcon;
+        return document;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)

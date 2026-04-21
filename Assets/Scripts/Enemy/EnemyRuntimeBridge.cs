@@ -4,10 +4,12 @@ using UnityEngine;
 public class EnemyRuntimeBridge : MonoBehaviour
 {
     [SerializeField] private ParticleSystem passAwayParticles;
+    [SerializeField] [Min(0f)] private float deathPassAwayDelay;
 
     private Enemy owner;
     private HealthComponent healthComponent;
     private bool runtimeRegistered;
+    private bool passAwayRequested;
 
     public void Initialize(Enemy enemy, HealthComponent runtimeHealthComponent)
     {
@@ -37,11 +39,30 @@ public class EnemyRuntimeBridge : MonoBehaviour
 
     public void PassAway()
     {
-        PassAwayAfterWave();
+        if (passAwayRequested)
+        {
+            return;
+        }
+
+        passAwayRequested = true;
+
+        if (deathPassAwayDelay <= 0f)
+        {
+            PassAwayAfterWave();
+            return;
+        }
+
+        CancelInvoke(nameof(PassAwayAfterWave));
+        Invoke(nameof(PassAwayAfterWave), deathPassAwayDelay);
     }
 
     public void PassAwayAfterWave()
     {
+        if (this == null)
+        {
+            return;
+        }
+
         if (passAwayParticles != null)
         {
             passAwayParticles.transform.SetParent(null);

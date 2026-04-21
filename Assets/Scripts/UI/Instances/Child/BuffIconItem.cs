@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffIconItem : MonoBehaviour, ITooltipDataSource
+public class BuffIconItem : MonoBehaviour, IDisplayDocumentSource
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Image borderImage;
@@ -43,9 +43,9 @@ public class BuffIconItem : MonoBehaviour, ITooltipDataSource
         }
     }
 
-    public TooltipDisplayData BuildTooltipData()
+    public DisplayDocument BuildDisplayDocument()
     {
-        return TooltipDataFactory.CreateFromBuff(snapshot);
+        return TooltipDisplayDocumentBuilder.CreateFromBuff(snapshot);
     }
 
     private Color ResolveBorderColor(BuffPolarity polarity)

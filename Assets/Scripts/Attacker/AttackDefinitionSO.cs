@@ -17,4 +17,5 @@ public abstract class AttackDefinitionSO : ScriptableObject
     public float AttackInterval => 1f / AttackFrequency;
 
     public abstract AttackType Type { get; }
+    public abstract IEnemyAttackStrategy CreateRuntimeStrategy();
 }

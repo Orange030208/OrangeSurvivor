@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemContainer : MonoBehaviour, IDisposable, ITooltipDataSource
+public class InventoryItemContainer : MonoBehaviour, IDisposable, IDisplayDocumentSource
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
@@ -42,9 +42,9 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, ITooltipDataSo
         button.OnClicked += OnItemClicked;
     }
 
-    public TooltipDisplayData BuildTooltipData()
+    public DisplayDocument BuildDisplayDocument()
     {
-        return TooltipDataFactory.CreateFromItem(currentItemData, currentColorDependencyNumber);
+        return TooltipDisplayDocumentBuilder.CreateFromItem(currentItemData, currentColorDependencyNumber);
     }
 
     private void OnItemClicked()

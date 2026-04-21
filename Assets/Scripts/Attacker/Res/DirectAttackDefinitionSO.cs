@@ -4,4 +4,9 @@ using UnityEngine;
 public class DirectAttackDefinitionSO : AttackDefinitionSO
 {
     public override AttackType Type => AttackType.Direct;
+
+    public override IEnemyAttackStrategy CreateRuntimeStrategy()
+    {
+        return new DirectEnemyAttackStrategy(this);
+    }
 }

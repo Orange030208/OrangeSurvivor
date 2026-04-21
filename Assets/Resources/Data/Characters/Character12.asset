@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
   m_Name: Character12
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: \\u7070\\u76d4\\u9a91\\u58eb
+  <CharacterName>k__BackingField: 灰盔骑士
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 0913e9bdc5a63eb4ab38932a9fb6da75, type: 3}
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: 4ed950a8135e32f439d889fc8a8b9c66, type: 2}
   extraProps:

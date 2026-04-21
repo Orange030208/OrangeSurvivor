@@ -7,8 +7,8 @@ public class EnemyCombatController : MonoBehaviour
     private Enemy owner;
     private Attacker attacker;
     private Entity targetEntity;
-    private EnemyMovementDefinitionSO movementDefinition;
-    private AttackDefinitionSO attackDefinition;
+    private IEnemyMovementStrategy movementStrategy;
+    private IEnemyAttackStrategy attackStrategy;
     private float attackDetectionRadius;
 
     public void Initialize(Enemy enemy, Attacker runtimeAttacker)
@@ -26,21 +26,16 @@ public class EnemyCombatController : MonoBehaviour
     public void Configure(Entity target, EnemyMovementDefinitionSO runtimeMovementDefinition, AttackDefinitionSO runtimeAttackDefinition, float detectionRadius)
     {
         targetEntity = target;
-        movementDefinition = runtimeMovementDefinition;
-        attackDefinition = runtimeAttackDefinition;
+        movementStrategy = runtimeMovementDefinition != null ? runtimeMovementDefinition.CreateRuntimeStrategy() : null;
+        attackStrategy = runtimeAttackDefinition != null ? runtimeAttackDefinition.CreateRuntimeStrategy() : null;
         attackDetectionRadius = Mathf.Max(0f, detectionRadius);
 
-        if (attacker == null)
+        if (runtimeAttackDefinition == null)
         {
-            return;
+            throw new InvalidOperationException($"{nameof(EnemyCombatController)} requires {nameof(AttackDefinitionSO)} before configuring combat.");
         }
 
-        if (attackDefinition == null)
-        {
-            throw new InvalidOperationException($"{nameof(EnemyCombatController)} requires {nameof(AttackDefinitionSO)} before configuring {nameof(Attacker)}.");
-        }
-
-        attacker.Configure(targetEntity, attackDefinition, attackDetectionRadius);
+        attacker?.EnsureInitialized();
     }
 
     private void Update()
@@ -50,31 +45,33 @@ public class EnemyCombatController : MonoBehaviour
             return;
         }
 
-        bool hasAttacked = attacker != null && attacker.Tick(Time.deltaTime);
+        bool hasAttacked = TickAttack(Time.deltaTime);
         if (!hasAttacked)
         {
             TickMovement(Time.deltaTime);
         }
     }
 
+    private bool TickAttack(float deltaTime)
+    {
+        if (attackStrategy == null)
+        {
+            return false;
+        }
+
+        EnemyAttackContext context = new EnemyAttackContext(attacker, owner, targetEntity, attackDetectionRadius, deltaTime);
+        return attackStrategy.Tick(context);
+    }
+
     private void TickMovement(float deltaTime)
     {
-        if (owner.MoveComponent is not Movement movement || movementDefinition == null)
+        if (owner.MoveComponent is not Movement movement || movementStrategy == null)
         {
             return;
         }
 
-        switch (movementDefinition.MovementType)
-        {
-            case EnemyMovementType.ChaseIntoContact:
-                movement.FollowTarget(targetEntity, deltaTime, 0f);
-                break;
-            case EnemyMovementType.StopAtAttackRange:
-                movement.FollowTarget(targetEntity, deltaTime, attackDetectionRadius);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(movementDefinition), movementDefinition.MovementType, "Unsupported enemy movement type.");
-        }
+        EnemyMovementContext context = new EnemyMovementContext(owner, targetEntity, movement, deltaTime, attackDetectionRadius);
+        movementStrategy.Tick(context);
     }
 
     private Transform ResolveAttackOriginTransform()

@@ -7,7 +7,6 @@ public sealed class ForceCriticalFeatureEffect : FeatureEffectBase
     public override bool CanModifyHit => true;
     public override int HitPriority => HitModifierPriority.Override;
 
-    public override string FeatureTitle => "强制暴击";
     public override string FeatureDescription => "该实体造成的命中强制视为暴击。";
 
     public override void ModifyHit(HitContext hitContext)

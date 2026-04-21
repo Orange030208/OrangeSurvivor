@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,21 +24,21 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Des
         }
 
         int colorDependency;
-        IReadOnlyList<string> descriptions;
+        DisplayDocument document;
 
         if (itemData is AccessoryDataSO accessoryData)
         {
             colorDependency = accessoryData.Rarity;
-            descriptions = accessoryData.GetDescriptions();
+            document = accessoryData.BuildDisplayDocument();
             nameText.text = itemData.ItemName;
-            bottom.DisplayDescriptions(descriptions);
+            bottom.Display(document);
         }
         else if (itemData is WeaponDataSO weaponData)
         {
             colorDependency = shopItem.Level;
-            descriptions = weaponData.GetDescriptions(shopItem.Level);
+            document = weaponData.BuildDisplayDocument(shopItem.Level);
             nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
-            bottom.DisplayDescriptions(descriptions);
+            bottom.Display(document);
         }
         else
         {

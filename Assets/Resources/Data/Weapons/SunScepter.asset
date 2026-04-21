@@ -28,7 +28,7 @@ MonoBehaviour:
     burstId: 0
     firingMode: 1
     patternConfig:
-      spreadCount: 3
+      spreadCount: 5
       spreadAngle: 9
       burstCount: 1
       burstInterval: 0

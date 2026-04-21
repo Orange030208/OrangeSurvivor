@@ -170,7 +170,7 @@ public class InventoryOperateManager : MonoBehaviour
             item.ItemData,
             item.ColorDependencyNumber,
             item.GetSellPrice(),
-            BuildDescriptions(item));
+            BuildDisplayDocument(item));
 
         GameEventBus.Publish(new InventoryItemOperatePanelDataEvent(resource));
     }
@@ -285,13 +285,13 @@ public class InventoryOperateManager : MonoBehaviour
         return true;
     }
 
-    private static IReadOnlyList<string> BuildDescriptions(InventoryRuntimeItem item)
+    private static DisplayDocument BuildDisplayDocument(InventoryRuntimeItem item)
     {
         return item.ItemData switch
         {
-            WeaponDataSO weaponData => weaponData.GetDescriptions(item.ColorDependencyNumber),
-            AccessoryDataSO accessoryData => accessoryData.GetDescriptions(),
-            _ => System.Array.Empty<string>()
+            WeaponDataSO weaponData => weaponData.BuildDisplayDocument(item.ColorDependencyNumber),
+            AccessoryDataSO accessoryData => accessoryData.BuildDisplayDocument(),
+            _ => new DisplayDocument()
         };
     }
 

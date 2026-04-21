@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFeatureSource
+public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource
 {
+    private static readonly FeatureDisplayBuilder featureDisplayBuilder = new();
+
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
     [field: SerializeField] public RuntimeAnimatorController CharacterAnimatorController { get; private set; }
@@ -27,10 +29,25 @@ public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFea
         return new List<PropEntry>(extraProps);
     }
 
-    public IReadOnlyList<string> GetDescriptions()
+    public DisplayDocument BuildDisplayDocument()
     {
-        List<string> descriptions = new(extraProps.Count + specialFeatures.Count + initialWeapons.Count + initialAccessories.Count);
-        FeatureDescriptionBuilder.AddPropDescriptions(descriptions, extraProps);
+        DisplayDocument document = featureDisplayBuilder.Build(extraProps, specialFeatures, new DisplayContext { IsCompact = true });
+        List<TextLineItem> items = new();
+
+        TextListBlock block = document.GetBlock<TextListBlock>();
+        if (block?.Items != null)
+        {
+            for (int i = 0; i < block.Items.Count; i++)
+            {
+                TextLineItem item = block.Items[i];
+                if (item == null || string.IsNullOrWhiteSpace(item.Text))
+                {
+                    continue;
+                }
+
+                items.Add(item);
+            }
+        }
 
         for (int i = 0; i < initialWeapons.Count; i++)
         {
@@ -40,7 +57,11 @@ public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFea
                 continue;
             }
 
-            descriptions.Add(FeatureDescriptionBuilder.BuildInitialWeaponDescription(entry.weaponData, entry.level));
+            items.Add(new TextLineItem
+            {
+                Text = FeatureDescriptionBuilder.BuildInitialWeaponDescription(entry.weaponData, entry.level),
+                StyleKey = "default"
+            });
         }
 
         for (int i = 0; i < initialAccessories.Count; i++)
@@ -51,11 +72,33 @@ public class CharacterDataSO : ScriptableObject, IDescriptionSource, IRuntimeFea
                 continue;
             }
 
-            descriptions.Add(FeatureDescriptionBuilder.BuildAccessoryOwnedDescription(accessory));
+            items.Add(new TextLineItem
+            {
+                Text = FeatureDescriptionBuilder.BuildAccessoryOwnedDescription(accessory),
+                StyleKey = "default"
+            });
         }
 
-        FeatureDescriptionBuilder.AddFeatureDescriptions(descriptions, specialFeatures);
-        return descriptions;
+        if (block != null)
+        {
+            block.Items = items;
+        }
+        else
+        {
+            document.Blocks = new DisplayBlock[]
+            {
+                new TextListBlock
+                {
+                    BlockId = "descriptions",
+                    Items = items
+                }
+            };
+        }
+
+        document.Id = $"character_{CharacterName}";
+        document.Title = CharacterName;
+        document.Icon = CharacterIcon;
+        return document;
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)

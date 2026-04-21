@@ -4,4 +4,9 @@ using UnityEngine;
 public class EnemyStopAtAttackRangeMovementDefinitionSO : EnemyMovementDefinitionSO
 {
     public override EnemyMovementType MovementType => EnemyMovementType.StopAtAttackRange;
+
+    public override IEnemyMovementStrategy CreateRuntimeStrategy()
+    {
+        return new StopAtAttackRangeEnemyMovementStrategy();
+    }
 }

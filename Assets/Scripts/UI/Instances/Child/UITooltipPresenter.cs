@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,10 +74,15 @@ public class UITooltipPresenter : MonoBehaviour
         GameEventBus.Unsubscribe<HideTooltipRequestedEvent>(OnHideTooltipRequested);
     }
 
+    public void Present(DisplayDocument document)
+    {
+        ApplyDocument(document);
+        SetVisible(true);
+    }
+
     private void OnShowTooltipRequested(ShowTooltipRequestedEvent eventData)
     {
-        ApplyData(eventData.Data);
-        SetVisible(true);
+        Present(eventData.Document);
         SetScreenPosition(eventData.ScreenPosition);
     }
 
@@ -85,14 +91,14 @@ public class UITooltipPresenter : MonoBehaviour
         HideImmediate();
     }
 
-    private void ApplyData(TooltipDisplayData data)
+    private void ApplyDocument(DisplayDocument document)
     {
-        titleText.text = data.Title;
-        footerText.text = data.Footer;
-        footerText.gameObject.SetActive(!string.IsNullOrWhiteSpace(data.Footer));
-        iconImage.sprite = data.Icon;
-        iconImage.enabled = data.Icon != null;
-        descriptionListDisplayer.DisplayDescriptions(data.Descriptions);
+        titleText.text = document != null ? document.Title : string.Empty;
+        footerText.text = document != null ? document.Footer : string.Empty;
+        footerText.gameObject.SetActive(document != null && !string.IsNullOrWhiteSpace(document.Footer));
+        iconImage.sprite = document != null ? document.Icon : null;
+        iconImage.enabled = document != null && document.Icon != null;
+        descriptionListDisplayer.Display(document);
         LayoutRebuilder.ForceRebuildLayoutImmediate(root);
     }
 

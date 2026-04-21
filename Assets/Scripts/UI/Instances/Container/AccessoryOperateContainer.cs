@@ -22,7 +22,7 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, Descri
         nameText.text = resource.ItemName;
         recycleText.text = resource.RecyclePrice.ToString();
         RenderColor(resource, resource.Rarity);
-        bottom.DisplayDescriptions(resource.GetDescriptions());
+        bottom.Display(resource.BuildDisplayDocument());
 
         takeButton.OnClicked -= OnTakeButtonClicked;
         recycleButton.OnClicked -= OnRecycleButtonClicked;

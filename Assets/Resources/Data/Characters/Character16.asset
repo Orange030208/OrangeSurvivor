@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
   m_Name: Character16
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: \\u7360\\u7259\\u9b54\\u517d
+  <CharacterName>k__BackingField: 獠牙魔兽
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 564b033b80183fd4b8d1eba2779c8a09, type: 3}
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: a89018448f706b545be232a36d06ae83, type: 2}
   extraProps:
