@@ -63,6 +63,7 @@ This file declares available skills for AI agents like Codex.
 - 需要额外查找时，应遵循最小范围原则：先查一个文件或一个目录，只有证据不足时再逐步扩大。
 - 不为了“更完整”而做大规模背景调研，不主动列出大量候选方案。
 - 回答默认简洁，优先直接执行、直接修改、直接给结论，避免长篇铺垫。
+- 若需要直接操作 Unity Editor、场景、Prefab、资源或组件，且 Unity Skills 可用，优先使用 Unity Skills；仅在 Unity Skills 不可用或明显不适用时，才退回到普通文件/代码方式处理。
 
 ### 6. 实施边界
 - 未经明确要求，不主动做大规模重构，不随意改动现有公共接口、资源命名或目录结构。

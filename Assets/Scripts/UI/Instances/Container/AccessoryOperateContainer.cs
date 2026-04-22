@@ -3,12 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, DescriptionListDisplayer>
+public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, ExtraInfoDescriber>
 {
     [SerializeField] private UIClickTarget takeButton;
     [SerializeField] private UIClickTarget recycleButton;
     [SerializeField] private TextMeshProUGUI recycleText;
-    [SerializeField] private Image outline;
 
     private AccessoryDataSO currentAccessory;
 

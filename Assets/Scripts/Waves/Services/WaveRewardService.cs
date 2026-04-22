@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WaveRewardService
 {
-    public WaveRewardGrantResult Grant(WaveRewardSnapshot rewardSnapshot)
+    public WaveRewardGrantResult Grant(WaveRewardSnapshot rewardSnapshot, CurrencyWallet wallet)
     {
         int grantedGold = 0;
         int grantedChestCount = 0;
@@ -10,7 +10,7 @@ public class WaveRewardService
         if (rewardSnapshot.GoldReward > 0)
         {
             grantedGold = rewardSnapshot.GoldReward;
-            GameEventBus.Publish(new CurrencyChangeRequestedEvent(CurrencyType.Currency, grantedGold));
+            wallet?.ChangeAmount(grantedGold);
         }
 
         for (int i = 0; i < rewardSnapshot.ChestRewardCount; i++)

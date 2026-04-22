@@ -10,10 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1774002642989257402}
   - component: {fileID: 2388690262079300533}
-  - component: {fileID: 6863372801195459561}
   - component: {fileID: 5121700486997552698}
   - component: {fileID: 8774373447140388083}
-  - component: {fileID: 3569943134734976313}
+  - component: {fileID: 4790871906719625864}
+  - component: {fileID: 197071781020205633}
+  - component: {fileID: 1003411078956690266}
   m_Layer: 6
   m_Name: Melee Enemy
   m_TagString: Untagged
@@ -74,19 +75,6 @@ CircleCollider2D:
   m_Offset: {x: -0.042283654, y: 0.41578913}
   serializedVersion: 2
   m_Radius: 0.3801967
---- !u!114 &6863372801195459561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1621166214436897976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 382f2d00e4cc42a7801941c84732f42d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
 --- !u!114 &5121700486997552698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,18 +87,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4231cfe8814000b02959b55462b3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passAwayParticles: {fileID: 9203911137525845175}
-  spriteRenderer: {fileID: 3412302525266147982}
   collider: {fileID: 2388690262079300533}
-  attackOrigin: {fileID: 5080212946098235696}
+  entityRenderer: {fileID: 0}
   maxHealth: 10
   role: 0
   attackDetectionRadius: 1
-  hitFlashColor: {r: 1, g: 0.92, b: 0.82, a: 1}
-  criticalHitFlashColor: {r: 1, g: 0.7, b: 0.3, a: 1}
-  hitFlashDuration: 0.08
-  hitPunchScale: 0.08
-  criticalHitPunchScale: 0.16
 --- !u!114 &8774373447140388083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaxHealth: 1
---- !u!114 &3569943134734976313
+--- !u!114 &4790871906719625864
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,10 +114,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 1621166214436897976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b157b6cb72958a54790d6c5b79cd078d, type: 3}
+  m_Script: {fileID: 11500000, guid: acf2bec3af34abb42b2600580aee25c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackOrigin: {fileID: 0}
+--- !u!114 &197071781020205633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621166214436897976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9bf959036847304b9aa16a6d40c5567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passAwayParticles: {fileID: 0}
+  deathPassAwayDelay: 0
+--- !u!114 &1003411078956690266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621166214436897976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db55490bad542c489de220d2e8f21c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4085122361671200470
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,10 +318,5 @@ PrefabInstance:
 --- !u!4 &1470377495747877834 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7013954580337616430, guid: ff382a2320507a24dba9b3e5cbe6c0bd, type: 3}
-  m_PrefabInstance: {fileID: 8444607801174048228}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &9203911137525845175 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 759870731596460371, guid: ff382a2320507a24dba9b3e5cbe6c0bd, type: 3}
   m_PrefabInstance: {fileID: 8444607801174048228}
   m_PrefabAsset: {fileID: 0}

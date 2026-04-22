@@ -7,6 +7,8 @@ public sealed class UIRuntimeState
     private readonly Dictionary<Type, Stack<string>> pageTypeToInstances = new Dictionary<Type, Stack<string>>();
     private readonly Stack<string> backStack = new Stack<string>();
 
+    public IReadOnlyDictionary<string, Type> InstanceToPageType => instanceToPageType;
+
     public void Register(Type pageType, string instanceId, bool trackInBackStack)
     {
         if (pageType == null)
@@ -125,6 +127,26 @@ public sealed class UIRuntimeState
         }
 
         return instances.Count;
+    }
+
+    public string[] GetBackStackSnapshot()
+    {
+        return backStack.ToArray();
+    }
+
+    public string[] GetOpenInstancesForPageType(Type pageType)
+    {
+        if (pageType == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        if (!pageTypeToInstances.TryGetValue(pageType, out Stack<string> instances) || instances.Count == 0)
+        {
+            return Array.Empty<string>();
+        }
+
+        return instances.ToArray();
     }
 
     public void Clear()

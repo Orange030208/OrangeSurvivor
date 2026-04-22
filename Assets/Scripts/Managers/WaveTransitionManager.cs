@@ -17,10 +17,12 @@ public class WaveTransitionManager : MonoBehaviour
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
     [SerializeField] private PropertiesManager propertiesManager;
+    [SerializeField] private CurrencyWallet currencyWallet;
 
     private readonly PropEntry[] propEntries = new PropEntry[3];
     private AccessoryDataSO currentAccessoryData;
     private int collectChestCount;
+    private PlayerLevel playerLevel;
     private TransitionPhase currentPhase = TransitionPhase.None;
 
     private TransitionPhase CurrentPhase
@@ -84,8 +86,10 @@ public class WaveTransitionManager : MonoBehaviour
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         player = eventData.Player;
-        accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
-        propertiesManager = player != null ? player.GetComponent<PropertiesManager>() : null;
+        accessoryManager = player.GetComponent<AccessoryManager>();
+        propertiesManager = player.GetComponent<PropertiesManager>();
+        playerLevel = player.GetComponent<PlayerLevel>();
+        currencyWallet = player.GetComponent<CurrencyWallet>();
     }
 
     private void StartTransitionFlow()
@@ -133,7 +137,7 @@ public class WaveTransitionManager : MonoBehaviour
         }
         else
         {
-            GameEventBus.Publish(new CurrencyChangeRequestedEvent(CurrencyType.Currency, eventData.accessoryData.RecyclePrice));
+            currencyWallet?.ChangeAmount(eventData.accessoryData.RecyclePrice);
             print($"回收了{eventData.accessoryData.ItemName},回收价格:{eventData.accessoryData.RecyclePrice}");
         }
 
@@ -171,8 +175,11 @@ public class WaveTransitionManager : MonoBehaviour
     {
         return propType switch
         {
-            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value > 0.5f ? PropModifierType.Flat : PropModifierType.BasePercent,
-            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.Range => Random.value > 0.5f ? PropModifierType.BasePercent : PropModifierType.FinalPercent,
+            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value > 0.5f
+                ? PropModifierType.Flat
+                : PropModifierType.BasePercent,
+            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.Range =>
+                Random.value > 0.5f ? PropModifierType.BasePercent : PropModifierType.FinalPercent,
             _ => PropModifierType.Flat
         };
     }
@@ -200,27 +207,27 @@ public class WaveTransitionManager : MonoBehaviour
         };
     }
 
-    private void UpgradeBonusCallback()
+    private void CompleteUpgradeSelection()
+    {
+        CurrentPhase = TransitionPhase.None;
+        GameEventBus.Publish<UpgradeSelectionCompletedEvent>();
+    }
+
+    private void ContinueOrCompleteUpgradeSelection()
     {
         if (CurrentPhase != TransitionPhase.UpgradeSelection)
         {
             return;
         }
 
-        if (player == null)
+        int remainingUpgradePoints = playerLevel.ConsumeUpgradePoint();
+        if (remainingUpgradePoints > 0)
         {
+            ConfigureUpgradeProps();
             return;
         }
 
-        if (player.GetComponent<PlayerLevel>().ConsumeUpgradePoint() > 0)
-        {
-            ConfigureUpgradeProps();
-        }
-        else
-        {
-            CurrentPhase = TransitionPhase.None;
-            GameEventBus.Publish<UpgradeSelectionCompletedEvent>();
-        }
+        CompleteUpgradeSelection();
     }
 
     private void OnUpgradeContainerClicked(UpgradeContainerClickedEvent eventData)
@@ -230,14 +237,11 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        if (propertiesManager != null)
-        {
-            string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-            PropEntry propEntry = propEntries[eventData.ContainerIndex];
-            propertiesManager.AddModifier(upgradeId, propEntry);
-        }
+        string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
+        PropEntry propEntry = propEntries[eventData.ContainerIndex];
+        propertiesManager.AddModifier(upgradeId, propEntry);
 
-        UpgradeBonusCallback();
+        ContinueOrCompleteUpgradeSelection();
     }
 
     private void PublishSnapshot()
@@ -251,6 +255,7 @@ public class WaveTransitionManager : MonoBehaviour
                 {
                     GameEventBus.Publish(new AccessorySelectionStartedEvent(currentAccessoryData));
                 }
+
                 break;
             case TransitionPhase.UpgradeSelection:
                 GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
@@ -267,6 +272,10 @@ public class WaveTransitionManager : MonoBehaviour
 
         if (player == null)
         {
+            accessoryManager = null;
+            propertiesManager = null;
+            playerLevel = null;
+            currencyWallet = null;
             return;
         }
 
@@ -278,6 +287,21 @@ public class WaveTransitionManager : MonoBehaviour
         if (propertiesManager == null)
         {
             propertiesManager = player.GetComponent<PropertiesManager>();
+        }
+
+        if (playerLevel == null)
+        {
+            playerLevel = player.GetComponent<PlayerLevel>();
+        }
+
+        if (currencyWallet == null)
+        {
+            currencyWallet = player.GetComponent<CurrencyWallet>();
+        }
+
+        if (currencyWallet == null)
+        {
+            currencyWallet = player.GetComponent<CurrencyWallet>();
         }
     }
 }

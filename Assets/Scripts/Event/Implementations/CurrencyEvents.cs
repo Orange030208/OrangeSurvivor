@@ -1,51 +1,23 @@
-using System;
+using UnityEngine;
 
 public struct CurrencyChangedEvent : IGameEvent
 {
     /// <summary>
-    /// 发生变化的货币类型
+    /// 发生变化的钱包实例。
     /// </summary>
-    public CurrencyType CurrencyType;
+    public CurrencyWallet Wallet;
 
     /// <summary>
-    /// 改变之后的货币数量
+    /// 改变之后的货币数量。
     /// </summary>
     public int CurrentAmount;
 
     public int ChangeAmount;
 
-    public CurrencyChangedEvent(CurrencyType currencyType, int currentAmount, int changeAmount)
+    public CurrencyChangedEvent(CurrencyWallet wallet, int currentAmount, int changeAmount)
     {
-        CurrencyType = currencyType;
+        Wallet = wallet;
         CurrentAmount = currentAmount;
         ChangeAmount = changeAmount;
-    }
-}
-
-/// <summary>
-/// 请求一次指定货币类型的快照。
-/// </summary>
-public struct RequestCurrencySnapshotEvent : IGameEvent
-{
-    public CurrencyType CurrencyType;
-
-    public RequestCurrencySnapshotEvent(CurrencyType currencyType)
-    {
-        CurrencyType = currencyType;
-    }
-}
-
-/// <summary>
-/// 请求变更指定货币类型。
-/// </summary>
-public struct CurrencyChangeRequestedEvent : IGameEvent
-{
-    public CurrencyType CurrencyType;
-    public int Amount;
-
-    public CurrencyChangeRequestedEvent(CurrencyType currencyType, int amount)
-    {
-        CurrencyType = currencyType;
-        Amount = amount;
     }
 }

@@ -398,6 +398,35 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
         }
     }
 
+    [ContextMenu("Log Runtime Diagnostics")]
+    public void LogRuntimeDiagnostics()
+    {
+        string transitionSummary = transitionRunner != null ? transitionRunner.GetDebugSummary() : "transitionRunner=null";
+        string[] backStackSnapshot = runtimeState.GetBackStackSnapshot();
+        string topOpenInstance = runtimeState.TryGetTopOpenInstance(out string instanceId) ? instanceId : "None";
+
+        List<string> openPageSummaries = new List<string>();
+        foreach (KeyValuePair<string, RuntimePage> pair in openedByInstance)
+        {
+            RuntimePage runtimePage = pair.Value;
+            bool isClosing = closingInstanceIds.Contains(runtimePage.InstanceId);
+            openPageSummaries.Add($"{runtimePage.PageType.Name}#{runtimePage.InstanceId} (closing={isClosing})");
+        }
+
+        string openedPages = openPageSummaries.Count > 0 ? string.Join(", ", openPageSummaries) : "None";
+        string closingPages = closingInstanceIds.Count > 0 ? string.Join(", ", closingInstanceIds) : "None";
+        string backStackText = backStackSnapshot.Length > 0 ? string.Join(" -> ", backStackSnapshot) : "Empty";
+
+        Debug.Log(
+            $"[UIManager] Runtime Diagnostics\n" +
+            $"TransitionRunner: {transitionSummary}\n" +
+            $"TopOpenInstance: {topOpenInstance}\n" +
+            $"ClosingInstanceIds: {closingPages}\n" +
+            $"OpenedPages: {openedPages}\n" +
+            $"BackStack: {backStackText}",
+            this);
+    }
+
     private void ApplyPageActivation(RuntimePage topRuntimePage)
     {
         foreach (RuntimePage page in openedByInstance.Values)

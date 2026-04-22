@@ -147,22 +147,55 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
             }
         }
 
+        pendingCount++;
+        bool baseCloseCompleted = false;
+
+        void CompleteBaseCloseOnce()
+        {
+            if (baseCloseCompleted)
+            {
+                return;
+            }
+
+            baseCloseCompleted = true;
+            MarkCompleted();
+        }
+
+        Tween baseCloseTween = DOVirtual.DelayedCall(0f, CompleteBaseCloseOnce).SetUpdate(useUnscaledTime);
+        baseCloseTween.OnKill(CompleteBaseCloseOnce);
+
         if (ShouldAutoPlaySequenceDirector())
         {
             pendingCount++;
             Tween exitTween = sequenceDirector.PlayExit();
-            exitTween.OnComplete(MarkCompleted);
+            if (exitTween == null)
+            {
+                MarkCompleted();
+            }
+            else
+            {
+                bool exitCompleted = false;
+
+                void CompleteExitOnce()
+                {
+                    if (exitCompleted)
+                    {
+                        return;
+                    }
+
+                    exitCompleted = true;
+                    MarkCompleted();
+                }
+
+                exitTween.OnComplete(CompleteExitOnce);
+                exitTween.OnKill(CompleteExitOnce);
+            }
         }
 
         if (HasAdditionalCloseWaitActions())
         {
             pendingCount++;
             PlayAdditionalCloseWaitActions(useUnscaledTime, MarkCompleted);
-        }
-
-        if (pendingCount == 0)
-        {
-            CompleteCloseWaitPipeline();
         }
     }
 
@@ -194,7 +227,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     protected virtual bool ShouldAutoPlaySequenceDirector()
     {
-        return autoPlaySequenceDirector;
+        return autoPlaySequenceDirector && sequenceDirector != null;
     }
 
     private void PrepareContentForOpen()

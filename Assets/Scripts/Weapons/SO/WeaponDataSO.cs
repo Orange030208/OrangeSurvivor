@@ -185,8 +185,8 @@ public class WeaponDataSO : ItemDataSO,IDescribable
     public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         List<DescriptorInfo> infos = new();
-        infos.Add(new DescriptorInfo("攻击力",attack.ToString()));
-        infos.Add(new DescriptorInfo("攻速", attackSpeed.ToString()));
+        infos.Add(new DescriptorInfo("攻击力",$"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
+        infos.Add(new DescriptorInfo("攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{attackSpeed}"));
         infos.Add(new DescriptorInfo("描述",Description));
         return infos;
     }
@@ -195,40 +195,4 @@ public class WeaponDataSO : ItemDataSO,IDescribable
 internal static class WeaponLevelScaling
 {
     public const int MaxLevel = 6;
-}
-
-public enum ProjectileFiringMode
-{
-    Default,
-    Spread,
-    Burst,
-    Charged,
-    Nova
-}
-
-[System.Serializable]
-public struct ProjectilePatternConfig
-{
-    public static ProjectilePatternConfig Default => new(3, 12f, 3, 0.06f, 8);
-
-    [SerializeField] private int spreadCount;
-    [SerializeField] private float spreadAngle;
-    [SerializeField] private int burstCount;
-    [SerializeField] private float burstInterval;
-    [SerializeField] private int novaCount;
-
-    public int SpreadCount => Mathf.Max(1, spreadCount);
-    public float SpreadAngle => Mathf.Max(0f, spreadAngle);
-    public int BurstCount => Mathf.Max(1, burstCount);
-    public float BurstInterval => Mathf.Max(0f, burstInterval);
-    public int NovaCount => Mathf.Max(1, novaCount);
-
-    public ProjectilePatternConfig(int spreadCount, float spreadAngle, int burstCount, float burstInterval, int novaCount)
-    {
-        this.spreadCount = Mathf.Max(1, spreadCount);
-        this.spreadAngle = Mathf.Max(0f, spreadAngle);
-        this.burstCount = Mathf.Max(1, burstCount);
-        this.burstInterval = Mathf.Max(0f, burstInterval);
-        this.novaCount = Mathf.Max(1, novaCount);
-    }
 }

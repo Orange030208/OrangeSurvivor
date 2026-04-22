@@ -87,7 +87,7 @@ public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
         foreach (PropEntry propEntry in propertyModifiers)
         {
             infos.Add(new DescriptorInfo(propEntry.GetDisplayName(),
-                propEntry.propType.GetIcon() + propEntry.GetDisplayName() + propEntry.value));
+                propEntry.propType.GetIconRichTextWithVOffset() + propEntry.GetDisplayName() + propEntry.value));
         }
         
         foreach (var feature in specialFeatures)

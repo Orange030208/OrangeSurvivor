@@ -10,11 +10,15 @@ public class Candy : Collection
     protected override void OnCollected(IEntity entity)
     {
         PlayerLevel levelComponent = entity.Transform.GetComponent<PlayerLevel>();
-        if (levelComponent == null)
+        if (levelComponent != null)
         {
-            return;
+            levelComponent.AddXP(Mathf.Max(BASE_EXPERIENCE_VALUE, experienceValue));
         }
-
-        levelComponent.AddXP(Mathf.Max(BASE_EXPERIENCE_VALUE, experienceValue));
+        
+        CurrencyWallet currencyWallet = entity.Transform.GetComponent<CurrencyWallet>();
+        if (currencyWallet != null)
+        {
+            currencyWallet.ChangeAmount(1);
+        }
     }
 }

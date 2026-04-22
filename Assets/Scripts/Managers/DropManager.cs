@@ -5,7 +5,6 @@ using Random = UnityEngine.Random;
 public class DropManager:MonoBehaviour
 {
     [SerializeField] private Candy candyPrefab;
-    [SerializeField] private Cash cashPrefab;
     [SerializeField] private Chest chestPrefab;
 
     private void OnEnable()
@@ -27,13 +26,9 @@ public class DropManager:MonoBehaviour
 
         Collection dropItem;
         int random = Random.Range(1, 101);
-        if (random <= 60)
+        if (random <= 95)
         {
             dropItem = candyPrefab;
-        }
-        else if (random <= 80)
-        {
-            dropItem = cashPrefab;
         }
         else
         {

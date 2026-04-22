@@ -8,6 +8,8 @@ using UnityEngine;
 /// </summary>
 public class WaveRewardManager : MonoBehaviour
 {
+    [SerializeField] private CurrencyWallet wallet;
+
     private WaveRewardService waveRewardService;
 
     private void Awake()
@@ -18,16 +20,24 @@ public class WaveRewardManager : MonoBehaviour
     private void OnEnable()
     {
         GameEventBus.Subscribe<WaveRewardGrantedEvent>(OnWaveRewardGranted);
+        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        TryBindWallet();
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<WaveRewardGrantedEvent>(OnWaveRewardGranted);
+        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+    }
+
+    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    {
+        wallet = eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null;
     }
 
     private void OnWaveRewardGranted(WaveRewardGrantedEvent eventData)
     {
-        WaveRewardGrantResult grantResult = waveRewardService.Grant(eventData.RewardSnapshot);
+        WaveRewardGrantResult grantResult = waveRewardService.Grant(eventData.RewardSnapshot, wallet);
         WaveRewardSnapshot resolvedReward = new WaveRewardSnapshot(
             grantResult.GrantedGold,
             grantResult.GrantedChestCount,
@@ -37,5 +47,21 @@ public class WaveRewardManager : MonoBehaviour
             eventData.WaveCompletedEvent,
             resolvedReward,
             resolvedFlow));
+    }
+
+    private void TryBindWallet()
+    {
+        if (wallet != null)
+        {
+            return;
+        }
+
+        Player player = FindFirstObjectByType<Player>();
+        if (player == null)
+        {
+            return;
+        }
+
+        wallet = player.GetComponent<CurrencyWallet>();
     }
 }

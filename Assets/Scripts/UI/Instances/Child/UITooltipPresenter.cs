@@ -9,7 +9,7 @@ public class UITooltipPresenter : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private DescriptionListDisplayer descriptionListDisplayer;
+    [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
     [SerializeField] private Vector2 screenOffset = new(18f, -18f);
     [SerializeField] private Vector2 screenPadding = new(12f, 12f);
 
@@ -43,7 +43,7 @@ public class UITooltipPresenter : MonoBehaviour
             throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing title text.");
         }
 
-        if (descriptionListDisplayer == null)
+        if (extraInfoDescriber == null)
         {
             throw new MissingReferenceException($"{nameof(UITooltipPresenter)} '{name}' is missing description list displayer.");
         }
@@ -90,7 +90,7 @@ public class UITooltipPresenter : MonoBehaviour
         titleText.text = document != null ? document.Title : string.Empty;
         iconImage.sprite = document != null ? document.Icon : null;
         iconImage.enabled = document != null && document.Icon != null;
-        descriptionListDisplayer.Display(document);
+        extraInfoDescriber.Display(document);
         LayoutRebuilder.ForceRebuildLayoutImmediate(root);
     }
 

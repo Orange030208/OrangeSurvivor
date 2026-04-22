@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, DescriptionListDisplayer>
+public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, ExtraInfoDescriber>
 {
     [SerializeField] private UIClickTarget buyButton;
     [SerializeField] private TextMeshProUGUI priceText;

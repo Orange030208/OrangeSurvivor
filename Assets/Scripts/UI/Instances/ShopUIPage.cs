@@ -8,26 +8,30 @@ public class ShopUIPage : UIPageBase
 {
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
-    [SerializeField] private UIClickTarget showPropertiesButton;
-    [SerializeField] private UIClickTarget showInventoryButton;
     [SerializeField] private UIClickTarget rerollButton;
-    [SerializeField] private UIClickTarget watchVideoRerollButton;
     [SerializeField] private UIClickTarget continueButton;
     [SerializeField] private TextMeshProUGUI rerollCostText;
+    [SerializeField] private TextMeshProUGUI currencyText;
 
-    [Header("属性面板(左)")] [SerializeField] private UISidebarRevealMotion propertiesSidebar;
+    [Header("属性面板(左)")]
+    [SerializeField] private UISidebarRevealMotion propertiesSidebar;
+    [SerializeField] private UIClickTarget propertiesToggleButton;
+    [SerializeField] private Describer propertiesDescriber;
 
-    [Header("背包面板(右)")] [SerializeField] private UISidebarRevealMotion inventorySidebar;
-
-    [Header("侧边遮罩")] [SerializeField] private UIClickTarget closeSidebarButton;
+    [Header("背包面板(右)")]
+    [SerializeField] private UISidebarRevealMotion inventorySidebar;
+    [SerializeField] private UIClickTarget inventoryToggleButton;
 
     private readonly List<ShopItemContainer> spawnedItems = new();
 
-    private UISidebarRevealMotion currentOpenPanel;
+    private bool isPropertiesSidebarVisible = true;
+    private bool isInventorySidebarVisible = true;
+    private PropertiesManager propertiesManager;
 
     protected override void Awake()
     {
         base.Awake();
+        ValidateConfiguration();
         shopItemParent.Clear();
         InitSidebarPanels();
     }
@@ -37,10 +41,11 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Subscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
         GameEventBus.Subscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
         GameEventBus.Subscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         BindButtonEvents();
         InjectPropertiesDependencies();
-        HideAllSidebarPanelsImmediately();
+        RefreshCurrencyDisplay(FindFirstObjectByType<CurrencyWallet>());
         GameEventBus.Publish(new RequestShopSnapshotEvent());
     }
 
@@ -49,7 +54,9 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Unsubscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
         GameEventBus.Unsubscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
         GameEventBus.Unsubscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
+        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
+        UnbindPropertiesDependencies();
         UnbindButtonEvents();
         KillPanelTweens();
         ClearShopItems();
@@ -57,22 +64,18 @@ public class ShopUIPage : UIPageBase
 
     private void BindButtonEvents()
     {
-        BindClick(rerollButton, OnRerollButtonClicked);
-        BindClick(watchVideoRerollButton, OnWatchVideoRerollButtonClicked);
-        BindClick(continueButton, OnContinueButtonClicked);
-        BindClick(showPropertiesButton, DisplayProperties);
-        BindClick(showInventoryButton, DisplayInventory);
-        BindClick(closeSidebarButton, OnCloseSidebarClicked);
+        rerollButton.OnClicked += OnRerollButtonClicked;
+        continueButton.OnClicked += OnContinueButtonClicked;
+        propertiesToggleButton.OnClicked += OnPropertiesToggleButtonClicked;
+        inventoryToggleButton.OnClicked += OnInventoryToggleButtonClicked;
     }
 
     private void UnbindButtonEvents()
     {
-        UnbindClick(rerollButton, OnRerollButtonClicked);
-        UnbindClick(watchVideoRerollButton, OnWatchVideoRerollButtonClicked);
-        UnbindClick(continueButton, OnContinueButtonClicked);
-        UnbindClick(showPropertiesButton, DisplayProperties);
-        UnbindClick(showInventoryButton, DisplayInventory);
-        UnbindClick(closeSidebarButton, OnCloseSidebarClicked);
+        rerollButton.OnClicked -= OnRerollButtonClicked;
+        continueButton.OnClicked -= OnContinueButtonClicked;
+        propertiesToggleButton.OnClicked -= OnPropertiesToggleButtonClicked;
+        inventoryToggleButton.OnClicked -= OnInventoryToggleButtonClicked;
     }
 
     private void OnShopItemsChanged(ShopItemsChangedEvent eventData)
@@ -93,9 +96,23 @@ public class ShopUIPage : UIPageBase
 
     private void UpdateRerollDisplay(ShopItemsChangedEvent eventData)
     {
-            rerollCostText.text = eventData.RerollCost.ToString();
+        rerollCostText.text = eventData.RerollCost.ToString();
+        rerollButton.Interactable = eventData.CanReroll;
+    }
 
-            rerollButton.Interactable = eventData.CanReroll;
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    {
+        RefreshCurrencyDisplay(eventData.Wallet);
+    }
+
+    private void RefreshCurrencyDisplay(CurrencyWallet wallet)
+    {
+        if (currencyText == null)
+        {
+            return;
+        }
+
+        currencyText.text = wallet != null ? wallet.CurrentAmount.ToString() : "0";
     }
 
     private void SpawnShopItem(ShopItemData itemData)
@@ -122,90 +139,38 @@ public class ShopUIPage : UIPageBase
         GameEventBus.Publish(new ShopRerollRequestedEvent());
     }
 
-    private void OnWatchVideoRerollButtonClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new ShopVideoAdRerollRequestedEvent());
-    }
-
     private void OnContinueButtonClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
-    private void DisplayProperties()
+    private void OnPropertiesToggleButtonClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        ShowPanel(propertiesSidebar);
+        UIMotionAction action = isPropertiesSidebarVisible ? UIMotionAction.Hide : UIMotionAction.Show;
+        propertiesSidebar.Play(action);
+        isPropertiesSidebarVisible = !isPropertiesSidebarVisible;
     }
 
-    private void DisplayInventory()
+    private void OnInventoryToggleButtonClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        ShowPanel(inventorySidebar);
-    }
-
-    private void OnCloseSidebarClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        HideCurrentSidebarPanel();
-    }
-
-    private static void BindClick(UIClickTarget clickTarget, UnityAction handler)
-    {
-        clickTarget.OnClicked += handler;
-    }
-
-    private static void UnbindClick(UIClickTarget clickTarget, UnityAction handler)
-    {
-        clickTarget.OnClicked -= handler;
+        UIMotionAction action = isInventorySidebarVisible ? UIMotionAction.Hide : UIMotionAction.Show;
+        inventorySidebar.Play(action);
+        isInventorySidebarVisible = !isInventorySidebarVisible;
     }
 
     private void InitSidebarPanels()
     {
-        RefreshSidebarDefaults(propertiesSidebar);
-        RefreshSidebarDefaults(inventorySidebar);
-    }
-
-    private void ShowPanel(UISidebarRevealMotion panel)
-    {
-
-        if (currentOpenPanel != null && currentOpenPanel != panel)
-        {
-            currentOpenPanel.Play(UIMotionAction.Hide);
-        }
-
-        panel.Play(UIMotionAction.Show);
-        currentOpenPanel = panel;
-
-        closeSidebarButton.gameObject.SetActive(true);
-    }
-
-    private void HideCurrentSidebarPanel()
-    {
-        if (currentOpenPanel != null)
-        {
-            currentOpenPanel.Play(UIMotionAction.Hide);
-            currentOpenPanel = null;
-        }
-
-        closeSidebarButton.gameObject.SetActive(false);
-    }
-
-    private void HideAllSidebarPanelsImmediately()
-    {
-        HideSidebarImmediate(propertiesSidebar);
-        HideSidebarImmediate(inventorySidebar);
-        currentOpenPanel = null;
-
-        closeSidebarButton.gameObject.SetActive(false);
+        propertiesSidebar.RefreshDefaults();
+        inventorySidebar.RefreshDefaults();
     }
 
     private void KillPanelTweens()
     {
-        KillSidebarTween(propertiesSidebar);
-        KillSidebarTween(inventorySidebar);
+        propertiesSidebar.Kill();
+        inventorySidebar.Kill();
     }
 
     private void OnPurchaseSuccess(ShopPurchaseSuccessEvent eventData)
@@ -220,39 +185,109 @@ public class ShopUIPage : UIPageBase
 
     private void ClearShopItems()
     {
-        foreach (var item in spawnedItems)
+        foreach (ShopItemContainer item in spawnedItems)
         {
-                item.CleanUp();
-                Destroy(item.gameObject);
+            item.CleanUp();
+            Destroy(item.gameObject);
         }
 
         spawnedItems.Clear();
     }
 
-    private void InjectPropertiesDependencies()
+    private void ValidateConfiguration()
     {
-        Player player = FindFirstObjectByType<Player>();
+        if (shopItemPrefab == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing shop item prefab.");
+        }
 
-        PropertiesManager manager = player != null ? player.GetComponent<PropertiesManager>() : null;
+        if (shopItemParent == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing shop item parent.");
+        }
+
+        if (rerollButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing reroll button.");
+        }
+
+        if (continueButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing continue button.");
+        }
+
+        if (rerollCostText == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing reroll cost text.");
+        }
+
+        if (currencyText == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing currency text.");
+        }
+
+        if (propertiesSidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties sidebar.");
+        }
+
+        if (propertiesToggleButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties toggle button.");
+        }
+
+        if (propertiesDescriber == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties describer.");
+        }
+
+        if (inventorySidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory sidebar.");
+        }
+
+        if (inventoryToggleButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory toggle button.");
+        }
     }
 
-    private static void RefreshSidebarDefaults(UISidebarRevealMotion sidebar)
+    private void InjectPropertiesDependencies()
     {
-        if (sidebar == null)
+        UnbindPropertiesDependencies();
+
+        Player player = FindFirstObjectByType<Player>();
+        propertiesManager = player != null ? player.GetComponent<PropertiesManager>() : null;
+
+        RefreshPropertiesDescription();
+
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += OnAllPropertiesChanged;
+        }
+    }
+
+    private void UnbindPropertiesDependencies()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= OnAllPropertiesChanged;
+            propertiesManager = null;
+        }
+    }
+
+    private void OnAllPropertiesChanged()
+    {
+        RefreshPropertiesDescription();
+    }
+
+    private void RefreshPropertiesDescription()
+    {
+        if (propertiesDescriber == null)
         {
             return;
         }
 
-        sidebar.RefreshDefaults();
-    }
-
-    private static void HideSidebarImmediate(UISidebarRevealMotion sidebar)
-    {
-        sidebar.SetImmediate(UIMotionAction.Hide);
-    }
-
-    private static void KillSidebarTween(UISidebarRevealMotion sidebar)
-    {
-        sidebar.Kill();
+        propertiesDescriber.Display(propertiesManager);
     }
 }

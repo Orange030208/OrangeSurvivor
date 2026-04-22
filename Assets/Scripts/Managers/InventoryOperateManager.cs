@@ -6,6 +6,7 @@ public class InventoryOperateManager : MonoBehaviour
     [Header("绑定目标（可留空，运行时自动查找）")]
     [SerializeField] private WeaponsHolder weaponsHolder;
     [SerializeField] private AccessoryManager accessoryManager;
+    [SerializeField] private CurrencyWallet currencyWallet;
 
     private readonly List<InventoryRuntimeItem> runtimeItems = new();
     private bool subscribed;
@@ -36,12 +37,17 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        Bind(player.GetComponent<WeaponsHolder>(), player.GetComponent<AccessoryManager>());
+        Bind(
+            player.GetComponent<WeaponsHolder>(),
+            player.GetComponent<AccessoryManager>(),
+            player.GetComponent<CurrencyWallet>());
     }
 
-    public void Bind(WeaponsHolder newWeaponsHolder, AccessoryManager newAccessoryManager)
+    public void Bind(WeaponsHolder newWeaponsHolder, AccessoryManager newAccessoryManager, CurrencyWallet newCurrencyWallet)
     {
-        bool sameTarget = weaponsHolder == newWeaponsHolder && accessoryManager == newAccessoryManager;
+        bool sameTarget = weaponsHolder == newWeaponsHolder
+                          && accessoryManager == newAccessoryManager
+                          && currencyWallet == newCurrencyWallet;
         if (sameTarget)
         {
             PublishInventorySnapshot();
@@ -51,6 +57,7 @@ public class InventoryOperateManager : MonoBehaviour
         Unsubscribe();
         weaponsHolder = newWeaponsHolder;
         accessoryManager = newAccessoryManager;
+        currencyWallet = newCurrencyWallet;
         Subscribe();
         PublishInventorySnapshot();
     }
@@ -197,7 +204,7 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        GameEventBus.Publish(new CurrencyChangeRequestedEvent(CurrencyType.Currency, item.GetSellPrice()));
+        currencyWallet?.ChangeAmount(item.GetSellPrice());
         GameEventBus.Publish(new InventoryItemOperatePanelShouldCloseEvent(eventData.ItemIndex));
     }
 

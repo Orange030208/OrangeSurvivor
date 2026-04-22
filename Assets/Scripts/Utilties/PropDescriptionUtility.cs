@@ -1,10 +1,39 @@
 public static class PropDescriptionUtility
 {
-    public static string GetIcon(this PropType propType)
+    public static string GetIconRichText(this PropType propType)
     {
         return RichTextStringUtility.GetSpriteTagByIconName(propType.ToString());
     }
-   public static string GetChineseName(this PropType propType)
+
+    public static string GetIconRichTextWithVOffset(this PropType propType, float offset = -0.2f)
+    {
+        return RichTextStringUtility.WrapWithVOffsetTag(propType.GetIconRichText(), offset);
+    }
+
+    public static string GetIconNameWithRichText(this PropType propType, float iconOffset = -0.2f)
+    {
+        return RichTextStringUtility.Create()
+            .AppendWithVOffset(propType.GetIconRichText(), iconOffset)
+            .Append(propType.GetChineseName())
+            .ToString();
+    }
+
+    public static string BuildIconNameValueDescription(this PropType propType, float value, float iconOffset = -0.2f, float valuePositionPercent = 80f)
+    {
+        return propType.BuildIconNameValueDescription(FormatSignedNumber(value), value, iconOffset, valuePositionPercent);
+    }
+
+    public static string BuildIconNameValueDescription(this PropType propType, string valueText, float rawValue, float iconOffset = -0.2f, float valuePositionPercent = 80f)
+    {
+        string leftContent = propType.GetIconNameWithRichText(iconOffset);
+        string rightContent = ColorHelper.WrapRichTextColor(valueText, ColorHelper.GetColorByValue(rawValue));
+
+        return RichTextStringUtility.Create()
+            .AppendHeadTail(leftContent, rightContent, valuePositionPercent)
+            .ToString();
+    }
+
+    public static string GetChineseName(this PropType propType)
     {
         return propType switch
         {
@@ -120,12 +149,12 @@ public static class PropDescriptionUtility
     {
         float percent = value * 100f;
         string formatted = percent.ToString("F1");
-        return percent > 0 ? $"+{formatted}%" : $"{formatted}%";
+        return percent > 0 ? $"{formatted}%" : $"{formatted}%";
     }
 
     private static string FormatSignedNumber(float value)
     {
         string formatted = value.ToString("F1");
-        return value > 0 ? $"+{formatted}" : formatted;
-    }   
+        return value > 0 ? $"{formatted}" : formatted;
+    }
 }

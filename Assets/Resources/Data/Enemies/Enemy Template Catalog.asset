@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meleeTemplate: {fileID: 5121700486997552698, guid: 6061935c048e93f4890d62019470d9dc, type: 3}
   rangeTemplate: {fileID: 2859848195627263458, guid: 92285e627e9c1864e9e5c78bea3ad096, type: 3}
+  orbitMageTemplate: {fileID: 2859848195627263458, guid: a1a7b9c2d3e44f54a9aa0d0b8e300101, type: 3}
+  novaMageTemplate: {fileID: 2859848195627263458, guid: a1a7b9c2d3e44f54a9aa0d0b8e300102, type: 3}

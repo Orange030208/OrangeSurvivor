@@ -50,23 +50,12 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void ShowSelectAccessory(AccessorySelectionStartedEvent eventData)
     {
-        if (!chestContainerParent.gameObject.activeSelf)
-        {
-            return;
-        }
-
         accessoryOperateContainer.Configure(eventData.accessoryData);
     }
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
     {
-        if (!upgradeContainersParent.gameObject.activeSelf || eventData.PropEntries == null)
-        {
-            return;
-        }
-
-        int count = Mathf.Min(upgradeContainers.Length, eventData.PropEntries.Length);
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < eventData.PropEntries.Length; i++)
         {
             PropEntry prop = eventData.PropEntries[i];
             upgradeContainers[i].Configure(new InfoAddIndex<PropEntry>(prop, i));

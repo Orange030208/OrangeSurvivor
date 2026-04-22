@@ -8,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(AccessoryManager))]
 [RequireComponent(typeof(WeaponsHolder))]
 [RequireComponent(typeof(PlayerAnimationController))]
+[RequireComponent(typeof(CurrencyWallet))]
 public class Player : Entity
 {
     [Header("组件")]
@@ -25,6 +26,8 @@ public class Player : Entity
     public override EntityRenderer EntityRenderer => entityRenderer;
 
     private CharacterDataSO characterData;
+    public CharacterDataSO CharacterData => characterData;
+
     private void Awake()
     {
         playerLevel = GetComponent<PlayerLevel>();

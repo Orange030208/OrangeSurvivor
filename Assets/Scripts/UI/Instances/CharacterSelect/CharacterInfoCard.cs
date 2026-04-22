@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CharacterInfoCard : MonoBehaviour
 {
-    [SerializeField] private DescriptionListDisplayer descriptionListDisplayer;
+    [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
     [SerializeField] private Image characterIconImage;
     [SerializeField] private TextMeshProUGUI characterNameText;
 
@@ -12,13 +12,13 @@ public class CharacterInfoCard : MonoBehaviour
     {
         characterIconImage.sprite = characterData.CharacterIcon;
         characterNameText.text = characterData.CharacterName;
-        descriptionListDisplayer.Display(characterData);
+        extraInfoDescriber.Display(characterData);
     }
 
     public void ClearInfo()
     {
         characterIconImage.sprite = null;
         characterNameText.text = string.Empty;
-        descriptionListDisplayer.Display((IDescribable)null);
+        extraInfoDescriber.Display((IDescribable)null);
     }
 }

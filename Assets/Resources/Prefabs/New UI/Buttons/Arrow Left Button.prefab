@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2738362673911831729}
   - component: {fileID: -484795988758975153}
   - component: {fileID: 2126647607020705311}
-  - component: {fileID: 2443277875605788429}
+  - component: {fileID: 6339696588121450102}
   - component: {fileID: 3291148694776631573}
   m_Layer: 5
   m_Name: Arrow Left Button
@@ -117,11 +117,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab32df935b83c62429e04183b836a38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   targetImage: {fileID: 2738362673911831729}
   useUnscaledTime: 1
   keepLastFrameOnComplete: 1
   actionClips:
-  - action: 4
+  - action: 2
     frameSourceMode: 0
     sourceAction: 4
     frames:
@@ -133,9 +134,9 @@ MonoBehaviour:
     reverse: 0
     deactivateOnComplete: 0
     frameEvents: []
-  - action: 0
+  - action: 3
     frameSourceMode: 1
-    sourceAction: 4
+    sourceAction: 2
     frames: []
     timingMode: 0
     framesPerSecond: 12
@@ -143,7 +144,18 @@ MonoBehaviour:
     reverse: 1
     deactivateOnComplete: 0
     frameEvents: []
---- !u!114 &2443277875605788429
+  - action: 0
+    frameSourceMode: 1
+    sourceAction: 4
+    frames:
+    - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+    timingMode: 0
+    framesPerSecond: 12
+    totalDuration: 0.5
+    reverse: 1
+    deactivateOnComplete: 0
+    frameEvents: []
+--- !u!114 &6339696588121450102
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,12 +164,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 3623396138096017967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: Button/Soft
   motionIntensity: 1
   useUnscaledTime: 1
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.18
+    ease: 6
+    deactivateOnComplete: 0
   - action: 0
     pose:
       fade: 0
@@ -166,9 +196,13 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.12
+    duration: 0.18
     ease: 6
     deactivateOnComplete: 0
   - action: 1
@@ -178,33 +212,79 @@ MonoBehaviour:
       move: 0
       offset: {x: 0, y: 0}
       scale: 1
-      scaleMultiplier: 0.96
+      scaleMultiplier: 0.98
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.14
-    ease: 8
+    ease: 5
     deactivateOnComplete: 0
-  - action: 2
+  - action: 5
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: 1}
+      scale: 1
+      scaleMultiplier: 1.01
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 6
     pose:
       fade: 0
       alpha: 1
       move: 0
       offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.1
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.16
-    ease: 27
+    duration: 0.08
+    ease: 6
     deactivateOnComplete: 0
   - action: 3
     pose:
       fade: 0
       alpha: 1
       move: 1
-      offset: {x: 0, y: 2}
+      offset: {x: 0, y: 1}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.08
+    ease: 6
+    deactivateOnComplete: 0
+  - action: 2
+    pose:
+      fade: 0
+      alpha: 1
+      move: 1
+      offset: {x: 0, y: -2}
+      scale: 1
+      scaleMultiplier: 0.98
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.08
@@ -214,13 +294,17 @@ MonoBehaviour:
     pose:
       fade: 0
       alpha: 1
-      move: 1
-      offset: {x: 0, y: -4}
+      move: 0
+      offset: {x: 0, y: 0}
       scale: 1
-      scaleMultiplier: 0.96
+      scaleMultiplier: 1.08
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.08
+    duration: 0.14
     ease: 6
     deactivateOnComplete: 0
 --- !u!114 &3291148694776631573
@@ -238,9 +322,13 @@ MonoBehaviour:
   motionSource: {fileID: 2126647607020705311}
   playEnterOnEnable: 0
   bindings:
+  - motionEvent: 0
+    action: 5
+  - motionEvent: 1
+    action: 6
   - motionEvent: 2
-    action: 4
-  - motionEvent: 3
-    action: 0
-  - motionEvent: 4
     action: 2
+  - motionEvent: 3
+    action: 3
+  - motionEvent: 4
+    action: 4

@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, DescriptionListDisplayer>
+public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperateResource, ExtraInfoDescriber>
 {
     [SerializeField] private UIClickTarget sellButton;
     [SerializeField] private UIClickTarget mergeButton;

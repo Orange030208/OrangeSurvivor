@@ -2,11 +2,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PropertiesManager : MonoBehaviour
+public class PropertiesManager : MonoBehaviour,IDescribable
 {
     private Dictionary<PropType, float> baseProps = new();
     private readonly Dictionary<PropType, float> calculatedProps = new();
     private readonly Dictionary<string, List<PropEntry>> modifierSources = new();
+
+    public string Title => "属性";
+    public Sprite Icon => null;
+    public string Description => "属性管理器";
+    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        List<DescriptorInfo> infos = new();
+        foreach (var info in calculatedProps)
+        {
+            infos.Add(new DescriptorInfo(info.Key.GetChineseName(),info.Key.BuildIconNameValueDescription(info.Value)));
+        }
+        return infos;
+    }
 
     public event Action<PropType, float> OnPropertyChanged;
     public event Action OnAllPropertiesChanged;

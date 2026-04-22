@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 internal sealed class UITransitionRunner : IUITransitionExecutor
 {
@@ -38,6 +39,13 @@ internal sealed class UITransitionRunner : IUITransitionExecutor
     {
         waitingForTransitionClosures = false;
         TryAdvanceTransition();
+    }
+
+    public string GetDebugSummary()
+    {
+        string activeSummary = DescribePlan(activeTransitionPlan, activeTransitionStepIndex);
+        string pendingSummary = DescribePlan(pendingTransitionPlan, 0);
+        return $"waitingForTransitionClosures={waitingForTransitionClosures}, active={activeSummary}, pending={pendingSummary}";
     }
 
     private void StartPendingTransition()
@@ -146,5 +154,15 @@ internal sealed class UITransitionRunner : IUITransitionExecutor
         }
 
         return false;
+    }
+
+    private static string DescribePlan(IUITransitionPlan plan, int currentStepIndex)
+    {
+        if (plan == null)
+        {
+            return "null";
+        }
+
+        return $"steps={plan.StepCount}, currentStepIndex={currentStepIndex}";
     }
 }

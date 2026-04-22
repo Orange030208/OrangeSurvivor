@@ -21,7 +21,7 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 2
-    prefab: {fileID: 3816208830851736021, guid: e5958a3e181b13e439375b903b3e0d9f, type: 3}
+    prefab: {fileID: 3816208830851736021, guid: 20c94ac16a11dc54b9e607c6eff07912, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
@@ -42,7 +42,7 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 2
-    prefab: {fileID: 5453402992543493149, guid: 4a3a1b694f36bcd4995dafcb3cd7a5aa, type: 3}
+    prefab: {fileID: 5453402992543493149, guid: 7a7ebd4679f38d64d85b9322f65b5589, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1

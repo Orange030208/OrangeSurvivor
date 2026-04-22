@@ -28,7 +28,7 @@ public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource,IDescriba
         foreach (PropEntry propEntry in extraProps)
         {
             infos.Add(new DescriptorInfo(propEntry.GetDisplayName(),
-                $"额外{RichTextStringUtility.WrapWithVOffsetTag(propEntry.propType.GetIcon())}{propEntry.GetDisplayName()}{propEntry.value}"));
+                $"额外{propEntry.propType.GetIconRichTextWithVOffset()}{propEntry.GetDisplayName()}{propEntry.value}"));
         }
 
         foreach (var weapon in initialWeapons)

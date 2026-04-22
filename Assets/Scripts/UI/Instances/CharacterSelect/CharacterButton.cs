@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(UIClickTarget), typeof(UIRevealMotion))]
 public class CharacterButton : UIScrollListItemBase
 {
     [SerializeField] private Image characterIconImage;

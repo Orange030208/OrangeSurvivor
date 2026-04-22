@@ -16,6 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 1e81b3e36f57b914ea642a98fa34727d, type: 3}
   itemPrice: 24
   itemType: 0
+  itemDescription: 
   weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
   constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: 5bc120404a5b6cc4bba80f9a8c7dceae, type: 2}
@@ -28,11 +29,11 @@ MonoBehaviour:
     burstId: 0
     firingMode: 1
     patternConfig:
-      spreadCount: 5
-      spreadAngle: 9
-      burstCount: 1
-      burstInterval: 0
-      novaCount: 1
+      spreadCount: 8
+      spreadAngle: 5
+      burstCount: 6
+      novaCount: 6
+      burstInterval: 0.1
   sequenceSfxList: []
   sequenceVfxList: []
   hitSfxKey: 0
