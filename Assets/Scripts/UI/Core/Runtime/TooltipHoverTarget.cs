@@ -3,21 +3,21 @@ using UnityEngine.EventSystems;
 
 public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
 {
-    [SerializeField] private MonoBehaviour tooltipDataSourceComponent;
+    [SerializeField] private MonoBehaviour dataSourceComponent;
 
-    private IDescribable tooltipDataSource;
+    private IDescribable dataSource;
     private bool isPointerDown;
 
     private void Awake()
     {
         ValidateConfiguration();
-        tooltipDataSource = (IDescribable)tooltipDataSourceComponent;
+        dataSource = (IDescribable)dataSourceComponent;
     }
 
-    public void SetTooltipDataSource(IDescribable source)
+    public void SetDataSource(IDescribable source)
     {
-        tooltipDataSource = source;
-        tooltipDataSourceComponent = source as MonoBehaviour;
+        dataSource = source;
+        dataSourceComponent = source as MonoBehaviour;
     }
 
     private void OnDisable()
@@ -58,17 +58,17 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        GameEventBus.Publish(new ShowTooltipRequestedEvent(tooltipDataSource, screenPosition));
+        GameEventBus.Publish(new ShowTooltipRequestedEvent(dataSource, screenPosition));
     }
 
     private void ValidateConfiguration()
     {
-        if (tooltipDataSourceComponent == null)
+        if (dataSourceComponent == null)
         {
             throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' is missing tooltip data source component.");
         }
 
-        if (tooltipDataSourceComponent is not IDescribable)
+        if (dataSourceComponent is not IDescribable)
         {
             throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(IDescribable)}.");
         }

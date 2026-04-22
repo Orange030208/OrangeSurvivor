@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// - PageClosed：页面离开流程已完成；若页面启用了 UISequenceDirector，会等待其 exit 完成后再触发。
 /// - PageActivationChanged：页面 VisualActive / InputActive 已被重新计算并应用。
 /// </summary>
-public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHost
+public sealed class UIManager : MonoSingletonBase<UIManager>,IUIManager, IUITransitionRunnerHost
 {
     [SerializeField] private UIFrameworkSettings settings;
     [SerializeField] private UIPrefabCatalog catalog;
@@ -31,6 +31,11 @@ public sealed class UIManager : MonoBehaviour, IUIManager, IUITransitionRunnerHo
     public event EventHandler<UIPageEventArgs> PageActivationChanged;
 
     public IReadOnlyList<UIPrefabEntry> RegisteredEntries => catalog.Entries;
+
+    public bool TryGetLayerRoot(UILayerType layerType, out Transform layerRoot)
+    {
+        return layerRoots.TryGetValue(layerType, out layerRoot);
+    }
 
     private void Awake()
     {

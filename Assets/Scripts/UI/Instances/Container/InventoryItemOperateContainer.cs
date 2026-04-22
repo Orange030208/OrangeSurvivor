@@ -6,6 +6,8 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
     [SerializeField] private UIClickTarget sellButton;
     [SerializeField] private UIClickTarget mergeButton;
     [SerializeField] private TextMeshProUGUI sellPriceText;
+    [SerializeField] private GameObject sellSection;
+    [SerializeField] private GameObject mergeSection;
 
     private int currentItemIndex = -1;
 
@@ -25,7 +27,10 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
             nameText.text = resource.itemData.ItemName;
         }
 
-        sellPriceText.text = resource.sellPrice.ToString();
+        if (sellPriceText != null)
+        {
+            sellPriceText.text = resource.sellPrice.ToString();
+        }
 
         RenderColor(resource.itemData, resource.colorDependencyNumber);
         bottom.Display(resource.itemData);
@@ -35,11 +40,33 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
         sellButton.OnClicked -= OnSellClicked;
         mergeButton.OnClicked -= OnMergeClicked;
 
-        sellButton.OnClicked += OnSellClicked;
+        bool isWeapon = resource.itemData.ItemType == ItemType.Weapon;
+        bool canMerge = isWeapon && WeaponLevelHelper.CanMerge(resource.colorDependencyNumber);
 
-        bool showMerge = resource.itemData.ItemType == ItemType.Weapon && WeaponLevelHelper.CanMerge(resource.colorDependencyNumber);
-        mergeButton.gameObject.SetActive(showMerge);
-        if (showMerge)
+        if (sellSection != null)
+        {
+            sellSection.SetActive(isWeapon);
+        }
+        else
+        {
+            sellButton.gameObject.SetActive(isWeapon);
+        }
+
+        if (mergeSection != null)
+        {
+            mergeSection.SetActive(canMerge);
+        }
+        else
+        {
+            mergeButton.gameObject.SetActive(canMerge);
+        }
+
+        if (isWeapon)
+        {
+            sellButton.OnClicked += OnSellClicked;
+        }
+
+        if (canMerge)
         {
             mergeButton.OnClicked += OnMergeClicked;
         }
@@ -61,11 +88,13 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
 
     private void OnSellClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new InventoryItemSellClickedEvent(currentItemIndex));
     }
 
     private void OnMergeClicked()
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new InventoryItemMergeClickedEvent(currentItemIndex));
     }
 }

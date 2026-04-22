@@ -172,11 +172,12 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
+        int sellPrice = item.ItemData.ItemType == ItemType.Weapon ? item.GetSellPrice() : 0;
         InventoryItemOperateResource resource = new InventoryItemOperateResource(
             eventData.ItemIndex,
             item.ItemData,
             item.ColorDependencyNumber,
-            item.GetSellPrice(),
+            sellPrice,
             item.ItemData);
 
         GameEventBus.Publish(new InventoryItemOperatePanelDataEvent(resource));
@@ -189,16 +190,12 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        bool sold = false;
-        if (item.ItemData.ItemType == ItemType.Weapon)
+        if (item.ItemData.ItemType != ItemType.Weapon)
         {
-            sold = weaponsHolder != null && weaponsHolder.RemoveWeapon(item.RuntimeWeapon);
-        }
-        else if (item.ItemData.ItemType == ItemType.Accessory)
-        {
-            sold = accessoryManager != null && accessoryManager.UnequipAccessory((AccessoryDataSO)item.ItemData);
+            return;
         }
 
+        bool sold = weaponsHolder != null && weaponsHolder.RemoveWeapon(item.RuntimeWeapon);
         if (!sold)
         {
             return;

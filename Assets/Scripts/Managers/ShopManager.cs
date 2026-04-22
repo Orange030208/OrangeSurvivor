@@ -54,6 +54,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Subscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
 
         TryBindWallet();
         RefreshCurrency();
@@ -68,6 +69,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Unsubscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void Start()
@@ -80,6 +82,16 @@ public class ShopManager : MonoBehaviour
     {
         currencyWallet = eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null;
         RefreshCurrency();
+    }
+
+    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    {
+        if (eventData.NewState != GameState.Shop || eventData.OldState == GameState.Shop)
+        {
+            return;
+        }
+
+        RefreshShopForWaveEntry();
     }
 
     private void OnRequestSnapshot()
@@ -230,6 +242,44 @@ public class ShopManager : MonoBehaviour
         Debug.Log("Video ad reroll requested - implement ad integration here.");
         RerollShopItems();
         PublishShopItems();
+    }
+
+    private void RefreshShopForWaveEntry()
+    {
+        if (currentItems == null || currentItems.Length == 0)
+        {
+            GenerateShopItems();
+            PublishShopItems();
+            return;
+        }
+
+        RefreshKeepingLockedItems();
+        PublishShopItems();
+    }
+
+    private void RefreshKeepingLockedItems()
+    {
+        int count = Mathf.Max(1, containersToAdd);
+        ShopItemData[] nextItems = new ShopItemData[count];
+        int writeIndex = 0;
+
+        for (int i = 0; i < currentItems.Length && writeIndex < count; i++)
+        {
+            if (!currentItems[i].Lock || currentItems[i].ItemData == null)
+            {
+                continue;
+            }
+
+            nextItems[writeIndex++] = currentItems[i];
+        }
+
+        while (writeIndex < count)
+        {
+            nextItems[writeIndex] = GenerateRandomShopItem(nextItems, writeIndex);
+            writeIndex++;
+        }
+
+        currentItems = nextItems;
     }
 
     private void RerollShopItems()

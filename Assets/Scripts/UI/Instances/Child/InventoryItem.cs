@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItemContainer : MonoBehaviour, IDisposable, IDescribable
+public class InventoryItem : MonoBehaviour, IDisposable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
     [SerializeField] private UIClickTarget button;
-    [SerializeField] private TooltipHoverTarget tooltipHoverTarget;
 
     private int itemIndex = -1;
     private ItemDataSO currentItemData;
     private int currentColorDependencyNumber;
-    private IDescribable iDescribableImplementation;
+    private IDescribable describable;
 
     public void Configure(ItemDataSO itemData, int colorDependencyNumber, int itemIndex)
     {
@@ -38,8 +37,6 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, IDescribable
             }
         }
 
-        tooltipHoverTarget?.SetTooltipDataSource(this);
-
         button.OnClicked -= OnItemClicked;
         button.OnClicked += OnItemClicked;
     }
@@ -60,16 +57,5 @@ public class InventoryItemContainer : MonoBehaviour, IDisposable, IDescribable
         currentItemData = null;
         currentColorDependencyNumber = 0;
         itemIndex = -1;
-    }
-
-    public string Title => currentItemData.Title;
-
-    public Sprite Icon => currentItemData.Icon;
-
-    public string Description => currentItemData.Description;
-
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        return currentItemData.GetExtraInfos();
     }
 }
