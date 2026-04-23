@@ -13,6 +13,9 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
 
     private int currentIndex = -1;
 
+    public event Action<int> BuyRequested;
+    public event Action<int> LockToggleRequested;
+
     public override void Configure(InfoAddIndex<ShopItemData> resource)
     {
         ShopItemData shopItem = resource.info;
@@ -67,18 +70,20 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
     {
         buyButton.OnClicked -= OnBuyButtonClicked;
         lockButton.OnClicked -= OnLockButtonClicked;
+        BuyRequested = null;
+        LockToggleRequested = null;
         currentIndex = -1;
     }
 
     private void OnBuyButtonClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new ShopItemClickedEvent(currentIndex));
+        BuyRequested?.Invoke(currentIndex);
     }
 
     private void OnLockButtonClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new OperateShopItemLockEvent(currentIndex));
+        LockToggleRequested?.Invoke(currentIndex);
     }
 }

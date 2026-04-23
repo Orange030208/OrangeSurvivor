@@ -9,11 +9,13 @@ public class AccessoryManager : MonoBehaviour
     private FeatureHost featureHost;
     private readonly Dictionary<string, List<EquippedAccessory>> equippedAccessories = new();
     private readonly List<AccessoryDataSO> accessories = new();
+    private readonly List<EquippedAccessoryInfo> equippedAccessoryInfos = new();
 
     public event Action<AccessoryDataSO> OnAccessoryEquipped;
     public event Action<AccessoryDataSO> OnAccessoryUnequipped;
 
     public IReadOnlyList<AccessoryDataSO> EquippedAccessories => accessories.AsReadOnly();
+    public IReadOnlyList<EquippedAccessoryInfo> EquippedAccessoryInfos => equippedAccessoryInfos.AsReadOnly();
 
     private void Awake()
     {
@@ -41,6 +43,7 @@ public class AccessoryManager : MonoBehaviour
 
         list.Add(equipped);
         accessories.Add(accessoryData);
+        equippedAccessoryInfos.Add(new EquippedAccessoryInfo(accessoryData, equipped.RuntimeSourceId));
 
         FeatureInstaller.InstallSource(featureHost, equipped.RuntimeSourceId, accessoryData);
 
@@ -67,6 +70,7 @@ public class AccessoryManager : MonoBehaviour
         FeatureInstaller.RemoveSource(featureHost, equipped.RuntimeSourceId);
         int index = accessories.LastIndexOf(equipped.Data);
         if (index >= 0) accessories.RemoveAt(index);
+        RemoveEquippedAccessoryInfo(equipped.RuntimeSourceId);
 
         OnAccessoryUnequipped?.Invoke(equipped.Data);
         return true;
@@ -81,6 +85,11 @@ public class AccessoryManager : MonoBehaviour
     public IReadOnlyList<AccessoryDataSO> GetEquippedAccessories()
     {
         return accessories.AsReadOnly();
+    }
+
+    public IReadOnlyList<EquippedAccessoryInfo> GetEquippedAccessoryInfos()
+    {
+        return equippedAccessoryInfos.AsReadOnly();
     }
 
     public bool IsEquipped(string accessoryId)
@@ -101,6 +110,21 @@ public class AccessoryManager : MonoBehaviour
 
         equippedAccessories.Clear();
         accessories.Clear();
+        equippedAccessoryInfos.Clear();
+    }
+
+    private void RemoveEquippedAccessoryInfo(string runtimeSourceId)
+    {
+        for (int i = equippedAccessoryInfos.Count - 1; i >= 0; i--)
+        {
+            if (equippedAccessoryInfos[i].RuntimeSourceId != runtimeSourceId)
+            {
+                continue;
+            }
+
+            equippedAccessoryInfos.RemoveAt(i);
+            return;
+        }
     }
 
     private class EquippedAccessory

@@ -21,6 +21,11 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
     [SerializeField] protected K bottom;
 
     [SerializeField] protected Graphic[] colorDependencyGraphics;
+    [SerializeField] protected Graphic[] secondaryColorDependencyGraphics;
+    [SerializeField] protected Graphic[] glowGraphics;
+    [SerializeField] protected GameObject[] premiumEffectObjects;
+    [SerializeField] protected GameObject[] pulseEffectObjects;
+    [SerializeField] private bool applyQualityToNameText = true;
 
     public event Action<PointerEventData> OnClicked;
 
@@ -36,22 +41,17 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
 
     public void RenderColor(ItemDataSO itemData, int colorDependency)
     {
-        iconImage.sprite = itemData.ItemIcon;
-        foreach (Graphic g in colorDependencyGraphics)
-        {
-            switch (itemData.ItemType)
-            {
-                case ItemType.Accessory:
-                    g.color = ColorHelper.GetColorByRarity(colorDependency);
-                    break;
-                case ItemType.Weapon:
-                    g.color = ColorHelper.GetColorByLevel(colorDependency);
-                    break;
-                default:
-                    Debug.LogWarning($"需要配置{itemData.ItemType}的颜色");
-                    break;
-            }
-        }
+        ItemQualityVisualResolver.Apply(
+            this,
+            itemData,
+            colorDependency,
+            iconImage,
+            applyQualityToNameText ? nameText : null,
+            colorDependencyGraphics,
+            secondaryColorDependencyGraphics,
+            glowGraphics,
+            premiumEffectObjects,
+            pulseEffectObjects);
     }
 
     public void OnPointerClick(PointerEventData eventData)

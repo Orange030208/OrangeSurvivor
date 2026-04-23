@@ -12,4 +12,9 @@ public sealed class UIPageOpenContext
     public Type PageType { get; }
     public string InstanceId { get; }
     public object Payload { get; }
+
+    public T GetPayload<T>() where T : class
+    {
+        return Payload as T;
+    }
 }

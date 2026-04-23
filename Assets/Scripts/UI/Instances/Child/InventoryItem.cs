@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,35 +6,35 @@ public class InventoryItem : MonoBehaviour, IDisposable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Graphic[] colorDependencyGraphics;
+    [SerializeField] private Graphic[] secondaryColorDependencyGraphics;
+    [SerializeField] private Graphic[] glowGraphics;
+    [SerializeField] private GameObject[] premiumEffectObjects;
+    [SerializeField] private GameObject[] pulseEffectObjects;
     [SerializeField] private UIClickTarget button;
 
-    private int itemIndex = -1;
+    private string entryId;
     private ItemDataSO currentItemData;
     private int currentColorDependencyNumber;
-    private IDescribable describable;
 
-    public void Configure(ItemDataSO itemData, int colorDependencyNumber, int itemIndex)
+    public event Action<string> Clicked;
+
+    public void Configure(string entryId, ItemDataSO itemData, int colorDependencyNumber)
     {
-        this.itemIndex = itemIndex;
+        this.entryId = entryId;
         currentItemData = itemData;
         currentColorDependencyNumber = colorDependencyNumber;
 
-        iconImage.sprite = itemData.ItemIcon;
-        foreach (Graphic g in colorDependencyGraphics)
-        {
-            switch (itemData.ItemType)
-            {
-                case ItemType.Accessory:
-                    g.color = ColorHelper.GetColorByRarity(colorDependencyNumber);
-                    break;
-                case ItemType.Weapon:
-                    g.color = ColorHelper.GetColorByLevel(colorDependencyNumber);
-                    break;
-                default:
-                    Debug.LogWarning($"需要配置{itemData.ItemType}的颜色");
-                    break;
-            }
-        }
+        ItemQualityVisualResolver.Apply(
+            this,
+            itemData,
+            colorDependencyNumber,
+            iconImage,
+            null,
+            colorDependencyGraphics,
+            secondaryColorDependencyGraphics,
+            glowGraphics,
+            premiumEffectObjects,
+            pulseEffectObjects);
 
         button.OnClicked -= OnItemClicked;
         button.OnClicked += OnItemClicked;
@@ -43,19 +42,20 @@ public class InventoryItem : MonoBehaviour, IDisposable
 
     private void OnItemClicked()
     {
-        if (itemIndex < 0)
+        if (string.IsNullOrEmpty(entryId))
         {
             return;
         }
 
-        GameEventBus.Publish(new InventoryItemClickedEvent(itemIndex));
+        Clicked?.Invoke(entryId);
     }
 
     public void Dispose()
     {
         button.OnClicked -= OnItemClicked;
+        Clicked = null;
         currentItemData = null;
         currentColorDependencyNumber = 0;
-        itemIndex = -1;
+        entryId = null;
     }
 }

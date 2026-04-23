@@ -1,0 +1,69 @@
+using System;
+
+public sealed class ShopSidebarRegionHost
+{
+    private readonly ShopPropertiesRegionView propertiesRegion;
+    private readonly ShopInventoryRegionView inventoryRegion;
+    private readonly SidebarRegionGroup regionGroup;
+
+    public ShopSidebarRegionHost(
+        string ownerName,
+        UISidebarRevealMotion propertiesSidebar,
+        UIClickTarget propertiesToggleButton,
+        Describer propertiesDescriber,
+        UISidebarRevealMotion inventorySidebar,
+        UIClickTarget inventoryToggleButton)
+    {
+        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopSidebarRegionHost) : ownerName;
+        propertiesRegion = new ShopPropertiesRegionView(resolvedOwnerName, propertiesSidebar, propertiesToggleButton, propertiesDescriber);
+        inventoryRegion = new ShopInventoryRegionView(resolvedOwnerName, inventorySidebar, inventoryToggleButton);
+        propertiesRegion.ToggleRequested += OnPropertiesToggleRequested;
+        inventoryRegion.ToggleRequested += OnInventoryToggleRequested;
+        regionGroup = new SidebarRegionGroup(propertiesRegion, inventoryRegion);
+    }
+
+    public event Action PropertiesToggleRequested;
+    public event Action InventoryToggleRequested;
+
+    public void Bind(PropertiesManager propertiesManager)
+    {
+        propertiesRegion.Bind(propertiesManager);
+        inventoryRegion.Bind();
+    }
+
+    public void Unbind()
+    {
+        propertiesRegion.Unbind();
+        inventoryRegion.Unbind();
+    }
+
+    public void SetPropertiesVisible(bool visible)
+    {
+        propertiesRegion.SetVisible(visible);
+    }
+
+    public void SetInventoryVisible(bool visible)
+    {
+        inventoryRegion.SetVisible(visible);
+    }
+
+    public void RefreshDefaults()
+    {
+        regionGroup.RefreshDefaults();
+    }
+
+    public void Kill()
+    {
+        regionGroup.Kill();
+    }
+
+    private void OnPropertiesToggleRequested()
+    {
+        PropertiesToggleRequested?.Invoke();
+    }
+
+    private void OnInventoryToggleRequested()
+    {
+        InventoryToggleRequested?.Invoke();
+    }
+}

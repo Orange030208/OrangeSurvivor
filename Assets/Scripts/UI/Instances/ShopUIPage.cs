@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class ShopUIPage : UIPageBase
+public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
 {
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
@@ -21,177 +19,140 @@ public class ShopUIPage : UIPageBase
     [Header("背包面板(右)")]
     [SerializeField] private UISidebarRevealMotion inventorySidebar;
     [SerializeField] private UIClickTarget inventoryToggleButton;
+    [SerializeField] private InventoryUI inventoryUI;
 
-    private readonly List<ShopItemContainer> spawnedItems = new();
+    private ShopPageContext currentContext;
+    private IPageController controller;
+    private ShopListRegionView shopListRegion;
+    private ShopSidebarRegionHost sidebarRegionHost;
 
-    private bool isPropertiesSidebarVisible = true;
-    private bool isInventorySidebarVisible = true;
-    private PropertiesManager propertiesManager;
+    public event Action RerollRequested;
+    public event Action ContinueRequested;
+    public event Action PropertiesToggleRequested;
+    public event Action InventoryToggleRequested;
+    public event Action<int> ItemBuyRequested;
+    public event Action<int> ItemLockToggleRequested;
 
     protected override void Awake()
     {
         base.Awake();
         ValidateConfiguration();
-        shopItemParent.Clear();
+        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
+        shopListRegion = new ShopListRegionView(name, shopItemPrefab, shopItemParent, rerollButton, continueButton, rerollCostText, currencyText);
+        sidebarRegionHost = new ShopSidebarRegionHost(
+            name,
+            propertiesSidebar,
+            propertiesToggleButton,
+            propertiesDescriber,
+            inventorySidebar,
+            inventoryToggleButton);
+        shopListRegion.RerollRequested += OnRerollRequested;
+        shopListRegion.ContinueRequested += OnContinueRequested;
+        shopListRegion.ItemBuyRequested += OnItemBuyRequested;
+        shopListRegion.ItemLockToggleRequested += OnItemLockToggleRequested;
+        sidebarRegionHost.PropertiesToggleRequested += OnPropertiesRegionToggleRequested;
+        sidebarRegionHost.InventoryToggleRequested += OnInventoryRegionToggleRequested;
         InitSidebarPanels();
     }
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        GameEventBus.Subscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
-        GameEventBus.Subscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
-        GameEventBus.Subscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
-        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
-
-        BindButtonEvents();
-        InjectPropertiesDependencies();
-        RefreshCurrencyDisplay(FindFirstObjectByType<CurrencyWallet>());
-        GameEventBus.Publish(new RequestShopSnapshotEvent());
+        currentContext = PageContextBinding.Resolve<ShopPageContext>(context, () => UIPageContextFactory.CreateShopPageContext());
+        controller = new ShopPageController(this, currentContext);
+        controller.Enter();
     }
 
     protected override void OnPageClosed()
     {
-        GameEventBus.Unsubscribe<ShopItemsChangedEvent>(OnShopItemsChanged);
-        GameEventBus.Unsubscribe<ShopPurchaseSuccessEvent>(OnPurchaseSuccess);
-        GameEventBus.Unsubscribe<ShopPurchaseFailedEvent>(OnPurchaseFailed);
-        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        controller?.Exit();
+        controller = null;
+        PageContextBinding.Release(ref currentContext);
+    }
 
-        UnbindPropertiesDependencies();
-        UnbindButtonEvents();
+    public void PrepareForOpen(ShopPageContext context)
+    {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
+        InventoryUiHostBinding.Bind(this, ref inventoryUI, context);
+        shopListRegion.Bind();
+        sidebarRegionHost.Bind(context.PropertiesManager);
+        UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
+    }
+
+    public void ResetAfterClose()
+    {
+        shopListRegion.Unbind();
+        sidebarRegionHost.Unbind();
+        InventoryUiHostBinding.Release(inventoryUI);
         KillPanelTweens();
-        ClearShopItems();
     }
 
-    private void BindButtonEvents()
+    public void RenderShopItems(ShopItemData[] items)
     {
-        rerollButton.OnClicked += OnRerollButtonClicked;
-        continueButton.OnClicked += OnContinueButtonClicked;
-        propertiesToggleButton.OnClicked += OnPropertiesToggleButtonClicked;
-        inventoryToggleButton.OnClicked += OnInventoryToggleButtonClicked;
+        shopListRegion.RenderShopItems(items);
     }
 
-    private void UnbindButtonEvents()
+    public void UpdateRerollState(int rerollCost, bool canReroll)
     {
-        rerollButton.OnClicked -= OnRerollButtonClicked;
-        continueButton.OnClicked -= OnContinueButtonClicked;
-        propertiesToggleButton.OnClicked -= OnPropertiesToggleButtonClicked;
-        inventoryToggleButton.OnClicked -= OnInventoryToggleButtonClicked;
+        shopListRegion.UpdateRerollState(rerollCost, canReroll);
     }
 
-    private void OnShopItemsChanged(ShopItemsChangedEvent eventData)
+    public void UpdateCurrencyAmount(int amount)
     {
-        ClearShopItems();
-        UpdateRerollDisplay(eventData);
-
-        if (eventData.Items == null || eventData.Items.Length == 0)
-        {
-            return;
-        }
-
-        for (int i = 0; i < eventData.Items.Length; i++)
-        {
-            SpawnShopItem(eventData.Items[i]);
-        }
+        shopListRegion.UpdateCurrencyAmount(amount);
     }
 
-    private void UpdateRerollDisplay(ShopItemsChangedEvent eventData)
-    {
-        rerollCostText.text = eventData.RerollCost.ToString();
-        rerollButton.Interactable = eventData.CanReroll;
-    }
-
-    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
-    {
-        RefreshCurrencyDisplay(eventData.Wallet);
-    }
-
-    private void RefreshCurrencyDisplay(CurrencyWallet wallet)
-    {
-        if (currencyText == null)
-        {
-            return;
-        }
-
-        currencyText.text = wallet != null ? wallet.CurrentAmount.ToString() : "0";
-    }
-
-    private void SpawnShopItem(ShopItemData itemData)
-    {
-        if (shopItemPrefab == null || shopItemParent == null)
-        {
-            Debug.LogWarning("Shop item prefab or parent is not assigned.");
-            return;
-        }
-
-        ShopItemContainer container = Instantiate(shopItemPrefab, shopItemParent);
-
-        if (itemData.ItemData != null)
-        {
-            container.Configure(new InfoAddIndex<ShopItemData>(itemData, spawnedItems.Count));
-        }
-
-        spawnedItems.Add(container);
-    }
-
-    private void OnRerollButtonClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new ShopRerollRequestedEvent());
-    }
-
-    private void OnContinueButtonClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish<ShopContinueClickedEvent>();
-    }
-
-    private void OnPropertiesToggleButtonClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        UIMotionAction action = isPropertiesSidebarVisible ? UIMotionAction.Hide : UIMotionAction.Show;
-        propertiesSidebar.Play(action);
-        isPropertiesSidebarVisible = !isPropertiesSidebarVisible;
-    }
-
-    private void OnInventoryToggleButtonClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        UIMotionAction action = isInventorySidebarVisible ? UIMotionAction.Hide : UIMotionAction.Show;
-        inventorySidebar.Play(action);
-        isInventorySidebarVisible = !isInventorySidebarVisible;
-    }
-
-    private void InitSidebarPanels()
-    {
-        propertiesSidebar.RefreshDefaults();
-        inventorySidebar.RefreshDefaults();
-    }
-
-    private void KillPanelTweens()
-    {
-        propertiesSidebar.Kill();
-        inventorySidebar.Kill();
-    }
-
-    private void OnPurchaseSuccess(ShopPurchaseSuccessEvent eventData)
+    public void ShowPurchaseSuccess(ShopPurchaseSuccessEvent eventData)
     {
         Debug.Log($"Purchase successful: {eventData.ItemData.ItemType}");
     }
 
-    private void OnPurchaseFailed(ShopPurchaseFailedEvent eventData)
+    public void ShowPurchaseFailure(string message)
     {
-        Debug.LogWarning($"Purchase failed: {eventData.Message}");
+        Debug.LogWarning($"Purchase failed: {message}");
     }
 
-    private void ClearShopItems()
+    public void SetPropertiesSidebarVisible(bool visible)
     {
-        foreach (ShopItemContainer item in spawnedItems)
-        {
-            item.CleanUp();
-            Destroy(item.gameObject);
-        }
+        sidebarRegionHost.SetPropertiesVisible(visible);
+    }
 
-        spawnedItems.Clear();
+    public void SetInventorySidebarVisible(bool visible)
+    {
+        sidebarRegionHost.SetInventoryVisible(visible);
+    }
+
+    private void OnRerollRequested()
+    {
+        RerollRequested?.Invoke();
+    }
+
+    private void OnContinueRequested()
+    {
+        ContinueRequested?.Invoke();
+    }
+
+    private void OnPropertiesRegionToggleRequested()
+    {
+        PropertiesToggleRequested?.Invoke();
+    }
+
+    private void OnInventoryRegionToggleRequested()
+    {
+        InventoryToggleRequested?.Invoke();
+    }
+
+    private void InitSidebarPanels()
+    {
+        sidebarRegionHost.RefreshDefaults();
+    }
+
+    private void KillPanelTweens()
+    {
+        sidebarRegionHost.Kill();
     }
 
     private void ValidateConfiguration()
@@ -252,42 +213,13 @@ public class ShopUIPage : UIPageBase
         }
     }
 
-    private void InjectPropertiesDependencies()
+    private void OnItemBuyRequested(int itemIndex)
     {
-        UnbindPropertiesDependencies();
-
-        Player player = FindFirstObjectByType<Player>();
-        propertiesManager = player != null ? player.GetComponent<PropertiesManager>() : null;
-
-        RefreshPropertiesDescription();
-
-        if (propertiesManager != null)
-        {
-            propertiesManager.OnAllPropertiesChanged += OnAllPropertiesChanged;
-        }
+        ItemBuyRequested?.Invoke(itemIndex);
     }
 
-    private void UnbindPropertiesDependencies()
+    private void OnItemLockToggleRequested(int itemIndex)
     {
-        if (propertiesManager != null)
-        {
-            propertiesManager.OnAllPropertiesChanged -= OnAllPropertiesChanged;
-            propertiesManager = null;
-        }
-    }
-
-    private void OnAllPropertiesChanged()
-    {
-        RefreshPropertiesDescription();
-    }
-
-    private void RefreshPropertiesDescription()
-    {
-        if (propertiesDescriber == null)
-        {
-            return;
-        }
-
-        propertiesDescriber.Display(propertiesManager);
+        ItemLockToggleRequested?.Invoke(itemIndex);
     }
 }

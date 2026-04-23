@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : MonoBehaviour, IInventoryRegionView
 {
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
@@ -10,36 +8,48 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private AccessoryInfoPopup accessoryPopupPrefab;
     [SerializeField] private Transform itemContainersParent;
 
+    [Header("Facade")]
+    [SerializeField] private InventoryOperateManager inventoryOperateManager;
+
     [Header("关闭")]
     [SerializeField] private UIClickTarget[] closeInventoryItemOperatePanelButtons;
 
-    private readonly List<InventoryItem> spawnedContainers = new();
-    private readonly List<UIClickTarget> popupCloseButtons = new();
-    private bool subscribed;
-    private int currentOperateItemIndex = -1;
     private Transform popupLayerRoot;
-    private GameObject popupCloseMask;
+    private IInventoryUiFacade inventoryFacade;
+    private IInventoryUiFacade configuredFacade;
+    private bool disposeConfiguredFacade;
+    private bool ownsInventoryFacade;
+    private bool requiresExternalFacadeConfiguration;
+    private InventoryRegionController controller;
+    private InventoryListRegionView listRegion;
+    private InventoryPopupHostView popupHost;
 
-    private WeaponOperatePopup weaponPopupInstance;
-    private AccessoryInfoPopup accessoryPopupInstance;
+    public event System.Action<string> ItemSelected;
+    public event System.Action CloseRequested;
+    public event System.Action<string> SellRequested;
+    public event System.Action<string> MergeRequested;
 
     private void Awake()
     {
         ValidateConfiguration();
+        requiresExternalFacadeConfiguration = ResolveRequiresExternalFacadeConfiguration();
         popupLayerRoot = ResolvePopupLayerRoot();
-        EnsureFullScreenCloseMask();
+        listRegion = new InventoryListRegionView(name, itemPrefab, itemContainersParent);
+        popupHost = new InventoryPopupHostView(name, weaponPopupPrefab, accessoryPopupPrefab, popupLayerRoot, closeInventoryItemOperatePanelButtons);
+        listRegion.ItemClicked += OnItemSelected;
+        popupHost.CloseRequested += OnCloseRequested;
+        popupHost.SellRequested += OnSellRequested;
+        popupHost.MergeRequested += OnMergeRequested;
     }
 
     private void OnEnable()
     {
-        Subscribe();
-        HideCloseMask();
-        GameEventBus.Publish(new RequestInventorySnapshotEvent());
+        StartController();
     }
 
     private void Update()
     {
-        if (currentOperateItemIndex < 0)
+        if (!popupHost.HasOpenPopup)
         {
             return;
         }
@@ -47,150 +57,79 @@ public class InventoryUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-            CloseOperatePanel();
+            CloseRequested?.Invoke();
         }
     }
 
     private void OnDisable()
     {
-        Unsubscribe();
-        CleanupSpawnedContainers();
-        DestroyCurrentPopupImmediate();
-        HideCloseMask();
+        StopController();
     }
 
-    private void Subscribe()
+    public void ConfigureFacade(IInventoryUiFacade facade, bool takeOwnership = false)
     {
-        if (subscribed)
+        if (configuredFacade == facade && disposeConfiguredFacade == takeOwnership)
         {
-            return;
-        }
-
-        GameEventBus.Subscribe<InventorySnapshotChangedEvent>(OnInventorySnapshotChanged);
-        GameEventBus.Subscribe<InventoryItemClickedEvent>(OnInventoryItemClicked);
-        GameEventBus.Subscribe<InventoryItemOperatePanelDataEvent>(OnOperatePanelDataChanged);
-        GameEventBus.Subscribe<InventoryItemOperatePanelShouldCloseEvent>(OnOperatePanelShouldClose);
-        GameEventBus.Subscribe<InventoryItemOperatePanelCloseClickedEvent>(OnOperatePanelCloseClicked);
-
-        BindClosePanelHandlers();
-        subscribed = true;
-    }
-
-    private void Unsubscribe()
-    {
-        if (!subscribed)
-        {
-            return;
-        }
-
-        GameEventBus.Unsubscribe<InventorySnapshotChangedEvent>(OnInventorySnapshotChanged);
-        GameEventBus.Unsubscribe<InventoryItemClickedEvent>(OnInventoryItemClicked);
-        GameEventBus.Unsubscribe<InventoryItemOperatePanelDataEvent>(OnOperatePanelDataChanged);
-        GameEventBus.Unsubscribe<InventoryItemOperatePanelShouldCloseEvent>(OnOperatePanelShouldClose);
-        GameEventBus.Unsubscribe<InventoryItemOperatePanelCloseClickedEvent>(OnOperatePanelCloseClicked);
-
-        UnbindClosePanelHandlers();
-        subscribed = false;
-    }
-
-    private void OnInventorySnapshotChanged(InventorySnapshotChangedEvent eventData)
-    {
-        CleanupSpawnedContainers();
-        itemContainersParent.Clear();
-
-        for (int i = 0; i < eventData.Items.Length; i++)
-        {
-            InventoryUIItemSnapshot item = eventData.Items[i];
-            if (item.ItemData == null)
+            if (controller == null && isActiveAndEnabled && facade != null)
             {
-                continue;
+                StartController();
             }
 
-            InventoryItem container = Instantiate(itemPrefab, itemContainersParent);
-            container.Configure(item.ItemData, item.ColorDependencyNumber, i);
-            spawnedContainers.Add(container);
-        }
-    }
-
-    private void OnInventoryItemClicked(InventoryItemClickedEvent eventData)
-    {
-        GameEventBus.Publish(new RequestInventoryItemOperatePanelEvent(eventData.ItemIndex));
-    }
-
-    private void OnOperatePanelDataChanged(InventoryItemOperatePanelDataEvent eventData)
-    {
-        if (eventData.Resource.itemData == null)
-        {
             return;
         }
 
-        currentOperateItemIndex = eventData.Resource.itemIndex;
-        ShowCloseMask();
-        RebuildPopup(eventData.Resource);
-    }
-
-    private void OnOperatePanelShouldClose(InventoryItemOperatePanelShouldCloseEvent eventData)
-    {
-        if (eventData.ItemIndex != currentOperateItemIndex)
+        bool shouldRebind = controller != null && isActiveAndEnabled;
+        if (shouldRebind)
         {
-            return;
+            StopController();
         }
 
-        CloseOperatePanel();
-    }
+        configuredFacade = facade;
+        disposeConfiguredFacade = takeOwnership;
 
-    private void OnOperatePanelCloseClicked(InventoryItemOperatePanelCloseClickedEvent eventData)
-    {
-        if (eventData.ItemIndex != currentOperateItemIndex)
+        if (isActiveAndEnabled && facade != null)
         {
-            return;
-        }
-
-        CloseOperatePanel();
-    }
-
-    private void BindClosePanelHandlers()
-    {
-        for (int i = 0; i < popupCloseButtons.Count; i++)
-        {
-            popupCloseButtons[i].OnClicked += OnClosePanelBackgroundClicked;
+            StartController();
         }
     }
 
-    private void UnbindClosePanelHandlers()
+    public void ReleaseConfiguredFacade()
     {
-        for (int i = 0; i < popupCloseButtons.Count; i++)
+        if (controller != null && ReferenceEquals(inventoryFacade, configuredFacade))
         {
-            popupCloseButtons[i].OnClicked -= OnClosePanelBackgroundClicked;
-        }
-    }
-
-    private void OnClosePanelBackgroundClicked()
-    {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        CloseOperatePanel();
-    }
-
-    private void CloseOperatePanel()
-    {
-        if (currentOperateItemIndex < 0)
-        {
-            return;
+            StopController();
         }
 
-        currentOperateItemIndex = -1;
-        DestroyCurrentPopupImmediate();
-        HideCloseMask();
+        configuredFacade = null;
+        disposeConfiguredFacade = false;
     }
 
-    private void CleanupSpawnedContainers()
+    public void PrepareForOpen()
     {
-        for (int i = 0; i < spawnedContainers.Count; i++)
-        {
-            spawnedContainers[i].Dispose();
-        }
+        popupHost.BindCloseHandlers();
+        popupHost.CloseCurrent();
+    }
 
-        spawnedContainers.Clear();
+    public void ResetAfterClose()
+    {
+        listRegion.Clear();
+        popupHost.UnbindCloseHandlers();
+        popupHost.CloseCurrent();
+    }
+
+    public void RenderItems(InventoryUIItemSnapshot[] items)
+    {
+        listRegion.Render(items);
+    }
+
+    public void ShowOperatePopup(InventoryItemOperateResource resource)
+    {
+        popupHost.Show(resource);
+    }
+
+    public void CloseOperatePopup()
+    {
+        popupHost.CloseCurrent();
     }
 
     private Transform ResolvePopupLayerRoot()
@@ -203,91 +142,78 @@ public class InventoryUI : MonoBehaviour
         return transform;
     }
 
-    private void RebuildPopup(InventoryItemOperateResource resource)
+    private IInventoryUiFacade ResolveInventoryFacade(out bool ownsFacade)
     {
-        DestroyCurrentPopupImmediate();
-
-        if (resource.itemData.ItemType == ItemType.Weapon)
+        if (configuredFacade != null)
         {
-            weaponPopupInstance = Instantiate(weaponPopupPrefab, popupLayerRoot, false);
-            weaponPopupInstance.name = weaponPopupPrefab.name;
-            weaponPopupInstance.transform.SetAsLastSibling();
-            weaponPopupInstance.Configure(resource);
-            return;
+            ownsFacade = disposeConfiguredFacade;
+            return configuredFacade;
         }
 
-        accessoryPopupInstance = Instantiate(accessoryPopupPrefab, popupLayerRoot, false);
-        accessoryPopupInstance.name = accessoryPopupPrefab.name;
-        accessoryPopupInstance.transform.SetAsLastSibling();
-        accessoryPopupInstance.Configure(resource);
+        InventoryOperateManager resolvedManager = ResolveInventoryOperateManager();
+        if (resolvedManager != null)
+        {
+            ownsFacade = true;
+            return new ManagerInventoryUiFacade(resolvedManager);
+        }
+
+        ownsFacade = true;
+        return new EventBusInventoryUiFacade();
     }
 
-    private void DestroyCurrentPopupImmediate()
+    private void StartController()
     {
-        if (weaponPopupInstance != null)
-        {
-            weaponPopupInstance.Dispose();
-            Destroy(weaponPopupInstance.gameObject);
-            weaponPopupInstance = null;
-        }
-
-        if (accessoryPopupInstance != null)
-        {
-            accessoryPopupInstance.Dispose();
-            Destroy(accessoryPopupInstance.gameObject);
-            accessoryPopupInstance = null;
-        }
-    }
-
-    private void EnsureFullScreenCloseMask()
-    {
-        if (popupCloseMask != null)
+        if (controller != null)
         {
             return;
         }
 
-        popupCloseMask = new GameObject("InventoryOperatePopupCloseMask", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(UIClickTarget));
-        RectTransform maskRect = popupCloseMask.GetComponent<RectTransform>();
-        maskRect.SetParent(popupLayerRoot, false);
-        maskRect.anchorMin = Vector2.zero;
-        maskRect.anchorMax = Vector2.one;
-        maskRect.offsetMin = Vector2.zero;
-        maskRect.offsetMax = Vector2.zero;
-        maskRect.SetAsFirstSibling();
-
-        Image maskImage = popupCloseMask.GetComponent<Image>();
-        maskImage.color = new Color(0f, 0f, 0f, 0.001f);
-        maskImage.raycastTarget = true;
-
-        popupCloseButtons.Clear();
-        if (closeInventoryItemOperatePanelButtons != null)
-        {
-            popupCloseButtons.AddRange(closeInventoryItemOperatePanelButtons);
-        }
-
-        popupCloseButtons.Add(popupCloseMask.GetComponent<UIClickTarget>());
-        popupCloseMask.SetActive(false);
-    }
-
-    private void ShowCloseMask()
-    {
-        if (popupCloseMask == null)
+        if (requiresExternalFacadeConfiguration && configuredFacade == null)
         {
             return;
         }
 
-        popupCloseMask.SetActive(true);
-        popupCloseMask.transform.SetAsFirstSibling();
+        inventoryFacade = ResolveInventoryFacade(out ownsInventoryFacade);
+        controller = new InventoryRegionController(this, inventoryFacade);
+        controller.Enter();
     }
 
-    private void HideCloseMask()
+    private void StopController()
     {
-        if (popupCloseMask == null)
+        controller?.Exit();
+        controller = null;
+
+        if (inventoryFacade != null && ownsInventoryFacade)
         {
-            return;
+            inventoryFacade.Dispose();
         }
 
-        popupCloseMask.SetActive(false);
+        inventoryFacade = null;
+        ownsInventoryFacade = false;
+    }
+
+    private bool ResolveRequiresExternalFacadeConfiguration()
+    {
+        MonoBehaviour[] parentBehaviours = GetComponentsInParent<MonoBehaviour>(true);
+        for (int i = 0; i < parentBehaviours.Length; i++)
+        {
+            if (parentBehaviours[i] is IInventoryUiFacadeHost)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private InventoryOperateManager ResolveInventoryOperateManager()
+    {
+        if (inventoryOperateManager != null)
+        {
+            return inventoryOperateManager;
+        }
+
+        return FindFirstObjectByType<InventoryOperateManager>();
     }
 
     private void ValidateConfiguration()
@@ -316,5 +242,25 @@ public class InventoryUI : MonoBehaviour
         {
             throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing close panel buttons.");
         }
+    }
+
+    private void OnItemSelected(string entryId)
+    {
+        ItemSelected?.Invoke(entryId);
+    }
+
+    private void OnCloseRequested()
+    {
+        CloseRequested?.Invoke();
+    }
+
+    private void OnSellRequested(string entryId)
+    {
+        SellRequested?.Invoke(entryId);
+    }
+
+    private void OnMergeRequested(string entryId)
+    {
+        MergeRequested?.Invoke(entryId);
     }
 }

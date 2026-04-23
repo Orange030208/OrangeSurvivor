@@ -536,6 +536,18 @@ Assets/Scripts/UI
 
 - 为重构提供最小合同层，不直接动大面积 UI Prefab
 
+当前进展：
+
+- 已新增 `IPageController`
+- 已新增 `GamingPageContext / PauseMenuContext / ShopPageContext`
+- 已新增 `UIPageContextFactory`
+- 已新增 `IShopUiFacade` 与基于事件总线的过渡实现
+- 已新增 `IInventoryUiFacade / IPlayerHudFacade` 合同占位
+- `UIPageOpenContext` 已支持泛型 `GetPayload<T>()`
+- `ShopUIPage` 已具备 “Page 壳 + controller 装配点” 的最小入口
+- `ShopUIPage` 的 sidebar 局部状态已开始进入 controller
+- `GamingUIPage / GamePauseMenu` 已开始消费显式 page context
+
 新增建议：
 
 - `IPageController`
@@ -563,6 +575,14 @@ Assets/Scripts/UI
 - 将 `ShopItemContainer` 改为纯 View 回调
 - 将商店列表、属性栏、背包栏的联动统一收束到 `ShopPageController`
 
+当前进展：
+
+- `ShopPageController` 已接管 reroll / continue / sidebar / item 命令入口，以及 snapshot / currency 的页面刷新调度
+- `ShopItemContainer` 已改为纯 View 回调，不再直接发布购买或锁定的全局业务事件
+- `ShopUIPage` 已开始把商店列表渲染与按钮绑定收束到轻量 `ShopListRegionView`，作为后续 region 拆分样板
+- `ShopUIPage` 已开始把属性栏与背包栏的表现层职责收束到 `ShopPropertiesRegionView / ShopInventoryRegionView`
+- 已新增 `ShopSidebarRegionHost`，将 Shop 页内双 sidebar region 的构造、绑定、解绑、toggle 事件转发与统一收尾收束为页面级宿主
+
 验收标准：
 
 - `ShopUIPage` 本体显著瘦身
@@ -574,6 +594,20 @@ Assets/Scripts/UI
 目标：
 
 - 解决当前 UI 内最痛的页内弹窗与条目管理问题
+
+当前进展：
+
+- `InventoryUI` 已开始从 Child 脚本向更明确的 `InventoryListRegionView / InventoryPopupHostView` 边界收束
+- `InventoryRegionController / InventoryRegionState / IInventoryUiFacade` 过渡链路已落地，`InventoryUI` 已切到显式控制流
+- `InventoryItem` 与活跃中的 `WeaponOperatePopup` 已改为纯 View 回调，列表点击与 sell / merge 不再由 UI 直接发布全局业务事件
+- 当前仍保留 `EventBusInventoryUiFacade -> InventoryOperateManager` 的事件桥接，作为后续 facade 下沉前的过渡
+- Inventory 活跃链路已从临时 `itemIndex` 切向稳定 `entryId`，快照、条目点击、弹窗打开、sell / merge 与关闭回路已开始统一身份语义
+- `InventoryRegionState` 已开始集中维护当前快照、选中项与弹窗项，列表刷新后可按稳定 `entryId` 自动关闭失效弹窗并恢复仍有效的弹窗内容
+- `InventoryOperateManager` 已开始暴露直接事件与命令入口，`ManagerInventoryUiFacade` 已落地，`InventoryUI` 现支持“外部注入 facade / 直连 manager / 事件桥回退”的渐进接入顺序
+- `GamingPageContext / PauseMenuContext` 已开始显式持有 `InventoryFacade`，`GamingUIPage / GamePauseMenu` 已能在页面打开时把 facade 装配给 `InventoryUI`
+- `EventBusInventoryUiFacade` 已改为 manager-first 的兼容 facade：优先直连 `InventoryOperateManager`，仅在无法解析 manager 时才回退 `GameEventBus`
+- `RequestInventorySnapshotEvent / InventorySnapshotChangedEvent / RequestInventoryItemOperatePanelEvent / InventoryItemOperatePanelDataEvent / InventoryItemSellClickedEvent / InventoryItemMergeClickedEvent / InventoryItemOperatePanelShouldCloseEvent` 这类纯 UI 过渡事件已从 Inventory 主链中移除
+- `InventoryUIItemSnapshot / InventoryItemOperateResource` 已迁到 `Assets/Scripts/UI/Contracts/Snapshots/`，旧 `InventoryEvents.cs` 已删除，Inventory 数据合同不再挂在旧事件目录或 UI 容器文件中
 
 实施重点：
 
@@ -594,6 +628,26 @@ Assets/Scripts/UI
 目标：
 
 - 把重复的区域逻辑沉淀成共用 Region
+
+当前进展：
+
+- 已新增 `IInventoryFacadeContext`，让 `GamingPageContext / PauseMenuContext / ShopPageContext` 以统一合同暴露 `InventoryFacade`
+- 已新增 `InventoryUiHostBinding`，将 `InventoryUI` 的查找、facade 注入与关闭释放收束为公共装配入口
+- `GamingUIPage / GamePauseMenu / ShopUIPage` 已切到共享的 Inventory 宿主装配路径，页面本体不再各自维护一套 `CacheInventoryUI / ConfigureInventoryRegion / ReleaseConfiguredFacade` 重复逻辑
+- 已新增 `PageContextBinding`，将 `UIPageOpenContext` payload 解析、fallback context 创建与关闭时 `Dispose + null` 收束为统一页面上下文生命周期入口
+- 已新增 `SidebarRegionMotion`，将 `UISidebarRevealMotion` 的 show/hide、默认态刷新、关闭收尾与时序配置收束为公共 sidebar motion 宿主
+- 已新增 `SidebarRegionMotionGroup`，将多块 sidebar 的联合 show/hide、立即隐藏、时序配置与 close-wait 收尾收束为页面级 sidebar 生命周期宿主
+- `GamePauseMenu / ShopPropertiesRegionView / ShopInventoryRegionView` 已开始共享同一套 sidebar motion 封装，减少页面与 region 各自重复持有 `UISidebarRevealMotion` 细节
+- `GamePauseMenu` 已开始使用 `SidebarRegionMotionGroup` 接管双 sidebar 的统一生命周期管理，页面本体不再手写成对的 tween 收尾与显隐遍历
+- `SidebarRegionMotionGroup` 已补齐“追加 close-wait 回调但不覆盖底层 tween 原有收尾逻辑”的保护，避免 group 宿主接管后吞掉 `UISidebarRevealMotion / UIRevealMotion` 自身的完成态处理
+- 已新增 `SidebarToggleRegionView`，将 toggle 按钮点击、音效触发与侧栏显隐收束为更明确的共用 region view
+- `ShopPropertiesRegionView / ShopInventoryRegionView` 已开始共享同一套 sidebar toggle 宿主，`ShopPropertiesRegionView` 现只保留属性描述绑定职责
+- `ShopUIPage` 已确认值得补页面级 sidebar 宿主，现已通过 `ShopSidebarRegionHost` 收束双 sidebar region 的页面装配与生命周期释放
+- 已新增 `PropertiesDescriberBinding`，将 `PropertiesManager -> Describer` 的订阅、解绑与刷新收束为独立绑定件
+- `ShopPropertiesRegionView` 已进一步瘦身为 “sidebar toggle 宿主 + properties describer binding” 的组合壳
+- 已确认当前 UI 中直接消费 `PropertiesManager -> Describer` 展示链路的页面仍只有 `ShopUIPage`；`PropertiesDescriberBinding` 已补齐解绑清空行为，后续暂不继续沿这条线扩展抽象
+- 已新增 `GamingHudRegionHost`，将 `GamingUIPage` 的 HUD 事件订阅、角色状态绑定、货币/波次刷新、tooltip 收尾与打开时的快照请求收束为页面级 HUD 生命周期宿主
+- 已新增 `GamingInputRegionHost`，将 `GamingUIPage` 的 joystick 查找、逐帧输入发布与关闭归零收束为页面级输入生命周期宿主
 
 实施重点：
 
@@ -707,10 +761,10 @@ Assets/Scripts/UI
 | Phase | 名称 | 状态 | 备注 |
 | --- | --- | --- | --- |
 | Phase 0 | 统一术语与边界 | Completed | 本计划文档已落地 |
-| Phase 1 | 合同层与上下文层 | Pending | 未开始 |
-| Phase 2 | Shop 页面样板 | Pending | 未开始 |
-| Phase 3 | Inventory 区域重构 | Pending | 未开始 |
-| Phase 4 | Gaming / Pause 公共 Region | Pending | 未开始 |
+| Phase 1 | 合同层与上下文层 | Completed | Context / Facade / payload 入口已落地，HUD/Inventory facade 具体实现留待后续阶段 |
+| Phase 2 | Shop 页面样板 | In Progress | Shop controller 已接管命令入口，ShopList / Properties / Inventory 边界已开始从 page 本体中抽离 |
+| Phase 3 | Inventory 区域重构 | In Progress | InventoryUI 已接入 controller/facade 过渡层，List / PopupHost 边界已抽出，活跃链路已切到稳定 entryId，刷新后的弹窗态恢复、manager-backed facade、Gaming/Pause/Shop 显式装配点、manager-first 兼容 facade、纯 UI 过渡事件清理与 Contracts/Snapshots 迁移已接入，页面宿主链路已开始避免沿用已释放 facade 的隐式重启，InventoryUI 自回退也已优先直连 manager |
+| Phase 4 | Gaming / Pause 公共 Region | In Progress | `IInventoryFacadeContext`、`InventoryUiHostBinding`、`PageContextBinding`、`SidebarRegionMotion`、`SidebarRegionMotionGroup`、`SidebarToggleRegionView`、`ShopSidebarRegionHost`、`GamingHudRegionHost` 与 `PropertiesDescriberBinding` 已落地，Inventory 宿主、page context 生命周期、sidebar motion、sidebar group、Shop sidebar 页面宿主、Gaming HUD 生命周期宿主、toggle region 与 properties describer 公共装配已开始从 Gaming/Pause/Shop 页面本体与局部 region 中抽离 |
 | Phase 5 | CharacterSelect / WaveTransition 整理 | Pending | 未开始 |
 | Phase 6 | 收尾与规范化 | Pending | 未开始 |
 
@@ -718,15 +772,22 @@ Assets/Scripts/UI
 
 ## 14. 当前建议的下一步
 
-下一步建议直接进入：
+下一步建议开始进入：
 
-- `Phase 1：合同层与上下文层`
+- `Phase 4：统一 Gaming 与 Pause 的公共 Region`
 
 最小切入建议：
 
-- 定义 `ShopPageContext`
-- 定义 `IShopUiFacade`
-- 定义 `IPageController`
-- 让 `ShopUIPage` 先具备“Page 壳 + controller 装配点”
+- 在当前共享的 `InventoryUiHostBinding` 基础上，继续判断 `GamingUIPage / GamePauseMenu` 中还有哪些 Inventory 相关逻辑可以下沉为更明确的共用 Region 宿主
+- 在 `PageContextBinding` 已统一 payload 解析与关闭释放后，继续观察 `GamingUIPage / GamePauseMenu / ShopUIPage` 中还有哪些页面级生命周期逻辑值得继续收束为更明确的宿主辅助能力
+- 该判断已完成：`ShopUIPage` 值得补页面级 sidebar 宿主，现已通过 `ShopSidebarRegionHost` 收束双 sidebar region 的页面装配、toggle 转发与生命周期释放
+- 在 `SidebarRegionMotion` 已落地后，开始梳理 `PropertiesRegion` 的公共装配边界，优先处理 `GamePauseMenu / ShopUIPage` 中重复的 sidebar 生命周期与属性区域依赖接线
+- 在 `SidebarToggleRegionView` 已接管 Shop 的 toggle + sidebar 行为后，继续判断 `PropertiesRegion` 的数据绑定是否值得再抽成更通用的 describer / manager 绑定件
+- `PropertiesDescriberBinding` 已落地后，下一步优先判断 Pause / 后续页面是否也会消费 `PropertiesManager` 描述展示；若不会，则到此为止，避免继续空抽象
+- 该判断已完成：当前先停止继续扩展 `PropertiesDescriberBinding` 这条抽象线，把后续重点转回 `GamingUIPage / GamePauseMenu` 的 Inventory 宿主与 sidebar 生命周期共用能力
+- `GamingUIPage` 已开始通过 `GamingHudRegionHost` 收束 HUD 事件订阅、角色状态绑定与打开/关闭生命周期，下一步优先判断 `moveJoystick` 输入发布是否值得继续下沉为更明确的输入宿主
+- 该判断已完成：`GamingUIPage` 的 joystick 输入已通过 `GamingInputRegionHost` 收束，page 本体进一步回到“上下文装配 + HUD 宿主 + Inventory 宿主”的薄壳形态
+- 保持 `Phase 3` 已落地的 `InventoryRegionController / InventoryRegionState` 稳定，不在未确认收益前重新打散已有边界
+- 若后续继续抽公共 Region，优先做“页面宿主装配 + 生命周期释放”这一层，再决定是否需要继续下沉到更完整的 Region Host 或 Controller 复用
 
-这是后续所有 UI 渐进重构的基础入口。
+这样可以在不推翻当前 Inventory 重构成果的前提下，开始把真正重复的页面宿主逻辑逐步沉到公共 Region 层。

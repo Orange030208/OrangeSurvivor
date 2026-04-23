@@ -5,12 +5,13 @@ using UnityEngine;
 /// 暂停菜单页面本体：负责按钮绑定、属性同步以及 sidebar 特殊结构动画。
 /// 页面本身不直接管理暂停恢复流程，只发意图事件并接入基类关闭等待管线。
 /// </summary>
-public class GamePauseMenu : UIPageBase
+public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
 {
     private const float DEFAULT_SLIDE_DURATION = 0.25f;
 
     [SerializeField] private UIClickTarget continueButton;
     [SerializeField] private UIClickTarget menuButton;
+    [SerializeField] private InventoryUI inventoryUI;
 
     [Header("属性面板(左)")] [SerializeField] private UISidebarRevealMotion propertiesSidebar;
 
@@ -18,17 +19,25 @@ public class GamePauseMenu : UIPageBase
 
     [SerializeField] private float slideDuration = DEFAULT_SLIDE_DURATION;
 
+    private PauseMenuContext currentContext;
+    private SidebarRegionMotionGroup sidebarMotionGroup;
+
     protected override void Awake()
     {
         base.Awake();
         ValidateConfiguration();
+        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
+        SidebarRegionMotion propertiesRegionMotion = new SidebarRegionMotion(nameof(GamePauseMenu), name, "properties sidebar", propertiesSidebar);
+        SidebarRegionMotion inventoryRegionMotion = new SidebarRegionMotion(nameof(GamePauseMenu), name, "inventory sidebar", inventorySidebar);
+        sidebarMotionGroup = new SidebarRegionMotionGroup(propertiesRegionMotion, inventoryRegionMotion);
         InitSidebarPanels();
     }
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
+        currentContext = PageContextBinding.Resolve<PauseMenuContext>(context, () => UIPageContextFactory.CreatePauseMenuContext());
+        InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
         BindButtonEvents();
-        InjectPropertiesDependencies();
         HideAllSidebarPanelsImmediately();
         ShowAllSidebarPanels();
     }
@@ -38,6 +47,8 @@ public class GamePauseMenu : UIPageBase
         UnbindButtonEvents();
         KillSidebarTweens();
         HideAllSidebarPanelsImmediately();
+        InventoryUiHostBinding.Release(inventoryUI);
+        PageContextBinding.Release(ref currentContext);
     }
 
     protected override bool HasAdditionalCloseWaitActions()
@@ -48,30 +59,7 @@ public class GamePauseMenu : UIPageBase
     protected override void PlayAdditionalCloseWaitActions(bool useUnscaledTime, System.Action onCompleted)
     {
         KillSidebarTweens();
-
-        int pendingCount = 0;
-
-        void MarkCompleted()
-        {
-            pendingCount--;
-            if (pendingCount <= 0)
-            {
-                onCompleted?.Invoke();
-            }
-        }
-
-        pendingCount++;
-        Tween propertiesTween = propertiesSidebar.Play(UIMotionAction.Hide);
-        propertiesTween.OnComplete(MarkCompleted);
-
-        pendingCount++;
-        Tween inventoryTween = inventorySidebar.Play(UIMotionAction.Hide);
-        inventoryTween.OnComplete(MarkCompleted);
-
-        if (pendingCount == 0)
-        {
-            onCompleted?.Invoke();
-        }
+        sidebarMotionGroup.PlayHideAll(onCompleted);
     }
 
     private void BindButtonEvents()
@@ -101,59 +89,28 @@ public class GamePauseMenu : UIPageBase
     private void InitSidebarPanels()
     {
         ApplySlideDuration();
-        RefreshSidebarDefaults(propertiesSidebar);
-        RefreshSidebarDefaults(inventorySidebar);
+        sidebarMotionGroup.RefreshDefaults();
     }
 
     private void ShowAllSidebarPanels()
     {
         ApplySlideDuration();
-        propertiesSidebar.Play(UIMotionAction.Show);
-        inventorySidebar.Play(UIMotionAction.Show);
+        sidebarMotionGroup.SetVisible(true);
     }
 
     private void HideAllSidebarPanelsImmediately()
     {
-        HideSidebarImmediate(propertiesSidebar);
-        HideSidebarImmediate(inventorySidebar);
+        sidebarMotionGroup.SetHiddenImmediate();
     }
 
     private void ApplySlideDuration()
     {
-        ApplySidebarTimings(propertiesSidebar);
-        ApplySidebarTimings(inventorySidebar);
+        sidebarMotionGroup.ConfigureTimings(slideDuration, Ease.OutCubic, slideDuration, Ease.InCubic);
     }
 
     private void KillSidebarTweens()
     {
-        KillSidebarTween(propertiesSidebar);
-        KillSidebarTween(inventorySidebar);
-    }
-
-    private void InjectPropertiesDependencies()
-    {
-        Player player = FindFirstObjectByType<Player>();
-        PropertiesManager manager = player.GetComponent<PropertiesManager>();
-    }
-
-    private void ApplySidebarTimings(UISidebarRevealMotion sidebar)
-    {
-        sidebar.ConfigureTimings(slideDuration, Ease.OutCubic, slideDuration, Ease.InCubic);
-    }
-
-    private static void RefreshSidebarDefaults(UISidebarRevealMotion sidebar)
-    {
-        sidebar.RefreshDefaults();
-    }
-
-    private static void HideSidebarImmediate(UISidebarRevealMotion sidebar)
-    {
-        sidebar.SetImmediate(UIMotionAction.Hide);
-    }
-
-    private static void KillSidebarTween(UISidebarRevealMotion sidebar)
-    {
-        sidebar.Kill();
+        sidebarMotionGroup.Kill();
     }
 
     private void ValidateConfiguration()

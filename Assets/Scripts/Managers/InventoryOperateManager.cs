@@ -11,6 +11,10 @@ public class InventoryOperateManager : MonoBehaviour
     private readonly List<InventoryRuntimeItem> runtimeItems = new();
     private bool subscribed;
 
+    public event System.Action<InventoryUIItemSnapshot[]> SnapshotChanged;
+    public event System.Action<InventoryItemOperateResource> OperatePanelOpened;
+    public event System.Action<string> OperatePanelShouldClose;
+
     private void OnEnable()
     {
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
@@ -85,11 +89,6 @@ public class InventoryOperateManager : MonoBehaviour
             accessoryManager.OnAccessoryUnequipped += OnAccessoryChanged;
         }
 
-        GameEventBus.Subscribe<RequestInventorySnapshotEvent>(OnRequestInventorySnapshot);
-        GameEventBus.Subscribe<RequestInventoryItemOperatePanelEvent>(OnRequestOperatePanelData);
-        GameEventBus.Subscribe<InventoryItemSellClickedEvent>(OnSellClicked);
-        GameEventBus.Subscribe<InventoryItemMergeClickedEvent>(OnMergeClicked);
-
         subscribed = true;
     }
 
@@ -111,11 +110,6 @@ public class InventoryOperateManager : MonoBehaviour
             accessoryManager.OnAccessoryUnequipped -= OnAccessoryChanged;
         }
 
-        GameEventBus.Unsubscribe<RequestInventorySnapshotEvent>(OnRequestInventorySnapshot);
-        GameEventBus.Unsubscribe<RequestInventoryItemOperatePanelEvent>(OnRequestOperatePanelData);
-        GameEventBus.Unsubscribe<InventoryItemSellClickedEvent>(OnSellClicked);
-        GameEventBus.Unsubscribe<InventoryItemMergeClickedEvent>(OnMergeClicked);
-
         subscribed = false;
     }
 
@@ -124,68 +118,32 @@ public class InventoryOperateManager : MonoBehaviour
         PublishInventorySnapshot();
     }
 
-    private void OnRequestInventorySnapshot(RequestInventorySnapshotEvent _)
+    public void RequestSnapshot()
     {
         PublishInventorySnapshot();
     }
 
-    private void PublishInventorySnapshot()
+    public void RequestOpenItemPanel(string entryId)
     {
-        runtimeItems.Clear();
-
-        if (weaponsHolder != null)
-        {
-            var equippedWeapons = weaponsHolder.EquippedWeapons;
-            for (int i = 0; i < equippedWeapons.Count; i++)
-            {
-                var weaponInfo = equippedWeapons[i];
-                runtimeItems.Add(InventoryRuntimeItem.CreateWeapon(
-                    weaponInfo.WeaponData,
-                    weaponInfo.RuntimeWeapon.Level,
-                    weaponInfo.RuntimeWeapon));
-            }
-        }
-
-        if (accessoryManager != null)
-        {
-            var accessories = accessoryManager.EquippedAccessories;
-            for (int i = 0; i < accessories.Count; i++)
-            {
-                AccessoryDataSO accessory = accessories[i];
-                runtimeItems.Add(InventoryRuntimeItem.CreateAccessory(accessory));
-            }
-        }
-
-        InventoryUIItemSnapshot[] snapshots = new InventoryUIItemSnapshot[runtimeItems.Count];
-        for (int i = 0; i < runtimeItems.Count; i++)
-        {
-            snapshots[i] = new InventoryUIItemSnapshot(runtimeItems[i].ItemData, runtimeItems[i].ColorDependencyNumber);
-        }
-
-        GameEventBus.Publish(new InventorySnapshotChangedEvent(snapshots));
-    }
-
-    private void OnRequestOperatePanelData(RequestInventoryItemOperatePanelEvent eventData)
-    {
-        if (!TryGetRuntimeItem(eventData.ItemIndex, out InventoryRuntimeItem item))
+        if (!TryGetRuntimeItem(entryId, out InventoryRuntimeItem item))
         {
             return;
         }
 
         int sellPrice = item.ItemData.ItemType == ItemType.Weapon ? item.GetSellPrice() : 0;
         InventoryItemOperateResource resource = new InventoryItemOperateResource(
-            eventData.ItemIndex,
+            item.EntryId,
             item.ItemData,
             item.ColorDependencyNumber,
             sellPrice,
             item.ItemData);
 
-        GameEventBus.Publish(new InventoryItemOperatePanelDataEvent(resource));
+        OperatePanelOpened?.Invoke(resource);
     }
 
-    private void OnSellClicked(InventoryItemSellClickedEvent eventData)
+    public void RequestSellItem(string entryId)
     {
-        if (!TryGetRuntimeItem(eventData.ItemIndex, out InventoryRuntimeItem item))
+        if (!TryGetRuntimeItem(entryId, out InventoryRuntimeItem item))
         {
             return;
         }
@@ -202,12 +160,12 @@ public class InventoryOperateManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(item.GetSellPrice());
-        GameEventBus.Publish(new InventoryItemOperatePanelShouldCloseEvent(eventData.ItemIndex));
+        NotifyOperatePanelShouldClose(item.EntryId);
     }
 
-    private void OnMergeClicked(InventoryItemMergeClickedEvent eventData)
+    public void RequestMergeItem(string entryId)
     {
-        if (!TryGetRuntimeItem(eventData.ItemIndex, out InventoryRuntimeItem selectedItem))
+        if (!TryGetRuntimeItem(entryId, out InventoryRuntimeItem selectedItem))
         {
             return;
         }
@@ -223,7 +181,7 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        if (!TryFindMergeTarget(eventData.ItemIndex, selectedItem, out InventoryRuntimeItem targetItem))
+        if (!TryFindMergeTarget(selectedItem.EntryId, selectedItem, out InventoryRuntimeItem targetItem))
         {
             Debug.Log("[Inventory] 合并失败：没有可合并的同名同等级武器");
             return;
@@ -241,19 +199,61 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        GameEventBus.Publish(new InventoryItemOperatePanelShouldCloseEvent(eventData.ItemIndex));
+        NotifyOperatePanelShouldClose(selectedItem.EntryId);
     }
 
-    private bool TryFindMergeTarget(int selectedIndex, InventoryRuntimeItem selectedItem, out InventoryRuntimeItem targetItem)
+    private void PublishInventorySnapshot()
+    {
+        runtimeItems.Clear();
+
+        if (weaponsHolder != null)
+        {
+            var equippedWeapons = weaponsHolder.EquippedWeapons;
+            for (int i = 0; i < equippedWeapons.Count; i++)
+            {
+                var weaponInfo = equippedWeapons[i];
+                runtimeItems.Add(InventoryRuntimeItem.CreateWeapon(
+                    BuildWeaponEntryId(weaponInfo.RuntimeWeapon),
+                    weaponInfo.WeaponData,
+                    weaponInfo.RuntimeWeapon.Level,
+                    weaponInfo.RuntimeWeapon));
+            }
+        }
+
+        if (accessoryManager != null)
+        {
+            var accessories = accessoryManager.EquippedAccessoryInfos;
+            for (int i = 0; i < accessories.Count; i++)
+            {
+                EquippedAccessoryInfo accessory = accessories[i];
+                runtimeItems.Add(InventoryRuntimeItem.CreateAccessory(
+                    BuildAccessoryEntryId(accessory.RuntimeSourceId),
+                    accessory.Data));
+            }
+        }
+
+        InventoryUIItemSnapshot[] snapshots = new InventoryUIItemSnapshot[runtimeItems.Count];
+        for (int i = 0; i < runtimeItems.Count; i++)
+        {
+            snapshots[i] = new InventoryUIItemSnapshot(
+                runtimeItems[i].EntryId,
+                runtimeItems[i].ItemData,
+                runtimeItems[i].ColorDependencyNumber);
+        }
+
+        SnapshotChanged?.Invoke(snapshots);
+    }
+
+    private bool TryFindMergeTarget(string selectedEntryId, InventoryRuntimeItem selectedItem, out InventoryRuntimeItem targetItem)
     {
         for (int i = 0; i < runtimeItems.Count; i++)
         {
-            if (i == selectedIndex)
+            InventoryRuntimeItem candidate = runtimeItems[i];
+            if (candidate.EntryId == selectedEntryId)
             {
                 continue;
             }
 
-            InventoryRuntimeItem candidate = runtimeItems[i];
             if (candidate.ItemData.ItemType != ItemType.Weapon || candidate.RuntimeWeapon == null)
             {
                 continue;
@@ -277,16 +277,27 @@ public class InventoryOperateManager : MonoBehaviour
         return false;
     }
 
-    private bool TryGetRuntimeItem(int itemIndex, out InventoryRuntimeItem item)
+    private bool TryGetRuntimeItem(string entryId, out InventoryRuntimeItem item)
     {
-        if (itemIndex < 0 || itemIndex >= runtimeItems.Count)
+        if (string.IsNullOrEmpty(entryId))
         {
             item = default;
             return false;
         }
 
-        item = runtimeItems[itemIndex];
-        return true;
+        for (int i = 0; i < runtimeItems.Count; i++)
+        {
+            if (runtimeItems[i].EntryId != entryId)
+            {
+                continue;
+            }
+
+            item = runtimeItems[i];
+            return true;
+        }
+
+        item = default;
+        return false;
     }
 
     private static IDescribable BuildDisplayDocument(InventoryRuntimeItem item)
@@ -294,27 +305,44 @@ public class InventoryOperateManager : MonoBehaviour
         return item.ItemData;
     }
 
+    private static string BuildWeaponEntryId(Weapon runtimeWeapon)
+    {
+        return runtimeWeapon == null ? null : $"WPN_{runtimeWeapon.GetInstanceID()}";
+    }
+
+    private static string BuildAccessoryEntryId(string runtimeSourceId)
+    {
+        return string.IsNullOrEmpty(runtimeSourceId) ? null : runtimeSourceId;
+    }
+
+    private void NotifyOperatePanelShouldClose(string entryId)
+    {
+        OperatePanelShouldClose?.Invoke(entryId);
+    }
+
     private readonly struct InventoryRuntimeItem
     {
+        public string EntryId { get; }
         public ItemDataSO ItemData { get; }
         public int ColorDependencyNumber { get; }
         public Weapon RuntimeWeapon { get; }
 
-        private InventoryRuntimeItem(ItemDataSO itemData, int colorDependencyNumber, Weapon runtimeWeapon)
+        private InventoryRuntimeItem(string entryId, ItemDataSO itemData, int colorDependencyNumber, Weapon runtimeWeapon)
         {
+            EntryId = entryId;
             ItemData = itemData;
             ColorDependencyNumber = colorDependencyNumber;
             RuntimeWeapon = runtimeWeapon;
         }
 
-        public static InventoryRuntimeItem CreateWeapon(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
+        public static InventoryRuntimeItem CreateWeapon(string entryId, WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
         {
-            return new InventoryRuntimeItem(weaponData, level, runtimeWeapon);
+            return new InventoryRuntimeItem(entryId, weaponData, level, runtimeWeapon);
         }
 
-        public static InventoryRuntimeItem CreateAccessory(AccessoryDataSO accessoryData)
+        public static InventoryRuntimeItem CreateAccessory(string entryId, AccessoryDataSO accessoryData)
         {
-            return new InventoryRuntimeItem(accessoryData, accessoryData != null ? accessoryData.Rarity : 0, null);
+            return new InventoryRuntimeItem(entryId, accessoryData, accessoryData != null ? accessoryData.Rarity : 0, null);
         }
 
         public int GetSellPrice()

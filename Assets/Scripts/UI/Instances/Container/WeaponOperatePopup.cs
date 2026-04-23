@@ -7,7 +7,10 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
     [SerializeField] private UIClickTarget mergeButton;
     [SerializeField] private TextMeshProUGUI sellPriceText;
 
-    private int currentItemIndex = -1;
+    private string currentEntryId;
+
+    public event System.Action<string> SellRequested;
+    public event System.Action<string> MergeRequested;
 
     public override void Configure(InventoryItemOperateResource resource)
     {
@@ -18,7 +21,7 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
         RenderColor(resource.itemData, resource.colorDependencyNumber);
         bottom.Display(resource.itemData);
 
-        currentItemIndex = resource.itemIndex;
+        currentEntryId = resource.entryId;
 
         sellButton.OnClicked -= OnSellClicked;
         mergeButton.OnClicked -= OnMergeClicked;
@@ -39,18 +42,20 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
         base.Dispose();
         sellButton.OnClicked -= OnSellClicked;
         mergeButton.OnClicked -= OnMergeClicked;
-        currentItemIndex = -1;
+        SellRequested = null;
+        MergeRequested = null;
+        currentEntryId = null;
     }
 
     private void OnSellClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new InventoryItemSellClickedEvent(currentItemIndex));
+        SellRequested?.Invoke(currentEntryId);
     }
 
     private void OnMergeClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-        GameEventBus.Publish(new InventoryItemMergeClickedEvent(currentItemIndex));
+        MergeRequested?.Invoke(currentEntryId);
     }
 }

@@ -324,7 +324,7 @@ public class GameManager : MonoSingletonBase<GameManager>
                 uiManager.OpenPage<CharacterSelectUIPage>();
                 break;
             case GameState.Game:
-                uiManager.OpenPage<GamingUIPage>();
+                uiManager.OpenPage<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player));
                 break;
             case GameState.GameOver:
                 uiManager.OpenPage<GameOverUIPage>();
@@ -336,7 +336,7 @@ public class GameManager : MonoSingletonBase<GameManager>
                 uiManager.OpenPage<WaveTransitionUIPage>();
                 break;
             case GameState.Shop:
-                uiManager.OpenPage<ShopUIPage>();
+                uiManager.OpenPage<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player));
                 break;
         }
     }
@@ -348,7 +348,7 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        uiManager.OpenPage<GamePauseMenu>();
+        uiManager.OpenPage<GamePauseMenu>(UIPageContextFactory.CreatePauseMenuContext(player));
     }
 
     private void EnsureMapGenerated()
