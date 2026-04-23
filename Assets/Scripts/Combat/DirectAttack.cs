@@ -5,15 +5,14 @@ public sealed class DirectAttack : AttackBase
     private float damage = 1f;
     private float attackFrequency = 1f;
 
-    public void ApplyConfig(DirectAttackConfigSO config)
+    public void SetDamage(float value)
     {
-        if (config == null)
-        {
-            return;
-        }
+        damage = Mathf.Max(0f, value);
+    }
 
-        damage = config.Damage;
-        attackFrequency = config.AttackFrequency;
+    public void SetAttackFrequency(float value)
+    {
+        attackFrequency = Mathf.Max(0.01f, value);
     }
 
     protected override float GetAttackInterval()

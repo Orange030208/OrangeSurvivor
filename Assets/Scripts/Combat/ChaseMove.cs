@@ -6,11 +6,9 @@ public sealed class ChaseMove : MoveBase
 
     private float stopDistance;
 
-    public void ApplyConfig(ChaseMoveConfigSO config, float fallbackStopDistance)
+    public void SetStopDistance(float value)
     {
-        stopDistance = config != null
-            ? config.StopDistance
-            : Mathf.Max(MIN_STOP_DISTANCE, fallbackStopDistance);
+        stopDistance = Mathf.Max(MIN_STOP_DISTANCE, value);
     }
 
     public override void Tick(Entity owner, Entity target, float deltaTime, float desiredDistance)

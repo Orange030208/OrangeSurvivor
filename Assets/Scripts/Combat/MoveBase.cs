@@ -26,6 +26,12 @@ public abstract class MoveBase : MonoBehaviour, IMovement
         OnStopped();
     }
 
+    public void StopImmediately()
+    {
+        moveDirection = Vector2.zero;
+        OnStopped();
+    }
+
     public void SetMoveSpeed(float value)
     {
         moveSpeed = Mathf.Max(MIN_MOVE_SPEED, value);

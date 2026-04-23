@@ -4,7 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(EnemyCombatController))]
 [RequireComponent(typeof(EnemyRuntimeBridge))]
-[RequireComponent(typeof(CombatConfigBinder))]
+[RequireComponent(typeof(EnemyBehaviorController))]
+[RequireComponent(typeof(EnemyComponentRegistry))]
 public class Enemy : Entity
 {
     [Header("组件")]
@@ -19,12 +20,12 @@ public class Enemy : Entity
     private HealthComponent healthComponent;
     private EnemyCombatController combatController;
     private EnemyRuntimeBridge runtimeBridge;
-    private CombatConfigBinder combatConfigBinder;
+    private EnemyBehaviorController behaviorController;
 
     private MoveBase activeMovement;
     private AttackBase activeAttack;
     private Entity targetEntity;
-    private EnemyDefinitionSO runtimeDefinition;
+    private EnemySO runtimeDefinition;
 
     public override IMovement MoveComponent => activeMovement;
     public override Vector2 Center => transform.position + new Vector3(0f, collider != null ? collider.offset.y : 0f, 0f);
@@ -33,30 +34,30 @@ public class Enemy : Entity
     public EnemyRole Role => role;
     public Entity TargetEntity => targetEntity;
     public float AttackDetectionRadius => attackDetectionRadius;
+    public EnemySO RuntimeDefinition => runtimeDefinition;
+    public EnemyCombatController CombatController => combatController;
+    public EnemyBehaviorController BehaviorController => behaviorController;
 
     private void Awake()
     {
         healthComponent = GetComponent<HealthComponent>();
         combatController = GetComponent<EnemyCombatController>();
         runtimeBridge = GetComponent<EnemyRuntimeBridge>();
-        combatConfigBinder = GetComponent<CombatConfigBinder>();
+        behaviorController = GetComponent<EnemyBehaviorController>();
 
         if (entityRenderer == null)
         {
             entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
 
-        if (runtimeBridge != null)
-        {
-            runtimeBridge.Initialize(this, healthComponent);
-        }
+        runtimeBridge?.Initialize(this, healthComponent);
     }
 
     private void Start()
     {
         if (runtimeDefinition == null)
         {
-            throw new InvalidOperationException($"{nameof(Enemy)} must be configured by factory or spawner before runtime. Missing {nameof(EnemyDefinitionSO)}.");
+            throw new InvalidOperationException($"{nameof(Enemy)} must be configured by factory or spawner before runtime. Missing {nameof(EnemySO)}.");
         }
 
         if (targetEntity == null)
@@ -65,15 +66,15 @@ public class Enemy : Entity
         }
 
         ApplyResolvedStats();
-        ApplyResolvedLoadout();
+        ConfigureBehavior();
         ConfigureCombat();
     }
 
-    public void Configure(EnemyDefinitionSO definition, Entity target)
+    public void Configure(EnemySO definition, Entity target)
     {
         if (definition == null)
         {
-            throw new ArgumentNullException(nameof(definition), $"{nameof(Enemy)} requires a non-null {nameof(EnemyDefinitionSO)}.");
+            throw new ArgumentNullException(nameof(definition), $"{nameof(Enemy)} requires a non-null {nameof(EnemySO)}.");
         }
 
         if (target == null)
@@ -84,7 +85,7 @@ public class Enemy : Entity
         runtimeDefinition = definition;
         targetEntity = target;
         ApplyResolvedStats();
-        ApplyResolvedLoadout();
+        ConfigureBehavior();
         ConfigureCombat();
     }
 
@@ -93,10 +94,38 @@ public class Enemy : Entity
         activeMovement = movement;
         activeAttack = attack;
 
-        if (combatController != null)
+        combatController?.Initialize(this, activeMovement, activeAttack);
+    }
+
+    public void SetActiveMovement(MoveBase movement)
+    {
+        activeMovement = movement;
+        combatController?.SetActiveMovement(movement);
+    }
+
+    public void SetActiveAttack(AttackBase attack)
+    {
+        activeAttack = attack;
+        combatController?.SetActiveAttack(attack);
+    }
+
+    public void SetAttackRange(float value)
+    {
+        attackDetectionRadius = Mathf.Max(0f, value);
+        if (combatController != null && targetEntity != null)
         {
-            combatController.Initialize(this, activeMovement, activeAttack);
+            combatController.Configure(targetEntity, attackDetectionRadius);
         }
+    }
+
+    public void SetAttackEnabled(bool enabled)
+    {
+        combatController?.SetAttackEnabled(enabled);
+    }
+
+    public void SetAllowMoveWhileAttacking(bool enabled)
+    {
+        combatController?.SetAllowMoveWhileAttacking(enabled);
     }
 
     public void PassAway()
@@ -113,7 +142,7 @@ public class Enemy : Entity
     {
         float resolvedMaxHealth = runtimeDefinition != null ? runtimeDefinition.MaxHealth : maxHealth;
         role = runtimeDefinition != null ? runtimeDefinition.Role : role;
-        attackDetectionRadius = runtimeDefinition != null ? runtimeDefinition.AttackDetectionRadius : attackDetectionRadius;
+        attackDetectionRadius = runtimeDefinition != null ? runtimeDefinition.BaseDetectionRadius : attackDetectionRadius;
 
         if (healthComponent != null)
         {
@@ -121,23 +150,24 @@ public class Enemy : Entity
         }
     }
 
-    private void ApplyResolvedLoadout()
+    private void ConfigureBehavior()
     {
-        if (runtimeDefinition == null || combatConfigBinder == null)
+        if (runtimeDefinition == null || behaviorController == null)
         {
             return;
         }
 
-        combatConfigBinder.Apply(runtimeDefinition, this);
+        behaviorController.Configure(runtimeDefinition);
     }
 
     private void ConfigureCombat()
     {
-        if (combatController == null || targetEntity == null || activeAttack == null)
+        if (combatController == null || targetEntity == null)
         {
             return;
         }
 
+        combatController.Initialize(this, activeMovement, activeAttack);
         combatController.Configure(targetEntity, attackDetectionRadius);
     }
 }

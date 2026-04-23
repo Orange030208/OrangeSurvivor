@@ -7,13 +7,20 @@ public sealed class DirectAttackPresetSO : AttackPresetSO
     [Header("Attack")]
     [SerializeField] private float damage = 1f;
     [SerializeField] private float attackFrequency = 1f;
+
     public override Type GetComponentType()
     {
-        throw new System.NotImplementedException();
+        return typeof(DirectAttack);
     }
 
-    public override void ApplyTo(AttackBase attack, EnemyDefinitionSO definition)
+    public override void ApplyTo(AttackBase attack, EnemySO enemy)
     {
-        throw new System.NotImplementedException();
+        if (attack is not DirectAttack directAttack)
+        {
+            throw new InvalidOperationException($"{nameof(DirectAttackPresetSO)} requires {nameof(DirectAttack)}.");
+        }
+
+        directAttack.SetDamage(damage);
+        directAttack.SetAttackFrequency(attackFrequency);
     }
 }

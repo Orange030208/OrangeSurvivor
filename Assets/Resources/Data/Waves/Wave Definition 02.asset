@@ -18,11 +18,11 @@ MonoBehaviour:
   completionType: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 09da824d713de3840b2348b6fc697db0, type: 2}
   spawnPlans:
-  - enemyDefinition: {fileID: 11400000, guid: 5ee1dcb6504b40aaaf620f60af5d59dd, type: 2}
+  - enemyDefinition: {fileID: 11400000, guid: 5f38dd7fb6d64c4cad87ab4aa1950a31, type: 2}
     spawnFrequency: 1.8
     spawnCountPerBatch: 3
     normalizedTimeRange: {x: 0, y: 55}
-  - enemyDefinition: {fileID: 11400000, guid: 6b44dd1b8d1d46ad8e77d66d2baf7fd7, type: 2}
+  - enemyDefinition: {fileID: 11400000, guid: 5f38dd7fb6d64c4cad87ab4aa1950a31, type: 2}
     spawnFrequency: 3
     spawnCountPerBatch: 2
     normalizedTimeRange: {x: 35, y: 100}

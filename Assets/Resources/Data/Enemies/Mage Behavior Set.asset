@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48fbcee3de2d48729aac41062037b74f, type: 3}
+  m_Name: Mage Behavior Set
+  m_EditorClassIdentifier: 
+  movementPresets:
+  - {fileID: 11400000, guid: 2d01f391f9004bc98bc5149ff78dc8a8, type: 2}
+  - {fileID: 11400000, guid: 52d978f94fc6485f87a96cd7e0a10fe9, type: 2}
+  - {fileID: 11400000, guid: 8c1db27eb8b74ccca54d6996fda7ab8e, type: 2}
+  attackPresets:
+  - {fileID: 11400000, guid: 13df1825f61141bb8e63314da6da027d, type: 2}
+  - {fileID: 11400000, guid: 7e9dc7de51ef46ba874d7d547959397a, type: 2}
+  defaultMovementId: Mage_KeepDistance
+  defaultAttackId: Mage_Projectile
+  preloadAllMovementComponents: 1
+  preloadAllAttackComponents: 1

@@ -5,10 +5,14 @@ public sealed class KeepDistanceMove : MoveBase
     private float desiredDistance;
     private float tolerance = 0.5f;
 
-    public void ApplyConfig(KeepDistanceMoveConfigSO config, float fallbackDistance)
+    public void SetDesiredDistance(float value)
     {
-        desiredDistance = config != null ? config.DesiredDistance : Mathf.Max(0f, fallbackDistance);
-        tolerance = config != null ? config.Tolerance : 0.5f;
+        desiredDistance = Mathf.Max(0f, value);
+    }
+
+    public void SetTolerance(float value)
+    {
+        tolerance = Mathf.Max(0f, value);
     }
 
     public override void Tick(Entity owner, Entity target, float deltaTime, float ignoredDesiredDistance)

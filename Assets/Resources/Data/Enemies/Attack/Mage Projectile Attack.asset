@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdb94fec37a4003b4a0cefdf5ae618a, type: 3}
+  m_Name: Mage Projectile Attack
+  m_EditorClassIdentifier: 
+  attackId: Mage_Projectile
+  displayName: Mage Projectile Attack
+  availableAtRuntime: 1
+  preferredRange: 6
+  minRange: 2
+  maxRange: 8.5
+  blocksMovementWhenExecuting: 0
+  damage: 6
+  attackFrequency: 1.35
+  projectileDefinition: {fileID: 11400000, guid: 60199221bfb36fa4880399e9c009dd0b, type: 2}
+  firingMode: 1
+  patternConfig:
+    spreadCount: 3
+    spreadAngle: 14
+    burstCount: 3
+    novaCount: 8
+    burstInterval: 0.08

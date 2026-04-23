@@ -10,13 +10,23 @@ public sealed class ProjectileAttackPresetSO : AttackPresetSO
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
     [SerializeField] private ProjectileFiringMode firingMode = ProjectileFiringMode.Default;
     [SerializeField] private ProjectilePatternConfig patternConfig = default;
+
     public override Type GetComponentType()
     {
-        throw new NotImplementedException();
+        return typeof(ProjectileAttack);
     }
 
-    public override void ApplyTo(AttackBase attack, EnemyDefinitionSO definition)
+    public override void ApplyTo(AttackBase attack, EnemySO enemy)
     {
-        throw new NotImplementedException();
+        if (attack is not ProjectileAttack projectileAttack)
+        {
+            throw new InvalidOperationException($"{nameof(ProjectileAttackPresetSO)} requires {nameof(ProjectileAttack)}.");
+        }
+
+        projectileAttack.SetDamage(damage);
+        projectileAttack.SetAttackFrequency(attackFrequency);
+        projectileAttack.SetProjectileDefinition(projectileDefinition);
+        projectileAttack.SetFiringMode(firingMode);
+        projectileAttack.SetPatternConfig(patternConfig);
     }
 }

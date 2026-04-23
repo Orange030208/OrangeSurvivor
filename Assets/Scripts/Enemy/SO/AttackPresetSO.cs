@@ -17,11 +17,11 @@ public abstract class AttackPresetSO : ScriptableObject
     public string AttackId => attackId;
     public string DisplayName => displayName;
     public bool AvailableAtRuntime => availableAtRuntime;
-    public float PreferredRange => preferredRange;
-    public float MinRange => minRange;
-    public float MaxRange => maxRange;
+    public float PreferredRange => Mathf.Max(0f, preferredRange);
+    public float MinRange => Mathf.Max(0f, minRange);
+    public float MaxRange => Mathf.Max(MinRange, maxRange);
     public bool BlocksMovementWhenExecuting => blocksMovementWhenExecuting;
 
     public abstract Type GetComponentType();
-    public abstract void ApplyTo(AttackBase attack, EnemyDefinitionSO definition);
+    public abstract void ApplyTo(AttackBase attack, EnemySO enemy);
 }

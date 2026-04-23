@@ -48,13 +48,7 @@ public class WaveManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRuntimeRegistry)} in the scene.");
         }
 
-        EnemyTemplateCatalogSO enemyTemplateCatalog = ResourcesManager.GetEnemyTemplateCatalog();
-        if (enemyTemplateCatalog == null)
-        {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires an {nameof(EnemyTemplateCatalogSO)} resource at Data/Enemies/Enemy Template Catalog.");
-        }
-
-        enemyFactory = new EnemyFactory(enemyTemplateCatalog, enemySpawnIndicatorPrefab);
+        enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);
         waveCompletionService = new WaveCompletionService(enemyRuntimeRegistry);
         waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory);
         ApplySpawnPositionPolicy(0);

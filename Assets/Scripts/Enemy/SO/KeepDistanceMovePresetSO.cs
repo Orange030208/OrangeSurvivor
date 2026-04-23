@@ -8,13 +8,22 @@ public sealed class KeepDistanceMovePresetSO : MovePresetSO
     [SerializeField] private float moveSpeed = 2.5f;
     [SerializeField] private float desiredDistance = 5f;
     [SerializeField] private float tolerance = 0.5f;
+
     public override Type GetComponentType()
     {
-        throw new NotImplementedException();
+        return typeof(KeepDistanceMove);
     }
 
     public override void ApplyTo(MoveBase move, EnemySO enemy)
     {
-        throw new NotImplementedException();
+        if (move is not KeepDistanceMove keepDistanceMove)
+        {
+            throw new InvalidOperationException($"{nameof(KeepDistanceMovePresetSO)} requires {nameof(KeepDistanceMove)}.");
+        }
+
+        float resolvedMoveSpeed = Mathf.Max(0f, moveSpeed > 0f ? moveSpeed : enemy != null ? enemy.BaseMoveSpeed : 0f);
+        keepDistanceMove.SetMoveSpeed(resolvedMoveSpeed);
+        keepDistanceMove.SetDesiredDistance(desiredDistance);
+        keepDistanceMove.SetTolerance(tolerance);
     }
 }

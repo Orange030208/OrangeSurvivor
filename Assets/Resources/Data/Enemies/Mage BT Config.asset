@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f79cad38da444271a05e4b50d468cdba, type: 3}
+  m_Name: Mage BT Config
+  m_EditorClassIdentifier: 
+  meleeMovePresetId: Mage_Chase
+  meleeAttackPresetId: Mage_Direct
+  orbitMovePresetId: Mage_Orbit
+  orbitAttackPresetId: Mage_Projectile
+  retreatMovePresetId: Mage_KeepDistance
+  retreatAttackPresetId: Mage_Projectile
+  meleeEnterDistance: 1.75
+  meleeExitDistance: 2.25
+  orbitEnterDistance: 5
+  orbitExitDistance: 6.5
+  retreatDesiredDistance: 8.25
+  retreatHealthRatio: 0.35
+  enragedHealthRatio: 0.5
+  styleSwitchCooldown: 0.25
+  burstWindow: 2.2
+  orbitDuration: 3.2
+  targetLostDelay: 1
+  requireLineOfSightForRanged: 0

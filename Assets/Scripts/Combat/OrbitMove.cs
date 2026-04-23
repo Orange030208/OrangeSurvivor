@@ -6,11 +6,19 @@ public sealed class OrbitMove : MoveBase
     private float radiusTolerance = 0.35f;
     private bool clockwise = true;
 
-    public void ApplyConfig(OrbitMoveConfigSO config, float fallbackOrbitRadius)
+    public void SetOrbitRadius(float value)
     {
-        orbitRadius = config != null ? config.OrbitRadius : Mathf.Max(0f, fallbackOrbitRadius);
-        radiusTolerance = config != null ? config.RadiusTolerance : 0.35f;
-        clockwise = config != null && config.Clockwise;
+        orbitRadius = Mathf.Max(0f, value);
+    }
+
+    public void SetRadiusTolerance(float value)
+    {
+        radiusTolerance = Mathf.Max(0f, value);
+    }
+
+    public void SetClockwise(bool value)
+    {
+        clockwise = value;
     }
 
     public override void Tick(Entity owner, Entity target, float deltaTime, float ignoredDesiredDistance)

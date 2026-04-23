@@ -4,20 +4,18 @@ using Object = UnityEngine.Object;
 
 public sealed class EnemyFactory
 {
-    private readonly EnemyTemplateCatalogSO templateCatalog;
     private readonly SpawnIndicator spawnIndicatorPrefab;
 
-    public EnemyFactory(EnemyTemplateCatalogSO templateCatalog, SpawnIndicator spawnIndicatorPrefab = null)
+    public EnemyFactory(SpawnIndicator spawnIndicatorPrefab = null)
     {
-        this.templateCatalog = templateCatalog;
         this.spawnIndicatorPrefab = spawnIndicatorPrefab;
     }
 
-    public void Spawn(EnemyDefinitionSO definition, Entity target, Vector3 spawnPosition, Transform parent)
+    public void Spawn(EnemySO definition, Entity target, Vector3 spawnPosition, Transform parent)
     {
         if (definition == null)
         {
-            throw new MissingReferenceException($"{nameof(EnemyFactory)} requires a non-null {nameof(EnemyDefinitionSO)}.");
+            throw new MissingReferenceException($"{nameof(EnemyFactory)} requires a non-null {nameof(EnemySO)}.");
         }
 
         if (target == null)
@@ -25,15 +23,10 @@ public sealed class EnemyFactory
             throw new ArgumentNullException(nameof(target), $"{nameof(EnemyFactory)} requires an explicit non-null {nameof(Entity)} target.");
         }
 
-        if (templateCatalog == null)
-        {
-            throw new MissingReferenceException($"{nameof(EnemyFactory)} requires a non-null {nameof(EnemyTemplateCatalogSO)}.");
-        }
-
-        Enemy template = templateCatalog.GetTemplate(definition.TemplateKind);
+        Enemy template = definition.EnemyPrefab;
         if (template == null)
         {
-            throw new MissingReferenceException($"{nameof(EnemyFactory)} cannot resolve template for {definition.TemplateKind}.");
+            throw new MissingReferenceException($"{nameof(EnemyFactory)} cannot resolve prefab from {definition.name}.");
         }
 
         if (spawnIndicatorPrefab != null)

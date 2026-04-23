@@ -83,6 +83,7 @@ MonoBehaviour:
   timerText: {fileID: 682055535760119137}
   currencyText: {fileID: 1500292031166583167}
   characterStatusPanel: {fileID: 6626129168850466840}
+  inventoryUI: {fileID: 0}
   menuButton: {fileID: 825468706418226040}
   moveJoystick: {fileID: 6004552391231687133}
   buffBarUI: {fileID: 7943445818030645722}
@@ -614,7 +615,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1530635173480228205, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 125
+      value: 72.5
       objectReference: {fileID: 0}
     - target: {fileID: 1530635173480228205, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -650,7 +651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1530635173480228205, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 10
+      value: 130
       objectReference: {fileID: 0}
     - target: {fileID: 1530635173480228205, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

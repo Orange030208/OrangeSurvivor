@@ -8,18 +8,29 @@ public sealed class ProjectileAttack : AttackBase, IProjectileLauncher
     private ProjectileFiringMode attackMode = ProjectileFiringMode.Default;
     private ProjectilePatternConfig patternConfig = default;
 
-    public void ApplyConfig(ProjectileAttackConfigSO config)
+    public void SetDamage(float value)
     {
-        if (config == null)
-        {
-            return;
-        }
+        damage = Mathf.Max(0f, value);
+    }
 
-        damage = config.Damage;
-        attackFrequency = config.AttackFrequency;
-        projectileDefinition = config.ProjectileDefinition;
-        attackMode = config.FiringMode;
-        patternConfig = config.PatternConfig;
+    public void SetAttackFrequency(float value)
+    {
+        attackFrequency = Mathf.Max(0.01f, value);
+    }
+
+    public void SetProjectileDefinition(ProjectileDefinitionSO definition)
+    {
+        projectileDefinition = definition;
+    }
+
+    public void SetFiringMode(ProjectileFiringMode mode)
+    {
+        attackMode = mode;
+    }
+
+    public void SetPatternConfig(ProjectilePatternConfig config)
+    {
+        patternConfig = config;
     }
 
     protected override float GetAttackInterval()

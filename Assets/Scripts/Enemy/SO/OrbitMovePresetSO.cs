@@ -9,13 +9,23 @@ public sealed class OrbitMovePresetSO : MovePresetSO
     [SerializeField] private float orbitRadius = 3.5f;
     [SerializeField] private float radiusTolerance = 0.35f;
     [SerializeField] private bool clockwise = true;
+
     public override Type GetComponentType()
     {
-        throw new NotImplementedException();
+        return typeof(OrbitMove);
     }
 
     public override void ApplyTo(MoveBase move, EnemySO enemy)
     {
-        throw new NotImplementedException();
+        if (move is not OrbitMove orbitMove)
+        {
+            throw new InvalidOperationException($"{nameof(OrbitMovePresetSO)} requires {nameof(OrbitMove)}.");
+        }
+
+        float resolvedMoveSpeed = Mathf.Max(0f, moveSpeed > 0f ? moveSpeed : enemy != null ? enemy.BaseMoveSpeed : 0f);
+        orbitMove.SetMoveSpeed(resolvedMoveSpeed);
+        orbitMove.SetOrbitRadius(orbitRadius);
+        orbitMove.SetRadiusTolerance(radiusTolerance);
+        orbitMove.SetClockwise(clockwise);
     }
 }

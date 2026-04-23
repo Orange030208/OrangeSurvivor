@@ -45,6 +45,11 @@ public abstract class AttackBase : MonoBehaviour
         return true;
     }
 
+    public void ResetAttackCooldown(bool readyImmediately = true)
+    {
+        attackTimer = readyImmediately ? GetAttackInterval() : 0f;
+    }
+
     public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
     {
         if (projectile == null)

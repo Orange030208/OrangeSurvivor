@@ -29,7 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaThreshold: 0.4
     - _ColorMask: 15
+    - _InnerOutlineThickness: 1
+    - _OuterOutlineThickness: 2
     - _OutlineSoftness: 0.08
     - _OutlineThickness: 0.6
     - _Stencil: 0
@@ -40,5 +43,7 @@ Material:
     - _UseUIAlphaClip: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _InnerOutlineColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
+    - _OuterOutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

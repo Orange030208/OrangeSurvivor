@@ -11,17 +11,17 @@ public struct WaveSpawnPlan
     private const int MIN_SPAWN_COUNT_PER_BATCH = 1;
     private const float MIN_SPAWN_FREQUENCY = 0.01f;
 
-    [SerializeField] private EnemyDefinitionSO enemyDefinition;
+    [SerializeField] private EnemySO enemyDefinition;
     [SerializeField] private float spawnFrequency;
     [SerializeField] private int spawnCountPerBatch;
     [SerializeField] private Vector2 normalizedTimeRange;
 
-    public EnemyDefinitionSO EnemyDefinition => enemyDefinition;
+    public EnemySO EnemyDefinition => enemyDefinition;
     public float SpawnFrequency => Mathf.Max(MIN_SPAWN_FREQUENCY, spawnFrequency);
     public int SpawnCountPerBatch => Mathf.Max(MIN_SPAWN_COUNT_PER_BATCH, spawnCountPerBatch);
     public Vector2 NormalizedTimeRange => normalizedTimeRange;
 
-    public WaveSpawnPlan(EnemyDefinitionSO enemyDefinition, float spawnFrequency, int spawnCountPerBatch, Vector2 normalizedTimeRange)
+    public WaveSpawnPlan(EnemySO enemyDefinition, float spawnFrequency, int spawnCountPerBatch, Vector2 normalizedTimeRange)
     {
         this.enemyDefinition = enemyDefinition;
         this.spawnFrequency = spawnFrequency;

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d197c29f3b8c4b0cb00020828d36e4d3, type: 3}
+  m_Name: Enemy Mage Arcane
+  m_EditorClassIdentifier: 
+  enemyId: Enemy_Mage_Arcane
+  displayName: Arcane Mage
+  role: 0
+  enemyPrefab: {fileID: 2859848195627263458, guid: b72ddf5433ac42708851d73bd5dab11e, type: 3}
+  maxHealth: 42
+  baseMoveSpeed: 3
+  baseDetectionRadius: 8.5
+  behaviorSet: {fileID: 11400000, guid: 3d0f5978f8d5462f9392f77f0e9838d0, type: 2}
+  btConfig: {fileID: 11400000, guid: 7c6126ea00b64208be1e46fb2e584641, type: 2}

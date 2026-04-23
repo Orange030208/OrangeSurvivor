@@ -10,7 +10,6 @@ public static class ResourcesManager
     private const string CHARACTER_DATA_PATH = "Data/Characters";
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
-    private const string ENEMY_TEMPLATE_CATALOG_DATA_PATH = "Data/Enemies/Enemy Template Catalog";
     private const string PROJECTILE_COMMON_PREFAB_PATH = "Prefabs/Projectiles/Projectile Common";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Character";
@@ -21,7 +20,6 @@ public static class ResourcesManager
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
     private static StageDefinitionSO stageDefinition;
-    private static EnemyTemplateCatalogSO enemyTemplateCatalog;
     private static readonly Dictionary<ProjectileTemplateKind, Projectile> projectilePrefabCache = new();
 
     public static Sprite GetPropIcon(PropType propType)
@@ -91,14 +89,6 @@ public static class ResourcesManager
         if (stageDefinition == null)
         {
             stageDefinition = Resources.Load<StageDefinitionSO>(STAGE_DEFINITION_DATA_PATH);
-        }
-    }
-
-    private static void LoadEnemyTemplateCatalog()
-    {
-        if (enemyTemplateCatalog == null)
-        {
-            enemyTemplateCatalog = Resources.Load<EnemyTemplateCatalogSO>(ENEMY_TEMPLATE_CATALOG_DATA_PATH);
         }
     }
 
@@ -193,12 +183,6 @@ public static class ResourcesManager
     {
         LoadStageDefinition();
         return stageDefinition;
-    }
-
-    public static EnemyTemplateCatalogSO GetEnemyTemplateCatalog()
-    {
-        LoadEnemyTemplateCatalog();
-        return enemyTemplateCatalog;
     }
 
     public static AccessoryDataSO GetAccessory(string accessoryId)
