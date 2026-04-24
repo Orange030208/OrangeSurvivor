@@ -79,7 +79,7 @@ public static class PropDescriptionUtility
             PropType.AttackSpeed => 1f,
             PropType.CriticalChance => 0f,
             PropType.CriticalPercent => 0f,
-            PropType.MoveSpeed => 2f,
+            PropType.MoveSpeed => 160f,
             PropType.MaxHealth => 100f,
             PropType.Range => 0f,
             PropType.HealthRecoverySpeed => 0f,

@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f63b40d9dc0c95499eeec1250ce0928, type: 3}
-  m_Name: Stage Definition
+  m_Script: {fileID: 11500000, guid: 2b780ca5e79252a47accfae8c39c0387, type: 3}
+  m_Name: CircleKiteStrategy
   m_EditorClassIdentifier: 
-  stageId: Stage_001
-  displayName: Stage 1
-  waves:
-  - {fileID: 11400000, guid: d194a116d7784954db3703ea10c9f7d4, type: 2}
+  circleSpeed: 2
+  IdealCircleRange: 6

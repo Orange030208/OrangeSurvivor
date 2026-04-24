@@ -10,7 +10,7 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private EntityRenderer entityRenderer;
 
-    private IMovement playerController;
+    private IMovable playerController;
     private HealthComponent healthComponent;
     private bool isDead;
 

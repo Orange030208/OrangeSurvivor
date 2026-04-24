@@ -13,4 +13,9 @@ public readonly struct HitSpec
         CritChance = Mathf.Clamp01(critChance);
         CritMultiplier = Mathf.Max(1f, critMultiplier);
     }
+
+    public static HitSpec EnemyHitSpec(float baseDamage)
+    {
+        return new HitSpec(baseDamage, 0, 0);
+    }
 }

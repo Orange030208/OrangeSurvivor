@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(HealthComponent))]
@@ -14,23 +15,32 @@ public class Player : Entity
     [Header("组件")]
     [SerializeField] private new CircleCollider2D collider;
     [SerializeField] private EntityRenderer entityRenderer;
+    private Rigidbody2D rb;
     private PlayerLevel playerLevel;
     private PlayerController playerController;
     private FeatureHost featureHost;
     private WeaponsHolder weaponsHolder;
     private AccessoryManager accessoryManager;
     private PlayerAnimationController playerAnimationController;
+    private PropertiesManager propertiesManager;
+    
     private bool hasInstalledLoadout;
-    public override IMovement MoveComponent => playerController;
+    
+    public override IMovable MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
     public override EntityRenderer EntityRenderer => entityRenderer;
+
+    public Rigidbody2D Rb => rb;
+    public PropertiesManager PropertiesManager => propertiesManager;
 
     private CharacterDataSO characterData;
     public CharacterDataSO CharacterData => characterData;
 
     private void Awake()
     {
+        rb =  GetComponent<Rigidbody2D>();
         playerLevel = GetComponent<PlayerLevel>();
+        propertiesManager =  GetComponent<PropertiesManager>();
         playerController = GetComponent<PlayerController>();
         featureHost = GetComponent<FeatureHost>();
         weaponsHolder = GetComponent<WeaponsHolder>();
@@ -40,6 +50,11 @@ public class Player : Entity
         {
             entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
+    }
+
+    private void Start()
+    {
+        InitializeComponent();
     }
 
     private void OnEnable()

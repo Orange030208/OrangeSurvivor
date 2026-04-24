@@ -15,11 +15,20 @@ public interface IEntity
 
 public abstract class Entity : MonoBehaviour, IEntity
 {
-    public virtual IMovement MoveComponent => IMovement.Empty;
+    public virtual IMovable MoveComponent => IMovable.Empty;
     public virtual Transform Transform => transform;
     public virtual Vector2 Center => transform.position;
     public abstract EntityRenderer EntityRenderer { get; }
     public int EventBusId => gameObject.GetInstanceID();
+
+    public void InitializeComponent()
+    {
+        var components = GetComponents<EntityComponentBase>();
+        foreach (var component in components)
+        {
+            component.Initialize(this);
+        }
+    }
 }
 
 public static class EntityExtensions

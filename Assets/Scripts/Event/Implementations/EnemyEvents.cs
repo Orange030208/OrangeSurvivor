@@ -1,23 +1,23 @@
 using UnityEngine;
 
-public struct EnemyRuntimeRegisteredEvent : IGameEvent
+public struct EnemyRegisteredEvent : IGameEvent
 {
     public Enemy Enemy;
     public EnemyRole Role;
 
-    public EnemyRuntimeRegisteredEvent(Enemy enemy, EnemyRole role)
+    public EnemyRegisteredEvent(Enemy enemy, EnemyRole role)
     {
         Enemy = enemy;
         Role = role;
     }
 }
 
-public struct EnemyRuntimeUnregisteredEvent : IGameEvent
+public struct EnemyUnregisteredEvent : IGameEvent
 {
     public Enemy Enemy;
     public EnemyRole Role;
 
-    public EnemyRuntimeUnregisteredEvent(Enemy enemy, EnemyRole role)
+    public EnemyUnregisteredEvent(Enemy enemy, EnemyRole role)
     {
         Enemy = enemy;
         Role = role;

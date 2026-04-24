@@ -10,12 +10,11 @@ public class Projectile : Entity, IProjectile
     [SerializeField] protected float maxLifetime = 5f;
     [SerializeField] protected int maxHitCount = 1;
     [SerializeField] protected EntityRenderer entityRenderer;
-
+    [SerializeField] protected Rigidbody2D rb;
     /// <summary>
     /// 防止刚生成就接触一群敌人
     /// </summary>
     private int currentHitCount = 0;
-    private Rigidbody2D rb;
     private float lifetimeTimer;
     protected ProjectileLaunchContext launchContext;
     private float currentMoveSpeed;

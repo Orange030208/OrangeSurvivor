@@ -18,8 +18,14 @@ public readonly struct ProjectileLaunchContext
     public Vector2 SpawnPosition { get; }
     public Vector2 Direction { get; }
     public HitSpec HitSpec { get; }
+    /// <summary>
+    /// 表示改弹射物从哪个发射槽位发射的,默认为0
+    /// </summary>
     public int SpawnPointIndex { get; }
     public ProjectileDefinitionSO ProjectileDefinition { get; }
+    /// <summary>
+    ///  Burst 连发的分组编号，用来防止同一个 burst 在一次攻击序列里被重复触发多次。
+    /// </summary>
     public int BurstId { get; }
     public ProjectileFiringMode FiringMode { get; }
     public ProjectilePatternConfig PatternConfig { get; }
@@ -32,8 +38,8 @@ public readonly struct ProjectileLaunchContext
         Vector2 direction,
         HitSpec hitSpec,
         LayerMask targetLayerMask,
-        int spawnPointIndex = 0,
         ProjectileDefinitionSO projectileDefinition = null,
+        int spawnPointIndex = 0,
         int burstId = 0,
         ProjectileFiringMode firingMode = ProjectileFiringMode.Default,
         ProjectilePatternConfig patternConfig = default)

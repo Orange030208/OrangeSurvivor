@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b89ccba8748b48bf805e70825310d3eb, type: 3}
+  m_Name: MageEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2859848195627263458, guid: b72ddf5433ac42708851d73bd5dab11e, type: 3}
+  role: 0
+  maxHp: 100
+  moveSpeed: 100
+  detectionRange: 12
+  meleeAttackRange: 1.5
+  rangedAttackRange: 8
+  meleeDamage: 20
+  rangedDamage: 10
+  baseAttackInterval: 1
+  lowHpPercent: 30
+  idealCircleRange: 6
+  defaultMoveStrategy: {fileID: 11400000, guid: 9bc8a0a400ea18f41a0c5ac2fe028706, type: 2}
+  defaultAttackStrategy: {fileID: 11400000, guid: 73e7bbd07d0ec4b418ecfe779bf64dac, type: 2}
+  DirectChaseStrategy: {fileID: 0}

@@ -248,8 +248,8 @@ public class RangeWeapon : Weapon, IProjectileLauncher
             aimDirection,
             hitSpec,
             TargetLayerMask,
-            projectileConfig.SpawnPointIndex,
             projectileConfig.ProjectileDefinition,
+            projectileConfig.SpawnPointIndex,
             projectileConfig.BurstId,
             projectileConfig.FiringMode,
             projectileConfig.PatternConfig));
