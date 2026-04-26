@@ -30,6 +30,37 @@ public class WeaponsHolder : EntityComponentBase
     {
         this.owner = owner;
         RebuildEquippedWeaponsCache();
+        var initialWeapons = owner.GetComponent<IInitialWeaponProvider>().InitialWeapons;
+        foreach (var weapon in initialWeapons)
+        {
+            AddWeapon(weapon.weaponData, weapon.level);
+        }
+    }
+
+    public override void Tick(float deltaTime)
+    {
+        if (weaponPositions == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            weaponPositions[i]?.Weapon?.Tick(deltaTime);
+        }
+    }
+
+    public override void OnDisableComponent()
+    {
+        if (weaponPositions == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            weaponPositions[i].Weapon?.OnDisableComponent();
+        }
     }
 
     /// <summary>
@@ -51,7 +82,7 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon runtimeWeapon = emptyPosition.AssignWeapon(weaponData, WeaponLevelHelper.ClampLevel(level));
+        Weapon runtimeWeapon = emptyPosition.AssignWeapon(owner,weaponData, WeaponLevelHelper.ClampLevel(level));
         if (runtimeWeapon == null)
         {
             return false;
@@ -128,7 +159,7 @@ public class WeaponsHolder : EntityComponentBase
 
         if (!targetPosition.RemoveWeapon(targetWeapon))
         {
-            sourcePosition.AssignWeapon(weaponData, sourceWeapon.Level);
+            sourcePosition.AssignWeapon(owner,weaponData, sourceWeapon.Level);
             if (sourcePosition.Weapon != null)
             {
                 sourcePosition.Weapon.SetTargetLayerMask(targetLayerMask);
@@ -138,7 +169,7 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon mergedWeapon = targetPosition.AssignWeapon(weaponData, mergedLevel);
+        Weapon mergedWeapon = targetPosition.AssignWeapon(owner,weaponData, mergedLevel);
         if (mergedWeapon != null)
         {
             mergedWeapon.SetTargetLayerMask(targetLayerMask);
@@ -147,16 +178,6 @@ public class WeaponsHolder : EntityComponentBase
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
         return true;
-    }
-
-    /// <summary>
-    /// 强制刷新一次对外快照。
-    /// 常用于外部数据和实际武器实例发生了重新同步后，通知 UI 更新。
-    /// </summary>
-    public void RefreshSnapshot()
-    {
-        RebuildEquippedWeaponsCache();
-        OnWeaponsChanged?.Invoke();
     }
 
     private WeaponPosition GetEmptyWeaponPosition()

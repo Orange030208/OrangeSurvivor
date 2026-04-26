@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -28,9 +28,9 @@ public class MeleeWeapon : Weapon
 
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
-    protected override void Awake()
+    public override void Initialize(Entity owner)
     {
-        base.Awake();
+        base.Initialize(owner);
         attackExecutor = new MeleeWeaponAttackExecutor(hitDetectionTransform, SpawnMeleeHitVfx);
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
         sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
@@ -53,9 +53,9 @@ public class MeleeWeapon : Weapon
         ApplyHitDetectionOffset();
     }
 
-    protected override void OnDisable()
+    public override void OnDisableComponent()
     {
-        base.OnDisable();
+        base.OnDisableComponent();
         ForceResetAttackState();
     }
 

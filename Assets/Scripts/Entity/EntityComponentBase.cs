@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public abstract class EntityComponentBase : MonoBehaviour, IComparable<EntityComponentBase>
+public abstract class EntityComponentBase : MonoBehaviour, IComparable<EntityComponentBase>,ILifecycle
 {
     public static class PriorityPreset
     {
@@ -40,4 +40,19 @@ public abstract class EntityComponentBase : MonoBehaviour, IComparable<EntityCom
     {
         return Priority.CompareTo(other.Priority);
     }
+}
+
+public interface ILifecycle
+{
+    public int Priority { get; }
+
+    public void Tick(float deltaTime);
+
+    public void FixedTick(float deltaTime);
+
+    public void Initialize(Entity owner);
+
+    public void OnEnableComponent();
+
+    public void OnDisableComponent();
 }

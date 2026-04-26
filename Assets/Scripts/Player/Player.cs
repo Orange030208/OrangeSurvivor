@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(HealthComponent))]
@@ -11,7 +12,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(CurrencyWallet))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Player : Entity, IPropGroupProvider
+public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
 {
     [Header("组件")]
     [SerializeField] private new CircleCollider2D collider;
@@ -35,6 +36,7 @@ public class Player : Entity, IPropGroupProvider
 
     public CharacterDataSO CharacterData => characterData;
     public BasePropGroupSO BasePropsGroup => characterData.BasePropsAsset;
+    public IReadOnlyList<WeaponEntry> InitialWeapons => characterData.InitialWeapons;
 
     private void Awake()
     {
@@ -102,35 +104,11 @@ public class Player : Entity, IPropGroupProvider
 
     private void InstallRuntimeFeatures()
     {
-        if (characterData == null || featureHost == null)
-        {
-            return;
-        }
-
         FeatureInstaller.InstallCharacter(featureHost, characterData);
     }
 
     private void ApplyInitialLoadout()
     {
-        if (characterData == null)
-        {
-            return;
-        }
-
-        if (weaponsHolder != null)
-        {
-            for (int i = 0; i < characterData.InitialWeapons.Count; i++)
-            {
-                WeaponEntry entry = characterData.InitialWeapons[i];
-                if (entry.weaponData == null)
-                {
-                    continue;
-                }
-
-                weaponsHolder.AddWeapon(entry.weaponData, entry.level);
-            }
-        }
-
         if (accessoryManager != null)
         {
             for (int i = 0; i < characterData.InitialAccessories.Count; i++)

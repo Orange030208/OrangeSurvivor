@@ -4,7 +4,7 @@ public class WeaponPosition : MonoBehaviour
 {
     public Weapon Weapon { get; private set; }
 
-    public Weapon AssignWeapon(WeaponDataSO weaponData, int level)
+    public Weapon AssignWeapon(Entity owner,WeaponDataSO weaponData, int level)
     {
         if (weaponData == null || weaponData.WeaponPrefab == null)
         {
@@ -20,7 +20,9 @@ public class WeaponPosition : MonoBehaviour
         Weapon = Instantiate(weaponData.WeaponPrefab, transform);
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
+        Weapon.Initialize(owner);
         Weapon.SetWeaponData(weaponData);
+        Weapon.OnEnableComponent();
         Weapon.SetLevel(level);
         return Weapon;
     }
@@ -32,6 +34,7 @@ public class WeaponPosition : MonoBehaviour
             return false;
         }
 
+        weapon.OnDisableComponent();
         Destroy(Weapon.gameObject);
         Weapon = null;
         return true;

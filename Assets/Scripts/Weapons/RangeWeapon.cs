@@ -31,9 +31,9 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
-    protected override void Awake()
+    public override void Initialize(Entity owner)
     {
-        base.Awake();
+        base.Initialize(owner);
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
     }
 
@@ -51,9 +51,9 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         }
     }
 
-    protected override void OnEnable()
+    public override void OnEnableComponent()
     {
-        base.OnEnable();
+        base.OnEnableComponent();
 
         sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
         sequenceBridge.SequenceCompleted -= FinishAttackSequence;
@@ -61,12 +61,11 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         sequenceBridge.SequenceCompleted += FinishAttackSequence;
     }
 
-    protected override void OnDisable()
+    public override void OnDisableComponent()
     {
+        base.OnDisableComponent();
         sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
         sequenceBridge.SequenceCompleted -= FinishAttackSequence;
-
-        base.OnDisable();
         FinishAttackSequence();
         sequenceBridge.Stop(true);
         StopAllCoroutines();

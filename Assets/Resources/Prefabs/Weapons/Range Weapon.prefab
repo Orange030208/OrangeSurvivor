@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 5846400266714924165}
   - component: {fileID: 5505801994863722094}
   m_Layer: 0
-  m_Name: Cotton Candy Gun
+  m_Name: Range Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

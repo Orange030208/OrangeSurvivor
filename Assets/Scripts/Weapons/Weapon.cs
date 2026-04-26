@@ -8,7 +8,7 @@ using UnityEngine;
 /// 3. 在冷却完成后触发具体武器的攻击实现。
 /// 子类只需要关心“如何攻击”，例如近战开命中窗口、远程发射投射物。
 /// </summary>
-public abstract class Weapon : Entity
+public abstract class Weapon : Entity, ILifecycle
 {
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
@@ -36,31 +36,40 @@ public abstract class Weapon : Entity
     public float CriticalChance { get; private set; }
     public float CriticalMultiplier { get; private set; } = 1f;
     public bool IsAttacking { get; protected set; }
-    public Entity OwnerEntity => ownerEntity;
-
     protected PropertiesManager propertiesManager;
-    protected Entity ownerEntity;
+    protected Entity owner;
     protected Entity currentTarget;
     private float attackCooldownTimer;
     private Vector2 lastAimDirection = Vector2.up;
     private Vector2 lockedAttackDirection = Vector2.up;
+    
+    public Entity Owner => owner;
+    public virtual int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
-    protected virtual void Awake()
+    public virtual void FixedTick(float deltaTime)
     {
-        propertiesManager = GetComponentInParent<PropertiesManager>();
-        ownerEntity = ResolveOwnerEntity();
+        
     }
 
-    protected virtual void OnEnable()
+    public virtual void Initialize(Entity owner)
+    {
+        this.owner = owner;
+        propertiesManager = GetComponentInParent<PropertiesManager>();
+    }
+
+    public virtual void OnEnableComponent()
     {
         if (propertiesManager != null)
         {
             propertiesManager.OnAllPropertiesChanged += RefreshRuntimeStats;
             propertiesManager.OnPropertyChanged += OnPropertyChanged;
         }
+
+        ApplyCurrentConfiguration();
+        RefreshRuntimeStats();
     }
 
-    protected virtual void OnDisable()
+    public virtual void OnDisableComponent()
     {
         if (propertiesManager != null)
         {
@@ -69,20 +78,13 @@ public abstract class Weapon : Entity
         }
     }
 
-    protected virtual void Start()
-    {
-        ApplyCurrentConfiguration();
-        RefreshRuntimeStats();
-    }
-
-    protected virtual void Update()
+    public virtual void Tick(float deltaTime)
     {
         if (!GameSimulation.IsRunning)
         {
             return;
         }
 
-        float deltaTime = Time.deltaTime;
         TickTargeting(deltaTime);
         TickWeapon(deltaTime);
     }
@@ -131,15 +133,10 @@ public abstract class Weapon : Entity
         localEulerAngles.z = WeaponData.VisualForwardAngle;
         visualTransform.localEulerAngles = localEulerAngles;
     }
-
-    protected Entity GetCurrentTarget()
-    {
-        return currentTarget;
-    }
-
+    
     protected Entity ResolveAttackSourceEntity()
     {
-        return ownerEntity != null ? ownerEntity : this;
+        return owner != null ? owner : this;
     }
 
     protected HitSpec BuildHitSpec()
@@ -181,9 +178,9 @@ public abstract class Weapon : Entity
             return (target.Center - (Vector2)transform.position).normalized;
         }
 
-        if (ownerEntity.MoveComponent.MoveDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        if (owner.MoveComponent.MoveDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
-            return ownerEntity.MoveComponent.MoveDirection.normalized;
+            return owner.MoveComponent.MoveDirection.normalized;
         }
 
         return lastAimDirection;
@@ -289,8 +286,8 @@ public abstract class Weapon : Entity
     protected virtual void TickTargeting(float deltaTime)
     {
         Entity previousTarget = currentTarget;
-        currentTarget = ownerEntity != null
-            ? ownerEntity.FindClosestTargetInRange(Range, targetLayerMask)
+        currentTarget = owner != null
+            ? owner.FindClosestTargetInRange(Range, targetLayerMask)
             : null;
 
         Vector2 desiredAimDirection = ResolveDesiredAimDirection(currentTarget);
@@ -394,21 +391,6 @@ public abstract class Weapon : Entity
     private bool ShouldStopAimingWhenAttackReady()
     {
         return WeaponData.StopAimingWhenAttackReady;
-    }
-
-    private Entity ResolveOwnerEntity()
-    {
-        Entity[] entities = GetComponentsInParent<Entity>(true);
-        for (int i = 0; i < entities.Length; i++)
-        {
-            Entity entity = entities[i];
-            if (entity != null && entity != this)
-            {
-                return entity;
-            }
-        }
-
-        return null;
     }
 
     private void OnPropertyChanged(PropType propType, float _)

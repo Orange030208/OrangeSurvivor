@@ -553,7 +553,7 @@ MonoBehaviour:
   - {fileID: 1290580664080994629}
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &4674165838269704260
 MonoBehaviour:
   m_ObjectHideFlags: 0
