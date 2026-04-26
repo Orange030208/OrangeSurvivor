@@ -134,6 +134,7 @@ public class ArcherBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.currentMovable.StopMoving();
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.IdleHash);
         }
     }
 
@@ -170,6 +171,7 @@ public class ArcherBrain : EnemyBrain
         {
             brain.SetMoveStrategy(brain.enemyData.retreatMoveStrategy);
             brain.SetAttackStrategy(brain.enemyData.retreatAttackStrategy);
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
         public override void OnFixedUpdate()

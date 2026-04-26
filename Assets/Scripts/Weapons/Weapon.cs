@@ -46,7 +46,7 @@ public abstract class Weapon : Entity, ILifecycle
     public Entity Owner => owner;
     public virtual int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
-    public virtual void FixedTick(float deltaTime)
+    public virtual void OnFixedTick(float deltaTime)
     {
         
     }
@@ -78,7 +78,7 @@ public abstract class Weapon : Entity, ILifecycle
         }
     }
 
-    public virtual void Tick(float deltaTime)
+    public virtual void OnTick(float deltaTime)
     {
         if (!GameSimulation.IsRunning)
         {

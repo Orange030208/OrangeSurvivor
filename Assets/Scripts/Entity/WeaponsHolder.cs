@@ -37,7 +37,7 @@ public class WeaponsHolder : EntityComponentBase
         }
     }
 
-    public override void Tick(float deltaTime)
+    public override void OnTick(float deltaTime)
     {
         if (weaponPositions == null)
         {
@@ -46,7 +46,7 @@ public class WeaponsHolder : EntityComponentBase
 
         for (int i = 0; i < weaponPositions.Length; i++)
         {
-            weaponPositions[i]?.Weapon?.Tick(deltaTime);
+            weaponPositions[i]?.Weapon?.OnTick(deltaTime);
         }
     }
 

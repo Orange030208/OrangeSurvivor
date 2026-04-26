@@ -37,7 +37,7 @@ public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
         UnbindProperties();
     }
 
-    public override void Tick(float deltaTime)
+    public override void OnTick(float deltaTime)
     {
         if (attackTimer > 0f)
         {

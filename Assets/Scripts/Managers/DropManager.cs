@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class DropManager:MonoBehaviour
+public class DropManager : MonoBehaviour
 {
-    [SerializeField] private Candy candyPrefab;
-    [SerializeField] private Chest chestPrefab;
+    [SerializeField] private CollectionSO coinSO;
+    [SerializeField] private CollectionSO chestSO;
 
     private void OnEnable()
     {
@@ -16,7 +15,7 @@ public class DropManager:MonoBehaviour
     {
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
     }
-    
+
     private void OnEntityDied(EntityDiedEvent deadEvent)
     {
         if (deadEvent.Entity is not Enemy)
@@ -24,16 +23,24 @@ public class DropManager:MonoBehaviour
             return;
         }
 
-        Collection dropItem;
+        CollectionSO dropSO;
         int random = Random.Range(1, 101);
         if (random <= 95)
         {
-            dropItem = candyPrefab;
+            dropSO = coinSO;
         }
         else
         {
-            dropItem = chestPrefab;
+            dropSO = chestSO;
         }
-        Instantiate(dropItem, deadEvent.Position, Quaternion.identity, transform);
+
+        if (dropSO == null || dropSO.prefab == null)
+        {
+            Debug.LogError($"[DropManager] {dropSO?.name} has no prefab assigned.", this);
+            return;
+        }
+
+        Collection instance = Instantiate(dropSO.prefab, deadEvent.Position, Quaternion.identity, transform);
+        instance.Configure(dropSO);
     }
 }

@@ -24,6 +24,12 @@ public class AccessoryManager : EntityComponentBase
     {
         this.owner = owner;
         featureHost = this.owner.GetComponent<FeatureHost>();
+        var initialAccessories = this.owner.GetComponent<IInitialAccessoryProvider>().InitialAccessories;
+
+        foreach (var accessory in initialAccessories)
+        {
+            EquipAccessory(accessory);
+        }
     }
 
     public override void OnDisableComponent()

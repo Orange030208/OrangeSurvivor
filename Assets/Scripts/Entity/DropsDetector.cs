@@ -44,7 +44,7 @@ public class DropsDetector : EntityComponentBase
         }
     }
 
-    public override void Tick(float deltaTime)
+    public override void OnTick(float deltaTime)
     {
         detectTimer -= deltaTime;
         if (detectTimer <= 0)
@@ -70,7 +70,7 @@ public class DropsDetector : EntityComponentBase
 
     private void Detect()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectRadius, collectLayerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(owner.Center, detectRadius, collectLayerMask);
         foreach (var collider in colliders)
         {
             if (collider.TryGetComponent(out Collection collector))

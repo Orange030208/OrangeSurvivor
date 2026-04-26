@@ -2,16 +2,26 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public abstract class Collection : Entity
+public abstract class Collection : Entity, IAnimationConfigProvider
 {
     [SerializeField] protected float contactRadius = 0.8f;
     [SerializeField] private float initialCollectSpeed = 2f;
     [SerializeField] private float maxCollectSpeed = 10f;
     [SerializeField] private float collectAcceleration = 20f;
+    protected CollectionSO collectionData;
     protected Coroutine _collectRoutine;
 
-    private void Awake()
+    public EntityAnimationConfig AnimationConfig => collectionData.AnimationConfig;
+
+    public void Configure(CollectionSO data)
     {
+        collectionData = data;
+    }
+
+    private void Start()
+    {
+        InitializeComponent();
+        EnableAllComponents();
     }
 
     public virtual void TryCollect(IEntity target)

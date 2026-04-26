@@ -983,8 +983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc602abbb2e045e7aa2962a05bd9bb8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  candyPrefab: {fileID: -7630175410232958358, guid: 738b1782fb179a84ead2b226f6070a75, type: 3}
-  chestPrefab: {fileID: 5263141732655844581, guid: faa8fbb426ab7b246a991233b700188a, type: 3}
+  coinSO: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
+  chestSO: {fileID: 11400000, guid: 8827be155b64dd044969b45be382db33, type: 2}
 --- !u!4 &889382728
 Transform:
   m_ObjectHideFlags: 0

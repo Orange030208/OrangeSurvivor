@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Candy : Collection
+public class Coin : Collection
 {
     private const int BASE_EXPERIENCE_VALUE = 1;
 

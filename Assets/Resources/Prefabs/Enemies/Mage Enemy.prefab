@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6429692057025159145}
+  - component: {fileID: 567385469487708262}
   - component: {fileID: 6357243046530940765}
   - component: {fileID: 2576062534117598723}
   - component: {fileID: 2859848195627263458}
@@ -20,6 +21,7 @@ GameObject:
   - component: {fileID: 1765903072934622948}
   - component: {fileID: 9035684678807474697}
   - component: {fileID: 7382220925090709899}
+  - component: {fileID: 7337929490514087635}
   m_Layer: 6
   m_Name: Mage Enemy
   m_TagString: Untagged
@@ -45,6 +47,27 @@ Transform:
   - {fileID: 271397300980425612}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &567385469487708262
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!50 &6357243046530940765
 Rigidbody2D:
   serializedVersion: 4
@@ -228,6 +251,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 862181768189889689}
+--- !u!114 &7337929490514087635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9d6c96c38be40aa8aa4757cbf2a1a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2464715893807307015
 GameObject:
   m_ObjectHideFlags: 0

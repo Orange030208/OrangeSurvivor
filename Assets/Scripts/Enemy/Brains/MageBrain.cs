@@ -93,6 +93,7 @@ public class MageBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.currentMovable.StopMoving();
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.IdleHash);
         }
     }
 
@@ -109,6 +110,7 @@ public class MageBrain : EnemyBrain
         {
             brain.SetMoveStrategy(brain.enemyData.normalMovementStrategy);
             brain.SetAttackStrategy(brain.enemyData.normalAttackStrategy);
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
         public override void OnFixedUpdate()
@@ -135,7 +137,7 @@ public class MageBrain : EnemyBrain
         {
             brain.SetMoveStrategy(brain.enemyData.retreatMovementStrategy);
             brain.SetAttackStrategy(brain.enemyData.normalAttackStrategy);
-            
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
             brain.propertiesManager.AddModifiers(RETREAT_BURST_MODIFIER_SOURCE,brain.enemyData.fastBurstModifierData);
         }
 

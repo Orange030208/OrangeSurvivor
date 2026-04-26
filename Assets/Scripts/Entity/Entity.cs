@@ -8,8 +8,8 @@ public interface IEntity
     EntityRenderer EntityRenderer { get; }
 
     /// <summary>
-    /// 事件总线用的实体运行时唯一ID（单机主线程场景）。
-    /// 注意：仅在本次运行期内唯一，不用于存档。
+    /// 事件总线用的实体运行时唯一ID
+    /// 仅在本次运行期内唯一，不用于存档。
     /// </summary>
     int EventBusId { get; }
 }
@@ -47,7 +47,7 @@ public abstract class Entity : MonoBehaviour, IEntity
         }
     }
 
-    protected void OnDisableComponent()
+    protected void DisableAllComponents()
     {
         for (int i = cachedComponents.Length - 1; i >= 0; i--)
         {
@@ -55,7 +55,7 @@ public abstract class Entity : MonoBehaviour, IEntity
         }
     }
 
-    protected void OnEnableComponent()
+    protected void EnableAllComponents()
     {
         for (int i = 0; i < cachedComponents.Length; i++)
         {
@@ -63,21 +63,21 @@ public abstract class Entity : MonoBehaviour, IEntity
         }
     }
 
-    protected void Tick()
+    protected void TickAllComponents()
     {
         float deltaTime = Time.deltaTime;
         for (int i = 0; i < cachedComponents.Length; i++)
         {
-            cachedComponents[i].Tick(deltaTime);
+            cachedComponents[i].OnTick(deltaTime);
         }
     }
 
-    protected void FixedTick()
+    protected void FixedTickAllComponents()
     {
         float deltaTime = Time.fixedDeltaTime;
         for (int i = 0; i < cachedComponents.Length; i++)
         {
-            cachedComponents[i].FixedTick(deltaTime);
+            cachedComponents[i].OnFixedTick(deltaTime);
         }
     }
 

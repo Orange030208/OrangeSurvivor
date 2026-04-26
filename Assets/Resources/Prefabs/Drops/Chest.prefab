@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7869618747577446403}
   - component: {fileID: 2855083097043443623}
   - component: {fileID: 5263141732655844581}
+  - component: {fileID: 7607383448853714979}
   m_Layer: 8
   m_Name: Chest
   m_TagString: Untagged
@@ -95,6 +96,19 @@ MonoBehaviour:
   initialCollectSpeed: 2
   maxCollectSpeed: 10
   collectAcceleration: 20
+--- !u!114 &7607383448853714979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2992720123479209781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 5293860397789571514}
 --- !u!1 &8986755521507652277
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,7 +119,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5633222940405452163}
   - component: {fileID: 5293860397789571514}
-  - component: {fileID: 8880571013122671984}
   m_Layer: 0
   m_Name: Renderer
   m_TagString: Untagged
@@ -166,8 +179,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1026834583
-  m_SortingLayer: -1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b981cc118659b144b9169dbeebb8df37, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -177,19 +190,6 @@ SpriteRenderer:
   m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8880571013122671984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8986755521507652277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 5293860397789571514}

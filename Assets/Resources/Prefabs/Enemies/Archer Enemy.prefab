@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6429692057025159145}
   - component: {fileID: 6357243046530940765}
   - component: {fileID: 2576062534117598723}
+  - component: {fileID: 5219981299427543749}
   - component: {fileID: 2859848195627263458}
   - component: {fileID: 924096642633410394}
   - component: {fileID: 4263554184824441641}
@@ -19,6 +20,7 @@ GameObject:
   - component: {fileID: 9035684678807474697}
   - component: {fileID: 320230337097771731}
   - component: {fileID: 3359448866278801548}
+  - component: {fileID: 8313821360306003311}
   m_Layer: 6
   m_Name: Archer Enemy
   m_TagString: Untagged
@@ -106,6 +108,27 @@ CircleCollider2D:
   m_Offset: {x: -0.02598396, y: 0.3324798}
   serializedVersion: 2
   m_Radius: 0.39649627
+--- !u!95 &5219981299427543749
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &2859848195627263458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +235,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 862181768189889689}
+--- !u!114 &8313821360306003311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9d6c96c38be40aa8aa4757cbf2a1a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2464715893807307015
 GameObject:
   m_ObjectHideFlags: 0

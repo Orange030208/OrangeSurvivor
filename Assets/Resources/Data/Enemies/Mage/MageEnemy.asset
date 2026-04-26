@@ -15,6 +15,7 @@ MonoBehaviour:
   prefab: {fileID: 2859848195627263458, guid: b72ddf5433ac42708851d73bd5dab11e, type: 3}
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 5b80b26554184b547876d735e9625c9c, type: 2}
+  animConfig: {fileID: 11400000, guid: 89d96c6114136f04387029c1f88e012a, type: 2}
   lowHpPercent: 30
   fastBurstModifierData:
   - propType: 1

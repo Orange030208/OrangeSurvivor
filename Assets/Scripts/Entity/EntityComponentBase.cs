@@ -14,12 +14,12 @@ public abstract class EntityComponentBase : MonoBehaviour, IComparable<EntityCom
 
     public virtual int Priority => PriorityPreset.NoRely;
 
-    public virtual void Tick(float deltaTime)
+    public virtual void OnTick(float deltaTime)
     {
 
     }
 
-    public virtual void FixedTick(float deltaTime)
+    public virtual void OnFixedTick(float deltaTime)
     {
 
     }
@@ -46,9 +46,9 @@ public interface ILifecycle
 {
     public int Priority { get; }
 
-    public void Tick(float deltaTime);
+    public void OnTick(float deltaTime);
 
-    public void FixedTick(float deltaTime);
+    public void OnFixedTick(float deltaTime);
 
     public void Initialize(Entity owner);
 

@@ -52,7 +52,7 @@ public class PlayerController : EntityComponentBase, IMovable
         }
     }
 
-    public override void FixedTick(float deltaTime)
+    public override void OnFixedTick(float deltaTime)
     {
         if (!GameSimulation.IsRunning)
         {

@@ -15,6 +15,7 @@ MonoBehaviour:
   prefab: {fileID: 2859848195627263458, guid: b50948a1e2e1e6d4880cded510310f87, type: 3}
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 9deac3c96a64e7a4595e498cf6b7fe6d, type: 2}
+  animConfig: {fileID: 11400000, guid: 8e77b9a949c2bbf4891931c4deb20cd1, type: 2}
   retreatTriggerDistance: 4
   retreatCompleteDistance: 7
   approachMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}

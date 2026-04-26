@@ -12,7 +12,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(CurrencyWallet))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
+public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IInitialAccessoryProvider
 {
     [Header("组件")]
     [SerializeField] private new CircleCollider2D collider;
@@ -27,6 +27,7 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
     private CharacterDataSO characterData;
 
     private bool hasInstalledLoadout;
+    private IReadOnlyList<AccessoryDataSO> initialWeapons;
 
     public override IMovable MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
@@ -38,6 +39,8 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
     public BasePropGroupSO BasePropsGroup => characterData.BasePropsAsset;
     public IReadOnlyList<WeaponEntry> InitialWeapons => characterData.InitialWeapons;
 
+    public IReadOnlyList<AccessoryDataSO> InitialAccessories => characterData.InitialAccessories;
+    
     private void Awake()
     {
         InitComponentReferences();
@@ -51,17 +54,17 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
     private void Start()
     {
         InitializeComponent();
-        OnEnableComponent();
+        EnableAllComponents();
     }
 
     private void Update()
     {
-        Tick();
+        TickAllComponents();
     }
 
     private void FixedUpdate()
     {
-        FixedTick();
+        FixedTickAllComponents();
     }
 
     private void OnDisable()
@@ -69,7 +72,7 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
         hasInstalledLoadout = false;
-        OnDisableComponent();
+        DisableAllComponents();
     }
 
     private void InitComponentReferences()
@@ -98,29 +101,11 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider
         }
 
         InstallRuntimeFeatures();
-        ApplyInitialLoadout();
         hasInstalledLoadout = true;
     }
 
     private void InstallRuntimeFeatures()
     {
         FeatureInstaller.InstallCharacter(featureHost, characterData);
-    }
-
-    private void ApplyInitialLoadout()
-    {
-        if (accessoryManager != null)
-        {
-            for (int i = 0; i < characterData.InitialAccessories.Count; i++)
-            {
-                AccessoryDataSO accessory = characterData.InitialAccessories[i];
-                if (accessory == null)
-                {
-                    continue;
-                }
-
-                accessoryManager.EquipAccessory(accessory);
-            }
-        }
     }
 }

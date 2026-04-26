@@ -1,40 +1,31 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class EnemyRuntimeBridge : MonoBehaviour
+public class EnemyRuntimeBridge : EntityComponentBase
 {
     [SerializeField] private ParticleSystem passAwayParticles;
     [SerializeField] [Min(0f)] private float deathPassAwayDelay;
 
-    private Enemy owner;
     private HealthComponent healthComponent;
-    private bool runtimeRegistered;
     private bool passAwayRequested;
+    private Enemy owner;
 
-    public void Initialize(Enemy enemy, HealthComponent runtimeHealthComponent)
+    public override Entity Owner => owner;
+
+    public override void Initialize(Entity owner)
     {
-        owner = enemy;
-        healthComponent = runtimeHealthComponent;
+        this.owner = owner as Enemy;
+        healthComponent = this.owner.HealthComponent;
     }
 
-    private void OnEnable()
+    public override void OnEnableComponent()
     {
-        if (healthComponent != null)
-        {
-            healthComponent.OnDied += PassAway;
-        }
-
-        RegisterRuntime();
+        healthComponent.OnDied += PassAway;
     }
 
-    private void OnDisable()
+    public override void OnDisableComponent()
     {
-        UnregisterRuntime();
-
-        if (healthComponent != null)
-        {
-            healthComponent.OnDied -= PassAway;
-        }
+        healthComponent.OnDied -= PassAway;
     }
 
     public void PassAway()
@@ -70,25 +61,5 @@ public class EnemyRuntimeBridge : MonoBehaviour
         }
 
         Destroy(gameObject);
-    }
-
-    private void RegisterRuntime()
-    {
-        if (runtimeRegistered || owner == null)
-        {
-            return;
-        }
-
-        runtimeRegistered = true;
-    }
-
-    private void UnregisterRuntime()
-    {
-        if (!runtimeRegistered || owner == null)
-        {
-            return;
-        }
-
-        runtimeRegistered = false;
     }
 }

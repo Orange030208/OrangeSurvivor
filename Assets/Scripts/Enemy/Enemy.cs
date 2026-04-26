@@ -1,16 +1,17 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(EnemyBrain))]
 [RequireComponent(typeof(EnemyRuntimeBridge))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Enemy : Entity, IPropGroupProvider
+public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 {
-    [Header("组件")]
-    [SerializeField] private new Collider2D collider;
+    [Header("组件")] [SerializeField] private new Collider2D collider;
 
+    private IAnimatable animComponent;
     private HealthComponent healthComponent;
     private PropertiesManager propertiesManager;
     private EnemyRuntimeBridge runtimeBridge;
@@ -21,7 +22,11 @@ public class Enemy : Entity, IPropGroupProvider
     private Rigidbody2D rb;
 
     public override IMovable MoveComponent => activeMovement;
-    public override Vector2 Center => transform.position + new Vector3(0f, collider != null ? collider.offset.y : 0f, 0f);
+
+    public override Vector2 Center =>
+        transform.position + new Vector3(0f, collider != null ? collider.offset.y : 0f, 0f);
+
+    public IAnimatable AnimComponent => animComponent;
     public HealthComponent HealthComponent => healthComponent;
     public EnemyRole Role => enemyData.role;
     public Entity TargetEntity => targetEntity;
@@ -30,6 +35,7 @@ public class Enemy : Entity, IPropGroupProvider
     public EnemyBrain Brain => brain;
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
+    public EntityAnimationConfig AnimationConfig => enemyData.AnimConfig;
 
     private void Awake()
     {
@@ -39,26 +45,27 @@ public class Enemy : Entity, IPropGroupProvider
     private void Start()
     {
         InitializeComponent();
-        OnEnableComponent();
+        EnableAllComponents();
     }
 
     private void Update()
     {
-        Tick();
+        TickAllComponents();
     }
 
     private void FixedUpdate()
     {
-        FixedTick();
+        FixedTickAllComponents();
     }
 
     private void OnDisable()
     {
-        OnDisableComponent();
+        DisableAllComponents();
     }
 
     private void InitComponentReferences()
     {
+        animComponent = GetComponent<IAnimatable>();
         healthComponent = GetComponent<HealthComponent>();
         propertiesManager = GetComponent<PropertiesManager>();
         runtimeBridge = GetComponent<EnemyRuntimeBridge>();
@@ -71,12 +78,14 @@ public class Enemy : Entity, IPropGroupProvider
     {
         if (enemyData == null)
         {
-            throw new ArgumentNullException(nameof(enemyData), $"{nameof(Enemy)} requires a non-null {nameof(EnemySO)}.");
+            throw new ArgumentNullException(nameof(enemyData),
+                $"{nameof(Enemy)} requires a non-null {nameof(EnemySO)}.");
         }
 
         if (target == null)
         {
-            throw new ArgumentNullException(nameof(target), $"{nameof(Enemy)} requires an explicit non-null {nameof(Entity)} target.");
+            throw new ArgumentNullException(nameof(target),
+                $"{nameof(Enemy)} requires an explicit non-null {nameof(Entity)} target.");
         }
 
         this.enemyData = enemyData;

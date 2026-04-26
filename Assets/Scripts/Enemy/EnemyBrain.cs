@@ -1,11 +1,15 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(IAnimatable))]
+[RequireComponent(typeof(IMovable))]
+[RequireComponent(typeof(Enemy))]
 public abstract class EnemyBrain : EntityBrain
 {
     protected Entity target;
     protected Enemy owner;
     protected IMovable currentMovable;
+    protected IAnimatable currentAnimatable;
     protected HealthComponent healthComponent;
     protected PropertiesManager propertiesManager;
 
@@ -26,11 +30,12 @@ public abstract class EnemyBrain : EntityBrain
         currentMovable = this.owner.MoveComponent;
         healthComponent = this.owner.HealthComponent;
         propertiesManager = this.owner.PropertiesManager;
+        currentAnimatable = this.owner.AnimComponent;
 
         isBrainActive = true;
     }
 
-    public override void Tick(float deltaTime)
+    public override void OnTick(float deltaTime)
     {
         if (!ShouldUpdateBrain())
         {
@@ -41,7 +46,7 @@ public abstract class EnemyBrain : EntityBrain
         OnBrainUpdate();
     }
 
-    public override void FixedTick(float deltaTime)
+    public override void OnFixedTick(float deltaTime)
     {
         if (!ShouldUpdateBrain())
         {
@@ -72,7 +77,7 @@ public abstract class EnemyBrain : EntityBrain
         enabled = false;
     }
 
-    public override void SetTarget(Entity newTarget)
+    public virtual void SetTarget(Entity newTarget)
     {
         target = newTarget;
     }
