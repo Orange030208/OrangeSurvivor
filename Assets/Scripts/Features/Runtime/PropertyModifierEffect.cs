@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public sealed class PropertyModifierEffect : FeatureEffectBase
 {
-    [SerializeField] private PropEntry modifier;
+    [SerializeField] private PropModifierData modifier;
     [HideInInspector]
     [SerializeField] private string sourceId;
 
@@ -13,11 +13,11 @@ public sealed class PropertyModifierEffect : FeatureEffectBase
     }
 
     public PropertyModifierEffect(string runtimeFeatureId, string sourceId, PropType property, float value)
-        : this(runtimeFeatureId, sourceId, new PropEntry(property, value))
+        : this(runtimeFeatureId, sourceId, new PropModifierData(property, PropModifierType.Add, value))
     {
     }
 
-    public PropertyModifierEffect(string runtimeFeatureId, string sourceId, PropEntry modifier)
+    public PropertyModifierEffect(string runtimeFeatureId, string sourceId, PropModifierData modifier)
     {
         RuntimeFeatureId = runtimeFeatureId;
         this.sourceId = sourceId;

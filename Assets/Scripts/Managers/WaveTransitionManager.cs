@@ -19,7 +19,7 @@ public class WaveTransitionManager : MonoBehaviour
     [SerializeField] private PropertiesManager propertiesManager;
     [SerializeField] private CurrencyWallet currencyWallet;
 
-    private readonly PropEntry[] propEntries = new PropEntry[3];
+    private readonly PropModifierData[] propEntries = new PropModifierData[3];
     private AccessoryDataSO currentAccessoryData;
     private int collectChestCount;
     private PlayerLevel playerLevel;
@@ -165,7 +165,7 @@ public class WaveTransitionManager : MonoBehaviour
         {
             PropType propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
             PropModifierType modifierType = GetRandomModifierTypeForProp(propType);
-            propEntries[i] = new PropEntry(propType, modifierType, GetRandomValueFor(propType, modifierType));
+            propEntries[i] = new PropModifierData(propType, modifierType, GetRandomValueFor(propType, modifierType));
         }
 
         GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
@@ -175,12 +175,15 @@ public class WaveTransitionManager : MonoBehaviour
     {
         return propType switch
         {
-            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value > 0.5f
-                ? PropModifierType.Flat
-                : PropModifierType.BasePercent,
+            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value switch
+            {
+                < 0.34f => PropModifierType.Add,
+                < 0.67f => PropModifierType.BaseMultiplier,
+                _ => PropModifierType.BonusMultiplier
+            },
             PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.Range =>
-                Random.value > 0.5f ? PropModifierType.BasePercent : PropModifierType.FinalPercent,
-            _ => PropModifierType.Flat
+                Random.value > 0.5f ? PropModifierType.BonusMultiplier : PropModifierType.FinalMultiplier,
+            _ => PropModifierType.Add
         };
     }
 
@@ -188,10 +191,10 @@ public class WaveTransitionManager : MonoBehaviour
     {
         return modifierType switch
         {
-            PropModifierType.Flat => GetRandomFlatValue(propType),
-            PropModifierType.FinalFlat => GetRandomFlatValue(propType),
-            PropModifierType.BasePercent => Random.Range(0.05f, 0.2f),
-            PropModifierType.FinalPercent => Random.Range(0.05f, 0.15f),
+            PropModifierType.Add => GetRandomFlatValue(propType),
+            PropModifierType.BaseMultiplier => Random.Range(0.05f, 0.2f),
+            PropModifierType.BonusMultiplier => Random.Range(0.05f, 0.2f),
+            PropModifierType.FinalMultiplier => Random.Range(0.05f, 0.15f),
             _ => 0f
         };
     }
@@ -238,7 +241,7 @@ public class WaveTransitionManager : MonoBehaviour
         }
 
         string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-        PropEntry propEntry = propEntries[eventData.ContainerIndex];
+        PropModifierData propEntry = propEntries[eventData.ContainerIndex];
         propertiesManager.AddModifier(upgradeId, propEntry);
 
         ContinueOrCompleteUpgradeSelection();

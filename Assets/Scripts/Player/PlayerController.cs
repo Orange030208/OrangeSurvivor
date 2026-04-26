@@ -1,28 +1,31 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : EntityComponentBase,IMovable
+public class PlayerController : EntityComponentBase, IMovable
 {
     private float speed = 0;
     private bool moveDisabled = false;
-    
+
     private Rigidbody2D rb;
     private Player owner;
     private PropertiesManager propertiesManager;
     private Vector2 moveDirection;
     public override Entity Owner => owner;
+    public PropertiesManager PropertiesManager => propertiesManager;
     public override void Initialize(Entity owner)
     {
         this.owner = owner as Player;
         this.rb = this.owner.Rb;
         this.propertiesManager = this.owner.PropertiesManager;
-        
+
         GameEventBus.Subscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
         propertiesManager.OnPropertyChanged += OnPropertyChanged;
-        
+
         UpdateSpeed();
     }
+
+    public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
     public Vector2 MoveDirection => moveDirection;
     public bool IsMoving => moveDirection.sqrMagnitude > 0.0001f;
@@ -34,12 +37,12 @@ public class PlayerController : EntityComponentBase,IMovable
 
     public void StopMoving()
     {
-        rb.velocity =  Vector2.zero;
+        rb.velocity = Vector2.zero;
     }
 
     public float Speed => speed;
 
-    private void OnDisable()
+    public override void OnDisableComponent()
     {
         GameEventBus.Unsubscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         if (propertiesManager != null)
@@ -49,7 +52,7 @@ public class PlayerController : EntityComponentBase,IMovable
         }
     }
 
-    private void FixedUpdate()
+    public override void FixedTick(float deltaTime)
     {
         if (!GameSimulation.IsRunning)
         {
@@ -58,13 +61,13 @@ public class PlayerController : EntityComponentBase,IMovable
             return;
         }
 
-        Move();
+        Move(deltaTime);
     }
 
-    private void Move()
+    private void Move(float deltaTime)
     {
         if (moveDisabled) return;
-        rb.velocity = moveDirection.normalized * Time.deltaTime * speed;
+        rb.velocity = moveDirection.normalized * deltaTime * speed;
     }
 
     private void OnMoveInputChanged(PlayerMoveInputChangedEvent eventData)
@@ -85,12 +88,12 @@ public class PlayerController : EntityComponentBase,IMovable
         speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
     }
 
-    public void Enable()
+    public void EnableMovement()
     {
         moveDisabled = true;
     }
 
-    public void Disable()
+    public void DisableMovement()
     {
         moveDisabled = false;
     }

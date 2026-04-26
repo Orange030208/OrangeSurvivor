@@ -1,4 +1,4 @@
-public class EnemyMoveComponent:MoveBase
+public class EnemyMoveComponent : MoveBase
 {
     protected Enemy owner;
     public override Entity Owner => owner;
@@ -7,6 +7,8 @@ public class EnemyMoveComponent:MoveBase
     {
         base.Initialize(owner);
         this.owner = owner as Enemy;
-        speed = this.owner.EnemyData.moveSpeed;
+
+        PropertiesManager propertiesManager = this.owner != null ? this.owner.GetComponent<PropertiesManager>() : null;
+        speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
     }
 }

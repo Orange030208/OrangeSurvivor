@@ -41,7 +41,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6272589886515006277}
   - component: {fileID: 6802585226729800489}
-  - component: {fileID: 8643157438015149344}
+  - component: {fileID: 1614708916331346369}
+  - component: {fileID: 9114279706605486992}
   m_Layer: 0
   m_Name: Melee Weapon
   m_TagString: Untagged
@@ -78,15 +79,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <WeaponData>k__BackingField: {fileID: 11400000, guid: daa6ae0cb705ebd4898b492c580d75d6, type: 2}
-  entityRenderer: {fileID: 2223827726265095503}
   aimLerp: 16
   attackStartAimToleranceDegrees: 8
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 0
   hitDetectionTransform: {fileID: 5478093807400225299}
-  sequenceBridge: {fileID: 8643157438015149344}
---- !u!114 &8643157438015149344
+  sequenceBridge: {fileID: 0}
+--- !u!114 &1614708916331346369
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -95,10 +95,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 3280234043680127104}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87a31b7393b39f34ba191a00685a56d0, type: 3}
+  m_Script: {fileID: 11500000, guid: 01da4b4371ee40efb62e19170601cb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animatedTransform: {fileID: 8142188886591454919}
+--- !u!114 &9114279706605486992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3280234043680127104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 1221009058419896357}
 --- !u!1 &6959299625153703311
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,7 +122,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7280237146038987481}
   - component: {fileID: 1221009058419896357}
-  - component: {fileID: 2223827726265095503}
   m_Layer: 0
   m_Name: Deboink SpriteRender
   m_TagString: Untagged
@@ -184,19 +196,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2223827726265095503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6959299625153703311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 1221009058419896357}
 --- !u!1 &8704008478489292038
 GameObject:
   m_ObjectHideFlags: 0

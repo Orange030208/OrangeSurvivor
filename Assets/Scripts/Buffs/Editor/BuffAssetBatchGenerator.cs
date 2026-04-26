@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -92,6 +91,7 @@ public static class BuffAssetBatchGenerator
         serializedObject.FindProperty("buffId").stringValue = definition.BuffId;
         serializedObject.FindProperty("displayName").stringValue = definition.DisplayName;
         serializedObject.FindProperty("icon").objectReferenceValue = spritesByIndex.TryGetValue(definition.IconIndex, out Sprite sprite) ? sprite : null;
+        serializedObject.FindProperty("description").stringValue = definition.Description;
         serializedObject.FindProperty("polarity").enumValueIndex = (int)definition.Polarity;
         serializedObject.FindProperty("durationPolicy").enumValueIndex = (int)definition.DurationPolicy;
         serializedObject.FindProperty("durationSeconds").floatValue = definition.DurationSeconds;
@@ -99,7 +99,6 @@ public static class BuffAssetBatchGenerator
         serializedObject.FindProperty("refreshMode").enumValueIndex = (int)definition.RefreshMode;
         serializedObject.FindProperty("overflowMode").enumValueIndex = (int)definition.OverflowMode;
 
-        AssignDescriptionLines(serializedObject.FindProperty("descriptionLines"), definition.DescriptionLines);
         AssignPropertyModifiers(serializedObject.FindProperty("propertyModifiers"), definition.PropertyModifiers);
         ClearSpecialFeatures(serializedObject.FindProperty("specialFeatures"));
 
@@ -107,16 +106,7 @@ public static class BuffAssetBatchGenerator
         EditorUtility.SetDirty(asset);
     }
 
-    private static void AssignDescriptionLines(SerializedProperty property, IReadOnlyList<string> descriptionLines)
-    {
-        property.arraySize = descriptionLines.Count;
-        for (int i = 0; i < descriptionLines.Count; i++)
-        {
-            property.GetArrayElementAtIndex(i).stringValue = descriptionLines[i];
-        }
-    }
-
-    private static void AssignPropertyModifiers(SerializedProperty property, IReadOnlyList<PropEntry> entries)
+    private static void AssignPropertyModifiers(SerializedProperty property, IReadOnlyList<PropModifierData> entries)
     {
         property.arraySize = entries.Count;
         for (int i = 0; i < entries.Count; i++)
@@ -142,86 +132,71 @@ public static class BuffAssetBatchGenerator
                 buffId: "Buff_Frenzy",
                 displayName: "狂乱",
                 iconIndex: 0,
-                propertyModifiers: new List<PropEntry>
+                propertyModifiers: new List<PropModifierData>
                 {
-                    new(PropType.AttackSpeed, PropModifierType.BasePercent, 0.4f),
-                    new(PropType.MoveSpeed, PropModifierType.BasePercent, -0.15f)
+                    new(PropType.AttackSpeed, PropModifierType.BaseMultiplier, 0.4f),
+                    new(PropType.MoveSpeed, PropModifierType.BaseMultiplier, -0.15f)
                 }),
             new(
                 assetFileName: "Buff_01_迅捷",
                 buffId: "Buff_Swiftness",
                 displayName: "迅捷",
                 iconIndex: 1,
-                propertyModifiers: new List<PropEntry>
+                propertyModifiers: new List<PropModifierData>
                 {
-                    new(PropType.MoveSpeed, PropModifierType.BasePercent, 0.6f),
-                    new(PropType.Range, PropModifierType.BasePercent, 0.2f)
+                    new(PropType.MoveSpeed, PropModifierType.BaseMultiplier, 0.6f),
+                    new(PropType.Range, PropModifierType.BaseMultiplier, 0.2f)
                 }),
             new(
                 assetFileName: "Buff_02_破甲",
                 buffId: "Buff_ArmorBreak",
                 displayName: "破甲",
                 iconIndex: 2,
-                descriptionLines: new List<string>
+                description: "对敌人护甲穿透 + 30%",
+                propertyModifiers: new List<PropModifierData>
                 {
-                    "对敌人护甲穿透 + 30%"
-                },
-                propertyModifiers: new List<PropEntry>
-                {
-                    new(PropType.Attack, PropModifierType.BasePercent, 0.5f)
+                    new(PropType.Attack, PropModifierType.BaseMultiplier, 0.5f)
                 }),
             new(
                 assetFileName: "Buff_03_屠戮",
                 buffId: "Buff_Slaughter",
                 displayName: "屠戮",
                 iconIndex: 3,
-                descriptionLines: new List<string>
-                {
-                    "对普通敌人伤害 + 80%"
-                }),
+                description: "对普通敌人伤害 + 80%"),
             new(
                 assetFileName: "Buff_04_嗜血",
                 buffId: "Buff_Bloodthirst",
                 displayName: "嗜血",
                 iconIndex: 4,
-                descriptionLines: new List<string>
+                description: "击杀敌人回复 5 点生命值",
+                propertyModifiers: new List<PropModifierData>
                 {
-                    "击杀敌人回复 5 点生命值"
-                },
-                propertyModifiers: new List<PropEntry>
-                {
-                    new(PropType.LifeSteal, PropModifierType.Flat, 0.015f)
+                    new(PropType.LifeSteal, PropModifierType.Add, 0.015f)
                 }),
             new(
                 assetFileName: "Buff_05_不朽",
                 buffId: "Buff_Immortal",
                 displayName: "不朽",
                 iconIndex: 5,
-                descriptionLines: new List<string>
-                {
-                    "濒死时获得一层吸收 500 点伤害的护盾，冷却 30 秒"
-                }),
+                description: "濒死时获得一层吸收 500 点伤害的护盾，冷却 30 秒"),
             new(
                 assetFileName: "Buff_06_再生",
                 buffId: "Buff_Regeneration",
                 displayName: "再生",
                 iconIndex: 6,
-                propertyModifiers: new List<PropEntry>
+                propertyModifiers: new List<PropModifierData>
                 {
-                    new(PropType.HealthRecoverySpeed, PropModifierType.BasePercent, 1f)
+                    new(PropType.HealthRecoverySpeed, PropModifierType.BaseMultiplier, 1f)
                 }),
             new(
                 assetFileName: "Buff_07_无敌",
                 buffId: "Buff_Invincible",
                 displayName: "无敌",
                 iconIndex: 7,
-                descriptionLines: new List<string>
+                description: "获得 3 秒无敌时间",
+                propertyModifiers: new List<PropModifierData>
                 {
-                    "获得 3 秒无敌时间"
-                },
-                propertyModifiers: new List<PropEntry>
-                {
-                    new(PropType.MoveSpeed, PropModifierType.BasePercent, 0.5f)
+                    new(PropType.MoveSpeed, PropModifierType.BaseMultiplier, 0.5f)
                 })
         };
     }
@@ -233,8 +208,8 @@ public static class BuffAssetBatchGenerator
             string buffId,
             string displayName,
             int iconIndex,
-            IReadOnlyList<string> descriptionLines = null,
-            IReadOnlyList<PropEntry> propertyModifiers = null,
+            string description = "",
+            IReadOnlyList<PropModifierData> propertyModifiers = null,
             BuffPolarity polarity = BuffPolarity.Positive,
             BuffDurationPolicy durationPolicy = BuffDurationPolicy.Timed,
             float durationSeconds = DEFAULT_DURATION_SECONDS,
@@ -246,8 +221,8 @@ public static class BuffAssetBatchGenerator
             BuffId = buffId;
             DisplayName = displayName;
             IconIndex = iconIndex;
-            DescriptionLines = descriptionLines ?? new List<string>();
-            PropertyModifiers = propertyModifiers ?? new List<PropEntry>();
+            Description = description;
+            PropertyModifiers = propertyModifiers ?? new List<PropModifierData>();
             Polarity = polarity;
             DurationPolicy = durationPolicy;
             DurationSeconds = durationSeconds;
@@ -260,8 +235,8 @@ public static class BuffAssetBatchGenerator
         public string BuffId { get; }
         public string DisplayName { get; }
         public int IconIndex { get; }
-        public IReadOnlyList<string> DescriptionLines { get; }
-        public IReadOnlyList<PropEntry> PropertyModifiers { get; }
+        public string Description { get; }
+        public IReadOnlyList<PropModifierData> PropertyModifiers { get; }
         public BuffPolarity Polarity { get; }
         public BuffDurationPolicy DurationPolicy { get; }
         public float DurationSeconds { get; }

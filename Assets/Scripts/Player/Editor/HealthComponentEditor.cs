@@ -26,11 +26,11 @@ public class HealthComponentEditor : Editor
             if (GUILayout.Button("Apply Debug Hit"))
             {
                 Undo.RecordObject(healthComponent, "Debug Apply Hit");
-                if (healthComponent.OwnerEntity != null)
+                if (healthComponent.Owner != null)
                 {
                     HitService.Apply(new HitRequest(
                         null,
-                        healthComponent.OwnerEntity,
+                        healthComponent.Owner,
                         new HitSpec(debugAmount, 0f, 1f),
                         healthComponent.transform.position,
                         HitSourceKind.Direct,

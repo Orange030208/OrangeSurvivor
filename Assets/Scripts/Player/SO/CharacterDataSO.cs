@@ -1,62 +1,69 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource,IDescribable
+public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
-    [field:SerializeField] public string CharacterDescription { get; private set; }
+    [field: SerializeField] public string CharacterDescription { get; private set; }
     [field: SerializeField] public RuntimeAnimatorController CharacterAnimatorController { get; private set; }
+
+    [Header("基础属性")]
+    [SerializeField] private BasePropGroupSO basePropsAsset;
+
     [Header("角色额外属性")]
-    [Tooltip("所有角色会先拥有全部 PropType 的默认值。这里配置的属性会在默认值基础上额外叠加，可用于后续自动描述。概率/比例统一使用 0~1，倍率类通常使用 1 代表 100%。")]
-    [SerializeField] private List<PropEntry> extraProps = new();
+    [Tooltip("配置角色提供的属性修饰。倍率统一使用 0~1 表示 0%~100%。")]
+    [SerializeField] private List<PropModifierData> extraProps = new();
 
     [Header("角色特殊能力")]
     [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
 
     [Space(8)]
     [Header("初始装备")]
-    [SerializeField] private List<WeaponLevelEntry> initialWeapons = new();
+    [SerializeField] private List<WeaponEntry> initialWeapons = new();
     [SerializeField] private List<AccessoryDataSO> initialAccessories = new();
-    
+
     public string Title => CharacterName;
     public Sprite Icon => CharacterIcon;
     public string Description => CharacterDescription;
+    public BasePropGroupSO BasePropsAsset => basePropsAsset;
+
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         List<DescriptorInfo> infos = new();
-        foreach (PropEntry propEntry in extraProps)
+        foreach (PropModifierData modifier in extraProps)
         {
-            infos.Add(new DescriptorInfo(propEntry.GetDisplayName(),
-                $"额外{propEntry.propType.GetIconRichTextWithVOffset()}{propEntry.GetDisplayName()}{propEntry.value}"));
+            infos.Add(new DescriptorInfo(modifier.GetDisplayName(),
+                $"额外{modifier.propType.GetIconRichTextWithVOffset()}{modifier.GetDisplayName()}{modifier.GetDisplayValueText()}"));
         }
 
-        foreach (var weapon in initialWeapons)
+        foreach (WeaponEntry weapon in initialWeapons)
         {
             infos.Add(new DescriptorInfo(weapon.weaponData.ItemName,
                 $"初始有{ColorHelper.WrapRichTextColor(weapon.weaponData.ItemName, ColorHelper.GetColorByLevel(weapon.level))}"));
         }
-        
-        foreach (var accessory in initialAccessories)
+
+        foreach (AccessoryDataSO accessory in initialAccessories)
         {
             infos.Add(new DescriptorInfo(accessory.ItemName,
                 $"初始有{ColorHelper.WrapRichTextColor(accessory.ItemName, ColorHelper.GetColorByRarity(accessory.Rarity))}"));
         }
 
-        foreach (var feature in specialFeatures)
+        foreach (FeatureEffectBase feature in specialFeatures)
         {
             infos.Add(new DescriptorInfo(feature.Title, feature.Description));
         }
+
         return infos;
     }
 
-    public IReadOnlyList<PropEntry> ExtraProps => extraProps;
-    public IReadOnlyList<WeaponLevelEntry> InitialWeapons => initialWeapons;
+    public IReadOnlyList<PropModifierData> ExtraProps => extraProps;
+    public IReadOnlyList<WeaponEntry> InitialWeapons => initialWeapons;
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
 
-    public List<PropEntry> GetCharacterModifiers()
+    public List<PropModifierData> GetCharacterModifiers()
     {
-        return new List<PropEntry>(extraProps);
+        return new List<PropModifierData>(extraProps);
     }
 
     public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
@@ -65,7 +72,7 @@ public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource,IDescriba
 
         for (int i = 0; i < extraProps.Count; i++)
         {
-            PropEntry modifier = extraProps[i];
+            PropModifierData modifier = extraProps[i];
             string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
             effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
         }

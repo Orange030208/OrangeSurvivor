@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -24,7 +24,7 @@ public class MeleeWeapon : Weapon
     private Vector2 pendingTargetPosition;
     private AttackSequenceDefinitionSO runtimeDefaultSequence;
 
-    private Vector2 HitBoxSize => WeaponData != null ? WeaponData.MeleeHitBoxSize : Vector2.one;
+    private Vector2 HitBoxSize => WeaponData.MeleeHitBoxSize;
 
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : runtimeDefaultSequence;
 
@@ -254,7 +254,7 @@ public class MeleeWeapon : Weapon
 
     private void ApplyHitDetectionOffset()
     {
-        if (hitDetectionTransform == null || WeaponData == null)
+        if (hitDetectionTransform == null)
         {
             return;
         }

@@ -71,47 +71,11 @@ public static class PropDescriptionUtility
         };
     }
 
-    public static float GetDefaultValue(this PropType propType)
-    {
-        return propType switch
-        {
-            PropType.Attack => 0f,
-            PropType.AttackSpeed => 1f,
-            PropType.CriticalChance => 0f,
-            PropType.CriticalPercent => 0f,
-            PropType.MoveSpeed => 160f,
-            PropType.MaxHealth => 100f,
-            PropType.Range => 0f,
-            PropType.HealthRecoverySpeed => 0f,
-            PropType.Armor => 0f,
-            PropType.Luck => 0f,
-            PropType.Dodge => 0f,
-            PropType.LifeSteal => 0f,
-            PropType.PickupRadius => 1f,
-            PropType.ProjectileCount => 0f,
-            PropType.ProjectileSpeed => 1f,
-            PropType.CooldownReduction => 0f,
-            PropType.SkillDuration => 1f,
-            PropType.AreaSize => 1f,
-            PropType.KnockbackForce => 0f,
-            PropType.StatusChance => 0f,
-            PropType.ExperienceGain => 1f,
-            PropType.GoldGain => 1f,
-            PropType.ShopPriceModifier => 1f,
-            PropType.EnemySpawnWeightModifier => 1f,
-            PropType.ReviveCount => 0f,
-            PropType.DamageReduction => 0f,
-            PropType.HealingPower => 1f,
-            PropType.ThornsDamage => 0f,
-            PropType.Curse => 0f,
-            PropType.MagnetStrength => 1f,
-            _ => 0f
-        };
-    }
-
     public static string FormatModifierValue(this PropType propType, PropModifierType modifierType, float value)
     {
-        if (modifierType == PropModifierType.BasePercent || modifierType == PropModifierType.FinalPercent)
+        if (modifierType == PropModifierType.BaseMultiplier
+            || modifierType == PropModifierType.BonusMultiplier
+            || modifierType == PropModifierType.FinalMultiplier)
         {
             return FormatSignedPercent(value);
         }
@@ -127,10 +91,10 @@ public static class PropDescriptionUtility
 
         return modifierType switch
         {
-            PropModifierType.Flat => $"{coloredValue} {propName}",
-            PropModifierType.BasePercent => $"{coloredValue} {propName}",
-            PropModifierType.FinalFlat => $"{propName} 最终固定修正 {coloredValue}",
-            PropModifierType.FinalPercent => $"{propName} 的最终修正为 {coloredValue}",
+            PropModifierType.Add => $"{coloredValue} {propName}",
+            PropModifierType.BaseMultiplier => $"{propName} 基础乘区 {coloredValue}",
+            PropModifierType.BonusMultiplier => $"{propName} 加成乘区 {coloredValue}",
+            PropModifierType.FinalMultiplier => $"{propName} 最终乘区 {coloredValue}",
             _ => $"{coloredValue} {propName}"
         };
     }
@@ -139,8 +103,9 @@ public static class PropDescriptionUtility
     {
         return modifierType switch
         {
-            PropModifierType.BasePercent => FormatSignedNumber(value * 100f) + "%",
-            PropModifierType.FinalPercent => value.ToString("F1") + "%",
+            PropModifierType.BaseMultiplier => FormatSignedNumber(value * 100f) + "%",
+            PropModifierType.BonusMultiplier => FormatSignedNumber(value * 100f) + "%",
+            PropModifierType.FinalMultiplier => FormatSignedNumber(value * 100f) + "%",
             _ => FormatSignedNumber(value)
         };
     }
@@ -149,12 +114,12 @@ public static class PropDescriptionUtility
     {
         float percent = value * 100f;
         string formatted = percent.ToString("F1");
-        return percent > 0 ? $"{formatted}%" : $"{formatted}%";
+        return percent > 0 ? $"+{formatted}%" : $"{formatted}%";
     }
 
     private static string FormatSignedNumber(float value)
     {
         string formatted = value.ToString("F1");
-        return value > 0 ? $"{formatted}" : formatted;
+        return value > 0 ? $"+{formatted}" : formatted;
     }
 }

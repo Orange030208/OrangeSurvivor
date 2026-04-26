@@ -6,7 +6,7 @@ public interface IAttackable
     bool IsInAttackRange(Entity target);
 
     void ResetAttackTimer();
-    float AttackInterval { get; set; }
+    float AttackInterval { get;}
     bool CanAttack { get; }
     LayerMask AttackLayer { get; set; }
 }

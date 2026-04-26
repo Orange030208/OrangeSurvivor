@@ -2,9 +2,9 @@ using System;
 
 public struct UpgradeOptionsChangedEvent : IGameEvent
 {
-    public PropEntry[] PropEntries;
+    public PropModifierData[] PropEntries;
 
-    public UpgradeOptionsChangedEvent(PropEntry[] propEntries)
+    public UpgradeOptionsChangedEvent(PropModifierData[] propEntries)
     {
         PropEntries = propEntries;
     }

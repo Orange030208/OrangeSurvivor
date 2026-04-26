@@ -976,7 +976,7 @@ GameObject:
   - component: {fileID: 1600978744}
   - component: {fileID: 1600978745}
   - component: {fileID: 1600978743}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Test Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1062,111 +1062,6 @@ Transform:
   - {fileID: 825937975}
   m_Father: {fileID: 430642722}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1620637926
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1620637927}
-  - component: {fileID: 1620637929}
-  - component: {fileID: 1620637928}
-  m_Layer: 0
-  m_Name: Label - Monster Test Scene
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1620637927
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620637926}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.4, y: 4.8, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1730979664}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!102 &1620637928
-TextMesh:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620637926}
-  m_Text: 'Monster Test Scene
-
-    Play: auto-spawns one configured enemy.
-
-    Context
-    menu on Monster Test Controller: spawn/reset enemies.
-
-    No WaveManager, GameManager,
-    UI, or map modules are required.'
-  m_OffsetZ: 0
-  m_CharacterSize: 0.28
-  m_LineSpacing: 1
-  m_Anchor: 0
-  m_Alignment: 0
-  m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 0
-  m_RichText: 1
-  m_Font: {fileID: 0}
-  m_Color:
-    serializedVersion: 2
-    rgba: 4294108889
---- !u!23 &1620637929
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620637926}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1691679688
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,11 +1106,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e2f854537b67049aafcfa24cddd3ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  templateCatalog: {fileID: 11400000, guid: 843b891cb65746bb87781ad20fb67df3, type: 2}
   target: {fileID: 1600978743}
   testEnemies:
-  - {fileID: 11400000, guid: 5f38dd7fb6d64c4cad87ab4aa1950a31, type: 2}
-  defaultEnemyIndex: 0
+  - {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+  - {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
+  - {fileID: 11400000, guid: 5b0a0ae7382cd2d40acb3a80b9b52f25, type: 2}
+  - {fileID: 11400000, guid: 1a1e1fbb5280fdc41834aa4171c3d631, type: 2}
+  - {fileID: 11400000, guid: 67f48c8e036990b488e8e19120bfd780, type: 2}
+  - {fileID: 11400000, guid: e7ce820c6dc4253468294c1ed25c8cc3, type: 2}
+  defaultEnemyIndex: 5
   spawnRoot: {fileID: 639716643}
   spawnPoints:
   - {fileID: 769611398}
@@ -1224,38 +1123,6 @@ MonoBehaviour:
   - {fileID: 1916276068}
   spawnOnStart: 1
   keepSimulationRunning: 1
---- !u!1 &1730979663
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1730979664}
-  m_Layer: 0
-  m_Name: Scene Notes
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1730979664
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1730979663}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1620637927}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1855384100
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,5 +1190,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 130301862}
-  - {fileID: 1730979664}
   - {fileID: 430642722}

@@ -8,17 +8,10 @@ public abstract class Collection : Entity
     [SerializeField] private float initialCollectSpeed = 2f;
     [SerializeField] private float maxCollectSpeed = 10f;
     [SerializeField] private float collectAcceleration = 20f;
-    [SerializeField] protected EntityRenderer entityRenderer; 
     protected Coroutine _collectRoutine;
-    
-    public override EntityRenderer EntityRenderer => entityRenderer;
 
     private void Awake()
     {
-        if (entityRenderer == null)
-        {
-            entityRenderer = GetComponentInChildren<EntityRenderer>();
-        }
     }
 
     public virtual void TryCollect(IEntity target)

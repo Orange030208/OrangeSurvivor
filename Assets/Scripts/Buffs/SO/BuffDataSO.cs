@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff Data", menuName = "SO/Buff", order = 0)]
-public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource,IDescribable
+public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
 {
     private const string BUFF_ID_PREFIX = "Buff_";
     private const float MIN_DURATION_SECONDS = 0.01f;
@@ -26,8 +26,8 @@ public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource,IDescribable
     [SerializeField] private BuffOverflowMode overflowMode = BuffOverflowMode.RefreshDurationOnly;
 
     [Header("属性修饰")]
-    [Tooltip("按照 PropType 的语义填写：概率/比例统一使用 0~1，倍率类通常使用 1 代表 100%。")]
-    [SerializeField] private List<PropEntry> propertyModifiers = new();
+    [Tooltip("按照属性语义填写。倍率统一使用 0~1 表示 0%~100%。")]
+    [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]
     [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
@@ -48,7 +48,7 @@ public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource,IDescribable
     public int MaxStackCount => maxStackCount;
     public BuffRefreshMode RefreshMode => refreshMode;
     public BuffOverflowMode OverflowMode => overflowMode;
-    public IReadOnlyList<PropEntry> PropertyModifiers => propertyModifiers;
+    public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
 
     private void OnValidate()
     {
@@ -71,7 +71,7 @@ public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource,IDescribable
 
         for (int i = 0; i < propertyModifiers.Count; i++)
         {
-            PropEntry modifier = propertyModifiers[i];
+            PropModifierData modifier = propertyModifiers[i];
             string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
             effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
         }

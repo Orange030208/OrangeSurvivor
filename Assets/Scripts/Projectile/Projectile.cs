@@ -9,7 +9,6 @@ public class Projectile : Entity, IProjectile
     [SerializeField] protected LayerMask targetsLayerMask;
     [SerializeField] protected float maxLifetime = 5f;
     [SerializeField] protected int maxHitCount = 1;
-    [SerializeField] protected EntityRenderer entityRenderer;
     [SerializeField] protected Rigidbody2D rb;
     /// <summary>
     /// 防止刚生成就接触一群敌人
@@ -25,8 +24,6 @@ public class Projectile : Entity, IProjectile
     private SpriteRenderer cachedSpriteRenderer;
     private Animator cachedAnimator;
 
-    public override EntityRenderer EntityRenderer => entityRenderer;
-
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -35,12 +32,7 @@ public class Projectile : Entity, IProjectile
         baseLocalScale = transform.localScale;
         baseRotation = transform.rotation;
 
-        if (entityRenderer == null)
-        {
-            entityRenderer = GetComponentInChildren<EntityRenderer>();
-        }
-
-        cachedSpriteRenderer = entityRenderer != null ? entityRenderer.SpriteRenderer : GetComponentInChildren<SpriteRenderer>();
+        cachedSpriteRenderer = EntityRenderer != null ? EntityRenderer.SpriteRenderer : GetComponentInChildren<SpriteRenderer>();
         cachedAnimator = GetComponentInChildren<Animator>();
     }
 
@@ -81,7 +73,7 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
-        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount>=maxHitCount)
+        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount >= maxHitCount)
         {
             return;
         }

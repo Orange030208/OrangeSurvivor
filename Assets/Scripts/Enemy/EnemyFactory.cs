@@ -39,12 +39,17 @@ public sealed class EnemyFactory
                     throw new MissingReferenceException($"{nameof(EnemyFactory)} expected spawned object to contain {nameof(Enemy)}.");
                 }
 
-                spawnedEnemy.Configure(enemyData, target);
+                ApplyEnemyRuntimeData(spawnedEnemy, enemyData, target);
             });
             return;
         }
 
         Enemy enemy = Object.Instantiate(template, spawnPosition, Quaternion.identity, parent);
+        ApplyEnemyRuntimeData(enemy, enemyData, target);
+    }
+
+    private static void ApplyEnemyRuntimeData(Enemy enemy, EnemySO enemyData, Entity target)
+    {
         enemy.Configure(enemyData, target);
     }
 }

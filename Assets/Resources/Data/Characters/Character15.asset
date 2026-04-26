@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
   m_Name: Character15
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: 尖耳恶崽
+  <CharacterName>k__BackingField: "\u5C16\u8033\u6076\u5D3D"
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 1326a6f941ee8c64faae10258f34a646, type: 3}
+  <CharacterDescription>k__BackingField: 
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: afbde83d7d07fb847a589ec275b70991, type: 2}
+  basePropsAsset: {fileID: 11400000, guid: 26684d967bd04984ea973d7dd3921ed0, type: 2}
   extraProps:
   - propType: 0
     modifierType: 0

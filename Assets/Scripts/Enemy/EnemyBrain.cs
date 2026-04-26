@@ -7,6 +7,7 @@ public abstract class EnemyBrain : EntityBrain
     protected Enemy owner;
     protected IMovable currentMovable;
     protected HealthComponent healthComponent;
+    protected PropertiesManager propertiesManager;
 
     protected bool isDead;
     protected bool isBrainActive;
@@ -24,11 +25,12 @@ public abstract class EnemyBrain : EntityBrain
         target = this.owner.TargetEntity;
         currentMovable = this.owner.MoveComponent;
         healthComponent = this.owner.HealthComponent;
+        propertiesManager = this.owner.PropertiesManager;
 
         isBrainActive = true;
     }
 
-    protected virtual void Update()
+    public override void Tick(float deltaTime)
     {
         if (!ShouldUpdateBrain())
         {
@@ -39,7 +41,7 @@ public abstract class EnemyBrain : EntityBrain
         OnBrainUpdate();
     }
 
-    protected virtual void FixedUpdate()
+    public override void FixedTick(float deltaTime)
     {
         if (!ShouldUpdateBrain())
         {

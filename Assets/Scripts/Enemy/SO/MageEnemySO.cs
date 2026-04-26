@@ -1,12 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MageEnemy", menuName = "Enemy/MageEnemy", order = 0)]
 public class MageEnemySO : EnemySO
 {
-    public float lowHpPercent = 30f; // 低血阈值
-    public float idealCircleRange = 6f; // 绕圈理想距离
-    public MovementStrategyBase defaultMoveStrategy;
-    public AttackStrategyBase defaultAttackStrategy;
+    [Header("State Thresholds")]
+    [Range(0f, 100f)] 
+    public float lowHpPercent = 30f;
     
-    public MovementStrategyBase CircleKiteStrategy;
+    public List<PropModifierData> fastBurstModifierData = new List<PropModifierData>();
+
+    [Header("Strategies")]
+    public MovementStrategyBase normalMovementStrategy;
+    public AttackStrategyBase normalAttackStrategy;
+    public MovementStrategyBase retreatMovementStrategy;
 }

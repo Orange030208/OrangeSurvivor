@@ -10,11 +10,11 @@ using UnityEngine;
 [RequireComponent(typeof(WeaponsHolder))]
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(CurrencyWallet))]
-public class Player : Entity
+[RequireComponent(typeof(PropertiesManager))]
+public class Player : Entity, IPropGroupProvider
 {
     [Header("组件")]
     [SerializeField] private new CircleCollider2D collider;
-    [SerializeField] private EntityRenderer entityRenderer;
     private Rigidbody2D rb;
     private PlayerLevel playerLevel;
     private PlayerController playerController;
@@ -23,38 +23,22 @@ public class Player : Entity
     private AccessoryManager accessoryManager;
     private PlayerAnimationController playerAnimationController;
     private PropertiesManager propertiesManager;
-    
+    private CharacterDataSO characterData;
+
     private bool hasInstalledLoadout;
-    
+
     public override IMovable MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
-    public override EntityRenderer EntityRenderer => entityRenderer;
 
     public Rigidbody2D Rb => rb;
     public PropertiesManager PropertiesManager => propertiesManager;
 
-    private CharacterDataSO characterData;
     public CharacterDataSO CharacterData => characterData;
+    public BasePropGroupSO BasePropsGroup => characterData.BasePropsAsset;
 
     private void Awake()
     {
-        rb =  GetComponent<Rigidbody2D>();
-        playerLevel = GetComponent<PlayerLevel>();
-        propertiesManager =  GetComponent<PropertiesManager>();
-        playerController = GetComponent<PlayerController>();
-        featureHost = GetComponent<FeatureHost>();
-        weaponsHolder = GetComponent<WeaponsHolder>();
-        accessoryManager = GetComponent<AccessoryManager>();
-        playerAnimationController =  GetComponent<PlayerAnimationController>();
-        if (entityRenderer == null)
-        {
-            entityRenderer = GetComponentInChildren<EntityRenderer>();
-        }
-    }
-
-    private void Start()
-    {
-        InitializeComponent();
+        InitComponentReferences();
     }
 
     private void OnEnable()
@@ -62,15 +46,40 @@ public class Player : Entity
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
+    private void Start()
+    {
+        InitializeComponent();
+        OnEnableComponent();
+    }
+
+    private void Update()
+    {
+        Tick();
+    }
+
+    private void FixedUpdate()
+    {
+        FixedTick();
+    }
+
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        if (featureHost != null)
-        {
-            FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
-        }
-
+        FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
         hasInstalledLoadout = false;
+        OnDisableComponent();
+    }
+
+    private void InitComponentReferences()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        playerLevel = GetComponent<PlayerLevel>();
+        propertiesManager = GetComponent<PropertiesManager>();
+        playerController = GetComponent<PlayerController>();
+        featureHost = GetComponent<FeatureHost>();
+        weaponsHolder = GetComponent<WeaponsHolder>();
+        accessoryManager = GetComponent<AccessoryManager>();
+        playerAnimationController = GetComponent<PlayerAnimationController>();
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -86,15 +95,9 @@ public class Player : Entity
             characterData = selectedCharacter;
         }
 
-        ApplyCharacterAnimator();
         InstallRuntimeFeatures();
         ApplyInitialLoadout();
         hasInstalledLoadout = true;
-    }
-
-    private void ApplyCharacterAnimator()
-    {
-        playerAnimationController.Animator.runtimeAnimatorController = characterData.CharacterAnimatorController;
     }
 
     private void InstallRuntimeFeatures()
@@ -118,7 +121,7 @@ public class Player : Entity
         {
             for (int i = 0; i < characterData.InitialWeapons.Count; i++)
             {
-                WeaponLevelEntry entry = characterData.InitialWeapons[i];
+                WeaponEntry entry = characterData.InitialWeapons[i];
                 if (entry.weaponData == null)
                 {
                     continue;

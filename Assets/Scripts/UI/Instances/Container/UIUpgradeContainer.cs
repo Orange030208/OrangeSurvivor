@@ -2,13 +2,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<PropEntry>,Describer>
+public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<PropModifierData>,Describer>
 {
-    public override void Configure(InfoAddIndex<PropEntry> resource)
+    public override void Configure(InfoAddIndex<PropModifierData> resource)
     {
         iconImage.sprite = ResourcesManager.GetPropIcon(resource.info.propType);
         nameText.text = resource.info.GetDisplayName();
-        //TODO:后续修改显示
         DefaultDescribe describable = new DefaultDescribe
         {
             Description = resource.info.GetAutoDescription()

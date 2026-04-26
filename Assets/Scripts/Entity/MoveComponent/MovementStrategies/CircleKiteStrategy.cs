@@ -1,23 +1,27 @@
 using UnityEngine;
 
 /// <summary>
-/// 中距离绕圈策略（法师默认状态）
+/// 中距离绕圈策略
 /// </summary>
 [CreateAssetMenu(fileName = "CircleKiteStrategy", menuName = "Entity/Component/Move/CircleKiteStrategy")]
 public class CircleKiteStrategy : MovementStrategyBase
 {
-    [SerializeField] private float circleSpeed = 2f;
-    [SerializeField] private float IdealCircleRange = 6f;
+    [SerializeField] private float circleSpeedRatio = 0.5f;
+    [SerializeField] private float IdealCircleRangeRatio = 0.95f;
 
     public override void ExecuteMove(IMovable movable, Entity self, Entity target, EnemySO enemyData)
     {
-        Vector3 targetDir = target.Center - self.Center;
-        targetDir.y = 0f;
+        //指向目标的方向
+        Vector2 targetDir = (Vector2)target.Center - (Vector2)self.Center;
         targetDir.Normalize();
 
-        Vector3 circleDir = Vector3.Cross(targetDir, Vector3.up);
-        Vector3 targetPos = target.Center - (Vector2)targetDir * IdealCircleRange
-                            + (Vector2)circleDir * Mathf.Sin(Time.time * circleSpeed) * 2f;
+        //计算环绕的左右方向
+        Vector2 circleDir = new Vector2(-targetDir.y, targetDir.x);
+
+        float attackRange = self.GetComponent<PropertiesManager>().GetPropValue(PropType.Range);
+        Vector2 targetPos = (Vector2)target.Center 
+                            - targetDir * IdealCircleRangeRatio * attackRange
+                            + circleDir * Mathf.Sin(circleSpeedRatio * movable.Speed) * 2f;
 
         movable.MoveTo(targetPos);
     }

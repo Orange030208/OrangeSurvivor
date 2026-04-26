@@ -7,7 +7,6 @@ using UnityEngine;
 public class RetreatStrategy : MovementStrategyBase
 {
     [SerializeField] private float safeDistance = 8f;
-    [SerializeField] private float LowHpPercent = 30f;
 
     public override void ExecuteMove(IMovable movable, Entity self, Entity target, EnemySO enemyData)
     {

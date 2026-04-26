@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(PlayerController))]
-public class PlayerAnimationController : MonoBehaviour
+public class PlayerAnimationController : EntityComponentBase
 {
     private static readonly int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
     private static readonly int DIE_HASH = Animator.StringToHash("Die");
@@ -10,14 +10,18 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private EntityRenderer entityRenderer;
 
+    private Player owner;
     private IMovable playerController;
     private HealthComponent healthComponent;
     private bool isDead;
 
+    public override Entity Owner => owner;
+
     public Animator Animator => animator;
 
-    private void Awake()
+    public override void Initialize(Entity owner)
     {
+        this.owner = owner as Player;
         playerController = GetComponent<PlayerController>();
         healthComponent = GetComponent<HealthComponent>();
 
@@ -30,9 +34,11 @@ public class PlayerAnimationController : MonoBehaviour
         {
             entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
+
+        animator.runtimeAnimatorController = this.owner.CharacterData.CharacterAnimatorController;
     }
 
-    private void OnEnable()
+    public override void OnEnableComponent()
     {
         if (healthComponent != null)
         {
@@ -40,7 +46,7 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    private void OnDisable()
+    public override void OnDisableComponent()
     {
         if (healthComponent != null)
         {
@@ -48,10 +54,10 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    private void Update()
+    public override void Tick(float deltaTime)
     {
         if (isDead) return;
-        
+
         animator.SetBool(IS_MOVING_HASH, playerController.IsMoving);
         UpdateFacing();
     }

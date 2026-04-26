@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PropertiesManager))]
-public class PlayerLevel : MonoBehaviour
+public class PlayerLevel : EntityComponentBase
 {
     private const int MIN_LEVEL = 1;
     private const int MIN_EXPERIENCE = 0;
@@ -12,12 +12,15 @@ public class PlayerLevel : MonoBehaviour
     [Header("Config")]
     [SerializeField] private PlayerLevelConfigSO levelConfig;
 
+    private Entity owner;
     private PropertiesManager propertiesManager;
     private int requiredXP;
     private int currentXP;
     private int currentLevel = MIN_LEVEL;
     private int levelOnWaveStart = MIN_LEVEL;
     private int unspentUpgradePoints;
+
+    public override Entity Owner => owner;
 
     public bool IsLevelUpInCurrentWave => LevelsGainedInCurrentWave > 0;
     public int LevelUpValue => LevelsGainedInCurrentWave;
@@ -27,31 +30,29 @@ public class PlayerLevel : MonoBehaviour
     public int RequiredXP => requiredXP;
     public int UnspentUpgradePoints => unspentUpgradePoints;
 
-    private void Awake()
+    public override void Initialize(Entity owner)
     {
+        this.owner = owner;
         propertiesManager = GetComponent<PropertiesManager>();
         if (levelConfig == null)
         {
             levelConfig = ResourcesManager.GetPlayerLevelConfig();
         }
+
+        InitializeProgression();
+        PublishSnapshot();
     }
 
-    private void OnEnable()
+    public override void OnEnableComponent()
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<RequestPlayerLevelSnapshotEvent>(PublishSnapshot);
     }
 
-    private void OnDisable()
+    public override void OnDisableComponent()
     {
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Unsubscribe<RequestPlayerLevelSnapshotEvent>(PublishSnapshot);
-    }
-
-    private void Start()
-    {
-        InitializeProgression();
-        PublishSnapshot();
     }
 
     public void AddXP(int xpToAdd)

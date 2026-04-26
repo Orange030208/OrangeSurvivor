@@ -55,8 +55,7 @@ public struct WeaponSequenceVfxDefinition
 }
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = "SO/WeaponData", order = 0)]
-
-public class WeaponDataSO : ItemDataSO,IDescribable
+public class WeaponDataSO : ItemDataSO, IDescribable
 {
     [Header("Runtime")]
     [SerializeField] protected Weapon weaponPrefab;
@@ -109,25 +108,25 @@ public class WeaponDataSO : ItemDataSO,IDescribable
         meleeHitBoxSize.y = Mathf.Max(0.01f, meleeHitBoxSize.y);
     }
 
-    public List<PropEntry> GetPropsList()
+    public List<PropModifierData> GetPropsList()
     {
-        return new List<PropEntry>
+        return new List<PropModifierData>
         {
-            new(PropType.Attack, attack),
-            new(PropType.AttackSpeed, attackSpeed),
-            new(PropType.CriticalChance, criticalChance),
-            new(PropType.CriticalPercent, criticalPercent),
-            new(PropType.Range, range)
+            new(PropType.Attack, PropModifierType.Add, attack),
+            new(PropType.AttackSpeed, PropModifierType.Add, attackSpeed),
+            new(PropType.CriticalChance, PropModifierType.Add, criticalChance),
+            new(PropType.CriticalPercent, PropModifierType.Add, criticalPercent),
+            new(PropType.Range, PropModifierType.Add, range)
         };
     }
 
-    public List<PropEntry> GetPropEntriesByLevel(int level)
+    public List<PropModifierData> GetPropEntriesByLevel(int level)
     {
         float multiplier = 1f + (float)level / WeaponLevelScaling.MaxLevel;
-        List<PropEntry> calculatedProps = new();
-        foreach (PropEntry propEntry in GetPropsList())
+        List<PropModifierData> calculatedProps = new();
+        foreach (PropModifierData propEntry in GetPropsList())
         {
-            calculatedProps.Add(new PropEntry(propEntry.propType, propEntry.modifierType, propEntry.value * multiplier));
+            calculatedProps.Add(new PropModifierData(propEntry.propType, propEntry.modifierType, propEntry.value * multiplier));
         }
 
         return calculatedProps;
@@ -136,10 +135,10 @@ public class WeaponDataSO : ItemDataSO,IDescribable
     public Dictionary<PropType, float> GetPropsByLevel(int level)
     {
         Dictionary<PropType, float> dictionary = new();
-        List<PropEntry> entries = GetPropEntriesByLevel(level);
+        List<PropModifierData> entries = GetPropEntriesByLevel(level);
         for (int i = 0; i < entries.Count; i++)
         {
-            PropEntry entry = entries[i];
+            PropModifierData entry = entries[i];
             dictionary[entry.propType] = entry.value;
         }
 
@@ -185,9 +184,9 @@ public class WeaponDataSO : ItemDataSO,IDescribable
     public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         List<DescriptorInfo> infos = new();
-        infos.Add(new DescriptorInfo("攻击力",$"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
+        infos.Add(new DescriptorInfo("攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
         infos.Add(new DescriptorInfo("攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{attackSpeed}"));
-        infos.Add(new DescriptorInfo("描述",Description));
+        infos.Add(new DescriptorInfo("描述", Description));
         return infos;
     }
 }

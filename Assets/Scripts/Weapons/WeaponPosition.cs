@@ -1,6 +1,6 @@
 using UnityEngine;
 
-class WeaponPosition : MonoBehaviour
+public class WeaponPosition : MonoBehaviour
 {
     public Weapon Weapon { get; private set; }
 
@@ -9,6 +9,12 @@ class WeaponPosition : MonoBehaviour
         if (weaponData == null || weaponData.WeaponPrefab == null)
         {
             return null;
+        }
+
+        if (Weapon != null)
+        {
+            Destroy(Weapon.gameObject);
+            Weapon = null;
         }
 
         Weapon = Instantiate(weaponData.WeaponPrefab, transform);

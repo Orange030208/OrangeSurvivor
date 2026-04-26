@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 591c33237c92d23438fa02b3ad9b72cb, type: 3}
+  m_Name: ArcherEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2859848195627263458, guid: b50948a1e2e1e6d4880cded510310f87, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 9deac3c96a64e7a4595e498cf6b7fe6d, type: 2}
+  retreatTriggerDistance: 4
+  retreatCompleteDistance: 7
+  approachMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}
+  retreatMoveStrategy: {fileID: 11400000, guid: 1e97e0cb0b73737448616b4b1da25d87, type: 2}
+  attackStrategy: {fileID: 11400000, guid: 73e7bbd07d0ec4b418ecfe779bf64dac, type: 2}
+  retreatAttackStrategy: {fileID: 11400000, guid: c289e5c2672bb814397ebf760969ddfb, type: 2}

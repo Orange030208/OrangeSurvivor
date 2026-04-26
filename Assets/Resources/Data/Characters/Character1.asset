@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
   m_Name: Character1
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: 晨光少年
+  <CharacterName>k__BackingField: "\u6668\u5149\u5C11\u5E74"
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: ca10b73db0cf6c94e8d5f44f102ef572, type: 3}
+  <CharacterDescription>k__BackingField: 
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: f7ddd534e3dd56d46bf19df1ca47b078, type: 2}
+  basePropsAsset: {fileID: 11400000, guid: 26684d967bd04984ea973d7dd3921ed0, type: 2}
   extraProps:
   - propType: 0
     modifierType: 0

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
   m_Name: Character17
   m_EditorClassIdentifier: 
-  <CharacterName>k__BackingField: 赤网异种
+  <CharacterName>k__BackingField: "\u8D64\u7F51\u5F02\u79CD"
   <CharacterIcon>k__BackingField: {fileID: 21300000, guid: d4f124ade450503469013c03f6abe2d0, type: 3}
+  <CharacterDescription>k__BackingField: 
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: e0cd0ce443854a040a9c915e1edefe73, type: 2}
+  basePropsAsset: {fileID: 11400000, guid: 26684d967bd04984ea973d7dd3921ed0, type: 2}
   extraProps:
   - propType: 0
     modifierType: 0

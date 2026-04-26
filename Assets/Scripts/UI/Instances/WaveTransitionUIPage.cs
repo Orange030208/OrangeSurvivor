@@ -57,8 +57,8 @@ public class WaveTransitionUIPage : UIPageBase
     {
         for (int i = 0; i < eventData.PropEntries.Length; i++)
         {
-            PropEntry prop = eventData.PropEntries[i];
-            upgradeContainers[i].Configure(new InfoAddIndex<PropEntry>(prop, i));
+            PropModifierData prop = eventData.PropEntries[i];
+            upgradeContainers[i].Configure(new InfoAddIndex<PropModifierData>(prop, i));
         }
     }
 

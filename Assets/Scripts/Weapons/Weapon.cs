@@ -15,16 +15,18 @@ public abstract class Weapon : Entity
 
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
-    [Header("Components")] [SerializeField]
-    private EntityRenderer entityRenderer;
-
-    [Header("Aim")] [Tooltip("平时自动转向目标的插值速度。")] [SerializeField]
+    [Header("Aim")]
+    [Tooltip("平时自动转向目标的插值速度。")]
+    [SerializeField]
     protected float aimLerp = 10f;
 
-    [Tooltip("允许发起攻击前，武器当前朝向与目标朝向之间的最大夹角。超过这个角度时会先继续转向，再等待下一帧攻击。")] [SerializeField]
+    [Tooltip("允许发起攻击前，武器当前朝向与目标朝向之间的最大夹角。超过这个角度时会先继续转向，再等待下一帧攻击。")]
+    [SerializeField]
     private float attackStartAimToleranceDegrees = 8f;
 
-    [Header("Runtime")] [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")] [SerializeField]
+    [Header("Runtime")]
+    [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")]
+    [SerializeField]
     protected LayerMask targetLayerMask;
 
     public int Level { get; private set; } = DEFAULT_WEAPON_LEVEL;
@@ -35,7 +37,6 @@ public abstract class Weapon : Entity
     public float CriticalMultiplier { get; private set; } = 1f;
     public bool IsAttacking { get; protected set; }
     public Entity OwnerEntity => ownerEntity;
-    public override EntityRenderer EntityRenderer => entityRenderer;
 
     protected PropertiesManager propertiesManager;
     protected Entity ownerEntity;
@@ -48,11 +49,6 @@ public abstract class Weapon : Entity
     {
         propertiesManager = GetComponentInParent<PropertiesManager>();
         ownerEntity = ResolveOwnerEntity();
-
-        if (entityRenderer == null)
-        {
-            entityRenderer = GetComponentInChildren<EntityRenderer>();
-        }
     }
 
     protected virtual void OnEnable()
@@ -99,13 +95,8 @@ public abstract class Weapon : Entity
 
     public void SetWeaponData(WeaponDataSO weaponData)
     {
-        if (weaponData == null)
-        {
-            throw new ArgumentNullException(nameof(weaponData),
+        WeaponData = weaponData ?? throw new ArgumentNullException(nameof(weaponData),
                 $"{nameof(Weapon)} requires a non-null {nameof(WeaponDataSO)}.");
-        }
-
-        WeaponData = weaponData;
         ApplyCurrentConfiguration();
         RefreshRuntimeStats();
     }
@@ -130,12 +121,14 @@ public abstract class Weapon : Entity
     {
         if (EntityRenderer == null)
         {
-            return;
+            throw new MissingComponentException(
+                $"{nameof(EntityRenderer)} is null on {name} when applying visual forward angle. " +
+                $"Ensure {nameof(EntityRenderer)} is assigned in the inspector.");
         }
 
         Transform visualTransform = EntityRenderer.transform;
         Vector3 localEulerAngles = visualTransform.localEulerAngles;
-        localEulerAngles.z = WeaponData != null ? WeaponData.VisualForwardAngle : 0f;
+        localEulerAngles.z = WeaponData.VisualForwardAngle;
         visualTransform.localEulerAngles = localEulerAngles;
     }
 
@@ -253,7 +246,7 @@ public abstract class Weapon : Entity
 
         float sequenceDuration = Mathf.Max(0.01f, sequence.Duration);
         float attackInterval = Mathf.Max(0.01f, AttackInterval);
-        float occupancy = WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f;
+        float occupancy = WeaponData.AttackSequenceOccupancy;
         float reservedWindow = Mathf.Max(0.01f, attackInterval * occupancy);
         return Mathf.Min(sequenceDuration, reservedWindow);
     }
@@ -331,14 +324,11 @@ public abstract class Weapon : Entity
 
     protected virtual void RecalculateRuntimeStats()
     {
-        if (WeaponData == null)
+        if (propertiesManager == null)
         {
-            Damage = 0f;
-            AttackInterval = 1f;
-            Range = 0.1f;
-            CriticalChance = 0f;
-            CriticalMultiplier = 1f;
-            return;
+            throw new MissingComponentException(
+                $"{nameof(propertiesManager)} is null on {name}. Cannot recalculate runtime stats. " +
+                $"Ensure the weapon is a child of an entity with a {nameof(PropertiesManager)} component.");
         }
 
         var calculatedProps = WeaponData.GetPropsByLevel(Level);
@@ -349,15 +339,11 @@ public abstract class Weapon : Entity
         float weaponCriticalMultiplier = Mathf.Max(1f, calculatedProps[PropType.CriticalPercent]);
         float weaponRange = calculatedProps[PropType.Range];
 
-        float playerAttack = propertiesManager != null ? propertiesManager.GetPropValue(PropType.Attack) : 0f;
-        float playerAttackSpeedMultiplier = propertiesManager != null
-            ? Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f)
-            : 1f;
-        float playerCriticalChance =
-            propertiesManager != null ? propertiesManager.GetPropValue(PropType.CriticalChance) : 0f;
-        float playerCriticalBonus =
-            propertiesManager != null ? propertiesManager.GetPropValue(PropType.CriticalPercent) : 0f;
-        float playerRange = propertiesManager != null ? propertiesManager.GetPropValue(PropType.Range) : 0f;
+        float playerAttack = propertiesManager.GetPropValue(PropType.Attack);
+        float playerAttackSpeedMultiplier = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 1);
+        float playerCriticalChance = propertiesManager.GetPropValue(PropType.CriticalChance);
+        float playerCriticalBonus = propertiesManager.GetPropValue(PropType.CriticalPercent);
+        float playerRange = propertiesManager.GetPropValue(PropType.Range);
 
         float finalAttackSpeed = Mathf.Max(weaponAttackSpeed * playerAttackSpeedMultiplier, 0.01f);
         Damage = weaponAttack + playerAttack;
@@ -371,7 +357,9 @@ public abstract class Weapon : Entity
     {
         if (WeaponData == null)
         {
-            return;
+            throw new InvalidOperationException(
+                $"{nameof(WeaponData)} is null on {name}. Cannot apply weapon configuration. " +
+                $"Ensure {nameof(WeaponData)} is assigned before the weapon starts.");
         }
 
         switch (WeaponData.ConstructionScheme)
@@ -393,9 +381,11 @@ public abstract class Weapon : Entity
 
     private void ApplyDataIcon()
     {
-        if (EntityRenderer == null || WeaponData == null)
+        if (EntityRenderer == null)
         {
-            return;
+            throw new MissingComponentException(
+                $"{nameof(EntityRenderer)} is null on {name} when applying weapon icon. " +
+                $"Ensure {nameof(EntityRenderer)} is assigned in the inspector.");
         }
 
         EntityRenderer.SetSprite(WeaponData.ItemIcon);
@@ -403,7 +393,7 @@ public abstract class Weapon : Entity
 
     private bool ShouldStopAimingWhenAttackReady()
     {
-        return WeaponData == null || WeaponData.StopAimingWhenAttackReady;
+        return WeaponData.StopAimingWhenAttackReady;
     }
 
     private Entity ResolveOwnerEntity()

@@ -1,66 +1,100 @@
+using System;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-public class RangeAttackComponent : EnemyAttackBase,IProjectileLauncher
+public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
 {
-    [Header("攻击配置")]
-    [SerializeField] private float attackRange = 8f;
-    [SerializeField] private float attackInterval = 1f;
-    [SerializeField] private float attackDamage = 10f;
+    [SerializeField] private float attackRange;
+    [SerializeField] private float attackInterval;
+    [SerializeField] private float attackDamage;
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
     [SerializeField] private Transform firePoint;
-    
+
     private float attackTimer;
     private Entity owner;
 
-    public override float AttackInterval
-    {
-        get => attackInterval;
-        set => attackInterval = value;
-    }
-
-    public override bool CanAttack => attackTimer <= 0;
-
+    public override float AttackInterval => attackInterval;
+    public override bool CanAttack => attackTimer <= 0f;
     public override Entity Owner => owner;
+    public ProjectileDefinitionSO ProjectileDefinition => projectileDefinition;
+    public Transform FirePoint => firePoint != null ? firePoint : transform;
+    public float AttackDamage => attackDamage;
+    public float AttackRange => attackRange;
 
     public override void Initialize(Entity owner)
     {
         base.Initialize(owner);
         this.owner = owner;
+        RefreshRuntimeStats();
     }
 
-    private void Update()
+    public override void OnEnableComponent()
     {
-        if (attackTimer > 0)
+        BindProperties();
+    }
+
+    public override void OnDisableComponent()
+    {
+        UnbindProperties();
+    }
+
+    public override void Tick(float deltaTime)
+    {
+        if (attackTimer > 0f)
         {
-            attackTimer -= Time.deltaTime;
+            attackTimer -= deltaTime;
         }
     }
-    
+
     public override void TryAttack(Entity target)
     {
-        if (!CanAttack || target == null) return;
-        
-        Vector2 aimDirection = (target.Center - owner.Center).normalized;
+        if (!CanAttack || target == null)
+        {
+            return;
+        }
 
-        Projectile projectile = ProjectileFactory.CreateProjectile(projectileDefinition, firePoint.position, Quaternion.identity);
-        // 生成投射物
+        Vector2 aimDirection = (target.Center - owner.Center).normalized;
+        FireProjectile(aimDirection);
+        CommitAttackCooldown();
+    }
+
+    public bool TryAttackDirection(Vector2 direction)
+    {
+        if (!CanAttack || direction.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return false;
+        }
+
+        FireProjectile(direction);
+        CommitAttackCooldown();
+        return true;
+    }
+
+    public void FireProjectile(Vector2 direction)
+    {
+        if (owner == null || projectileDefinition == null || direction.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return;
+        }
+
+        Vector2 normalizedDirection = direction.normalized;
+        Projectile projectile = ProjectileFactory.CreateProjectile(projectileDefinition, FirePoint.position, Quaternion.identity);
         LaunchProjectile(projectile, new ProjectileLaunchContext(
             this,
             owner,
-            firePoint.position,
-            aimDirection,
+            FirePoint.position,
+            normalizedDirection,
             HitSpec.EnemyHitSpec(attackDamage),
             AttackLayer,
             projectileDefinition));
-
-        // 重置冷却
-        attackTimer = attackInterval;
     }
 
     public override bool IsInAttackRange(Entity target)
     {
-        if (target == null) return false;
+        if (target == null)
+        {
+            return false;
+        }
+
         return Vector3.Distance(transform.position, target.Center) <= attackRange;
     }
 
@@ -69,8 +103,50 @@ public class RangeAttackComponent : EnemyAttackBase,IProjectileLauncher
         projectile.Launch(context);
     }
 
+    public void CommitAttackCooldown()
+    {
+        attackTimer = attackInterval;
+    }
+
     public override void ResetAttackTimer()
     {
-        attackTimer = 0;
+        attackTimer = 0f;
+    }
+
+    private void OnPropertyChanged(PropType propType, float _)
+    {
+        if (propType == PropType.Attack ||
+            propType == PropType.AttackSpeed ||
+            propType == PropType.Range)
+        {
+            RefreshRuntimeStats();
+        }
+    }
+
+    private void OnAllPropertiesChanged()
+    {
+        RefreshRuntimeStats();
+    }
+
+    private void RefreshRuntimeStats()
+    {
+        attackDamage = propertiesManager.GetPropValue(PropType.Attack);
+        attackRange = propertiesManager.GetPropValue(PropType.Range);
+
+        float attackSpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f);
+        attackInterval = 1f / attackSpeed;
+    }
+
+    private void BindProperties()
+    {
+        UnbindProperties();
+        propertiesManager.OnAllPropertiesChanged += OnAllPropertiesChanged;
+        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+    }
+
+    private void UnbindProperties()
+    {
+        propertiesManager.OnAllPropertiesChanged -= OnAllPropertiesChanged;
+        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
     }
 }
