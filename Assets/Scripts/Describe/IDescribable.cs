@@ -16,7 +16,7 @@ public interface IDescribable
 internal class DefaultDescribe:IDescribable
 {
     public string Title { get; set; }
-    public Sprite Icon { get; set; }
+    public Sprite Icon { get;set; }
     public string Description { get; set; }
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {

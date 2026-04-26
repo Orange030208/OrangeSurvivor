@@ -8,7 +8,7 @@ public class BuffBarUI : MonoBehaviour
 
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
-    private int subscribedPlayerEventBusId = -1;
+    private string subscribedPlayerEventBusId = string.Empty;
 
     private void Awake()
     {
@@ -53,20 +53,20 @@ public class BuffBarUI : MonoBehaviour
             return;
         }
 
-        subscribedPlayerEventBusId = player.EventBusId;
-        GameEventBus.Subscribe<ActiveBuffSnapshotChangedEvent, int>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
-        GameEventBus.Publish<RequestActiveBuffSnapshotEvent, int>(subscribedPlayerEventBusId);
+        subscribedPlayerEventBusId = player.RuntimeId;
+        GameEventBus.Subscribe<ActiveBuffSnapshotChangedEvent, string>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
+        GameEventBus.Publish<RequestActiveBuffSnapshotEvent, string>(subscribedPlayerEventBusId);
     }
 
     private void UnsubscribePlayerEvents()
     {
-        if (subscribedPlayerEventBusId < 0)
+        if (string.IsNullOrEmpty(subscribedPlayerEventBusId))
         {
             return;
         }
 
-        GameEventBus.Unsubscribe<ActiveBuffSnapshotChangedEvent, int>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
-        subscribedPlayerEventBusId = -1;
+        GameEventBus.Unsubscribe<ActiveBuffSnapshotChangedEvent, string>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
+        subscribedPlayerEventBusId = string.Empty;
     }
 
     private void OnActiveBuffSnapshotChanged(ActiveBuffSnapshotChangedEvent eventData)

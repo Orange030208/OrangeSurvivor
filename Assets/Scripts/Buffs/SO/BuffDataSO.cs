@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff Data", menuName = "SO/Buff", order = 0)]
-public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
+public class BuffDataSO : ScriptableObject, IDescribable
 {
     private const string BUFF_ID_PREFIX = "Buff_";
     private const float MIN_DURATION_SECONDS = 0.01f;
@@ -49,6 +49,8 @@ public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
     public BuffRefreshMode RefreshMode => refreshMode;
     public BuffOverflowMode OverflowMode => overflowMode;
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
+    
+    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
 
     private void OnValidate()
     {
@@ -63,31 +65,5 @@ public class BuffDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
 
         durationSeconds = Mathf.Max(MIN_DURATION_SECONDS, durationSeconds);
         maxStackCount = Mathf.Max(MIN_STACK_COUNT, maxStackCount);
-    }
-
-    public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
-    {
-        List<FeatureEffectBase> effects = new(propertyModifiers.Count + specialFeatures.Count);
-
-        for (int i = 0; i < propertyModifiers.Count; i++)
-        {
-            PropModifierData modifier = propertyModifiers[i];
-            string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
-            effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureEffectBase feature = specialFeatures[i];
-            if (feature == null)
-            {
-                continue;
-            }
-
-            feature.RuntimeFeatureId = $"{runtimeSourceId}_FEATURE_{i}";
-            effects.Add(feature);
-        }
-
-        return effects;
     }
 }

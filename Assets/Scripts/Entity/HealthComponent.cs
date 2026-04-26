@@ -108,7 +108,9 @@ public class HealthComponent : EntityComponentBase
             return;
         }
 
-        float realDamage = Mathf.Min(result.FinalDamage, health);
+        //暂时不屏蔽超出伤害了，后续有需要再修改
+        // float realDamage = Mathf.Min(result.FinalDamage, health);
+        float realDamage = result.FinalDamage;
         if (realDamage <= 0f)
         {
             return;

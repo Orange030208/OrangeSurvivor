@@ -110,7 +110,7 @@ public class Projectile : Entity, IProjectile
             GetType().Name);
 
         HitService.Apply(request);
-        SpawnImpactEffect(healthComponent.transform.position, launchContext.ProjectileDefinition);
+        SpawnImpactEffect(transform.position, launchContext.ProjectileDefinition);
     }
 
     public void ApplyProjectileDefinition(ProjectileDefinitionSO projectileDefinition)

@@ -7,16 +7,14 @@ using UnityEngine;
 public class AccessoryManager : EntityComponentBase
 {
     private FeatureHost featureHost;
+    private PropertiesManager propertiesManager;
     private Entity owner;
-    private readonly Dictionary<string, List<EquippedAccessory>> equippedAccessories = new();
-    private readonly List<AccessoryDataSO> accessories = new();
-    private readonly List<EquippedAccessoryInfo> equippedAccessoryInfos = new();
-
+    private readonly Dictionary<string, List<RuntimeAccessoryData>> equippedAccessoryDict = new();
+    private readonly List<RuntimeAccessoryData> equippedAccessoryList = new();
     public event Action<AccessoryDataSO> OnAccessoryEquipped;
     public event Action<AccessoryDataSO> OnAccessoryUnequipped;
 
-    public IReadOnlyList<AccessoryDataSO> EquippedAccessories => accessories.AsReadOnly();
-    public IReadOnlyList<EquippedAccessoryInfo> EquippedAccessoryInfos => equippedAccessoryInfos.AsReadOnly();
+    public IReadOnlyList<RuntimeAccessoryData> EquippedAccessoryList => equippedAccessoryList.AsReadOnly();
 
 
     public override Entity Owner => owner;
@@ -24,6 +22,7 @@ public class AccessoryManager : EntityComponentBase
     {
         this.owner = owner;
         featureHost = this.owner.GetComponent<FeatureHost>();
+        propertiesManager = this.owner.GetComponent<PropertiesManager>();
         var initialAccessories = this.owner.GetComponent<IInitialAccessoryProvider>().InitialAccessories;
 
         foreach (var accessory in initialAccessories)
@@ -44,108 +43,76 @@ public class AccessoryManager : EntityComponentBase
             return false;
         }
 
-        var equipped = new EquippedAccessory(accessoryData);
-        if (!equippedAccessories.TryGetValue(accessoryData.AccessoryId, out var list))
+        if (!equippedAccessoryDict.TryGetValue(accessoryData.AccessoryId, out var dictList))
         {
-            list = new List<EquippedAccessory>();
-            equippedAccessories[accessoryData.AccessoryId] = list;
+            dictList = new List<RuntimeAccessoryData>();
+            equippedAccessoryDict[accessoryData.AccessoryId] = dictList;
         }
 
-        list.Add(equipped);
-        accessories.Add(accessoryData);
-        equippedAccessoryInfos.Add(new EquippedAccessoryInfo(accessoryData, equipped.RuntimeSourceId));
+        var newAccessoryData = new RuntimeAccessoryData(accessoryData);
 
-        FeatureInstaller.InstallSource(featureHost, equipped.RuntimeSourceId, accessoryData);
+        dictList.Add(newAccessoryData);
+        equippedAccessoryList.Add(newAccessoryData);
+
+        featureHost.InstallFeature(newAccessoryData.RuntimeId, newAccessoryData.AccessoryData.SpecialFeatures);
+        propertiesManager.AddModifiers(newAccessoryData.RuntimeId, accessoryData.PropertyModifiers);
 
         OnAccessoryEquipped?.Invoke(accessoryData);
         return true;
     }
 
-    public bool UnequipAccessory(string accessoryId)
+    public bool UnequipAccessory(AccessoryDataSO accessoryData)
     {
-        if (!equippedAccessories.TryGetValue(accessoryId, out var list)) return false;
-        if (list.Count == 0)
+        if (!equippedAccessoryDict.TryGetValue(accessoryData.AccessoryId, out var dictList)) return false;
+        if (dictList.Count == 0)
         {
-            equippedAccessories.Remove(accessoryId);
+            equippedAccessoryDict.Remove(accessoryData.AccessoryId);
             return false;
         }
 
-        var equipped = list[list.Count - 1];
-        list.RemoveAt(list.Count - 1);
-        if (list.Count == 0)
+        //移除同类饰品的最后添加的一个
+        var equipped = dictList[dictList.Count - 1];
+        dictList.RemoveAt(dictList.Count - 1);
+        if (dictList.Count == 0)
         {
-            equippedAccessories.Remove(accessoryId);
+            equippedAccessoryDict.Remove(accessoryData.AccessoryId);
         }
 
-        FeatureInstaller.RemoveSource(featureHost, equipped.RuntimeSourceId);
-        int index = accessories.LastIndexOf(equipped.Data);
-        if (index >= 0) accessories.RemoveAt(index);
-        RemoveEquippedAccessoryInfo(equipped.RuntimeSourceId);
+        featureHost.RemoveFeature(equipped.RuntimeId);
+        propertiesManager.RemoveModifiers(equipped.RuntimeId);
 
-        OnAccessoryUnequipped?.Invoke(equipped.Data);
+        int index = equippedAccessoryList.LastIndexOf(equipped);
+        if (index >= 0) equippedAccessoryList.RemoveAt(index);
+
+        OnAccessoryUnequipped?.Invoke(equipped.AccessoryData);
         return true;
-    }
-
-    public bool UnequipAccessory(AccessoryDataSO accessoryData)
-    {
-        if (accessoryData == null) return false;
-        return UnequipAccessory(accessoryData.AccessoryId);
-    }
-
-    public IReadOnlyList<AccessoryDataSO> GetEquippedAccessories()
-    {
-        return accessories.AsReadOnly();
-    }
-
-    public IReadOnlyList<EquippedAccessoryInfo> GetEquippedAccessoryInfos()
-    {
-        return equippedAccessoryInfos.AsReadOnly();
-    }
-
-    public bool IsEquipped(string accessoryId)
-    {
-        return equippedAccessories.TryGetValue(accessoryId, out var list) && list.Count > 0;
     }
 
     private void ClearEquippedAccessories()
     {
-        foreach (var pair in equippedAccessories)
+        foreach (var pair in equippedAccessoryDict)
         {
-            List<EquippedAccessory> list = pair.Value;
+            List<RuntimeAccessoryData> list = pair.Value;
             for (int i = 0; i < list.Count; i++)
             {
-                FeatureInstaller.RemoveSource(featureHost, list[i].RuntimeSourceId);
+                featureHost.RemoveFeature(list[i].RuntimeId);
+                propertiesManager.RemoveModifiers(list[i].RuntimeId);
             }
         }
 
-        equippedAccessories.Clear();
-        accessories.Clear();
-        equippedAccessoryInfos.Clear();
+        equippedAccessoryDict.Clear();
+        equippedAccessoryList.Clear();
     }
+}
 
-    private void RemoveEquippedAccessoryInfo(string runtimeSourceId)
+public struct RuntimeAccessoryData
+{
+    public string RuntimeId;
+    public AccessoryDataSO AccessoryData;
+
+    public RuntimeAccessoryData(AccessoryDataSO accessoryData)
     {
-        for (int i = equippedAccessoryInfos.Count - 1; i >= 0; i--)
-        {
-            if (equippedAccessoryInfos[i].RuntimeSourceId != runtimeSourceId)
-            {
-                continue;
-            }
-
-            equippedAccessoryInfos.RemoveAt(i);
-            return;
-        }
-    }
-
-    private class EquippedAccessory
-    {
-        public AccessoryDataSO Data { get; }
-        public string RuntimeSourceId { get; }
-
-        public EquippedAccessory(AccessoryDataSO data)
-        {
-            Data = data;
-            RuntimeSourceId = $"ACC_{data.AccessoryId}_{Guid.NewGuid():N}";
-        }
+        this.AccessoryData = accessoryData;
+        RuntimeId = $"ACC_{accessoryData.AccessoryId}_{Guid.NewGuid():N}";
     }
 }

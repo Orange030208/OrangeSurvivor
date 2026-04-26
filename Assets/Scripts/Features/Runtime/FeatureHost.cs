@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Entity), typeof(PropertiesManager))]
-public class FeatureHost : MonoBehaviour,IHitModifierProvider
+public class FeatureHost : EntityComponentBase,IHitModifierProvider
 {
-    private Entity ownerEntity;
+    private Entity owner;
     private PropertiesManager propertiesManager;
     private FeatureContext featureContext;
     private readonly Dictionary<string, FeatureHostSourceHandle> installedSources = new();
@@ -18,19 +18,22 @@ public class FeatureHost : MonoBehaviour,IHitModifierProvider
         return handle;
     }
 
-    private void Awake()
+    public override Entity Owner => owner;
+    public override void Initialize(Entity owner)
     {
-        ownerEntity = GetComponent<Entity>();
+        this.owner = owner;
         propertiesManager = GetComponent<PropertiesManager>();
-        featureContext = new FeatureContext(ownerEntity, propertiesManager);
+        featureContext = new FeatureContext(owner, propertiesManager);
+        var featureEffectsProvider = owner.GetComponent<IFeatureEffectsProvider>();
+        InstallFeature(owner.RuntimeId, featureEffectsProvider.FeatureEffects);
     }
 
-    private void OnDisable()
+    public override void OnDisableComponent()
     {
         ClearAllSources();
     }
 
-    private void Update()
+    public override void OnTick(float deltaTime)
     {
         if (!GameSimulation.IsRunning)
         {
@@ -42,7 +45,6 @@ public class FeatureHost : MonoBehaviour,IHitModifierProvider
             return;
         }
 
-        float deltaTime = Time.deltaTime;
         foreach (FeatureHostSourceHandle handle in installedSources.Values)
         {
             for (int i = 0; i < handle.RuntimeEffects.Count; i++)
@@ -58,16 +60,16 @@ public class FeatureHost : MonoBehaviour,IHitModifierProvider
         }
     }
 
-    public bool InstallSource(string sourceId, IRuntimeFeatureSource source)
+    public bool InstallFeature(string sourceId,IReadOnlyList<FeatureEffectBase> featureEffects)
     {
-        if (string.IsNullOrWhiteSpace(sourceId) || source == null || featureContext == null || ownerEntity == null)
+        if (string.IsNullOrWhiteSpace(sourceId) || featureContext == null)
         {
             return false;
         }
 
-        RemoveSource(sourceId);
+        RemoveFeature(sourceId);
 
-        var runtimeEffects = new List<FeatureEffectBase>(source.CreateRuntimeFeatureEffects(sourceId));
+        var runtimeEffects = new List<FeatureEffectBase>(featureEffects);
         for (int i = 0; i < runtimeEffects.Count; i++)
         {
             FeatureEffectBase effect = runtimeEffects[i];
@@ -83,8 +85,9 @@ public class FeatureHost : MonoBehaviour,IHitModifierProvider
         installedSources[sourceId] = new FeatureHostSourceHandle(sourceId, runtimeEffects);
         return true;
     }
+    
 
-    public bool RemoveSource(string sourceId)
+    public bool RemoveFeature(string sourceId)
     {
         if (string.IsNullOrWhiteSpace(sourceId) || !installedSources.TryGetValue(sourceId, out FeatureHostSourceHandle handle))
         {
@@ -113,7 +116,7 @@ public class FeatureHost : MonoBehaviour,IHitModifierProvider
         installedSources.Keys.CopyTo(sourceIds, 0);
         for (int i = 0; i < sourceIds.Length; i++)
         {
-            RemoveSource(sourceIds[i]);
+            RemoveFeature(sourceIds[i]);
         }
     }
 

@@ -40,11 +40,11 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     {
         this.owner = owner;
 
-        InitializeBaseProps();
+        InitializeProps();
         NotifyAllPropertiesChanged();
     }
 
-    private void InitializeBaseProps()
+    private void Clear()
     {
         baseProps.Clear();
         addProps.Clear();
@@ -52,16 +52,31 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         bonusMultiplierProps.Clear();
         finalMultiplierProps.Clear();
         calculatedProps.Clear();
-        if (!this.owner.TryGetComponent<IPropGroupProvider>(out IPropGroupProvider provider))
+    }
+
+    private void InitializeProps()
+    {
+        Clear();
+        if (!this.owner.TryGetComponent<IPropGroupProvider>(out IPropGroupProvider basePropProvider))
         {
             Debug.LogWarning($"{owner.name}应该实现IPropGroupProvider为PropertiesManager提供基础属性");
         }
 
-        IReadOnlyList<BasePropData> values = provider.BasePropsGroup.Values;
+        IReadOnlyList<BasePropData> values = basePropProvider.BasePropsGroup.Values;
         for (int i = 0; i < values.Count; i++)
         {
             BasePropData baseProp = values[i];
             AddValue(baseProps, baseProp.propType, baseProp.value);
+        }
+        
+        if (!this.owner.TryGetComponent<IPropModifierProvider>(out IPropModifierProvider propModifierProvider))
+        {
+            Debug.Log($"{owner.name}没有提供额外属性");
+        }
+        else
+        {
+            var propModifierDataList = propModifierProvider.PropModifierDataList;
+            AddModifiers(owner.RuntimeId, propModifierDataList);
         }
 
         RecalculateAllProps(false);

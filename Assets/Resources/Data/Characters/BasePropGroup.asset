@@ -18,6 +18,4 @@ MonoBehaviour:
   - propType: 4
     value: 200
   - propType: 12
-    value: 2
-  - propType: 12
-    value: 0.3
+    value: 0.5

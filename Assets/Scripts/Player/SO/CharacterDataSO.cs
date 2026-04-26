@@ -1,32 +1,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource, IDescribable
+public class CharacterDataSO : ScriptableObject, IDescribable
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
     [field: SerializeField] public string CharacterDescription { get; private set; }
     [field: SerializeField] public RuntimeAnimatorController CharacterAnimatorController { get; private set; }
 
-    [Header("基础属性")]
-    [SerializeField] private BasePropGroupSO basePropsAsset;
+    [Header("基础属性")] [SerializeField] private BasePropGroupSO basePropsAsset;
 
-    [Header("角色额外属性")]
-    [Tooltip("配置角色提供的属性修饰。倍率统一使用 0~1 表示 0%~100%。")]
-    [SerializeField] private List<PropModifierData> extraProps = new();
+    [Header("角色额外属性")] [Tooltip("配置角色提供的属性修饰。倍率统一使用 0~1 表示 0%~100%。")] [SerializeField]
+    private List<PropModifierData> extraProps = new();
 
-    [Header("角色特殊能力")]
-    [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
+    [Header("角色特殊能力")] [SerializeReference]
+    private List<FeatureEffectBase> specialFeatures = new();
 
-    [Space(8)]
-    [Header("初始装备")]
-    [SerializeField] private List<WeaponEntry> initialWeapons = new();
+    [Space(8)] [Header("初始装备")] [SerializeField]
+    private List<WeaponEntry> initialWeapons = new();
+
     [SerializeField] private List<AccessoryDataSO> initialAccessories = new();
 
     public string Title => CharacterName;
     public Sprite Icon => CharacterIcon;
     public string Description => CharacterDescription;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
+    
+    public IReadOnlyList<PropModifierData> ExtraProps => extraProps;
+    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+    public IReadOnlyList<WeaponEntry> InitialWeapons => initialWeapons;
+    public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
 
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
@@ -57,38 +60,8 @@ public class CharacterDataSO : ScriptableObject, IRuntimeFeatureSource, IDescrib
         return infos;
     }
 
-    public IReadOnlyList<PropModifierData> ExtraProps => extraProps;
-    public IReadOnlyList<WeaponEntry> InitialWeapons => initialWeapons;
-    public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
-
     public List<PropModifierData> GetCharacterModifiers()
     {
         return new List<PropModifierData>(extraProps);
-    }
-
-    public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
-    {
-        List<FeatureEffectBase> effects = new(extraProps.Count + specialFeatures.Count);
-
-        for (int i = 0; i < extraProps.Count; i++)
-        {
-            PropModifierData modifier = extraProps[i];
-            string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
-            effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureEffectBase feature = specialFeatures[i];
-            if (feature == null)
-            {
-                continue;
-            }
-
-            feature.RuntimeFeatureId = $"{runtimeSourceId}_FEATURE_{i}";
-            effects.Add(feature);
-        }
-
-        return effects;
     }
 }

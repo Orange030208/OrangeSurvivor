@@ -12,19 +12,14 @@ public sealed class PropertyModifierEffect : FeatureEffectBase
     {
     }
 
-    public PropertyModifierEffect(string runtimeFeatureId, string sourceId, PropType property, float value)
-        : this(runtimeFeatureId, sourceId, new PropModifierData(property, PropModifierType.Add, value))
+    public PropertyModifierEffect(string sourceId, PropModifierData modifier)
     {
-    }
-
-    public PropertyModifierEffect(string runtimeFeatureId, string sourceId, PropModifierData modifier)
-    {
-        RuntimeFeatureId = runtimeFeatureId;
         this.sourceId = sourceId;
         this.modifier = modifier;
     }
 
-    public override string FeatureDescription => string.Empty;
+    public override string Description => string.Empty;
+    
 
     public override void OnInstall()
     {

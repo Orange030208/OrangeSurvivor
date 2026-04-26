@@ -603,6 +603,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4969178274878832572, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -298862662, guid: a24e2353fb6e71044a042c87c30ca6ee, type: 3}
     - target: {fileID: 6002684336069457846, guid: 9f541c80f48bbae4a99f0000defa9f2c, type: 3}
       propertyPath: m_Name
       value: DisplayPanel

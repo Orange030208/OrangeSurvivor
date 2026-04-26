@@ -27,7 +27,9 @@ MonoBehaviour:
   - propType: 25
     modifierType: 0
     value: 0.12
-  specialFeatures: []
+  specialFeatures:
+  - rid: 451546934818111488
+  - rid: 451546934818111493
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 00f0fce340da97d4b9baec7e221641e9, type: 2}
     level: 1
@@ -37,4 +39,21 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2c35fd36a60d0cb4194ed451ed23d89b, type: 2}
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 451546934818111488
+      type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
+      data:
+        runtimeFeatureId: 
+        hitModifierTiming: 0
+    - rid: 451546934818111493
+      type: {class: LowHealthExplosionFeatureEffect, ns: , asm: Assembly-CSharp}
+      data:
+        runtimeFeatureId: 
+        hitModifierTiming: 1
+        healthThreshold: 1
+        cooldown: 10
+        explosionRadius: 10
+        explosionDamage: 10
+        enemyLayerMask:
+          serializedVersion: 2
+          m_Bits: 64

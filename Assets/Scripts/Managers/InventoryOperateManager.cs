@@ -222,13 +222,13 @@ public class InventoryOperateManager : MonoBehaviour
 
         if (accessoryManager != null)
         {
-            var accessories = accessoryManager.EquippedAccessoryInfos;
+            var accessories = accessoryManager.EquippedAccessoryList;
             for (int i = 0; i < accessories.Count; i++)
             {
-                EquippedAccessoryInfo accessory = accessories[i];
+                RuntimeAccessoryData accessory = accessories[i];
                 runtimeItems.Add(InventoryRuntimeItem.CreateAccessory(
-                    BuildAccessoryEntryId(accessory.RuntimeSourceId),
-                    accessory.Data));
+                    BuildAccessoryEntryId(accessory.RuntimeId),
+                    accessory.AccessoryData));
             }
         }
 

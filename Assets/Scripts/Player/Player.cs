@@ -12,10 +12,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(CurrencyWallet))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IInitialAccessoryProvider
+public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitialWeaponProvider, IInitialAccessoryProvider,IFeatureEffectsProvider
 {
-    [Header("组件")]
-    [SerializeField] private new CircleCollider2D collider;
+    [Header("组件")] [SerializeField] private new CircleCollider2D collider;
     private Rigidbody2D rb;
     private PlayerLevel playerLevel;
     private PlayerController playerController;
@@ -25,9 +24,6 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IIniti
     private PlayerAnimationController playerAnimationController;
     private PropertiesManager propertiesManager;
     private CharacterDataSO characterData;
-
-    private bool hasInstalledLoadout;
-    private IReadOnlyList<AccessoryDataSO> initialWeapons;
 
     public override IMovable MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;
@@ -41,6 +37,10 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IIniti
 
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => characterData.InitialAccessories;
     
+    public IReadOnlyList<PropModifierData> PropModifierDataList => characterData.ExtraProps;
+
+    public IReadOnlyList<FeatureEffectBase> FeatureEffects => characterData.SpecialFeatures;
+
     private void Awake()
     {
         InitComponentReferences();
@@ -70,8 +70,6 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IIniti
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        FeatureInstaller.RemoveSource(featureHost, FeatureInstaller.CharacterSourceId);
-        hasInstalledLoadout = false;
         DisableAllComponents();
     }
 
@@ -89,7 +87,7 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IIniti
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-        if (eventData.NewState != GameState.Game || hasInstalledLoadout)
+        if (eventData.NewState != GameState.Game)
         {
             return;
         }
@@ -99,13 +97,5 @@ public class Player : Entity, IPropGroupProvider , IInitialWeaponProvider,IIniti
         {
             characterData = selectedCharacter;
         }
-
-        InstallRuntimeFeatures();
-        hasInstalledLoadout = true;
-    }
-
-    private void InstallRuntimeFeatures()
-    {
-        FeatureInstaller.InstallCharacter(featureHost, characterData);
     }
 }

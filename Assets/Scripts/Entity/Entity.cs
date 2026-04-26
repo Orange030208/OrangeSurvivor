@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 public interface IEntity
@@ -8,10 +9,9 @@ public interface IEntity
     EntityRenderer EntityRenderer { get; }
 
     /// <summary>
-    /// 事件总线用的实体运行时唯一ID
     /// 仅在本次运行期内唯一，不用于存档。
     /// </summary>
-    int EventBusId { get; }
+    string RuntimeId { get; }
 }
 
 public abstract class Entity : MonoBehaviour, IEntity
@@ -19,10 +19,24 @@ public abstract class Entity : MonoBehaviour, IEntity
     private EntityComponentBase[] cachedComponents = Array.Empty<EntityComponentBase>();
     private EntityRenderer cachedEntityRenderer;
 
+    private string runtimeId;
+
     public virtual IMovable MoveComponent => IMovable.Empty;
     public virtual Transform Transform => transform;
     public virtual Vector2 Center => transform.position;
-    public int EventBusId => gameObject.GetInstanceID();
+
+    public string RuntimeId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(runtimeId))
+            {
+                runtimeId = $"Entity_{gameObject.GetInstanceID()}_{Guid.NewGuid():N}";
+            }
+
+            return runtimeId;
+        }
+    }
 
     public virtual EntityRenderer EntityRenderer
     {

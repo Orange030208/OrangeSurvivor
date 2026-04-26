@@ -13,7 +13,7 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
     private float cooldownEndTime;
     private HealthComponent healthComponent;
 
-    public override string FeatureDescription => "生命低于阈值时触发一次范围爆炸，受冷却限制。";
+    public override string Description => "生命低于阈值时触发一次范围爆炸，受冷却限制。";
 
     public override void OnInstall()
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
-public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
+public class AccessoryDataSO : ItemDataSO
 {
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
@@ -21,6 +21,10 @@ public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
     public string AccessoryId => accessoryId;
     public int RecyclePrice => recyclePrice;
     public int Rarity => rarity;
+    
+    public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
+    
+    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
 
     private void OnValidate()
     {
@@ -30,37 +34,6 @@ public class AccessoryDataSO : ItemDataSO, IRuntimeFeatureSource
         }
 
         itemType = ItemType.Accessory;
-    }
-
-    public IReadOnlyList<PropModifierData> GetPropEntries()
-    {
-        return propertyModifiers;
-    }
-
-    public IReadOnlyList<FeatureEffectBase> CreateRuntimeFeatureEffects(string runtimeSourceId)
-    {
-        List<FeatureEffectBase> effects = new(propertyModifiers.Count + specialFeatures.Count);
-
-        for (int i = 0; i < propertyModifiers.Count; i++)
-        {
-            PropModifierData modifier = propertyModifiers[i];
-            string effectId = $"{runtimeSourceId}_{modifier.propType}_{modifier.modifierType}_{i}";
-            effects.Add(new PropertyModifierEffect(effectId, effectId, modifier));
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureEffectBase feature = specialFeatures[i];
-            if (feature == null)
-            {
-                continue;
-            }
-
-            feature.RuntimeFeatureId = $"{runtimeSourceId}_FEATURE_{i}";
-            effects.Add(feature);
-        }
-
-        return effects;
     }
 
     public Dictionary<PropType, float> GetProps()
