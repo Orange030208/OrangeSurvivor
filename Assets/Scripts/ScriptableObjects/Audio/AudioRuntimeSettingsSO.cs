@@ -9,7 +9,7 @@ using UnityEngine;
 /// - 直接维护 AudioBgmKey 到具体音频配置的映射。
 /// 该资源只负责状态驱动的 BGM 配置，不负责音量控制。
 /// </summary>
-[CreateAssetMenu(fileName = "Audio Runtime Settings", menuName = AudioConstants.AUDIO_RUNTIME_SETTINGS_MENU_PATH, order = 1)]
+[CreateAssetMenu(fileName = "Audio Runtime Settings", menuName = ScriptableObjectMenuPaths.AUDIO_RUNTIME_SETTINGS, order = 1)]
 public class AudioRuntimeSettingsSO : ScriptableObject
 {
     [Header("BGM")]

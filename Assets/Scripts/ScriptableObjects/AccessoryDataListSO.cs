@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Accessory Data List", menuName = "SO/Accessory Data List", order = 0)]
+[CreateAssetMenu(fileName = "Accessory Data List", menuName = ScriptableObjectMenuPaths.ACCESSORY_DATA_LIST, order = 0)]
 public class AccessoryDataListSO : ScriptableObject
 {
     [field: SerializeField] public AccessoryDataSO[] Accessories { get; private set; }

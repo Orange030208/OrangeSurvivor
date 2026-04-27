@@ -46,7 +46,7 @@ public class MeleeWeapon : Weapon
 
         if (attackSequence == null)
         {
-            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.MeleeHeavySwing);
+            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.MeleeHeavyHorizontalSlash);
             attackSequence = runtimeDefaultSequence;
         }
 
@@ -116,11 +116,9 @@ public class MeleeWeapon : Weapon
         hitWindowLastPoses.Clear();
 
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
-        // 动态帧不是在播放过程中实时追目标，
-        // 而是在这次攻击开始时，结合当前目标位置 + 当前 RuntimeStats.Range 先解出一份本轮专属轨迹。
-        float reachScale = Mathf.Max(0.1f, Range);
-        IReadOnlyDictionary<int, Vector3> dynamicPositionOverrides = BuildDynamicPositionOverrides(target);
-        sequenceBridge.Play(attackSequence, dynamicPositionOverrides, sequenceDuration, reachScale);
+        // 每次攻击开始时锁定目标相对坐标，序列播放器会按参考坐标和缩放权重重定向采样点。
+        Vector2 targetLocalOffset = transform.InverseTransformPoint(target.Center);
+        sequenceBridge.Play(attackSequence, targetLocalOffset, sequenceDuration);
     }
 
     public void OpenHitWindow(int eventKey)
@@ -152,75 +150,6 @@ public class MeleeWeapon : Weapon
         hitWindowLastPoses.Clear();
         pendingTargetPosition = Vector2.zero;
         CompleteAttackCycle();
-    }
-
-    private IReadOnlyDictionary<int, Vector3> BuildDynamicPositionOverrides(Entity target)
-    {
-        if (attackSequence == null || target == null)
-        {
-            return null;
-        }
-
-        IReadOnlyList<WeaponMotionKeyframe> keyframes = attackSequence.MotionKeyframes;
-        if (keyframes == null || keyframes.Count == 0)
-        {
-            return null;
-        }
-
-        Vector2 localTarget = transform.InverseTransformPoint(target.Center);
-        float attackRange = Mathf.Max(0.1f, Range);
-        Dictionary<int, Vector3> overrides = null;
-
-        for (int i = 0; i < keyframes.Count; i++)
-        {
-            WeaponMotionKeyframe keyframe = keyframes[i];
-            if (keyframe.xPositionMode != WeaponMotionPositionMode.DynamicFromTarget &&
-                keyframe.yPositionMode != WeaponMotionPositionMode.DynamicFromTarget)
-            {
-                continue;
-            }
-
-            Vector3 resolvedPosition = ResolveDynamicKeyframePosition(keyframe, localTarget, attackRange);
-            overrides ??= new Dictionary<int, Vector3>();
-            overrides[i] = resolvedPosition;
-        }
-
-        return overrides;
-    }
-
-    private static Vector2 ResolveDynamicKeyframePosition(WeaponMotionKeyframe keyframe, Vector2 localTarget, float attackRange)
-    {
-        float normalizedTargetDistance = Mathf.Clamp01(localTarget.magnitude / attackRange);
-
-        float resolvedX = keyframe.localPositionX;
-        if (keyframe.xPositionMode == WeaponMotionPositionMode.DynamicFromTarget)
-        {
-            float minReach = Mathf.Clamp01(keyframe.xDynamicMinNormalizedReach);
-            float maxReach = Mathf.Clamp(keyframe.xDynamicMaxNormalizedReach, minReach, 1f);
-            float normalizedResolvedDistance = keyframe.dynamicPositionStrategy switch
-            {
-                WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius => Mathf.Clamp(normalizedTargetDistance, minReach, maxReach),
-                _ => Mathf.Clamp01(Mathf.Abs(keyframe.localPositionX))
-            };
-
-            resolvedX = normalizedResolvedDistance * attackRange * Mathf.Sign(keyframe.localPositionX == 0f ? 1f : keyframe.localPositionX);
-        }
-
-        float resolvedY = keyframe.localPositionY;
-        if (keyframe.yPositionMode == WeaponMotionPositionMode.DynamicFromTarget)
-        {
-            float minReach = Mathf.Clamp01(keyframe.yDynamicMinNormalizedReach);
-            float maxReach = Mathf.Clamp(keyframe.yDynamicMaxNormalizedReach, minReach, 1f);
-            float normalizedResolvedDistance = keyframe.dynamicPositionStrategy switch
-            {
-                WeaponMotionDynamicPositionStrategy.TowardTargetClampedRadius => Mathf.Clamp(normalizedTargetDistance, minReach, maxReach),
-                _ => Mathf.Clamp01(Mathf.Abs(keyframe.localPositionY))
-            };
-
-            resolvedY = normalizedResolvedDistance * attackRange * Mathf.Sign(keyframe.localPositionY == 0f ? 1f : keyframe.localPositionY);
-        }
-
-        return new Vector2(resolvedX, resolvedY);
     }
 
     private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)

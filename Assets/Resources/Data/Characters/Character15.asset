@@ -29,9 +29,7 @@ MonoBehaviour:
     value: 1
   specialFeatures: []
   initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 081fb5fc7941ce74bbb1d7c7ed7b6699, type: 2}
-    level: 1
-  - weaponData: {fileID: 11400000, guid: 29640aa5ba56a374a88652f11598abb8, type: 2}
+  - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
     level: 1
   initialAccessories:
   - {fileID: 11400000, guid: 5892d4bd77d189449b9535eaa7aceab5, type: 2}

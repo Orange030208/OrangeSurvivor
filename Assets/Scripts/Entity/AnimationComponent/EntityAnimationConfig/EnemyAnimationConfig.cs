@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyAnimationConfig", menuName = "Entity/Component/Animation/EnemyAnimationConfig")]
+[CreateAssetMenu(fileName = "EnemyAnimationConfig", menuName = ScriptableObjectMenuPaths.ENEMY_ANIMATION_CONFIG)]
 public class EnemyAnimationConfig : EntityAnimationConfig
 {
     [Header("通用基础状态")] 

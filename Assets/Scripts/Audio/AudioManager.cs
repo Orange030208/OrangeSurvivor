@@ -67,6 +67,20 @@ public class AudioManager : MonoBehaviour
         GameEventBus.Unsubscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
     }
 
+    private void OnValidate()
+    {
+        masterVolume = Mathf.Clamp(masterVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        musicVolume = Mathf.Clamp(musicVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        sfxVolume = Mathf.Clamp(sfxVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+
+        if (!Application.isPlaying || instance != this)
+        {
+            return;
+        }
+
+        ApplyVolumeSettings();
+    }
+
     public static AudioManager EnsureInstance(AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
     {
         if (instance != null)

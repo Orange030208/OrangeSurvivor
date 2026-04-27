@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -49,14 +48,14 @@ public class WeaponSequenceBridge : MonoBehaviour
         sequencePlayer.CacheDefaultPose();
     }
 
-    public void Play(AttackSequenceDefinitionSO sequence, float durationOverride = -1f, float reachScale = 1f)
+    public void Play(AttackSequenceDefinitionSO sequence, float durationOverride = -1f)
     {
-        sequencePlayer.Play(sequence, durationOverride, reachScale);
+        sequencePlayer.Play(sequence, durationOverride);
     }
 
-    public void Play(AttackSequenceDefinitionSO sequence, IReadOnlyDictionary<int, Vector3> localPositionOverrides, float durationOverride = -1f, float reachScale = 1f)
+    public void Play(AttackSequenceDefinitionSO sequence, Vector2 targetLocalOffset, float durationOverride = -1f)
     {
-        sequencePlayer.Play(sequence, localPositionOverrides, durationOverride, reachScale);
+        sequencePlayer.Play(sequence, targetLocalOffset, durationOverride);
     }
 
     public void Stop(bool restoreDefaultPose = true)

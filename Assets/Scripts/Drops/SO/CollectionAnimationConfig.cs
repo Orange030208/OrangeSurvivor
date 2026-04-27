@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CollectionAnimationConfig", menuName = "Entity/Component/Animation/CollectionAnimationConfig")]
+[CreateAssetMenu(fileName = "CollectionAnimationConfig", menuName = ScriptableObjectMenuPaths.COLLECTION_ANIMATION_CONFIG)]
 public class CollectionAnimationConfig : EntityAnimationConfig
 {
     [Header("Collection Animation States")]

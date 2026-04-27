@@ -30,7 +30,7 @@ MonoBehaviour:
   specialFeatures:
   - rid: 451546934818111489
   initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 4143a6befc62ae845b69e224661ccccb, type: 2}
+  - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
     level: 1
   initialAccessories:
   - {fileID: 11400000, guid: 2c35fd36a60d0cb4194ed451ed23d89b, type: 2}

@@ -15,13 +15,13 @@ MonoBehaviour:
   buffId: Buff_Swiftness
   displayName: "\u8FC5\u6377"
   icon: {fileID: 73420571, guid: 80d9c25e3fb5718428929790d5add98f, type: 3}
+  description: 
   polarity: 0
   durationPolicy: 1
   durationSeconds: 10
   maxStackCount: 1
   refreshMode: 1
   overflowMode: 1
-  descriptionLines: []
   propertyModifiers:
   - propType: 4
     modifierType: 1

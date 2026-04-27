@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu(fileName = "Map Ground Theme", menuName = "SO/Map/Ground Theme", order = 0)]
+[CreateAssetMenu(fileName = "Map Ground Theme", menuName = ScriptableObjectMenuPaths.MAP_GROUND_THEME, order = 0)]
 public class MapGroundThemeSO : ScriptableObject
 {
     [Header("Fallback")]

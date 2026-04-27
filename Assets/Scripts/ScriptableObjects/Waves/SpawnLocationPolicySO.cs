@@ -9,7 +9,7 @@ public enum SpawnLocationPolicyType
     AroundPlayerRing = 0
 }
 
-[CreateAssetMenu(fileName = "Spawn Location Policy", menuName = "SO/Waves/Spawn Location Policy", order = 0)]
+[CreateAssetMenu(fileName = "Spawn Location Policy", menuName = ScriptableObjectMenuPaths.SPAWN_LOCATION_POLICY, order = 0)]
 public class SpawnLocationPolicySO : ScriptableObject
 {
     private const float MIN_DISTANCE = 0.1f;

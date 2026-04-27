@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ArcherEnemy", menuName = "Enemy/ArcherEnemy", order = 1)]
+[CreateAssetMenu(fileName = "ArcherEnemy", menuName = ScriptableObjectMenuPaths.ARCHER_ENEMY, order = 1)]
 public class ArcherEnemySO : EnemySO
 {
     [Header("Distance")]

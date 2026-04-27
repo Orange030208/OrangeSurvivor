@@ -4,7 +4,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
-[RequireComponent(typeof(EnemyBrain))]
 [RequireComponent(typeof(EnemyRuntimeBridge))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]

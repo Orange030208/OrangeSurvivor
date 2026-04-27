@@ -10,21 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
-  m_Name: Weapon Sequence - Melee Heavy Cleave
+  m_Name: Weapon Sequence - Melee Heavy Horizontal Slash
   m_EditorClassIdentifier: 
-  duration: 1.04
+  duration: 1.18
   restoreDefaultPoseOnComplete: 1
+  referenceTargetOffset: {x: 0, y: 1}
+  retargetScaleWeight: {x: 0, y: 1}
   motionKeyframes:
   - normalizedTime: 0
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
     localPositionX: 0
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
     localPositionY: 0
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
     localEulerAngles: {x: 0, y: 0, z: 0}
     ease: 0
     customCurve:
@@ -33,2429 +28,197 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.0069029024
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.07126441
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.008940918
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 1.7618889}
-    ease: 0
+  - normalizedTime: 0.027027028
+    localPositionX: -0.038596783
+    localPositionY: 0.004308478
+    localEulerAngles: {x: 0, y: 0, z: 1.3643514}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.013805804
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.14252883
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.01788184
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 3.5237784}
-    ease: 0
+  - normalizedTime: 0.054054055
+    localPositionX: -0.14574768
+    localPositionY: 0.016269507
+    localEulerAngles: {x: 0, y: 0, z: 5.152011}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.020700432
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.21378788
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.026820939
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 5.2862244}
-    ease: 0
+  - normalizedTime: 0.08108108
+    localPositionX: -0.30849347
+    localPositionY: 0.034436475
+    localEulerAngles: {x: 0, y: 0, z: 10.904884}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.027658211
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.28508437
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.035773553
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 7.0443053}
-    ease: 0
+  - normalizedTime: 0.10810811
+    localPositionX: -0.513875
+    localPositionY: 0.05736279
+    localEulerAngles: {x: 0, y: 0, z: 18.164885}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.034604706
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.35637212
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.04472352
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 8.803098}
-    ease: 0
+  - normalizedTime: 0.13513513
+    localPositionX: -0.748933
+    localPositionY: 0.08360182
+    localEulerAngles: {x: 0, y: 0, z: 26.473911}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.041325435
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.42751616
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.05362408
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 10.5771675}
-    ease: 0
+  - normalizedTime: 0.16216215
+    localPositionX: -1.0007085
+    localPositionY: 0.11170699
+    localEulerAngles: {x: 0, y: 0, z: 35.37388}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.047793668
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.49841616
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.06251075
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 12.376206}
-    ease: 0
+  - normalizedTime: 0.1891892
+    localPositionX: -1.2562422
+    localPositionY: 0.14023168
+    localEulerAngles: {x: 0, y: 0, z: 44.4067}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.054039706
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.56918234
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
-    localPositionY: 0.0713439
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
-    localEulerAngles: {x: 0, y: 0, z: 14.189328}
-    ease: 0
+  - normalizedTime: 0.21621622
+    localPositionX: -1.5025747
+    localPositionY: 0.16772926
+    localEulerAngles: {x: 0, y: 0, z: 53.114265}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.06
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.64
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.08
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 16}
-    ease: 4
+  - normalizedTime: 0.24324325
+    localPositionX: -1.726747
+    localPositionY: 0.19275315
+    localEulerAngles: {x: 0, y: 0, z: 61.038498}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.06736271
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.7322036
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.0909477
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 18.337328}
-    ease: 0
+  - normalizedTime: 0.27027026
+    localPositionX: -1.9158
+    localPositionY: 0.21385673
+    localEulerAngles: {x: 0, y: 0, z: 67.7213}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.074450456
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.8244425
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.101731576
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 20.673536}
-    ease: 0
+  - normalizedTime: 0.2972973
+    localPositionX: -2.0567744
+    localPositionY: 0.22959341
+    localEulerAngles: {x: 0, y: 0, z: 72.70458}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.08136038
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -0.9165114
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.112503566
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 23.026903}
-    ease: 0
+  - normalizedTime: 0.3243243
+    localPositionX: -2.136711
+    localPositionY: 0.23851655
+    localEulerAngles: {x: 0, y: 0, z: 75.53024}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.0880835
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.0085475
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.123191066
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 25.384586}
-    ease: 0
+  - normalizedTime: 0.35135135
+    localPositionX: -2.1283288
+    localPositionY: 0.2481267
+    localEulerAngles: {x: 0, y: 0, z: 77.083565}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.09462874
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.1004078
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.13387017
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 27.760113}
-    ease: 0
+  - normalizedTime: 0.3783784
+    localPositionX: -2.0859923
+    localPositionY: 0.2640029
+    localEulerAngles: {x: 0, y: 0, z: 79.200386}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.1010861
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.1915364
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.14486146
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 30.20464}
-    ease: 0
+  - normalizedTime: 0.4054054
+    localPositionX: -2.070004
+    localPositionY: 0.26999855
+    localEulerAngles: {x: 0, y: 0, z: 79.99981}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.107510865
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.2818556
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.15647623
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 32.721817}
-    ease: 0
+  - normalizedTime: 0.43243244
+    localPositionX: -2.086945
+    localPositionY: 0.26364568
+    localEulerAngles: {x: 0, y: 0, z: 79.152756}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.11384269
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.3714303
-    xDynamicMinNormalizedReach: 0.22399999
-    xDynamicMaxNormalizedReach: 0.64
-    localPositionY: 0.16839074
-    yDynamicMinNormalizedReach: 0.027999999
-    yDynamicMaxNormalizedReach: 0.08
-    localEulerAngles: {x: 0, y: 0, z: 35.30892}
-    ease: 0
+  - normalizedTime: 0.45945945
+    localPositionX: -2.1298418
+    localPositionY: 0.24755934
+    localEulerAngles: {x: 0, y: 0, z: 77.00791}
+    ease: 5
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.12
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.46
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.18
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 38}
-    ease: 7
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.12607591
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.5494807
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.19120386
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 40.884018}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.13198416
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.6379874
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.20213477
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 43.86841}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.13780694
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.7258545
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.21334524
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 46.912754}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.14347753
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.8131241
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.22432639
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 50.020664}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.14906313
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.899763
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.23557042
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 53.187904}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.1548249
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -1.9858495
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.24913462
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 56.375946}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.16084541
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.0712914
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.26556948
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 59.573265}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.16704255
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.1560614
-    xDynamicMinNormalizedReach: 0.511
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.28437516
-    yDynamicMinNormalizedReach: 0.063
-    yDynamicMaxNormalizedReach: 0.18
-    localEulerAngles: {x: 0, y: 0, z: 62.7879}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.1734694
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.24
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.30666548
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 66}
-    ease: 9
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.17912431
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.3097644
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.3292971
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 68.68808}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.18499608
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.3784263
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.35545626
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 71.36271}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.19101785
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.446059
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.38413763
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 74.038994}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.19706479
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.5128393
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.41457826
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 76.72095}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.2032339
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.5785422
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.44733143
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 79.40054}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.20983462
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.6424332
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.48354974
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 82.07548}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.21697731
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.70422
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.52345806
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 84.73478}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.22454554
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.7638776
-    xDynamicMinNormalizedReach: 0.784
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5667602
-    yDynamicMinNormalizedReach: 0.098
-    yDynamicMaxNormalizedReach: 0.28
-    localEulerAngles: {x: 0, y: 0, z: 87.37677}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.23265325
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.82
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.61481476
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 90}
-    ease: 10
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.23902133
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.856676
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.65418357
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 91.871925}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.24584967
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.8889086
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.6979207
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 93.691574}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.25298163
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.917483
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.74482465
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 95.45342}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.26014972
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.9425128
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.79422086
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 97.16672}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.26749736
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.96387
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.8460612
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 98.811485}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.2756349
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.9823346
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.9002757
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 100.335884}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.28468612
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.9969518
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.9572429
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 101.70233}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.29443744
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.008258
-    xDynamicMinNormalizedReach: 0.987
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.0163286
-    yDynamicMinNormalizedReach: 0.133
-    yDynamicMaxNormalizedReach: 0.38
-    localEulerAngles: {x: 0, y: 0, z: 102.93554}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.30612245
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.02
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.0770358
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 104}
-    ease: 2
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.32112968
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0368302
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.139711
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 104.903694}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.33853152
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0556765
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.2036811
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 105.62751}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.35830683
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.07
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.2719501
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 106.03762}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.3803561
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0788422
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.3438251
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 106.084656}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.4027683
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0805469
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.4138179
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 105.76023}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.42230254
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0681334
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.4796991
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 105.14287}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.43949515
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0447137
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.5420063
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 104.31427}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.4512546
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -3.0062294
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.5928764
-    yDynamicMinNormalizedReach: 0.161
-    yDynamicMaxNormalizedReach: 0.46
-    localEulerAngles: {x: 0, y: 0, z: 103.21018}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.45918366
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.96
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.6355547
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 102}
-    ease: 2
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.4652351
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.8773668
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.6882447
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 100.003624}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.46931556
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.7919123
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.7356173
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 97.96445}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.47310165
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.705884
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.7810689
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 95.885635}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.47624657
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.620629
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.8295981
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 93.81202}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.4789945
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.5343525
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.8753656
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 91.69324}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.482118
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.4434276
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.9036477
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 89.37798}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.48565254
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.3518865
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.8898802
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 86.94688}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.48918703
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: -2.265381
-    xDynamicMinNormalizedReach: 1
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 1.8538685
-    yDynamicMinNormalizedReach: 0.168
-    yDynamicMaxNormalizedReach: 0.48
-    localEulerAngles: {x: 0, y: 0, z: 84.57493}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.49362752
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -2.18
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.31010023
-    yDynamicMinNormalizedReach: 0.31010023
-    yDynamicMaxNormalizedReach: 0.58
-    localEulerAngles: {x: 0, y: 0, z: 82}
-    ease: 11
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5027747
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -2.0553622
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5771944
-    yDynamicMinNormalizedReach: 0.31010023
-    yDynamicMaxNormalizedReach: 0.5771944
-    localEulerAngles: {x: 0, y: 0, z: 77.633286}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5132644
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.9332039
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5783986
-    yDynamicMinNormalizedReach: 0.31010023
-    yDynamicMaxNormalizedReach: 0.5783986
-    localEulerAngles: {x: 0, y: 0, z: 72.99249}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5244313
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.8128734
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.49751934
-    yDynamicMinNormalizedReach: 0.49751934
-    yDynamicMaxNormalizedReach: 0.58
-    localEulerAngles: {x: 0, y: 0, z: 68.17115}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5362256
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.6937331
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5781582
-    yDynamicMinNormalizedReach: 0.49751934
-    yDynamicMaxNormalizedReach: 0.5781582
-    localEulerAngles: {x: 0, y: 0, z: 63.160034}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.54863465
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.5763435
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5762279
-    yDynamicMinNormalizedReach: 0.49751934
-    yDynamicMaxNormalizedReach: 0.5762279
-    localEulerAngles: {x: 0, y: 0, z: 57.97725}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5603836
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.4588006
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4923093
-    yDynamicMinNormalizedReach: 0.4923093
-    yDynamicMaxNormalizedReach: 0.58
-    localEulerAngles: {x: 0, y: 0, z: 52.86923}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.57153755
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.3387196
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5944045
-    yDynamicMinNormalizedReach: 0.4923093
-    yDynamicMaxNormalizedReach: 0.5944045
-    localEulerAngles: {x: 0, y: 0, z: 47.797005}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.58175594
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.2217245
-    xDynamicMinNormalizedReach: 0.763
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.6129615
-    yDynamicMinNormalizedReach: 0.4923093
-    yDynamicMaxNormalizedReach: 0.6129615
-    localEulerAngles: {x: 0, y: 0, z: 42.93108}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.59132665
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.1
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.35661528
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 38}
-    ease: 11
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5957726
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -1.0282286
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.6292808
-    yDynamicMinNormalizedReach: 0.6292808
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 35.24189}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.5994888
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.955473
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.6282041
-    yDynamicMinNormalizedReach: 0.6282041
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 32.54353}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.60298187
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.8824971
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 29.864695}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.60619414
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.8094537
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 27.207428}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.60916036
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.7361672
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 24.573296}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6121377
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.66270983
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 21.95681}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6152012
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.58906764
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 19.358997}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.61827046
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.51523983
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.35661528
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 16.779737}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6213454
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.441256
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.3700595
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 14.215978}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.62445736
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.3665752
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 11.646202}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6275749
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.29173937
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 9.092045}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.63067394
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.21671721
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 6.5563903}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.63369
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.14157808
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 4.031636}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6366864
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: -0.06626084
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: 1.5242038}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6398378
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.00950183
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: -0.9379547}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.64318144
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.085778505
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: -3.3479948}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6466801
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.16250321
-    xDynamicMinNormalizedReach: 0.385
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3700595
-    yDynamicMaxNormalizedReach: 0.76
-    localEulerAngles: {x: 0, y: 0, z: -5.7125545}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6505102
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.24
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.3774837
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -8}
-    ease: 11
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.65408015
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.30487764
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -9.800201}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6580226
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.37060633
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -11.515172}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6622491
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.43706825
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -13.156793}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.66675586
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.5042304
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -14.725941}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.67154646
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.5721216
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -16.221338}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6763672
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.640311
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -17.687294}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6811247
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.70871
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -19.133736}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6859046
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.77738315
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3774837
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -20.552767}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.6906889
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.8460405
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.37828568
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -21.97335}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.69536936
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.9129147
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -23.380514}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.70005405
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 0.97977173
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.6273885
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -24.789274}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7047174
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.0468625
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -26.174726}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7094436
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.1142646
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -27.527534}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.71414065
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.181904
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -28.856308}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7185523
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.2497326
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.4878049
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -30.166952}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.72270316
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.3176994
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -31.466253}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7265602
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.385859
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.37828568
-    yDynamicMaxNormalizedReach: 0.9
-    localEulerAngles: {x: 0, y: 0, z: -32.746}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.73
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.454285
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.3630252
-    yDynamicMinNormalizedReach: 0.3630252
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -34}
-    ease: 13
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7335935
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.5373299
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3630252
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -35.481846}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7368302
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.6205986
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.3630252
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -36.941265}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.73992765
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.7039814
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.49663174
-    yDynamicMinNormalizedReach: 0.49663174
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -38.389893}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7428487
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.7880509
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.49663174
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -39.83089}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.74562895
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.8722346
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.62738854
-    yDynamicMinNormalizedReach: 0.49663174
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -41.261303}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7485132
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.9563217
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.5
-    yDynamicMinNormalizedReach: 0.5
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -42.70062}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.751644
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.040613
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.63475114
-    yDynamicMinNormalizedReach: 0.63475114
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -44.1664}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.75490075
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.1248584
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.64180595
-    yDynamicMinNormalizedReach: 0.64180595
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -45.64393}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.75779384
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.1989205
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.32180843
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.88
-    localEulerAngles: {x: 0, y: 0, z: -46.94578}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.76157254
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.2956834
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.56122166
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.56122166
-    localEulerAngles: {x: 0, y: 0, z: -48.64649}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7645648
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.3715127
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.49082863
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.49082863
-    localEulerAngles: {x: 0, y: 0, z: -49.98231}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7680052
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.4573922
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4223338
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.4223338
-    localEulerAngles: {x: 0, y: 0, z: -51.500397}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.77035886
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.5192454
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.39349434
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.39349434
-    localEulerAngles: {x: 0, y: 0, z: -52.582153}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.77324665
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.5960877
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.36970004
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.36970004
-    localEulerAngles: {x: 0, y: 0, z: -53.922855}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.77683
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.6694312
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.34504673
-    yDynamicMinNormalizedReach: 0.32180843
-    yDynamicMaxNormalizedReach: 0.34504673
-    localEulerAngles: {x: 0, y: 0, z: -55.28218}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7804316
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.721593
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.31717178
-    yDynamicMinNormalizedReach: 0.31717178
-    yDynamicMaxNormalizedReach: 0.31717178
-    localEulerAngles: {x: 0, y: 0, z: -56.33303}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.7843547
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.7671802
-    xDynamicMinNormalizedReach: 0.413
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.28792483
-    yDynamicMinNormalizedReach: 0.28792483
-    yDynamicMaxNormalizedReach: 0.28792483
-    localEulerAngles: {x: 0, y: 0, z: -57.314}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.79
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.7742858
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.2554621
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.2554621
-    localEulerAngles: {x: 0, y: 0, z: -58}
-    ease: 13
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8000881
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.65482
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.22056442
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.22056442
-    localEulerAngles: {x: 0, y: 0, z: -57.642414}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8084902
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.5111816
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.19885853
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.19885853
-    localEulerAngles: {x: 0, y: 0, z: -56.798035}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8162765
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.3642888
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.18060185
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.18060185
-    localEulerAngles: {x: 0, y: 0, z: -55.808006}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.823624
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.2056847
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.16407204
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.16407204
-    localEulerAngles: {x: 0, y: 0, z: -54.646828}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8302543
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 2.044796
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.15176316
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.15176316
-    localEulerAngles: {x: 0, y: 0, z: -53.336025}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.83716965
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.8837857
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.14289407
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.14289407
-    localEulerAngles: {x: 0, y: 0, z: -51.821133}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.84446734
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.7267542
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.14052494
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.14052494
-    localEulerAngles: {x: 0, y: 0, z: -50.13032}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8519643
-    xPositionMode: 0
-    yPositionMode: 1
-    dynamicPositionStrategy: 1
-    localPositionX: 1.571426
-    xDynamicMinNormalizedReach: 0.651
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.14224792
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.14224792
-    localEulerAngles: {x: 0, y: 0, z: -48.24617}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.86
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.42
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.44
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -46}
+  - normalizedTime: 0.4864865
+    localPositionX: -2.0098882
+    localPositionY: 0.48527426
+    localEulerAngles: {x: 0, y: 0, z: 72.544785}
     ease: 8
     customCurve:
       serializedVersion: 2
@@ -2463,161 +226,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.8656101
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.3307209
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.4139353
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -44.230335}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.87156135
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.250225
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.37365508
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -42.144386}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8777863
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.1725987
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.33416325
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -39.76675}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.884271
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.095834
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.30220944
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -37.035843}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.89102954
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 1.0216446
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.27187327
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -34.005795}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.8979935
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.9473164
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.2425686
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -30.950342}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.9051388
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.8721938
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.21411064
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -27.937687}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.9124846
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.79688954
-    xDynamicMinNormalizedReach: 0.49699998
-    xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.18666996
-    yDynamicMinNormalizedReach: 0.154
-    yDynamicMaxNormalizedReach: 0.44
-    localEulerAngles: {x: 0, y: 0, z: -24.907007}
-    ease: 0
-    customCurve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  - normalizedTime: 0.92
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.72
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.16
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -22}
+  - normalizedTime: 0.5135135
+    localPositionX: -1.7886218
+    localPositionY: 0.5141649
+    localEulerAngles: {x: 0, y: 0, z: 64.51744}
     ease: 8
     customCurve:
       serializedVersion: 2
@@ -2625,306 +237,187 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.92492294
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.6689386
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.14347082
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -20.310423}
-    ease: 0
+  - normalizedTime: 0.5405405
+    localPositionX: -1.410514
+    localPositionY: 0.5610715
+    localEulerAngles: {x: 0, y: 0, z: 50.800045}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9300098
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.61626524
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.1277078
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -18.752062}
-    ease: 0
+  - normalizedTime: 0.5675676
+    localPositionX: -0.9173326
+    localPositionY: 0.6125272
+    localEulerAngles: {x: 0, y: 0, z: 32.907883}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.935284
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.5630214
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.11291119
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -17.221985}
-    ease: 0
+  - normalizedTime: 0.5945946
+    localPositionX: -0.35084817
+    localPositionY: 0.6503231
+    localEulerAngles: {x: 0, y: 0, z: 12.356353}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9407837
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.50947356
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.099329606
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -15.689509}
-    ease: 0
+  - normalizedTime: 0.6216216
+    localPositionX: 0.24717157
+    localPositionY: 0.65896046
+    localEulerAngles: {x: 0, y: 0, z: -9.339247}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9464733
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.4554067
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.08675855
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -14.1837015}
-    ease: 0
+  - normalizedTime: 0.6486486
+    localPositionX: 0.8349579
+    localPositionY: 0.63466793
+    localEulerAngles: {x: 0, y: 0, z: -30.663588}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9522529
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.40136096
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.07461545
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -12.666302}
-    ease: 0
+  - normalizedTime: 0.6756757
+    localPositionX: 1.3707435
+    localPositionY: 0.58783954
+    localEulerAngles: {x: 0, y: 0, z: -50.10139}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9580874
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.34747294
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.06270419
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -11.128533}
-    ease: 0
+  - normalizedTime: 0.7027027
+    localPositionX: 1.8127571
+    localPositionY: 0.5365281
+    localEulerAngles: {x: 0, y: 0, z: -66.13724}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.96400833
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.29361907
-    xDynamicMinNormalizedReach: 0.252
-    xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.051205106
-    yDynamicMinNormalizedReach: 0.055999998
-    yDynamicMaxNormalizedReach: 0.16
-    localEulerAngles: {x: 0, y: 0, z: -9.578778}
-    ease: 0
+  - normalizedTime: 0.7297297
+    localPositionX: 2.1192317
+    localPositionY: 0.49717098
+    localEulerAngles: {x: 0, y: 0, z: -77.255844}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.97
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.24
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.04
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -8}
-    ease: 6
+  - normalizedTime: 0.7567568
+    localPositionX: 2.2483985
+    localPositionY: 0.48021057
+    localEulerAngles: {x: 0, y: 0, z: -81.9419}
+    ease: 8
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.97309786
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.21296087
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.034467064
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -7.16688}
-    ease: 0
+  - normalizedTime: 0.7837838
+    localPositionX: 2.18809
+    localPositionY: 0.46679255
+    localEulerAngles: {x: 0, y: 0, z: -79.74373}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.97626555
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.186164
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.029224211
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -6.3043647}
-    ease: 0
+  - normalizedTime: 0.8108108
+    localPositionX: 1.9901544
+    localPositionY: 0.42456627
+    localEulerAngles: {x: 0, y: 0, z: -72.53007}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.9795134
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.15945649
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.024357874
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -5.4261274}
-    ease: 0
+  - normalizedTime: 0.8378378
+    localPositionX: 1.6935079
+    localPositionY: 0.3612817
+    localEulerAngles: {x: 0, y: 0, z: -61.718956}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.98286897
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.13281159
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.020016866
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -4.532973}
-    ease: 0
+  - normalizedTime: 0.8648649
+    localPositionX: 1.3367088
+    localPositionY: 0.28516454
+    localEulerAngles: {x: 0, y: 0, z: -48.71561}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.98630637
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.106264256
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.01606826
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -3.6242642}
-    ease: 0
+  - normalizedTime: 0.8918919
+    localPositionX: 0.95831734
+    localPositionY: 0.20444103
+    localEulerAngles: {x: 0, y: 0, z: -34.925343}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.98974675
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.07971947
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.012133267
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -2.7149813}
-    ease: 0
+  - normalizedTime: 0.9189189
+    localPositionX: 0.59689194
+    localPositionY: 0.12733695
+    localEulerAngles: {x: 0, y: 0, z: -21.753395}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.99316305
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.053144813
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.008082042
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -1.8102648}
-    ease: 0
+  - normalizedTime: 0.9459459
+    localPositionX: 0.29099137
+    localPositionY: 0.06207816
+    localEulerAngles: {x: 0, y: 0, z: -10.60502}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.99658155
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
-    localPositionX: 0.02657217
-    xDynamicMinNormalizedReach: 0.084
-    xDynamicMaxNormalizedReach: 0.24
-    localPositionY: 0.004040984
-    yDynamicMinNormalizedReach: 0.0139999995
-    yDynamicMaxNormalizedReach: 0.04
-    localEulerAngles: {x: 0, y: 0, z: -0.9051244}
-    ease: 0
+  - normalizedTime: 0.972973
+    localPositionX: 0.079174116
+    localPositionY: 0.016890477
+    localEulerAngles: {x: 0, y: 0, z: -2.8854566}
+    ease: 3
     customCurve:
       serializedVersion: 2
       m_Curve: []
@@ -2932,15 +425,8 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - normalizedTime: 1
-    xPositionMode: 0
-    yPositionMode: 0
-    dynamicPositionStrategy: 0
     localPositionX: 0
-    xDynamicMinNormalizedReach: 0
-    xDynamicMaxNormalizedReach: 0
     localPositionY: 0
-    yDynamicMinNormalizedReach: 0
-    yDynamicMaxNormalizedReach: 0
     localEulerAngles: {x: 0, y: 0, z: 0}
     ease: 3
     customCurve:
@@ -2950,15 +436,15 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   eventKeyframes:
-  - normalizedTime: 0.5
+  - normalizedTime: 0.49
     eventType: 0
     eventKey: 0
-  - normalizedTime: 0.64
+  - normalizedTime: 0.82
+    eventType: 1
+    eventKey: 0
+  - normalizedTime: 0.61
     eventType: 3
     eventKey: 0
-  - normalizedTime: 0.69
+  - normalizedTime: 0.65
     eventType: 4
-    eventKey: 0
-  - normalizedTime: 0.83
-    eventType: 1
     eventKey: 0

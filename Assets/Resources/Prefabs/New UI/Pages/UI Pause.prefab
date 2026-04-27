@@ -242,8 +242,8 @@ MonoBehaviour:
   autoPlaySequenceDirector: 1
   continueButton: {fileID: 0}
   menuButton: {fileID: 0}
+  inventoryUI: {fileID: 0}
   propertiesSidebar: {fileID: 0}
-  propertiesViewSync: {fileID: 0}
   inventorySidebar: {fileID: 0}
   slideDuration: 0.25
 --- !u!114 &4513989171235067532
@@ -2999,10 +2999,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: 
+  currentConfigOption: Sidebar/Panel Soft
   motionIntensity: 1
   useUnscaledTime: 1
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.28
+    ease: 6
+    deactivateOnComplete: 0
   - action: 0
     pose:
       fade: 0
@@ -3017,8 +3034,8 @@ MonoBehaviour:
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.24
-    ease: 9
+    duration: 0.28
+    ease: 6
     deactivateOnComplete: 0
   - action: 1
     pose:
@@ -3034,59 +3051,8 @@ MonoBehaviour:
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
-  - action: 3
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 2}
-      scale: 1
-      scaleMultiplier: 1.02
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: -4}
-      scale: 1
-      scaleMultiplier: 0.96
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
+    duration: 0.2
+    ease: 5
     deactivateOnComplete: 0
   hiddenDirection: 0
   extraHideOffset: 0

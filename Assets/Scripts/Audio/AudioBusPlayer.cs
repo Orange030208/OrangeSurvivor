@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -17,8 +18,8 @@ public class AudioBusPlayer : MonoBehaviour
 
     private Tween volumeTween;
     private float busVolume = AudioConstants.DEFAULT_VOLUME;
-    private float currentCueVolume = AudioConstants.DEFAULT_VOLUME;
     private string currentCueId;
+    private readonly List<AudioSource> activeOneShotSources = new();
 
     public bool IsPlaying => audioSource.isPlaying;
     public string CurrentCueId => currentCueId;
@@ -31,6 +32,7 @@ public class AudioBusPlayer : MonoBehaviour
     private void OnDestroy()
     {
         volumeTween?.Kill();
+        activeOneShotSources.Clear();
     }
 
     public bool IsPlayingCue(string cueId)
@@ -80,16 +82,15 @@ public class AudioBusPlayer : MonoBehaviour
         if (!source.isPlaying || string.IsNullOrEmpty(currentCueId))
         {
             ApplyLoopCue(source, cueData);
-            FadeToVolume(source, GetTargetVolume(cueData.Volume), clampedDuration);
+            FadeToVolume(source, GetTargetVolume(), clampedDuration);
             return;
         }
 
         if (currentCueId == cueData.CueId)
         {
-            currentCueVolume = cueData.Volume;
             if (!restartIfPlaying)
             {
-                FadeToVolume(source, GetTargetVolume(cueData.Volume), clampedDuration);
+                FadeToVolume(source, GetTargetVolume(), clampedDuration);
                 return;
             }
         }
@@ -101,7 +102,7 @@ public class AudioBusPlayer : MonoBehaviour
             {
                 ApplyLoopCue(source, cueData);
                 source.volume = AudioConstants.MIN_FADE_DURATION;
-                FadeToVolume(source, GetTargetVolume(cueData.Volume), clampedDuration);
+                FadeToVolume(source, GetTargetVolume(), clampedDuration);
             });
     }
 
@@ -116,6 +117,7 @@ public class AudioBusPlayer : MonoBehaviour
         source.Stop();
         source.clip = null;
         currentCueId = null;
+        StopActiveOneShotSources();
     }
 
     /// <summary>
@@ -145,12 +147,13 @@ public class AudioBusPlayer : MonoBehaviour
     {
         AudioSource source = audioSource;
         busVolume = Mathf.Clamp(volume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        UpdateActiveOneShotVolumes();
         if (!source.isPlaying)
         {
             return;
         }
 
-        source.volume = GetTargetVolume(currentCueVolume);
+        source.volume = GetTargetVolume();
     }
 
     private void PlayOneShot(AudioCueData cueData)
@@ -161,10 +164,11 @@ public class AudioBusPlayer : MonoBehaviour
         AudioSource oneShotSource = tempObject.AddComponent<AudioSource>();
         CopyOneShotSettings(oneShotSource);
         oneShotSource.clip = cueData.Clip;
-        oneShotSource.volume = GetTargetVolume(cueData.Volume);
+        oneShotSource.volume = GetTargetVolume();
         oneShotSource.pitch = cueData.Pitch;
         oneShotSource.loop = false;
         oneShotSource.Play();
+        activeOneShotSources.Add(oneShotSource);
 
         float clipDuration = Mathf.Max(0.01f, cueData.Clip.length / Mathf.Max(0.01f, Mathf.Abs(cueData.Pitch)));
         Destroy(tempObject, clipDuration);
@@ -189,11 +193,10 @@ public class AudioBusPlayer : MonoBehaviour
     {
         volumeTween?.Kill();
         currentCueId = cueData.CueId;
-        currentCueVolume = cueData.Volume;
         source.loop = true;
         source.clip = cueData.Clip;
         source.pitch = cueData.Pitch;
-        source.volume = GetTargetVolume(cueData.Volume);
+        source.volume = GetTargetVolume();
         source.Play();
     }
 
@@ -209,9 +212,38 @@ public class AudioBusPlayer : MonoBehaviour
         volumeTween = source.DOFade(targetVolume, fadeDuration).SetUpdate(true);
     }
 
-    private float GetTargetVolume(float cueVolume)
+    private float GetTargetVolume()
     {
-        return Mathf.Clamp(cueVolume * busVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        return busVolume;
+    }
+
+    private void UpdateActiveOneShotVolumes()
+    {
+        for (int i = activeOneShotSources.Count - 1; i >= 0; i--)
+        {
+            AudioSource source = activeOneShotSources[i];
+            if (source == null || !source.isPlaying)
+            {
+                activeOneShotSources.RemoveAt(i);
+                continue;
+            }
+
+            source.volume = GetTargetVolume();
+        }
+    }
+
+    private void StopActiveOneShotSources()
+    {
+        for (int i = activeOneShotSources.Count - 1; i >= 0; i--)
+        {
+            AudioSource source = activeOneShotSources[i];
+            if (source != null)
+            {
+                Destroy(source.gameObject);
+            }
+        }
+
+        activeOneShotSources.Clear();
     }
 
     private void EnsureAudioSource()

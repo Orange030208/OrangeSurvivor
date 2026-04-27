@@ -4,7 +4,7 @@ using UnityEngine;
 /// 单波配置资源。
 /// 描述该波的完成条件、刷怪计划、刷怪位置策略以及奖励/流程语义。
 /// </summary>
-[CreateAssetMenu(fileName = "Wave Definition", menuName = "SO/Waves/Wave Definition", order = 0)]
+[CreateAssetMenu(fileName = "Wave Definition", menuName = ScriptableObjectMenuPaths.WAVE_DEFINITION, order = 0)]
 public class WaveDefinitionSO : ScriptableObject
 {
     private const float MIN_DURATION = 1f;

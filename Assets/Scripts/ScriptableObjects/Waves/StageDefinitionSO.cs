@@ -4,7 +4,7 @@ using UnityEngine;
 /// 整个关卡的波次配置入口。
 /// 运行时会从这里按顺序读取每一波的定义并构建关卡波次列表。
 /// </summary>
-[CreateAssetMenu(fileName = "Stage Definition", menuName = "SO/Waves/Stage Definition", order = 0)]
+[CreateAssetMenu(fileName = "Stage Definition", menuName = ScriptableObjectMenuPaths.STAGE_DEFINITION, order = 0)]
 public class StageDefinitionSO : ScriptableObject
 {
     [Header("Identity")]

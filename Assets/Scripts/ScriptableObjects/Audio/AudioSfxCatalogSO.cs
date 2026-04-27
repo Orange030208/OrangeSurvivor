@@ -8,7 +8,7 @@ using UnityEngine;
 /// - 让 UI 与业务层只依赖强类型枚举；
 /// - 只负责配置索引与缓存，不参与实际播放。
 /// </summary>
-[CreateAssetMenu(fileName = "Audio Sfx Catalog", menuName = AudioConstants.AUDIO_SFX_CATALOG_MENU_PATH, order = 2)]
+[CreateAssetMenu(fileName = "Audio Sfx Catalog", menuName = ScriptableObjectMenuPaths.AUDIO_SFX_CATALOG, order = 2)]
 public class AudioSfxCatalogSO : ScriptableObject
 {
     [Tooltip("音效配置列表。每个枚举键直接对应一个具体音频配置。")]

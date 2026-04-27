@@ -46,7 +46,7 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
         if (attackSequence == null)
         {
-            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.RangedRifleKick);
+            runtimeDefaultSequence = WeaponAnimationSequencePresets.CreatePreset(WeaponAnimationSequencePresetId.RangedGunfireShot);
             attackSequence = runtimeDefaultSequence;
         }
     }
@@ -83,8 +83,7 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
         activeBurstId = -1;
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
-        float reachScale = Mathf.Max(0.1f, Range);
-        sequenceBridge.Play(attackSequence, sequenceDuration, reachScale);
+        sequenceBridge.Play(attackSequence, sequenceDuration);
     }
 
     private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)

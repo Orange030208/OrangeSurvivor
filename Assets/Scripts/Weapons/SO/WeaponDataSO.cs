@@ -54,7 +54,7 @@ public struct WeaponSequenceVfxDefinition
     public Vector3 LocalEulerAngles => localEulerAngles;
 }
 
-[CreateAssetMenu(fileName = "Weapon Data", menuName = "SO/WeaponData", order = 0)]
+[CreateAssetMenu(fileName = "Weapon Data", menuName = ScriptableObjectMenuPaths.WEAPON_DATA, order = 0)]
 public class WeaponDataSO : ItemDataSO, IDescribable
 {
     [Header("Runtime")]

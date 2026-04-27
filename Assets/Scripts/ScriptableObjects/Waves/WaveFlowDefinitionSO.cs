@@ -4,7 +4,7 @@ using UnityEngine;
 /// 波次结束后的流程配置。
 /// 用于描述该波结束后是否进过渡页、商店，或直接进入下一波。
 /// </summary>
-[CreateAssetMenu(fileName = "Wave Flow Definition", menuName = "SO/Waves/Wave Flow Definition", order = 0)]
+[CreateAssetMenu(fileName = "Wave Flow Definition", menuName = ScriptableObjectMenuPaths.WAVE_FLOW_DEFINITION, order = 0)]
 public class WaveFlowDefinitionSO : ScriptableObject
 {
     [Header("Flow")]

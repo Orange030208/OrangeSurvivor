@@ -31,8 +31,6 @@ MonoBehaviour:
   - rid: 451546934818111488
   - rid: 451546934818111493
   initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 00f0fce340da97d4b9baec7e221641e9, type: 2}
-    level: 4
   - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
     level: 5
   initialAccessories:

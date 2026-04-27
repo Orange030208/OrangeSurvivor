@@ -1,7 +1,7 @@
 public static class UIFrameworkConstants
 {
-    public const string SETTINGS_MENU_PATH = "UniversalUI/Settings/UI Framework Settings";
-    public const string CATALOG_MENU_PATH = "UniversalUI/Settings/UI Prefab Catalog";
+    public const string SETTINGS_MENU_PATH = ScriptableObjectMenuPaths.UI_FRAMEWORK_SETTINGS;
+    public const string CATALOG_MENU_PATH = ScriptableObjectMenuPaths.UI_PREFAB_CATALOG;
     public const string DEFAULT_INSTANCE_ID_PREFIX = "UIInst_";
     public const int LAYER_BACKGROUND_SORTING_ORDER = -300;
     public const int LAYER_SCENE_OVERLAY_SORTING_ORDER = -100;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item Quality Visual Config", menuName = "SO/UI/Item Quality Visual Config", order = 0)]
+[CreateAssetMenu(fileName = "Item Quality Visual Config", menuName = ScriptableObjectMenuPaths.ITEM_QUALITY_VISUAL_CONFIG, order = 0)]
 public class ItemQualityVisualConfigSO : ScriptableObject
 {
     [Header("Weapon Level Styles")]

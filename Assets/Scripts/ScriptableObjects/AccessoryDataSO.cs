@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Accessory Data", menuName = "SO/Accessory", order = 0)]
+[CreateAssetMenu(fileName = "Accessory Data", menuName = ScriptableObjectMenuPaths.ACCESSORY, order = 0)]
 public class AccessoryDataSO : ItemDataSO
 {
     [SerializeField] protected string accessoryId;

@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 中距离绕圈策略
 /// </summary>
-[CreateAssetMenu(fileName = "CircleKiteStrategy", menuName = "Entity/Component/Move/CircleKiteStrategy")]
+[CreateAssetMenu(fileName = "CircleKiteStrategy", menuName = ScriptableObjectMenuPaths.CIRCLE_KITE_STRATEGY)]
 public class CircleKiteStrategy : MovementStrategyBase
 {
     [SerializeField] private float circleSpeedRatio = 0.5f;

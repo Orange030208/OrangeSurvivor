@@ -296,11 +296,11 @@ MonoBehaviour:
     - {fileID: 8718368499556981394}
     startDelay: 0
     stagger: 0
-    playTogether: 0
+    playTogether: 1
   exitGroups: []
   reverseExitOrder: 1
   useUnscaledTime: 1
-  timeScale: 1
+  timeScale: 0.6
 --- !u!1 &4333633928833420987
 GameObject:
   m_ObjectHideFlags: 0
@@ -672,7 +672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Sidebar/Panel
+  currentConfigOption: Sidebar/Panel Soft
   motionIntensity: 1
   useUnscaledTime: 1
   actionClips:
@@ -690,8 +690,8 @@ MonoBehaviour:
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.22
-    ease: 9
+    duration: 0.28
+    ease: 6
     deactivateOnComplete: 0
   - action: 0
     pose:
@@ -707,8 +707,8 @@ MonoBehaviour:
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.22
-    ease: 9
+    duration: 0.28
+    ease: 6
     deactivateOnComplete: 0
   - action: 1
     pose:
@@ -724,8 +724,8 @@ MonoBehaviour:
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.22
-    ease: 8
+    duration: 0.2
+    ease: 5
     deactivateOnComplete: 0
   hiddenDirection: 3
   extraHideOffset: 0

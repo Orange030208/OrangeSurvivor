@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MageEnemy", menuName = "Enemy/MageEnemy", order = 0)]
+[CreateAssetMenu(fileName = "MageEnemy", menuName = ScriptableObjectMenuPaths.MAGE_ENEMY, order = 0)]
 public class MageEnemySO : EnemySO
 {
     [Header("State Thresholds")]

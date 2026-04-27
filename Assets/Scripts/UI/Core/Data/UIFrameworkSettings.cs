@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = UIFrameworkConstants.SETTINGS_MENU_PATH, fileName = "UIFrameworkSettings")]
+[CreateAssetMenu(menuName = ScriptableObjectMenuPaths.UI_FRAMEWORK_SETTINGS, fileName = "UIFrameworkSettings")]
 public sealed class UIFrameworkSettings : ScriptableObject
 {
     [Header("Runtime")]

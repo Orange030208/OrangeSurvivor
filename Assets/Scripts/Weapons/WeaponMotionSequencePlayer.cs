@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 纯代码序列播放器：
-/// - 根据 AttackSequenceDefinitionSO 采样位移/旋转关键帧；
-/// - 根据事件关键帧发出命中窗口、发射、特效等事件。
-/// WeaponSequenceBridge 只是 MonoBehaviour 包装层，真正的时间推进和插值都在这里。
+/// Plays a weapon motion sequence and applies target-offset retargeting at sample time.
 /// </summary>
 public sealed class WeaponMotionSequencePlayer
 {
@@ -14,8 +11,8 @@ public sealed class WeaponMotionSequencePlayer
     private Vector3 defaultLocalPosition;
     private Vector3 defaultLocalEulerAngles;
     private AttackSequenceDefinitionSO currentSequence;
-    private IReadOnlyDictionary<int, Vector3> currentPositionOverrides;
-    private float currentReachScale = 1f;
+    private Vector2 currentTargetLocalOffset;
+    private bool hasRetargetTarget;
     private float elapsed;
     private float playbackDuration;
     private int nextEventIndex;
@@ -41,16 +38,21 @@ public sealed class WeaponMotionSequencePlayer
         defaultLocalEulerAngles = animatedTransform.localEulerAngles;
     }
 
-    public void Play(AttackSequenceDefinitionSO sequence, float durationOverride = -1f, float reachScale = 1f)
+    public void Play(AttackSequenceDefinitionSO sequence, float durationOverride = -1f)
     {
-        Play(sequence, null, durationOverride, reachScale);
+        Play(sequence, default, false, durationOverride);
     }
 
-    public void Play(AttackSequenceDefinitionSO sequence, IReadOnlyDictionary<int, Vector3> localPositionOverrides, float durationOverride = -1f, float reachScale = 1f)
+    public void Play(AttackSequenceDefinitionSO sequence, Vector2 targetLocalOffset, float durationOverride = -1f)
+    {
+        Play(sequence, targetLocalOffset, true, durationOverride);
+    }
+
+    private void Play(AttackSequenceDefinitionSO sequence, Vector2 targetLocalOffset, bool retarget, float durationOverride)
     {
         currentSequence = sequence;
-        currentPositionOverrides = localPositionOverrides;
-        currentReachScale = Mathf.Max(0.01f, reachScale);
+        currentTargetLocalOffset = targetLocalOffset;
+        hasRetargetTarget = retarget;
         elapsed = 0f;
         nextEventIndex = 0;
         IsPlaying = currentSequence != null;
@@ -61,12 +63,11 @@ public sealed class WeaponMotionSequencePlayer
         if (!IsPlaying)
         {
             RestoreDefaultPose();
+            return;
         }
-        else
-        {
-            SampleAndApplyPose(0f);
-            FlushEvents(0f);
-        }
+
+        SampleAndApplyPose(0f);
+        FlushEvents(0f);
     }
 
     public void Tick(float deltaTime)
@@ -100,8 +101,8 @@ public sealed class WeaponMotionSequencePlayer
     {
         IsPlaying = false;
         currentSequence = null;
-        currentPositionOverrides = null;
-        currentReachScale = 1f;
+        currentTargetLocalOffset = default;
+        hasRetargetTarget = false;
         elapsed = 0f;
         playbackDuration = 0f;
         nextEventIndex = 0;
@@ -119,7 +120,7 @@ public sealed class WeaponMotionSequencePlayer
             return;
         }
 
-        var events = currentSequence.EventKeyframes;
+        IReadOnlyList<WeaponSequenceEventKeyframe> events = currentSequence.EventKeyframes;
         while (nextEventIndex < events.Count && normalizedTime >= events[nextEventIndex].normalizedTime)
         {
             WeaponSequenceEventKeyframe keyframe = events[nextEventIndex];
@@ -136,13 +137,11 @@ public sealed class WeaponMotionSequencePlayer
         }
 
         Vector3 sampledPosition = defaultLocalPosition;
-        var keyframes = currentSequence.MotionKeyframes;
+        IReadOnlyList<WeaponMotionKeyframe> keyframes = currentSequence.MotionKeyframes;
         if (keyframes != null && keyframes.Count > 0)
         {
             WeaponMotionKeyframe from = keyframes[0];
             WeaponMotionKeyframe to = keyframes[keyframes.Count - 1];
-            int fromIndex = 0;
-            int toIndex = keyframes.Count - 1;
 
             for (int i = 0; i < keyframes.Count - 1; i++)
             {
@@ -152,8 +151,6 @@ public sealed class WeaponMotionSequencePlayer
                 {
                     from = current;
                     to = next;
-                    fromIndex = i;
-                    toIndex = i + 1;
                     break;
                 }
             }
@@ -162,9 +159,10 @@ public sealed class WeaponMotionSequencePlayer
             float linearT = Mathf.Clamp01((normalizedTime - from.normalizedTime) / segmentLength);
             float easedT = EvaluateEase(linearT, to.ease, to.customCurve);
 
-            Vector3 fromLocalPosition = ResolveLocalPosition(keyframes, fromIndex, from);
-            Vector3 toLocalPosition = ResolveLocalPosition(keyframes, toIndex, to);
+            Vector3 fromLocalPosition = ResolveLocalPosition(from);
+            Vector3 toLocalPosition = ResolveLocalPosition(to);
             sampledPosition = Vector3.LerpUnclamped(defaultLocalPosition + fromLocalPosition, defaultLocalPosition + toLocalPosition, easedT);
+
             Quaternion fromRotation = Quaternion.Euler(defaultLocalEulerAngles + from.localEulerAngles);
             Quaternion toRotation = Quaternion.Euler(defaultLocalEulerAngles + to.localEulerAngles);
             animatedTransform.localRotation = Quaternion.SlerpUnclamped(fromRotation, toRotation, easedT);
@@ -177,16 +175,34 @@ public sealed class WeaponMotionSequencePlayer
         }
     }
 
-    private Vector3 ResolveLocalPosition(IReadOnlyList<WeaponMotionKeyframe> keyframes, int keyframeIndex, WeaponMotionKeyframe keyframe)
+    private Vector3 ResolveLocalPosition(WeaponMotionKeyframe keyframe)
     {
-        if (currentPositionOverrides != null && currentPositionOverrides.TryGetValue(keyframeIndex, out Vector3 overridePosition))
+        Vector2 localPosition = new(keyframe.localPositionX, keyframe.localPositionY);
+        if (hasRetargetTarget && currentSequence != null)
         {
-            return overridePosition;
+            localPosition = RetargetLocalPosition(localPosition, currentSequence.ReferenceTargetOffset, currentTargetLocalOffset, currentSequence.RetargetScaleWeight);
         }
 
-        // 固定帧始终按配置里的分离 X/Y 位置直接播放，不受武器 Range 影响。
-        // 只有动态轴才会在外部先结合当前目标和攻击半径解出真实落点，再通过 override 传进来。
-        return new Vector3(keyframe.localPositionX, keyframe.localPositionY, 0f);
+        return new Vector3(localPosition.x, localPosition.y, 0f);
+    }
+
+    private static Vector2 RetargetLocalPosition(Vector2 localPosition, Vector2 referenceTargetOffset, Vector2 targetLocalOffset, Vector2 scaleWeight)
+    {
+        return new Vector2(
+            RetargetAxis(localPosition.x, referenceTargetOffset.x, targetLocalOffset.x, scaleWeight.x),
+            RetargetAxis(localPosition.y, referenceTargetOffset.y, targetLocalOffset.y, scaleWeight.y));
+    }
+
+    private static float RetargetAxis(float localValue, float referenceValue, float targetValue, float weight)
+    {
+        float clampedWeight = Mathf.Clamp01(weight);
+        if (clampedWeight <= 0f || Mathf.Approximately(localValue, 0f) || Mathf.Abs(referenceValue) < 0.0001f)
+        {
+            return localValue;
+        }
+
+        float scale = Mathf.Lerp(1f, targetValue / referenceValue, clampedWeight);
+        return localValue * scale;
     }
 
     private float EvaluateEase(float t, WeaponMotionEase ease, AnimationCurve customCurve)
@@ -220,29 +236,33 @@ public sealed class WeaponMotionSequencePlayer
                 {
                     return 0f;
                 }
+
                 if (t >= 1f)
                 {
                     return 1f;
                 }
+
                 return t < 0.5f
                     ? Mathf.Pow(2f, 20f * t - 10f) * 0.5f
                     : (2f - Mathf.Pow(2f, -20f * t + 10f)) * 0.5f;
             case WeaponMotionEase.OutBack:
-                const float c1 = 1.70158f;
-                const float c3 = c1 + 1f;
+                const float C1 = 1.70158f;
+                const float C3 = C1 + 1f;
                 float p = t - 1f;
-                return 1f + c3 * p * p * p + c1 * p * p;
+                return 1f + C3 * p * p * p + C1 * p * p;
             case WeaponMotionEase.OutElastic:
                 if (t <= 0f)
                 {
                     return 0f;
                 }
+
                 if (t >= 1f)
                 {
                     return 1f;
                 }
-                const float c4 = (2f * Mathf.PI) / 3f;
-                return Mathf.Pow(2f, -10f * t) * Mathf.Sin((t * 10f - 0.75f) * c4) + 1f;
+
+                const float C4 = (2f * Mathf.PI) / 3f;
+                return Mathf.Pow(2f, -10f * t) * Mathf.Sin((t * 10f - 0.75f) * C4) + 1f;
             case WeaponMotionEase.CustomCurve:
                 return customCurve != null ? customCurve.Evaluate(t) : t;
             default:

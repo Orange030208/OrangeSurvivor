@@ -4,7 +4,7 @@ using UnityEngine;
 /// 波次奖励配置。
 /// 只描述奖励内容本身，不直接决定奖励发放后的流程跳转。
 /// </summary>
-[CreateAssetMenu(fileName = "Wave Reward Definition", menuName = "SO/Waves/Wave Reward Definition", order = 0)]
+[CreateAssetMenu(fileName = "Wave Reward Definition", menuName = ScriptableObjectMenuPaths.WAVE_REWARD_DEFINITION, order = 0)]
 public class WaveRewardDefinitionSO : ScriptableObject
 {
     private const int MIN_REWARD_VALUE = 0;

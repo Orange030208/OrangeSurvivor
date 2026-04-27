@@ -7,10 +7,9 @@ public readonly struct AudioCueData
     public AudioClip Clip { get; }
     public AudioBusType BusType { get; }
     public AudioPlaybackMode PlaybackMode { get; }
-    public float Volume { get; }
     public float Pitch { get; }
 
-    public AudioCueData(string cueId, AudioClip clip, AudioBusType busType, AudioPlaybackMode playbackMode, float volume, float pitch)
+    public AudioCueData(string cueId, AudioClip clip, AudioBusType busType, AudioPlaybackMode playbackMode, float pitch)
     {
         if (string.IsNullOrWhiteSpace(cueId))
         {
@@ -26,7 +25,6 @@ public readonly struct AudioCueData
         Clip = clip;
         BusType = busType;
         PlaybackMode = playbackMode;
-        Volume = Mathf.Clamp(volume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
         Pitch = Mathf.Clamp(pitch, AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH);
     }
 }

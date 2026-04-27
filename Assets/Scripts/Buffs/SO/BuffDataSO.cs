@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Buff Data", menuName = "SO/Buff", order = 0)]
+[CreateAssetMenu(fileName = "Buff Data", menuName = ScriptableObjectMenuPaths.BUFF, order = 0)]
 public class BuffDataSO : ScriptableObject, IDescribable
 {
     private const string BUFF_ID_PREFIX = "Buff_";

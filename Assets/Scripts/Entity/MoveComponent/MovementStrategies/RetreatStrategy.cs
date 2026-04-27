@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 后撤策略
 /// </summary>
-[CreateAssetMenu(fileName = "RetreatStrategy", menuName = "Entity/Component/Move/RetreatStrategy")]
+[CreateAssetMenu(fileName = "RetreatStrategy", menuName = ScriptableObjectMenuPaths.RETREAT_STRATEGY)]
 public class RetreatStrategy : MovementStrategyBase
 {
     [SerializeField] private float safeDistance = 8f;

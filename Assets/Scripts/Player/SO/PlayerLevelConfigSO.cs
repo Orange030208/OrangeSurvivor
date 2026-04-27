@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Player Level Config", menuName = "SO/Player/Level Config", order = 0)]
+[CreateAssetMenu(fileName = "Player Level Config", menuName = ScriptableObjectMenuPaths.PLAYER_LEVEL_CONFIG, order = 0)]
 public class PlayerLevelConfigSO : ScriptableObject
 {
     private const int MIN_LEVEL = 1;

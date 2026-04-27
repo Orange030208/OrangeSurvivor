@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Projectile Definition", menuName = "SO/ProjectileDefinition", order = 0)]
+[CreateAssetMenu(fileName = "Projectile Definition", menuName = ScriptableObjectMenuPaths.PROJECTILE_DEFINITION, order = 0)]
 public class ProjectileDefinitionSO : ScriptableObject
 {
     [Header("标识")]
