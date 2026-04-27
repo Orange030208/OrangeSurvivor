@@ -17,6 +17,12 @@ public class AttackSequenceDefinitionSOEditor : Editor
     {
         serializedObject.Update();
 
+        if (GUILayout.Button("打开攻击序列工作台"))
+        {
+            AttackSequenceStudioWindow.Open((AttackSequenceDefinitionSO)target);
+        }
+
+        EditorGUILayout.Space(8f);
         DrawPresetToolbar();
         EditorGUILayout.Space(8f);
 

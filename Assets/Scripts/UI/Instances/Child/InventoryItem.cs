@@ -5,11 +5,6 @@ using UnityEngine.UI;
 public class InventoryItem : MonoBehaviour, IDisposable
 {
     [SerializeField] private Image iconImage;
-    [SerializeField] private Graphic[] colorDependencyGraphics;
-    [SerializeField] private Graphic[] secondaryColorDependencyGraphics;
-    [SerializeField] private Graphic[] glowGraphics;
-    [SerializeField] private GameObject[] premiumEffectObjects;
-    [SerializeField] private GameObject[] pulseEffectObjects;
     [SerializeField] private UIClickTarget button;
 
     private string entryId;
@@ -24,17 +19,7 @@ public class InventoryItem : MonoBehaviour, IDisposable
         currentItemData = itemData;
         currentColorDependencyNumber = colorDependencyNumber;
 
-        ItemQualityVisualResolver.Apply(
-            this,
-            itemData,
-            colorDependencyNumber,
-            iconImage,
-            null,
-            colorDependencyGraphics,
-            secondaryColorDependencyGraphics,
-            glowGraphics,
-            premiumEffectObjects,
-            pulseEffectObjects);
+        ItemQualityVisualResolver.Apply(this, itemData, colorDependencyNumber, iconImage);
 
         button.OnClicked -= OnItemClicked;
         button.OnClicked += OnItemClicked;

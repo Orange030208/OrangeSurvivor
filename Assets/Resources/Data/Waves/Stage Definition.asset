@@ -16,3 +16,4 @@ MonoBehaviour:
   displayName: Stage 1
   waves:
   - {fileID: 11400000, guid: d194a116d7784954db3703ea10c9f7d4, type: 2}
+  - {fileID: 11400000, guid: 2b0dc1bfc8067dd48a9e37398ca0667e, type: 2}

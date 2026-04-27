@@ -32,9 +32,9 @@ MonoBehaviour:
   - rid: 451546934818111493
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 00f0fce340da97d4b9baec7e221641e9, type: 2}
-    level: 1
+    level: 4
   - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
-    level: 1
+    level: 5
   initialAccessories:
   - {fileID: 11400000, guid: 2c35fd36a60d0cb4194ed451ed23d89b, type: 2}
   references:
@@ -43,12 +43,10 @@ MonoBehaviour:
     - rid: 451546934818111488
       type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
       data:
-        runtimeFeatureId: 
         hitModifierTiming: 0
     - rid: 451546934818111493
       type: {class: LowHealthExplosionFeatureEffect, ns: , asm: Assembly-CSharp}
       data:
-        runtimeFeatureId: 
         hitModifierTiming: 1
         healthThreshold: 1
         cooldown: 10

@@ -19,6 +19,15 @@ public class WeaponEditor : Editor
 
         Weapon weapon = (Weapon)target;
 
+        EditorGUILayout.Space(8f);
+        using (new EditorGUI.DisabledScope(weapon.WeaponData == null))
+        {
+            if (GUILayout.Button("打开攻击序列工作台"))
+            {
+                AttackSequenceStudioWindow.Open(weapon.WeaponData);
+            }
+        }
+
         EditorGUILayout.Space(10f);
         EditorGUILayout.LabelField("Runtime Debug", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("Level", weapon.Level.ToString());

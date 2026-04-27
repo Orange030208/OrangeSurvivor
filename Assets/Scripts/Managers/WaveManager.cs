@@ -85,7 +85,7 @@ public class WaveManager : MonoBehaviour
 
     private void Update()
     {
-        if (!GameSimulation.IsRunning || !IsTimerOn)
+        if (!GameManager.Instance.IsSimulationRunning || !IsTimerOn)
         {
             return;
         }

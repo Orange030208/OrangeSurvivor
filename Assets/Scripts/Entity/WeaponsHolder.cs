@@ -83,6 +83,7 @@ public class WeaponsHolder : EntityComponentBase
         }
 
         Weapon runtimeWeapon = emptyPosition.AssignWeapon(owner,weaponData, WeaponLevelHelper.ClampLevel(level));
+        
         if (runtimeWeapon == null)
         {
             return false;

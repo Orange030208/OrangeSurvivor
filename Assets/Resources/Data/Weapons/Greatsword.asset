@@ -16,6 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 66e4e001dc8e39649950ab8aa5b50bb4, type: 3}
   itemPrice: 26
   itemType: 0
+  itemDescription: 
   weaponPrefab: {fileID: 6802585226729800489, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
   constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: 9e340302b445e13449986dae827d8b27, type: 2}
@@ -33,4 +34,4 @@ MonoBehaviour:
   attackSpeed: 0.72
   criticalChance: 0.1
   criticalPercent: 2.2
-  range: 3.6
+  range: 10

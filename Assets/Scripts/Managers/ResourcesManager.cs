@@ -20,7 +20,10 @@ public static class ResourcesManager
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
     private static StageDefinitionSO stageDefinition;
+    private const string ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH = "Materials/UI/WeaponQualityIconEffect";
+
     private static readonly Dictionary<ProjectileTemplateKind, Projectile> projectilePrefabCache = new();
+    private static Material cachedItemQualityIconEffectMaterial;
 
     public static Sprite GetPropIcon(PropType propType)
     {
@@ -232,6 +235,16 @@ public static class ResourcesManager
         }
 
         return filteredAccessories[UnityEngine.Random.Range(0, filteredAccessories.Length)];
+    }
+
+    public static Material GetItemQualityIconEffectMaterial()
+    {
+        if (cachedItemQualityIconEffectMaterial == null)
+        {
+            cachedItemQualityIconEffectMaterial = Resources.Load<Material>(ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH);
+        }
+
+        return cachedItemQualityIconEffectMaterial;
     }
 
     private static Projectile LoadProjectilePrefab(string resourcePath)

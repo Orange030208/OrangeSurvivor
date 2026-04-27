@@ -59,7 +59,7 @@ public class ItemQualityVisualConfigSO : ScriptableObject
                 continue;
             }
 
-            style = styles[i].WithFallbacks();
+            style = styles[i];
             return true;
         }
 

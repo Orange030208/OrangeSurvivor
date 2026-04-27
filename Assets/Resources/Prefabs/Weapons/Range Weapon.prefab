@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37573044aa864676a0e7320e8236cb4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponData>k__BackingField: {fileID: 11400000, guid: f2018ac17db5ab4499e404c85919bb44, type: 2}
+  <WeaponData>k__BackingField: {fileID: 0}
   aimLerp: 10
   attackStartAimToleranceDegrees: 8
   targetLayerMask:

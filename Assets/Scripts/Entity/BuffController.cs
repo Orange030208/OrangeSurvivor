@@ -42,7 +42,7 @@ public class BuffController : EntityComponentBase
 
     public override void OnTick(float deltaTime)
     {
-        if (!GameSimulation.IsRunning || buffStacksById.Count == 0)
+        if (!GameManager.Instance.IsSimulationRunning || buffStacksById.Count == 0)
         {
             return;
         }

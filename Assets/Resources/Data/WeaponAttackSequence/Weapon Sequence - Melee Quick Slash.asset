@@ -91,10 +91,10 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 0
     dynamicPositionStrategy: 0
-    localPositionX: -2.62
+    localPositionX: -2.4817705
     xDynamicMinNormalizedReach: 0.91699994
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.42
+    localPositionY: 0.52367276
     yDynamicMinNormalizedReach: 0.147
     yDynamicMaxNormalizedReach: 0.42
     localEulerAngles: {x: 0, y: 0, z: 82}
@@ -127,12 +127,12 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: -2.72
+    localPositionX: -2.4276395
     xDynamicMinNormalizedReach: 0.952
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.64
+    localPositionY: 0.31926095
     yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.56
+    yDynamicMaxNormalizedReach: 0.31926095
     localEulerAngles: {x: 0, y: 0, z: 88}
     ease: 3
     customCurve:
@@ -145,12 +145,12 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: -1.86
+    localPositionX: -2.032758
     xDynamicMinNormalizedReach: 0.651
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.82
+    localPositionY: 0.46511635
     yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.7
+    yDynamicMaxNormalizedReach: 0.46511635
     localEulerAngles: {x: 0, y: 0, z: 62}
     ease: 11
     customCurve:
@@ -159,16 +159,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.54
+  - normalizedTime: 0.5142856
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: -0.72
+    localPositionX: -1.1637907
     xDynamicMinNormalizedReach: 0.252
     xDynamicMaxNormalizedReach: 0.72
-    localPositionY: 0.98
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.82
+    localPositionY: 0.49237472
+    yDynamicMinNormalizedReach: 0.49237472
+    yDynamicMaxNormalizedReach: 0.49237472
     localEulerAngles: {x: 0, y: 0, z: 24}
     ease: 11
     customCurve:
@@ -177,16 +177,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.62
+  - normalizedTime: 0.6061224
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: 0.74
+    localPositionX: -0.013484839
     xDynamicMinNormalizedReach: 0.259
     xDynamicMaxNormalizedReach: 0.74
-    localPositionY: 1.06
-    yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.92
+    localPositionY: 0.49803907
+    yDynamicMinNormalizedReach: 0.49803907
+    yDynamicMaxNormalizedReach: 0.49803907
     localEulerAngles: {x: 0, y: 0, z: -12}
     ease: 11
     customCurve:
@@ -195,16 +195,16 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.7
+  - normalizedTime: 0.7224492
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: 1.78
+    localPositionX: 1.7853675
     xDynamicMinNormalizedReach: 0.62299997
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.98
+    localPositionY: 0.43606058
     yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.88
+    yDynamicMaxNormalizedReach: 0.388
     localEulerAngles: {x: 0, y: 0, z: -42}
     ease: 13
     customCurve:
@@ -217,12 +217,12 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 1
     dynamicPositionStrategy: 1
-    localPositionX: 2.34
+    localPositionX: 2.8371482
     xDynamicMinNormalizedReach: 0.81899995
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.84
+    localPositionY: 0.17337771
     yDynamicMinNormalizedReach: 0.05
-    yDynamicMaxNormalizedReach: 0.78
+    yDynamicMaxNormalizedReach: 0.17337771
     localEulerAngles: {x: 0, y: 0, z: -66}
     ease: 13
     customCurve:
@@ -235,10 +235,10 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 0
     dynamicPositionStrategy: 0
-    localPositionX: 1.86
+    localPositionX: 1.5317048
     xDynamicMinNormalizedReach: 0.651
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.46
+    localPositionY: 0.09714931
     yDynamicMinNormalizedReach: 0.161
     yDynamicMaxNormalizedReach: 0.46
     localEulerAngles: {x: 0, y: 0, z: -52}
@@ -253,10 +253,10 @@ MonoBehaviour:
     xPositionMode: 0
     yPositionMode: 0
     dynamicPositionStrategy: 0
-    localPositionX: 1.02
+    localPositionX: 0.9336069
     xDynamicMinNormalizedReach: 0.357
     xDynamicMaxNormalizedReach: 1
-    localPositionY: 0.18
+    localPositionY: 0.04177186
     yDynamicMinNormalizedReach: 0.063
     yDynamicMaxNormalizedReach: 0.18
     localEulerAngles: {x: 0, y: 0, z: -28}

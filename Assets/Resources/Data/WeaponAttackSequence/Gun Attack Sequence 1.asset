@@ -87,14 +87,14 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  - normalizedTime: 0.3
+  - normalizedTime: 0.379
     xPositionMode: 0
     yPositionMode: 0
     dynamicPositionStrategy: 0
     localPositionX: -0.04
     xDynamicMinNormalizedReach: 0.0139999995
     xDynamicMaxNormalizedReach: 0.04
-    localPositionY: 0.24
+    localPositionY: 0.066221975
     yDynamicMinNormalizedReach: 0.084
     yDynamicMaxNormalizedReach: 0.24
     localEulerAngles: {x: 0, y: 0, z: 20}
@@ -216,10 +216,10 @@ MonoBehaviour:
   eventKeyframes:
   - normalizedTime: 0.36
     eventType: 2
-    windowId: 0
+    eventKey: 0
   - normalizedTime: 0.36
     eventType: 3
-    windowId: 0
+    eventKey: 0
   - normalizedTime: 0.37
     eventType: 4
-    windowId: 0
+    eventKey: 0

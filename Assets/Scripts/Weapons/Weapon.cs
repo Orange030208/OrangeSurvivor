@@ -42,13 +42,13 @@ public abstract class Weapon : Entity, ILifecycle
     private float attackCooldownTimer;
     private Vector2 lastAimDirection = Vector2.up;
     private Vector2 lockedAttackDirection = Vector2.up;
-    
+
     public Entity Owner => owner;
     public virtual int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
     public virtual void OnFixedTick(float deltaTime)
     {
-        
+
     }
 
     public virtual void Initialize(Entity owner)
@@ -80,7 +80,7 @@ public abstract class Weapon : Entity, ILifecycle
 
     public virtual void OnTick(float deltaTime)
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameManager.Instance.IsSimulationRunning)
         {
             return;
         }
@@ -133,7 +133,7 @@ public abstract class Weapon : Entity, ILifecycle
         localEulerAngles.z = WeaponData.VisualForwardAngle;
         visualTransform.localEulerAngles = localEulerAngles;
     }
-    
+
     protected Entity ResolveAttackSourceEntity()
     {
         return owner != null ? owner : this;

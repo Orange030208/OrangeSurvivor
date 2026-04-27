@@ -32,7 +32,7 @@ public class WeaponSequenceBridge : MonoBehaviour
 
     private void Update()
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameManager.Instance.IsSimulationRunning)
         {
             return;
         }

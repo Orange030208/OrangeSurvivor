@@ -975,7 +975,6 @@ GameObject:
   - component: {fileID: 1600978746}
   - component: {fileID: 1600978744}
   - component: {fileID: 1600978745}
-  - component: {fileID: 1600978743}
   m_Layer: 7
   m_Name: Test Target
   m_TagString: Untagged
@@ -983,20 +982,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1600978743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600978742}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd3f76e69a2a8d84e9212d82bc2795e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  circleCollider: {fileID: 1600978744}
-  entityRenderer: {fileID: 524162377}
 --- !u!58 &1600978744
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1071,7 +1056,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1691679689}
-  - component: {fileID: 1691679690}
   m_Layer: 0
   m_Name: Monster Test Controller
   m_TagString: Untagged
@@ -1094,35 +1078,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 430642722}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1691679690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1691679688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30e2f854537b67049aafcfa24cddd3ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 1600978743}
-  testEnemies:
-  - {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-  - {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-  - {fileID: 11400000, guid: 5b0a0ae7382cd2d40acb3a80b9b52f25, type: 2}
-  - {fileID: 11400000, guid: 1a1e1fbb5280fdc41834aa4171c3d631, type: 2}
-  - {fileID: 11400000, guid: 67f48c8e036990b488e8e19120bfd780, type: 2}
-  - {fileID: 11400000, guid: e7ce820c6dc4253468294c1ed25c8cc3, type: 2}
-  defaultEnemyIndex: 5
-  spawnRoot: {fileID: 639716643}
-  spawnPoints:
-  - {fileID: 769611398}
-  - {fileID: 1855384101}
-  - {fileID: 793639923}
-  - {fileID: 1916276068}
-  spawnOnStart: 1
-  keepSimulationRunning: 1
 --- !u!1 &1855384100
 GameObject:
   m_ObjectHideFlags: 0

@@ -37,7 +37,7 @@ public abstract class Collection : Entity, IAnimationConfigProvider
 
         while (target != null)
         {
-            if (!GameSimulation.IsRunning)
+            if (!GameManager.Instance.IsSimulationRunning)
             {
                 yield return null;
                 continue;

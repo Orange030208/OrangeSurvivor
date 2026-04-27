@@ -54,7 +54,7 @@ public class PlayerController : EntityComponentBase, IMovable
 
     public override void OnFixedTick(float deltaTime)
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameManager.Instance.IsSimulationRunning)
         {
             moveDirection = Vector2.zero;
             rb.velocity = Vector2.zero;

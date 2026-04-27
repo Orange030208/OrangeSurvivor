@@ -43,7 +43,7 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void Update()
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameManager.Instance.IsSimulationRunning)
         {
             return;
         }

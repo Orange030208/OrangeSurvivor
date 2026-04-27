@@ -7,7 +7,6 @@ public class PlayerLevel : EntityComponentBase
     private const int MIN_LEVEL = 1;
     private const int MIN_EXPERIENCE = 0;
     private const int DEFAULT_REQUIRED_EXPERIENCE = 1;
-    private const float MIN_EXPERIENCE_GAIN_MULTIPLIER = 0f;
 
     [Header("Config")]
     [SerializeField] private PlayerLevelConfigSO levelConfig;
@@ -62,13 +61,7 @@ public class PlayerLevel : EntityComponentBase
             return;
         }
 
-        int appliedExperience = ResolveAppliedExperience(xpToAdd);
-        if (appliedExperience <= 0)
-        {
-            return;
-        }
-
-        currentXP += appliedExperience;
+        currentXP += xpToAdd;
         ResolvePendingLevelUps();
         PublishSnapshot();
     }
@@ -117,20 +110,6 @@ public class PlayerLevel : EntityComponentBase
         unspentUpgradePoints += GetUpgradePointsPerLevel();
         requiredXP = CalculateRequiredXP(currentLevel);
         GameEventBus.Publish(new PlayerLevelChangedEvent(currentLevel, unspentUpgradePoints));
-    }
-
-    private int ResolveAppliedExperience(int rawExperience)
-    {
-        if (propertiesManager == null)
-        {
-            return rawExperience;
-        }
-
-        float experienceGainMultiplier = Mathf.Max(
-            MIN_EXPERIENCE_GAIN_MULTIPLIER,
-            propertiesManager.GetPropValue(PropType.ExperienceGain));
-
-        return Mathf.Max(MIN_EXPERIENCE, Mathf.RoundToInt(rawExperience * experienceGainMultiplier));
     }
 
     private int CalculateRequiredXP(int level)

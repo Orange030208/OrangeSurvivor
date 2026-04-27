@@ -35,7 +35,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
     public override void OnTick(float deltaTime)
     {
-        if (!GameSimulation.IsRunning)
+        if (!GameManager.Instance.IsSimulationRunning)
         {
             return;
         }

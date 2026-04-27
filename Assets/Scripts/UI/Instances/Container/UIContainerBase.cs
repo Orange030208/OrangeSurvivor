@@ -20,13 +20,6 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
     [FormerlySerializedAs("recyclePriceText")]
     [SerializeField] protected K bottom;
 
-    [SerializeField] protected Graphic[] colorDependencyGraphics;
-    [SerializeField] protected Graphic[] secondaryColorDependencyGraphics;
-    [SerializeField] protected Graphic[] glowGraphics;
-    [SerializeField] protected GameObject[] premiumEffectObjects;
-    [SerializeField] protected GameObject[] pulseEffectObjects;
-    [SerializeField] private bool applyQualityToNameText = true;
-
     public event Action<PointerEventData> OnClicked;
 
     public virtual void Dispose()
@@ -41,17 +34,7 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
 
     public void RenderColor(ItemDataSO itemData, int colorDependency)
     {
-        ItemQualityVisualResolver.Apply(
-            this,
-            itemData,
-            colorDependency,
-            iconImage,
-            applyQualityToNameText ? nameText : null,
-            colorDependencyGraphics,
-            secondaryColorDependencyGraphics,
-            glowGraphics,
-            premiumEffectObjects,
-            pulseEffectObjects);
+        ItemQualityVisualResolver.Apply(this, itemData, colorDependency, iconImage);
     }
 
     public void OnPointerClick(PointerEventData eventData)

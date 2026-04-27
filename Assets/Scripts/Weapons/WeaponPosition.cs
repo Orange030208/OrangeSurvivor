@@ -18,6 +18,9 @@ public class WeaponPosition : MonoBehaviour
         }
 
         Weapon = Instantiate(weaponData.WeaponPrefab, transform);
+        
+        ItemQualityVisualResolver.Apply(Weapon, weaponData, level, Weapon.EntityRenderer.SpriteRenderer);
+        
         Weapon.transform.localPosition = Vector3.zero;
         Weapon.transform.localRotation = Quaternion.identity;
         Weapon.Initialize(owner);
