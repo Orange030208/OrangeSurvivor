@@ -44,6 +44,7 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
         [Min(1f)] public float framesPerSecond = 12f;
         [Min(0.01f)] public float totalDuration = 0.5f;
         public bool reverse;
+        [Tooltip("Legacy compatibility only. Page activation is owned by UIPageBase.")]
         public bool deactivateOnComplete;
         public List<FrameEvent> frameEvents = new();
     }
@@ -93,9 +94,19 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
         return Play(UIMotionAction.Hide, delay);
     }
 
+    public override Tween PlayVisibility(UIVisibilityMotion motion, float delay = 0f)
+    {
+        return Play(UIMotionActionMapper.ToLegacyAction(motion), delay);
+    }
+
     public void SetHiddenImmediate()
     {
         SetImmediate(UIMotionAction.Hide);
+    }
+
+    public override void SetVisibilityImmediate(UIVisibilityMotion motion)
+    {
+        SetImmediate(UIMotionActionMapper.ToLegacyAction(motion));
     }
 
     public void CompleteImmediate()
@@ -124,7 +135,6 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
         }
 
         Kill();
-        gameObject.SetActive(true);
         targetImage.enabled = true;
 
         Sequence sequence = DOTween.Sequence().SetUpdate(useUnscaledTime);
@@ -159,7 +169,7 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
 
             if (clip.deactivateOnComplete)
             {
-                gameObject.SetActive(false);
+                Debug.LogWarning($"{GetType().Name} '{name}' ignores deactivateOnComplete. Page activation is owned by UIPageBase.", this);
             }
         });
 
@@ -193,13 +203,12 @@ public class UISpriteSequenceMotion : UIRuntimeMotionBase, IUISequenceMotion
             return;
         }
 
-        gameObject.SetActive(true);
         targetImage.enabled = true;
         int frameIndex = useLastFrame ? GetCompletedFrameIndex(clip, frames.Count) : GetStartFrameIndex(clip, frames.Count);
         SetFrame(frames, frameIndex);
         if (clip.deactivateOnComplete && useLastFrame)
         {
-            gameObject.SetActive(false);
+            Debug.LogWarning($"{GetType().Name} '{name}' ignores deactivateOnComplete. Page activation is owned by UIPageBase.", this);
         }
     }
 

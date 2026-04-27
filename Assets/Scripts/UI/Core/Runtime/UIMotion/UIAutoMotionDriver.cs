@@ -16,11 +16,24 @@ public class UIAutoMotionDriver : MonoBehaviour,
     [Serializable]
     private class MotionBinding
     {
-        [Tooltip("触发该动效的 UI 事件。")] 
+        [Tooltip("UI event that triggers this motion.")]
         public UIMotionEvent motionEvent;
 
-        [Tooltip("该事件发生时要播放的动效动作。")]
+        [Tooltip("Interaction feedback motion played when this event is raised.")]
+        public UIInteractionMotion interactionMotion = UIInteractionMotion.Normal;
+
+        [Tooltip("Legacy action field. Use interactionMotion for new bindings.")]
         public UIMotionAction action = UIMotionAction.Show;
+
+        public UIInteractionMotion ResolveInteractionMotion()
+        {
+            if (action != UIMotionAction.Show)
+            {
+                return UIMotionActionMapper.ToInteractionMotion(action, motionEvent);
+            }
+
+            return interactionMotion;
+        }
     }
 
     [SerializeField] private UIRuntimeMotionBase motionSource;
@@ -31,11 +44,11 @@ public class UIAutoMotionDriver : MonoBehaviour,
     [Header("Pointer Event Bindings")]
     [SerializeField] private List<MotionBinding> bindings = new()
     {
-        new MotionBinding { motionEvent = UIMotionEvent.PointerEnter, action = UIMotionAction.Enter },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, action = UIMotionAction.Exit },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerDown, action = UIMotionAction.Press },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, action = UIMotionAction.Release },
-        new MotionBinding { motionEvent = UIMotionEvent.PointerClick, action = UIMotionAction.Emphasis }
+        new MotionBinding { motionEvent = UIMotionEvent.PointerEnter, interactionMotion = UIInteractionMotion.Hover, action = UIMotionAction.Enter },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerExit, interactionMotion = UIInteractionMotion.Unhover, action = UIMotionAction.Exit },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerDown, interactionMotion = UIInteractionMotion.Pressed, action = UIMotionAction.Press },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerUp, interactionMotion = UIInteractionMotion.Released, action = UIMotionAction.Release },
+        new MotionBinding { motionEvent = UIMotionEvent.PointerClick, interactionMotion = UIInteractionMotion.ClickPulse, action = UIMotionAction.Emphasis }
     };
 
     private readonly List<UIRuntimeMotionBase> runtimeMotions = new();
@@ -49,7 +62,7 @@ public class UIAutoMotionDriver : MonoBehaviour,
     {
         if (playEnterOnEnable)
         {
-            PlayAll(UIMotionAction.Show);
+            PlayVisibility(UIVisibilityMotion.Enter);
         }
     }
 
@@ -100,15 +113,24 @@ public class UIAutoMotionDriver : MonoBehaviour,
             return;
         }
 
-        PlayAll(binding.action);
+        PlayInteraction(binding.ResolveInteractionMotion());
     }
 
-    private void PlayAll(UIMotionAction action)
+    private void PlayVisibility(UIVisibilityMotion motion)
     {
         EnsureRuntimeMotions();
         foreach (UIRuntimeMotionBase runtimeMotion in runtimeMotions)
         {
-            runtimeMotion.Play(action);
+            runtimeMotion.PlayVisibility(motion);
+        }
+    }
+
+    private void PlayInteraction(UIInteractionMotion motion)
+    {
+        EnsureRuntimeMotions();
+        foreach (UIRuntimeMotionBase runtimeMotion in runtimeMotions)
+        {
+            runtimeMotion.PlayInteraction(motion);
         }
     }
 

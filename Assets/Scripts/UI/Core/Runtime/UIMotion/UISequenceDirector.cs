@@ -64,6 +64,18 @@ public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
         return currentSequence;
     }
 
+    public Tween PlayVisibility(UIVisibilityMotion motion, float delay = 0f)
+    {
+        return motion switch
+        {
+            UIVisibilityMotion.Enter => PlayEnter(delay),
+            UIVisibilityMotion.Visible => PlayEnter(delay),
+            UIVisibilityMotion.Exit => PlayExit(delay),
+            UIVisibilityMotion.Hidden => PlayExit(delay),
+            _ => null
+        };
+    }
+
     public void CompleteImmediate()
     {
         Kill();
@@ -74,6 +86,12 @@ public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
     {
         Kill();
         ForEachMotion(enterGroups, motion => motion.SetHiddenImmediate());
+    }
+
+    public void SetVisibilityImmediate(UIVisibilityMotion motion)
+    {
+        Kill();
+        ForEachMotion(enterGroups, sequenceMotion => sequenceMotion.SetVisibilityImmediate(motion));
     }
 
     public void Kill()
@@ -128,7 +146,7 @@ public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
                 IUISequenceMotion motion = ResolveMotion(group.motions[motionIndex]);
 
                 float delay = group.playTogether ? order * group.stagger : 0f;
-                Tween tween = playEnter ? motion.PlayEnter(delay) : motion.PlayExit(delay);
+                Tween tween = motion.PlayVisibility(playEnter ? UIVisibilityMotion.Enter : UIVisibilityMotion.Exit, delay);
                 if (tween != null)
                 {
                     tween.timeScale = timeScale;

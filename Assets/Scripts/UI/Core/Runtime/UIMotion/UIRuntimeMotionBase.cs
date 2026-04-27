@@ -19,6 +19,26 @@ public abstract class UIRuntimeMotionBase : MonoBehaviour, IUIRuntimeMotion, ISt
     public abstract void RefreshDefaults();
     public abstract void Kill();
 
+    public virtual Tween PlayVisibility(UIVisibilityMotion motion, float delay = 0f)
+    {
+        return Play(UIMotionActionMapper.ToLegacyAction(motion), delay);
+    }
+
+    public virtual Tween PlayInteraction(UIInteractionMotion motion, float delay = 0f)
+    {
+        return Play(UIMotionActionMapper.ToLegacyAction(motion), delay);
+    }
+
+    public virtual void SetVisibilityImmediate(UIVisibilityMotion motion)
+    {
+        SetImmediate(UIMotionActionMapper.ToLegacyAction(motion));
+    }
+
+    public virtual void SetInteractionImmediate(UIInteractionMotion motion)
+    {
+        SetImmediate(UIMotionActionMapper.ToLegacyAction(motion));
+    }
+
     // 扩展说明：子类通过该接口显式声明支持的动作，供 Inspector 与调用方做安全过滤。
     public virtual bool SupportsAction(UIMotionAction action)
     {

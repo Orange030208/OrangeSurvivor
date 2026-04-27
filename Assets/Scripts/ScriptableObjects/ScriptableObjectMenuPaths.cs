@@ -39,6 +39,7 @@ public static class ScriptableObjectMenuPaths
     public const string AUDIO_SFX_CATALOG = SYSTEMS_ROOT + "Audio/Sfx Catalog";
     public const string UI_FRAMEWORK_SETTINGS = SYSTEMS_ROOT + "UI/Framework Settings";
     public const string UI_PREFAB_CATALOG = SYSTEMS_ROOT + "UI/Prefab Catalog";
+    public const string UI_MOTION_PRESET = SYSTEMS_ROOT + "UI/Motion Preset";
 
     public const string ITEM_QUALITY_VISUAL_CONFIG = PRESENTATION_ROOT + "Items/Quality Visual Config";
     public const string MAP_GROUND_THEME = WORLD_ROOT + "Map/Ground Theme";

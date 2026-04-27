@@ -54,6 +54,7 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     [SerializeField] [Min(0f)] private float motionIntensity = 1f;
     [SerializeField] private bool useUnscaledTime = true;
+    [SerializeField] private UIMotionPreset preset;
     [SerializeField] protected List<UIMotionClip> actionClips = new();
 
     private CanvasGroup canvasGroup;
@@ -63,9 +64,6 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
     private Vector3 defaultScale;
     private Vector3 defaultEulerAngles;
     private bool cached;
-    private bool interactionCached;
-    private bool defaultInteractable;
-    private bool defaultBlocksRaycasts;
     private UIMotionAction currentStableAction = UIMotionAction.Common;
 
     protected CanvasGroup CanvasGroup => canvasGroup;
@@ -78,8 +76,13 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     protected virtual void Awake()
     {
+        ApplySerializedPresetIfNeeded();
         EnsureReferences();
-        CacheInteractionDefaults();
+    }
+
+    protected virtual void OnValidate()
+    {
+        ApplySerializedPresetIfNeeded();
     }
 
     protected virtual void OnDestroy() => Kill();
@@ -110,6 +113,7 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public override void ApplyConfigByString(string selectedOption)
     {
+        ClearPresetReference();
         if (string.IsNullOrWhiteSpace(selectedOption))
         {
             SetCurrentConfigOption(CUSTOM_OPTION);
@@ -174,6 +178,29 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
         SetCurrentConfigOption(selectedOption);
     }
 
+    public void ApplyPreset(UIMotionPreset motionPreset)
+    {
+        preset = motionPreset;
+        ApplySerializedPresetIfNeeded();
+    }
+
+    private void ApplySerializedPresetIfNeeded()
+    {
+        if (preset == null)
+        {
+            return;
+        }
+
+        useUnscaledTime = preset.UseUnscaledTime;
+        actionClips = preset.CreateRuntimeClips();
+        SetCurrentConfigOption(preset.name);
+    }
+
+    protected void ClearPresetReference()
+    {
+        preset = null;
+    }
+
     public virtual void PrepareEnter()
     {
         SetImmediate(UIMotionAction.Hide);
@@ -189,9 +216,19 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
         return Play(UIMotionAction.Hide, delay);
     }
 
+    public override Tween PlayVisibility(UIVisibilityMotion motion, float delay = 0f)
+    {
+        return Play(UIMotionActionMapper.ToLegacyAction(motion), delay);
+    }
+
     public virtual void SetHiddenImmediate()
     {
         SetImmediate(UIMotionAction.Hide);
+    }
+
+    public override void SetVisibilityImmediate(UIVisibilityMotion motion)
+    {
+        SetImmediate(UIMotionActionMapper.ToLegacyAction(motion));
     }
 
     /// <summary>
@@ -305,16 +342,7 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
     {
         EnsureReferences();
         CacheDefaults();
-        CacheInteractionDefaults();
         Kill();
-        gameObject.SetActive(true);
-        RestoreInteractionState();
-    }
-
-    protected void RestoreInteractionState()
-    {
-        canvasGroup.interactable = defaultInteractable;
-        canvasGroup.blocksRaycasts = defaultBlocksRaycasts;
     }
 
     protected Vector2 ScaleOffset(Vector2 offset) => offset * motionIntensity;
@@ -385,7 +413,7 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
         UIMotionClip clip = GetClip(action);
         if (clip != null && clip.deactivateOnComplete)
         {
-            gameObject.SetActive(false);
+            Debug.LogWarning($"{GetType().Name} '{name}' ignores deactivateOnComplete. Page activation is owned by UIPageBase.", this);
         }
     }
 
@@ -418,7 +446,6 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
         sequence.OnComplete(() =>
         {
-            RestoreInteractionState();
             ApplyCurrentStableStateImmediate();
         });
 
@@ -436,10 +463,8 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
             UpdateStableAction(action);
             if (clip.deactivateOnComplete)
             {
-                gameObject.SetActive(false);
+                Debug.LogWarning($"{GetType().Name} '{name}' ignores deactivateOnComplete. Page activation is owned by UIPageBase.", this);
             }
-
-            RestoreInteractionState();
         }));
         return currentTween;
     }
@@ -694,13 +719,5 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
         defaultScale = targetRect.localScale;
         defaultEulerAngles = targetRect.localEulerAngles;
         cached = true;
-    }
-
-    private void CacheInteractionDefaults()
-    {
-        if (interactionCached) return;
-        defaultInteractable = canvasGroup.interactable;
-        defaultBlocksRaycasts = canvasGroup.blocksRaycasts;
-        interactionCached = true;
     }
 }

@@ -51,6 +51,7 @@ public class UISidebarRevealMotion : UIRevealMotion
 
     public override void ApplyConfigByString(string selectedOption)
     {
+        ClearPresetReference();
         switch (selectedOption)
         {
             case PANEL_OPTION:
@@ -130,7 +131,7 @@ public class UISidebarRevealMotion : UIRevealMotion
             sequence.Append(TweenToPose(new UIMotionPose(), settleDuration, enterSettleEase, 0f, null));
         }
 
-        sequence.OnComplete(RestoreInteractionState);
+        sequence.OnComplete(() => { });
         return RegisterTween(sequence);
     }
 

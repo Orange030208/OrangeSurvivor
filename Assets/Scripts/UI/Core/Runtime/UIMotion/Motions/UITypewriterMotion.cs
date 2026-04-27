@@ -23,6 +23,7 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
     {
         [Min(0.01f)] public float duration = 0.2f;
         public Ease ease = Ease.Linear;
+        [Tooltip("Legacy compatibility only. Page activation is owned by UIPageBase.")]
         public bool deactivateOnComplete;
         public bool restartFromBeginning;
         public UIMotionAction action;
@@ -105,9 +106,19 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
         return Play(UIMotionAction.Hide, delay);
     }
 
+    public override Tween PlayVisibility(UIVisibilityMotion motion, float delay = 0f)
+    {
+        return Play(UIMotionActionMapper.ToLegacyAction(motion), delay);
+    }
+
     public virtual void SetHiddenImmediate()
     {
         SetImmediate(UIMotionAction.Hide);
+    }
+
+    public override void SetVisibilityImmediate(UIVisibilityMotion motion)
+    {
+        SetImmediate(UIMotionActionMapper.ToLegacyAction(motion));
     }
 
     public virtual void CompleteImmediate()
@@ -144,16 +155,10 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
         EnsureReferences();
         RefreshDefaults();
         Kill();
-        gameObject.SetActive(true);
 
         int fullCharacterCount = GetFullCharacterCount();
         int targetVisibleCount = action == UIMotionAction.Hide ? 0 : fullCharacterCount;
         ApplyVisibleCharacterCount(targetVisibleCount);
-
-        if (ShouldDeactivateOnComplete(action))
-        {
-            gameObject.SetActive(false);
-        }
     }
 
     public override void RefreshDefaults()
@@ -203,7 +208,6 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
         EnsureReferences();
         RefreshDefaults();
         Kill();
-        gameObject.SetActive(true);
 
         TypewriterMotionClip clip = GetClip(action);
         int fullCharacterCount = GetFullCharacterCount();
@@ -270,7 +274,13 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     protected virtual bool ShouldDeactivateOnComplete(UIMotionAction action)
     {
-        return GetClip(action).deactivateOnComplete;
+        TypewriterMotionClip clip = GetClip(action);
+        if (clip.deactivateOnComplete)
+        {
+            Debug.LogWarning($"{GetType().Name} '{name}' ignores deactivateOnComplete. Page activation is owned by UIPageBase.", this);
+        }
+
+        return false;
     }
 
     protected void ApplyVisibleCharacterCount(int characterCount)
@@ -291,10 +301,7 @@ public class UITypewriterMotion : UIRuntimeMotionBase, IUISequenceMotion
     private void CompleteTypewriterAction(UIMotionAction action, int targetVisibleCount)
     {
         ApplyVisibleCharacterCount(targetVisibleCount);
-        if (ShouldDeactivateOnComplete(action))
-        {
-            gameObject.SetActive(false);
-        }
+        ShouldDeactivateOnComplete(action);
     }
 
     private void EnsureReferences()
