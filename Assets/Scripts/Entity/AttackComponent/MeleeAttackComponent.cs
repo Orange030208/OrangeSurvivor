@@ -12,8 +12,6 @@ public class MeleeAttackComponent : EnemyAttackBase
     public override Entity Owner => owner;
     public override bool CanAttack => attackTimer <= 0f;
     public override float AttackInterval => attackInterval;
-
-
     public override void Initialize(Entity owner)
     {
         base.Initialize(owner);
@@ -51,23 +49,29 @@ public class MeleeAttackComponent : EnemyAttackBase
 
     public override void TryAttack(Entity target)
     {
-        if (!CanAttack || target == null)
+        if (!CanAttack || target == null || !IsInAttackRange(target))
         {
             return;
         }
 
-        if (IsInAttackRange(target))
-        {
-            HealthComponent health = target.GetComponent<HealthComponent>();
-            health.ApplyHitResult(HitService.Apply(new HitRequest(owner, target, HitSpec.EnemyHitSpec(attackDamage), owner.Center, HitSourceKind.Direct, GetType().Name)));
-        }
-
+        ApplyDamage(target);
         attackTimer = attackInterval;
     }
 
     public override void ResetAttackTimer()
     {
         attackTimer = 0f;
+    }
+
+    private void ApplyDamage(Entity target)
+    {
+        if (target == null || !IsInAttackRange(target))
+        {
+            return;
+        }
+
+        HealthComponent health = target.GetComponent<HealthComponent>();
+        health.ApplyHitResult(HitService.Apply(new HitRequest(owner, target, HitSpec.EnemyHitSpec(attackDamage), owner.Center, HitSourceKind.Direct, GetType().Name)));
     }
 
     private void OnPropertyChanged(PropType propType, float _)

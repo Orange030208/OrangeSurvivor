@@ -42,7 +42,7 @@ public class PlayerAnimationController : EntityComponentBase
     {
         if (healthComponent != null)
         {
-            healthComponent.OnDied += OnDied;
+            healthComponent.OnDeathSequenceStarted += OnDeathSequenceStarted;
         }
     }
 
@@ -50,7 +50,7 @@ public class PlayerAnimationController : EntityComponentBase
     {
         if (healthComponent != null)
         {
-            healthComponent.OnDied -= OnDied;
+            healthComponent.OnDeathSequenceStarted -= OnDeathSequenceStarted;
         }
     }
 
@@ -62,7 +62,7 @@ public class PlayerAnimationController : EntityComponentBase
         UpdateFacing();
     }
 
-    private void OnDied()
+    private void OnDeathSequenceStarted()
     {
         if (isDead) return;
 

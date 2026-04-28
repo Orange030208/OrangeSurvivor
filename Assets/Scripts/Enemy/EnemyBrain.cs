@@ -42,7 +42,6 @@ public abstract class EnemyBrain : EntityBrain
             return;
         }
 
-        OnDetermineState();
         OnBrainUpdate();
     }
 
@@ -58,10 +57,8 @@ public abstract class EnemyBrain : EntityBrain
 
     protected virtual bool ShouldUpdateBrain()
     {
-        return isBrainActive && !isDead && target != null;
+        return isBrainActive && !isDead;
     }
-
-    protected abstract void OnDetermineState();
 
     protected virtual void OnBrainUpdate()
     {
@@ -75,6 +72,13 @@ public abstract class EnemyBrain : EntityBrain
     {
         isBrainActive = false;
         enabled = false;
+    }
+
+    public override void StartBrain()
+    {
+        isDead = false;
+        isBrainActive = true;
+        enabled = true;
     }
 
     public virtual void SetTarget(Entity newTarget)

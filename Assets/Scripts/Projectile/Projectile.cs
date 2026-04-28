@@ -43,11 +43,6 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void Update()
     {
-        if (!GameManager.Instance.IsSimulationRunning)
-        {
-            return;
-        }
-
         lifetimeTimer += Time.deltaTime;
         if (lifetimeTimer >= currentMaxLifetime)
         {

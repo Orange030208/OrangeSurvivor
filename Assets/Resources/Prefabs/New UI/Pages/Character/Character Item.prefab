@@ -136,6 +136,7 @@ MonoBehaviour:
   currentConfigOption: Sidebar/Button
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: a8ed908dc73db5c468b42351f219a364, type: 2}
   actionClips:
   - action: 7
     pose:

@@ -5,7 +5,7 @@ public class CoinBrain : EntityBrain
 {
     private IAnimatable animatable;
     private Collection collection;
-    private CollectionAnimationConfig animConfig;
+    private EntityAnimationConfig animConfig;
 
     public override Entity Owner => collection;
 
@@ -19,7 +19,7 @@ public class CoinBrain : EntityBrain
         }
 
         animatable = collection.GetComponent<IAnimatable>();
-        animConfig = collection.AnimationConfig as CollectionAnimationConfig;
+        animConfig = collection.AnimationConfig;
     }
 
     protected override void OnBrainStart()
@@ -32,7 +32,7 @@ public class CoinBrain : EntityBrain
 
         if (animConfig == null)
         {
-            Debug.LogError($"[CoinBrain] {nameof(CollectionAnimationConfig)} is missing on {collection.name}.", collection);
+            Debug.LogError($"[CoinBrain] {nameof(EntityAnimationConfig)} is missing on {collection.name}.", collection);
             return;
         }
 
@@ -42,5 +42,10 @@ public class CoinBrain : EntityBrain
     public override void StopBrain()
     {
         enabled = false;
+    }
+
+    public override void StartBrain()
+    {
+        enabled = true;
     }
 }

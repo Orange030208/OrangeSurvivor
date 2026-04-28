@@ -77,6 +77,9 @@ MonoBehaviour:
   autoPlaySequenceDirector: 1
   waveText: {fileID: 7235176671689471289}
   timerText: {fileID: 682055535760119137}
+  currencyText: {fileID: 0}
+  characterStatusPanel: {fileID: 0}
+  inventoryUI: {fileID: 0}
   menuButton: {fileID: 8095011821272816366}
   moveJoystick: {fileID: 6004552391231687133}
   buffBarUI: {fileID: 0}
@@ -309,6 +312,9 @@ MonoBehaviour:
   autoPlaySequenceDirector: 1
   waveText: {fileID: 7235176671689471289}
   timerText: {fileID: 682055535760119137}
+  currencyText: {fileID: 0}
+  characterStatusPanel: {fileID: 0}
+  inventoryUI: {fileID: 0}
   menuButton: {fileID: 0}
   moveJoystick: {fileID: 0}
   buffBarUI: {fileID: 0}
@@ -675,62 +681,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5620201161086115075, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 243113547331601912}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
---- !u!114 &1105933695961279474 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8985466497857092038, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
-  m_PrefabInstance: {fileID: 8353010703264240180}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1586173033493625797 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7343379785955486193, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
-  m_PrefabInstance: {fileID: 8353010703264240180}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &4028347503450553043 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4903375786357663975, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
   m_PrefabInstance: {fileID: 8353010703264240180}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &4473532209287876407 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5620201161086115075, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
-  m_PrefabInstance: {fileID: 8353010703264240180}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &243113547331601912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4473532209287876407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4905db6f0793e4d41b61469113679a94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterIconImage: {fileID: 1586173033493625797}
-  characterNameText: {fileID: 1105933695961279474}
-  healthSlider: {fileID: 0}
-  healthText: {fileID: 0}
-  xpBar: {fileID: 0}
-  levelText: {fileID: 0}
-  upgradePointText: {fileID: 0}
 --- !u!1001 &9041342717372202822
 PrefabInstance:
   m_ObjectHideFlags: 0

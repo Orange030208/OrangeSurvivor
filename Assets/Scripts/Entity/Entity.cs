@@ -7,11 +7,15 @@ public interface IEntity
     Transform Transform { get; }
     Vector2 Center { get; }
     EntityRenderer EntityRenderer { get; }
+    bool IsRuntimeEnabled { get; }
 
     /// <summary>
     /// 仅在本次运行期内唯一，不用于存档。
     /// </summary>
     string RuntimeId { get; }
+
+    void EnableRuntime();
+    void DisableRuntime();
 }
 
 public abstract class Entity : MonoBehaviour, IEntity
@@ -20,10 +24,12 @@ public abstract class Entity : MonoBehaviour, IEntity
     private EntityRenderer cachedEntityRenderer;
 
     private string runtimeId;
+    private bool isRuntimeEnabled = true;
 
     public virtual IMovable MoveComponent => IMovable.Empty;
     public virtual Transform Transform => transform;
     public virtual Vector2 Center => transform.position;
+    public bool IsRuntimeEnabled => isRuntimeEnabled;
 
     public string RuntimeId
     {
@@ -79,6 +85,11 @@ public abstract class Entity : MonoBehaviour, IEntity
 
     protected void TickAllComponents()
     {
+        if (!isRuntimeEnabled)
+        {
+            return;
+        }
+
         float deltaTime = Time.deltaTime;
         for (int i = 0; i < cachedComponents.Length; i++)
         {
@@ -88,11 +99,26 @@ public abstract class Entity : MonoBehaviour, IEntity
 
     protected void FixedTickAllComponents()
     {
+        if (!isRuntimeEnabled)
+        {
+            return;
+        }
+
         float deltaTime = Time.fixedDeltaTime;
         for (int i = 0; i < cachedComponents.Length; i++)
         {
             cachedComponents[i].OnFixedTick(deltaTime);
         }
+    }
+
+    public virtual void EnableRuntime()
+    {
+        isRuntimeEnabled = true;
+    }
+
+    public virtual void DisableRuntime()
+    {
+        isRuntimeEnabled = false;
     }
 
     protected void RefreshComponentCache()

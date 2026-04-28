@@ -388,12 +388,6 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   bottom: {fileID: 1314857178707274722}
-  colorDependencyGraphics: []
-  secondaryColorDependencyGraphics: []
-  glowGraphics: []
-  premiumEffectObjects: []
-  pulseEffectObjects: []
-  applyQualityToNameText: 1
   sellButton: {fileID: 5549504602664758912}
   mergeButton: {fileID: 7386976416890742460}
   sellPriceText: {fileID: 6271331814880997545}

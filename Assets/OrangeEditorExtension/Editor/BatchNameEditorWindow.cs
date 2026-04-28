@@ -41,14 +41,14 @@ public sealed class BatchNameEditorWindow : EditorWindow
     private bool trimWhitespace = true;
     private CaseMode caseMode = CaseMode.None;
 
-    private bool useNumbering = true;
+    private bool useNumbering = false;
     private NumberPlacement numberPlacement = NumberPlacement.Suffix;
     private int numberStart = 1;
     private int numberStep = 1;
     private int numberPadding = 2;
     private string numberSeparator = "_";
 
-    [MenuItem("Tools/Orange Editor/Batch Name Editor")]
+    [MenuItem("Tools/Orange Editor/名字批处理")]
     private static void OpenWindow()
     {
         BatchNameEditorWindow window = GetWindow<BatchNameEditorWindow>();

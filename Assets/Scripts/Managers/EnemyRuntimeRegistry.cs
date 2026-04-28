@@ -62,8 +62,9 @@ public class EnemyRuntimeRegistry : MonoBehaviour
             {
                 continue;
             }
-
-            enemies[i].PassAwayAfterWave();
+            
+            //TODO:后续改为播放动画
+            Destroy(enemies[i].gameObject);
         }
     }
 

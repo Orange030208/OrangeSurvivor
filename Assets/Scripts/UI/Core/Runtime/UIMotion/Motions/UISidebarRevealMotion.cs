@@ -7,8 +7,6 @@ using UnityEngine;
 /// </summary>
 public class UISidebarRevealMotion : UIRevealMotion
 {
-    public enum EdgeDirection { Left, Right, Top, Bottom }
-
     private const string PANEL_OPTION = "Sidebar/Panel";
     private const string PANEL_NO_OVERSHOOT_OPTION = "Sidebar/Panel No Overshoot";
     private const string PANEL_SOFT_OPTION = "Sidebar/Panel Soft";
@@ -20,7 +18,7 @@ public class UISidebarRevealMotion : UIRevealMotion
     private const string BUTTON_SOFT_OPTION = "Sidebar/Button Soft";
     private const string BUTTON_SOFT_NO_OVERSHOOT_OPTION = "Sidebar/Button Soft No Overshoot";
 
-    [SerializeField] private EdgeDirection hiddenDirection = EdgeDirection.Left;
+    [SerializeField] private UISidebarEdgeDirection hiddenDirection = UISidebarEdgeDirection.Left;
     [SerializeField] private float extraHideOffset = 0f;
     [SerializeField] private bool useEnterOvershoot = true;
     [SerializeField] [Min(0f)] private float enterOvershootDistance = 36f;
@@ -51,63 +49,22 @@ public class UISidebarRevealMotion : UIRevealMotion
 
     public override void ApplyConfigByString(string selectedOption)
     {
-        ClearPresetReference();
-        switch (selectedOption)
+        if (!IsSidebarOption(selectedOption))
         {
-            case PANEL_OPTION:
-                actionClips = CreatePanelSidebarClips();
-                useEnterOvershoot = true;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case PANEL_NO_OVERSHOOT_OPTION:
-                actionClips = CreatePanelSidebarClips();
-                useEnterOvershoot = false;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case PANEL_SOFT_OPTION:
-                actionClips = CreatePanelSoftSidebarClips();
-                useEnterOvershoot = true;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case PANEL_SOFT_NO_OVERSHOOT_OPTION:
-                actionClips = CreatePanelSoftSidebarClips();
-                useEnterOvershoot = false;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case PANEL_FADE_OPTION:
-                actionClips = CreatePanelFadeSidebarClips();
-                useEnterOvershoot = true;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case PANEL_FADE_NO_OVERSHOOT_OPTION:
-                actionClips = CreatePanelFadeSidebarClips();
-                useEnterOvershoot = false;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case BUTTON_OPTION:
-                actionClips = CreateButtonSidebarClips();
-                useEnterOvershoot = true;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case BUTTON_NO_OVERSHOOT_OPTION:
-                actionClips = CreateButtonSidebarClips();
-                useEnterOvershoot = false;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case BUTTON_SOFT_OPTION:
-                actionClips = CreateButtonSoftSidebarClips();
-                useEnterOvershoot = true;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            case BUTTON_SOFT_NO_OVERSHOOT_OPTION:
-                actionClips = CreateButtonSoftSidebarClips();
-                useEnterOvershoot = false;
-                SetCurrentConfigOption(selectedOption);
-                return;
-            default:
-                base.ApplyConfigByString(selectedOption);
-                return;
+            base.ApplyConfigByString(selectedOption);
+            return;
         }
+
+        if (UIMotionPresetResolver.TryGetPreset(selectedOption, out UISidebarMotionPreset sidebarPreset))
+        {
+            ApplyPreset(sidebarPreset);
+            SetCurrentConfigOption(selectedOption);
+            return;
+        }
+
+        Debug.LogWarning($"{GetType().Name} could not resolve UI sidebar motion preset option '{selectedOption}'.", this);
+        ClearPresetReference();
+        SetCurrentConfigOption(CUSTOM_OPTION);
     }
 
     /// <summary>侧边栏入场播放。</summary>
@@ -138,7 +95,7 @@ public class UISidebarRevealMotion : UIRevealMotion
     /// <summary>立即设为隐藏状态。</summary>
     public override void SetHiddenImmediate() => SetImmediate(UIMotionAction.Hide);
 
-    public void ConfigureSidebar(EdgeDirection direction, float extraOffset = 0f)
+    public void ConfigureSidebar(UISidebarEdgeDirection direction, float extraOffset = 0f)
     {
         hiddenDirection = direction;
         extraHideOffset = extraOffset;
@@ -162,16 +119,45 @@ public class UISidebarRevealMotion : UIRevealMotion
         return base.GetPose(action);
     }
 
+    protected override void OnPresetApplied(UIMotionPreset motionPreset, string option)
+    {
+        if (motionPreset is not UISidebarMotionPreset sidebarPreset)
+        {
+            return;
+        }
+
+        ApplySidebarPreset(sidebarPreset);
+    }
+
+    private void ApplySidebarPreset(UISidebarMotionPreset sidebarPreset)
+    {
+        if (sidebarPreset.OverrideHiddenDirection)
+        {
+            hiddenDirection = sidebarPreset.HiddenDirection;
+        }
+
+        if (sidebarPreset.OverrideExtraHideOffset)
+        {
+            extraHideOffset = sidebarPreset.ExtraHideOffset;
+        }
+
+        useEnterOvershoot = sidebarPreset.UseEnterOvershoot;
+        enterOvershootDistance = sidebarPreset.EnterOvershootDistance;
+        enterOvershootDurationRatio = sidebarPreset.EnterOvershootDurationRatio;
+        enterOvershootEase = sidebarPreset.EnterOvershootEase;
+        enterSettleEase = sidebarPreset.EnterSettleEase;
+    }
+
     private UIMotionPose CreateSidebarPose(bool fade, float alpha)
     {
         float width = TargetRect.rect.width > 0f ? TargetRect.rect.width : Mathf.Abs(TargetRect.sizeDelta.x);
         float height = TargetRect.rect.height > 0f ? TargetRect.rect.height : Mathf.Abs(TargetRect.sizeDelta.y);
-        float distance = ((hiddenDirection == EdgeDirection.Left || hiddenDirection == EdgeDirection.Right) ? width : height) + extraHideOffset;
+        float distance = ((hiddenDirection == UISidebarEdgeDirection.Left || hiddenDirection == UISidebarEdgeDirection.Right) ? width : height) + extraHideOffset;
         Vector2 dir = hiddenDirection switch
         {
-            EdgeDirection.Right => Vector2.right,
-            EdgeDirection.Top => Vector2.up,
-            EdgeDirection.Bottom => Vector2.down,
+            UISidebarEdgeDirection.Right => Vector2.right,
+            UISidebarEdgeDirection.Top => Vector2.up,
+            UISidebarEdgeDirection.Bottom => Vector2.down,
             _ => Vector2.left
         };
 
@@ -182,9 +168,9 @@ public class UISidebarRevealMotion : UIRevealMotion
     {
         Vector2 direction = hiddenDirection switch
         {
-            EdgeDirection.Right => Vector2.left,
-            EdgeDirection.Top => Vector2.down,
-            EdgeDirection.Bottom => Vector2.up,
+            UISidebarEdgeDirection.Right => Vector2.left,
+            UISidebarEdgeDirection.Top => Vector2.down,
+            UISidebarEdgeDirection.Bottom => Vector2.up,
             _ => Vector2.right
         };
 
@@ -208,61 +194,10 @@ public class UISidebarRevealMotion : UIRevealMotion
         clip.ease = ease;
     }
 
-    private static List<UIMotionClip> CreatePanelSidebarClips()
+    private static bool IsSidebarOption(string selectedOption)
     {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.22f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.22f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true }, duration = 0.22f, ease = Ease.InCubic }
-        };
+        return !string.IsNullOrWhiteSpace(selectedOption)
+               && selectedOption.StartsWith("Sidebar/", System.StringComparison.Ordinal);
     }
 
-    private static List<UIMotionClip> CreatePanelSoftSidebarClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.28f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.28f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true }, duration = 0.2f, ease = Ease.InQuad }
-        };
-    }
-
-    private static List<UIMotionClip> CreatePanelFadeSidebarClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.2f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose { fade = true, alpha = 1f }, duration = 0.2f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true }, duration = 0.18f, ease = Ease.InCubic }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonSidebarClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.22f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.22f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true }, duration = 0.22f, ease = Ease.InCubic },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 2f), scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -4f), scale = true, scaleMultiplier = 0.96f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.1f }, duration = 0.16f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonSoftSidebarClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.24f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.24f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true }, duration = 0.2f, ease = Ease.InQuad },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.01f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -2f), scale = true, scaleMultiplier = 0.98f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.06f }, duration = 0.14f, ease = Ease.OutBack }
-        };
-    }
 }

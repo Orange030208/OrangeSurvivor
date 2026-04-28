@@ -47,7 +47,7 @@ public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
 
     public override void TryAttack(Entity target)
     {
-        if (!CanAttack || target == null)
+        if (!CanAttack || target == null || !IsInAttackRange(target))
         {
             return;
         }

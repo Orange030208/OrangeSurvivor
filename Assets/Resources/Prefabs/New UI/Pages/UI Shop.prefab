@@ -1588,6 +1588,7 @@ MonoBehaviour:
   currentConfigOption: Sidebar/Panel
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 5a32d4f43391c0f4f97ba1b7b16b76d7, type: 2}
   actionClips:
   - action: 7
     pose:
@@ -1855,6 +1856,7 @@ MonoBehaviour:
   currentConfigOption: Sidebar/Panel
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 5a32d4f43391c0f4f97ba1b7b16b76d7, type: 2}
   actionClips:
   - action: 7
     pose:

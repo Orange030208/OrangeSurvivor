@@ -4,7 +4,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
-[RequireComponent(typeof(EnemyRuntimeBridge))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]
 public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
@@ -14,7 +13,6 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
     private IAnimatable animComponent;
     private HealthComponent healthComponent;
     private PropertiesManager propertiesManager;
-    private EnemyRuntimeBridge runtimeBridge;
     private IMovable activeMovement;
     private Entity targetEntity;
     private EnemySO enemyData;
@@ -68,7 +66,6 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
         animComponent = GetComponent<IAnimatable>();
         healthComponent = GetComponent<HealthComponent>();
         propertiesManager = GetComponent<PropertiesManager>();
-        runtimeBridge = GetComponent<EnemyRuntimeBridge>();
         activeMovement = GetComponent<IMovable>();
         brain = GetComponent<EnemyBrain>();
         rb = GetComponent<Rigidbody2D>();
@@ -92,8 +89,33 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
         targetEntity = target;
     }
 
-    public void PassAwayAfterWave()
+    public override void EnableRuntime()
     {
-        runtimeBridge?.PassAwayAfterWave();
+        base.EnableRuntime();
+        brain?.StartBrain();
+        activeMovement?.EnableMovement();
+
+        if (collider != null)
+        {
+            collider.enabled = true;
+        }
+    }
+
+    public override void DisableRuntime()
+    {
+        base.DisableRuntime();
+        brain?.StopBrain();
+        activeMovement?.StopMoving();
+        activeMovement?.DisableMovement();
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
+
+        if (collider != null)
+        {
+            collider.enabled = false;
+        }
     }
 }

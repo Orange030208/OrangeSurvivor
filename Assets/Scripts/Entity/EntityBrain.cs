@@ -4,6 +4,8 @@ public abstract class EntityBrain : EntityComponentBase
 
     public abstract void StopBrain();
 
+    public abstract void StartBrain();
+
     public sealed override void Initialize(Entity owner)
     {
         OnInitialize(owner);

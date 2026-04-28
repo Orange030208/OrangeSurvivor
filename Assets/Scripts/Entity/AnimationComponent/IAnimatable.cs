@@ -15,4 +15,6 @@ public interface IAnimatable
     // 播放动画状态 参数用字符串或哈希ID
     void PlayState(string stateName);
     void PlayState(int stateHash);
+    bool IsCurrentState(int stateHash, int layerIndex = 0);
+    float GetCurrentStateNormalizedTime(int layerIndex = 0);
 }

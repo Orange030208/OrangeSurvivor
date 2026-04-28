@@ -9,12 +9,14 @@ using UnityEngine;
 
 public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 {
-    private const string WINDOW_TITLE = "Sprite Variant Animation Builder";
+    private const string WINDOW_TITLE = "图片动画变体构建器";
     private const string SETTINGS_ASSET_PATH =
+        "Assets/Scripts/Editor/SpriteVariantAnimationBuilder/图片动画变体构建器设置.asset";
+    private const string LEGACY_SETTINGS_ASSET_PATH =
         "Assets/Scripts/Editor/SpriteVariantAnimationBuilder/Sprite Variant Animation Builder Settings.asset";
-    private const float LEFT_PANEL_WIDTH = 340f;
-    private const float PATH_LABEL_WIDTH = 74f;
-    private const float COUNTER_WIDTH = 72f;
+    private const float LEFT_PANEL_WIDTH = 360f;
+    private const float PATH_LABEL_WIDTH = 86f;
+    private const float COUNTER_WIDTH = 76f;
     private const float TOP_PANEL_SPACING = 8f;
     private const float ACTION_BUTTON_HEIGHT = 24f;
 
@@ -28,18 +30,18 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     private Vector2 settingsScroll;
     private Vector2 previewScroll;
     private Editor settingsEditor;
-    private string lastReport = "Scan sprite folders to preview the build plan.";
+    private string lastReport = "点击扫描，预览输入根目录下的构建分组。";
 
-    [MenuItem("Tools/Animation/Sprite Variant Animation Builder")]
+    [MenuItem("Tools/Animation/图片动画变体构建器")]
     public static void OpenFromMenu()
     {
         SpriteVariantAnimationBuilderWindow window =
             GetWindow<SpriteVariantAnimationBuilderWindow>(WINDOW_TITLE);
-        window.minSize = new Vector2(980f, 560f);
+        window.minSize = new Vector2(1040f, 600f);
         window.Show();
     }
 
-    [MenuItem("Assets/Sprite Variant Animation Builder/Build Selected Folder", true)]
+    [MenuItem("Assets/图片动画变体构建器/构建选中文件夹", true)]
     private static bool ValidateBuildSelectedSpriteFolder()
     {
         string path = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -47,7 +49,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         return AssetDatabase.IsValidFolder(path) && IsPathUnder(path, spriteRootPath);
     }
 
-    [MenuItem("Assets/Sprite Variant Animation Builder/Build Selected Folder")]
+    [MenuItem("Assets/图片动画变体构建器/构建选中文件夹")]
     private static void BuildSelectedSpriteFolder()
     {
         SpriteVariantAnimationBuilderWindow window =
@@ -104,13 +106,13 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
     private void DrawSettingsTopBlock()
     {
-        using (new EditorGUILayout.VerticalScope(GUILayout.MinWidth(260f), GUILayout.ExpandWidth(true)))
+        using (new EditorGUILayout.VerticalScope(GUILayout.MinWidth(360f), GUILayout.ExpandWidth(true)))
         {
             EditorGUILayout.LabelField(WINDOW_TITLE, EditorStyles.boldLabel);
 
             EditorGUI.BeginChangeCheck();
             settings = (SpriteVariantAnimationBuilderSettings)EditorGUILayout.ObjectField(
-                "Settings",
+                "配置",
                 settings,
                 typeof(SpriteVariantAnimationBuilderSettings),
                 false);
@@ -124,12 +126,12 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
     private void DrawActionTopBlock()
     {
-        using (new EditorGUILayout.VerticalScope(GUILayout.Width(176f)))
+        using (new EditorGUILayout.VerticalScope(GUILayout.Width(210f)))
         {
-            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("操作", EditorStyles.boldLabel);
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Scan", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
+                if (GUILayout.Button("扫描", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
                 {
                     Scan();
                     GUIUtility.ExitGUI();
@@ -137,7 +139,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
                 using (new EditorGUI.DisabledScope(previews.Count == 0))
                 {
-                    if (GUILayout.Button("Build All", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
+                    if (GUILayout.Button("构建全部", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
                     {
                         SelectAll(true);
                         BuildSelected();
@@ -148,7 +150,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
             using (new EditorGUI.DisabledScope(previews.Count == 0))
             {
-                if (GUILayout.Button("Build Selected", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
+                if (GUILayout.Button("构建选中", GUILayout.Height(ACTION_BUTTON_HEIGHT)))
                 {
                     BuildSelected();
                     GUIUtility.ExitGUI();
@@ -159,11 +161,11 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
     private void DrawBuildScopeTopBlock()
     {
-        using (new EditorGUILayout.VerticalScope(GUILayout.Width(160f)))
+        using (new EditorGUILayout.VerticalScope(GUILayout.Width(180f)))
         {
-            EditorGUILayout.LabelField("Build", EditorStyles.boldLabel);
-            buildAnimations = EditorGUILayout.ToggleLeft("Animations", buildAnimations);
-            buildPrefabs = EditorGUILayout.ToggleLeft("Prefab Variants", buildPrefabs);
+            EditorGUILayout.LabelField("构建内容", EditorStyles.boldLabel);
+            buildAnimations = EditorGUILayout.ToggleLeft("动画与控制器", buildAnimations);
+            buildPrefabs = EditorGUILayout.ToggleLeft("预制体变体", buildPrefabs);
         }
     }
 
@@ -172,7 +174,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         EditorGUILayout.BeginVertical(GUILayout.Width(LEFT_PANEL_WIDTH));
         settingsScroll = EditorGUILayout.BeginScrollView(settingsScroll);
 
-        showSettings = EditorGUILayout.Foldout(showSettings, "Settings", true);
+        showSettings = EditorGUILayout.Foldout(showSettings, "配置", true);
         if (showSettings)
         {
             using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
@@ -187,20 +189,20 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
                 EditorGUILayout.Space(4f);
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button("Resolve Defaults"))
+                    if (GUILayout.Button("补全默认目录"))
                     {
                         settings.ResolveDefaultReferences();
                         EditorUtility.SetDirty(settings);
                         Scan();
                     }
 
-                    if (GUILayout.Button("Reset"))
+                    if (GUILayout.Button("重置"))
                     {
                         if (EditorUtility.DisplayDialog(
-                                "Reset Settings",
-                                "Reset Sprite Variant Animation Builder settings to defaults?",
-                                "Reset",
-                                "Cancel"))
+                                "重置配置",
+                                "确定要将图片动画变体构建器配置恢复为默认值吗？",
+                                "重置",
+                                "取消"))
                         {
                             settings.ResetToDefaults();
                             EditorUtility.SetDirty(settings);
@@ -212,7 +214,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         }
 
         EditorGUILayout.Space(8f);
-        EditorGUILayout.LabelField("Report", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("报告", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(lastReport, MessageType.Info);
 
         EditorGUILayout.EndScrollView();
@@ -229,7 +231,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         if (previews.Count == 0)
         {
             EditorGUILayout.HelpBox(
-                "No build folders found. Put one folder per variant under the configured sprite root.",
+                "没有找到可构建的文件夹。请在输入根目录下按“一个子文件夹一个变体”的方式放置图片。",
                 MessageType.Warning);
         }
         else
@@ -248,12 +250,12 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     {
         using (new EditorGUILayout.HorizontalScope(EditorStyles.helpBox))
         {
-            if (GUILayout.Button("All", GUILayout.Width(56f)))
+            if (GUILayout.Button("全选", GUILayout.Width(64f)))
             {
                 SelectAll(true);
             }
 
-            if (GUILayout.Button("None", GUILayout.Width(68f)))
+            if (GUILayout.Button("全不选", GUILayout.Width(76f)))
             {
                 SelectAll(false);
             }
@@ -262,7 +264,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
             int selectedCount = previews.Count(preview =>
                 selectedByFolder.TryGetValue(preview.FolderPath, out bool selected) && selected);
-            GUILayout.Label($"Folders {previews.Count} / Selected {selectedCount}", EditorStyles.miniLabel);
+            GUILayout.Label($"分组 {previews.Count} / 已选 {selectedCount}", EditorStyles.miniLabel);
         }
     }
 
@@ -278,19 +280,19 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
                     GUILayout.Toggle(selected, GUIContent.none, GUILayout.Width(20f));
                 EditorGUILayout.LabelField(preview.VariantName, EditorStyles.boldLabel, GUILayout.MinWidth(120f));
                 GUILayout.FlexibleSpace();
-                DrawCounter("clips", preview.ValidClipCount);
-                DrawCounter("frames", preview.FrameCount);
+                DrawCounter("动画", preview.ValidClipCount);
+                DrawCounter("帧", preview.FrameCount);
 
-                if (GUILayout.Button("Ping", GUILayout.Width(58f)))
+                if (GUILayout.Button("定位", GUILayout.Width(58f)))
                 {
                     PingPath(preview.FolderPath);
                 }
             }
 
-            DrawPathRow("Source", preview.FolderPath);
-            DrawPathRow("Anim", preview.AnimationFolderPath);
-            DrawPathRow("Controller", preview.ControllerPath);
-            DrawPathRow("Prefab", preview.PrefabPath);
+            DrawPathRow("来源", preview.FolderPath);
+            DrawPathRow("动画目录", preview.AnimationFolderPath);
+            DrawPathRow("控制器", preview.ControllerPath);
+            DrawPathRow("预制体", preview.PrefabPath);
 
             foreach (AnimationAtlasPreview atlas in preview.Atlases)
             {
@@ -345,6 +347,11 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         settings = AssetDatabase.LoadAssetAtPath<SpriteVariantAnimationBuilderSettings>(SETTINGS_ASSET_PATH);
         if (settings == null)
         {
+            settings = LoadOrMoveLegacySettings();
+        }
+
+        if (settings == null)
+        {
             EnsureFolder(Path.GetDirectoryName(SETTINGS_ASSET_PATH)?.Replace('\\', '/'));
             settings = CreateInstance<SpriteVariantAnimationBuilderSettings>();
             settings.ResetToDefaults();
@@ -354,6 +361,26 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         settings.ResolveDefaultReferences();
         RebuildSettingsEditor();
+    }
+
+    private static SpriteVariantAnimationBuilderSettings LoadOrMoveLegacySettings()
+    {
+        SpriteVariantAnimationBuilderSettings legacySettings =
+            AssetDatabase.LoadAssetAtPath<SpriteVariantAnimationBuilderSettings>(LEGACY_SETTINGS_ASSET_PATH);
+        if (legacySettings == null)
+        {
+            return null;
+        }
+
+        string moveError = AssetDatabase.MoveAsset(LEGACY_SETTINGS_ASSET_PATH, SETTINGS_ASSET_PATH);
+        if (!string.IsNullOrEmpty(moveError))
+        {
+            Debug.LogWarning($"迁移图片动画变体构建器配置失败，将继续使用旧配置：{moveError}");
+            return legacySettings;
+        }
+
+        AssetDatabase.SaveAssets();
+        return AssetDatabase.LoadAssetAtPath<SpriteVariantAnimationBuilderSettings>(SETTINGS_ASSET_PATH);
     }
 
     private void RebuildSettingsEditor()
@@ -368,20 +395,20 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         if (settings == null)
         {
-            lastReport = "Settings asset is missing.";
+            lastReport = "配置资产不存在。";
             return;
         }
 
         settings.ResolveDefaultReferences();
 
-        string spriteRoot = settings.SpriteInputRootPath;
-        if (!AssetDatabase.IsValidFolder(spriteRoot))
+        string inputRoot = settings.InputRootPath;
+        if (!AssetDatabase.IsValidFolder(inputRoot))
         {
-            lastReport = $"Sprite input root does not exist: {spriteRoot}";
+            lastReport = $"输入根目录不存在：{inputRoot}";
             return;
         }
 
-        string[] buildFolders = AssetDatabase.GetSubFolders(spriteRoot);
+        string[] buildFolders = AssetDatabase.GetSubFolders(inputRoot);
         foreach (string buildFolder in buildFolders.OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase))
         {
             BuildFolderPreview preview = CreatePreview(buildFolder);
@@ -393,7 +420,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             }
         }
 
-        lastReport = $"Found {previews.Count} build folder(s) under {spriteRoot}.";
+        lastReport = $"在 {inputRoot} 下找到 {previews.Count} 个构建分组。";
         Repaint();
     }
 
@@ -419,17 +446,17 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         if (preview.Atlases.Count == 0)
         {
-            preview.Warnings.Add("No texture atlases found.");
+            preview.Warnings.Add("没有找到图片。");
         }
 
         if (preview.ValidClipCount == 0)
         {
-            preview.Warnings.Add("No sprites found in the atlases. Check Sprite Mode and slicing.");
+            preview.Warnings.Add("图片中没有可用 Sprite，请检查 Sprite Mode 和切片设置。");
         }
 
         if (settings.TemplatePrefab == null)
         {
-            preview.Warnings.Add("Template prefab is not assigned.");
+            preview.Warnings.Add("未设置模板预制体。");
         }
 
         return preview;
@@ -487,7 +514,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         if (selectedPreviews.Count == 0)
         {
-            lastReport = "No build folders selected.";
+            lastReport = "没有选中任何构建分组。";
             return;
         }
 
@@ -501,7 +528,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
                 BuildFolderPreview preview = selectedPreviews[i];
                 EditorUtility.DisplayProgressBar(
                     WINDOW_TITLE,
-                    $"Building {preview.VariantName}",
+                    $"正在构建 {preview.VariantName}",
                     (float)i / selectedPreviews.Count);
 
                 BuildFolder(preview, report);
@@ -529,7 +556,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     {
         if (preview.ValidClipCount == 0)
         {
-            report.AddSkipped(preview.VariantName, "No valid sprite atlas.");
+            report.AddSkipped(preview.VariantName, "没有有效的 Sprite 图集。");
             return;
         }
 
@@ -560,7 +587,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         {
             if (atlas.Sprites.Count == 0)
             {
-                report.AddSkipped($"{preview.VariantName}/{atlas.ClipName}", "Atlas has no sprites.");
+                report.AddSkipped($"{preview.VariantName}/{atlas.ClipName}", "图集中没有 Sprite。");
                 continue;
             }
 
@@ -569,7 +596,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             {
                 report.AddSkipped(
                     $"{preview.VariantName}/{atlas.ClipName}",
-                    "Animation clip exists and overwrite is disabled.");
+                    "动画片段已存在，且未开启覆盖。");
                 continue;
             }
 
@@ -602,7 +629,8 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         clip.name = atlas.ClipName;
         clip.frameRate = settings.AnimationFrameRate;
-        clip.wrapMode = settings.LoopClipsByDefault ? WrapMode.Loop : WrapMode.Default;
+        bool shouldLoop = settings.ShouldLoopClip(atlas.ClipName);
+        clip.wrapMode = shouldLoop ? WrapMode.Loop : WrapMode.Default;
 
         ClearAnimationClipCurves(clip);
 
@@ -617,7 +645,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         AnimationUtility.SetObjectReferenceCurve(clip, spriteBinding, keyframes);
 
         AnimationClipSettings clipSettings = AnimationUtility.GetAnimationClipSettings(clip);
-        clipSettings.loopTime = settings.LoopClipsByDefault;
+        clipSettings.loopTime = shouldLoop;
         AnimationUtility.SetAnimationClipSettings(clip, clipSettings);
 
         EditorUtility.SetDirty(clip);
@@ -685,7 +713,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         }
         else if (!settings.OverwriteExistingAssets)
         {
-            report.AddSkipped(preview.VariantName, "Animator controller exists and overwrite is disabled.");
+            report.AddSkipped(preview.VariantName, "动画控制器已存在，且未开启覆盖。");
             return controller;
         }
 
@@ -733,14 +761,14 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     {
         if (settings.TemplatePrefab == null)
         {
-            report.AddSkipped(preview.VariantName, "Template prefab is missing.");
+            report.AddSkipped(preview.VariantName, "缺少模板预制体。");
             return AssetDatabase.LoadAssetAtPath<GameObject>(preview.PrefabPath);
         }
 
         GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(preview.PrefabPath);
         if (existingPrefab != null && !settings.OverwriteExistingAssets)
         {
-            report.AddSkipped(preview.VariantName, "Prefab exists and overwrite is disabled.");
+            report.AddSkipped(preview.VariantName, "预制体已存在，且未开启覆盖。");
             return existingPrefab;
         }
 
@@ -752,7 +780,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             : (GameObject)PrefabUtility.InstantiatePrefab(settings.TemplatePrefab);
         if (instance == null)
         {
-            report.AddSkipped(preview.VariantName, "Failed to instantiate template prefab.");
+            report.AddSkipped(preview.VariantName, "实例化模板预制体失败。");
             return existingPrefab;
         }
 
@@ -780,7 +808,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(instance, preview.PrefabPath, out bool success);
             if (!success || savedPrefab == null)
             {
-                report.AddSkipped(preview.VariantName, $"Failed to save prefab: {preview.PrefabPath}");
+                report.AddSkipped(preview.VariantName, $"保存预制体失败：{preview.PrefabPath}");
                 return existingPrefab;
             }
 
@@ -888,9 +916,15 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     {
         SpriteVariantAnimationBuilderSettings configuredSettings =
             AssetDatabase.LoadAssetAtPath<SpriteVariantAnimationBuilderSettings>(SETTINGS_ASSET_PATH);
+        if (configuredSettings == null)
+        {
+            configuredSettings =
+                AssetDatabase.LoadAssetAtPath<SpriteVariantAnimationBuilderSettings>(LEGACY_SETTINGS_ASSET_PATH);
+        }
+
         return configuredSettings != null
-            ? configuredSettings.SpriteInputRootPath
-            : SpriteVariantAnimationBuilderSettings.DEFAULT_SPRITE_INPUT_ROOT;
+            ? configuredSettings.InputRootPath
+            : SpriteVariantAnimationBuilderSettings.DEFAULT_INPUT_ROOT;
     }
 
     private static AnimatorState FindState(AnimatorStateMachine stateMachine, string stateName)
@@ -911,7 +945,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         string[] parts = normalizedPath.Split('/');
         if (parts.Length == 0 || parts[0] != "Assets")
         {
-            throw new ArgumentException($"Unity asset folders must start with Assets: {folderPath}", nameof(folderPath));
+            throw new ArgumentException($"Unity 资产目录必须以 Assets 开头：{folderPath}", nameof(folderPath));
         }
 
         string current = "Assets";
@@ -1000,8 +1034,8 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         public string GetDisplaySummary()
         {
             return Sprites.Count == 0
-                ? $"{TexturePath} | no sprites"
-                : $"{TexturePath} | {Sprites.Count} frame(s)";
+                ? $"{TexturePath} | 无 Sprite"
+                : $"{TexturePath} | {Sprites.Count} 帧";
         }
     }
 
@@ -1024,17 +1058,17 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         {
             List<string> lines = new()
             {
-                "Sprite Variant Animation Builder completed.",
-                $"Animation clips: {AnimationClipCount}",
-                $"Animator controllers created: {ControllerCreateCount}",
-                $"Prefab variants created: {PrefabCreateCount}",
-                $"Prefabs updated: {PrefabUpdateCount}",
-                $"Stale clips deleted: {DeletedStaleClipCount}"
+                "图片动画变体构建完成。",
+                $"动画片段：{AnimationClipCount}",
+                $"新建动画控制器：{ControllerCreateCount}",
+                $"新建预制体变体：{PrefabCreateCount}",
+                $"更新预制体：{PrefabUpdateCount}",
+                $"删除过期动画片段：{DeletedStaleClipCount}"
             };
 
             if (skipped.Count > 0)
             {
-                lines.Add("Skipped:");
+                lines.Add("跳过：");
                 lines.AddRange(skipped.Select(item => $"  {item}"));
             }
 

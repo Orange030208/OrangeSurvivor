@@ -104,6 +104,7 @@ MonoBehaviour:
   currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:

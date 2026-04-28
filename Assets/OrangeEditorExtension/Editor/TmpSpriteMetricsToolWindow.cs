@@ -18,7 +18,7 @@ public sealed class TmpSpriteMetricsToolWindow : EditorWindow
     private bool useWidthAsAdvance = true;
     private bool showGlyphPreview = true;
 
-    [MenuItem("Tools/TMP/精灵字形度量工具")]
+    [MenuItem("Tools/Orange Editor/精灵字形度量工具")]
     private static void OpenWindow()
     {
         TmpSpriteMetricsToolWindow window = GetWindow<TmpSpriteMetricsToolWindow>();

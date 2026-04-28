@@ -32,7 +32,7 @@ public sealed class AnimationPathRemapperWindow : EditorWindow
         public bool isObjectRef;
     }
 
-    [MenuItem("Tools/Animation/路径引用迁移工具")]
+    [MenuItem("Tools/Orange Editor/路径引用迁移工具")]
     private static void OpenWindow()
     {
         AnimationPathRemapperWindow window = GetWindow<AnimationPathRemapperWindow>();

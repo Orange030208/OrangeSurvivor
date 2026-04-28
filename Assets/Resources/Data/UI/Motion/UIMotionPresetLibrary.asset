@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38da6bc3186fd8e4aad6a3b74b9d8ec1, type: 3}
+  m_Name: UIMotionPresetLibrary
+  m_EditorClassIdentifier: 
+  entries:
+  - option: Default
+    preset: {fileID: 11400000, guid: 79465ad4d1c07f0458e16c663b626735, type: 2}
+  - option: Default/Soft
+    preset: {fileID: 11400000, guid: b8688000e7bc12444859f85ddc73eaed, type: 2}
+  - option: Default/Fade
+    preset: {fileID: 11400000, guid: 4cdf9043165709e41a285f7f92093de2, type: 2}
+  - option: Default/Crisp
+    preset: {fileID: 11400000, guid: b25c9a54bfa4b1f478a41b29b9043951, type: 2}
+  - option: Button
+    preset: {fileID: 11400000, guid: 36c56de847c558a44a555a879207c662, type: 2}
+  - option: Button/Soft
+    preset: {fileID: 11400000, guid: d024f6662fe08884383d0c65ef6c9b0b, type: 2}
+  - option: Button/Fade
+    preset: {fileID: 11400000, guid: 8940a59578ec0094aba1dde06368d0f0, type: 2}
+  - option: Button/Crisp
+    preset: {fileID: 11400000, guid: ea33ce10fa340844184bf536de76ec91, type: 2}
+  - option: Button/CollapseX
+    preset: {fileID: 11400000, guid: f15091332e4f86949a3d0495228f4f12, type: 2}
+  - option: Badge
+    preset: {fileID: 11400000, guid: 4792037bed6a05b47b47bd496d23282d, type: 2}
+  - option: Badge/Soft
+    preset: {fileID: 11400000, guid: e23577be4cf7e53428ea6b9a1254a724, type: 2}
+  - option: Badge/Crisp
+    preset: {fileID: 11400000, guid: ce0aa343a8b891d4abca81de5c35b5d7, type: 2}
+  - option: Tooltip
+    preset: {fileID: 11400000, guid: a21ec7a00bbdcec488f9a65521e344b0, type: 2}
+  - option: Tooltip/Soft
+    preset: {fileID: 11400000, guid: 87958ba343652384da44bcafa25be51f, type: 2}
+  - option: Tooltip/Fade
+    preset: {fileID: 11400000, guid: 0292c8d24840655499d15939e8970dc6, type: 2}
+  - option: Tooltip/Crisp
+    preset: {fileID: 11400000, guid: 87a45b01c6be1df4f9c51e4ff1544cc9, type: 2}
+  - option: Sidebar/Panel
+    preset: {fileID: 11400000, guid: 5a32d4f43391c0f4f97ba1b7b16b76d7, type: 2}
+  - option: Sidebar/Panel No Overshoot
+    preset: {fileID: 11400000, guid: 9fca181412bdbea49aef47f4052539a6, type: 2}
+  - option: Sidebar/Panel Soft
+    preset: {fileID: 11400000, guid: 33d0717d97aa85d49b67265aeaf6ed26, type: 2}
+  - option: Sidebar/Panel Soft No Overshoot
+    preset: {fileID: 11400000, guid: 26d8099a2872a4342b91ec437ea94373, type: 2}
+  - option: Sidebar/Panel Fade
+    preset: {fileID: 11400000, guid: b7cef554cb64a9f4ab315f204cafdd65, type: 2}
+  - option: Sidebar/Panel Fade No Overshoot
+    preset: {fileID: 11400000, guid: f019190407db83c40bc0212504361b35, type: 2}
+  - option: Sidebar/Button
+    preset: {fileID: 11400000, guid: a8ed908dc73db5c468b42351f219a364, type: 2}
+  - option: Sidebar/Button No Overshoot
+    preset: {fileID: 11400000, guid: c48a052f34e9e0147b6e0ed0cfad088a, type: 2}
+  - option: Sidebar/Button Soft
+    preset: {fileID: 11400000, guid: 98e5a9a6c33eec44f92b59824f82990c, type: 2}
+  - option: Sidebar/Button Soft No Overshoot
+    preset: {fileID: 11400000, guid: 5907bde09b191864184fc0f4b868a008, type: 2}

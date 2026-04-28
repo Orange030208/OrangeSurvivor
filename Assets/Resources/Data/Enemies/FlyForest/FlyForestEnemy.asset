@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b89ccba8748b48bf805e70825310d3eb, type: 3}
+  m_Name: FlyForestEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 4816993533346680030, guid: 40b738ae2780a0e41a250b95993a1e6f, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 5b80b26554184b547876d735e9625c9c, type: 2}
+  animConfig: {fileID: 11400000, guid: 89d96c6114136f04387029c1f88e012a, type: 2}
+  lowHpPercent: 30
+  fastBurstModifierData:
+  - propType: 1
+    modifierType: 3
+    value: 2
+  normalMovementStrategy: {fileID: 11400000, guid: 9bc8a0a400ea18f41a0c5ac2fe028706, type: 2}
+  normalAttackStrategy: {fileID: 11400000, guid: 73e7bbd07d0ec4b418ecfe779bf64dac, type: 2}
+  retreatMovementStrategy: {fileID: 11400000, guid: 360664d2989d726439a9a488e9243431, type: 2}

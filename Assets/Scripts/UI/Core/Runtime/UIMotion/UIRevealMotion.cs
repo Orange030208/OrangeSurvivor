@@ -113,69 +113,30 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
     public override void ApplyConfigByString(string selectedOption)
     {
-        ClearPresetReference();
         if (string.IsNullOrWhiteSpace(selectedOption))
         {
+            ClearPresetReference();
             SetCurrentConfigOption(CUSTOM_OPTION);
             return;
         }
 
-        switch (selectedOption)
+        if (string.Equals(selectedOption, CUSTOM_OPTION, StringComparison.Ordinal))
         {
-            case DEFAULT_OPTION:
-                actionClips = CreateDefaultPresetClips();
-                break;
-            case DEFAULT_SOFT_OPTION:
-                actionClips = CreateDefaultSoftPresetClips();
-                break;
-            case DEFAULT_FADE_OPTION:
-                actionClips = CreateDefaultFadePresetClips();
-                break;
-            case DEFAULT_CRISP_OPTION:
-                actionClips = CreateDefaultCrispPresetClips();
-                break;
-            case BUTTON_OPTION:
-                actionClips = CreateButtonPresetClips();
-                break;
-            case BUTTON_SOFT_OPTION:
-                actionClips = CreateButtonSoftPresetClips();
-                break;
-            case BUTTON_FADE_OPTION:
-                actionClips = CreateButtonFadePresetClips();
-                break;
-            case BUTTON_CRISP_OPTION:
-                actionClips = CreateButtonCrispPresetClips();
-                break;
-            case COLLAPSE_X_OPTION:
-                actionClips = CreateCollapseXPresetClips();
-                break;
-            case BADGE_OPTION:
-                actionClips = CreateBadgePresetClips();
-                break;
-            case BADGE_SOFT_OPTION:
-                actionClips = CreateBadgeSoftPresetClips();
-                break;
-            case BADGE_CRISP_OPTION:
-                actionClips = CreateBadgeCrispPresetClips();
-                break;
-            case TOOLTIP_OPTION:
-                actionClips = CreateTooltipPresetClips();
-                break;
-            case TOOLTIP_SOFT_OPTION:
-                actionClips = CreateTooltipSoftPresetClips();
-                break;
-            case TOOLTIP_FADE_OPTION:
-                actionClips = CreateTooltipFadePresetClips();
-                break;
-            case TOOLTIP_CRISP_OPTION:
-                actionClips = CreateTooltipCrispPresetClips();
-                break;
-            default:
-                selectedOption = CUSTOM_OPTION;
-                break;
+            ClearPresetReference();
+            SetCurrentConfigOption(CUSTOM_OPTION);
+            return;
         }
 
-        SetCurrentConfigOption(selectedOption);
+        if (UIMotionPresetResolver.TryGetPreset(selectedOption, out UIMotionPreset motionPreset))
+        {
+            ApplyPreset(motionPreset);
+            SetCurrentConfigOption(selectedOption);
+            return;
+        }
+
+        Debug.LogWarning($"{GetType().Name} could not resolve UI motion preset option '{selectedOption}'.", this);
+        ClearPresetReference();
+        SetCurrentConfigOption(CUSTOM_OPTION);
     }
 
     public void ApplyPreset(UIMotionPreset motionPreset)
@@ -193,7 +154,18 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
 
         useUnscaledTime = preset.UseUnscaledTime;
         actionClips = preset.CreateRuntimeClips();
-        SetCurrentConfigOption(preset.name);
+        string option = preset.name;
+        if (UIMotionPresetResolver.TryGetOption(preset, out string resolvedOption))
+        {
+            option = resolvedOption;
+        }
+
+        SetCurrentConfigOption(option);
+        OnPresetApplied(preset, option);
+    }
+
+    protected virtual void OnPresetApplied(UIMotionPreset motionPreset, string option)
+    {
     }
 
     protected void ClearPresetReference()
@@ -492,218 +464,6 @@ public class UIRevealMotion : UIRuntimeMotionBase, IUISequenceMotion
     private UIMotionPose CreateDefaultPose()
     {
         return new UIMotionPose();
-    }
-
-    private static List<UIMotionClip> CreateDefaultPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.18f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.18f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, -18f), scale = true, scaleMultiplier = 0.96f }, duration = 0.18f, ease = Ease.InCubic },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 4f), scale = true, scaleMultiplier = 1.03f }, duration = 0.12f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.1f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.12f }, duration = 0.16f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateDefaultSoftPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.24f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.24f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, -12f), scale = true, scaleMultiplier = 0.98f }, duration = 0.18f, ease = Ease.InQuad },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 2f), scale = true, scaleMultiplier = 1.015f }, duration = 0.1f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.08f }, duration = 0.14f, ease = Ease.OutQuad }
-        };
-    }
-
-    private static List<UIMotionClip> CreateDefaultFadePresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.18f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose { fade = true, alpha = 1f, move = true, offset = new Vector2(0f, -8f) }, duration = 0.18f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, -8f), scale = true, scaleMultiplier = 0.99f }, duration = 0.14f, ease = Ease.InQuad },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.02f }, duration = 0.1f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { fade = true, alpha = 1f, scale = true, scaleMultiplier = 1.1f }, duration = 0.14f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateDefaultCrispPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.12f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.12f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, -24f), scale = true, scaleMultiplier = 0.94f }, duration = 0.1f, ease = Ease.InCubic },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 5f), scale = true, scaleMultiplier = 1.04f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.14f }, duration = 0.12f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.14f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.14f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.96f }, duration = 0.14f, ease = Ease.InCubic },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 2f), scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Release, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.03f }, duration = 0.1f, ease = Ease.OutBack },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -4f), scale = true, scaleMultiplier = 0.96f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.16f }, duration = 0.18f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonSoftPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.18f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.18f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.98f }, duration = 0.14f, ease = Ease.InQuad },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.01f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Release, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -2f), scale = true, scaleMultiplier = 0.98f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.08f }, duration = 0.14f, ease = Ease.OutQuad }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonFadePresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.16f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose { fade = true, alpha = 1f, scale = true, scaleMultiplier = 0.99f }, duration = 0.16f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.95f }, duration = 0.12f, ease = Ease.InQuad },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Release, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { scale = true, scaleMultiplier = 0.97f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { fade = true, alpha = 1f, scale = true, scaleMultiplier = 1.12f }, duration = 0.14f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateButtonCrispPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.1f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.1f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.92f }, duration = 0.08f, ease = Ease.InCubic },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 3f), scale = true, scaleMultiplier = 1.03f }, duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Release, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.04f }, duration = 0.08f, ease = Ease.OutBack },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -4f), scale = true, scaleMultiplier = 0.94f }, duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.18f }, duration = 0.12f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateCollapseXPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.16f, ease = Ease.OutBack },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.16f, ease = Ease.OutBack },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.96f, scaleX = true, scaleXMultiplier = 0.4f }, duration = 0.14f, ease = Ease.InCubic, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 2f), scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Release, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.03f }, duration = 0.1f, ease = Ease.OutBack },
-            new() { action = UIMotionAction.Press, pose = new UIMotionPose { move = true, offset = new Vector2(0f, -4f), scale = true, scaleMultiplier = 0.96f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.16f }, duration = 0.18f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateBadgePresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.82f }, duration = 0.08f, ease = Ease.InBack, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.2f }, duration = 0.12f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateBadgeSoftPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.12f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.12f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.9f }, duration = 0.1f, ease = Ease.InQuad, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.12f }, duration = 0.12f, ease = Ease.OutQuad }
-        };
-    }
-
-    private static List<UIMotionClip> CreateBadgeCrispPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.06f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.06f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, scale = true, scaleMultiplier = 0.76f }, duration = 0.06f, ease = Ease.InBack, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.24f }, duration = 0.1f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateTooltipPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.1f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.1f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, 6f), scale = true, scaleMultiplier = 0.98f }, duration = 0.1f, ease = Ease.InQuad, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 2f), scale = true, scaleMultiplier = 1.02f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.08f, move = true, offset = new Vector2(0f, 3f) }, duration = 0.1f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateTooltipSoftPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.14f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.14f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, 4f), scale = true, scaleMultiplier = 0.99f }, duration = 0.12f, ease = Ease.InQuad, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 1f), scale = true, scaleMultiplier = 1.01f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.05f, move = true, offset = new Vector2(0f, 2f) }, duration = 0.12f, ease = Ease.OutQuad }
-        };
-    }
-
-    private static List<UIMotionClip> CreateTooltipFadePresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.12f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose { fade = true, alpha = 1f, move = true, offset = new Vector2(0f, 4f) }, duration = 0.12f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, 4f), scale = true, scaleMultiplier = 0.99f }, duration = 0.1f, ease = Ease.InQuad, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.015f }, duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { fade = true, alpha = 1f, scale = true, scaleMultiplier = 1.07f, move = true, offset = new Vector2(0f, 2f) }, duration = 0.1f, ease = Ease.OutBack }
-        };
-    }
-
-    private static List<UIMotionClip> CreateTooltipCrispPresetClips()
-    {
-        return new List<UIMotionClip>
-        {
-            new() { action = UIMotionAction.Common, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Show, pose = new UIMotionPose(), duration = 0.08f, ease = Ease.OutCubic },
-            new() { action = UIMotionAction.Hide, pose = new UIMotionPose { fade = true, alpha = 0f, move = true, offset = new Vector2(0f, 8f), scale = true, scaleMultiplier = 0.97f }, duration = 0.08f, ease = Ease.InCubic, deactivateOnComplete = true },
-            new() { action = UIMotionAction.Enter, pose = new UIMotionPose { move = true, offset = new Vector2(0f, 3f), scale = true, scaleMultiplier = 1.03f }, duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Exit, pose = new UIMotionPose(), duration = 0.06f, ease = Ease.OutQuad },
-            new() { action = UIMotionAction.Emphasis, pose = new UIMotionPose { scale = true, scaleMultiplier = 1.1f, move = true, offset = new Vector2(0f, 3f) }, duration = 0.08f, ease = Ease.OutBack }
-        };
     }
 
     private void EnsureReferences()

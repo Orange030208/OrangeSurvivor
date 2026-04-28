@@ -20,6 +20,8 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private const float MOTION_MARKER_HIT_RADIUS = 12f;
     private const float TIMELINE_HEIGHT = 38f;
     private const float TIMELINE_MARGIN = 10f;
+    private const float MIN_TARGET_DISTANCE = 0.1f;
+    private const float MAX_TARGET_DISTANCE = 8f;
 
     private static readonly Color CanvasBorderColor = new(0.07f, 0.07f, 0.07f, 1f);
     private static readonly Color CanvasBackgroundColor = new(0.15f, 0.15f, 0.16f, 1f);
@@ -27,14 +29,24 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private static readonly Color PoseColor = new(0.2f, 0.8f, 1f, 1f);
     private static readonly Color TargetColor = new(1f, 0.75f, 0.2f, 1f);
     private static readonly Color ReferenceColor = new(0.55f, 1f, 0.55f, 0.9f);
+    private static readonly string[] StudioViewLabels = { "Sequence", "Weapon Data" };
+    private const HideFlags DRAFT_HIDE_FLAGS =
+        HideFlags.HideInHierarchy |
+        HideFlags.DontSaveInEditor |
+        HideFlags.DontSaveInBuild |
+        HideFlags.DontUnloadUnusedAsset;
 
     [SerializeField] private AttackSequenceDefinitionSO sequence;
     [SerializeField] private WeaponDataSO weaponData;
+    [SerializeField] private AttackSequenceDefinitionSO sequenceAsset;
+    [SerializeField] private WeaponDataSO weaponDataAsset;
+    [SerializeField] private StudioView selectedView = StudioView.Sequence;
     [SerializeField] private WeaponAnimationSequencePresetId selectedPreset;
     [SerializeField] private float previewNormalizedTime;
     [SerializeField] private bool previewPlaying;
     [SerializeField] private bool loopPreview = true;
     [SerializeField] private Vector2 previewTargetOffset = new(0f, 1f);
+    [SerializeField] private float previewTargetDistance = 1f;
     [SerializeField] private float previewPixelsPerUnit = 70f;
     [SerializeField] private Vector2 previewCanvasPan;
     [SerializeField] private bool showMotionPath = true;
@@ -42,8 +54,11 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     [SerializeField] private bool showReferenceOffset = true;
     [SerializeField] private int selectedMotionIndex = -1;
     [SerializeField] private int selectedEventIndex = -1;
+    [SerializeField] private bool sequenceDraftHasUnsavedChanges;
+    [SerializeField] private bool weaponDataDraftHasUnsavedChanges;
 
     private SerializedObject sequenceObject;
+    private SerializedObject weaponDataObject;
     private ReorderableList motionList;
     private ReorderableList eventList;
     private Vector2 leftScroll;
@@ -93,14 +108,23 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private void OnEnable()
     {
         minSize = new Vector2(1120f, 560f);
+        saveChangesMessage = "Attack Sequence Studio has unsaved draft changes. Save them before closing?";
         lastEditorTime = EditorApplication.timeSinceStartup;
         EditorApplication.update += OnEditorUpdate;
+        EnsureDraftsReady();
+        EnsureDraftsEditable();
         RebuildSerializedObjects();
+        RefreshUnsavedChangesState();
     }
 
     private void OnDisable()
     {
         EditorApplication.update -= OnEditorUpdate;
+    }
+
+    private void OnDestroy()
+    {
+        DestroyDraftObjects();
     }
 
     private void OnSelectionChange()
@@ -138,26 +162,34 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
     private void OnGUI()
     {
+        ApplySerializedDraftChanges();
         DrawToolbar();
-        EnsureSerializedObject();
+        EnsureSerializedObjects();
 
-        if (sequenceObject == null)
+        if (sequenceObject == null && weaponDataObject == null)
         {
             DrawEmptyState();
             return;
         }
 
-        sequenceObject.Update();
-        EnsureListsReady();
-        EnsureSelectedIndices();
+        GUI.enabled = true;
+        sequenceObject?.UpdateIfRequiredOrScript();
+        weaponDataObject?.UpdateIfRequiredOrScript();
+        EnsureActiveViewIsAvailable();
+        if (sequenceObject != null)
+        {
+            EnsureListsReady();
+            EnsureSelectedIndices();
+        }
 
         EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         DrawLeftColumn();
         GUILayout.Space(COLUMN_GAP);
         DrawMiddleColumn();
         GUILayout.Space(COLUMN_GAP);
-        sequenceObject.ApplyModifiedProperties();
+        ApplySerializedDraftChanges();
         DrawPreviewColumn();
+        RefreshUnsavedChangesState();
         EditorGUILayout.EndHorizontal();
     }
 
@@ -167,18 +199,45 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         EditorGUILayout.LabelField("Attack Sequence Studio", EditorStyles.boldLabel, GUILayout.Width(180f));
 
         EditorGUI.BeginChangeCheck();
-        AttackSequenceDefinitionSO nextSequence = (AttackSequenceDefinitionSO)EditorGUILayout.ObjectField(sequence, typeof(AttackSequenceDefinitionSO), false, GUILayout.MinWidth(180f));
-        WeaponDataSO nextWeapon = (WeaponDataSO)EditorGUILayout.ObjectField(weaponData, typeof(WeaponDataSO), false, GUILayout.MinWidth(180f));
+        AttackSequenceDefinitionSO nextSequence = (AttackSequenceDefinitionSO)EditorGUILayout.ObjectField(sequenceAsset, typeof(AttackSequenceDefinitionSO), false, GUILayout.MinWidth(180f));
+        WeaponDataSO nextWeapon = (WeaponDataSO)EditorGUILayout.ObjectField(weaponDataAsset, typeof(WeaponDataSO), false, GUILayout.MinWidth(180f));
         if (EditorGUI.EndChangeCheck())
         {
-            AssignTargets(nextSequence, nextWeapon);
+            if (ConfirmDiscardUnsavedChanges())
+            {
+                AssignTargets(nextSequence, nextWeapon);
+            }
+            else
+            {
+                GUIUtility.ExitGUI();
+            }
         }
 
         if (GUILayout.Button("Load Selection", EditorStyles.toolbarButton, GUILayout.Width(110f)))
         {
-            TryLoadTargetsFromSelection(true);
+            if (ConfirmDiscardUnsavedChanges())
+            {
+                TryLoadTargetsFromSelection(true);
+            }
+
             GUIUtility.ExitGUI();
         }
+
+        bool previousGuiEnabled = GUI.enabled;
+        GUI.enabled = previousGuiEnabled && HasUnsavedChanges();
+        if (GUILayout.Button("Save", EditorStyles.toolbarButton, GUILayout.Width(58f)))
+        {
+            SaveDraftChanges();
+            GUIUtility.ExitGUI();
+        }
+
+        if (GUILayout.Button("Revert", EditorStyles.toolbarButton, GUILayout.Width(62f)))
+        {
+            DiscardDraftChanges();
+            GUIUtility.ExitGUI();
+        }
+
+        GUI.enabled = previousGuiEnabled;
 
         EditorGUILayout.EndHorizontal();
     }
@@ -198,15 +257,32 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     {
         float width = ResolveLeftColumnWidth();
         EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(width), GUILayout.MinWidth(MIN_LEFT_PANEL_WIDTH), GUILayout.ExpandHeight(true));
+
+        EditorGUI.BeginDisabledGroup(weaponDataObject == null);
+        selectedView = (StudioView)GUILayout.Toolbar((int)selectedView, StudioViewLabels, GUILayout.ExpandWidth(true));
+        EditorGUI.EndDisabledGroup();
+        EditorGUILayout.Space(6f);
+
         leftScroll = EditorGUILayout.BeginScrollView(leftScroll, GUILayout.ExpandHeight(true));
 
-        DrawSequenceSettings();
-        EditorGUILayout.Space(6f);
-        DrawPresetPanel();
-        EditorGUILayout.Space(6f);
-        DrawQuickActionsPanel();
-        EditorGUILayout.Space(6f);
-        DrawDiagnostics();
+        if (selectedView == StudioView.WeaponData)
+        {
+            DrawWeaponDataCorePanel();
+            EditorGUILayout.Space(6f);
+            DrawWeaponDataStatsPanel();
+            EditorGUILayout.Space(6f);
+            DrawWeaponDataPreviewPanel();
+        }
+        else
+        {
+            DrawSequenceSettings();
+            EditorGUILayout.Space(6f);
+            DrawPresetPanel();
+            EditorGUILayout.Space(6f);
+            DrawQuickActionsPanel();
+            EditorGUILayout.Space(6f);
+            DrawDiagnostics();
+        }
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
@@ -218,9 +294,22 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(width), GUILayout.MinWidth(MIN_MIDDLE_PANEL_WIDTH), GUILayout.ExpandHeight(true));
         middleScroll = EditorGUILayout.BeginScrollView(middleScroll, GUILayout.ExpandHeight(true));
 
-        DrawMotionSection();
-        EditorGUILayout.Space(6f);
-        DrawEventSection();
+        if (selectedView == StudioView.WeaponData)
+        {
+            DrawWeaponDataPresentationPanel();
+            EditorGUILayout.Space(6f);
+            DrawWeaponDataSequenceEventsPanel();
+        }
+        else if (sequenceObject != null)
+        {
+            DrawMotionSection();
+            EditorGUILayout.Space(6f);
+            DrawEventSection();
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("Load an AttackSequenceDefinitionSO to edit motion and events.", MessageType.Info);
+        }
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
@@ -275,9 +364,135 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         {
             previewCanvasPan = Vector2.zero;
             previewTargetOffset = sequence != null ? sequence.ReferenceTargetOffset : new Vector2(0f, 1f);
+            SyncTargetDistanceFromOffset();
             Repaint();
         }
 
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawWeaponDataCorePanel()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Weapon Data", EditorStyles.boldLabel);
+        if (weaponDataObject == null)
+        {
+            EditorGUILayout.HelpBox("Load a WeaponDataSO to edit weapon data.", MessageType.Info);
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        DrawWeaponDataProperty("itemName", "Name");
+        DrawWeaponDataProperty("itemIcon", "Icon");
+        DrawWeaponDataProperty("itemPrice", "Price");
+        DrawWeaponDataProperty("itemDescription", "Description");
+        DrawWeaponDataProperty("weaponPrefab", "Prefab");
+        DrawWeaponDataProperty("constructionScheme", "Construction");
+
+        EditorGUI.BeginChangeCheck();
+        DrawWeaponDataProperty("attackSequence", "Attack Sequence");
+        if (EditorGUI.EndChangeCheck())
+        {
+            if (weaponDataObject.ApplyModifiedProperties())
+            {
+                MarkWeaponDataDraftChanged();
+            }
+
+            sequenceAsset = weaponData != null ? weaponData.AttackSequence : null;
+            DestroyDraftSequence();
+            if (sequenceAsset != null)
+            {
+                sequence = CreateSequenceDraft(sequenceAsset);
+                ReplaceWeaponDataSequenceReference(weaponData, sequence);
+            }
+
+            RebuildSerializedObjects();
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawWeaponDataStatsPanel()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Stats", EditorStyles.boldLabel);
+        if (weaponDataObject == null)
+        {
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        DrawWeaponDataProperty("attack", "Attack");
+        DrawWeaponDataProperty("attackSpeed", "Attack Speed");
+        DrawWeaponDataProperty("criticalChance", "Critical Chance");
+        DrawWeaponDataProperty("criticalPercent", "Critical Percent");
+        DrawWeaponDataProperty("range", "Range");
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawWeaponDataPreviewPanel()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Preview Inputs", EditorStyles.boldLabel);
+        if (sequence != null)
+        {
+            EditorGUILayout.LabelField("Sequence", sequence.name, EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Reference Target", FormatVector2(sequence.ReferenceTargetOffset), EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Current Target", FormatVector2(previewTargetOffset), EditorStyles.miniLabel);
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("No sequence is linked to this weapon.", MessageType.None);
+        }
+
+        if (GUILayout.Button("Use Sequence Reference Target"))
+        {
+            ApplyReferenceTargetOffset();
+        }
+
+        if (GUILayout.Button("Reset Preview View"))
+        {
+            previewCanvasPan = Vector2.zero;
+            Repaint();
+        }
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawWeaponDataPresentationPanel()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Attack Presentation", EditorStyles.boldLabel);
+        if (weaponDataObject == null)
+        {
+            EditorGUILayout.HelpBox("Load a WeaponDataSO to edit presentation data.", MessageType.Info);
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        DrawWeaponDataProperty("visualForwardAngle", "Visual Forward Angle");
+        DrawWeaponDataProperty("stopAimingWhenAttackReady", "Stop Aiming When Ready");
+        DrawWeaponDataProperty("attackSequenceOccupancy", "Sequence Occupancy");
+        DrawWeaponDataProperty("hitSfxKey", "Hit SFX");
+        DrawWeaponDataProperty("meleeHitVfxPrefab", "Melee Hit VFX");
+        DrawWeaponDataProperty("meleeHitBoxSize", "Melee Hit Box Size");
+        DrawWeaponDataProperty("meleeHitOffset", "Melee Hit Offset");
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawWeaponDataSequenceEventsPanel()
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        EditorGUILayout.LabelField("Sequence Payloads", EditorStyles.boldLabel);
+        if (weaponDataObject == null)
+        {
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        DrawWeaponDataProperty("sequenceProjectileList", "Projectiles", true);
+        DrawWeaponDataProperty("sequenceSfxList", "SFX", true);
+        DrawWeaponDataProperty("sequenceVfxList", "VFX", true);
         EditorGUILayout.EndVertical();
     }
 
@@ -422,63 +637,90 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
     private void DrawPreviewControls()
     {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
         EditorGUILayout.BeginHorizontal();
-        previewTargetOffset = EditorGUILayout.Vector2Field("Target Offset", previewTargetOffset);
-        if (GUILayout.Button("Ref", GUILayout.Width(44f)))
+        EditorGUILayout.LabelField("Target", EditorStyles.boldLabel, GUILayout.Width(58f));
+        EditorGUI.BeginChangeCheck();
+        Rect targetOffsetRect = GUILayoutUtility.GetRect(150f, EditorGUIUtility.singleLineHeight, GUILayout.MinWidth(150f), GUILayout.ExpandWidth(true));
+        previewTargetOffset = EditorGUI.Vector2Field(targetOffsetRect, GUIContent.none, previewTargetOffset);
+        if (EditorGUI.EndChangeCheck())
         {
-            previewTargetOffset = sequence.ReferenceTargetOffset;
+            SyncTargetDistanceFromOffset();
         }
+
+        EditorGUI.BeginDisabledGroup(sequence == null);
+        if (GUILayout.Button("Use Reference", GUILayout.Width(104f)))
+        {
+            ApplyReferenceTargetOffset();
+        }
+        EditorGUI.EndDisabledGroup();
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button(previewPlaying ? "Pause" : "Play", GUILayout.Width(72f)))
+        string playButtonLabel = previewPlaying ? "Pause Preview" : "Play Preview";
+        if (GUILayout.Button(playButtonLabel, GUILayout.Width(108f)))
         {
             previewPlaying = !previewPlaying;
             lastEditorTime = EditorApplication.timeSinceStartup;
         }
 
-        if (GUILayout.Button("Stop", GUILayout.Width(54f)))
+        if (GUILayout.Button("Stop Preview", GUILayout.Width(96f)))
         {
             previewPlaying = false;
             previewNormalizedTime = 0f;
         }
 
-        loopPreview = EditorGUILayout.Toggle("Loop", loopPreview, GUILayout.Width(86f));
-        showMotionPath = EditorGUILayout.Toggle("Path", showMotionPath);
-        showHitBox = EditorGUILayout.Toggle("Hit Box", showHitBox);
-        showReferenceOffset = EditorGUILayout.Toggle("Reference", showReferenceOffset);
+        DrawPreviewToggle(ref loopPreview, "Loop", 56f);
+        DrawPreviewToggle(ref showMotionPath, "Path", 56f);
+        DrawPreviewToggle(ref showHitBox, "Hit Box", 72f);
+        DrawPreviewToggle(ref showReferenceOffset, "Reference", 88f);
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Distance", GUILayout.Width(58f));
+        EditorGUI.BeginChangeCheck();
+        previewTargetDistance = EditorGUILayout.Slider(previewTargetDistance, MIN_TARGET_DISTANCE, MAX_TARGET_DISTANCE, GUILayout.MinWidth(140f));
+        if (EditorGUI.EndChangeCheck())
+        {
+            ApplyTargetDistance();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.EndVertical();
     }
 
     private void DrawPreview(Rect rect)
     {
         EditorGUI.DrawRect(rect, CanvasBorderColor);
         Rect canvas = new(rect.x + PANEL_PADDING, rect.y + PANEL_PADDING, rect.width - PANEL_PADDING * 2f, rect.height - PANEL_PADDING * 2f);
+        Rect drawingCanvas = new(canvas.x, canvas.y, canvas.width, Mathf.Max(1f, canvas.height - TIMELINE_HEIGHT));
         EditorGUI.DrawRect(canvas, CanvasBackgroundColor);
 
-        HandlePreviewInput(canvas);
+        HandlePreviewInput(canvas, drawingCanvas);
 
         GUI.BeginGroup(canvas);
         Rect localCanvas = new(0f, 0f, canvas.width, canvas.height);
+        Rect localDrawingCanvas = new(localCanvas.x, localCanvas.y, localCanvas.width, Mathf.Max(1f, localCanvas.height - TIMELINE_HEIGHT));
         Handles.BeginGUI();
-        DrawGrid(localCanvas);
+        DrawGrid(localDrawingCanvas);
 
         if (showReferenceOffset)
         {
-            DrawReferenceMarker(localCanvas);
+            DrawReferenceMarker(localDrawingCanvas);
         }
 
-        DrawTargetMarker(localCanvas);
+        DrawTargetMarker(localDrawingCanvas);
 
         if (sequence != null)
         {
             if (showMotionPath)
             {
-                DrawMotionPath(localCanvas);
+                DrawMotionPath(localDrawingCanvas);
             }
 
-            DrawMotionKeyframeMarkers(localCanvas);
-            DrawCurrentPose(localCanvas);
+            DrawMotionKeyframeMarkers(localDrawingCanvas);
+            DrawCurrentPose(localDrawingCanvas);
         }
 
         Handles.EndGUI();
@@ -491,31 +733,32 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
     }
 
-    private void HandlePreviewInput(Rect rect)
+    private void HandlePreviewInput(Rect canvasRect, Rect drawingRect)
     {
         Event current = Event.current;
-        int controlId = GUIUtility.GetControlID(FocusType.Passive, rect);
+        int controlId = GUIUtility.GetControlID(FocusType.Passive, canvasRect);
         Vector2 mouse = current.mousePosition;
         bool ownsMouse = GUIUtility.hotControl == controlId;
-        bool isInside = rect.Contains(mouse);
-        Rect timelineRect = GetAbsoluteTimelineRect(rect);
+        bool isInside = canvasRect.Contains(mouse);
+        bool isInsideDrawing = drawingRect.Contains(mouse);
+        Rect timelineRect = GetAbsoluteTimelineRect(canvasRect);
         bool hitTimeline = timelineRect.Contains(mouse);
-        int hitMotionIndex = isInside && !hitTimeline ? FindMotionMarkerAtCanvas(rect, mouse) : -1;
-        bool hitTarget = isInside && Vector2.Distance(WorldToCanvas(previewTargetOffset, rect), mouse) <= TARGET_MARKER_HIT_RADIUS;
+        int hitMotionIndex = isInsideDrawing ? FindMotionMarkerAtCanvas(drawingRect, mouse) : -1;
+        bool hitTarget = isInsideDrawing && Vector2.Distance(WorldToCanvas(previewTargetOffset, drawingRect), mouse) <= TARGET_MARKER_HIT_RADIUS;
 
         if (isInside)
         {
             if (hitTimeline)
             {
-                EditorGUIUtility.AddCursorRect(rect, MouseCursor.SlideArrow);
+                EditorGUIUtility.AddCursorRect(canvasRect, MouseCursor.SlideArrow);
             }
             else if (hitTarget || hitMotionIndex >= 0)
             {
-                EditorGUIUtility.AddCursorRect(rect, MouseCursor.MoveArrow);
+                EditorGUIUtility.AddCursorRect(drawingRect, MouseCursor.MoveArrow);
             }
             else
             {
-                EditorGUIUtility.AddCursorRect(rect, MouseCursor.Pan);
+                EditorGUIUtility.AddCursorRect(drawingRect, MouseCursor.Pan);
             }
         }
 
@@ -566,7 +809,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
                 return;
             }
 
-            if (current.button == 0 || current.button == 1 || current.button == 2)
+            if (isInsideDrawing && (current.button == 0 || current.button == 1 || current.button == 2))
             {
                 previewDragMode = PreviewDragMode.Pan;
                 previewDragStartMouse = mouse;
@@ -589,7 +832,8 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
             if (previewDragMode == PreviewDragMode.Target)
             {
-                previewTargetOffset = CanvasToWorld(mouse, rect);
+                previewTargetOffset = CanvasToWorld(mouse, drawingRect);
+                SyncTargetDistanceFromOffset();
                 current.Use();
                 Repaint();
                 return;
@@ -597,7 +841,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
             if (previewDragMode == PreviewDragMode.MotionSample && previewDragMotionIndex >= 0)
             {
-                SetMotionFramePreviewPosition(previewDragMotionIndex, CanvasToWorld(mouse, rect));
+                SetMotionFramePreviewPosition(previewDragMotionIndex, CanvasToWorld(mouse, drawingRect));
                 current.Use();
                 Repaint();
                 return;
@@ -652,7 +896,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         Vector2 point = WorldToCanvas(sequence.ReferenceTargetOffset, rect);
         Handles.color = ReferenceColor;
         Handles.DrawWireDisc(point, Vector3.forward, 6f);
-        GUI.Label(new Rect(point.x + 7f, point.y - 9f, 72f, 18f), "ref", EditorStyles.miniLabel);
+        GUI.Label(new Rect(point.x + 7f, point.y - 9f, 112f, 18f), "reference target", EditorStyles.miniLabel);
     }
 
     private void DrawTargetMarker(Rect rect)
@@ -770,10 +1014,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
             DrawRotatedRect(rect, pose.Position + Rotate(weaponData.MeleeHitOffset, pose.AngleZ), weaponData.MeleeHitBoxSize, pose.AngleZ, new Color(1f, 0.25f, 0.2f, 0.88f));
         }
 
-        Sprite sprite = ResolveWeaponPreviewSprite();
-        if (sprite != null)
+        WeaponPreviewSpriteInfo spriteInfo = ResolveWeaponPreviewSpriteInfo();
+        if (spriteInfo.Sprite != null)
         {
-            DrawSpritePreview(sprite, center, pose.AngleZ);
+            DrawSpritePreview(spriteInfo, center, pose.AngleZ, pose.AngleZ + spriteInfo.LocalAngleZ);
         }
         else
         {
@@ -793,8 +1037,15 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         return new Rect(rect.x, rect.yMax - TIMELINE_HEIGHT, rect.width, TIMELINE_HEIGHT);
     }
 
-    private void DrawSpritePreview(Sprite sprite, Vector2 center, float angleDegrees)
+    private void DrawPreviewToggle(ref bool value, string label, float width)
     {
+        Rect rect = GUILayoutUtility.GetRect(width, EditorGUIUtility.singleLineHeight, GUILayout.Width(width));
+        value = EditorGUI.ToggleLeft(rect, label, value);
+    }
+
+    private void DrawSpritePreview(WeaponPreviewSpriteInfo spriteInfo, Vector2 center, float rootAngleDegrees, float spriteAngleDegrees)
+    {
+        Sprite sprite = spriteInfo.Sprite;
         Rect textureRect = sprite.textureRect;
         Rect uv = new(
             textureRect.x / sprite.texture.width,
@@ -804,37 +1055,130 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
         float pixelsPerUnit = Mathf.Max(1f, sprite.pixelsPerUnit);
         Vector2 spriteWorldSize = new(sprite.rect.width / pixelsPerUnit, sprite.rect.height / pixelsPerUnit);
-        Vector2 spriteCanvasSize = spriteWorldSize * previewPixelsPerUnit;
-        Rect drawRect = new(center.x - spriteCanvasSize.x * 0.5f, center.y - spriteCanvasSize.y * 0.5f, spriteCanvasSize.x, spriteCanvasSize.y);
+        Vector2 spriteCanvasSize = new(
+            spriteWorldSize.x * previewPixelsPerUnit * Mathf.Abs(spriteInfo.Scale.x),
+            spriteWorldSize.y * previewPixelsPerUnit * Mathf.Abs(spriteInfo.Scale.y));
+        Vector2 pivotOffset = new(
+            (sprite.pivot.x - sprite.rect.width * 0.5f) / pixelsPerUnit * previewPixelsPerUnit * spriteInfo.Scale.x,
+            (sprite.pivot.y - sprite.rect.height * 0.5f) / pixelsPerUnit * previewPixelsPerUnit * spriteInfo.Scale.y);
+        Vector2 rotatedLocalOffset = Rotate(new Vector2(spriteInfo.LocalPosition.x, spriteInfo.LocalPosition.y), rootAngleDegrees);
+        Vector2 drawCenter = center + new Vector2(rotatedLocalOffset.x * previewPixelsPerUnit, -rotatedLocalOffset.y * previewPixelsPerUnit);
+        Rect drawRect = new(
+            drawCenter.x - spriteCanvasSize.x * 0.5f - pivotOffset.x,
+            drawCenter.y - spriteCanvasSize.y * 0.5f + pivotOffset.y,
+            spriteCanvasSize.x,
+            spriteCanvasSize.y);
 
         Matrix4x4 previousMatrix = GUI.matrix;
-        GUIUtility.RotateAroundPivot(-angleDegrees, center);
+        GUIUtility.RotateAroundPivot(-spriteAngleDegrees, drawCenter);
         GUI.DrawTextureWithTexCoords(drawRect, sprite.texture, uv, true);
         GUI.matrix = previousMatrix;
 
         Handles.color = PoseColor;
         Handles.DrawSolidDisc(center, Vector3.forward, 3f);
-        DrawArrow(center, angleDegrees, Mathf.Max(22f, Mathf.Min(spriteCanvasSize.x, spriteCanvasSize.y) * 0.45f), PoseColor);
+        DrawArrow(center, rootAngleDegrees, Mathf.Max(22f, Mathf.Min(spriteCanvasSize.x, spriteCanvasSize.y) * 0.45f), PoseColor);
     }
 
-    private Sprite ResolveWeaponPreviewSprite()
+    private WeaponPreviewSpriteInfo ResolveWeaponPreviewSpriteInfo()
     {
         if (weaponData == null)
         {
-            return null;
+            return default;
         }
 
         Weapon weaponPrefab = weaponData.WeaponPrefab;
         if (weaponPrefab != null)
         {
-            SpriteRenderer renderer = weaponPrefab.GetComponentInChildren<SpriteRenderer>();
+            SpriteRenderer renderer = null;
+            EntityRenderer entityRenderer = weaponPrefab.GetComponentInChildren<EntityRenderer>();
+            if (entityRenderer != null)
+            {
+                renderer = entityRenderer.SpriteRenderer;
+            }
+
+            if (renderer == null)
+            {
+                renderer = weaponPrefab.GetComponentInChildren<SpriteRenderer>();
+            }
+
             if (renderer != null && renderer.sprite != null)
             {
-                return renderer.sprite;
+                Sprite sprite = weaponData.ItemIcon != null ? weaponData.ItemIcon : renderer.sprite;
+                Vector3 localPosition = ResolvePreviewRendererLocalPosition(weaponPrefab.transform, entityRenderer, renderer.transform);
+                Vector3 localScale = ResolveLocalScale(weaponPrefab.transform, renderer.transform);
+                float localAngleZ = ResolvePreviewRendererLocalAngle(entityRenderer, renderer.transform, weaponData.VisualForwardAngle);
+                return new WeaponPreviewSpriteInfo(sprite, localPosition, localScale, localAngleZ);
             }
         }
 
-        return weaponData.ItemIcon;
+        float fallbackAngle = weaponData != null ? weaponData.VisualForwardAngle : 0f;
+        return new WeaponPreviewSpriteInfo(weaponData.ItemIcon, Vector3.zero, Vector3.one, fallbackAngle);
+    }
+
+    private void ApplyReferenceTargetOffset()
+    {
+        if (sequence == null)
+        {
+            return;
+        }
+
+        previewTargetOffset = sequence.ReferenceTargetOffset;
+        SyncTargetDistanceFromOffset();
+        Repaint();
+    }
+
+    private void SyncTargetDistanceFromOffset()
+    {
+        previewTargetDistance = Mathf.Clamp(previewTargetOffset.magnitude, MIN_TARGET_DISTANCE, MAX_TARGET_DISTANCE);
+    }
+
+    private void ApplyTargetDistance()
+    {
+        previewTargetDistance = Mathf.Clamp(previewTargetDistance, MIN_TARGET_DISTANCE, MAX_TARGET_DISTANCE);
+        Vector2 direction = previewTargetOffset.sqrMagnitude > 0.0001f
+            ? previewTargetOffset.normalized
+            : Vector2.up;
+        previewTargetOffset = direction * previewTargetDistance;
+        Repaint();
+    }
+
+    private static Vector3 ResolvePreviewRendererLocalPosition(Transform weaponRoot, EntityRenderer entityRenderer, Transform spriteTransform)
+    {
+        if (weaponRoot == null || spriteTransform == null)
+        {
+            return Vector3.zero;
+        }
+
+        Transform visualTransform = entityRenderer != null ? entityRenderer.transform : spriteTransform;
+        return weaponRoot.InverseTransformPoint(visualTransform.position);
+    }
+
+    private static float ResolvePreviewRendererLocalAngle(EntityRenderer entityRenderer, Transform spriteTransform, float visualForwardAngle)
+    {
+        if (entityRenderer != null)
+        {
+            return visualForwardAngle;
+        }
+
+        return spriteTransform != null ? spriteTransform.localEulerAngles.z : visualForwardAngle;
+    }
+
+    private static Vector3 ResolveLocalScale(Transform root, Transform target)
+    {
+        if (target == null)
+        {
+            return Vector3.one;
+        }
+
+        Vector3 scale = target.localScale;
+        Transform current = target.parent;
+        while (current != null && current != root)
+        {
+            scale = Vector3.Scale(scale, current.localScale);
+            current = current.parent;
+        }
+
+        return scale;
     }
 
     private static float NormalizeTimelinePosition(Rect timelineRect, float mouseX)
@@ -986,23 +1330,27 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
         if (weaponData != null && weaponData.AttackSequence != sequence)
         {
-            warnings.Add("The loaded WeaponDataSO does not reference this sequence.");
+            warnings.Add("The loaded WeaponDataSO does not reference this sequence draft.");
         }
 
         return warnings;
     }
 
-    private void EnsureSerializedObject()
+    private void EnsureSerializedObjects()
     {
-        if (sequence == null)
+        if (sequence == null && weaponData == null)
         {
             sequenceObject = null;
+            weaponDataObject = null;
             motionList = null;
             eventList = null;
             return;
         }
 
-        if (sequenceObject == null || sequenceObject.targetObject != sequence)
+        if ((sequence == null && sequenceObject != null) ||
+            (sequence != null && (sequenceObject == null || sequenceObject.targetObject != sequence)) ||
+            (weaponData == null && weaponDataObject != null) ||
+            (weaponData != null && (weaponDataObject == null || weaponDataObject.targetObject != weaponData)))
         {
             RebuildSerializedObjects();
         }
@@ -1011,9 +1359,292 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private void RebuildSerializedObjects()
     {
         sequenceObject = sequence != null ? new SerializedObject(sequence) : null;
+        weaponDataObject = weaponData != null ? new SerializedObject(weaponData) : null;
         motionList = null;
         eventList = null;
         EnsureListsReady();
+    }
+
+    private void ApplySerializedDraftChanges()
+    {
+        if (sequenceObject != null && sequenceObject.hasModifiedProperties)
+        {
+            Object targetObject = sequenceObject.targetObject;
+            sequenceObject.ApplyModifiedProperties();
+            if (targetObject == sequence)
+            {
+                MarkSequenceDraftChanged();
+            }
+        }
+
+        if (weaponDataObject != null && weaponDataObject.hasModifiedProperties)
+        {
+            Object targetObject = weaponDataObject.targetObject;
+            weaponDataObject.ApplyModifiedProperties();
+            if (targetObject == weaponData)
+            {
+                MarkWeaponDataDraftChanged();
+            }
+        }
+    }
+
+    private void MarkSequenceDraftChanged()
+    {
+        sequenceDraftHasUnsavedChanges = true;
+        RefreshUnsavedChangesState();
+    }
+
+    private void MarkWeaponDataDraftChanged()
+    {
+        weaponDataDraftHasUnsavedChanges = true;
+        RefreshUnsavedChangesState();
+    }
+
+    private void ResetDraftChangeFlags()
+    {
+        sequenceDraftHasUnsavedChanges = false;
+        weaponDataDraftHasUnsavedChanges = false;
+        RefreshUnsavedChangesState();
+    }
+
+    private bool HasUnsavedChanges()
+    {
+        return sequenceDraftHasUnsavedChanges || weaponDataDraftHasUnsavedChanges;
+    }
+
+    private bool ConfirmDiscardUnsavedChanges()
+    {
+        if (!HasUnsavedChanges())
+        {
+            return true;
+        }
+
+        return EditorUtility.DisplayDialog(
+            "Discard Unsaved Changes",
+            "Attack Sequence Studio has unsaved draft changes. Discard them?",
+            "Discard",
+            "Cancel");
+    }
+
+    public override void SaveChanges()
+    {
+        SaveDraftChanges();
+        base.SaveChanges();
+    }
+
+    public override void DiscardChanges()
+    {
+        DiscardDraftChanges();
+        base.DiscardChanges();
+    }
+
+    private void DiscardDraftChanges()
+    {
+        DestroyDraftObjects();
+        RebuildDraftObjects();
+        ResetDraftChangeFlags();
+        if (sequence != null)
+        {
+            previewTargetOffset = sequence.ReferenceTargetOffset;
+            SyncTargetDistanceFromOffset();
+        }
+
+        RebuildSerializedObjects();
+        RefreshUnsavedChangesState();
+        Repaint();
+    }
+
+    private void DestroyDraftObjects()
+    {
+        DestroyDraftSequence();
+        DestroyDraftWeaponData();
+    }
+
+    private void RebuildDraftObjects()
+    {
+        DestroyDraftObjects();
+        sequence = CreateSequenceDraft(sequenceAsset);
+        weaponData = CreateWeaponDataDraft(weaponDataAsset);
+
+        if (sequence == null && weaponData != null)
+        {
+            sequenceAsset = weaponDataAsset != null ? weaponDataAsset.AttackSequence : null;
+            sequence = CreateSequenceDraft(sequenceAsset);
+        }
+
+        if (sequence == null)
+        {
+            sequenceObject = null;
+            motionList = null;
+            eventList = null;
+        }
+
+        if (weaponData != null && sequence != null)
+        {
+            ReplaceWeaponDataSequenceReference(weaponData, sequence);
+        }
+
+        EnsureDraftsEditable();
+    }
+
+    private void SaveDraftChanges()
+    {
+        ApplySerializedDraftChanges();
+
+        if (!HasUnsavedChanges())
+        {
+            return;
+        }
+
+        if (sequenceDraftHasUnsavedChanges && sequenceAsset != null && sequence != null)
+        {
+            Undo.RecordObject(sequenceAsset, "Save Attack Sequence Studio Sequence");
+            EditorUtility.CopySerialized(sequence, sequenceAsset);
+            EditorUtility.SetDirty(sequenceAsset);
+        }
+
+        if (weaponDataDraftHasUnsavedChanges && weaponDataAsset != null && weaponData != null)
+        {
+            Undo.RecordObject(weaponDataAsset, "Save Attack Sequence Studio Weapon Data");
+            AttackSequenceDefinitionSO linkedSequence = weaponData.AttackSequence;
+            ReplaceWeaponDataSequenceReference(weaponData, sequenceAsset);
+            EditorUtility.CopySerialized(weaponData, weaponDataAsset);
+            ReplaceWeaponDataSequenceReference(weaponData, linkedSequence);
+            EditorUtility.SetDirty(weaponDataAsset);
+        }
+
+        AssetDatabase.SaveAssets();
+        if (sequence != null)
+        {
+            EditorUtility.ClearDirty(sequence);
+        }
+
+        if (weaponData != null)
+        {
+            EditorUtility.ClearDirty(weaponData);
+        }
+
+        RebuildDraftObjects();
+        ResetDraftChangeFlags();
+        if (sequence != null)
+        {
+            previewTargetOffset = sequence.ReferenceTargetOffset;
+            SyncTargetDistanceFromOffset();
+        }
+
+        RebuildSerializedObjects();
+        RefreshUnsavedChangesState();
+        Repaint();
+    }
+
+    private void EnsureDraftsReady()
+    {
+        if (sequence == null && weaponData == null && (sequenceAsset != null || weaponDataAsset != null))
+        {
+            RebuildDraftObjects();
+        }
+
+        EnsureDraftsEditable();
+    }
+
+    private void EnsureDraftsEditable()
+    {
+        ApplyDraftHideFlags(sequence, sequenceAsset);
+        ApplyDraftHideFlags(weaponData, weaponDataAsset);
+    }
+
+    private static void ApplyDraftHideFlags(Object draft, Object source)
+    {
+        if (draft != null && draft != source)
+        {
+            draft.hideFlags = DRAFT_HIDE_FLAGS;
+        }
+    }
+
+    private void RefreshUnsavedChangesState()
+    {
+        hasUnsavedChanges = HasUnsavedChanges();
+    }
+
+    private AttackSequenceDefinitionSO CreateSequenceDraft(AttackSequenceDefinitionSO source)
+    {
+        if (source == null)
+        {
+            return null;
+        }
+
+        AttackSequenceDefinitionSO draft = Instantiate(source);
+        draft.name = source.name + " (Draft)";
+        draft.hideFlags = DRAFT_HIDE_FLAGS;
+        EditorUtility.ClearDirty(draft);
+        return draft;
+    }
+
+    private WeaponDataSO CreateWeaponDataDraft(WeaponDataSO source)
+    {
+        if (source == null)
+        {
+            return null;
+        }
+
+        WeaponDataSO draft = Instantiate(source);
+        draft.name = source.name + " (Draft)";
+        draft.hideFlags = DRAFT_HIDE_FLAGS;
+        EditorUtility.ClearDirty(draft);
+        return draft;
+    }
+
+    private void DestroyDraftSequence()
+    {
+        if (sequence != null && sequence != sequenceAsset)
+        {
+            DestroyImmediate(sequence);
+        }
+
+        sequence = null;
+        sequenceObject = null;
+        motionList = null;
+        eventList = null;
+    }
+
+    private void DestroyDraftWeaponData()
+    {
+        if (weaponData != null && weaponData != weaponDataAsset)
+        {
+            DestroyImmediate(weaponData);
+        }
+
+        weaponData = null;
+        weaponDataObject = null;
+    }
+
+    private static void ReplaceWeaponDataSequenceReference(WeaponDataSO targetWeaponData, AttackSequenceDefinitionSO targetSequence)
+    {
+        if (targetWeaponData == null)
+        {
+            return;
+        }
+
+        SerializedObject serializedWeapon = new(targetWeaponData);
+        SerializedProperty attackSequence = serializedWeapon.FindProperty("attackSequence");
+        if (attackSequence != null)
+        {
+            attackSequence.objectReferenceValue = targetSequence;
+            serializedWeapon.ApplyModifiedPropertiesWithoutUndo();
+        }
+    }
+
+    private void EnsureActiveViewIsAvailable()
+    {
+        if (selectedView == StudioView.WeaponData && weaponDataObject == null)
+        {
+            selectedView = StudioView.Sequence;
+        }
+
+        if (selectedView == StudioView.Sequence && sequenceObject == null && weaponDataObject != null)
+        {
+            selectedView = StudioView.WeaponData;
+        }
     }
 
     private void EnsureListsReady()
@@ -1168,8 +1799,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         OnAddMotionFrame(motionList);
-        sequenceObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(sequence);
+        if (sequenceObject.ApplyModifiedProperties())
+        {
+            MarkSequenceDraftChanged();
+        }
     }
 
     private void AddEventFrameAtPreviewTime()
@@ -1180,8 +1813,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         OnAddEventFrame(eventList);
-        sequenceObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(sequence);
+        if (sequenceObject.ApplyModifiedProperties())
+        {
+            MarkSequenceDraftChanged();
+        }
     }
 
     private void SetMotionFramePreviewPosition(int index, Vector2 previewPosition)
@@ -1204,8 +1839,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         element.FindPropertyRelative("localPositionY").floatValue = authoredPosition.y;
         previewNormalizedTime = element.FindPropertyRelative("normalizedTime").floatValue;
         selectedMotionIndex = index;
-        sequenceObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(sequence);
+        if (sequenceObject.ApplyModifiedProperties())
+        {
+            MarkSequenceDraftChanged();
+        }
     }
 
     private int FindMotionMarkerAtCanvas(Rect rect, Vector2 mousePosition)
@@ -1243,16 +1880,27 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
     private void AssignTargets(AttackSequenceDefinitionSO targetSequence, WeaponDataSO targetWeapon)
     {
-        sequence = targetSequence;
-        weaponData = targetWeapon;
-        if (sequence == null && weaponData != null)
+        DestroyDraftObjects();
+
+        sequenceAsset = targetSequence;
+        weaponDataAsset = targetWeapon;
+        if (sequenceAsset == null && weaponDataAsset != null)
         {
-            sequence = weaponData.AttackSequence;
+            sequenceAsset = weaponDataAsset.AttackSequence;
         }
+
+        RebuildDraftObjects();
+        ResetDraftChangeFlags();
 
         if (sequence != null)
         {
             previewTargetOffset = sequence.ReferenceTargetOffset;
+            SyncTargetDistanceFromOffset();
+        }
+        else
+        {
+            previewTargetOffset = new Vector2(0f, 1f);
+            SyncTargetDistanceFromOffset();
         }
 
         selectedMotionIndex = -1;
@@ -1272,7 +1920,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
         if (activeObject is AttackSequenceDefinitionSO selectedSequence)
         {
-            AssignTargets(selectedSequence, replaceExisting ? null : weaponData);
+            AssignTargets(selectedSequence, replaceExisting ? null : weaponDataAsset);
         }
     }
 
@@ -1285,6 +1933,25 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
     }
 
+    private void DrawWeaponDataProperty(string propertyName, string label, bool includeChildren = false)
+    {
+        if (weaponDataObject == null)
+        {
+            return;
+        }
+
+        SerializedProperty property = weaponDataObject.FindProperty(propertyName);
+        if (property != null)
+        {
+            EditorGUILayout.PropertyField(property, new GUIContent(label), includeChildren);
+        }
+    }
+
+    private static string FormatVector2(Vector2 value)
+    {
+        return $"({value.x:0.###}, {value.y:0.###})";
+    }
+
     private void ApplySelectedPreset()
     {
         if (sequence == null)
@@ -1292,10 +1959,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
             return;
         }
 
-        sequenceObject.ApplyModifiedProperties();
+        ApplySerializedDraftChanges();
         Undo.RecordObject(sequence, "Apply Attack Sequence Preset");
         WeaponAnimationSequencePresets.ApplyPreset(sequence, selectedPreset);
-        EditorUtility.SetDirty(sequence);
+        MarkSequenceDraftChanged();
         selectedMotionIndex = 0;
         selectedEventIndex = 0;
         RebuildSerializedObjects();
@@ -1346,8 +2013,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         selectedMotionIndex = Mathf.Clamp(selectedMotionIndex, 0, frames.arraySize - 1);
-        sequenceObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(sequence);
+        if (sequenceObject.ApplyModifiedProperties())
+        {
+            MarkSequenceDraftChanged();
+        }
         RebuildSerializedObjects();
     }
 
@@ -1389,8 +2058,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         selectedEventIndex = Mathf.Clamp(selectedEventIndex, 0, frames.arraySize - 1);
-        sequenceObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(sequence);
+        if (sequenceObject.ApplyModifiedProperties())
+        {
+            MarkSequenceDraftChanged();
+        }
         RebuildSerializedObjects();
     }
 
@@ -1534,6 +2205,28 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
             Position = position;
             AngleZ = angleZ;
         }
+    }
+
+    private readonly struct WeaponPreviewSpriteInfo
+    {
+        public Sprite Sprite { get; }
+        public Vector3 LocalPosition { get; }
+        public Vector3 Scale { get; }
+        public float LocalAngleZ { get; }
+
+        public WeaponPreviewSpriteInfo(Sprite sprite, Vector3 localPosition, Vector3 scale, float localAngleZ)
+        {
+            Sprite = sprite;
+            LocalPosition = localPosition;
+            Scale = scale;
+            LocalAngleZ = localAngleZ;
+        }
+    }
+
+    private enum StudioView
+    {
+        Sequence,
+        WeaponData
     }
 
     private enum PreviewDragMode

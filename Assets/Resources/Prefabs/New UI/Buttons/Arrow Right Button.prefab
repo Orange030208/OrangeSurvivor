@@ -170,6 +170,7 @@ MonoBehaviour:
   currentConfigOption: Button/Soft
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: d024f6662fe08884383d0c65ef6c9b0b, type: 2}
   actionClips:
   - action: 7
     pose:
@@ -323,12 +324,17 @@ MonoBehaviour:
   playEnterOnEnable: 0
   bindings:
   - motionEvent: 0
+    interactionMotion: 1
     action: 5
   - motionEvent: 1
+    interactionMotion: 2
     action: 6
   - motionEvent: 2
+    interactionMotion: 3
     action: 2
   - motionEvent: 3
+    interactionMotion: 4
     action: 3
   - motionEvent: 4
+    interactionMotion: 5
     action: 4

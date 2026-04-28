@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = ScriptableObjectMenuPaths.UI_MOTION_PRESET, fileName = "UIMotionPreset")]
-public sealed class UIMotionPreset : ScriptableObject
+public class UIMotionPreset : ScriptableObject
 {
     [SerializeField] private bool useUnscaledTime = true;
     [SerializeField] private List<UIMotionClip> clips = new();
@@ -10,7 +10,7 @@ public sealed class UIMotionPreset : ScriptableObject
     public bool UseUnscaledTime => useUnscaledTime;
     public IReadOnlyList<UIMotionClip> Clips => clips;
 
-    public List<UIMotionClip> CreateRuntimeClips()
+    public virtual List<UIMotionClip> CreateRuntimeClips()
     {
         List<UIMotionClip> runtimeClips = new();
         if (clips == null)

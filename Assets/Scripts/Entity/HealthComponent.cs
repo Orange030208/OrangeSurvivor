@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -22,10 +23,13 @@ public class HealthComponent : EntityComponentBase
     private float recoveryBuffer;
     private Entity owner;
     private PropertiesManager propertiesManager;
+    private bool isDeathSequenceRunning;
 
     public event Action<float, float> OnHealthChanged;
     public event Action<HitResult> OnDamaged;
-    public event Action OnDied;
+    public event Action OnDeathSequenceStarted;
+    public event Func<IEnumerator> OnDeathSequenceRequested;
+    public event Action OnDeathSequenceCompleted;
     public event Action<Vector2> OnDamageDodged;
 
     public float CurrentHealth => health;
@@ -174,8 +178,51 @@ public class HealthComponent : EntityComponentBase
 
     private void HandleDeath()
     {
-        OnDied?.Invoke();
+        if (isDeathSequenceRunning)
+        {
+            return;
+        }
+
+        isDeathSequenceRunning = true;
+        owner.DisableRuntime();
+        OnDeathSequenceStarted?.Invoke();
         GameEventBus.Publish(new EntityDiedEvent(owner, transform.position));
+        StartCoroutine(RunDeathSequence());
+    }
+
+    private IEnumerator RunDeathSequence()
+    {
+        Delegate[] deathSequenceListeners = OnDeathSequenceRequested?.GetInvocationList();
+        if (deathSequenceListeners != null)
+        {
+            for (int i = 0; i < deathSequenceListeners.Length; i++)
+            {
+                Func<IEnumerator> listener = deathSequenceListeners[i] as Func<IEnumerator>;
+                if (listener == null)
+                {
+                    continue;
+                }
+
+                IEnumerator sequence = null;
+                try
+                {
+                    sequence = listener.Invoke();
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception, this);
+                }
+
+                if (sequence != null)
+                {
+                    yield return sequence;
+                }
+            }
+        }
+        
+        OnDeathSequenceCompleted?.Invoke();
+        
+        Destroy(gameObject);
     }
 
     private void OnEntityDamaged(EntityDamagedEvent damageEvent)

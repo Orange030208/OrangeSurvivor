@@ -28,7 +28,7 @@ public sealed class PixelTextureBatchWindow : EditorWindow
     private Vector2Int offset = Vector2Int.zero;
     private Vector2Int padding = Vector2Int.zero;
 
-    [MenuItem("Tools/Sprites/Pixel Texture Batch Tool")]
+    [MenuItem("Tools/Orange Editor/纹理批处理工具")]
     private static void OpenWindow()
     {
         PixelTextureBatchWindow w = GetWindow<PixelTextureBatchWindow>();

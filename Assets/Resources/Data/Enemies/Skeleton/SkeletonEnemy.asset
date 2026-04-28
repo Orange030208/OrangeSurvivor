@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b8c58e4f384fd1ad9a28ce63d6f41b, type: 3}
+  m_Name: SkeletonEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5716100092401657504, guid: ff3812ec6c584bf4d933a5c9510d8a17, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 6c0debfdbb6fc6645979fcc6454c3413, type: 2}
+  animConfig: {fileID: 11400000, guid: 17d247971b3b4614886e12c75e799d6a, type: 2}
+  attackCommitNormalizedTime: 0.55
+  attackFinishNormalizedTime: 0.95
+  chaseMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}

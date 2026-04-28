@@ -80,4 +80,4 @@
 
 ### 7.校验规则
 
-- 优先使用unityskill进行校验而非使用dotnet build，默认校验顺序为：先执行 `Assets/Refresh`，再检查 `debug_check_compilation`，再读取 `debug_get_errors`；若需要，可补充 `debug_force_recompile`。
+- 稍微复杂点的任务，优先使用unityskill进行校验，默认校验顺序为：先执行 `Assets/Refresh`，再检查 `debug_check_compilation`，再读取 `debug_get_errors`；若需要，可补充 `debug_force_recompil`

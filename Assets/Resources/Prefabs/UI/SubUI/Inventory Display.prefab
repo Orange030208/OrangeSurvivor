@@ -205,13 +205,11 @@ MonoBehaviour:
   iconImage: {fileID: 1622031969949295272}
   nameText: {fileID: 5581180839980433120}
   bottom: {fileID: 5050589081258512246}
-  colorDependencyGraphics:
-  - {fileID: 228215656435397713}
-  - {fileID: 5581180839980433120}
-  - {fileID: 3518021081152618811}
   sellButton: {fileID: 1776868594258967103}
   mergeButton: {fileID: 805389754860863823}
   sellPriceText: {fileID: 4360720014688603347}
+  sellSection: {fileID: 0}
+  mergeSection: {fileID: 0}
 --- !u!225 &2829437334490256135
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -236,11 +234,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 0
-  extraHideOffset: 0
-  setInactiveOnHide: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:
@@ -250,6 +247,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -263,6 +264,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -276,11 +281,22 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.1
     ease: 6
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &2337300881558818752
 GameObject:
   m_ObjectHideFlags: 0
@@ -965,8 +981,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u6B66\u5668\u540D\u79F0\u6B66\u5668\u540D\u79F0\u6B66\u5668\u540D\u79F0"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 1f0a9e519ab63354296436f495aa4f5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1092,10 +1108,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e82a0aab65e7c448c5baa9266eabe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemContainerPrefab: {fileID: 1455350923919165057, guid: b9c289bbdd1508941b3eab63809540f8, type: 3}
-  inventoryItemOperateContainer: {fileID: 3747161869045174641}
-  inventoryItemOperateContainerSidebar: {fileID: 0}
+  itemPrefab: {fileID: 0}
+  weaponPopupPrefab: {fileID: 0}
+  accessoryPopupPrefab: {fileID: 0}
   itemContainersParent: {fileID: 988665002408414939}
+  inventoryOperateManager: {fileID: 0}
   closeInventoryItemOperatePanelButtons:
   - {fileID: 1776868594258967103}
   - {fileID: 805389754860863823}
@@ -1123,11 +1140,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 0
-  extraHideOffset: 0
-  setInactiveOnHide: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:
@@ -1137,6 +1153,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -1150,6 +1170,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -1163,11 +1187,22 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.1
     ease: 6
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &5893023701934365862
 GameObject:
   m_ObjectHideFlags: 0
@@ -1683,8 +1718,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u7269\u54C1"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 1f0a9e519ab63354296436f495aa4f5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1760,7 +1795,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2781740735121104142}
   - component: {fileID: 3831489011871308422}
-  - component: {fileID: 8504377942357123746}
   m_Layer: 0
   m_Name: Prop Section
   m_TagString: Untagged
@@ -1808,20 +1842,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &8504377942357123746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9009321483631674290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36ec7e596224426eb8ab90821d5b5d16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  propContainerPrefab: {fileID: 8607981031944417474, guid: 575f8f0e15a473b4ead9a59bd97ced7d, type: 3}
-  propContainersParent: {fileID: 0}
 --- !u!1001 &969577637025587155
 PrefabInstance:
   m_ObjectHideFlags: 0

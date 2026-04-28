@@ -460,8 +460,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u7269\u54C1"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 1f0a9e519ab63354296436f495aa4f5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -538,7 +538,6 @@ GameObject:
   - component: {fileID: 3675542774123640576}
   - component: {fileID: 295630183408333333}
   - component: {fileID: 3520958945090878471}
-  - component: {fileID: 8920498771790044732}
   - component: {fileID: 4742944165614689738}
   - component: {fileID: 6638198153739434212}
   m_Layer: 5
@@ -588,31 +587,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e82a0aab65e7c448c5baa9266eabe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemContainerPrefab: {fileID: 1455350923919165057, guid: b9c289bbdd1508941b3eab63809540f8, type: 3}
-  inventoryItemOperateContainer: {fileID: 6379496149727162868}
-  inventoryItemOperateContainerSidebar: {fileID: 3496279117207081710}
+  itemPrefab: {fileID: 0}
+  weaponPopupPrefab: {fileID: 0}
+  accessoryPopupPrefab: {fileID: 0}
   itemContainersParent: {fileID: 7003207078530264670}
+  inventoryOperateManager: {fileID: 0}
   closeInventoryItemOperatePanelButtons:
   - {fileID: 0}
   - {fileID: 0}
---- !u!114 &8920498771790044732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2557573668138510161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6702ff648be803b489f52c0a9f1959d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  revealMotion: {fileID: 0}
-  sidebarType: 1
-  slideDuration: 0.25
-  slideEase: 9
-  extraHideOffset: 0
-  setInactiveOnHide: 0
 --- !u!225 &4742944165614689738
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -637,11 +619,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 0
-  extraHideOffset: 0
-  setInactiveOnHide: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:
@@ -651,6 +632,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -664,6 +649,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -677,6 +666,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -690,6 +683,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -703,11 +700,22 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.1
     ease: 6
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &2892490402108985337
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,8 +935,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u6B66\u5668\u540D\u79F0\u6B66\u5668\u540D\u79F0\u6B66\u5668\u540D\u79F0"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 1f0a9e519ab63354296436f495aa4f5e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1222,9 +1230,9 @@ MonoBehaviour:
   autoPlaySequenceDirector: 1
   continueButton: {fileID: 6989436208890113372}
   menuButton: {fileID: 8688679495706508661}
-  propertiesSidebar: {fileID: 3704945406608032492}
-  propertiesViewSync: {fileID: 6035345980573946086}
-  inventorySidebar: {fileID: 8920498771790044732}
+  inventoryUI: {fileID: 0}
+  propertiesSidebar: {fileID: 0}
+  inventorySidebar: {fileID: 0}
   slideDuration: 0.25
 --- !u!114 &4513989171235067532
 MonoBehaviour:
@@ -1874,8 +1882,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u559D\u676F\u5496\u5561\n\u7EE7\u7EED\u6218\u6597~"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
-  m_sharedMaterial: {fileID: 410325253554415106, guid: 9c01e1323c1259147ab4bc3b5368f8eb, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2102,7 +2110,6 @@ GameObject:
   - component: {fileID: 6861056318422737323}
   - component: {fileID: 8460155941306432360}
   - component: {fileID: 6654798146471076286}
-  - component: {fileID: 3496279117207081710}
   - component: {fileID: 6379496149727162868}
   - component: {fileID: 4550711702038110062}
   - component: {fileID: 4847841100767836315}
@@ -2172,24 +2179,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3496279117207081710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8230501998950734076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6702ff648be803b489f52c0a9f1959d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  revealMotion: {fileID: 0}
-  sidebarType: 3
-  slideDuration: 0.25
-  slideEase: 9
-  extraHideOffset: 100
-  setInactiveOnHide: 0
 --- !u!114 &6379496149727162868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2205,13 +2194,11 @@ MonoBehaviour:
   iconImage: {fileID: 8793998817444856365}
   nameText: {fileID: 2448907374218042981}
   bottom: {fileID: 0}
-  colorDependencyGraphics:
-  - {fileID: 8044232408178201812}
-  - {fileID: 2448907374218042981}
-  - {fileID: 6654798146471076286}
   sellButton: {fileID: 0}
   mergeButton: {fileID: 0}
   sellPriceText: {fileID: 0}
+  sellSection: {fileID: 0}
+  mergeSection: {fileID: 0}
 --- !u!225 &4550711702038110062
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2236,11 +2223,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 0
-  extraHideOffset: 0
-  setInactiveOnHide: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:
@@ -2250,6 +2236,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -2263,6 +2253,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -2276,6 +2270,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -2289,6 +2287,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -2302,11 +2304,22 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.1
     ease: 6
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &8454774048686945352
 GameObject:
   m_ObjectHideFlags: 0
@@ -3519,15 +3532,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3704945406608032492}
-    - targetCorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6035345980573946086}
-    - targetCorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 42497957649071390}
-    - targetCorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 7275310322615132763}
     - targetCorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
       insertIndex: -1
@@ -3538,52 +3542,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4511395013680656145, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
   m_PrefabInstance: {fileID: 3627857040355613388}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3704945406608032492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919593167214130653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6702ff648be803b489f52c0a9f1959d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  revealMotion: {fileID: 0}
-  sidebarType: 0
-  slideDuration: 0.25
-  slideEase: 9
-  extraHideOffset: 0
-  setInactiveOnHide: 0
---- !u!114 &6035345980573946086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919593167214130653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ff85f6b9e09cb54dbce92f4d6521f9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  propertiesViewList: {fileID: 42497957649071390}
-  propertiesManager: {fileID: 0}
---- !u!114 &42497957649071390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919593167214130653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36ec7e596224426eb8ab90821d5b5d16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  propContainerPrefab: {fileID: 8607981031944417474, guid: 575f8f0e15a473b4ead9a59bd97ced7d, type: 3}
-  propContainersParent: {fileID: 5660247470864170194}
 --- !u!225 &7275310322615132763
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3608,11 +3566,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentConfigOption: 
   motionIntensity: 1
   useUnscaledTime: 1
-  hiddenDirection: 0
-  extraHideOffset: 0
-  setInactiveOnHide: 1
+  preset: {fileID: 0}
   actionClips:
   - action: 0
     pose:
@@ -3622,6 +3579,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -3635,6 +3596,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -3648,6 +3613,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.24
@@ -3661,6 +3630,10 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 0
       scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.22
@@ -3674,19 +3647,25 @@ MonoBehaviour:
       offset: {x: 0, y: 0}
       scale: 1
       scaleMultiplier: 1.02
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
     duration: 0.1
     ease: 6
     deactivateOnComplete: 0
+  hiddenDirection: 0
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!224 &2071506311073359244 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3379886384877289280, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
-  m_PrefabInstance: {fileID: 3627857040355613388}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &5660247470864170194 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8995238579011757598, guid: 0cf2e3882d2855e479204347be9e89ae, type: 3}
   m_PrefabInstance: {fileID: 3627857040355613388}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4452939401033764473

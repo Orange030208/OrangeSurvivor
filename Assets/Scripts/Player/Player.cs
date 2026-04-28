@@ -23,7 +23,7 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     private AccessoryManager accessoryManager;
     private PlayerAnimationController playerAnimationController;
     private PropertiesManager propertiesManager;
-    private CharacterDataSO characterData;
+    [SerializeField]private CharacterDataSO characterData;
 
     public override IMovable MoveComponent => playerController;
     public override Vector2 Center => (Vector2)transform.position + collider.offset;

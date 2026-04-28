@@ -4,5 +4,5 @@ using UnityEngine;
 public class CollectionSO : ScriptableObject
 {
     public Collection prefab;
-    public CollectionAnimationConfig AnimationConfig;
+    public EntityAnimationConfig AnimationConfig;
 }

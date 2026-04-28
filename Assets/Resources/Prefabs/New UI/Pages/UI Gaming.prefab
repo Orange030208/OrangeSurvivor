@@ -858,6 +858,7 @@ MonoBehaviour:
   currentConfigOption: Default
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 79465ad4d1c07f0458e16c663b626735, type: 2}
   actionClips:
   - action: 7
     pose:
@@ -1177,6 +1178,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Icon Button
       objectReference: {fileID: 0}
+    - target: {fileID: 4101026062322790189, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
+      propertyPath: preset
+      value: 
+      objectReference: {fileID: 11400000, guid: 36c56de847c558a44a555a879207c662, type: 2}
     - target: {fileID: 4101026062322790189, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
       propertyPath: currentConfigOption
       value: Button

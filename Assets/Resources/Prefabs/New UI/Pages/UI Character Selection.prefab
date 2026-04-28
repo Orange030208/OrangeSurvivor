@@ -675,6 +675,7 @@ MonoBehaviour:
   currentConfigOption: Sidebar/Panel Soft
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 33d0717d97aa85d49b67265aeaf6ed26, type: 2}
   actionClips:
   - action: 7
     pose:
@@ -855,7 +856,25 @@ MonoBehaviour:
   currentConfigOption: Default
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 79465ad4d1c07f0458e16c663b626735, type: 2}
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.18
+    ease: 9
+    deactivateOnComplete: 0
   - action: 0
     pose:
       fade: 0
@@ -890,24 +909,7 @@ MonoBehaviour:
     duration: 0.18
     ease: 8
     deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.06
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.14
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 3
+  - action: 5
     pose:
       fade: 0
       alpha: 1
@@ -924,6 +926,23 @@ MonoBehaviour:
     duration: 0.12
     ease: 6
     deactivateOnComplete: 0
+  - action: 6
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.1
+    ease: 6
+    deactivateOnComplete: 0
   - action: 4
     pose:
       fade: 0
@@ -931,15 +950,15 @@ MonoBehaviour:
       move: 0
       offset: {x: 0, y: 0}
       scale: 1
-      scaleMultiplier: 0.97
+      scaleMultiplier: 1.12
       scaleX: 0
       scaleXMultiplier: 1
       scaleY: 0
       scaleYMultiplier: 1
       rotate: 0
       rotationZ: 0
-    duration: 0.08
-    ease: 6
+    duration: 0.16
+    ease: 27
     deactivateOnComplete: 0
 --- !u!1001 &230407803195905079
 PrefabInstance:
@@ -1690,6 +1709,10 @@ PrefabInstance:
       value: Title Container
       objectReference: {fileID: 0}
     - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      propertyPath: preset
+      value: 
+      objectReference: {fileID: 11400000, guid: 33d0717d97aa85d49b67265aeaf6ed26, type: 2}
+    - target: {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
       propertyPath: currentConfigOption
       value: Sidebar/Panel Soft
       objectReference: {fileID: 0}
@@ -2073,6 +2096,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3291148694776631573, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
+      propertyPath: motionSource
+      value: 
+      objectReference: {fileID: 897119806931785790}
     - target: {fileID: 3623396138096017967, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
       propertyPath: m_Name
       value: Arrow Left Button
@@ -2082,6 +2109,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
+--- !u!114 &897119806931785790 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6339696588121450102, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
+  m_PrefabInstance: {fileID: 6595545582547172936}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5309876654273381150 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1312919602413714774, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}

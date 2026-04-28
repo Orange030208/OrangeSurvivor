@@ -388,7 +388,6 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   bottom: {fileID: 1314857178707274722}
-  colorDependencyGraphics: []
   takeButton: {fileID: 5549504602664758912}
   recycleButton: {fileID: 7386976416890742460}
   recycleText: {fileID: 8973490351345629333}

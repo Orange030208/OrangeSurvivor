@@ -305,7 +305,42 @@ MonoBehaviour:
   currentConfigOption: Button
   motionIntensity: 1
   useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 36c56de847c558a44a555a879207c662, type: 2}
   actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.14
+    ease: 9
+    deactivateOnComplete: 0
+  - action: 0
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.14
+    ease: 9
+    deactivateOnComplete: 0
   - action: 1
     pose:
       fade: 1
@@ -424,12 +459,17 @@ MonoBehaviour:
   playEnterOnEnable: 0
   bindings:
   - motionEvent: 0
+    interactionMotion: 1
     action: 5
   - motionEvent: 1
+    interactionMotion: 2
     action: 6
   - motionEvent: 2
+    interactionMotion: 3
     action: 2
   - motionEvent: 3
+    interactionMotion: 4
     action: 3
   - motionEvent: 4
+    interactionMotion: 5
     action: 4
