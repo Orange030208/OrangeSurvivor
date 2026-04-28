@@ -31,11 +31,6 @@ public class WeaponSequenceBridge : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.IsSimulationRunning)
-        {
-            return;
-        }
-
         sequencePlayer.Tick(Time.deltaTime);
     }
 

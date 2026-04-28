@@ -37,12 +37,6 @@ public abstract class Collection : Entity, IAnimationConfigProvider
 
         while (target != null)
         {
-            if (!GameManager.Instance.IsSimulationRunning)
-            {
-                yield return null;
-                continue;
-            }
-
             Vector2 currentPosition = transform.position;
             Vector2 targetPosition = target.Center;
             float distance = Vector2.Distance(currentPosition, targetPosition);

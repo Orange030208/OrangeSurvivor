@@ -45,11 +45,13 @@ public abstract class MoveBase : EntityComponentBase, IMovable
 
     public virtual void MoveTo(Vector2 position)
     {
-        rb.velocity = (position - Owner.Center).normalized * (Time.fixedDeltaTime * speed);
+        moveDirection = (position - Owner.Center).normalized;
+        rb.velocity = moveDirection * (Time.fixedDeltaTime * speed);
     }
 
     public virtual void StopMoving()
     {
+        moveDirection = Vector2.zero;
         rb.velocity = Vector2.zero;
     }
 

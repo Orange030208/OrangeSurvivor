@@ -10,6 +10,7 @@ public abstract class EnemyBrain : EntityBrain
     protected Enemy owner;
     protected IMovable currentMovable;
     protected IAnimatable currentAnimatable;
+    protected IEntityFacingController facingController;
     protected HealthComponent healthComponent;
     protected PropertiesManager propertiesManager;
 
@@ -31,6 +32,7 @@ public abstract class EnemyBrain : EntityBrain
         healthComponent = this.owner.HealthComponent;
         propertiesManager = this.owner.PropertiesManager;
         currentAnimatable = this.owner.AnimComponent;
+        facingController = this.owner.GetComponent<IEntityFacingController>();
 
         isBrainActive = true;
     }
@@ -84,5 +86,15 @@ public abstract class EnemyBrain : EntityBrain
     public virtual void SetTarget(Entity newTarget)
     {
         target = newTarget;
+    }
+
+    protected void FaceTarget()
+    {
+        facingController?.FaceTarget(target);
+    }
+
+    protected void FaceMoveDirection()
+    {
+        facingController?.FaceMoveDirection(currentMovable);
     }
 }

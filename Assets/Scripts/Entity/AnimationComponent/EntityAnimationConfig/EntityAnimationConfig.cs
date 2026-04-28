@@ -7,7 +7,16 @@ using System;
 /// </summary>
 public class EntityAnimationConfig : ScriptableObject
 {
+    public enum FacingDirection
+    {
+        Right = 0,
+        Left = 1
+    }
+
     public RuntimeAnimatorController AnimatorController;
+
+    [Header("Facing")]
+    public FacingDirection DefaultFacingDirection = FacingDirection.Right;
     
     [Header("通用基础状态")] 
     public string Idle = "Idle";

@@ -117,6 +117,8 @@ public class WormBrain : EnemyBrain
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target == null)
             {
                 return;
@@ -148,10 +150,13 @@ public class WormBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.SetMoveStrategy(brain.enemyData.approachMoveStrategy);
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target == null)
             {
                 brain.stateMachine.ChangeState(WormAIState.Idle);
@@ -179,6 +184,7 @@ public class WormBrain : EnemyBrain
             }
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.FaceTarget();
         }
     }
 
@@ -209,6 +215,7 @@ public class WormBrain : EnemyBrain
             float distanceToTarget = brain.GetDistanceToTarget();
             if (distanceToTarget < brain.enemyData.retreatCompleteDistance)
             {
+                brain.FaceMoveDirection();
                 return;
             }
 
@@ -229,6 +236,7 @@ public class WormBrain : EnemyBrain
             }
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.FaceMoveDirection();
         }
     }
 
@@ -249,12 +257,15 @@ public class WormBrain : EnemyBrain
             attackCommitted = false;
             attackFinished = false;
             brain.SetAttackStrategy(brain.enemyData.attackStrategy);
+            brain.FaceTarget();
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
             brain.currentMovable.StopMoving();
         }
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target == null)
             {
                 brain.stateMachine.ChangeState(WormAIState.Idle);

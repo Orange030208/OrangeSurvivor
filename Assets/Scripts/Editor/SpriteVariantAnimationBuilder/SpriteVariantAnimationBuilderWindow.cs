@@ -518,6 +518,12 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             return;
         }
 
+        if (!ConfirmOverwriteExistingAssets(selectedPreviews))
+        {
+            lastReport = "已取消构建，未覆盖已有资源。";
+            return;
+        }
+
         BuildReport report = new();
         AssetDatabase.Refresh();
 
@@ -549,6 +555,67 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         if (settings.SelectGeneratedAssets)
         {
             SelectGeneratedObjects(selectedPreviews);
+        }
+    }
+
+    private bool ConfirmOverwriteExistingAssets(IReadOnlyList<BuildFolderPreview> selectedPreviews)
+    {
+        if (!settings.OverwriteExistingAssets)
+        {
+            return true;
+        }
+
+        List<string> existingAssetPaths = GetExistingBuildAssetPaths(selectedPreviews)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (existingAssetPaths.Count == 0)
+        {
+            return true;
+        }
+
+        const int MAX_DISPLAY_COUNT = 12;
+        string displayedPaths = string.Join(
+            "\n",
+            existingAssetPaths.Take(MAX_DISPLAY_COUNT).Select(path => $"- {path}"));
+        int hiddenCount = existingAssetPaths.Count - MAX_DISPLAY_COUNT;
+        string hiddenSummary = hiddenCount > 0
+            ? $"\n...还有 {hiddenCount} 个资源"
+            : string.Empty;
+
+        return EditorUtility.DisplayDialog(
+            "确认覆盖已有资源",
+            $"检测到本次构建目标中已有 {existingAssetPaths.Count} 个资源存在：\n\n" +
+            $"{displayedPaths}{hiddenSummary}\n\n" +
+            "继续构建会覆盖或更新这些资源。",
+            "继续覆盖",
+            "取消构建");
+    }
+
+    private IEnumerable<string> GetExistingBuildAssetPaths(IEnumerable<BuildFolderPreview> selectedPreviews)
+    {
+        foreach (BuildFolderPreview preview in selectedPreviews)
+        {
+            if (buildAnimations)
+            {
+                foreach (AnimationAtlasPreview atlas in preview.Atlases)
+                {
+                    if (AssetDatabase.LoadAssetAtPath<AnimationClip>(atlas.OutputClipPath) != null)
+                    {
+                        yield return atlas.OutputClipPath;
+                    }
+                }
+
+                if (AssetDatabase.LoadAssetAtPath<AnimatorController>(preview.ControllerPath) != null)
+                {
+                    yield return preview.ControllerPath;
+                }
+            }
+
+            if (buildPrefabs && AssetDatabase.LoadAssetAtPath<GameObject>(preview.PrefabPath) != null)
+            {
+                yield return preview.PrefabPath;
+            }
         }
     }
 

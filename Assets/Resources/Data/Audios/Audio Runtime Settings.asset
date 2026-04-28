@@ -22,12 +22,10 @@ MonoBehaviour:
     restartIfAlreadyPlaying: 0
   bgmCues:
   - bgmKey: 1
-    clip: {fileID: 8300000, guid: d7e24811e1c7da644890a475b4a7ea9e, type: 3}
+    clip: {fileID: 8300000, guid: 1ad48260dd57b1b4c843267b3a1f9e7a, type: 3}
     playbackMode: 1
-    volume: 1
     pitch: 1
   - bgmKey: 2
     clip: {fileID: 8300000, guid: d7e24811e1c7da644890a475b4a7ea9e, type: 3}
     playbackMode: 1
-    volume: 1
     pitch: 1

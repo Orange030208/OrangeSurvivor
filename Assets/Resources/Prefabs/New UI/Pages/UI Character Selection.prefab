@@ -829,6 +829,9 @@ MonoBehaviour:
   extraInfoDescriber: {fileID: 1952436610797406295}
   characterIconImage: {fileID: 3428506458016114692}
   characterNameText: {fileID: 7056907180788648646}
+  defaultCharacterIcon: {fileID: 21300000, guid: ce1f039062b108842aa7c8fb2c117249, type: 3}
+  defaultCharacterName: "\u8BF7\u9009\u62E9\u89D2\u8272"
+  defaultExtraInfo: "\u9009\u62E9\u4E00\u4E2A\u89D2\u8272\u67E5\u770B\u8BE6\u60C5"
 --- !u!225 &2836150192426863821
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1985,6 +1988,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8779231363884387445, guid: 1752649d4ee95e54cbdbfd26d5d92bdb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ce1f039062b108842aa7c8fb2c117249, type: 3}
     m_RemovedComponents:
     - {fileID: 9009843185414534451, guid: 1752649d4ee95e54cbdbfd26d5d92bdb, type: 3}
     - {fileID: 5302315719248004412, guid: 1752649d4ee95e54cbdbfd26d5d92bdb, type: 3}

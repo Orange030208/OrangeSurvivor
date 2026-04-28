@@ -12,7 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef5336722614401a7940a0c502fcde2, type: 3}
   m_Name: BlueGolemAnimationConfig
   m_EditorClassIdentifier: 
-  AnimatorController: {fileID: 9100000, guid: 5c187512a5df4d04f856610e08fd2bf4, type: 2}
+  AnimatorController: {fileID: 9100000, guid: a16922f8401eebd49b78100dfbcd2acd, type: 2}
+  DefaultFacingDirection: 0
   Idle: Move
   Move: Move
+  Float: Float
+  Attack: Attack
+  Attack1: Attack1
+  Attack2: Attack2
+  Attack3: Attack3
+  MeleeAttack: MeleeAttack
+  MeleeAttack1: MeleeAttack1
+  MeleeAttack2: MeleeAttack2
+  MeleeAttack3: MeleeAttack3
+  RangeAttack: RangeAttack
+  RangeAttack1: RangeAttack1
+  RangeAttack2: RangeAttack2
+  RangeAttack3: RangeAttack3
   Death: Die

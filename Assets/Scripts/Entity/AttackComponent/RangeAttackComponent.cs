@@ -47,7 +47,7 @@ public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
 
     public override void TryAttack(Entity target)
     {
-        if (!CanAttack || target == null || !IsInAttackRange(target))
+        if (!CanAttack || target == null)
         {
             return;
         }
@@ -117,7 +117,7 @@ public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
     {
         if (propType == PropType.Attack ||
             propType == PropType.AttackSpeed ||
-            propType == PropType.Range)
+            propType == PropType.DetectionRange)
         {
             RefreshRuntimeStats();
         }
@@ -131,7 +131,7 @@ public class RangeAttackComponent : EnemyAttackBase, IProjectileLauncher
     private void RefreshRuntimeStats()
     {
         attackDamage = propertiesManager.GetPropValue(PropType.Attack);
-        attackRange = propertiesManager.GetPropValue(PropType.Range);
+        attackRange = propertiesManager.GetPropValue(PropType.DetectionRange);
 
         float attackSpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f);
         attackInterval = 1f / attackSpeed;

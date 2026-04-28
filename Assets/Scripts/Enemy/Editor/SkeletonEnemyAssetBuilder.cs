@@ -119,7 +119,7 @@ public static class SkeletonEnemyAssetBuilder
         SetProp(values.GetArrayElementAtIndex(0), PropType.Attack, 18f);
         SetProp(values.GetArrayElementAtIndex(1), PropType.AttackSpeed, 0.75f);
         SetProp(values.GetArrayElementAtIndex(2), PropType.MaxHealth, 90f);
-        SetProp(values.GetArrayElementAtIndex(3), PropType.Range, 1.35f);
+        SetProp(values.GetArrayElementAtIndex(3), PropType.DetectionRange, 1.35f);
         SetProp(values.GetArrayElementAtIndex(4), PropType.MoveSpeed, 3.2f);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(propGroup);

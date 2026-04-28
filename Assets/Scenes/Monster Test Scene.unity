@@ -352,9 +352,9 @@ MonoBehaviour:
   testCharacterData: {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
   characterResourcePath: Data/Characters/Test
   playerSpawnPosition: {x: 0, y: 0, z: 0}
-  enemyData: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+  enemyData: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
   enemyResourcePath: Data/Enemies/Skeleton/SkeletonEnemy
-  spawnCount: 3
+  spawnCount: 1
   spawnRadius: 3
   spawnOnStart: 1
   enemyRuntimeRegistry: {fileID: 425943046}

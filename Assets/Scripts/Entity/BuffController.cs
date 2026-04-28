@@ -42,11 +42,6 @@ public class BuffController : EntityComponentBase
 
     public override void OnTick(float deltaTime)
     {
-        if (!GameManager.Instance.IsSimulationRunning || buffStacksById.Count == 0)
-        {
-            return;
-        }
-
         bool changed = TickTimedBuffs(deltaTime);
         changed |= RemoveEmptyEntries();
         if (changed)

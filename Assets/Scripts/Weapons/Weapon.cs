@@ -80,11 +80,6 @@ public abstract class Weapon : Entity, ILifecycle
 
     public virtual void OnTick(float deltaTime)
     {
-        if (!GameManager.Instance.IsSimulationRunning)
-        {
-            return;
-        }
-
         TickTargeting(deltaTime);
         TickWeapon(deltaTime);
     }
@@ -334,13 +329,13 @@ public abstract class Weapon : Entity, ILifecycle
         float weaponAttackSpeed = Mathf.Max(calculatedProps[PropType.AttackSpeed], 0.01f);
         float weaponCriticalChance = Mathf.Clamp01(calculatedProps[PropType.CriticalChance]);
         float weaponCriticalMultiplier = Mathf.Max(1f, calculatedProps[PropType.CriticalPercent]);
-        float weaponRange = calculatedProps[PropType.Range];
+        float weaponRange = calculatedProps[PropType.DetectionRange];
 
         float playerAttack = propertiesManager.GetPropValue(PropType.Attack);
         float playerAttackSpeedMultiplier = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 1);
         float playerCriticalChance = propertiesManager.GetPropValue(PropType.CriticalChance);
         float playerCriticalBonus = propertiesManager.GetPropValue(PropType.CriticalPercent);
-        float playerRange = propertiesManager.GetPropValue(PropType.Range);
+        float playerRange = propertiesManager.GetPropValue(PropType.DetectionRange);
 
         float finalAttackSpeed = Mathf.Max(weaponAttackSpeed * playerAttackSpeedMultiplier, 0.01f);
         Damage = weaponAttack + playerAttack;
@@ -399,7 +394,7 @@ public abstract class Weapon : Entity, ILifecycle
             propType == PropType.AttackSpeed ||
             propType == PropType.CriticalChance ||
             propType == PropType.CriticalPercent ||
-            propType == PropType.Range)
+            propType == PropType.DetectionRange)
         {
             RefreshRuntimeStats();
         }

@@ -14,6 +14,24 @@ public enum TransitionPhase
 /// </summary>
 public class WaveTransitionManager : MonoBehaviour
 {
+    private static readonly PropType[] upgradePropTypes =
+    {
+        PropType.Attack,
+        PropType.AttackSpeed,
+        PropType.CriticalChance,
+        PropType.CriticalPercent,
+        PropType.MoveSpeed,
+        PropType.MaxHealth,
+        PropType.DetectionRange,
+        PropType.HealthRecoverySpeed,
+        PropType.Armor,
+        PropType.Dodge,
+        PropType.LifeSteal,
+        PropType.PickupRadius,
+        PropType.DamageReduction,
+        PropType.HealingPower
+    };
+
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
     [SerializeField] private PropertiesManager propertiesManager;
@@ -163,7 +181,7 @@ public class WaveTransitionManager : MonoBehaviour
 
         for (int i = 0; i < propEntries.Length; i++)
         {
-            PropType propType = (PropType)Random.Range(0, Enum.GetNames(typeof(PropType)).Length);
+            PropType propType = upgradePropTypes[Random.Range(0, upgradePropTypes.Length)];
             PropModifierType modifierType = GetRandomModifierTypeForProp(propType);
             propEntries[i] = new PropModifierData(propType, modifierType, GetRandomValueFor(propType, modifierType));
         }
@@ -181,7 +199,7 @@ public class WaveTransitionManager : MonoBehaviour
                 < 0.67f => PropModifierType.BaseMultiplier,
                 _ => PropModifierType.BonusMultiplier
             },
-            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.Range =>
+            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.DetectionRange =>
                 Random.value > 0.5f ? PropModifierType.BonusMultiplier : PropModifierType.FinalMultiplier,
             _ => PropModifierType.Add
         };

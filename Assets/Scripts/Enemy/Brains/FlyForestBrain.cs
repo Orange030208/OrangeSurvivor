@@ -81,6 +81,8 @@ public class FlyForestBrain : EnemyBrain
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target != null)
             {
                 brain.stateMachine.ChangeState(FlyForestAIState.CircleKite);
@@ -106,6 +108,8 @@ public class FlyForestBrain : EnemyBrain
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target == null)
             {
                 brain.stateMachine.ChangeState(FlyForestAIState.Idle);
@@ -126,6 +130,7 @@ public class FlyForestBrain : EnemyBrain
             }
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.FaceTarget();
             if (brain.rangeAttack.IsInAttackRange(brain.target))
             {
                 brain.currentAttackStrategy.ExecuteAttack(brain.rangeAttack, brain.owner, brain.target);
@@ -163,6 +168,8 @@ public class FlyForestBrain : EnemyBrain
             {
                 brain.stateMachine.ChangeState(FlyForestAIState.CircleKite);
             }
+
+            brain.FaceMoveDirection();
         }
 
         public override void OnFixedUpdate()
@@ -173,6 +180,7 @@ public class FlyForestBrain : EnemyBrain
             }
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.FaceMoveDirection();
             brain.currentAttackStrategy.ExecuteAttack(brain.rangeAttack, brain.owner, brain.target);
         }
 

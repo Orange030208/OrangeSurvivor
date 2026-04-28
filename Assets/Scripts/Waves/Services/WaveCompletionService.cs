@@ -13,7 +13,9 @@ public class WaveCompletionService
     {
         return runtimeState.CompletionType switch
         {
-            WaveCompletionType.ClearAllEnemies => enemyRuntimeRegistry != null && enemyRuntimeRegistry.AliveEnemyCount == 0
+            WaveCompletionType.ClearAllEnemies => HasSpawnedAnyEnemy(runtimeState)
+                                                    && enemyRuntimeRegistry != null
+                                                    && enemyRuntimeRegistry.AliveEnemyCount == 0
                 ? WaveCompletionCheckResult.Complete(WaveCompletionReason.ClearedAllEnemies)
                 : WaveCompletionCheckResult.Continue(),
             WaveCompletionType.BossDefeated => WaveCompletionCheckResult.Continue(),
@@ -36,5 +38,24 @@ public class WaveCompletionService
         }
 
         return WaveCompletionCheckResult.Continue();
+    }
+
+    private static bool HasSpawnedAnyEnemy(WaveRuntimeState runtimeState)
+    {
+        WaveSegmentRuntimeState[] segmentStates = runtimeState.SegmentStates;
+        if (segmentStates == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < segmentStates.Length; i++)
+        {
+            if (segmentStates[i].HasSpawned)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

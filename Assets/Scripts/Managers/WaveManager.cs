@@ -85,16 +85,12 @@ public class WaveManager : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.IsSimulationRunning || !IsTimerOn)
+        if (!IsTimerOn || runtimeState.CompletionTriggered)
         {
             return;
         }
 
-        if (runtimeState.CompletionTriggered)
-        {
-            return;
-        }
-
+        ProcessCurrentWaveSpawns();
         WaveCompletionCheckResult completionResult = waveCompletionService.EvaluatePerFrame(runtimeState, CurrentWaveDuration);
         if (completionResult.ShouldComplete)
         {
@@ -102,7 +98,6 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        ProcessCurrentWaveSpawns();
         runtimeState.Timer += Time.deltaTime;
         PublishWaveProgress();
     }

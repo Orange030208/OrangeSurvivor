@@ -89,6 +89,8 @@ public class SkeletonBrain : EnemyBrain
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             bool isTargetInRange = brain.meleeAttack.IsInAttackRange(brain.target);
             
             if (brain.meleeAttack.CanAttack)
@@ -122,6 +124,8 @@ public class SkeletonBrain : EnemyBrain
 
         public override void OnUpdate()
         {
+            brain.FaceTarget();
+
             if (brain.target == null)
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Idle);
@@ -142,6 +146,7 @@ public class SkeletonBrain : EnemyBrain
             }
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.FaceTarget();
         }
     }
 
@@ -177,6 +182,7 @@ public class SkeletonBrain : EnemyBrain
             }
 
             attackStarted = true;
+            brain.FaceTarget();
             brain.currentAnimatable.PlayState(attackStateHash);
         }
 

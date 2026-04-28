@@ -19,7 +19,6 @@ public class GameManager : MonoSingletonBase<GameManager>
     private bool hasMoreWaves;
 
     public GameState CurrentGameState => currentGameState;
-    public bool IsSimulationRunning => currentGameState == GameState.Game && !isPaused;
 
     private void OnEnable()
     {

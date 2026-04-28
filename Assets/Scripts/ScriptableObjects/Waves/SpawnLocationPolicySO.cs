@@ -13,16 +13,22 @@ public enum SpawnLocationPolicyType
 public class SpawnLocationPolicySO : ScriptableObject
 {
     private const float MIN_DISTANCE = 0.1f;
+    private const float MIN_BOUNDS_PADDING = 0f;
+    private const int MIN_RESOLVE_ATTEMPTS = 1;
 
     [SerializeField] private SpawnLocationPolicyType policyType = SpawnLocationPolicyType.AroundPlayerRing;
     [SerializeField] private float minDistance = 6f;
     [SerializeField] private float maxDistance = 10f;
+    [SerializeField] private float boundsPadding = 1f;
+    [SerializeField] private int resolveAttempts = 16;
     [SerializeField] private Vector2 minBounds = new(-10f, -10f);
     [SerializeField] private Vector2 maxBounds = new(10f, 10f);
 
     public SpawnLocationPolicyType PolicyType => policyType;
     public float MinDistance => Mathf.Max(MIN_DISTANCE, minDistance);
     public float MaxDistance => Mathf.Max(MinDistance, maxDistance);
+    public float BoundsPadding => Mathf.Max(MIN_BOUNDS_PADDING, boundsPadding);
+    public int ResolveAttempts => Mathf.Max(MIN_RESOLVE_ATTEMPTS, resolveAttempts);
     public Vector2 MinBounds => minBounds;
     public Vector2 MaxBounds => maxBounds;
 
@@ -30,6 +36,8 @@ public class SpawnLocationPolicySO : ScriptableObject
     {
         minDistance = Mathf.Max(MIN_DISTANCE, minDistance);
         maxDistance = Mathf.Max(minDistance, maxDistance);
+        boundsPadding = Mathf.Max(MIN_BOUNDS_PADDING, boundsPadding);
+        resolveAttempts = Mathf.Max(MIN_RESOLVE_ATTEMPTS, resolveAttempts);
 
         if (maxBounds.x < minBounds.x)
         {

@@ -77,7 +77,3 @@
 - 如需引入新包、新系统或较大结构调整，应先说明原因与影响。
 - 输出内容优先考虑长期维护成本、调试体验与团队协作成本。
 - 回答与说明默认使用中文。
-
-### 7.校验规则
-
-- 稍微复杂点的任务，优先使用unityskill进行校验，默认校验顺序为：先执行 `Assets/Refresh`，再检查 `debug_check_compilation`，再读取 `debug_get_errors`；若需要，可补充 `debug_force_recompil`

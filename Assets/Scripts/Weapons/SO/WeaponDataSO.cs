@@ -116,7 +116,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             new(PropType.AttackSpeed, PropModifierType.Add, attackSpeed),
             new(PropType.CriticalChance, PropModifierType.Add, criticalChance),
             new(PropType.CriticalPercent, PropModifierType.Add, criticalPercent),
-            new(PropType.Range, PropModifierType.Add, range)
+            new(PropType.DetectionRange, PropModifierType.Add, range)
         };
     }
 

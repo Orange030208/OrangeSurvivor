@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class MeleeAttackComponent : EnemyAttackBase
 {
-    [Header("攻击配置")][SerializeField] private float attackRange;
+    [Header("攻击配置")][SerializeField] private float detectionRange;
+    [SerializeField] private float attackRange;
     [SerializeField] private float attackInterval;
     [SerializeField] private float attackDamage;
 
@@ -44,12 +45,12 @@ public class MeleeAttackComponent : EnemyAttackBase
             return false;
         }
 
-        return Vector3.Distance(transform.position, target.Center) <= attackRange;
+        return Vector3.Distance(transform.position, target.Center) <= detectionRange;
     }
 
     public override void TryAttack(Entity target)
     {
-        if (!CanAttack || target == null || !IsInAttackRange(target))
+        if (!CanAttack || target == null)
         {
             return;
         }
@@ -65,20 +66,25 @@ public class MeleeAttackComponent : EnemyAttackBase
 
     private void ApplyDamage(Entity target)
     {
-        if (target == null || !IsInAttackRange(target))
+        if (target == null || !IsWithinAttackRange(target))
         {
             return;
         }
 
-        HealthComponent health = target.GetComponent<HealthComponent>();
-        health.ApplyHitResult(HitService.Apply(new HitRequest(owner, target, HitSpec.EnemyHitSpec(attackDamage), owner.Center, HitSourceKind.Direct, GetType().Name)));
+        HitService.Apply(new HitRequest(owner, target, HitSpec.EnemyHitSpec(attackDamage), owner.Center, HitSourceKind.Direct, GetType().Name));
+    }
+
+    private bool IsWithinAttackRange(Entity target)
+    {
+        return Vector3.Distance(transform.position, target.Center) <= attackRange;
     }
 
     private void OnPropertyChanged(PropType propType, float _)
     {
         if (propType == PropType.Attack ||
             propType == PropType.AttackSpeed ||
-            propType == PropType.Range)
+            propType == PropType.DetectionRange ||
+            propType == PropType.AttackRange)
         {
             RefreshProps();
         }
@@ -92,7 +98,12 @@ public class MeleeAttackComponent : EnemyAttackBase
     private void RefreshProps()
     {
         attackDamage = propertiesManager.GetPropValue(PropType.Attack);
-        attackRange = propertiesManager.GetPropValue(PropType.Range);
+        detectionRange = propertiesManager.GetPropValue(PropType.DetectionRange);
+        attackRange = propertiesManager.GetPropValue(PropType.AttackRange);
+        if (attackRange <= 0f)
+        {
+            attackRange = detectionRange;
+        }
 
         float attackSpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f);
         attackInterval = 1f / attackSpeed;

@@ -149,11 +149,6 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
         for (int i = 0; i < burstCount; i++)
         {
-            while (!GameManager.Instance.IsSimulationRunning)
-            {
-                yield return null;
-            }
-
             FireSingle(projectileConfig, null);
             if (i < burstCount - 1)
             {
