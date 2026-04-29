@@ -1,0 +1,211 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Upgrade Card", menuName = ScriptableObjectMenuPaths.UPGRADE_CARD, order = 0)]
+public class UpgradeCardSO : ScriptableObject, IDescribable
+{
+    private const int MIN_PICK_COUNT = 1;
+    private const int MIN_WEIGHT = 1;
+
+    [Header("基础")]
+    [SerializeField] private string cardId;
+    [SerializeField] private string title;
+    [SerializeField] private Sprite icon;
+    [SerializeField] private UpgradeCardRarity rarity = UpgradeCardRarity.Common;
+    [SerializeField] private UpgradeCardTag[] tags = Array.Empty<UpgradeCardTag>();
+
+    [Header("抽取")]
+    [SerializeField] private int maxPickCount = MIN_PICK_COUNT;
+    [SerializeField] private int baseWeight = 100;
+    [SerializeField] private UpgradeCardOfferConditions offerConditions = UpgradeCardOfferConditions.Empty();
+
+    [Header("描述")]
+    [TextArea]
+    [SerializeField] private string description;
+
+    [Header("属性修饰")]
+    [Tooltip("倍率统一使用 0~1 表示 0%~100%。")]
+    [SerializeField] private List<PropModifierData> propertyModifiers = new();
+
+    [Header("特殊能力")]
+    [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
+
+    public string CardId => cardId;
+    public string Title => title;
+    public Sprite Icon => icon;
+    public string Description => description;
+    public UpgradeCardRarity Rarity => rarity;
+    public IReadOnlyList<UpgradeCardTag> Tags => tags;
+    public int MaxPickCount => Mathf.Max(MIN_PICK_COUNT, maxPickCount);
+    public int BaseWeight => Mathf.Max(MIN_WEIGHT, baseWeight);
+    public UpgradeCardOfferConditions OfferConditions => offerConditions;
+    public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
+    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrWhiteSpace(cardId))
+        {
+            cardId = Guid.NewGuid().ToString("N")[..8];
+        }
+
+        maxPickCount = Mathf.Max(MIN_PICK_COUNT, maxPickCount);
+        baseWeight = Mathf.Max(MIN_WEIGHT, baseWeight);
+        tags ??= Array.Empty<UpgradeCardTag>();
+        offerConditions ??= UpgradeCardOfferConditions.Empty();
+        offerConditions.Validate();
+        propertyModifiers ??= new List<PropModifierData>();
+        specialFeatures ??= new List<FeatureEffectBase>();
+    }
+
+    public bool HasAnyEffect()
+    {
+        return propertyModifiers.Count > 0 || specialFeatures.Count > 0;
+    }
+
+    public void InitializeRuntime(
+        string runtimeCardId,
+        string runtimeTitle,
+        UpgradeCardRarity runtimeRarity,
+        int runtimeBaseWeight,
+        IReadOnlyList<UpgradeCardTag> runtimeTags,
+        string runtimeDescription,
+        IReadOnlyList<PropModifierData> runtimePropertyModifiers)
+    {
+        cardId = string.IsNullOrWhiteSpace(runtimeCardId) ? Guid.NewGuid().ToString("N")[..8] : runtimeCardId;
+        title = runtimeTitle;
+        rarity = runtimeRarity;
+        baseWeight = Mathf.Max(MIN_WEIGHT, runtimeBaseWeight);
+        maxPickCount = MIN_PICK_COUNT;
+        tags = runtimeTags != null ? ToArray(runtimeTags) : Array.Empty<UpgradeCardTag>();
+        description = runtimeDescription;
+        offerConditions = UpgradeCardOfferConditions.Empty();
+        propertyModifiers = runtimePropertyModifiers != null
+            ? new List<PropModifierData>(runtimePropertyModifiers)
+            : new List<PropModifierData>();
+        specialFeatures = new List<FeatureEffectBase>();
+    }
+
+    public void InitializeRuntime(
+        string runtimeCardId,
+        string runtimeTitle,
+        UpgradeCardRarity runtimeRarity,
+        int runtimeBaseWeight,
+        IReadOnlyList<UpgradeCardTag> runtimeTags,
+        string runtimeDescription,
+        IReadOnlyList<PropModifierData> runtimePropertyModifiers,
+        IReadOnlyList<FeatureEffectBase> runtimeSpecialFeatures)
+    {
+        InitializeRuntime(
+            runtimeCardId,
+            runtimeTitle,
+            runtimeRarity,
+            runtimeBaseWeight,
+            runtimeTags,
+            runtimeDescription,
+            runtimePropertyModifiers);
+        specialFeatures = runtimeSpecialFeatures != null
+            ? new List<FeatureEffectBase>(runtimeSpecialFeatures)
+            : new List<FeatureEffectBase>();
+    }
+
+    public void SetOfferConditions(UpgradeCardOfferConditions runtimeOfferConditions)
+    {
+        offerConditions = runtimeOfferConditions ?? UpgradeCardOfferConditions.Empty();
+        offerConditions.Validate();
+    }
+
+    public void SetMaxPickCount(int runtimeMaxPickCount)
+    {
+        maxPickCount = Mathf.Max(MIN_PICK_COUNT, runtimeMaxPickCount);
+    }
+
+    public UpgradeCardOptionSnapshot ToSnapshot(UpgradeRunState runState)
+    {
+        int pickCount = runState != null ? runState.GetPickCount(CardId) : 0;
+        return new UpgradeCardOptionSnapshot(
+            CardId,
+            Title,
+            ResolveDisplayIcon(),
+            BuildDescription(),
+            Rarity,
+            tags,
+            pickCount,
+            MaxPickCount);
+    }
+
+    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        List<DescriptorInfo> infos = new();
+        for (int i = 0; i < propertyModifiers.Count; i++)
+        {
+            PropModifierData modifier = propertyModifiers[i];
+            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetAutoDescription()));
+        }
+
+        for (int i = 0; i < specialFeatures.Count; i++)
+        {
+            FeatureEffectBase feature = specialFeatures[i];
+            if (feature == null)
+            {
+                continue;
+            }
+
+            infos.Add(new DescriptorInfo(feature.Title, feature.Description));
+        }
+
+        return infos;
+    }
+
+    private string BuildDescription()
+    {
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            return description;
+        }
+
+        List<string> lines = new();
+        for (int i = 0; i < propertyModifiers.Count; i++)
+        {
+            lines.Add(propertyModifiers[i].GetAutoDescription());
+        }
+
+        for (int i = 0; i < specialFeatures.Count; i++)
+        {
+            FeatureEffectBase feature = specialFeatures[i];
+            if (feature != null && !string.IsNullOrWhiteSpace(feature.Description))
+            {
+                lines.Add(feature.Description);
+            }
+        }
+
+        return lines.Count > 0 ? string.Join("\n", lines) : "获得一项升级。";
+    }
+
+    private Sprite ResolveDisplayIcon()
+    {
+        if (icon != null)
+        {
+            return icon;
+        }
+
+        if (propertyModifiers.Count > 0)
+        {
+            return ResourcesManager.GetPropIcon(propertyModifiers[0].propType);
+        }
+
+        return null;
+    }
+
+    private static UpgradeCardTag[] ToArray(IReadOnlyList<UpgradeCardTag> source)
+    {
+        UpgradeCardTag[] result = new UpgradeCardTag[source.Count];
+        for (int i = 0; i < source.Count; i++)
+        {
+            result[i] = source[i];
+        }
+
+        return result;
+    }
+}

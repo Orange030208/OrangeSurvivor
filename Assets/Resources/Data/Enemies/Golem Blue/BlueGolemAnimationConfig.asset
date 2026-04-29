@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AnimatorController: {fileID: 9100000, guid: a16922f8401eebd49b78100dfbcd2acd, type: 2}
   DefaultFacingDirection: 0
-  Idle: Move
+  Idle: Idle
   Move: Move
   Float: Float
   Attack: Attack
@@ -29,4 +29,4 @@ MonoBehaviour:
   RangeAttack1: RangeAttack1
   RangeAttack2: RangeAttack2
   RangeAttack3: RangeAttack3
-  Death: Die
+  Death: Death

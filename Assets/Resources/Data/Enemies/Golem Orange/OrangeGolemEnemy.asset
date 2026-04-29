@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dea8958739d48eb4590de73bbe6224ee, type: 3}
+  m_Name: OrangeGolemEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5575725859304634866, guid: 2ec1b6a4a193fc640aac676020659e07, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 11d83d5cbe808c64f803388bedcde52c, type: 2}
+  animConfig: {fileID: 11400000, guid: 84ce5795e7038434ebf1c35467a1f24a, type: 2}
+  attackCommitNormalizedTime: 0.55
+  attackFinishNormalizedTime: 0.95
+  berserkInterval: 7
+  preChargeStunDuration: 1.1
+  chargeDuration: 0.8
+  postChargeStunDuration: 0.9
+  chargeDamageRadius: 1.25
+  chargeDamageMultiplier: 1.1
+  chargeModifiers:
+  - propType: 4
+    modifierType: 3
+    value: 2
+  chaseMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}

@@ -24,6 +24,7 @@ public class HealthComponent : EntityComponentBase
     private Entity owner;
     private PropertiesManager propertiesManager;
     private bool isDeathSequenceRunning;
+    private Entity lastDamageSource;
 
     public event Action<float, float> OnHealthChanged;
     public event Action<HitResult> OnDamaged;
@@ -123,6 +124,7 @@ public class HealthComponent : EntityComponentBase
         health -= realDamage;
 
         HitResult appliedResult = result.WithFinalDamage(realDamage);
+        lastDamageSource = appliedResult.Source;
         OnDamaged?.Invoke(appliedResult);
         GameEventBus.Publish(new EntityDamagedEvent(owner, appliedResult));
 
@@ -186,7 +188,7 @@ public class HealthComponent : EntityComponentBase
         isDeathSequenceRunning = true;
         owner.DisableRuntime();
         OnDeathSequenceStarted?.Invoke();
-        GameEventBus.Publish(new EntityDiedEvent(owner, transform.position));
+        GameEventBus.Publish(new EntityDiedEvent(owner, transform.position, lastDamageSource));
         StartCoroutine(RunDeathSequence());
     }
 

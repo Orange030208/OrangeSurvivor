@@ -94,13 +94,15 @@ public class Projectile : Entity, IProjectile
         HitSpec hitSpec = new HitSpec(
             launchContext.HitSpec.BaseDamage * currentDamageMultiplier,
             launchContext.HitSpec.CritChance,
-            launchContext.HitSpec.CritMultiplier);
+            launchContext.HitSpec.CritMultiplier,
+            launchContext.HitSpec.KnockbackForce);
 
         HitRequest request = new HitRequest(
             launchContext.Source,
             target,
             hitSpec,
             healthComponent.transform.position,
+            launchContext.Direction,
             HitSourceKind.Projectile,
             GetType().Name);
 

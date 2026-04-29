@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: heavy_critical
+  m_EditorClassIdentifier: 
+  cardId: heavy_critical
+  title: "\u91CD\u51FB\u8BAD\u7EC3"
+  icon: {fileID: 0}
+  rarity: 1
+  tags: 0200000000000000
+  maxPickCount: 2
+  baseWeight: 70
+  offerConditions:
+    minWave: 1
+    requiredTagPickCounts:
+    - tag: 2
+      minPickCount: 1
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds: []
+  description: "\u66B4\u51FB\u4F24\u5BB3 +18%\u3002"
+  propertyModifiers:
+  - propType: 3
+    modifierType: 0
+    value: 0.18
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

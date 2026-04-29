@@ -17,17 +17,49 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: c2b92abc9ce719f428292c4272f10786, type: 3}
     busType: 1
     playbackMode: 0
-    volume: 1
     pitch: 1
   - sfxKey: 2
     clip: {fileID: 8300000, guid: 557202cb1b6fb704197d31b7b5f24718, type: 3}
     busType: 1
     playbackMode: 0
-    volume: 1
     pitch: 1
   - sfxKey: 3
     clip: {fileID: 8300000, guid: 62c801adc153d104a9d8b242217acccc, type: 3}
     busType: 1
     playbackMode: 0
-    volume: 1
     pitch: 1
+  - sfxKey: 100
+    clip: {fileID: 8300000, guid: c2b92abc9ce719f428292c4272f10786, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 0.95
+  - sfxKey: 101
+    clip: {fileID: 8300000, guid: 557202cb1b6fb704197d31b7b5f24718, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1.08
+  - sfxKey: 102
+    clip: {fileID: 8300000, guid: 62c801adc153d104a9d8b242217acccc, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1.08
+  - sfxKey: 103
+    clip: {fileID: 8300000, guid: 557202cb1b6fb704197d31b7b5f24718, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 0.82
+  - sfxKey: 104
+    clip: {fileID: 8300000, guid: 557202cb1b6fb704197d31b7b5f24718, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1.04
+  - sfxKey: 105
+    clip: {fileID: 8300000, guid: 62c801adc153d104a9d8b242217acccc, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1.04
+  - sfxKey: 106
+    clip: {fileID: 8300000, guid: 62c801adc153d104a9d8b242217acccc, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 0.88

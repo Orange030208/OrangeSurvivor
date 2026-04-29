@@ -9,8 +9,10 @@ using UnityEngine;
 public class WaveRewardManager : MonoBehaviour
 {
     [SerializeField] private CurrencyWallet wallet;
+    [SerializeField] private Player player;
 
     private WaveRewardService waveRewardService;
+    private PropertiesManager propertiesManager;
 
     private void Awake()
     {
@@ -32,12 +34,15 @@ public class WaveRewardManager : MonoBehaviour
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
-        wallet = eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null;
+        player = eventData.Player;
+        wallet = player != null ? player.GetComponent<CurrencyWallet>() : null;
+        propertiesManager = player != null ? player.GetComponent<PropertiesManager>() : null;
     }
 
     private void OnWaveRewardGranted(WaveRewardGrantedEvent eventData)
     {
-        WaveRewardGrantResult grantResult = waveRewardService.Grant(eventData.RewardSnapshot, wallet);
+        WaveRewardSnapshot rewardSnapshot = ApplyUpgradeRewardBonus(eventData.RewardSnapshot);
+        WaveRewardGrantResult grantResult = waveRewardService.Grant(rewardSnapshot, wallet);
         WaveRewardSnapshot resolvedReward = new WaveRewardSnapshot(
             grantResult.GrantedGold,
             grantResult.GrantedChestCount,
@@ -49,19 +54,57 @@ public class WaveRewardManager : MonoBehaviour
             resolvedFlow));
     }
 
+    private WaveRewardSnapshot ApplyUpgradeRewardBonus(WaveRewardSnapshot rewardSnapshot)
+    {
+        int extraGoldReward = ResolveWaveGoldRewardBonus();
+        if (extraGoldReward <= 0)
+        {
+            return rewardSnapshot;
+        }
+
+        int goldReward = Mathf.Max(0, rewardSnapshot.GoldReward) + extraGoldReward;
+        return new WaveRewardSnapshot(goldReward, rewardSnapshot.ChestRewardCount, rewardSnapshot.GrantShopEntry);
+    }
+
+    private int ResolveWaveGoldRewardBonus()
+    {
+        if (propertiesManager == null)
+        {
+            TryBindPlayerReferences();
+        }
+
+        float bonusGold = propertiesManager != null
+            ? Mathf.Max(0f, propertiesManager.GetPropValue(PropType.WaveGoldRewardBonus))
+            : 0f;
+        return Mathf.RoundToInt(bonusGold);
+    }
+
     private void TryBindWallet()
     {
-        if (wallet != null)
+        if (wallet != null && propertiesManager != null)
         {
             return;
         }
 
-        Player player = FindFirstObjectByType<Player>();
+        TryBindPlayerReferences();
+    }
+
+    private void TryBindPlayerReferences()
+    {
+        player = FindFirstObjectByType<Player>();
         if (player == null)
         {
             return;
         }
 
-        wallet = player.GetComponent<CurrencyWallet>();
+        if (wallet == null)
+        {
+            wallet = player.GetComponent<CurrencyWallet>();
+        }
+
+        if (propertiesManager == null)
+        {
+            propertiesManager = player.GetComponent<PropertiesManager>();
+        }
     }
 }

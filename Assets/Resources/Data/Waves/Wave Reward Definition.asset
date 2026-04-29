@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b9ead452083d734eb1e418381dd5b76, type: 3}
   m_Name: Wave Reward Definition
   m_EditorClassIdentifier: 
-  goldReward: 25
+  goldReward: 0
   chestRewardCount: 1
   grantShopEntry: 1

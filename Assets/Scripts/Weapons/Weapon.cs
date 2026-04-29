@@ -35,6 +35,7 @@ public abstract class Weapon : Entity, ILifecycle
     public float Range { get; private set; } = 0.1f;
     public float CriticalChance { get; private set; }
     public float CriticalMultiplier { get; private set; } = 1f;
+    public float KnockbackForce { get; private set; }
     public bool IsAttacking { get; protected set; }
     protected PropertiesManager propertiesManager;
     protected Entity owner;
@@ -136,7 +137,7 @@ public abstract class Weapon : Entity, ILifecycle
 
     protected HitSpec BuildHitSpec()
     {
-        return new HitSpec(Damage, CriticalChance, CriticalMultiplier);
+        return new HitSpec(Damage, CriticalChance, CriticalMultiplier, KnockbackForce);
     }
 
     protected Vector2 ResolveFallbackAttackDirection()
@@ -329,13 +330,19 @@ public abstract class Weapon : Entity, ILifecycle
         float weaponAttackSpeed = Mathf.Max(calculatedProps[PropType.AttackSpeed], 0.01f);
         float weaponCriticalChance = Mathf.Clamp01(calculatedProps[PropType.CriticalChance]);
         float weaponCriticalMultiplier = Mathf.Max(1f, calculatedProps[PropType.CriticalPercent]);
-        float weaponRange = calculatedProps[PropType.DetectionRange];
+        float weaponRange = calculatedProps.TryGetValue(PropType.AttackRange, out float attackRangeValue)
+            ? attackRangeValue
+            : 0f;
+        float weaponKnockbackForce = calculatedProps.TryGetValue(PropType.KnockbackForce, out float knockbackValue)
+            ? knockbackValue
+            : 0f;
 
         float playerAttack = propertiesManager.GetPropValue(PropType.Attack);
         float playerAttackSpeedMultiplier = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 1);
         float playerCriticalChance = propertiesManager.GetPropValue(PropType.CriticalChance);
         float playerCriticalBonus = propertiesManager.GetPropValue(PropType.CriticalPercent);
-        float playerRange = propertiesManager.GetPropValue(PropType.DetectionRange);
+        float playerRange = propertiesManager.GetPropValue(PropType.AttackRange);
+        float playerKnockbackForce = propertiesManager.GetPropValue(PropType.KnockbackForce);
 
         float finalAttackSpeed = Mathf.Max(weaponAttackSpeed * playerAttackSpeedMultiplier, 0.01f);
         Damage = weaponAttack + playerAttack;
@@ -343,6 +350,7 @@ public abstract class Weapon : Entity, ILifecycle
         CriticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
         Range = Mathf.Max(0.1f, weaponRange + playerRange);
+        KnockbackForce = Mathf.Max(0f, weaponKnockbackForce + playerKnockbackForce);
     }
 
     private void ApplyCurrentConfiguration()
@@ -394,7 +402,8 @@ public abstract class Weapon : Entity, ILifecycle
             propType == PropType.AttackSpeed ||
             propType == PropType.CriticalChance ||
             propType == PropType.CriticalPercent ||
-            propType == PropType.DetectionRange)
+            propType == PropType.AttackRange ||
+            propType == PropType.KnockbackForce)
         {
             RefreshRuntimeStats();
         }

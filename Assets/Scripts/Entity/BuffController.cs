@@ -12,6 +12,7 @@ public class BuffController : EntityComponentBase
     private PropertiesManager propertiesManager;
     private Entity owner;
     private readonly Dictionary<string, List<BuffRuntimeHandle>> buffStacksById = new();
+    private readonly List<BuffApplyRequest> waveStartBuffRequests = new();
     private readonly List<string> emptyBuffIds = new();
     public override Entity Owner => owner;
 
@@ -29,6 +30,7 @@ public class BuffController : EntityComponentBase
         GameEventBus.Subscribe<RequestActiveBuffSnapshotEvent, string>(owner.RuntimeId, OnRequestSnapshot);
         GameEventBus.Subscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
         GameEventBus.Subscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
+        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
     }
 
     public override void OnDisableComponent()
@@ -36,6 +38,7 @@ public class BuffController : EntityComponentBase
         GameEventBus.Unsubscribe<RequestActiveBuffSnapshotEvent, string>(owner.RuntimeId, OnRequestSnapshot);
         GameEventBus.Unsubscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
         GameEventBus.Unsubscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
+        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
 
         ClearAllBuffs();
     }
@@ -79,6 +82,22 @@ public class BuffController : EntityComponentBase
 
         NotifyStackStateChanged(buffData, previousStackCount, stacks.Count);
         PublishSnapshot();
+        return true;
+    }
+
+    public bool RegisterWaveStartBuff(BuffApplyRequest applyRequest, bool applyImmediately)
+    {
+        if (applyRequest.BuffData == null)
+        {
+            return false;
+        }
+
+        waveStartBuffRequests.Add(applyRequest);
+        if (applyImmediately)
+        {
+            ApplyBuff(applyRequest);
+        }
+
         return true;
     }
 
@@ -429,6 +448,19 @@ public class BuffController : EntityComponentBase
     private void OnRemoveBuffRequested(RemoveBuffRequestedEvent eventData)
     {
         RemoveBuff(eventData.BuffId);
+    }
+
+    private void OnWaveStarted(WaveStartedEvent eventData)
+    {
+        if (waveStartBuffRequests.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < waveStartBuffRequests.Count; i++)
+        {
+            ApplyBuff(waveStartBuffRequests[i]);
+        }
     }
 
     private void PublishSnapshot()

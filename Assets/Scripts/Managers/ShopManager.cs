@@ -7,6 +7,7 @@ public struct ShopItemData
     public ItemDataSO ItemData;
     public int Level;
     public bool Lock;
+    public float PriceMultiplier;
 
     public int GetPrice()
     {
@@ -17,10 +18,16 @@ public struct ShopItemData
 
         if (ItemData.ItemType == ItemType.Weapon)
         {
-            return WeaponPriceHelper.GetPrice(ItemData.ItemPrice, Level);
+            return ApplyPriceMultiplier(WeaponPriceHelper.GetPrice(ItemData.ItemPrice, Level));
         }
 
-        return ItemData.ItemPrice;
+        return ApplyPriceMultiplier(ItemData.ItemPrice);
+    }
+
+    private int ApplyPriceMultiplier(int basePrice)
+    {
+        float multiplier = PriceMultiplier > 0f ? PriceMultiplier : 1f;
+        return Mathf.Max(0, Mathf.RoundToInt(basePrice * multiplier));
     }
 }
 
@@ -30,12 +37,17 @@ public class ShopManager : MonoBehaviour
     private const int BASE_REROLL_COST = 5;
     private const int ACCESSORY_WEIGHT = 2;
     private const int WEAPON_WEIGHT = 1;
+    private const float MIN_SHOP_PRICE_MULTIPLIER = 0.2f;
+    private const float MAX_SHOP_PRICE_DISCOUNT = 0.8f;
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private int baseRerollCost = BASE_REROLL_COST;
     [SerializeField] private CurrencyWallet currencyWallet;
 
     private ShopItemData[] currentItems;
+    private Player player;
+    private PropertiesManager propertiesManager;
+    private int freeShopRerolls;
     private int rerollCost;
     private int rerollCount;
     private int currentCurrency;
@@ -55,6 +67,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Subscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
 
         TryBindWallet();
         RefreshCurrency();
@@ -62,6 +75,8 @@ public class ShopManager : MonoBehaviour
 
     private void OnDisable()
     {
+        UnbindPropertiesManager();
+
         GameEventBus.Unsubscribe<RequestShopSnapshotEvent>(OnRequestSnapshot);
         GameEventBus.Unsubscribe<ShopItemClickedEvent>(OnItemClicked);
         GameEventBus.Unsubscribe<ShopRerollRequestedEvent>(OnRerollRequested);
@@ -70,6 +85,7 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        GameEventBus.Unsubscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
     }
 
     private void Start()
@@ -80,7 +96,9 @@ public class ShopManager : MonoBehaviour
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
-        currencyWallet = eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null;
+        player = eventData.Player;
+        currencyWallet = player != null ? player.GetComponent<CurrencyWallet>() : null;
+        BindPropertiesManager(player != null ? player.GetComponent<PropertiesManager>() : null);
         RefreshCurrency();
     }
 
@@ -118,6 +136,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
+        ApplyShopPriceMultiplier();
         ShopItemData itemData = currentItems[eventData.ItemIndex];
         if (itemData.ItemData == null)
         {
@@ -226,6 +245,13 @@ public class ShopManager : MonoBehaviour
 
     private void OnRerollRequested()
     {
+        if (TryConsumeFreeShopReroll())
+        {
+            RerollShopItems();
+            PublishShopItems();
+            return;
+        }
+
         if (currentCurrency < rerollCost)
         {
             GameEventBus.Publish(new ShopPurchaseFailedEvent($"Not enough currency for reroll. Cost: {rerollCost}"));
@@ -417,8 +443,18 @@ public class ShopManager : MonoBehaviour
             currentItems = Array.Empty<ShopItemData>();
         }
 
-        bool canReroll = currentCurrency >= rerollCost;
+        ApplyShopPriceMultiplier();
+        bool canReroll = currentCurrency >= rerollCost || freeShopRerolls > 0;
         GameEventBus.Publish(new ShopItemsChangedEvent(currentItems, rerollCost, canReroll));
+    }
+
+    private void ApplyShopPriceMultiplier()
+    {
+        float priceMultiplier = ResolveShopPriceMultiplier();
+        for (int i = 0; i < currentItems.Length; i++)
+        {
+            currentItems[i].PriceMultiplier = priceMultiplier;
+        }
     }
 
     private void OnOperateShopItemLock(OperateShopItemLockEvent eventData)
@@ -435,18 +471,118 @@ public class ShopManager : MonoBehaviour
 
     private void TryBindWallet()
     {
-        if (currencyWallet != null)
+        if (currencyWallet != null && propertiesManager != null)
         {
             return;
         }
 
-        Player player = FindFirstObjectByType<Player>();
+        if (player == null)
+        {
+            player = FindFirstObjectByType<Player>();
+        }
+
         if (player == null)
         {
             return;
         }
 
-        currencyWallet = player.GetComponent<CurrencyWallet>();
+        if (currencyWallet == null)
+        {
+            currencyWallet = player.GetComponent<CurrencyWallet>();
+        }
+
+        if (propertiesManager == null)
+        {
+            BindPropertiesManager(player.GetComponent<PropertiesManager>());
+        }
+    }
+
+    private void OnShopFreeRerollsGranted(ShopFreeRerollsGrantedEvent eventData)
+    {
+        if (!IsEventForCurrentPlayer(eventData.Player))
+        {
+            return;
+        }
+
+        int count = Mathf.Max(0, eventData.Count);
+        if (count <= 0)
+        {
+            return;
+        }
+
+        freeShopRerolls += count;
+        PublishShopItems();
+    }
+
+    private bool TryConsumeFreeShopReroll()
+    {
+        if (freeShopRerolls <= 0)
+        {
+            return false;
+        }
+
+        freeShopRerolls--;
+        return true;
+    }
+
+    private bool IsEventForCurrentPlayer(Player eventPlayer)
+    {
+        if (eventPlayer == null)
+        {
+            return true;
+        }
+
+        if (player == null)
+        {
+            TryBindWallet();
+        }
+
+        return player == null || player == eventPlayer;
+    }
+
+    private float ResolveShopPriceMultiplier()
+    {
+        if (propertiesManager == null)
+        {
+            TryBindWallet();
+        }
+
+        float discount = propertiesManager != null
+            ? Mathf.Clamp(propertiesManager.GetPropValue(PropType.ShopPriceDiscount), 0f, MAX_SHOP_PRICE_DISCOUNT)
+            : 0f;
+        return Mathf.Max(MIN_SHOP_PRICE_MULTIPLIER, 1f - discount);
+    }
+
+    private void BindPropertiesManager(PropertiesManager newPropertiesManager)
+    {
+        if (propertiesManager == newPropertiesManager)
+        {
+            return;
+        }
+
+        UnbindPropertiesManager();
+        propertiesManager = newPropertiesManager;
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnPropertyChanged += OnPlayerPropertyChanged;
+        }
+    }
+
+    private void UnbindPropertiesManager()
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnPropertyChanged -= OnPlayerPropertyChanged;
+            propertiesManager = null;
+        }
+    }
+
+    private void OnPlayerPropertyChanged(PropType propType, float value)
+    {
+        if (propType == PropType.ShopPriceDiscount)
+        {
+            PublishShopItems();
+        }
     }
 
     private void RefreshCurrency()

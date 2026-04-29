@@ -27,6 +27,9 @@ MonoBehaviour:
   - propType: 25
     modifierType: 0
     value: 0.12
+  - propType: 12
+    modifierType: 0
+    value: 5
   specialFeatures:
   - rid: 451546934818111488
   - rid: 451546934818111493

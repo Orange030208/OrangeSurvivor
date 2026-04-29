@@ -72,11 +72,16 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
         {
             if (colliders[i].TryGetComponent(out HealthComponent targetHealth))
             {
+                Entity targetEntity = targetHealth.GetComponent<Entity>();
+                Vector2 knockbackDirection = targetEntity != null
+                    ? targetEntity.Center - (Vector2)Context.Transform.position
+                    : (Vector2)(targetHealth.transform.position - Context.Transform.position);
                 HitService.Apply(new HitRequest(
                     Context.OwnerEntity,
-                    targetHealth.GetComponent<Entity>(),
+                    targetEntity,
                     new HitSpec(explosionDamage, 0f, 1f),
                     targetHealth.transform.position,
+                    knockbackDirection,
                     HitSourceKind.Explosion,
                     GetType().Name));
             }

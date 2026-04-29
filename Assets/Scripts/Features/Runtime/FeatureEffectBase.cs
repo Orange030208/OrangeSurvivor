@@ -5,6 +5,7 @@ using UnityEngine;
 public interface IFeatureEffect
 {
     FeatureContext Context { get; set; }
+    string SourceId { get; set; }
     void OnInstall();
     void OnUninstall();
     void OnUpdate(float deltaTime);
@@ -14,6 +15,7 @@ public interface IFeatureEffect
 public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribable
 {
     public FeatureContext Context { get; set; }
+    public string SourceId { get; set; }
 
     public virtual void OnInstall(){}
     public virtual void OnUninstall(){}

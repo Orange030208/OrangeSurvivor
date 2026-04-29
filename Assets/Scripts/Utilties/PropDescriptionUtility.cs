@@ -20,7 +20,7 @@ public static class PropDescriptionUtility
 
     public static string BuildIconNameValueDescription(this PropType propType, float value, float iconOffset = -0.2f, float valuePositionPercent = 80f)
     {
-        return propType.BuildIconNameValueDescription(FormatSignedNumber(value), value, iconOffset, valuePositionPercent);
+        return propType.BuildIconNameValueDescription(FormatValue(propType, value), value, iconOffset, valuePositionPercent);
     }
 
     public static string BuildIconNameValueDescription(this PropType propType, string valueText, float rawValue, float iconOffset = -0.2f, float valuePositionPercent = 80f)
@@ -55,6 +55,8 @@ public static class PropDescriptionUtility
             PropType.ProjectileSpeed => "弹体速度",
             PropType.KnockbackForce => "击退强度",
             PropType.ExperienceGain => "经验获取",
+            PropType.ShopPriceDiscount => "商店折扣",
+            PropType.WaveGoldRewardBonus => "波次金币奖励",
             PropType.DamageReduction => "伤害减免",
             PropType.HealingPower => "治疗效果",
             _ => "未知属性"
@@ -70,6 +72,11 @@ public static class PropDescriptionUtility
             return FormatSignedPercent(value);
         }
 
+        if (IsPercentAdditiveProp(propType))
+        {
+            return FormatSignedPercent(value);
+        }
+
         string formatted = value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
     }
@@ -77,7 +84,7 @@ public static class PropDescriptionUtility
     public static string BuildModifierDescription(this PropType propType, PropModifierType modifierType, float value)
     {
         string propName = propType.GetChineseName();
-        string coloredValue = ColorHelper.WrapRichTextColor(BuildPlainValueText(modifierType, value), ColorHelper.GetColorByValue(value));
+        string coloredValue = ColorHelper.WrapRichTextColor(BuildPlainValueText(propType, modifierType, value), ColorHelper.GetColorByValue(value));
 
         return modifierType switch
         {
@@ -89,15 +96,26 @@ public static class PropDescriptionUtility
         };
     }
 
-    private static string BuildPlainValueText(PropModifierType modifierType, float value)
+    private static string BuildPlainValueText(PropType propType, PropModifierType modifierType, float value)
     {
         return modifierType switch
         {
             PropModifierType.BaseMultiplier => FormatSignedNumber(value * 100f) + "%",
             PropModifierType.BonusMultiplier => FormatSignedNumber(value * 100f) + "%",
             PropModifierType.FinalMultiplier => FormatSignedNumber(value * 100f) + "%",
-            _ => FormatSignedNumber(value)
+            _ => IsPercentAdditiveProp(propType) ? FormatSignedNumber(value * 100f) + "%" : FormatSignedNumber(value)
         };
+    }
+
+    private static string FormatValue(PropType propType, float value)
+    {
+        return IsPercentAdditiveProp(propType) ? FormatSignedPercent(value) : FormatSignedNumber(value);
+    }
+
+    private static bool IsPercentAdditiveProp(PropType propType)
+    {
+        return propType == PropType.ExperienceGain ||
+               propType == PropType.ShopPriceDiscount;
     }
 
     private static string FormatSignedPercent(float value)

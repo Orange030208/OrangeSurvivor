@@ -9,6 +9,8 @@ public static class ResourcesManager
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
+    private const string UPGRADE_CARD_POOL_DATA_PATH = "Data/UpgradeCards/Pool/Default Upgrade Card Pool";
+    private const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH = "Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
     private const string PROJECTILE_COMMON_PREFAB_PATH = "Prefabs/Projectiles/Projectile Common";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
@@ -19,6 +21,8 @@ public static class ResourcesManager
     private static WeaponDataSO[] Weapons;
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
+    private static UpgradeCardPoolSO upgradeCardPool;
+    private static UpgradeCardRarityPresentationCatalogSO upgradeCardRarityPresentationCatalog;
     private static StageDefinitionSO stageDefinition;
     private const string ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH = "Materials/UI/WeaponQualityIconEffect";
 
@@ -84,6 +88,23 @@ public static class ResourcesManager
         if (playerLevelConfig == null)
         {
             playerLevelConfig = Resources.Load<PlayerLevelConfigSO>(PLAYER_LEVEL_CONFIG_DATA_PATH);
+        }
+    }
+
+    private static void LoadUpgradeCardPool()
+    {
+        if (upgradeCardPool == null)
+        {
+            upgradeCardPool = Resources.Load<UpgradeCardPoolSO>(UPGRADE_CARD_POOL_DATA_PATH);
+        }
+    }
+
+    private static void LoadUpgradeCardRarityPresentationCatalog()
+    {
+        if (upgradeCardRarityPresentationCatalog == null)
+        {
+            upgradeCardRarityPresentationCatalog =
+                Resources.Load<UpgradeCardRarityPresentationCatalogSO>(UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH);
         }
     }
 
@@ -180,6 +201,32 @@ public static class ResourcesManager
     {
         LoadPlayerLevelConfig();
         return playerLevelConfig;
+    }
+
+    public static UpgradeCardPoolSO GetUpgradeCardPool()
+    {
+        LoadUpgradeCardPool();
+        if (upgradeCardPool == null)
+        {
+            Debug.LogError(
+                $"{nameof(ResourcesManager)} could not find {nameof(UpgradeCardPoolSO)} at {UPGRADE_CARD_POOL_DATA_PATH}. " +
+                "Run Survivors/Upgrades/Rebuild Upgrade Card System to generate the configured card pool.");
+        }
+
+        return upgradeCardPool;
+    }
+
+    public static UpgradeCardRarityPresentationCatalogSO GetUpgradeCardRarityPresentationCatalog()
+    {
+        LoadUpgradeCardRarityPresentationCatalog();
+        if (upgradeCardRarityPresentationCatalog == null)
+        {
+            Debug.LogError(
+                $"{nameof(ResourcesManager)} could not find {nameof(UpgradeCardRarityPresentationCatalogSO)} at {UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH}. " +
+                "Run Survivors/Upgrades/Rebuild Upgrade Card System to generate the configured rarity presentation profiles.");
+        }
+
+        return upgradeCardRarityPresentationCatalog;
     }
 
     public static StageDefinitionSO GetStageDefinition()

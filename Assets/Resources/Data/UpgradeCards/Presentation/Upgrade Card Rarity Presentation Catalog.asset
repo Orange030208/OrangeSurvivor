@@ -1,0 +1,375 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32ae1dfbe7140c54e8583e256137ce96, type: 3}
+  m_Name: Upgrade Card Rarity Presentation Catalog
+  m_EditorClassIdentifier: 
+  profiles:
+  - rarity: 0
+    presentationKey: common
+    shaderParameters:
+    - propertyName: _Rarity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EffectIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PrimaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.82, g: 0.9, b: 0.86, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SecondaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.32, g: 0.46, b: 0.4, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AccentColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.92, g: 1, b: 0.96, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _GlowIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PixelGrid
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 48
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _FlowSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderWidth
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderGlow
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.45
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EnergyDensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 8
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.8
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    effectIntensity: 0.35
+    revealSfxKey: 100
+    selectSfxKey: 1
+  - rarity: 1
+    presentationKey: rare
+    shaderParameters:
+    - propertyName: _Rarity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EffectIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.7
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PrimaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.35, g: 0.65, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SecondaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.12, g: 0.28, b: 0.75, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AccentColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.72, g: 0.92, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _GlowIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.7
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PixelGrid
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 48
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _FlowSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.7
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderWidth
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderGlow
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.85
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EnergyDensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 10
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1.1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    effectIntensity: 0.7
+    revealSfxKey: 101
+    selectSfxKey: 104
+  - rarity: 2
+    presentationKey: epic
+    shaderParameters:
+    - propertyName: _Rarity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 2
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EffectIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PrimaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.76, g: 0.38, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SecondaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.36, g: 0.12, b: 0.72, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AccentColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 0.78, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _GlowIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PixelGrid
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 48
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _FlowSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderWidth
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderGlow
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1.15
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EnergyDensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 15
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1.6
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    effectIntensity: 1
+    revealSfxKey: 102
+    selectSfxKey: 105
+  - rarity: 3
+    presentationKey: legendary
+    shaderParameters:
+    - propertyName: _Rarity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 3
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EffectIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PrimaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 0.76, b: 0.25, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SecondaryColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 0.85, g: 0.18, b: 0.1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AccentColor
+      parameterType: 1
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 0.95, b: 0.62, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _GlowIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PixelGrid
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 48
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _FlowSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1.35
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderWidth
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _BorderGlow
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 1.45
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _EnergyDensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 18
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseSpeed
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 2.1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    effectIntensity: 1.35
+    revealSfxKey: 103
+    selectSfxKey: 106

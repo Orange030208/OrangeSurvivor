@@ -5,18 +5,25 @@
 /// </summary>
 public enum AudioSfxKey
 {
-    None,
+    None = 0,
 
     #region UI音效
 
-    WoodenButtonClicked,
+    WoodenButtonClicked = 1,
+    UpgradeCardCommonReveal = 100,
+    UpgradeCardRareReveal = 101,
+    UpgradeCardEpicReveal = 102,
+    UpgradeCardLegendaryReveal = 103,
+    UpgradeCardRareSelected = 104,
+    UpgradeCardEpicSelected = 105,
+    UpgradeCardLegendarySelected = 106,
 
     #endregion
 
     #region 武器音效
 
-    Swipe,
-    Slap,
+    Swipe = 2,
+    Slap = 3,
 
     #endregion
 }

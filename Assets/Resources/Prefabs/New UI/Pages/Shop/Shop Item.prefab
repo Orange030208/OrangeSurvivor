@@ -71,7 +71,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -71, y: 0}
+  m_AnchoredPosition: {x: -54.755, y: 0}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7762369295640489739
@@ -235,8 +235,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 58.171005, y: -2.6700974}
-  m_SizeDelta: {x: -116.34, y: -88.7813}
+  m_AnchoredPosition: {x: 60, y: -2.6700974}
+  m_SizeDelta: {x: -120, y: -88.7813}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1158603689618774637
 CanvasRenderer:
@@ -293,8 +293,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 20
@@ -368,8 +368,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -26.654}
-  m_SizeDelta: {x: 0, y: 224.5116}
+  m_AnchoredPosition: {x: 0, y: -36.356}
+  m_SizeDelta: {x: 0, y: 205.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7139556483707835314
 GameObject:
@@ -448,7 +448,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 0.25
 --- !u!114 &6212716520622307748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,8 +464,6 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   bottom: {fileID: 1314857178707274722}
-  colorDependencyGraphics:
-  - {fileID: 645304453978423736}
   buyButton: {fileID: 7889412740765118647}
   priceText: {fileID: 645304453978423736}
   lockButton: {fileID: 5500555380500807534}
@@ -654,8 +652,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -6, y: -6}
+  m_AnchoredPosition: {x: -0.7319031, y: -1.8208}
+  m_SizeDelta: {x: -39.6677, y: -44.8091}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8769072373689064212
 GameObject:

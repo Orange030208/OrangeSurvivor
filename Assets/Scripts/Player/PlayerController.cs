@@ -1,22 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : EntityComponentBase, IMovable
+public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
 {
     private float speed = 0;
-    private bool moveDisabled = false;
 
     private Rigidbody2D rb;
     private Player owner;
     private PropertiesManager propertiesManager;
     private Vector2 moveDirection;
+    private readonly HashSet<object> movementLocks = new();
     public override Entity Owner => owner;
     public PropertiesManager PropertiesManager => propertiesManager;
+    public bool IsMovementLocked => movementLocks.Count > 0;
     public override void Initialize(Entity owner)
     {
         this.owner = owner as Player;
         this.rb = this.owner.Rb;
         this.propertiesManager = this.owner.PropertiesManager;
+        movementLocks.Clear();
 
         GameEventBus.Subscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
@@ -28,10 +31,10 @@ public class PlayerController : EntityComponentBase, IMovable
     public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
     public Vector2 MoveDirection => moveDirection;
-    public bool IsMoving => moveDirection.sqrMagnitude > 0.0001f;
+    public bool IsMoving => !IsMovementLocked && moveDirection.sqrMagnitude > 0.0001f;
     public void MoveTo(Vector2 position)
     {
-        if (moveDisabled) return;
+        if (IsMovementLocked) return;
         rb.velocity = (position - Owner.Center).normalized * Time.deltaTime * speed;
     }
 
@@ -59,7 +62,7 @@ public class PlayerController : EntityComponentBase, IMovable
 
     private void Move(float deltaTime)
     {
-        if (moveDisabled) return;
+        if (IsMovementLocked) return;
         rb.velocity = moveDirection.normalized * deltaTime * speed;
     }
 
@@ -83,11 +86,32 @@ public class PlayerController : EntityComponentBase, IMovable
 
     public void EnableMovement()
     {
-        moveDisabled = true;
+        movementLocks.Clear();
     }
 
     public void DisableMovement()
     {
-        moveDisabled = false;
+        AddMovementLock(this);
+    }
+
+    public void AddMovementLock(object source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        movementLocks.Add(source);
+        moveDirection = Vector2.zero;
+    }
+
+    public void RemoveMovementLock(object source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        movementLocks.Remove(source);
     }
 }

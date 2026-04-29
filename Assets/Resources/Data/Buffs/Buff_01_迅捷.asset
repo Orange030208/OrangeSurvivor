@@ -26,7 +26,7 @@ MonoBehaviour:
   - propType: 4
     modifierType: 1
     value: 0.6
-  - propType: 6
+  - propType: 15
     modifierType: 1
     value: 0.2
   specialFeatures: []

@@ -74,6 +74,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
             }
 
             effect.Context = featureContext;
+            effect.SourceId = sourceId;
             effect.OnInstall();
         }
 
@@ -99,6 +100,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
             effect.OnUninstall();
             effect.Context =  null;
+            effect.SourceId = null;
         }
 
         installedSources.Remove(sourceId);

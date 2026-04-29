@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: battle_frenzy
+  m_EditorClassIdentifier: 
+  cardId: battle_frenzy
+  title: "\u6218\u6597\u5174\u594B"
+  icon: {fileID: 0}
+  rarity: 1
+  tags: 03000000
+  maxPickCount: 2
+  baseWeight: 60
+  offerConditions:
+    minWave: 2
+    requiredTagPickCounts:
+    - tag: 3
+      minPickCount: 1
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds: []
+  description: "\u6BCF\u6CE2\u5F00\u59CB\u83B7\u5F97\u77ED\u6682\u72C2\u4E71 Buff\u3002"
+  propertyModifiers: []
+  specialFeatures:
+  - rid: 451547002770030619
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030619
+      type: {class: WaveStartBuffUpgradeCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        buffData: {fileID: 11400000, guid: 59120db0dcdf66f4aacc7826a1384761, type: 2}
+        durationSeconds: 8
+        applyImmediately: 1

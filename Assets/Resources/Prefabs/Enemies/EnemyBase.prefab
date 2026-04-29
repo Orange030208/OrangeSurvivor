@@ -20,6 +20,8 @@ GameObject:
   - component: {fileID: 9035684678807474697}
   - component: {fileID: 7382220925090709899}
   - component: {fileID: 7337929490514087635}
+  - component: {fileID: 2010192819939336532}
+  - component: {fileID: 238958669032439503}
   m_Layer: 6
   m_Name: EnemyBase
   m_TagString: Untagged
@@ -194,6 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da1ff6d8b0b47b0a96d28619efde8c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionRange: 0
   attackRange: 1.5
   attackInterval: 0.8
   attackDamage: 20
@@ -234,6 +237,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9d6c96c38be40aa8aa4757cbf2a1a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2010192819939336532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8edb653d7a0a44481b8186a66f6323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receiverConfig: {fileID: 11400000, guid: 3a0208af168ac8345aff031e64ce0b81, type: 2}
+--- !u!114 &238958669032439503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234637727428497752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c8e7915a78eae49bfb5553d57fd2be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashDuration: 0.08
 --- !u!1 &2464715893807307015
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,7 +347,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 3f5c12030e6fed447a3fa3b300fcb158, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -339,7 +369,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -862079177, guid: b4e9359a1c036a543b8ff80025f2f047, type: 3}
-  m_Color: {r: 0.7877358, g: 0.909434, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

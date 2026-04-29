@@ -21,14 +21,7 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 2
-    prefab: {fileID: 3816208830851736021, guid: e5958a3e181b13e439375b903b3e0d9f, type: 3}
-    singleton: 1
-    cacheOnClose: 1
-    trackInBackStack: 1
-    warmupCount: 0
-    maxCachedInstancesOverride: 0
-  - layerType: 3
-    prefab: {fileID: 3816208830851736021, guid: e6ab8e1c786b9d4409cedc1cc5d99d58, type: 3}
+    prefab: {fileID: 3816208830851736021, guid: 02f7f2fe1141a9b4cb409ce8b556f135, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
@@ -42,28 +35,21 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 2
-    prefab: {fileID: 5453402992543493149, guid: 4a3a1b694f36bcd4995dafcb3cd7a5aa, type: 3}
+    prefab: {fileID: 5453402992543493149, guid: 7a7ebd4679f38d64d85b9322f65b5589, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    warmupCount: 0
+    maxCachedInstancesOverride: 0
+  - layerType: 2
+    prefab: {fileID: 3816208830851736021, guid: 20c94ac16a11dc54b9e607c6eff07912, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
     warmupCount: 0
     maxCachedInstancesOverride: 0
   - layerType: 3
-    prefab: {fileID: 3816208830851736021, guid: 56e7c02e901575f41b6af872ba0cec50, type: 3}
-    singleton: 1
-    cacheOnClose: 1
-    trackInBackStack: 1
-    warmupCount: 0
-    maxCachedInstancesOverride: 0
-  - layerType: 2
-    prefab: {fileID: 3816208830851736021, guid: 02f7f2fe1141a9b4cb409ce8b556f135, type: 3}
-    singleton: 1
-    cacheOnClose: 1
-    trackInBackStack: 1
-    warmupCount: 0
-    maxCachedInstancesOverride: 0
-  - layerType: 2
-    prefab: {fileID: 3816208830851736021, guid: f8f792afbabf75f4fa3cbfdb6318da5c, type: 3}
+    prefab: {fileID: 3816208830851736021, guid: a3b9b07b8f661b249b31e24e92419cff, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1

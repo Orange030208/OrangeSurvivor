@@ -4,85 +4,151 @@ using UnityEngine;
 
 public class DamageTextFlow : MonoBehaviour
 {
-    [Header("基础飘字设置")]
-    public float floatTime = 0.8f;
-    public Color normalColor = Color.white;
-
-    [Header("视觉效果")]
-    public float startScale = 0.5f;
-    public bool useFade = true;
-
-    [Header("暴击专属效果")]
-    public Color criticalColor = new Color(1f, 0.6f, 0f);
-    public float criticalStartScale = 1.2f;
-    public float criticalShakeStrength = 0.3f;
-
+    [Header("References")]
     [SerializeField] private TextMeshPro _damageText;
-    private Sequence _animSequence;
-    private bool _isCritical;
 
-    private void OnEnable() { }
+    [Header("Legacy Fallback")]
+    [SerializeField, Min(0.01f)] private float floatTime = 0.8f;
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField, Min(0f)] private float startScale = 0.5f;
+    [SerializeField] private bool useFade = true;
+    [SerializeField] private Color criticalColor = new(1f, 0.6f, 0f);
+    [SerializeField, Min(0f)] private float criticalStartScale = 1.2f;
+    [SerializeField, Min(0f)] private float criticalShakeStrength = 0.3f;
+
+    private Sequence animSequence;
+    private DamageTextVisualStyle normalFallbackStyle;
+    private DamageTextVisualStyle criticalFallbackStyle;
 
     public void SetDamage(float damage, bool isCritical)
     {
-        _damageText.text = ((int)damage).ToString();
-        _isCritical = isCritical;
-        Play();
+        DamageTextVisualStyle fallbackStyle = GetLegacyFallbackStyle(isCritical);
+        Play(new DamageTextViewData(damage, isCritical, transform.position), fallbackStyle);
     }
 
-    private void Play()
+    public void Play(DamageTextViewData viewData, DamageTextVisualStyle style)
     {
-        // 1. 初始化参数
-        float currentStartScale = _isCritical ? criticalStartScale : startScale;
-        Color currentColor = _isCritical ? criticalColor : normalColor;
-
-        transform.localScale = Vector3.one * currentStartScale;
-        _damageText.color = currentColor;
-        _damageText.alpha = 1;
-
-        // 2. 清理旧动画
-        _animSequence?.Kill();
-        _animSequence = DOTween.Sequence();
-
-        // 3. 播放动画 (只有缩放 + 震动 + 渐隐)
-        Ease scaleEase = _isCritical ? Ease.OutElastic : Ease.OutBack;
-        float scaleDuration = _isCritical ? floatTime * 0.5f : floatTime * 0.3f;
-
-        // 缩放动画
-        _animSequence.Append(transform.DOScale(Vector3.one, scaleDuration).SetEase(scaleEase));
-
-        // 暴击震动
-        if (_isCritical)
+        if (style == null)
         {
-            _animSequence.Join(transform.DOShakePosition(
-                scaleDuration, 
-                criticalShakeStrength, 
-                20, 
-                90f, 
-                false, 
-                true
-            ));
+            style = GetLegacyFallbackStyle(viewData.IsCritical);
         }
 
-        // 渐隐效果
-        if (useFade)
+        if (_damageText == null)
         {
-            float fadeDelay = _isCritical ? floatTime * 0.4f : floatTime * 0.5f;
-            _animSequence.Append(_damageText.DOFade(0, floatTime * 0.5f).SetDelay(fadeDelay));
+            Debug.LogWarning($"{nameof(DamageTextFlow)} 缺少 TextMeshPro 引用，无法播放伤害飘字。", this);
+            Destroy(gameObject);
+            return;
         }
 
-        // 4. 结束回收
-        _animSequence.OnComplete(DestroyDamageText);
+        transform.position = viewData.WorldPosition;
+        ResetVisual(viewData, style);
+        PlaySequence(style);
     }
 
-    private void DestroyDamageText()
+    public void Stop()
     {
-        _animSequence?.Kill();
+        animSequence?.Kill();
+        animSequence = null;
+    }
+
+    private void ResetVisual(DamageTextViewData viewData, DamageTextVisualStyle style)
+    {
+        transform.localScale = Vector3.one * style.StartScale;
+
+        _damageText.text = style.FormatDamage(viewData.Damage);
+        _damageText.fontSize = style.FontSize;
+        _damageText.fontStyle = style.FontStyle;
+        _damageText.color = style.TextColor;
+        _damageText.alpha = 1f;
+        _damageText.enableVertexGradient = style.UseVertexGradient;
+        _damageText.colorGradient = new VertexGradient(
+            style.GradientTopColor,
+            style.GradientTopColor,
+            style.GradientBottomColor,
+            style.GradientBottomColor);
+    }
+
+    private void PlaySequence(DamageTextVisualStyle style)
+    {
+        animSequence?.Kill();
+
+        Vector3 startPosition = transform.position;
+        float direction = UnityEngine.Random.value < 0.5f ? -1f : 1f;
+        float drift = style.HorizontalDrift > 0f ? UnityEngine.Random.Range(style.HorizontalDrift * 0.35f, style.HorizontalDrift) : 0f;
+        Vector3 endPosition = startPosition + new Vector3(drift * direction, style.FloatDistance, 0f);
+
+        animSequence = DOTween.Sequence();
+        animSequence.Append(transform.DOScale(Vector3.one * style.PeakScale, style.PopDuration).SetEase(style.PopEase));
+        animSequence.Append(transform.DOScale(Vector3.one * style.EndScale, style.SettleDuration).SetEase(style.SettleEase));
+        animSequence.Insert(0f, transform.DOMove(endPosition, style.Lifetime).SetEase(style.MoveEase));
+
+        if (style.ShakeStrength > 0f)
+        {
+            animSequence.Insert(0f, transform.DOShakePosition(
+                style.ShakeDuration,
+                style.ShakeStrength,
+                style.ShakeVibrato,
+                style.ShakeRandomness,
+                false,
+                true));
+        }
+
+        if (style.UseFade)
+        {
+            float fadeDuration = Mathf.Max(0.01f, style.Lifetime - style.FadeDelay);
+            animSequence.Insert(style.FadeDelay, _damageText.DOFade(0f, fadeDuration).SetEase(style.FadeEase));
+        }
+
+        animSequence.OnComplete(HandleAnimationCompleted);
+    }
+
+    private void HandleAnimationCompleted()
+    {
+        animSequence = null;
         Destroy(gameObject);
+    }
+
+    private DamageTextVisualStyle GetLegacyFallbackStyle(bool isCritical)
+    {
+        if (normalFallbackStyle == null || criticalFallbackStyle == null)
+        {
+            normalFallbackStyle = DamageTextVisualStyle.CreateLegacyNormal(floatTime, normalColor, startScale, useFade);
+            normalFallbackStyle.OnValidate();
+
+            criticalFallbackStyle = DamageTextVisualStyle.CreateLegacyCritical(
+                floatTime,
+                criticalColor,
+                criticalStartScale,
+                useFade,
+                criticalShakeStrength);
+            criticalFallbackStyle.OnValidate();
+        }
+
+        DamageTextVisualStyle style = isCritical ? criticalFallbackStyle : normalFallbackStyle;
+        style.OnValidate();
+        return style;
+    }
+
+    private void OnDisable()
+    {
+        Stop();
     }
 
     private void OnDestroy()
     {
-        _animSequence?.Kill();
+        Stop();
+    }
+
+    private void OnValidate()
+    {
+        if (_damageText == null)
+        {
+            _damageText = GetComponentInChildren<TextMeshPro>();
+        }
+
+        floatTime = Mathf.Max(0.01f, floatTime);
+        startScale = Mathf.Max(0f, startScale);
+        criticalStartScale = Mathf.Max(0f, criticalStartScale);
+        criticalShakeStrength = Mathf.Max(0f, criticalShakeStrength);
     }
 }

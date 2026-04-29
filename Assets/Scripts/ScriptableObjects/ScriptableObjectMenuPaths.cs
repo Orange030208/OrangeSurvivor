@@ -13,8 +13,12 @@ public static class ScriptableObjectMenuPaths
     public const string WORM_ENEMY = GAMEPLAY_ROOT + "Enemies/Worm Enemy";
     public const string FLY_FOREST = GAMEPLAY_ROOT + "Enemies/Fly Forest Enemy";
     public const string SKELETON_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Enemy";
+    public const string GOLEM_ENEMY = GAMEPLAY_ROOT + "Enemies/Golem Enemy";
     public const string BASE_PROP_GROUP = GAMEPLAY_ROOT + "Player/Base Prop Group";
     public const string PLAYER_LEVEL_CONFIG = GAMEPLAY_ROOT + "Player/Level Config";
+    public const string UPGRADE_CARD = GAMEPLAY_ROOT + "Upgrades/Upgrade Card";
+    public const string UPGRADE_CARD_POOL = GAMEPLAY_ROOT + "Upgrades/Upgrade Card Pool";
+    public const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Upgrades/Upgrade Card Rarity Presentation Catalog";
     public const string PROJECTILE_DEFINITION = GAMEPLAY_ROOT + "Projectiles/Projectile Definition";
     public const string ACCESSORY = GAMEPLAY_ROOT + "Items/Accessories/Accessory";
     public const string ACCESSORY_DATA_LIST = GAMEPLAY_ROOT + "Items/Accessories/Accessory Data List";
@@ -28,6 +32,7 @@ public static class ScriptableObjectMenuPaths
     public const string WAVE_REWARD_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Reward Definition";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
+    public const string KNOCKBACK_RECEIVER_CONFIG = ENTITY_ROOT + "Combat/Knockback Receiver Config";
     public const string MELEE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Melee Attack Strategy";
     public const string NO_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/No Attack Strategy";
     public const string RANGE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Range Attack Strategy";
@@ -44,5 +49,6 @@ public static class ScriptableObjectMenuPaths
     public const string UI_MOTION_PRESET_LIBRARY = SYSTEMS_ROOT + "UI/Motion Preset Library";
 
     public const string ITEM_QUALITY_VISUAL_CONFIG = PRESENTATION_ROOT + "Items/Quality Visual Config";
+    public const string DAMAGE_TEXT_VISUAL_CONFIG = PRESENTATION_ROOT + "Combat/Damage Text Visual Config";
     public const string MAP_GROUND_THEME = WORLD_ROOT + "Map/Ground Theme";
 }

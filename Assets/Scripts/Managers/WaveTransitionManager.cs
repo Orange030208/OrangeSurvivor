@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public enum TransitionPhase
 {
@@ -14,32 +13,20 @@ public enum TransitionPhase
 /// </summary>
 public class WaveTransitionManager : MonoBehaviour
 {
-    private static readonly PropType[] upgradePropTypes =
-    {
-        PropType.Attack,
-        PropType.AttackSpeed,
-        PropType.CriticalChance,
-        PropType.CriticalPercent,
-        PropType.MoveSpeed,
-        PropType.MaxHealth,
-        PropType.DetectionRange,
-        PropType.HealthRecoverySpeed,
-        PropType.Armor,
-        PropType.Dodge,
-        PropType.LifeSteal,
-        PropType.PickupRadius,
-        PropType.DamageReduction,
-        PropType.HealingPower
-    };
-
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
     [SerializeField] private PropertiesManager propertiesManager;
     [SerializeField] private CurrencyWallet currencyWallet;
+    [SerializeField] private UpgradeCardPoolSO upgradeCardPool;
 
-    private readonly PropModifierData[] propEntries = new PropModifierData[3];
+    private readonly UpgradeRunState upgradeRunState = new();
+    private readonly UpgradeCardRollService upgradeCardRollService = new();
+    private readonly UpgradeCardApplyService upgradeCardApplyService = new();
+    private UpgradeCardSO[] upgradeCardOptions = Array.Empty<UpgradeCardSO>();
+    private UpgradeCardOptionSnapshot[] upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
     private AccessoryDataSO currentAccessoryData;
     private int collectChestCount;
+    private int latestCompletedWave = 1;
     private PlayerLevel playerLevel;
     private TransitionPhase currentPhase = TransitionPhase.None;
 
@@ -67,6 +54,7 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
 
         TryBindPlayerReferences();
     }
@@ -79,6 +67,7 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -101,6 +90,11 @@ public class WaveTransitionManager : MonoBehaviour
         collectChestCount++;
     }
 
+    private void OnWaveCompleted(WaveCompletedEvent eventData)
+    {
+        latestCompletedWave = Mathf.Max(1, eventData.WaveNumber);
+    }
+
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         player = eventData.Player;
@@ -113,6 +107,8 @@ public class WaveTransitionManager : MonoBehaviour
     private void StartTransitionFlow()
     {
         currentAccessoryData = null;
+        upgradeCardOptions = Array.Empty<UpgradeCardSO>();
+        upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
         CurrentPhase = TransitionPhase.None;
         TryBindPlayerReferences();
         TryEnterNextPhase();
@@ -167,65 +163,56 @@ public class WaveTransitionManager : MonoBehaviour
     private void EnterUpgradeSelection()
     {
         currentAccessoryData = null;
+
+        if (playerLevel == null || playerLevel.UnspentUpgradePoints <= 0)
+        {
+            CompleteUpgradeSelection();
+            return;
+        }
+
         CurrentPhase = TransitionPhase.UpgradeSelection;
-        ConfigureUpgradeProps();
+        ConfigureUpgradeCards();
     }
 
     [NaughtyAttributes.Button]
-    private void ConfigureUpgradeProps()
+    private void ConfigureUpgradeCards()
     {
         if (CurrentPhase != TransitionPhase.UpgradeSelection)
         {
             return;
         }
 
-        for (int i = 0; i < propEntries.Length; i++)
+        UpgradeCardPoolSO pool = ResolveUpgradeCardPool();
+        UpgradeCardOfferContext offerContext = new(
+            upgradeRunState,
+            latestCompletedWave,
+            player != null ? player.GetComponent<WeaponsHolder>() : null);
+        var rolledOptions = upgradeCardRollService.RollOptions(pool, offerContext);
+        if (rolledOptions.Count == 0)
         {
-            PropType propType = upgradePropTypes[Random.Range(0, upgradePropTypes.Length)];
-            PropModifierType modifierType = GetRandomModifierTypeForProp(propType);
-            propEntries[i] = new PropModifierData(propType, modifierType, GetRandomValueFor(propType, modifierType));
+            Debug.LogWarning("[WaveTransitionManager] No upgrade cards could be rolled. Completing upgrade selection.");
+            CompleteUpgradeSelection();
+            return;
         }
 
-        GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
+        upgradeCardOptions = rolledOptions.ToArray();
+        upgradeOptionSnapshots = new UpgradeCardOptionSnapshot[upgradeCardOptions.Length];
+        for (int i = 0; i < upgradeCardOptions.Length; i++)
+        {
+            upgradeOptionSnapshots[i] = upgradeCardOptions[i].ToSnapshot(upgradeRunState);
+        }
+
+        GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeOptionSnapshots));
     }
 
-    private PropModifierType GetRandomModifierTypeForProp(PropType propType)
+    private UpgradeCardPoolSO ResolveUpgradeCardPool()
     {
-        return propType switch
+        if (upgradeCardPool == null)
         {
-            PropType.Attack or PropType.MaxHealth or PropType.Armor => Random.value switch
-            {
-                < 0.34f => PropModifierType.Add,
-                < 0.67f => PropModifierType.BaseMultiplier,
-                _ => PropModifierType.BonusMultiplier
-            },
-            PropType.AttackSpeed or PropType.CriticalChance or PropType.CriticalPercent or PropType.DetectionRange =>
-                Random.value > 0.5f ? PropModifierType.BonusMultiplier : PropModifierType.FinalMultiplier,
-            _ => PropModifierType.Add
-        };
-    }
+            upgradeCardPool = ResourcesManager.GetUpgradeCardPool();
+        }
 
-    private float GetRandomValueFor(PropType propType, PropModifierType modifierType)
-    {
-        return modifierType switch
-        {
-            PropModifierType.Add => GetRandomFlatValue(propType),
-            PropModifierType.BaseMultiplier => Random.Range(0.05f, 0.2f),
-            PropModifierType.BonusMultiplier => Random.Range(0.05f, 0.2f),
-            PropModifierType.FinalMultiplier => Random.Range(0.05f, 0.15f),
-            _ => 0f
-        };
-    }
-
-    private float GetRandomFlatValue(PropType propType)
-    {
-        return propType switch
-        {
-            PropType.Attack => Random.Range(2f, 6f),
-            PropType.MaxHealth => Random.Range(10f, 30f),
-            PropType.MoveSpeed => Random.Range(0.5f, 2f),
-            _ => Random.Range(1f, 3f)
-        };
+        return upgradeCardPool;
     }
 
     private void CompleteUpgradeSelection()
@@ -244,7 +231,7 @@ public class WaveTransitionManager : MonoBehaviour
         int remainingUpgradePoints = playerLevel.ConsumeUpgradePoint();
         if (remainingUpgradePoints > 0)
         {
-            ConfigureUpgradeProps();
+            ConfigureUpgradeCards();
             return;
         }
 
@@ -258,10 +245,20 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        string upgradeId = $"Upgrade_{Guid.NewGuid():N}";
-        PropModifierData propEntry = propEntries[eventData.ContainerIndex];
-        propertiesManager.AddModifier(upgradeId, propEntry);
+        if (eventData.ContainerIndex < 0 || eventData.ContainerIndex >= upgradeCardOptions.Length)
+        {
+            Debug.LogWarning($"[WaveTransitionManager] Invalid upgrade card index {eventData.ContainerIndex}.");
+            return;
+        }
 
+        UpgradeCardSO selectedCard = upgradeCardOptions[eventData.ContainerIndex];
+        if (!upgradeCardApplyService.Apply(selectedCard, player))
+        {
+            Debug.LogWarning($"[WaveTransitionManager] Failed to apply upgrade card {selectedCard?.name}.");
+            return;
+        }
+
+        upgradeRunState.RecordPick(selectedCard);
         ContinueOrCompleteUpgradeSelection();
     }
 
@@ -279,7 +276,7 @@ public class WaveTransitionManager : MonoBehaviour
 
                 break;
             case TransitionPhase.UpgradeSelection:
-                GameEventBus.Publish(new UpgradeOptionsChangedEvent(propEntries));
+                GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeOptionSnapshots));
                 break;
         }
     }

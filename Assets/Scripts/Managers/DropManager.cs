@@ -3,6 +3,9 @@ using Random = UnityEngine.Random;
 
 public class DropManager : MonoBehaviour
 {
+    private const float BASE_CHEST_DROP_CHANCE = 0.01f;
+    private const float CHEST_DROP_CHANCE_PER_LUCK = 0.0001f;
+
     [SerializeField] private CollectionSO coinSO;
     [SerializeField] private CollectionSO chestSO;
 
@@ -23,16 +26,7 @@ public class DropManager : MonoBehaviour
             return;
         }
 
-        CollectionSO dropSO;
-        int random = Random.Range(1, 101);
-        if (random <= 95)
-        {
-            dropSO = coinSO;
-        }
-        else
-        {
-            dropSO = chestSO;
-        }
+        CollectionSO dropSO = RollDrop(deadEvent.Source);
 
         if (dropSO == null || dropSO.prefab == null)
         {
@@ -42,5 +36,22 @@ public class DropManager : MonoBehaviour
 
         Collection instance = Instantiate(dropSO.prefab, deadEvent.Position, Quaternion.identity, transform);
         instance.Configure(dropSO);
+    }
+
+    private CollectionSO RollDrop(Entity source)
+    {
+        float chestDropChance = ResolveChestDropChance(source);
+        return Random.value < chestDropChance ? chestSO : coinSO;
+    }
+
+    private float ResolveChestDropChance(Entity source)
+    {
+        float luck = 0f;
+        if (source != null && source.TryGetComponent(out PropertiesManager propertiesManager))
+        {
+            luck = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Luck));
+        }
+
+        return Mathf.Clamp01(BASE_CHEST_DROP_CHANCE + luck * CHEST_DROP_CHANCE_PER_LUCK);
     }
 }

@@ -150,7 +150,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         for (int i = 0; i < values.Length; i++)
         {
             PropType propType = (PropType)values.GetValue(i);
-            float oldValue = calculatedProps.GetValueOrDefault(propType, 0f);
+            float oldValue = calculatedProps.GetValueOrDefault(propType, GetDefaultValue(propType));
             float newValue = CalculateFinalValue(propType);
             calculatedProps[propType] = newValue;
 
@@ -179,7 +179,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
 
     private float CalculateFinalValue(PropType propType)
     {
-        float baseValue = baseProps.GetValueOrDefault(propType, 0f);
+        float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType));
         float addValue = addProps.GetValueOrDefault(propType, 0f);
         float baseOnlyMultiplierValue = baseOnlyMultiplierProps.GetValueOrDefault(propType, 0f);
         float bonusMultiplierValue = bonusMultiplierProps.GetValueOrDefault(propType, 0f);
@@ -238,12 +238,24 @@ public class PropertiesManager : EntityComponentBase, IDescribable
 
     public float GetPropValue(PropType propType)
     {
-        return calculatedProps.GetValueOrDefault(propType, 0f);
+        return calculatedProps.GetValueOrDefault(propType, GetDefaultValue(propType));
     }
 
     public float GetBaseValue(PropType propType)
     {
-        return baseProps.GetValueOrDefault(propType, 0f);
+        return baseProps.GetValueOrDefault(propType, GetDefaultValue(propType));
+    }
+
+    public static float GetDefaultValue(PropType propType)
+    {
+        return propType switch
+        {
+            PropType.AttackSpeed => 1f,
+            PropType.CriticalPercent => 1f,
+            PropType.ProjectileCount => 1f,
+            PropType.ProjectileSpeed => 1f,
+            _ => 0f
+        };
     }
 
     public Dictionary<PropType, float> GetAllPropValues()

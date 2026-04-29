@@ -2,11 +2,11 @@ using System;
 
 public struct UpgradeOptionsChangedEvent : IGameEvent
 {
-    public PropModifierData[] PropEntries;
+    public UpgradeCardOptionSnapshot[] Options;
 
-    public UpgradeOptionsChangedEvent(PropModifierData[] propEntries)
+    public UpgradeOptionsChangedEvent(UpgradeCardOptionSnapshot[] options)
     {
-        PropEntries = propEntries;
+        Options = options;
     }
 }
 

@@ -55,8 +55,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -195,8 +195,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.76862746}
   m_RaycastTarget: 0
@@ -240,11 +240,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoPlaySequenceDirector: 1
-  continueButton: {fileID: 0}
-  menuButton: {fileID: 0}
+  statusButton: {fileID: 3626760036914076050}
+  continueButton: {fileID: 2847696012931218655}
+  settingsButton: {fileID: 4232152046907614145}
+  menuButton: {fileID: 279844879927022756}
   inventoryUI: {fileID: 0}
-  propertiesSidebar: {fileID: 0}
-  inventorySidebar: {fileID: 0}
+  statusSidebar: {fileID: 0}
+  settingsSidebar: {fileID: 919001000000000002}
   slideDuration: 0.25
 --- !u!114 &4513989171235067532
 MonoBehaviour:
@@ -289,6 +291,9 @@ GameObject:
   - component: {fileID: 2272864807976897109}
   - component: {fileID: 6734365980037706488}
   - component: {fileID: 8243995101575807079}
+  - component: {fileID: 919001000000000001}
+  - component: {fileID: 919001000000000002}
+  - component: {fileID: 919001000000000003}
   m_Layer: 5
   m_Name: Setting Menu
   m_TagString: Untagged
@@ -355,6 +360,129 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &919001000000000001
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4596477547647230936}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &919001000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4596477547647230936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb561bd6fde0485f96afc11642e2a9f6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  masterVolume:
+    inputArea: {fileID: 1553742494208900628}
+    steps: []
+    activeColor: {r: 1, g: 1, b: 1, a: 1}
+    inactiveColor: {r: 1, g: 1, b: 1, a: 0.35}
+  sfxVolume:
+    inputArea: {fileID: 6973442153195788424}
+    steps: []
+    activeColor: {r: 1, g: 1, b: 1, a: 1}
+    inactiveColor: {r: 1, g: 1, b: 1, a: 0.35}
+  musicVolume:
+    inputArea: {fileID: 958211522356930437}
+    steps: []
+    activeColor: {r: 1, g: 1, b: 1, a: 1}
+    inactiveColor: {r: 1, g: 1, b: 1, a: 0.35}
+  useMasterVolumeYesArea: {fileID: 8354331043650489177}
+  useMasterVolumeYesMark: {fileID: 0}
+  useMasterVolumeNoArea: {fileID: 5917497410059426919}
+  useMasterVolumeNoMark: {fileID: 0}
+  selectedToggleColor: {r: 1, g: 1, b: 1, a: 1}
+  unselectedToggleColor: {r: 1, g: 1, b: 1, a: 0.35}
+  saveButtonArea: {fileID: 8737946927007128009}
+  resetButtonArea: {fileID: 2669431175338467080}
+  applyPreviewImmediately: 1
+--- !u!114 &919001000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4596477547647230936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  currentConfigOption: Sidebar/Panel Soft
+  motionIntensity: 1
+  useUnscaledTime: 1
+  preset: {fileID: 11400000, guid: 33d0717d97aa85d49b67265aeaf6ed26, type: 2}
+  actionClips:
+  - action: 7
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.25
+    ease: 9
+    deactivateOnComplete: 0
+  - action: 0
+    pose:
+      fade: 0
+      alpha: 1
+      move: 0
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.25
+    ease: 9
+    deactivateOnComplete: 0
+  - action: 1
+    pose:
+      fade: 1
+      alpha: 0
+      move: 1
+      offset: {x: 0, y: 0}
+      scale: 0
+      scaleMultiplier: 1
+      scaleX: 0
+      scaleXMultiplier: 1
+      scaleY: 0
+      scaleYMultiplier: 1
+      rotate: 0
+      rotationZ: 0
+    duration: 0.25
+    ease: 5
+    deactivateOnComplete: 0
+  hiddenDirection: 1
+  extraHideOffset: 0
+  useEnterOvershoot: 1
+  enterOvershootDistance: 36
+  enterOvershootDurationRatio: 0.78
+  enterOvershootEase: 9
+  enterSettleEase: 9
 --- !u!1 &8287619885024907495
 GameObject:
   m_ObjectHideFlags: 0

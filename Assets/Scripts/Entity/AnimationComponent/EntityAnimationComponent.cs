@@ -5,6 +5,7 @@ using UnityEngine;
 public class EntityAnimationComponent : EntityComponentBase, IAnimatable, IEntityFacingController
 {
     private const float DEFAULT_SCALE_X = 1f;
+    private const float DEFAULT_PLAYBACK_SPEED = 1f;
 
     private Animator anim;
 
@@ -88,6 +89,21 @@ public class EntityAnimationComponent : EntityComponentBase, IAnimatable, IEntit
     {
         if (anim == null) return;
         anim.Play(stateHash);
+    }
+
+    public void SetPlaybackSpeed(float speed)
+    {
+        if (anim == null)
+        {
+            return;
+        }
+
+        anim.speed = Mathf.Max(0f, speed);
+    }
+
+    public void ResetPlaybackSpeed()
+    {
+        SetPlaybackSpeed(DEFAULT_PLAYBACK_SPEED);
     }
 
     public bool IsCurrentState(int stateHash, int layerIndex = 0)

@@ -55,10 +55,16 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
     {
-        for (int i = 0; i < eventData.PropEntries.Length; i++)
+        for (int i = 0; i < upgradeContainers.Length; i++)
         {
-            PropModifierData prop = eventData.PropEntries[i];
-            upgradeContainers[i].Configure(new InfoAddIndex<PropModifierData>(prop, i));
+            bool hasOption = eventData.Options != null && i < eventData.Options.Length;
+            upgradeContainers[i].gameObject.SetActive(hasOption);
+            if (!hasOption)
+            {
+                continue;
+            }
+
+            upgradeContainers[i].Configure(new InfoAddIndex<UpgradeCardOptionSnapshot>(eventData.Options[i], i));
         }
     }
 

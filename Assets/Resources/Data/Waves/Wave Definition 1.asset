@@ -14,18 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_001
   displayName: Wave 1
-  duration: 10
+  duration: 30
   completionType: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 09da824d713de3840b2348b6fc697db0, type: 2}
   spawnPlans:
   - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    spawnFrequency: 0.2
+    spawnFrequency: 0.64
     spawnCountPerBatch: 2
-    normalizedTimeRange: {x: 0, y: 60}
-  - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    spawnFrequency: 0.5
+    normalizedTimeRange: {x: 0, y: 1100}
+  - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+    spawnFrequency: 0.48
     spawnCountPerBatch: 1
-    normalizedTimeRange: {x: 5, y: 100}
+    normalizedTimeRange: {x: 0, y: 100}
+  - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+    spawnFrequency: 1
+    spawnCountPerBatch: 1
+    normalizedTimeRange: {x: 0, y: 100}
+  - enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
+    spawnFrequency: 0.3
+    spawnCountPerBatch: 1
+    normalizedTimeRange: {x: 0, y: 100}
   waveTags: 1
   rewardDefinition: {fileID: 11400000, guid: 5832ea69ff0259842b2832ab3cfd8c20, type: 2}
   flowDefinition: {fileID: 11400000, guid: 7d8d6d1b1a2f4f1e8c6b7a5d4e3f2a19, type: 2}

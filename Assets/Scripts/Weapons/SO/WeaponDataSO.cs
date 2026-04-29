@@ -81,6 +81,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] protected float criticalChance;
     [SerializeField] protected float criticalPercent = 2f;
     [SerializeField] protected float range;
+    [SerializeField] protected float knockbackForce;
 
     public Weapon WeaponPrefab => weaponPrefab;
     public WeaponConstructionScheme ConstructionScheme => constructionScheme;
@@ -103,6 +104,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         criticalChance = Mathf.Clamp01(criticalChance);
         criticalPercent = Mathf.Max(1f, criticalPercent);
         range = Mathf.Max(0f, range);
+        knockbackForce = Mathf.Max(0f, knockbackForce);
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
         meleeHitBoxSize.x = Mathf.Max(0.01f, meleeHitBoxSize.x);
         meleeHitBoxSize.y = Mathf.Max(0.01f, meleeHitBoxSize.y);
@@ -116,7 +118,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             new(PropType.AttackSpeed, PropModifierType.Add, attackSpeed),
             new(PropType.CriticalChance, PropModifierType.Add, criticalChance),
             new(PropType.CriticalPercent, PropModifierType.Add, criticalPercent),
-            new(PropType.DetectionRange, PropModifierType.Add, range)
+            new(PropType.AttackRange, PropModifierType.Add, range),
+            new(PropType.KnockbackForce, PropModifierType.Add, knockbackForce)
         };
     }
 
@@ -186,6 +189,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         List<DescriptorInfo> infos = new();
         infos.Add(new DescriptorInfo("攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
         infos.Add(new DescriptorInfo("攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{attackSpeed}"));
+        infos.Add(new DescriptorInfo("击退", $"{PropType.KnockbackForce.GetIconRichTextWithVOffset()}{knockbackForce}"));
         infos.Add(new DescriptorInfo("描述", Description));
         return infos;
     }

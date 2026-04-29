@@ -343,11 +343,15 @@ internal sealed class MeleeWeaponAttackExecutor
             }
 
             hitTargets.Add(healthComponent);
+            Vector2 knockbackDirection = sourceEntity != null
+                ? target.Center - sourceEntity.Center
+                : target.Center - (Vector2)healthComponent.transform.position;
             HitRequest request = new HitRequest(
                 sourceEntity,
                 target,
                 hitSpec,
                 healthComponent.transform.position,
+                knockbackDirection,
                 HitSourceKind.Weapon,
                 weapon.GetType().Name);
             HitResult hitResult = weapon.ApplyHit(request);

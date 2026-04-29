@@ -1,23 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MoveBase : EntityComponentBase, IMovable
+public abstract class MoveBase : EntityComponentBase, IMovable, IMovementLockable
 {
     protected Rigidbody2D rb;
     protected float speed;
-    protected bool movementDisabled;
     protected Vector2 moveDirection;
     protected PropertiesManager propertiesManager;
+    private readonly HashSet<object> movementLocks = new();
 
     public float Speed => speed;
     public Vector2 MoveDirection => moveDirection;
-    public bool IsMoving => !movementDisabled && moveDirection.sqrMagnitude > Mathf.Epsilon;
+    public bool IsMoving => !IsMovementLocked && moveDirection.sqrMagnitude > Mathf.Epsilon;
     public PropertiesManager PropertiesManager => propertiesManager;
+    public bool IsMovementLocked => movementLocks.Count > 0;
 
     public override void Initialize(Entity owner)
     {
         rb = owner.GetComponent<Rigidbody2D>();
         propertiesManager = owner.GetComponent<PropertiesManager>();
-        movementDisabled = false;
+        movementLocks.Clear();
 
         RefreshMoveSpeed();
     }
@@ -34,17 +36,42 @@ public abstract class MoveBase : EntityComponentBase, IMovable
 
     public virtual void EnableMovement()
     {
-        movementDisabled = false;
+        movementLocks.Clear();
     }
 
     public virtual void DisableMovement()
     {
-        movementDisabled = true;
+        AddMovementLock(this);
+    }
+
+    public void AddMovementLock(object source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        movementLocks.Add(source);
         moveDirection = Vector2.zero;
+    }
+
+    public void RemoveMovementLock(object source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        movementLocks.Remove(source);
     }
 
     public virtual void MoveTo(Vector2 position)
     {
+        if (IsMovementLocked || rb == null)
+        {
+            return;
+        }
+
         moveDirection = (position - Owner.Center).normalized;
         rb.velocity = moveDirection * (Time.fixedDeltaTime * speed);
     }
@@ -52,7 +79,10 @@ public abstract class MoveBase : EntityComponentBase, IMovable
     public virtual void StopMoving()
     {
         moveDirection = Vector2.zero;
-        rb.velocity = Vector2.zero;
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
 
     public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;

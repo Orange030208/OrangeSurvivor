@@ -18,6 +18,8 @@ public enum PropType
     AttackRange = 15,
     KnockbackForce = 18,
     ExperienceGain = 20,
+    ShopPriceDiscount = 21,
+    WaveGoldRewardBonus = 22,
     DamageReduction = 25,
     HealingPower = 26,
 }

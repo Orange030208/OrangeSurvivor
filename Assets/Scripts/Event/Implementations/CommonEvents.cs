@@ -86,11 +86,18 @@ public struct EntityDiedEvent : IGameEvent
 {
     public Entity Entity;
     public Vector2 Position;
+    public Entity Source;
 
     public EntityDiedEvent(Entity entity, Vector2 position)
+        : this(entity, position, null)
+    {
+    }
+
+    public EntityDiedEvent(Entity entity, Vector2 position, Entity source)
     {
         Entity = entity;
         Position = position;
+        Source = source;
     }
 }
 

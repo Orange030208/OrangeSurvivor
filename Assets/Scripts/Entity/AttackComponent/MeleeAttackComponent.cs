@@ -71,7 +71,15 @@ public class MeleeAttackComponent : EnemyAttackBase
             return;
         }
 
-        HitService.Apply(new HitRequest(owner, target, HitSpec.EnemyHitSpec(attackDamage), owner.Center, HitSourceKind.Direct, GetType().Name));
+        Vector2 knockbackDirection = target.Center - owner.Center;
+        HitService.Apply(new HitRequest(
+            owner,
+            target,
+            HitSpec.EnemyHitSpec(attackDamage),
+            owner.Center,
+            knockbackDirection,
+            HitSourceKind.Direct,
+            GetType().Name));
     }
 
     private bool IsWithinAttackRange(Entity target)
@@ -100,11 +108,6 @@ public class MeleeAttackComponent : EnemyAttackBase
         attackDamage = propertiesManager.GetPropValue(PropType.Attack);
         detectionRange = propertiesManager.GetPropValue(PropType.DetectionRange);
         attackRange = propertiesManager.GetPropValue(PropType.AttackRange);
-        if (attackRange <= 0f)
-        {
-            attackRange = detectionRange;
-        }
-
         float attackSpeed = Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), 0.01f);
         attackInterval = 1f / attackSpeed;
     }

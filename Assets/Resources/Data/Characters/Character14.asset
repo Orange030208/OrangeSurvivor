@@ -26,7 +26,7 @@ MonoBehaviour:
     value: 0.22
   - propType: 18
     modifierType: 0
-    value: 0.4
+    value: 5
   specialFeatures:
   - rid: 451546934818111489
   initialWeapons:
@@ -40,4 +40,4 @@ MonoBehaviour:
     - rid: 451546934818111489
       type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
       data:
-        runtimeFeatureId: 
+        hitModifierTiming: 0

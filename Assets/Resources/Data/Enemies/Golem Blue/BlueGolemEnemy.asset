@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dea8958739d48eb4590de73bbe6224ee, type: 3}
+  m_Name: BlueGolemEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 437054103638545586, guid: fab403b0a55a6374c96773eaece6a4a0, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 21f41c3b28dac424bb0f532a76a27cde, type: 2}
+  animConfig: {fileID: 11400000, guid: 41efa156e817d3c488cb81700223a388, type: 2}
+  attackCommitNormalizedTime: 0.55
+  attackFinishNormalizedTime: 0.95
+  berserkInterval: 8
+  preChargeStunDuration: 1.2
+  chargeDuration: 1.5
+  postChargeStunDuration: 1
+  chargeDamageRadius: 1.15
+  chargeDamageMultiplier: 1
+  chargeModifiers:
+  - propType: 4
+    modifierType: 3
+    value: 5
+  chaseMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}

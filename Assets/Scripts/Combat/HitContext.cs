@@ -7,6 +7,9 @@ public sealed class HitContext
     public float Damage { get; set; }
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
+    public float KnockbackForce { get; set; }
+    public bool HasKnockbackDirection { get; set; }
+    public Vector2 KnockbackDirection { get; set; }
     public float DodgeChance { get; set; }
     public float DamageReduction { get; set; }
     public bool IsCritical { get; set; }
@@ -20,6 +23,9 @@ public sealed class HitContext
         Damage = request.Spec.BaseDamage;
         CritChance = request.Spec.CritChance;
         CritMultiplier = request.Spec.CritMultiplier;
+        KnockbackForce = request.Spec.KnockbackForce;
+        HasKnockbackDirection = request.HasKnockbackDirection;
+        KnockbackDirection = request.KnockbackDirection;
         DodgeChance = 0f;
         DamageReduction = 0f;
         IsCritical = false;

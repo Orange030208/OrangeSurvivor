@@ -530,4 +530,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7830a0362af13c94eb5ebb802ce1222b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipDataSourceComponent: {fileID: 2675827089189243830}
+  dataSourceComponent: {fileID: 2675827089189243830}

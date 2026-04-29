@@ -18,6 +18,7 @@ public class PlayerLevel : EntityComponentBase
     private int currentLevel = MIN_LEVEL;
     private int levelOnWaveStart = MIN_LEVEL;
     private int unspentUpgradePoints;
+    private float pendingExperienceGain;
 
     public override Entity Owner => owner;
 
@@ -56,12 +57,13 @@ public class PlayerLevel : EntityComponentBase
 
     public void AddXP(int xpToAdd)
     {
-        if (xpToAdd <= 0)
+        int resolvedXp = ResolveExperienceGain(xpToAdd);
+        if (resolvedXp <= 0)
         {
             return;
         }
 
-        currentXP += xpToAdd;
+        currentXP += resolvedXp;
         ResolvePendingLevelUps();
         PublishSnapshot();
     }
@@ -84,6 +86,7 @@ public class PlayerLevel : EntityComponentBase
         currentXP = Mathf.Max(MIN_EXPERIENCE, GetConfiguredStartExperience());
         levelOnWaveStart = currentLevel;
         unspentUpgradePoints = MIN_EXPERIENCE;
+        pendingExperienceGain = 0f;
         requiredXP = CalculateRequiredXP(currentLevel);
         ResolvePendingLevelUps();
     }
@@ -126,6 +129,22 @@ public class PlayerLevel : EntityComponentBase
         int growthRequirement = config.RequiredExperienceGrowthPerLevel * levelOffset * Mathf.Max(0, levelOffset - 1) / 2;
         int totalRequirement = config.BaseRequiredExperience + incrementalRequirement + growthRequirement;
         return Mathf.Max(config.MinimumRequiredExperience, totalRequirement);
+    }
+
+    private int ResolveExperienceGain(int baseXp)
+    {
+        if (baseXp <= 0)
+        {
+            return 0;
+        }
+
+        float bonus = propertiesManager != null
+            ? Mathf.Max(0f, propertiesManager.GetPropValue(PropType.ExperienceGain))
+            : 0f;
+        pendingExperienceGain += baseXp * (1f + bonus);
+        int resolvedXp = Mathf.FloorToInt(pendingExperienceGain);
+        pendingExperienceGain -= resolvedXp;
+        return Mathf.Max(0, resolvedXp);
     }
 
     private int GetConfiguredStartLevel()

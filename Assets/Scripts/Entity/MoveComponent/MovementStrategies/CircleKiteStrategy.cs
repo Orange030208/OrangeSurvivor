@@ -18,9 +18,9 @@ public class CircleKiteStrategy : MovementStrategyBase
         //计算环绕的左右方向
         Vector2 circleDir = new Vector2(-targetDir.y, targetDir.x);
 
-        float attackRange = self.GetComponent<PropertiesManager>().GetPropValue(PropType.DetectionRange);
+        float detectRange = self.GetComponent<PropertiesManager>().GetPropValue(PropType.DetectionRange);
         Vector2 targetPos = (Vector2)target.Center 
-                            - targetDir * IdealCircleRangeRatio * attackRange
+                            - targetDir * IdealCircleRangeRatio * detectRange
                             + circleDir * Mathf.Sin(circleSpeedRatio * movable.Speed) * 2f;
 
         movable.MoveTo(targetPos);
