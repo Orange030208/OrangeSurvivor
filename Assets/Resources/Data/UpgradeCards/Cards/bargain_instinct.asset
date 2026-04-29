@@ -29,13 +29,14 @@ MonoBehaviour:
   description: "\u5546\u5E97\u4EF7\u683C\u964D\u4F4E 10%\uFF0C\u83B7\u5F97 1 \u6B21\u514D\u8D39\u5237\u65B0\u3002"
   propertyModifiers: []
   specialFeatures:
-  - rid: 451547002770030623
+  - rid: 451547002770030631
   references:
     version: 2
     RefIds:
-    - rid: 451547002770030623
+    - rid: 451547002770030631
       type: {class: EconomyBonusUpgradeCardEffect, ns: , asm: Assembly-CSharp}
       data:
+        hitModifierTiming: 0
         shopDiscountPercent: 0.1
         freeShopRerolls: 1
         waveGoldBonus: 0

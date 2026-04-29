@@ -32,11 +32,11 @@ MonoBehaviour:
   description: "\u6240\u6709\u547D\u4E2D\u5F3A\u5236\u89C6\u4E3A\u66B4\u51FB\u3002"
   propertyModifiers: []
   specialFeatures:
-  - rid: 451547002770030618
+  - rid: 451547002770030626
   references:
     version: 2
     RefIds:
-    - rid: 451547002770030618
+    - rid: 451547002770030626
       type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0
