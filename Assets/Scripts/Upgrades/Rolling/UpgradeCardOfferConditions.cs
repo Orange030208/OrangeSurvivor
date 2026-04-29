@@ -120,21 +120,9 @@ public sealed class UpgradeCardOfferConditions
             requiredTagPickCounts[i] = requirement;
         }
 
-        for (int i = requiredOwnedWeapons.Count - 1; i >= 0; i--)
+        for (int i = 0; i < mutuallyExclusiveCardIds.Count; i++)
         {
-            if (requiredOwnedWeapons[i] == null)
-            {
-                requiredOwnedWeapons.RemoveAt(i);
-            }
-        }
-
-        for (int i = mutuallyExclusiveCardIds.Count - 1; i >= 0; i--)
-        {
-            if (string.IsNullOrWhiteSpace(mutuallyExclusiveCardIds[i]))
-            {
-                mutuallyExclusiveCardIds.RemoveAt(i);
-            }
-            else
+            if (mutuallyExclusiveCardIds[i] != null)
             {
                 mutuallyExclusiveCardIds[i] = mutuallyExclusiveCardIds[i].Trim();
             }
@@ -168,6 +156,11 @@ public sealed class UpgradeCardOfferConditions
 
         for (int i = 0; i < requiredOwnedWeapons.Count; i++)
         {
+            if (requiredOwnedWeapons[i] == null)
+            {
+                continue;
+            }
+
             if (!context.HasOwnedWeapon(requiredOwnedWeapons[i]))
             {
                 return false;

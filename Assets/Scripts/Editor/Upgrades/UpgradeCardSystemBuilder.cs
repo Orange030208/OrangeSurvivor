@@ -404,9 +404,9 @@ public static class UpgradeCardSystemBuilder
 
             Material rarityEffectMaterial = EnsureRarityEffectMaterial();
             Image background = prefabRoot.GetComponent<Image>();
-            Image rarityBackground = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Background", 0, 0f);
-            Image rarityBorder = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Border", 1, 0.85f);
-            Image rarityGlow = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Glow", 2, 1.25f);
+            Image rarityBackground = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Background", 0, 0.52f, background);
+            Image rarityGlow = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Glow", 1, 0.38f, background);
+            Image rarityBorder = EnsureRarityImageLayer(prefabRoot.transform, "Rarity Border", 2, 0.86f, background);
 
             presenter.ConfigureTargets(new[]
             {
@@ -414,30 +414,41 @@ public static class UpgradeCardSystemBuilder
                     "Card Background",
                     background,
                     rarityEffectMaterial,
-                    0.75f),
+                    0.28f,
+                    UpgradeCardShaderParameter.Float("_LayerRole", 0f),
+                    UpgradeCardShaderParameter.Float("_AlphaScale", 1f),
+                    UpgradeCardShaderParameter.Float("_PatternIntensity", 0.05f, true),
+                    UpgradeCardShaderParameter.Float("_SweepIntensity", 0.04f, true),
+                    UpgradeCardShaderParameter.Float("_PulseIntensity", 0f)),
                 UpgradeCardRarityShaderTarget.Create(
                     "Rarity Background",
                     rarityBackground,
                     rarityEffectMaterial,
-                    0.55f,
-                    UpgradeCardShaderParameter.Float("_GlowIntensity", 0.2f, true),
-                    UpgradeCardShaderParameter.Float("_BorderGlow", 0.25f, true)),
+                    0.48f,
+                    UpgradeCardShaderParameter.Float("_LayerRole", 1f),
+                    UpgradeCardShaderParameter.Float("_AlphaScale", 0.32f),
+                    UpgradeCardShaderParameter.Float("_GlowIntensity", 0.12f, true),
+                    UpgradeCardShaderParameter.Float("_BorderGlow", 0.1f, true)),
                 UpgradeCardRarityShaderTarget.Create(
                     "Rarity Border",
                     rarityBorder,
                     rarityEffectMaterial,
-                    1.1f,
-                    UpgradeCardShaderParameter.Float("_GlowIntensity", 0.85f, true),
-                    UpgradeCardShaderParameter.Float("_BorderWidth", 0.1f),
-                    UpgradeCardShaderParameter.Float("_BorderGlow", 1f, true)),
+                    0.82f,
+                    UpgradeCardShaderParameter.Float("_LayerRole", 2f),
+                    UpgradeCardShaderParameter.Float("_AlphaScale", 0.78f),
+                    UpgradeCardShaderParameter.Float("_GlowIntensity", 0.48f, true),
+                    UpgradeCardShaderParameter.Float("_BorderWidth", 0.075f),
+                    UpgradeCardShaderParameter.Float("_BorderGlow", 0.56f, true)),
                 UpgradeCardRarityShaderTarget.Create(
                     "Rarity Glow",
                     rarityGlow,
                     rarityEffectMaterial,
-                    1.35f,
-                    UpgradeCardShaderParameter.Float("_GlowIntensity", 1.2f, true),
-                    UpgradeCardShaderParameter.Float("_BorderWidth", 0.16f),
-                    UpgradeCardShaderParameter.Float("_BorderGlow", 1.4f, true))
+                    0.58f,
+                    UpgradeCardShaderParameter.Float("_LayerRole", 3f),
+                    UpgradeCardShaderParameter.Float("_AlphaScale", 0.32f),
+                    UpgradeCardShaderParameter.Float("_GlowIntensity", 0.46f, true),
+                    UpgradeCardShaderParameter.Float("_BorderWidth", 0.14f),
+                    UpgradeCardShaderParameter.Float("_BorderGlow", 0.32f, true))
             });
 
             SetPrivateField(container, "rarityPresenter", presenter);
@@ -478,12 +489,15 @@ public static class UpgradeCardSystemBuilder
         material.SetFloat("_Rarity", 0f);
         material.SetFloat("_EffectIntensity", 0.5f);
         material.SetFloat("_GlowIntensity", 0.5f);
-        material.SetFloat("_PixelGrid", 48f);
-        material.SetFloat("_FlowSpeed", 0.9f);
-        material.SetFloat("_BorderWidth", 0.08f);
-        material.SetFloat("_BorderGlow", 0.65f);
-        material.SetFloat("_EnergyDensity", 12f);
-        material.SetFloat("_PulseSpeed", 1.4f);
+        material.SetFloat("_FlowSpeed", 0.45f);
+        material.SetFloat("_BorderWidth", 0.075f);
+        material.SetFloat("_BorderGlow", 0.45f);
+        material.SetFloat("_PulseSpeed", 0.9f);
+        material.SetFloat("_LayerRole", 0f);
+        material.SetFloat("_AlphaScale", 1f);
+        material.SetFloat("_PatternIntensity", 0.18f);
+        material.SetFloat("_SweepIntensity", 0.35f);
+        material.SetFloat("_PulseIntensity", 0.25f);
         material.SetColor("_PrimaryColor", Color.white);
         material.SetColor("_SecondaryColor", new Color(0.2f, 0.2f, 0.2f, 1f));
         material.SetColor("_AccentColor", Color.white);
@@ -495,7 +509,8 @@ public static class UpgradeCardSystemBuilder
         Transform root,
         string childName,
         int siblingIndex,
-        float alpha)
+        float alpha,
+        Image sourceImage)
     {
         Transform child = root.Find(childName);
         if (child == null)
@@ -521,7 +536,27 @@ public static class UpgradeCardSystemBuilder
 
         image.raycastTarget = false;
         image.color = new Color(1f, 1f, 1f, Mathf.Clamp01(alpha));
+        CopyImageShape(sourceImage, image);
         return image;
+    }
+
+    private static void CopyImageShape(Image source, Image target)
+    {
+        if (source == null || target == null)
+        {
+            return;
+        }
+
+        target.sprite = source.sprite;
+        target.type = source.type;
+        target.preserveAspect = source.preserveAspect;
+        target.fillCenter = source.fillCenter;
+        target.fillMethod = source.fillMethod;
+        target.fillAmount = source.fillAmount;
+        target.fillClockwise = source.fillClockwise;
+        target.fillOrigin = source.fillOrigin;
+        target.useSpriteMesh = source.useSpriteMesh;
+        target.pixelsPerUnitMultiplier = source.pixelsPerUnitMultiplier;
     }
 
     private static UIPrefabEntry CreateUIPrefabEntry(string prefabPath, UILayerType layerType)

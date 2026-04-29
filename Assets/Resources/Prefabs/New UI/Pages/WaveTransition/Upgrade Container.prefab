@@ -304,15 +304,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.38}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: b51f191e5be773548a7685ffc8fe9efc, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -379,15 +379,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.52}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: b51f191e5be773548a7685ffc8fe9efc, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -466,8 +466,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7189686391839190851}
-  - {fileID: 6737981012959219464}
   - {fileID: 834649621879895086}
+  - {fileID: 6737981012959219464}
   - {fileID: 5564033512122092647}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -561,25 +561,74 @@ MonoBehaviour:
     targetGraphic: {fileID: 3600694285946655353}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.75
-    parameterOverrides: []
+    intensityMultiplier: 0.28
+    parameterOverrides:
+    - propertyName: _LayerRole
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AlphaScale
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PatternIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.05
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SweepIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 1
+      floatValue: 0.04
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
   - displayName: Rarity Background
     targetGraphic: {fileID: 2870677616441635675}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.55
+    intensityMultiplier: 0.48
     parameterOverrides:
+    - propertyName: _LayerRole
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 1
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AlphaScale
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.32
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 0.2
+      floatValue: 0.12
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 0.25
+      floatValue: 0.1
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -587,26 +636,40 @@ MonoBehaviour:
     targetGraphic: {fileID: 7587781164036591210}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 1.1
+    intensityMultiplier: 0.82
     parameterOverrides:
+    - propertyName: _LayerRole
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 2
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AlphaScale
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.78
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 0.85
+      floatValue: 0.48
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.1
+      floatValue: 0.075
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 1
+      floatValue: 0.56
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -614,26 +677,40 @@ MonoBehaviour:
     targetGraphic: {fileID: 1614219068169174166}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 1.35
+    intensityMultiplier: 0.58
     parameterOverrides:
+    - propertyName: _LayerRole
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 3
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _AlphaScale
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.32
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 1.2
+      floatValue: 0.46
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.16
+      floatValue: 0.14
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 1.4
+      floatValue: 0.32
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -733,15 +810,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.85}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.86}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: b51f191e5be773548a7685ffc8fe9efc, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

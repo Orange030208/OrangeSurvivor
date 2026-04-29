@@ -41,14 +41,14 @@ MonoBehaviour:
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.32, g: 0.46, b: 0.4, a: 1}
+      colorValue: {r: 0.24, g: 0.32, b: 0.29, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _AccentColor
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.92, g: 1, b: 0.96, a: 1}
+      colorValue: {r: 0.9, g: 1, b: 0.95, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
@@ -58,45 +58,52 @@ MonoBehaviour:
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
-    - propertyName: _PixelGrid
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 48
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
     - propertyName: _FlowSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.35
+      floatValue: 0.28
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.08
+      floatValue: 0.075
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 0.45
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _EnergyDensity
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 8
+      floatValue: 0.22
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _PulseSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.8
+      floatValue: 0.9
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PatternIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SweepIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.12
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -131,14 +138,14 @@ MonoBehaviour:
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.12, g: 0.28, b: 0.75, a: 1}
+      colorValue: {r: 0.06, g: 0.16, b: 0.38, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _AccentColor
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.72, g: 0.92, b: 1, a: 1}
+      colorValue: {r: 0.66, g: 0.9, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
@@ -148,45 +155,52 @@ MonoBehaviour:
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
-    - propertyName: _PixelGrid
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 48
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
     - propertyName: _FlowSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.7
+      floatValue: 0.42
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.08
+      floatValue: 0.075
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 0.85
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _EnergyDensity
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 10
+      floatValue: 0.48
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _PulseSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 1.1
+      floatValue: 0.9
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PatternIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.18
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SweepIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.42
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.08
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -221,14 +235,14 @@ MonoBehaviour:
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.36, g: 0.12, b: 0.72, a: 1}
+      colorValue: {r: 0.22, g: 0.08, b: 0.45, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _AccentColor
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 1, g: 0.78, b: 1, a: 1}
+      colorValue: {r: 1, g: 0.72, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
@@ -238,45 +252,52 @@ MonoBehaviour:
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
-    - propertyName: _PixelGrid
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 48
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
     - propertyName: _FlowSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 1
+      floatValue: 0.52
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.08
+      floatValue: 0.075
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 1.15
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _EnergyDensity
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 15
+      floatValue: 0.68
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _PulseSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 1.6
+      floatValue: 0.9
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PatternIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.24
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SweepIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.62
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.18
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -311,14 +332,14 @@ MonoBehaviour:
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 0.85, g: 0.18, b: 0.1, a: 1}
+      colorValue: {r: 0.52, g: 0.16, b: 0.05, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _AccentColor
       parameterType: 1
       scaleWithTargetIntensity: 0
       floatValue: 0
-      colorValue: {r: 1, g: 0.95, b: 0.62, a: 1}
+      colorValue: {r: 1, g: 0.92, b: 0.48, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _GlowIntensity
@@ -328,45 +349,52 @@ MonoBehaviour:
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
-    - propertyName: _PixelGrid
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 48
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
     - propertyName: _FlowSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 1.35
+      floatValue: 0.62
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderWidth
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.08
+      floatValue: 0.075
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _BorderGlow
       parameterType: 0
       scaleWithTargetIntensity: 1
-      floatValue: 1.45
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _EnergyDensity
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 18
+      floatValue: 0.86
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
     - propertyName: _PulseSpeed
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 2.1
+      floatValue: 0.9
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PatternIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.28
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _SweepIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.76
+      colorValue: {r: 1, g: 1, b: 1, a: 1}
+      vectorValue: {x: 0, y: 0, z: 0, w: 0}
+      textureValue: {fileID: 0}
+    - propertyName: _PulseIntensity
+      parameterType: 0
+      scaleWithTargetIntensity: 0
+      floatValue: 0.34
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
