@@ -176,10 +176,10 @@ Shader "UI/Upgrade Card Rarity Effect"
 
                 float hexDistance = HexDistance(uv);
                 float borderWidth = max(0.01, _BorderWidth * lerp(0.82, 1.12, linearMask));
-                float outerShape = 1.0 - smoothstep(0.995, 1.035, hexDistance);
-                float innerShape = 1.0 - smoothstep(0.995 - borderWidth, 1.02 - borderWidth, hexDistance);
+                float outerShape = 1.0 - smoothstep(0.99, 1.015, hexDistance);
+                float innerShape = 1.0 - smoothstep(0.99 - borderWidth, 1.015 - borderWidth, hexDistance);
                 float borderRing = saturate(outerShape - innerShape);
-                float innerLine = saturate((1.0 - smoothstep(0.995 - borderWidth * 2.2, 1.02 - borderWidth * 2.2, hexDistance)) - innerShape);
+                float innerLine = saturate((1.0 - smoothstep(0.99 - borderWidth * 2.2, 1.015 - borderWidth * 2.2, hexDistance)) - innerShape);
                 float edgeHalo = saturate(smoothstep(0.64, 0.99, hexDistance) * outerShape);
                 float fresnel = pow(saturate(hexDistance), 3.2) * outerShape;
 
@@ -233,7 +233,8 @@ Shader "UI/Upgrade Card Rarity Effect"
                 float backgroundRole = RoleMask(role, 1.0);
                 float borderRole = RoleMask(role, 2.0);
                 float glowRole = RoleMask(role, 3.0);
-                float layerAlpha = saturate(_AlphaScale) * spriteColor.a * outerShape * shapeMask;
+                float smoothShape = saturate(lerp(outerShape, outerShape * shapeMask, 0.18));
+                float layerAlpha = saturate(_AlphaScale) * spriteColor.a * smoothShape;
 
                 fixed4 color;
                 color.rgb =
