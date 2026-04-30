@@ -9,5 +9,15 @@ using UnityEngine;
 /// </summary>
 public abstract class AttackStrategyBase : ScriptableObject
 {
-    public abstract void ExecuteAttack(IAttackable attackable, Entity self, Entity target);
+    public virtual bool CanExecute(IEntityAttackExecutor attackExecutor, Entity self, Entity target)
+    {
+        return false;
+    }
+
+    public virtual bool IsInAttackRange(IEntityAttackExecutor attackExecutor, Entity self, Entity target)
+    {
+        return false;
+    }
+
+    public abstract void ExecuteAttack(IEntityAttackExecutor attackExecutor, Entity self, Entity target);
 }

@@ -69,11 +69,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
             AddValue(baseProps, baseProp.propType, baseProp.value);
         }
         
-        if (!this.owner.TryGetComponent<IPropModifierProvider>(out IPropModifierProvider propModifierProvider))
-        {
-            Debug.Log($"{owner.name}没有提供额外属性");
-        }
-        else
+        if (this.owner.TryGetComponent<IPropModifierProvider>(out IPropModifierProvider propModifierProvider))
         {
             var propModifierDataList = propModifierProvider.PropModifierDataList;
             AddModifiers(owner.RuntimeId, propModifierDataList);

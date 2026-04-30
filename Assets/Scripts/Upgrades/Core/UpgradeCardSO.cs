@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Upgrade Card", menuName = ScriptableObjectMenuPaths.UPGRADE_CARD, order = 0)]
 public class UpgradeCardSO : ScriptableObject, IDescribable
 {
+    public const int UNLIMITED_PICK_COUNT = 0;
+
     private const int MIN_PICK_COUNT = 1;
     private const int MIN_WEIGHT = 1;
 
@@ -37,7 +39,8 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     public string Description => description;
     public UpgradeCardRarity Rarity => rarity;
     public IReadOnlyList<UpgradeCardTag> Tags => tags;
-    public int MaxPickCount => Mathf.Max(MIN_PICK_COUNT, maxPickCount);
+    public bool HasPickLimit => maxPickCount > UNLIMITED_PICK_COUNT;
+    public int MaxPickCount => HasPickLimit ? Mathf.Max(MIN_PICK_COUNT, maxPickCount) : UNLIMITED_PICK_COUNT;
     public int BaseWeight => Mathf.Max(MIN_WEIGHT, baseWeight);
     public UpgradeCardOfferConditions OfferConditions => offerConditions;
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
@@ -50,7 +53,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             cardId = Guid.NewGuid().ToString("N")[..8];
         }
 
-        maxPickCount = Mathf.Max(MIN_PICK_COUNT, maxPickCount);
+        maxPickCount = Mathf.Max(UNLIMITED_PICK_COUNT, maxPickCount);
         baseWeight = Mathf.Max(MIN_WEIGHT, baseWeight);
         tags ??= Array.Empty<UpgradeCardTag>();
         offerConditions ??= UpgradeCardOfferConditions.Empty();
@@ -118,7 +121,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
 
     public void SetMaxPickCount(int runtimeMaxPickCount)
     {
-        maxPickCount = Mathf.Max(MIN_PICK_COUNT, runtimeMaxPickCount);
+        maxPickCount = Mathf.Max(UNLIMITED_PICK_COUNT, runtimeMaxPickCount);
     }
 
     public UpgradeCardOptionSnapshot ToSnapshot(UpgradeRunState runState)
@@ -132,7 +135,8 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             Rarity,
             tags,
             pickCount,
-            MaxPickCount);
+            MaxPickCount,
+            HasPickLimit);
     }
 
     public IEnumerable<DescriptorInfo> GetExtraInfos()

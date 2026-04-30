@@ -51,5 +51,7 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
         {
             GameEventBus.Publish(new CharacterItemClickedEvent(index));
         });
+
+        item.SetSelected(index == selectedIndex);
     }
 }

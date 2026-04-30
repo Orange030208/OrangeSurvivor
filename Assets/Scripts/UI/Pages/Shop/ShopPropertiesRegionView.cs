@@ -8,7 +8,7 @@ public sealed class ShopPropertiesRegionView : ISidebarRegion
 
     public ShopPropertiesRegionView(
         string ownerName,
-        UISidebarRevealMotion sidebar,
+        MonoBehaviour sidebar,
         UIClickTarget toggleButton,
         Describer propertiesDescriber)
     {

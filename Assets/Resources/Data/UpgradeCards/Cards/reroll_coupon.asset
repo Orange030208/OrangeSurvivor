@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: reroll_coupon
+  m_EditorClassIdentifier: 
+  cardId: reroll_coupon
+  title: "\u6539\u7B7E\u5238"
+  icon: {fileID: 0}
+  rarity: 1
+  tags: 06000000
+  maxPickCount: 2
+  baseWeight: 52
+  offerConditions:
+    minWave: 2
+    requiredTagPickCounts:
+    - tag: 6
+      minPickCount: 1
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds: []
+  description: "\u83B7\u5F97 2 \u6B21\u514D\u8D39\u5237\u65B0\u3002"
+  propertyModifiers: []
+  specialFeatures:
+  - rid: 451547002770030692
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030692
+      type: {class: EconomyBonusUpgradeCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        shopDiscountPercent: 0
+        freeShopRerolls: 2
+        waveGoldBonus: 0

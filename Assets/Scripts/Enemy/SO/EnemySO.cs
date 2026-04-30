@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class EnemySO : ScriptableObject
@@ -11,4 +12,16 @@ public abstract class EnemySO : ScriptableObject
     [SerializeField] private EntityAnimationConfig animConfig;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
     public EntityAnimationConfig AnimConfig => animConfig;
+
+    public abstract IReadOnlyList<EnemyAttackDefinitionSO> GetAttackDefinitions();
+
+    protected static void AddAttackDefinition(
+        List<EnemyAttackDefinitionSO> results,
+        EnemyAttackDefinitionSO attackDefinition)
+    {
+        if (attackDefinition != null && !results.Contains(attackDefinition))
+        {
+            results.Add(attackDefinition);
+        }
+    }
 }

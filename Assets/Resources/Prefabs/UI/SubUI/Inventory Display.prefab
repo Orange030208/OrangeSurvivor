@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 3518021081152618811}
   - component: {fileID: 3747161869045174641}
   - component: {fileID: 2829437334490256135}
-  - component: {fileID: 5677413171907634130}
+  - component: {fileID: 3750374024537713970}
   m_Layer: 0
   m_Name: 'Item Properties Display Merge Sell Container '
   m_TagString: Untagged
@@ -222,7 +222,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &5677413171907634130
+--- !u!114 &3750374024537713970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -231,72 +231,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2211425580832782457}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: f44a6475cceed6a4ab98dcfea989e32a, type: 2}
+  targets:
+    bindings: []
   currentConfigOption: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 0}
-  actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.24
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.02
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
-  hiddenDirection: 0
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &2337300881558818752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1060,7 +1003,7 @@ GameObject:
   - component: {fileID: 7535182134836318864}
   - component: {fileID: 6653197284391918722}
   - component: {fileID: 7938567812322397788}
-  - component: {fileID: 590159498030695030}
+  - component: {fileID: 14885428012501597}
   m_Layer: 5
   m_Name: Inventory Display
   m_TagString: Untagged
@@ -1128,7 +1071,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &590159498030695030
+--- !u!114 &14885428012501597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1137,72 +1080,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5761864912518236116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 82bc97d1c4bf94f4bbed8fe1fb768827, type: 2}
+  targets:
+    bindings: []
   currentConfigOption: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 0}
-  actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.24
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.02
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
-  hiddenDirection: 0
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &5893023701934365862
 GameObject:
   m_ObjectHideFlags: 0

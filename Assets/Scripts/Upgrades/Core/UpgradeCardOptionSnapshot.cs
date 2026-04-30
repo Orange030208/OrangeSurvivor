@@ -10,6 +10,7 @@ public readonly struct UpgradeCardOptionSnapshot
     public readonly UpgradeCardTag[] Tags;
     public readonly int PickCount;
     public readonly int MaxPickCount;
+    public readonly bool HasPickLimit;
 
     public UpgradeCardOptionSnapshot(
         string cardId,
@@ -19,7 +20,8 @@ public readonly struct UpgradeCardOptionSnapshot
         UpgradeCardRarity rarity,
         UpgradeCardTag[] tags,
         int pickCount,
-        int maxPickCount)
+        int maxPickCount,
+        bool hasPickLimit)
     {
         CardId = cardId;
         Title = title;
@@ -28,6 +30,7 @@ public readonly struct UpgradeCardOptionSnapshot
         Rarity = rarity;
         Tags = tags ?? System.Array.Empty<UpgradeCardTag>();
         PickCount = Mathf.Max(0, pickCount);
-        MaxPickCount = Mathf.Max(1, maxPickCount);
+        HasPickLimit = hasPickLimit;
+        MaxPickCount = hasPickLimit ? Mathf.Max(1, maxPickCount) : UpgradeCardSO.UNLIMITED_PICK_COUNT;
     }
 }

@@ -5,6 +5,7 @@ public sealed class UpgradeCardOfferContext
 {
     private readonly List<WeaponDataSO> ownedWeapons = new();
     private readonly HashSet<string> ownedWeaponNames = new(System.StringComparer.Ordinal);
+    private readonly Dictionary<WeaponTag, int> ownedWeaponTagCounts = new();
 
     public UpgradeCardOfferContext(UpgradeRunState runState, int waveNumber, WeaponsHolder weaponsHolder)
     {
@@ -47,6 +48,16 @@ public sealed class UpgradeCardOfferContext
         return !string.IsNullOrWhiteSpace(weaponData.ItemName) && ownedWeaponNames.Contains(weaponData.ItemName);
     }
 
+    public int GetOwnedWeaponTagCount(WeaponTag tag)
+    {
+        return ownedWeaponTagCounts.GetValueOrDefault(tag, 0);
+    }
+
+    public bool HasOwnedWeaponTag(WeaponTag tag, int minCount = 1)
+    {
+        return GetOwnedWeaponTagCount(tag) >= Mathf.Max(1, minCount);
+    }
+
     private void AddEquippedWeapons(WeaponsHolder weaponsHolder)
     {
         if (weaponsHolder == null)
@@ -72,6 +83,13 @@ public sealed class UpgradeCardOfferContext
         if (!string.IsNullOrWhiteSpace(weaponData.ItemName))
         {
             ownedWeaponNames.Add(weaponData.ItemName);
+        }
+
+        IReadOnlyList<WeaponTag> tags = weaponData.Tags;
+        for (int i = 0; i < tags.Count; i++)
+        {
+            WeaponTag tag = tags[i];
+            ownedWeaponTagCounts[tag] = GetOwnedWeaponTagCount(tag) + 1;
         }
     }
 }

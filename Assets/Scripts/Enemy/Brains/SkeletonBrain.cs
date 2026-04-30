@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(MeleeAttackComponent))]
+[RequireComponent(typeof(EnemyAttackController))]
 public class SkeletonBrain : EnemyBrain
 {
     public enum SkeletonAIState
@@ -13,7 +13,7 @@ public class SkeletonBrain : EnemyBrain
 
     private readonly StateMachine<SkeletonAIState> stateMachine = new();
 
-    private IAttackable meleeAttack;
+    private EnemyAttackController attackController;
     private SkeletonEnemySO enemyData;
     private MovementStrategyBase currentMoveStrategy;
 
@@ -21,12 +21,12 @@ public class SkeletonBrain : EnemyBrain
     {
         base.OnInitialize(owner);
 
-        meleeAttack = owner.GetComponent<MeleeAttackComponent>();
+        attackController = owner.GetComponent<EnemyAttackController>();
         enemyData = this.owner.EnemyData as SkeletonEnemySO;
 
-        if (meleeAttack == null)
+        if (attackController == null)
         {
-            throw new MissingComponentException($"{nameof(SkeletonBrain)} requires a {nameof(MeleeAttackComponent)}.");
+            throw new MissingComponentException($"{nameof(SkeletonBrain)} requires an {nameof(EnemyAttackController)}.");
         }
 
         if (enemyData == null)
@@ -65,6 +65,11 @@ public class SkeletonBrain : EnemyBrain
         {
             throw new MissingReferenceException($"{nameof(SkeletonEnemySO)} on {enemyData.name} is missing {nameof(enemyData.chaseMoveStrategy)}.");
         }
+
+        if (enemyData.AttackDefinition == null)
+        {
+            throw new MissingReferenceException($"{nameof(SkeletonEnemySO)} on {enemyData.name} is missing {nameof(enemyData.AttackDefinition)}.");
+        }
     }
 
     private void SetMoveStrategy(MovementStrategyBase strategy)
@@ -91,9 +96,9 @@ public class SkeletonBrain : EnemyBrain
         {
             brain.FaceTarget();
 
-            bool isTargetInRange = brain.meleeAttack.IsInAttackRange(brain.target);
+            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target);
             
-            if (brain.meleeAttack.CanAttack)
+            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
             {
                 if (isTargetInRange)
                 {
@@ -132,7 +137,8 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (brain.meleeAttack.CanAttack && brain.meleeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Attack);
             }
@@ -175,7 +181,8 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (!brain.meleeAttack.CanAttack || !brain.meleeAttack.IsInAttackRange(brain.target))
+            if (!brain.attackController.CanUse(brain.enemyData.AttackDefinition) ||
+                !brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Chase);
                 return;
@@ -209,9 +216,10 @@ public class SkeletonBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (brain.meleeAttack.CanAttack && brain.meleeAttack.IsInAttackRange(brain.target))
+                if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
+                    brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
                 {
-                    brain.meleeAttack.TryAttack(brain.target);
+                    brain.attackController.TryUse(brain.enemyData.AttackDefinition, brain.target);
                 }
             }
 
@@ -234,7 +242,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (brain.meleeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Idle);
             }

@@ -105,13 +105,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8379807647346980964}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 798723218d394739a441caebcb478e9f, type: 3}
+  m_Script: {fileID: 11500000, guid: 01a630da01f340ccafe789bb8748d328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 0
-  attackInterval: 0
-  attackDamage: 0
-  projectileDefinition: {fileID: 0}
+  attackSlots: []
+  defaultAttack: {fileID: 0}
   firePoint: {fileID: 0}
 --- !u!114 &7122263294796118743
 MonoBehaviour:

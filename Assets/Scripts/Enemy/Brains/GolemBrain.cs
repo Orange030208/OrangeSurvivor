@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeleeAttackComponent))]
+[RequireComponent(typeof(EnemyAttackController))]
 public class GolemBrain : EnemyBrain
 {
     private const string CHARGE_MODIFIER_SOURCE = "GolemBrain_Charge";
@@ -23,7 +23,7 @@ public class GolemBrain : EnemyBrain
     private readonly HashSet<Entity> chargeHitTargets = new();
     private readonly Collider2D[] chargeHitBuffer = new Collider2D[CHARGE_HIT_BUFFER_SIZE];
 
-    private IAttackable meleeAttack;
+    private EnemyAttackController attackController;
     private GolemEnemySO enemyData;
     private MovementStrategyBase currentMoveStrategy;
     private float berserkTimer;
@@ -34,12 +34,12 @@ public class GolemBrain : EnemyBrain
     {
         base.OnInitialize(owner);
 
-        meleeAttack = owner.GetComponent<MeleeAttackComponent>();
+        attackController = owner.GetComponent<EnemyAttackController>();
         enemyData = this.owner.EnemyData as GolemEnemySO;
 
-        if (meleeAttack == null)
+        if (attackController == null)
         {
-            throw new MissingComponentException($"{nameof(GolemBrain)} requires a {nameof(MeleeAttackComponent)}.");
+            throw new MissingComponentException($"{nameof(GolemBrain)} requires an {nameof(EnemyAttackController)}.");
         }
 
         if (enemyData == null)
@@ -108,6 +108,11 @@ public class GolemBrain : EnemyBrain
         if (enemyData.chaseMoveStrategy == null)
         {
             throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.chaseMoveStrategy)}.");
+        }
+
+        if (enemyData.AttackDefinition == null)
+        {
+            throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.AttackDefinition)}.");
         }
     }
 
@@ -188,7 +193,7 @@ public class GolemBrain : EnemyBrain
             return;
         }
 
-        int hitCount = Physics2D.OverlapCircleNonAlloc(owner.Center, enemyData.ChargeDamageRadius, chargeHitBuffer, meleeAttack.AttackLayer);
+        int hitCount = Physics2D.OverlapCircleNonAlloc(owner.Center, enemyData.ChargeDamageRadius, chargeHitBuffer, attackController.AttackLayer);
         for (int i = 0; i < hitCount; i++)
         {
             Collider2D hitCollider = chargeHitBuffer[i];
@@ -252,9 +257,9 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            if (brain.meleeAttack.CanAttack)
+            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
             {
-                brain.stateMachine.ChangeState(brain.meleeAttack.IsInAttackRange(brain.target)
+                brain.stateMachine.ChangeState(brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target)
                     ? GolemAIState.Attack
                     : GolemAIState.Chase);
             }
@@ -292,7 +297,8 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            if (brain.meleeAttack.CanAttack && brain.meleeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(GolemAIState.Attack);
             }
@@ -335,7 +341,8 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            if (!brain.meleeAttack.CanAttack || !brain.meleeAttack.IsInAttackRange(brain.target))
+            if (!brain.attackController.CanUse(brain.enemyData.AttackDefinition) ||
+                !brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(GolemAIState.Chase);
                 return;
@@ -369,9 +376,10 @@ public class GolemBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (brain.meleeAttack.CanAttack && brain.meleeAttack.IsInAttackRange(brain.target))
+                if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
+                    brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
                 {
-                    brain.meleeAttack.TryAttack(brain.target);
+                    brain.attackController.TryUse(brain.enemyData.AttackDefinition, brain.target);
                 }
             }
 
@@ -400,7 +408,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            brain.stateMachine.ChangeState(brain.meleeAttack.IsInAttackRange(brain.target)
+            brain.stateMachine.ChangeState(brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target)
                 ? GolemAIState.Idle
                 : GolemAIState.Chase);
         }

@@ -836,14 +836,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5620201161086115075, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2561260544060155166}
+      addedObject: {fileID: 4548395314617136077}
   m_SourcePrefab: {fileID: 100100000, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
 --- !u!1 &370145334200815997 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5620201161086115075, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
   m_PrefabInstance: {fileID: 5250618915352497278}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2561260544060155166
+--- !u!114 &4548395314617136077
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -852,116 +852,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 370145334200815997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 902114c470f3fa1498fa522a7de1f0d4, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Default
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: 79465ad4d1c07f0458e16c663b626735, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 1
-      offset: {x: 0, y: -18}
-      scale: 1
-      scaleMultiplier: 0.96
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 5
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 4}
-      scale: 1
-      scaleMultiplier: 1.03
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.12
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 6
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.12
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
+  definition: {fileID: 11400000, guid: 4cf5841e74b72fe40bcc2f91fcda8495, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!224 &923722094444930201 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4903375786357663975, guid: 5c4656fe7b70ca044837f7e8dcb79ff3, type: 3}
@@ -1130,10 +1029,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4990342001424426691}
     m_Modifications:
-    - target: {fileID: 894648763483764682, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
-      propertyPath: motionSource
-      value: 
-      objectReference: {fileID: 6465799243168989279}
     - target: {fileID: 894648763483764682, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
       propertyPath: bindings.Array.size
       value: 5
@@ -1487,17 +1382,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8042485884299799243, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
   m_PrefabInstance: {fileID: 7012921961710727026}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6465799243168989279 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4101026062322790189, guid: de78f6e785251d14499f5ad8f77c6f9c, type: 3}
-  m_PrefabInstance: {fileID: 7012921961710727026}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &7419129996794942279
 PrefabInstance:
   m_ObjectHideFlags: 0

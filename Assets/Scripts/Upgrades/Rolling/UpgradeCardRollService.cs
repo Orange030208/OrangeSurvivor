@@ -172,7 +172,7 @@ public class UpgradeCardRollService
 
         UpgradeRunState runState = context?.RunState;
         int pickCount = runState != null ? runState.GetPickCount(card.CardId) : 0;
-        if (pickCount >= card.MaxPickCount)
+        if (card.HasPickLimit && pickCount >= card.MaxPickCount)
         {
             return false;
         }

@@ -276,10 +276,10 @@ MonoBehaviour:
   continueButton: {fileID: 4398614357056526755}
   rerollCostText: {fileID: 950086506306574783}
   currencyText: {fileID: 2607457919317532470}
-  propertiesSidebar: {fileID: 6049750689868835703}
+  propertiesSidebar: {fileID: 8706374530548335907}
   propertiesToggleButton: {fileID: 5786650212898361234}
   propertiesDescriber: {fileID: 4539172415588371942}
-  inventorySidebar: {fileID: 3781301127998558950}
+  inventorySidebar: {fileID: 1730573582740224298}
   inventoryToggleButton: {fileID: 6734765040095314348}
   inventoryUI: {fileID: 0}
 --- !u!114 &3339615293881789033
@@ -1100,22 +1100,49 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2215124819933001492, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8581381773005605417}
   m_SourcePrefab: {fileID: 100100000, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
 --- !u!114 &260280351962784072 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3095811099161380947, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
   m_PrefabInstance: {fileID: 2984255235145902363}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4023825643932835343}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &4023825643932835343 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2215124819933001492, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+  m_PrefabInstance: {fileID: 2984255235145902363}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8581381773005605417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023825643932835343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 62926db39ad112846b385bcbe5accf27, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!224 &7907489924715157274 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4960495516222242305, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
@@ -1498,10 +1525,10 @@ PrefabInstance:
       addedObject: {fileID: 8245371842309823431}
     - targetCorrespondingSourceObject: {fileID: 5335511603769192443, guid: 614253e0b0d1f704c8cb430f0672321d, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3781301127998558950}
+      addedObject: {fileID: 5311398793965051210}
     - targetCorrespondingSourceObject: {fileID: 5335511603769192443, guid: 614253e0b0d1f704c8cb430f0672321d, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5311398793965051210}
+      addedObject: {fileID: 1730573582740224298}
     - targetCorrespondingSourceObject: {fileID: 34619614089201935, guid: 614253e0b0d1f704c8cb430f0672321d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6718039154491369828}
@@ -1573,81 +1600,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3781301127998558950
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8916195660724273071}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentConfigOption: Sidebar/Panel
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: 5a32d4f43391c0f4f97ba1b7b16b76d7, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 1
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  hiddenDirection: 0
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
 --- !u!114 &5311398793965051210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1666,6 +1618,24 @@ MonoBehaviour:
   itemContainersParent: {fileID: 7032089879319786788}
   inventoryOperateManager: {fileID: 0}
   closeInventoryItemOperatePanelButtons: []
+--- !u!114 &1730573582740224298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8916195660724273071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 6fad630ea4ec1094f96055d54c53de2c, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1001 &3644894212591851084
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1795,7 +1765,7 @@ PrefabInstance:
       addedObject: {fileID: 2943908648589713210}
     - targetCorrespondingSourceObject: {fileID: 5335511603769192443, guid: f4dc00c9b1419c9459471756518d5974, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6049750689868835703}
+      addedObject: {fileID: 8706374530548335907}
   m_SourcePrefab: {fileID: 100100000, guid: f4dc00c9b1419c9459471756518d5974, type: 3}
 --- !u!114 &3897546145734296141 stripped
 MonoBehaviour:
@@ -1841,7 +1811,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6049750689868835703
+--- !u!114 &8706374530548335907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1850,72 +1820,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8691604720622057911}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Sidebar/Panel
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: 5a32d4f43391c0f4f97ba1b7b16b76d7, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 1
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  hiddenDirection: 0
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
+  definition: {fileID: 11400000, guid: c9a45ec944650134ab59f31475db967f, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1001 &5653009756154741561
 PrefabInstance:
   m_ObjectHideFlags: 0

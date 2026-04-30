@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 161624aa8fa14bb48194ddbf36fc4cb9, type: 3}
   m_Name: NormalRangedStrategy
   m_EditorClassIdentifier: 
+  attackDefinition: {fileID: 11400000, guid: 0123507837284daa8c9d5a75d7291d68, type: 2}

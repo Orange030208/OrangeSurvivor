@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: lucky_stipend
+  m_EditorClassIdentifier: 
+  cardId: lucky_stipend
+  title: "\u5E78\u8FD0\u6D25\u8D34"
+  icon: {fileID: 0}
+  rarity: 0
+  tags: 0600000005000000
+  maxPickCount: 3
+  baseWeight: 68
+  offerConditions:
+    minWave: 1
+    requiredTagPickCounts: []
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds: []
+  description: "\u7ACB\u5373\u83B7\u5F97 10 \u91D1\u5E01\uFF0C\u5E78\u8FD0 +4\u3002"
+  propertyModifiers:
+  - propType: 9
+    modifierType: 0
+    value: 4
+  specialFeatures:
+  - rid: 451547002770030699
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030699
+      type: {class: GrantCurrencyUpgradeCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        amount: 10

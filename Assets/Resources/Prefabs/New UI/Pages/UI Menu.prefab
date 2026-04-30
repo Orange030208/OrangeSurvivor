@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8009793970223344833}
   - component: {fileID: 7584206518084605926}
   - component: {fileID: 8425115972709131347}
-  - component: {fileID: 6969041062286978695}
+  - component: {fileID: 732983955599906064}
   m_Layer: 5
   m_Name: Logo Image
   m_TagString: Untagged
@@ -89,7 +89,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6969041062286978695
+--- !u!114 &732983955599906064
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,72 +98,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 4854555361122867723}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 38ad9b0696ca4214ca8d1d1f5f528f5b, type: 2}
+  targets:
+    bindings: []
   currentConfigOption: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 0}
-  actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.24
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.02
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
-  hiddenDirection: 2
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &5453402992543493149
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,7 +218,7 @@ MonoBehaviour:
   startButton: {fileID: 6256860417183849786}
   characterSelectButton: {fileID: 0}
   settingsButton: {fileID: 6383841706332223335}
-  settingsSidebar: {fileID: 1281663076569088}
+  settingsSidebar: {fileID: 1009200000000000002}
 --- !u!114 &4401061136781019396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,8 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enterGroups:
   - name: "\u6807\u9898"
-    motions:
-    - {fileID: 6969041062286978695}
+    motions: []
     startDelay: 0
     stagger: 0
     playTogether: 0
@@ -537,7 +479,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchorMax.y
@@ -545,7 +487,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchorMin.y
@@ -589,11 +531,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -241.6055
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -777,6 +719,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4805453179860517809, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4872626861123807927, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
+      propertyPath: targets.bindings.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5515672151892849914, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
@@ -1120,22 +1066,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
---- !u!114 &1281663076569088 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 919001000000000002, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
-  m_PrefabInstance: {fileID: 920000000000000002}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1391235839642503767 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
   m_PrefabInstance: {fileID: 920000000000000002}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1009200000000000002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4872626861123807927, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
+  m_PrefabInstance: {fileID: 920000000000000002}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1817869059996929249
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,6 +6,17 @@ public enum WeaponConstructionScheme
     Default = 0
 }
 
+public enum WeaponTag
+{
+    Melee = 0,
+    Ranged = 1,
+    Projectile = 2,
+    AreaDamage = 3,
+    Critical = 4,
+    Fast = 5,
+    Heavy = 6
+}
+
 [System.Serializable]
 public struct WeaponSequenceProjectileDefinition
 {
@@ -57,6 +68,9 @@ public struct WeaponSequenceVfxDefinition
 [CreateAssetMenu(fileName = "Weapon Data", menuName = ScriptableObjectMenuPaths.WEAPON_DATA, order = 0)]
 public class WeaponDataSO : ItemDataSO, IDescribable
 {
+    [Header("分类")]
+    [SerializeField] private WeaponTag[] tags = System.Array.Empty<WeaponTag>();
+
     [Header("Runtime")]
     [SerializeField] protected Weapon weaponPrefab;
     [SerializeField] private WeaponConstructionScheme constructionScheme = WeaponConstructionScheme.Default;
@@ -84,6 +98,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] protected float knockbackForce;
 
     public Weapon WeaponPrefab => weaponPrefab;
+    public IReadOnlyList<WeaponTag> Tags => tags ?? System.Array.Empty<WeaponTag>();
     public WeaponConstructionScheme ConstructionScheme => constructionScheme;
     public AttackSequenceDefinitionSO AttackSequence => attackSequence;
     public float VisualForwardAngle => visualForwardAngle;
@@ -100,6 +115,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     private void OnValidate()
     {
         itemType = ItemType.Weapon;
+        tags ??= System.Array.Empty<WeaponTag>();
         attackSpeed = Mathf.Max(0.01f, attackSpeed);
         criticalChance = Mathf.Clamp01(criticalChance);
         criticalPercent = Mathf.Max(1f, criticalPercent);
@@ -108,6 +124,24 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
         meleeHitBoxSize.x = Mathf.Max(0.01f, meleeHitBoxSize.x);
         meleeHitBoxSize.y = Mathf.Max(0.01f, meleeHitBoxSize.y);
+    }
+
+    public bool HasTag(WeaponTag tag)
+    {
+        if (tags == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < tags.Length; i++)
+        {
+            if (tags[i] == tag)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public List<PropModifierData> GetPropsList()
@@ -190,6 +224,11 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         infos.Add(new DescriptorInfo("攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
         infos.Add(new DescriptorInfo("攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{attackSpeed}"));
         infos.Add(new DescriptorInfo("击退", $"{PropType.KnockbackForce.GetIconRichTextWithVOffset()}{knockbackForce}"));
+        if (tags != null && tags.Length > 0)
+        {
+            infos.Add(new DescriptorInfo("标签", string.Join(" / ", tags)));
+        }
+
         infos.Add(new DescriptorInfo("描述", Description));
         return infos;
     }

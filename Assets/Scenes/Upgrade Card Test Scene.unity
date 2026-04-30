@@ -287,7 +287,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 5359458450767791847, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
   testCharacterData: {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
   playerSpawnPosition: {x: 0, y: 0, z: 0}
-  initialUpgradePoints: 3
+  initialUpgradePoints: 272
   testWaveNumber: 3
   initialGold: 80
   runSelfTestOnStart: 1

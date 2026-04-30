@@ -1,0 +1,479 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6db882f30fc1a4fa5f202a8833a21d, type: 3}
+  m_Name: Arrow Left Button_Arrow Left Button_Motion
+  m_EditorClassIdentifier: 
+  useUnscaledTime: 1
+  clips:
+  - clipId: Press
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030700
+    - rid: 451547002770030701
+    - rid: 451547002770030702
+    - rid: 451547002770030703
+    - rid: 451547002770030704
+  - clipId: Release
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030705
+    - rid: 451547002770030706
+    - rid: 451547002770030707
+    - rid: 451547002770030708
+    - rid: 451547002770030709
+  - clipId: Visible
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030710
+    - rid: 451547002770030711
+    - rid: 451547002770030712
+    - rid: 451547002770030713
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030714
+    - rid: 451547002770030715
+    - rid: 451547002770030716
+    - rid: 451547002770030717
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030718
+    - rid: 451547002770030719
+    - rid: 451547002770030720
+    - rid: 451547002770030721
+  - clipId: HoverIn
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030722
+    - rid: 451547002770030723
+    - rid: 451547002770030724
+    - rid: 451547002770030725
+  - clipId: HoverOut
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030726
+    - rid: 451547002770030727
+    - rid: 451547002770030728
+    - rid: 451547002770030729
+  - clipId: ClickPulse
+    channel: Feedback
+    playMode: 0
+    conflictPolicy: 2
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030730
+    - rid: 451547002770030731
+    - rid: 451547002770030732
+    - rid: 451547002770030733
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030700
+      type: {class: UISpriteSequenceMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.5
+        ease: 1
+        frames:
+        - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+        - {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+        reverse: 0
+        keepLastFrameOnComplete: 1
+        setNativeSizeIfEmpty: 0
+        timingMode: 0
+        framesPerSecond: 12
+        totalDuration: 0.5
+        frameEvents: []
+    - rid: 451547002770030701
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030702
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: -2}
+    - rid: 451547002770030703
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 0.98}
+    - rid: 451547002770030704
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030705
+      type: {class: UISpriteSwapMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 1
+        sprite: {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+        restoreInitialOnStart: 0
+        setNativeSizeIfEmpty: 0
+    - rid: 451547002770030706
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030707
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 1}
+    - rid: 451547002770030708
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.02, y: 1.02, z: 1.02}
+    - rid: 451547002770030709
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030710
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030711
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030712
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 451547002770030713
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030714
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030715
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030716
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 451547002770030717
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.18
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030718
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 5
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 0
+    - rid: 451547002770030719
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 5
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030720
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 5
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 0.98}
+    - rid: 451547002770030721
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 5
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030722
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030723
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 1}
+    - rid: 451547002770030724
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.01, y: 1.01, z: 1.01}
+    - rid: 451547002770030725
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030726
+      type: {class: UISpriteSwapMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 1
+        sprite: {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+        restoreInitialOnStart: 0
+        setNativeSizeIfEmpty: 0
+    - rid: 451547002770030727
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030728
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 451547002770030729
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030730
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030731
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030732
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.08, y: 1.08, z: 1.08}
+    - rid: 451547002770030733
+      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}

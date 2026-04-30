@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(RangeAttackComponent))]
+[RequireComponent(typeof(EnemyAttackController))]
 public class FlyForestBrain : EnemyBrain
 {
     public enum FlyForestAIState
@@ -12,23 +12,26 @@ public class FlyForestBrain : EnemyBrain
 
     private readonly StateMachine<FlyForestAIState> stateMachine = new();
 
-    private IAttackable rangeAttack;
+    private EnemyAttackController attackController;
     private FlyForestEnemySO enemyData;
     private MovementStrategyBase currentMoveStrategy;
-    private AttackStrategyBase currentAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
         base.OnInitialize(owner);
-        rangeAttack = owner.GetComponent<RangeAttackComponent>();
+        attackController = owner.GetComponent<EnemyAttackController>();
         enemyData = this.owner.EnemyData as FlyForestEnemySO;
+
+        if (attackController == null)
+        {
+            throw new MissingComponentException($"{nameof(FlyForestBrain)} requires an {nameof(EnemyAttackController)}.");
+        }
     }
 
     protected override void OnBrainStart()
     {
         RegisterStates();
         SetMoveStrategy(enemyData.normalMovementStrategy);
-        SetAttackStrategy(enemyData.normalAttackStrategy);
         stateMachine.ChangeState(FlyForestAIState.CircleKite);
     }
 
@@ -52,11 +55,6 @@ public class FlyForestBrain : EnemyBrain
     private void SetMoveStrategy(MovementStrategyBase strategy)
     {
         currentMoveStrategy = strategy;
-    }
-
-    private void SetAttackStrategy(AttackStrategyBase strategy)
-    {
-        currentAttackStrategy = strategy;
     }
 
     private bool IsLowHealth()
@@ -102,7 +100,6 @@ public class FlyForestBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.SetMoveStrategy(brain.enemyData.normalMovementStrategy);
-            brain.SetAttackStrategy(brain.enemyData.normalAttackStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -131,9 +128,10 @@ public class FlyForestBrain : EnemyBrain
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
             brain.FaceTarget();
-            if (brain.rangeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.normalAttackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.normalAttackDefinition, brain.target))
             {
-                brain.currentAttackStrategy.ExecuteAttack(brain.rangeAttack, brain.owner, brain.target);
+                brain.attackController.TryUse(brain.enemyData.normalAttackDefinition, brain.target);
             }
         }
     }
@@ -151,7 +149,6 @@ public class FlyForestBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.SetMoveStrategy(brain.enemyData.retreatMovementStrategy);
-            brain.SetAttackStrategy(brain.enemyData.normalAttackStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
             brain.propertiesManager.AddModifiers(RETREAT_BURST_MODIFIER_SOURCE,brain.enemyData.fastBurstModifierData);
         }
@@ -181,7 +178,11 @@ public class FlyForestBrain : EnemyBrain
 
             brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
             brain.FaceMoveDirection();
-            brain.currentAttackStrategy.ExecuteAttack(brain.rangeAttack, brain.owner, brain.target);
+            if (brain.attackController.CanUse(brain.enemyData.normalAttackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.normalAttackDefinition, brain.target))
+            {
+                brain.attackController.TryUse(brain.enemyData.normalAttackDefinition, brain.target);
+            }
         }
 
         public override void OnExit()

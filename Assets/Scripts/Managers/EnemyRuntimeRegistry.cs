@@ -54,6 +54,8 @@ public class EnemyRuntimeRegistry : MonoBehaviour
 
     private void OnDefeatAllTrackedEnemiesRequested()
     {
+        CancelPendingEnemySpawns();
+
         Enemy[] enemies = new Enemy[aliveEnemies.Count];
         aliveEnemies.Values.CopyTo(enemies, 0);
         for (int i = 0; i < enemies.Length; i++)
@@ -63,8 +65,21 @@ public class EnemyRuntimeRegistry : MonoBehaviour
                 continue;
             }
             
-            //TODO:后续改为播放动画
-            Destroy(enemies[i].gameObject);
+            enemies[i].DefeatSilently();
+        }
+    }
+
+    private static void CancelPendingEnemySpawns()
+    {
+        SpawnIndicator[] indicators = FindObjectsByType<SpawnIndicator>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        for (int i = 0; i < indicators.Length; i++)
+        {
+            if (indicators[i] == null)
+            {
+                continue;
+            }
+
+            indicators[i].Cancel();
         }
     }
 

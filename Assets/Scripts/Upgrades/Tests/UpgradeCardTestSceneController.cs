@@ -262,6 +262,7 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         if (!TryFindCard(pool, "new_weapon_cache", out UpgradeCardSO minWaveCard) ||
             !TryFindCard(pool, "heavy_critical", out UpgradeCardSO tagRequirementCard) ||
             !TryFindCard(pool, "weapon_focus", out UpgradeCardSO weaponRequirementCard) ||
+            !TryFindCard(pool, "long_barrel", out UpgradeCardSO weaponTagRequirementCard) ||
             !TryFindCard(pool, "tough_body", out UpgradeCardSO defenseCard) ||
             !TryFindCard(pool, "glass_cannon", out UpgradeCardSO glassCannonCard))
         {
@@ -301,6 +302,13 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         if (!weaponRequirementCard.OfferConditions.AreSatisfied(waveTwoContext))
         {
             FailSelfTest("owned-weapon requirement did not detect the test character weapon.");
+            return false;
+        }
+
+        if (weaponTagRequirementCard.OfferConditions.RequiredOwnedWeaponTags.Count > 0 &&
+            !weaponTagRequirementCard.OfferConditions.AreSatisfied(waveTwoContext))
+        {
+            FailSelfTest("owned-weapon-tag requirement did not detect the test character weapon tags.");
             return false;
         }
 

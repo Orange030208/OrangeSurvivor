@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 5433611543509539166}
   - component: {fileID: 7648871609319545866}
   - component: {fileID: 5355398135417586134}
-  - component: {fileID: 4101026062322790189}
-  - component: {fileID: 894648763483764682}
+  - component: {fileID: 763013150596740961}
+  - component: {fileID: 3388566457622636206}
   m_Layer: 5
   m_Name: Icon Button
   m_TagString: Untagged
@@ -104,7 +104,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &4101026062322790189
+--- !u!114 &763013150596740961
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,78 +113,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2841885558735006456}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.12
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 0.96
-      rotate: 0
-      rotationZ: 0
-    duration: 0.14
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
-  - action: 3
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 2}
-      scale: 1
-      scaleMultiplier: 1.02
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: -4}
-      scale: 1
-      scaleMultiplier: 0.96
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
---- !u!114 &894648763483764682
+  definition: {fileID: 11400000, guid: fcd06bacca4caaa4483859b67b802e69, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+--- !u!114 &3388566457622636206
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,15 +131,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2841885558735006456}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c185814a58a85f49b9c59e5ff79f5c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 4929a3e45707a2e4cbfa06d4755193c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 0}
-  playEnterOnEnable: 0
+  player: {fileID: 763013150596740961}
   bindings:
-  - motionEvent: 2
-    action: 4
-  - motionEvent: 3
-    action: 0
-  - motionEvent: 4
-    action: 2
+  - triggerEvent: 3
+    clipId: Press
+    requireLeftButton: 1
+    delay: 0
+  - triggerEvent: 4
+    clipId: Release
+    requireLeftButton: 1
+    delay: 0

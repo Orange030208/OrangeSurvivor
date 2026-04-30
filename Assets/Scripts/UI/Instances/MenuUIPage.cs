@@ -5,13 +5,16 @@ public class MenuUIPage : UIPageBase
     [SerializeField] private UIClickTarget startButton;
     [SerializeField] private UIClickTarget characterSelectButton;
     [SerializeField] private UIClickTarget settingsButton;
-    [SerializeField] private UISidebarRevealMotion settingsSidebar;
+    [SerializeField] private MonoBehaviour settingsSidebar;
+
+    private IUIRuntimeMotion settingsMotion;
 
     private bool settingsVisible;
 
     protected override void Awake()
     {
         base.Awake();
+        ValidateConfiguration();
         HideSettingsImmediate();
     }
 
@@ -51,32 +54,67 @@ public class MenuUIPage : UIPageBase
 
     private void SetSettingsVisible(bool visible)
     {
-        if (settingsSidebar == null)
-        {
-            settingsVisible = false;
-            return;
-        }
+        IUIRuntimeMotion motion = ResolveSettingsMotion();
 
         settingsVisible = visible;
-        settingsSidebar.Play(visible ? UIMotionAction.Show : UIMotionAction.Hide);
+        motion.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
         SetSettingsInteractionEnabled(visible);
     }
 
     private void HideSettingsImmediate()
     {
         settingsVisible = false;
-        settingsSidebar?.SetHiddenImmediate();
+        ResolveSettingsMotion()?.SetImmediate(UIMotionClipIds.HIDE);
         SetSettingsInteractionEnabled(false);
     }
 
     private void SetSettingsInteractionEnabled(bool enabled)
     {
-        if (settingsSidebar == null || !settingsSidebar.TryGetComponent(out CanvasGroup canvasGroup))
+        if (!settingsSidebar.TryGetComponent(out CanvasGroup canvasGroup))
         {
             return;
         }
 
         canvasGroup.interactable = enabled;
         canvasGroup.blocksRaycasts = enabled;
+    }
+
+    private IUIRuntimeMotion ResolveSettingsMotion()
+    {
+        if (settingsMotion != null)
+        {
+            return settingsMotion;
+        }
+
+        if (settingsSidebar is IUIRuntimeMotion directMotion)
+        {
+            settingsMotion = directMotion;
+            return settingsMotion;
+        }
+
+        if (settingsSidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(MenuUIPage)} '{name}' is missing settings sidebar.");
+        }
+
+        throw new MissingReferenceException($"{nameof(MenuUIPage)} '{name}' settings sidebar must implement {nameof(IUIRuntimeMotion)}.");
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (startButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(MenuUIPage)} '{name}' is missing start button.");
+        }
+
+        if (settingsButton == null)
+        {
+            throw new MissingReferenceException($"{nameof(MenuUIPage)} '{name}' is missing settings button.");
+        }
+
+        if (settingsSidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(MenuUIPage)} '{name}' is missing settings sidebar.");
+        }
     }
 }

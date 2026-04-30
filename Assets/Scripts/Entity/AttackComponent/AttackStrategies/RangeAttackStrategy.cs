@@ -3,10 +3,6 @@ using UnityEngine;
 /// 普通远程攻击策略
 /// </summary>
 [CreateAssetMenu(fileName = "RangeAttackStrategy", menuName = ScriptableObjectMenuPaths.RANGE_ATTACK_STRATEGY)]
-public class RangeAttackStrategy : AttackStrategyBase
+public class RangeAttackStrategy : ConfiguredEnemyAttackStrategy
 {
-    public override void ExecuteAttack(IAttackable attackable, Entity self, Entity target)
-    {
-        attackable.TryAttack(target);
-    }
 }

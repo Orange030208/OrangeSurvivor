@@ -3,44 +3,65 @@ using UnityEngine;
 
 public sealed class SidebarRegionMotion
 {
-    private readonly UISidebarRevealMotion sidebar;
+    private readonly MonoBehaviour sidebarBehaviour;
+    private readonly IUIRuntimeMotion runtimeMotion;
 
-    public SidebarRegionMotion(string ownerTypeName, string ownerName, string missingFieldName, UISidebarRevealMotion sidebar)
+    public SidebarRegionMotion(string ownerTypeName, string ownerName, string missingFieldName, MonoBehaviour sidebar)
     {
         string resolvedOwnerTypeName = string.IsNullOrWhiteSpace(ownerTypeName) ? nameof(SidebarRegionMotion) : ownerTypeName;
         string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? resolvedOwnerTypeName : ownerName;
-        string resolvedMissingFieldName = string.IsNullOrWhiteSpace(missingFieldName) ? nameof(UISidebarRevealMotion) : missingFieldName;
+        string resolvedMissingFieldName = string.IsNullOrWhiteSpace(missingFieldName) ? nameof(UIMotionPlayer) : missingFieldName;
 
-        this.sidebar = sidebar ?? throw new MissingReferenceException($"{resolvedOwnerTypeName} '{resolvedOwnerName}' is missing {resolvedMissingFieldName}.");
+        sidebarBehaviour = sidebar ?? throw new MissingReferenceException($"{resolvedOwnerTypeName} '{resolvedOwnerName}' is missing {resolvedMissingFieldName}.");
+        runtimeMotion = ResolveRuntimeMotion(sidebarBehaviour)
+                        ?? throw new MissingComponentException($"{resolvedOwnerTypeName} '{resolvedOwnerName}' expects {resolvedMissingFieldName} to implement {nameof(IUIRuntimeMotion)}.");
     }
 
     public void SetVisible(bool visible)
     {
-        sidebar.Play(visible ? UIMotionAction.Show : UIMotionAction.Hide);
+        runtimeMotion.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
     }
 
     public Tween PlayHide()
     {
-        return sidebar.Play(UIMotionAction.Hide);
+        return runtimeMotion.Play(UIMotionClipIds.HIDE);
     }
 
     public void RefreshDefaults()
     {
-        sidebar.RefreshDefaults();
+        runtimeMotion.RefreshDefaults();
     }
 
     public void SetHiddenImmediate()
     {
-        sidebar.SetImmediate(UIMotionAction.Hide);
+        runtimeMotion.SetImmediate(UIMotionClipIds.HIDE);
     }
 
     public void Kill()
     {
-        sidebar.Kill();
+        runtimeMotion.Kill();
     }
 
     public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
     {
-        sidebar.ConfigureTimings(showDuration, showEase, hideDuration, hideEase);
+    }
+
+    private static IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source)
+    {
+        if (source is IUIRuntimeMotion directMotion)
+        {
+            return directMotion;
+        }
+
+        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] is IUIRuntimeMotion motion)
+            {
+                return motion;
+            }
+        }
+
+        return null;
     }
 }

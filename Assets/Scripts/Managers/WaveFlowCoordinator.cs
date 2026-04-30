@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -9,8 +10,11 @@ using UnityEngine;
 public class WaveFlowCoordinator : MonoBehaviour
 {
     [SerializeField] private Player player;
+    [Min(0f)]
+    [SerializeField] private float coinCollectionSettleDelay = 0.5f;
 
     private WaveFlowRuleService waveFlowRuleService;
+    private Coroutine decisionRoutine;
 
     private void Awake()
     {
@@ -29,6 +33,12 @@ public class WaveFlowCoordinator : MonoBehaviour
     {
         GameEventBus.Unsubscribe<WaveFlowDecisionRequestedEvent>(OnWaveFlowDecisionRequested);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+
+        if (decisionRoutine != null)
+        {
+            StopCoroutine(decisionRoutine);
+            decisionRoutine = null;
+        }
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -38,6 +48,28 @@ public class WaveFlowCoordinator : MonoBehaviour
 
     private void OnWaveFlowDecisionRequested(WaveFlowDecisionRequestedEvent eventData)
     {
+        if (decisionRoutine != null)
+        {
+            StopCoroutine(decisionRoutine);
+        }
+
+        decisionRoutine = StartCoroutine(RunWaveEndFlow(eventData));
+    }
+
+    private IEnumerator RunWaveEndFlow(WaveFlowDecisionRequestedEvent eventData)
+    {
+        TryBindPlayer();
+        GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+        if (StartCollectingExistingCoins())
+        {
+            yield return WaitForAllCoinsCollected();
+        }
+
+        if (coinCollectionSettleDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(coinCollectionSettleDelay);
+        }
+
         GameState nextState = waveFlowRuleService.ResolveNextState(eventData, player);
         if (nextState == GameState.StageComplete)
         {
@@ -45,6 +77,41 @@ public class WaveFlowCoordinator : MonoBehaviour
         }
 
         GameEventBus.Publish(new WaveFlowDecisionEvent(nextState));
+        decisionRoutine = null;
+    }
+
+    private bool StartCollectingExistingCoins()
+    {
+        if (player == null)
+        {
+            if (FindFirstObjectByType<Coin>() != null)
+            {
+                Debug.LogWarning("[WaveFlowCoordinator] Player is missing, skipping wave-end coin collection.");
+            }
+
+            return false;
+        }
+
+        Coin[] coins = FindObjectsByType<Coin>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        for (int i = 0; i < coins.Length; i++)
+        {
+            if (coins[i] == null)
+            {
+                continue;
+            }
+
+            coins[i].TryCollect(player);
+        }
+
+        return true;
+    }
+
+    private static IEnumerator WaitForAllCoinsCollected()
+    {
+        while (FindFirstObjectByType<Coin>() != null)
+        {
+            yield return null;
+        }
     }
 
     private void TryBindPlayer()

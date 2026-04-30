@@ -40,6 +40,10 @@ public struct UpgradeCardShaderParameter
 
     public string PropertyName => propertyName;
     public ParameterType Type => parameterType;
+    public float FloatValue => floatValue;
+    public Color ColorValue => colorValue;
+    public Vector4 VectorValue => vectorValue;
+    public Texture TextureValue => textureValue;
     public bool IsConfigured => !string.IsNullOrWhiteSpace(propertyName);
 
     public static UpgradeCardShaderParameter Float(

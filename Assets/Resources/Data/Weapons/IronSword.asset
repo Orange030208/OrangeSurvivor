@@ -16,6 +16,8 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: bf013ce99c3144345a0fca54e39fd870, type: 3}
   itemPrice: 18
   itemType: 0
+  tags:
+  - 0
   weaponPrefab: {fileID: 6802585226729800489, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
   constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: 8a1cae0602e95ab44aa0038e45285d49, type: 2}

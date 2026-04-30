@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NoAttackStrategy", menuName = ScriptableObjectMenuPaths.NO_ATTACK_STRATEGY)]
 public class NoAttackStrategy : AttackStrategyBase
 {
-    public override void ExecuteAttack(IAttackable attackable, Entity self, Entity target)
+    public override void ExecuteAttack(IEntityAttackExecutor attackExecutor, Entity self, Entity target)
     {
     }
 }

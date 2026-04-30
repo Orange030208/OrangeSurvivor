@@ -4,6 +4,7 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOption
 {
     [Header("稀有度表现")]
     [SerializeField] private UpgradeCardRarityPresenter rarityPresenter;
+    [SerializeField] private UpgradeCardHexTechEffectController hexTechEffectController;
     [SerializeField] private bool playRevealSfx = true;
 
     public override void Configure(InfoAddIndex<UpgradeCardOptionSnapshot> resource)
@@ -35,6 +36,22 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOption
         }
 
         rarityPresenter?.Apply(profile);
+        ApplyHexTechEffect(profile);
+    }
+
+    private void ApplyHexTechEffect(UpgradeCardRarityPresentationProfile profile)
+    {
+        if (hexTechEffectController == null)
+        {
+            hexTechEffectController = GetComponent<UpgradeCardHexTechEffectController>();
+        }
+
+        if (hexTechEffectController == null)
+        {
+            hexTechEffectController = gameObject.AddComponent<UpgradeCardHexTechEffectController>();
+        }
+
+        hexTechEffectController.ApplyRarity(profile);
     }
 
     private static UpgradeCardRarityPresentationProfile ResolveRarityPresentationProfile(UpgradeCardRarity rarity)
@@ -67,7 +84,7 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOption
     {
         string description = option.Description;
         string rarityText = GetRarityText(option.Rarity);
-        string pickText = option.MaxPickCount > 1
+        string pickText = option.HasPickLimit && option.MaxPickCount > 1
             ? $"\n已选择 {option.PickCount}/{option.MaxPickCount}"
             : string.Empty;
         string tagText = BuildTagText(option.Tags);

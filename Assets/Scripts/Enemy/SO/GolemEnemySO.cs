@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "GolemEnemy", menuName = ScriptableObjectMenuPaths.GOLEM_ENEMY, order = 3)]
 public class GolemEnemySO : EnemySO
@@ -18,6 +19,10 @@ public class GolemEnemySO : EnemySO
     [SerializeField, Min(0f)] private float chargeDamageMultiplier = 1f;
     [SerializeField] private List<PropModifierData> chargeModifiers = new();
 
+    [Header("Attacks")]
+    [FormerlySerializedAs("defaultAttackDefinition")]
+    [SerializeField] private EnemyAttackDefinitionSO attackDefinition;
+
     [Header("Strategies")]
     public MovementStrategyBase chaseMoveStrategy;
 
@@ -31,6 +36,14 @@ public class GolemEnemySO : EnemySO
     public float ChargeDamageRadius => chargeDamageRadius;
     public float ChargeDamageMultiplier => chargeDamageMultiplier;
     public IReadOnlyList<PropModifierData> ChargeModifiers => chargeModifiers;
+    public EnemyAttackDefinitionSO AttackDefinition => attackDefinition;
+
+    public override IReadOnlyList<EnemyAttackDefinitionSO> GetAttackDefinitions()
+    {
+        List<EnemyAttackDefinitionSO> results = new();
+        AddAttackDefinition(results, attackDefinition);
+        return results;
+    }
 
     private void OnValidate()
     {

@@ -67,7 +67,10 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
         
         UnityEngine.Debug.Log("爆炸了");
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(Context.Transform.position, explosionRadius, enemyLayerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(
+            Context.Transform.position,
+            explosionRadius,
+            ResolveEnemyLayerMask());
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].TryGetComponent(out HealthComponent targetHealth))
@@ -88,5 +91,10 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
         }
 
         cooldownEndTime = Time.time + cooldown;
+    }
+
+    private LayerMask ResolveEnemyLayerMask()
+    {
+        return enemyLayerMask.value != 0 ? enemyLayerMask : LayerMask.GetMask("Enemy");
     }
 }

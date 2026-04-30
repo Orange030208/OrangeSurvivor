@@ -116,12 +116,12 @@ public abstract class UIScrollListBase<TItem, TData> : MonoBehaviour
             }
 
             item.KillRevealMotion();
-            item.SetRevealImmediate(revealConfig.RevealAction);
+            item.SetRevealImmediate(revealConfig.InitialClipId);
             float itemDelay = revealConfig.PlayTogether ? visibleOrder * revealConfig.ItemStagger : 0f;
-            Tween tween = item.PlayReveal(revealConfig.RevealAction, itemDelay);
+            Tween tween = item.PlayReveal(revealConfig.RevealClipId, itemDelay);
             if (tween == null)
             {
-                item.SetRevealImmediate(UIMotionAction.Common);
+                item.SetRevealImmediate(UIMotionClipIds.VISIBLE);
                 visibleOrder++;
                 continue;
             }

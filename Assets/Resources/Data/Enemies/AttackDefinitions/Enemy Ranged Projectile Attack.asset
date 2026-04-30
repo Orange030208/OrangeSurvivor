@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8474b1f1b13844f79e55300e71868ea1, type: 3}
+  m_Name: Enemy Ranged Projectile Attack
+  m_EditorClassIdentifier: 
+  id: enemy_ranged_projectile_attack
+  displayName: Enemy Ranged Projectile Attack
+  executionKind: 1
+  hitShape: {fileID: 0}
+  projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  cooldown: 1
+  damageMultiplier: 1
+  rangeSource: 2
+  fixedRange: 7
+  rangeMultiplier: 1

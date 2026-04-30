@@ -43,6 +43,17 @@ public static class UpgradeCardSystemBuilder
         Debug.Log("[UpgradeCardSystemBuilder] Upgrade card system assets and test scene rebuilt.");
     }
 
+    [MenuItem("Survivors/Upgrades/Rebuild Upgrade Cards Only")]
+    public static void RebuildUpgradeCardsOnly()
+    {
+        EnsureFolders();
+        UpgradeCardSO[] cards = BuildCards();
+        BuildPool(cards);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"[UpgradeCardSystemBuilder] {cards.Length} upgrade cards rebuilt.");
+    }
+
     [InitializeOnLoadMethod]
     private static void AutoBuildWhenEditorImports()
     {
@@ -132,6 +143,58 @@ public static class UpgradeCardSystemBuilder
             CreatePropertyCard("lifesteal_instinct", "吸血本能", UpgradeCardRarity.Rare, 65,
                 new[] { UpgradeCardTag.Recovery, UpgradeCardTag.Attack }, "生命偷取 +4%。",
                 new PropModifierData(PropType.LifeSteal, PropModifierType.Add, 0.04f)),
+            CreatePropertyCard("learning_curve", "学习曲线", UpgradeCardRarity.Common, 92,
+                new[] { UpgradeCardTag.Pickup }, "经验获取 +12%。",
+                new PropModifierData(PropType.ExperienceGain, PropModifierType.BonusMultiplier, 0.12f)),
+            CreatePropertyCard("magnetic_belt", "磁吸腰带", UpgradeCardRarity.Common, 88,
+                new[] { UpgradeCardTag.Pickup }, "拾取范围 +18%，幸运 +3。",
+                new PropModifierData(PropType.PickupRadius, PropModifierType.BonusMultiplier, 0.18f),
+                new PropModifierData(PropType.Luck, PropModifierType.Add, 3f)),
+            CreatePropertyCard("steady_breath", "稳定呼吸", UpgradeCardRarity.Common, 84,
+                new[] { UpgradeCardTag.Critical }, "暴击率 +3%，攻击范围 +8%。",
+                new PropModifierData(PropType.CriticalChance, PropModifierType.Add, 0.03f),
+                new PropModifierData(PropType.AttackRange, PropModifierType.BonusMultiplier, 0.08f)),
+            CreatePropertyCard("patched_armor", "拼接护甲", UpgradeCardRarity.Common, 82,
+                new[] { UpgradeCardTag.Defense }, "护甲 +2，伤害减免 +3%。",
+                new PropModifierData(PropType.Armor, PropModifierType.Add, 2f),
+                new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 0.03f)),
+            CreatePropertyCard("long_barrel", "加长枪管", UpgradeCardRarity.Rare, 66,
+                new[] { UpgradeCardTag.Ranged, UpgradeCardTag.Projectile }, "弹速 +18%，攻击范围 +12%。",
+                new PropModifierData(PropType.ProjectileSpeed, PropModifierType.BonusMultiplier, 0.18f),
+                new PropModifierData(PropType.AttackRange, PropModifierType.BonusMultiplier, 0.12f)),
+            CreatePropertyCard("close_quarters", "贴身短打", UpgradeCardRarity.Rare, 62,
+                new[] { UpgradeCardTag.Melee, UpgradeCardTag.Defense }, "攻击力 +10%，护甲 +2，攻击范围 -10%。",
+                new PropModifierData(PropType.Attack, PropModifierType.BonusMultiplier, 0.1f),
+                new PropModifierData(PropType.Armor, PropModifierType.Add, 2f),
+                new PropModifierData(PropType.AttackRange, PropModifierType.BonusMultiplier, -0.1f)),
+            CreatePropertyCard("momentum_engine", "动能引擎", UpgradeCardRarity.Rare, 58,
+                new[] { UpgradeCardTag.AttackSpeed, UpgradeCardTag.MoveSpeed }, "攻击速度 +14%，移动速度 +0.45。",
+                new PropModifierData(PropType.AttackSpeed, PropModifierType.BonusMultiplier, 0.14f),
+                new PropModifierData(PropType.MoveSpeed, PropModifierType.Add, 0.45f)),
+            CreatePropertyCard("harvest_route", "收割路线", UpgradeCardRarity.Rare, 56,
+                new[] { UpgradeCardTag.Pickup, UpgradeCardTag.Economy }, "拾取范围 +25%，经验获取 +10%。",
+                new PropModifierData(PropType.PickupRadius, PropModifierType.BonusMultiplier, 0.25f),
+                new PropModifierData(PropType.ExperienceGain, PropModifierType.BonusMultiplier, 0.1f)),
+            CreatePropertyCard("sniper_stance", "狙击架势", UpgradeCardRarity.Epic, 36,
+                new[] { UpgradeCardTag.Ranged, UpgradeCardTag.Critical }, "攻击范围 +35%，暴击率 +8%，移动速度 -8%。",
+                new PropModifierData(PropType.AttackRange, PropModifierType.FinalMultiplier, 0.35f),
+                new PropModifierData(PropType.CriticalChance, PropModifierType.Add, 0.08f),
+                new PropModifierData(PropType.MoveSpeed, PropModifierType.BonusMultiplier, -0.08f)),
+            CreatePropertyCard("overloaded_magazine", "过载弹匣", UpgradeCardRarity.Epic, 32,
+                new[] { UpgradeCardTag.Projectile, UpgradeCardTag.AttackSpeed }, "投射物数量 +1，攻击速度 -12%，弹速 -10%。",
+                new PropModifierData(PropType.ProjectileCount, PropModifierType.Add, 1f),
+                new PropModifierData(PropType.AttackSpeed, PropModifierType.BonusMultiplier, -0.12f),
+                new PropModifierData(PropType.ProjectileSpeed, PropModifierType.BonusMultiplier, -0.1f)),
+            CreatePropertyCard("blood_pact", "鲜血契约", UpgradeCardRarity.Epic, 34,
+                new[] { UpgradeCardTag.Attack, UpgradeCardTag.Recovery, UpgradeCardTag.LowHealth }, "攻击力 +18%，生命偷取 +3%，最大生命 -10%。",
+                new PropModifierData(PropType.Attack, PropModifierType.FinalMultiplier, 0.18f),
+                new PropModifierData(PropType.LifeSteal, PropModifierType.Add, 0.03f),
+                new PropModifierData(PropType.MaxHealth, PropModifierType.FinalMultiplier, -0.1f)),
+            CreatePropertyCard("guardian_oath", "守护誓约", UpgradeCardRarity.Epic, 34,
+                new[] { UpgradeCardTag.Defense, UpgradeCardTag.Recovery }, "伤害减免 +10%，治疗效果 +15%，攻击力 -8%。",
+                new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 0.1f),
+                new PropModifierData(PropType.HealingPower, PropModifierType.BonusMultiplier, 0.15f),
+                new PropModifierData(PropType.Attack, PropModifierType.BonusMultiplier, -0.08f)),
             CreatePropertyCard("glass_cannon", "玻璃大炮", UpgradeCardRarity.Epic, 40,
                 new[] { UpgradeCardTag.Attack }, "攻击力 +25%，最大生命 -12%。",
                 new PropModifierData(PropType.Attack, PropModifierType.FinalMultiplier, 0.25f),
@@ -142,9 +205,30 @@ public static class UpgradeCardSystemBuilder
             CreateEffectCard("field_supplies", "战地补给", UpgradeCardRarity.Common, 70,
                 new[] { UpgradeCardTag.Economy }, "立即获得 18 金币。",
                 new GrantCurrencyUpgradeCardEffect(18)),
+            SaveCard("lucky_stipend", "幸运津贴", UpgradeCardRarity.Common, 68,
+                new[] { UpgradeCardTag.Economy, UpgradeCardTag.Pickup }, "立即获得 10 金币，幸运 +4。",
+                new[]
+                {
+                    new PropModifierData(PropType.Luck, PropModifierType.Add, 4f)
+                },
+                new FeatureEffectBase[]
+                {
+                    new GrantCurrencyUpgradeCardEffect(10)
+                }),
             CreateEffectCard("bargain_instinct", "砍价直觉", UpgradeCardRarity.Rare, 55,
                 new[] { UpgradeCardTag.Economy }, "商店价格降低 10%，获得 1 次免费刷新。",
                 new EconomyBonusUpgradeCardEffect(0.1f, 1, 0)),
+            CreateEffectCard("reroll_coupon", "改签券", UpgradeCardRarity.Rare, 52,
+                new[] { UpgradeCardTag.Economy }, "获得 2 次免费刷新。",
+                new EconomyBonusUpgradeCardEffect(0f, 2, 0)),
+            SaveCard("king_ransom", "国王赎金", UpgradeCardRarity.Epic, 30,
+                new[] { UpgradeCardTag.Economy }, "立即获得 35 金币，商店价格降低 6%。",
+                Array.Empty<PropModifierData>(),
+                new FeatureEffectBase[]
+                {
+                    new GrantCurrencyUpgradeCardEffect(35),
+                    new EconomyBonusUpgradeCardEffect(0.06f, 0, 0)
+                }),
             CreateEffectCard("gold_contract", "赏金契约", UpgradeCardRarity.Epic, 35,
                 new[] { UpgradeCardTag.Economy }, "每波结束获得 25 金币。",
                 new EconomyBonusUpgradeCardEffect(0f, 0, 25)),
@@ -154,12 +238,46 @@ public static class UpgradeCardSystemBuilder
             CreateEffectCard("swift_start", "疾行开局", UpgradeCardRarity.Rare, 55,
                 new[] { UpgradeCardTag.MoveSpeed }, "每波开始获得短暂迅捷 Buff。",
                 new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_01_迅捷"), 8f, true)),
+            CreateEffectCard("first_aid_protocol", "急救协议", UpgradeCardRarity.Rare, 50,
+                new[] { UpgradeCardTag.Recovery }, "立即获得 10 秒再生 Buff。",
+                new ApplyBuffUpgradeCardEffect(LoadBuff("Buff_06_再生"), 10f)),
+            CreateEffectCard("bloodthirst_dose", "嗜血剂量", UpgradeCardRarity.Rare, 44,
+                new[] { UpgradeCardTag.Recovery, UpgradeCardTag.Attack }, "立即获得 9 秒嗜血 Buff。",
+                new ApplyBuffUpgradeCardEffect(LoadBuff("Buff_04_嗜血"), 9f)),
+            CreateEffectCard("slaughter_rhythm", "屠戮节拍", UpgradeCardRarity.Epic, 28,
+                new[] { UpgradeCardTag.Attack, UpgradeCardTag.AttackSpeed }, "每波开始获得 7 秒屠戮 Buff。",
+                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_03_屠戮"), 7f, true)),
+            SaveCard("emergency_core", "应急核心", UpgradeCardRarity.Epic, 26,
+                new[] { UpgradeCardTag.LowHealth, UpgradeCardTag.AreaDamage, UpgradeCardTag.Defense }, "最大生命 +18。生命较低时触发一次范围爆炸。",
+                new[]
+                {
+                    new PropModifierData(PropType.MaxHealth, PropModifierType.Add, 18f)
+                },
+                new FeatureEffectBase[]
+                {
+                    new LowHealthExplosionFeatureEffect()
+                }),
             CreateEffectCard("new_weapon_cache", "武器补给箱", UpgradeCardRarity.Epic, 30,
                 new[] { UpgradeCardTag.Weapon }, "获得一把随机 1 级武器。",
                 new AddRandomWeaponUpgradeCardEffect(null, 1)),
+            CreateEffectCard("arsenal_drop", "军械空投", UpgradeCardRarity.Legendary, 9,
+                new[] { UpgradeCardTag.Weapon }, "获得一把随机 2 级武器。",
+                new AddRandomWeaponUpgradeCardEffect(null, 2)),
+            CreateEffectCard("duelist_blade", "决斗者刀刃", UpgradeCardRarity.Rare, 48,
+                new[] { UpgradeCardTag.Weapon, UpgradeCardTag.Melee }, "获得一把 2 级猎人匕首。",
+                new AddRandomWeaponUpgradeCardEffect(LoadWeapon("HunterDagger"), 2)),
+            CreateEffectCard("sun_scepter_cache", "日冕权杖", UpgradeCardRarity.Epic, 22,
+                new[] { UpgradeCardTag.Weapon, UpgradeCardTag.Ranged }, "获得一把 2 级日冕权杖。",
+                new AddRandomWeaponUpgradeCardEffect(LoadWeapon("SunScepter"), 2)),
+            CreateEffectCard("weapon_overclock", "武器超频", UpgradeCardRarity.Epic, 26,
+                new[] { UpgradeCardTag.Weapon, UpgradeCardTag.AttackSpeed }, "随机一把已装备武器等级 +2。",
+                new UpgradeRandomEquippedWeaponCardEffect(2)),
             CreateFeatureCard("sure_critical", "精准杀意", UpgradeCardRarity.Legendary, 10,
                 new[] { UpgradeCardTag.Critical, UpgradeCardTag.Attack }, "所有命中强制视为暴击。",
-                new ForceCriticalFeatureEffect())
+                new ForceCriticalFeatureEffect()),
+            CreateEffectCard("immortal_second_wind", "不朽回响", UpgradeCardRarity.Legendary, 8,
+                new[] { UpgradeCardTag.Defense, UpgradeCardTag.LowHealth }, "每波开始获得 5 秒不朽 Buff。",
+                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_05_不朽"), 5f, true))
         };
 
         ApplyCardTuning(cards);
@@ -170,27 +288,88 @@ public static class UpgradeCardSystemBuilder
     {
         WeaponDataSO rangerSaber = LoadWeapon("RangerSaber");
 
-        SetCardTuning(cards, "attack_training", 5, EmptyConditions());
-        SetCardTuning(cards, "quick_strike", 5, EmptyConditions());
-        SetCardTuning(cards, "tough_body", 4, MutuallyExclusive("glass_cannon"));
-        SetCardTuning(cards, "light_steps", 4, EmptyConditions());
-        SetCardTuning(cards, "eagle_sense", 4, EmptyConditions());
-        SetCardTuning(cards, "battle_scavenger", 4, EmptyConditions());
-        SetCardTuning(cards, "armor_reinforcement", 4, EmptyConditions());
-        SetCardTuning(cards, "life_recovery", 3, EmptyConditions());
+        SetCardTuning(cards, "attack_training", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "quick_strike", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "tough_body", UpgradeCardSO.UNLIMITED_PICK_COUNT, MutuallyExclusive("glass_cannon"));
+        SetCardTuning(cards, "light_steps", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "eagle_sense", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "battle_scavenger", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "armor_reinforcement", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "life_recovery", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
         SetCardTuning(cards, "field_supplies", 4, EmptyConditions());
+        SetCardTuning(cards, "learning_curve", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "magnetic_belt", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "steady_breath", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "patched_armor", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "lucky_stipend", 3, EmptyConditions());
 
-        SetCardTuning(cards, "critical_basics", 3, EmptyConditions());
-        SetCardTuning(cards, "heavy_critical", 2, RequiredTags(1, new UpgradeCardTagPickRequirement(UpgradeCardTag.Critical, 1)));
-        SetCardTuning(cards, "lifesteal_instinct", 2, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Attack, 1)));
+        SetCardTuning(cards, "critical_basics", UpgradeCardSO.UNLIMITED_PICK_COUNT, EmptyConditions());
+        SetCardTuning(cards, "heavy_critical", UpgradeCardSO.UNLIMITED_PICK_COUNT, RequiredTags(1, new UpgradeCardTagPickRequirement(UpgradeCardTag.Critical, 1)));
+        SetCardTuning(cards, "lifesteal_instinct", UpgradeCardSO.UNLIMITED_PICK_COUNT, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Attack, 1)));
         SetCardTuning(cards, "weapon_focus", 3, RequiredWeapon(1, rangerSaber));
         SetCardTuning(cards, "bargain_instinct", 2, RequiredTags(1, new UpgradeCardTagPickRequirement(UpgradeCardTag.Economy, 1)));
         SetCardTuning(cards, "battle_frenzy", 2, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.AttackSpeed, 1)));
         SetCardTuning(cards, "swift_start", 2, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.MoveSpeed, 1)));
+        SetCardTuning(cards, "long_barrel", UpgradeCardSO.UNLIMITED_PICK_COUNT, RequiredWeaponTags(2, new WeaponTagRequirement(WeaponTag.Projectile, 1)));
+        SetCardTuning(cards, "close_quarters", UpgradeCardSO.UNLIMITED_PICK_COUNT, Conditions(
+            2,
+            new[] { new UpgradeCardTagPickRequirement(UpgradeCardTag.Defense, 1) },
+            Array.Empty<WeaponDataSO>(),
+            new[] { new WeaponTagRequirement(WeaponTag.Melee, 1) },
+            Array.Empty<string>()));
+        SetCardTuning(cards, "momentum_engine", UpgradeCardSO.UNLIMITED_PICK_COUNT, RequiredTags(
+            2,
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.AttackSpeed, 1),
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.MoveSpeed, 1)));
+        SetCardTuning(cards, "harvest_route", UpgradeCardSO.UNLIMITED_PICK_COUNT, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Pickup, 1)));
+        SetCardTuning(cards, "reroll_coupon", 2, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Economy, 1)));
+        SetCardTuning(cards, "first_aid_protocol", 2, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Recovery, 1)));
+        SetCardTuning(cards, "bloodthirst_dose", 2, RequiredTags(
+            3,
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.Recovery, 1),
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.Attack, 1)));
+        SetCardTuning(cards, "duelist_blade", 1, RequiredTags(2, new UpgradeCardTagPickRequirement(UpgradeCardTag.Melee, 1)));
 
         SetCardTuning(cards, "glass_cannon", 1, MutuallyExclusive("tough_body"));
+        SetCardTuning(cards, "sniper_stance", 1, Conditions(
+            3,
+            new[] { new UpgradeCardTagPickRequirement(UpgradeCardTag.Critical, 1) },
+            Array.Empty<WeaponDataSO>(),
+            new[] { new WeaponTagRequirement(WeaponTag.Ranged, 1) },
+            Array.Empty<string>()));
+        SetCardTuning(cards, "overloaded_magazine", 1, Conditions(
+            4,
+            new[] { new UpgradeCardTagPickRequirement(UpgradeCardTag.Projectile, 1) },
+            Array.Empty<WeaponDataSO>(),
+            new[] { new WeaponTagRequirement(WeaponTag.Projectile, 1) },
+            Array.Empty<string>()));
+        SetCardTuning(cards, "blood_pact", 1, Conditions(
+            4,
+            new[]
+            {
+                new UpgradeCardTagPickRequirement(UpgradeCardTag.Attack, 2)
+            },
+            Array.Empty<WeaponDataSO>(),
+            new[] { "guardian_oath" }));
+        SetCardTuning(cards, "guardian_oath", 1, Conditions(
+            4,
+            new[]
+            {
+                new UpgradeCardTagPickRequirement(UpgradeCardTag.Defense, 2)
+            },
+            Array.Empty<WeaponDataSO>(),
+            new[] { "blood_pact", "glass_cannon" }));
+        SetCardTuning(cards, "king_ransom", 1, RequiredTags(3, new UpgradeCardTagPickRequirement(UpgradeCardTag.Economy, 2)));
         SetCardTuning(cards, "gold_contract", 1, RequiredTags(3, new UpgradeCardTagPickRequirement(UpgradeCardTag.Economy, 1)));
+        SetCardTuning(cards, "slaughter_rhythm", 1, RequiredTags(
+            5,
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.Attack, 2),
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.AttackSpeed, 1)));
+        SetCardTuning(cards, "emergency_core", 1, RequiredTags(4, new UpgradeCardTagPickRequirement(UpgradeCardTag.Defense, 1)));
         SetCardTuning(cards, "new_weapon_cache", 2, MinWave(2));
+        SetCardTuning(cards, "sun_scepter_cache", 1, RequiredTags(4, new UpgradeCardTagPickRequirement(UpgradeCardTag.Ranged, 1)));
+        SetCardTuning(cards, "weapon_overclock", 1, RequiredTags(4, new UpgradeCardTagPickRequirement(UpgradeCardTag.Weapon, 1)));
+        SetCardTuning(cards, "arsenal_drop", 1, RequiredTags(5, new UpgradeCardTagPickRequirement(UpgradeCardTag.Weapon, 2)));
         SetCardTuning(cards, "sure_critical", 1, new UpgradeCardOfferConditions(
             6,
             new[]
@@ -200,6 +379,10 @@ public static class UpgradeCardSystemBuilder
             },
             rangerSaber != null ? new[] { rangerSaber } : Array.Empty<WeaponDataSO>(),
             Array.Empty<string>()));
+        SetCardTuning(cards, "immortal_second_wind", 1, RequiredTags(
+            6,
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.Defense, 2),
+            new UpgradeCardTagPickRequirement(UpgradeCardTag.LowHealth, 1)));
     }
 
     private static UpgradeCardSO CreatePropertyCard(
@@ -703,6 +886,44 @@ public static class UpgradeCardSystemBuilder
             Array.Empty<UpgradeCardTagPickRequirement>(),
             weapon != null ? new[] { weapon } : Array.Empty<WeaponDataSO>(),
             Array.Empty<string>());
+    }
+
+    private static UpgradeCardOfferConditions RequiredWeaponTags(int minWave, params WeaponTagRequirement[] requirements)
+    {
+        return new UpgradeCardOfferConditions(
+            minWave,
+            Array.Empty<UpgradeCardTagPickRequirement>(),
+            Array.Empty<WeaponDataSO>(),
+            requirements,
+            Array.Empty<string>());
+    }
+
+    private static UpgradeCardOfferConditions Conditions(
+        int minWave,
+        IReadOnlyList<UpgradeCardTagPickRequirement> requiredTags,
+        IReadOnlyList<WeaponDataSO> requiredWeapons,
+        IReadOnlyList<string> mutuallyExclusiveCardIds)
+    {
+        return new UpgradeCardOfferConditions(
+            minWave,
+            requiredTags,
+            requiredWeapons,
+            mutuallyExclusiveCardIds);
+    }
+
+    private static UpgradeCardOfferConditions Conditions(
+        int minWave,
+        IReadOnlyList<UpgradeCardTagPickRequirement> requiredTags,
+        IReadOnlyList<WeaponDataSO> requiredWeapons,
+        IReadOnlyList<WeaponTagRequirement> requiredWeaponTags,
+        IReadOnlyList<string> mutuallyExclusiveCardIds)
+    {
+        return new UpgradeCardOfferConditions(
+            minWave,
+            requiredTags,
+            requiredWeapons,
+            requiredWeaponTags,
+            mutuallyExclusiveCardIds);
     }
 
     private static UpgradeCardOfferConditions MutuallyExclusive(params string[] mutuallyExclusiveCardIds)

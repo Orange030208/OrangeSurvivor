@@ -95,7 +95,7 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing tooltip presenter.");
         }
 
-        if (moveJoystick == null && GetComponentInChildren<MobileJoystick>(true) == null)
+        if (moveJoystick == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing move joystick.");
         }

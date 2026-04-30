@@ -22,6 +22,7 @@ public class CharacterButton : UIScrollListItemBase
         clickTarget.OnClicked += () =>
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+            RuntimeMotion?.Play(UIMotionClipIds.EMPHASIS);
             onClick?.Invoke();
         };
     }
@@ -30,7 +31,7 @@ public class CharacterButton : UIScrollListItemBase
     {
         isSelected = selected;
         RuntimeMotion?.Kill();
-        RuntimeMotion?.Play(isSelected ? UIMotionAction.Enter : UIMotionAction.Exit);
+        RuntimeMotion?.Play(isSelected ? UIMotionClipIds.HOVER_IN : UIMotionClipIds.HOVER_OUT);
     }
 
     protected override void OnPresentationRefreshed()
@@ -41,6 +42,6 @@ public class CharacterButton : UIScrollListItemBase
     private void SetSelectedImmediate(bool selected)
     {
         RuntimeMotion?.Kill();
-        RuntimeMotion?.SetImmediate(selected ? UIMotionAction.Enter : UIMotionAction.Exit);
+        RuntimeMotion?.SetImmediate(selected ? UIMotionClipIds.HOVER_IN : UIMotionClipIds.HOVER_OUT);
     }
 }

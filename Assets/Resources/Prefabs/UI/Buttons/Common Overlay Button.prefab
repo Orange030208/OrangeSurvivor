@@ -222,8 +222,8 @@ GameObject:
   - component: {fileID: 949713136473417128}
   - component: {fileID: 2738362673911831729}
   - component: {fileID: -484795988758975153}
-  - component: {fileID: 6997324325739695970}
-  - component: {fileID: 3291148694776631573}
+  - component: {fileID: 1011265317421567386}
+  - component: {fileID: 4970536074624188713}
   m_Layer: 5
   m_Name: Common Overlay Button
   m_TagString: Untagged
@@ -316,7 +316,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &6997324325739695970
+--- !u!114 &1011265317421567386
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -325,78 +325,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3623396138096017967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57dac980b4af37b4e8ae14703092c703, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  actionClips:
-  - action: 0
-    pose:
-      fade: 1
-      alpha: 0
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 0.94
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 0.96
-      rotate: 0
-      rotationZ: 0
-    duration: 0.14
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
-  - action: 3
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.04
-      rotate: 0
-      rotationZ: 0
-    duration: 0.12
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 0.97
-      rotate: 0
-      rotationZ: 0
-    duration: 0.06
-    ease: 6
-    deactivateOnComplete: 0
---- !u!114 &3291148694776631573
+  definition: {fileID: 11400000, guid: b139574eca3aa2c48b1e4b7d192e2bbc, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+--- !u!114 &4970536074624188713
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -405,22 +343,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 3623396138096017967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c185814a58a85f49b9c59e5ff79f5c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 4929a3e45707a2e4cbfa06d4755193c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motion: {fileID: 6997324325739695970}
-  playEnterOnEnable: 0
+  player: {fileID: 1011265317421567386}
   bindings:
-  - motionEvent: 0
-    action: 3
-  - motionEvent: 1
-    action: 0
-  - motionEvent: 2
-    action: 4
-  - motionEvent: 3
-    action: 0
-  - motionEvent: 4
-    action: 2
+  - triggerEvent: 1
+    clipId: Release
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 2
+    clipId: HoverOut
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 3
+    clipId: Press
+    requireLeftButton: 1
+    delay: 0
+  - triggerEvent: 4
+    clipId: Release
+    requireLeftButton: 1
+    delay: 0
 --- !u!1 &5904449335526832169
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,6 +70,20 @@ public class SpawnIndicator : MonoBehaviour
         });
     }
 
+    public void Cancel()
+    {
+        if (!isPlaying)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        pulseTween?.Kill();
+        pulseTween = null;
+        isPlaying = false;
+        Destroy(gameObject);
+    }
+
     private void SetVisualVisible(bool visible)
     {
         if (visualRoot != null)

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
+public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEntityAttackDefinitionProvider
 {
     [Header("组件")] [SerializeField] private new Collider2D collider;
 
@@ -18,6 +18,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
     private EnemySO enemyData;
     private EnemyBrain brain;
     private Rigidbody2D rb;
+    private bool isRuntimeRegistered;
 
     public override IMovable MoveComponent => activeMovement;
 
@@ -26,7 +27,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 
     public IAnimatable AnimComponent => animComponent;
     public HealthComponent HealthComponent => healthComponent;
-    public EnemyRole Role => enemyData.role;
+    public EnemyRole Role => enemyData != null ? enemyData.role : EnemyRole.Normal;
     public Entity TargetEntity => targetEntity;
     public EnemySO EnemyData => enemyData;
     public PropertiesManager PropertiesManager => propertiesManager;
@@ -34,6 +35,8 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
     public EntityAnimationConfig AnimationConfig => enemyData.AnimConfig;
+    public IReadOnlyList<EnemyAttackDefinitionSO> AttackDefinitions =>
+        enemyData != null ? enemyData.GetAttackDefinitions() : Array.Empty<EnemyAttackDefinitionSO>();
 
     private void Awake()
     {
@@ -58,6 +61,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 
     private void OnDisable()
     {
+        UnregisterRuntime();
         DisableAllComponents();
     }
 
@@ -85,8 +89,11 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
                 $"{nameof(Enemy)} requires an explicit non-null {nameof(Entity)} target.");
         }
 
+        UnregisterRuntime();
+
         this.enemyData = enemyData;
         targetEntity = target;
+        RegisterRuntime();
     }
 
     public override void EnableRuntime()
@@ -117,5 +124,38 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
         {
             collider.enabled = false;
         }
+    }
+
+    public void DefeatSilently()
+    {
+        if (IsRuntimeEnabled)
+        {
+            DisableRuntime();
+        }
+
+        UnregisterRuntime();
+        Destroy(gameObject);
+    }
+
+    private void RegisterRuntime()
+    {
+        if (isRuntimeRegistered)
+        {
+            return;
+        }
+
+        isRuntimeRegistered = true;
+        GameEventBus.Publish(new EnemyRegisteredEvent(this, Role));
+    }
+
+    private void UnregisterRuntime()
+    {
+        if (!isRuntimeRegistered)
+        {
+            return;
+        }
+
+        isRuntimeRegistered = false;
+        GameEventBus.Publish(new EnemyUnregisteredEvent(this, Role));
     }
 }

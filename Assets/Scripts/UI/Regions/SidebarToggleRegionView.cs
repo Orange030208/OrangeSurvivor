@@ -13,7 +13,7 @@ public sealed class SidebarToggleRegionView
         string ownerName,
         string missingSidebarFieldName,
         string missingToggleButtonFieldName,
-        UISidebarRevealMotion sidebar,
+        MonoBehaviour sidebar,
         UIClickTarget toggleButton)
     {
         motion = new SidebarRegionMotion(ownerTypeName, ownerName, missingSidebarFieldName, sidebar);

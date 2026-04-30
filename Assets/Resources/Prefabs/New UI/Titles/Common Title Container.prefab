@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5899074810511018433}
   - component: {fileID: 3095811099161380947}
   - component: {fileID: 1485730427235718722}
-  - component: {fileID: 3500834685999541277}
+  - component: {fileID: 8542278114557876959}
   m_Layer: 5
   m_Name: Common Title Container
   m_TagString: Untagged
@@ -90,7 +90,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3500834685999541277
+--- !u!114 &8542278114557876959
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,54 +99,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2215124819933001492}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionIntensity: 1
-  useUnscaledTime: 1
-  hiddenDirection: 2
-  extraHideOffset: 0
-  setInactiveOnHide: 1
-  actionClips:
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.24
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.22
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.02
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
+  definition: {fileID: 11400000, guid: ae14a2f7639ed8e4a84d6fe856f7dcb8, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &5655752049956636402
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   rarity: 0
   tags: 01000000
-  maxPickCount: 4
+  maxPickCount: 0
   baseWeight: 90
   offerConditions:
     minWave: 1

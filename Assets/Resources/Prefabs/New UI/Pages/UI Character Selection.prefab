@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 4790502736386935231}
   - component: {fileID: 2007781208652475618}
   - component: {fileID: 2802882096935603422}
-  - component: {fileID: 8400708949562964699}
+  - component: {fileID: 981638782431488116}
   m_Layer: 5
   m_Name: Character Scroll View
   m_TagString: Untagged
@@ -642,12 +642,12 @@ MonoBehaviour:
   revealConfig:
     playOnRefresh: 1
     useUnscaledTime: 1
-    playTogether: 0
+    playTogether: 1
     startDelay: 0
     itemStagger: 0
     sequenceEase: 1
-    initialAction: 1
-    revealAction: 0
+    initialClipId: Hide
+    revealClipId: Show
 --- !u!225 &2802882096935603422
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -660,7 +660,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &8400708949562964699
+--- !u!114 &981638782431488116
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -669,72 +669,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7485156174328488886}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0825943619340374aaa916201c2b96e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Sidebar/Panel Soft
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: 33d0717d97aa85d49b67265aeaf6ed26, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.28
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.28
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 1
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.2
-    ease: 5
-    deactivateOnComplete: 0
-  hiddenDirection: 3
-  extraHideOffset: 0
-  useEnterOvershoot: 1
-  enterOvershootDistance: 36
-  enterOvershootDurationRatio: 0.78
-  enterOvershootEase: 9
-  enterSettleEase: 9
+  definition: {fileID: 11400000, guid: 7a61d89156dd13c4983b19c393272139, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &8098750875393023848
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,7 +691,7 @@ GameObject:
   - component: {fileID: 7129777176377492296}
   - component: {fileID: 7430751627697373610}
   - component: {fileID: 2836150192426863821}
-  - component: {fileID: 1073940139809380046}
+  - component: {fileID: 5605757101756772419}
   m_Layer: 5
   m_Name: Character Detail
   m_TagString: Untagged
@@ -844,7 +787,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1073940139809380046
+--- !u!114 &5605757101756772419
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -853,116 +796,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8098750875393023848}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Default
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: 79465ad4d1c07f0458e16c663b626735, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 9
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 1
-      offset: {x: 0, y: -18}
-      scale: 1
-      scaleMultiplier: 0.96
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 8
-    deactivateOnComplete: 0
-  - action: 5
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 4}
-      scale: 1
-      scaleMultiplier: 1.03
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.12
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 6
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.1
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.12
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.16
-    ease: 27
-    deactivateOnComplete: 0
+  definition: {fileID: 11400000, guid: 477f956c1e2d9b7419bb4f8845e32f29, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1001 &230407803195905079
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1859,22 +1701,49 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3500834685999541277, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2215124819933001492, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2282153218572373935}
   m_SourcePrefab: {fileID: 100100000, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
 --- !u!224 &1647299712705719488 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4960495516222242305, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
   m_PrefabInstance: {fileID: 5911918164701434561}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5527867783711598037 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2215124819933001492, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
+  m_PrefabInstance: {fileID: 5911918164701434561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2282153218572373935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527867783711598037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: f4e128700b317614fb81de4ac57295c5, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!114 &8718368499556981394 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3095811099161380947, guid: 1763c795fe5249445aa769a0a30d0393, type: 3}
   m_PrefabInstance: {fileID: 5911918164701434561}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5527867783711598037}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -2103,10 +1972,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3291148694776631573, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
-      propertyPath: motionSource
-      value: 
-      objectReference: {fileID: 897119806931785790}
     - target: {fileID: 3623396138096017967, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
       propertyPath: m_Name
       value: Arrow Left Button
@@ -2116,17 +1981,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
---- !u!114 &897119806931785790 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6339696588121450102, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}
-  m_PrefabInstance: {fileID: 6595545582547172936}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5309876654273381150 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1312919602413714774, guid: 8023cd6b1eafd084fa86efc25872f3e0, type: 3}

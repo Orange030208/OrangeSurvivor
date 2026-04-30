@@ -20,11 +20,13 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
 
     [Header("状态面板")]
     [FormerlySerializedAs("propertiesSidebar")]
-    [SerializeField] private UISidebarRevealMotion statusSidebar;
+    [SerializeField] private MonoBehaviour statusSidebar;
+    [SerializeField] private CanvasGroup statusPanelCanvasGroup;
 
     [Header("设置面板")]
     [FormerlySerializedAs("inventorySidebar")]
-    [SerializeField] private UISidebarRevealMotion settingsSidebar;
+    [SerializeField] private MonoBehaviour settingsSidebar;
+    [SerializeField] private CanvasGroup settingsPanelCanvasGroup;
 
     [SerializeField] private float slideDuration = DEFAULT_SLIDE_DURATION;
 
@@ -40,8 +42,8 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         base.Awake();
         ValidateConfiguration();
         InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
-        statusPanel = new PauseMenuPanelBinding("status panel", statusButton, statusSidebar);
-        settingsPanel = new PauseMenuPanelBinding("settings panel", settingsButton, settingsSidebar);
+        statusPanel = new PauseMenuPanelBinding("status panel", statusButton, statusSidebar, statusPanelCanvasGroup);
+        settingsPanel = new PauseMenuPanelBinding("settings panel", settingsButton, settingsSidebar, settingsPanelCanvasGroup);
         InitContentPanels();
     }
 
@@ -313,20 +315,46 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
             throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing menu button.");
         }
 
-        ValidateOptionalPanelPair(statusButton, statusSidebar, "status button", "status sidebar");
-        ValidateOptionalPanelPair(settingsButton, settingsSidebar, "settings button", "settings sidebar");
+        ValidateOptionalPanelPair(statusButton, statusSidebar, statusPanelCanvasGroup, "status button", "status sidebar", "status panel canvas group");
+        ValidateOptionalPanelPair(settingsButton, settingsSidebar, settingsPanelCanvasGroup, "settings button", "settings sidebar", "settings panel canvas group");
     }
 
-    private void ValidateOptionalPanelPair(UIClickTarget button, UISidebarRevealMotion sidebar, string buttonFieldName, string sidebarFieldName)
+    private void ValidateOptionalPanelPair(
+        UIClickTarget button,
+        MonoBehaviour sidebar,
+        CanvasGroup panelCanvasGroup,
+        string buttonFieldName,
+        string sidebarFieldName,
+        string panelCanvasGroupFieldName)
     {
-        if (button == null && sidebar == null)
+        if (button == null && sidebar == null && panelCanvasGroup == null)
         {
             return;
         }
 
-        if (button == null && sidebar != null)
+        if (button == null)
         {
-            Debug.LogWarning($"{nameof(GamePauseMenu)} '{name}' has {sidebarFieldName} but no {buttonFieldName}.", this);
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' has {sidebarFieldName} but no {buttonFieldName}.");
+        }
+
+        if (sidebar == null && panelCanvasGroup == null)
+        {
+            return;
+        }
+
+        if (sidebar == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' has {panelCanvasGroupFieldName} but no {sidebarFieldName}.");
+        }
+
+        if (panelCanvasGroup == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' has {sidebarFieldName} but no {panelCanvasGroupFieldName}.");
+        }
+
+        if (sidebar is not IUIRuntimeMotion)
+        {
+            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' {sidebarFieldName} must implement {nameof(IUIRuntimeMotion)}.");
         }
     }
 
@@ -339,19 +367,22 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
     {
         private readonly string panelName;
         private readonly UIClickTarget button;
-        private readonly UISidebarRevealMotion sidebar;
-        private CanvasGroup canvasGroup;
+        private readonly MonoBehaviour sidebar;
+        private readonly IUIRuntimeMotion motion;
+        private readonly CanvasGroup canvasGroup;
 
         private UnityAction clickHandler;
 
-        public PauseMenuPanelBinding(string panelName, UIClickTarget button, UISidebarRevealMotion sidebar)
+        public PauseMenuPanelBinding(string panelName, UIClickTarget button, MonoBehaviour sidebar, CanvasGroup canvasGroup)
         {
             this.panelName = string.IsNullOrWhiteSpace(panelName) ? "content panel" : panelName;
             this.button = button;
             this.sidebar = sidebar;
+            this.canvasGroup = canvasGroup;
+            motion = sidebar as IUIRuntimeMotion;
         }
 
-        public bool IsConfigured => button != null && sidebar != null;
+        public bool IsConfigured => button != null && motion != null && canvasGroup != null;
 
         private bool HasButton => button != null;
 
@@ -381,57 +412,44 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         public Tween PlayShow()
         {
             SetInteractionEnabled(true);
-            return sidebar != null ? sidebar.Play(UIMotionAction.Show) : null;
+            return motion?.Play(UIMotionClipIds.SHOW);
         }
 
         public Tween PlayHide()
         {
             SetInteractionEnabled(false);
-            return sidebar != null ? sidebar.Play(UIMotionAction.Hide) : null;
+            return motion?.Play(UIMotionClipIds.HIDE);
         }
 
         public void SetHiddenImmediate()
         {
-            sidebar?.SetHiddenImmediate();
+            motion?.SetImmediate(UIMotionClipIds.HIDE);
             SetInteractionEnabled(false);
         }
 
         public void RefreshDefaults()
         {
-            sidebar?.RefreshDefaults();
+            motion?.RefreshDefaults();
         }
 
         public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
         {
-            sidebar?.ConfigureTimings(showDuration, showEase, hideDuration, hideEase);
         }
 
         public void Kill()
         {
-            sidebar?.Kill();
+            motion?.Kill();
         }
 
         private void SetInteractionEnabled(bool enabled)
         {
-            CanvasGroup group = ResolveCanvasGroup();
-            if (group == null)
+            if (canvasGroup == null)
             {
                 return;
             }
 
-            group.interactable = enabled;
-            group.blocksRaycasts = enabled;
-        }
-
-        private CanvasGroup ResolveCanvasGroup()
-        {
-            if (canvasGroup != null || sidebar == null)
-            {
-                return canvasGroup;
-            }
-
-            canvasGroup = sidebar.GetComponent<CanvasGroup>();
-            return canvasGroup;
+            canvasGroup.interactable = enabled;
+            canvasGroup.blocksRaycasts = enabled;
         }
 
         public override string ToString()

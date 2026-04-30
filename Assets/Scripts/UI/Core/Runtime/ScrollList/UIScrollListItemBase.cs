@@ -6,14 +6,14 @@ using UnityEngine;
 public abstract class UIScrollListItemBase : MonoBehaviour, IUIScrollListItem
 {
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private UIRuntimeMotionBase runtimeMotionBehaviour;
+    [SerializeField] private MonoBehaviour runtimeMotionBehaviour;
 
     private RectTransform itemRectTransform;
-    private UIRuntimeMotionBase runtimeMotion;
+    private IUIRuntimeMotion runtimeMotion;
 
     public RectTransform ItemRectTransform => itemRectTransform;
     public GameObject ItemGameObject => gameObject;
-    protected UIRuntimeMotionBase RuntimeMotion => runtimeMotion;
+    protected IUIRuntimeMotion RuntimeMotion => runtimeMotion;
 
     protected virtual void Awake()
     {
@@ -53,16 +53,16 @@ public abstract class UIScrollListItemBase : MonoBehaviour, IUIScrollListItem
         itemRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, layoutSize.y);
     }
 
-    public Tween PlayReveal(UIMotionAction action, float delay)
+    public Tween PlayReveal(string clipId, float delay)
     {
         ResolveReferences();
-        return runtimeMotion?.Play(action, delay);
+        return runtimeMotion?.Play(clipId, delay);
     }
 
-    public void SetRevealImmediate(UIMotionAction action)
+    public void SetRevealImmediate(string clipId)
     {
         ResolveReferences();
-        runtimeMotion?.SetImmediate(action);
+        runtimeMotion?.SetImmediate(clipId);
     }
 
     public void KillRevealMotion()
@@ -82,13 +82,32 @@ public abstract class UIScrollListItemBase : MonoBehaviour, IUIScrollListItem
 
         if (runtimeMotion == null)
         {
-            runtimeMotion = runtimeMotionBehaviour;
-            if (runtimeMotion == null && runtimeMotionBehaviour != null)
-            {
-                runtimeMotion = runtimeMotionBehaviour.GetComponent<UIRuntimeMotionBase>();
-            }
-
-            runtimeMotion ??= GetComponent<UIRuntimeMotionBase>();
+            runtimeMotion = ResolveRuntimeMotion(runtimeMotionBehaviour);
+            runtimeMotion ??= ResolveRuntimeMotion(this);
         }
+    }
+
+    private static IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source)
+    {
+        if (source == null)
+        {
+            return null;
+        }
+
+        if (source is IUIRuntimeMotion directMotion)
+        {
+            return directMotion;
+        }
+
+        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] is IUIRuntimeMotion motion)
+            {
+                return motion;
+            }
+        }
+
+        return null;
     }
 }

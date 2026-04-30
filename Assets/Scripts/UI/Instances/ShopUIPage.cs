@@ -12,12 +12,12 @@ public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
     [SerializeField] private TextMeshProUGUI currencyText;
 
     [Header("属性面板(左)")]
-    [SerializeField] private UISidebarRevealMotion propertiesSidebar;
+    [SerializeField] private MonoBehaviour propertiesSidebar;
     [SerializeField] private UIClickTarget propertiesToggleButton;
     [SerializeField] private Describer propertiesDescriber;
 
     [Header("背包面板(右)")]
-    [SerializeField] private UISidebarRevealMotion inventorySidebar;
+    [SerializeField] private MonoBehaviour inventorySidebar;
     [SerializeField] private UIClickTarget inventoryToggleButton;
     [SerializeField] private InventoryUI inventoryUI;
 

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public sealed class ShopInventoryRegionView : ISidebarRegion
 {
@@ -6,7 +7,7 @@ public sealed class ShopInventoryRegionView : ISidebarRegion
 
     public ShopInventoryRegionView(
         string ownerName,
-        UISidebarRevealMotion sidebar,
+        MonoBehaviour sidebar,
         UIClickTarget toggleButton)
     {
         string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopInventoryRegionView) : ownerName;

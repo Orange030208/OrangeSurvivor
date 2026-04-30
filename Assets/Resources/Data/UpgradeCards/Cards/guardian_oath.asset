@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: guardian_oath
+  m_EditorClassIdentifier: 
+  cardId: guardian_oath
+  title: "\u5B88\u62A4\u8A93\u7EA6"
+  icon: {fileID: 0}
+  rarity: 2
+  tags: 010000000b000000
+  maxPickCount: 1
+  baseWeight: 34
+  offerConditions:
+    minWave: 4
+    requiredTagPickCounts:
+    - tag: 1
+      minPickCount: 2
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds:
+    - blood_pact
+    - glass_cannon
+  description: "\u4F24\u5BB3\u51CF\u514D +10%\uFF0C\u6CBB\u7597\u6548\u679C +15%\uFF0C\u653B\u51FB\u529B
+    -8%\u3002"
+  propertyModifiers:
+  - propType: 25
+    modifierType: 0
+    value: 0.1
+  - propType: 26
+    modifierType: 2
+    value: 0.15
+  - propType: 0
+    modifierType: 2
+    value: -0.08
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

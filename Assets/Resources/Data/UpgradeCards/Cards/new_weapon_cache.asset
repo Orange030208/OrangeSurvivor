@@ -27,11 +27,11 @@ MonoBehaviour:
   description: "\u83B7\u5F97\u4E00\u628A\u968F\u673A 1 \u7EA7\u6B66\u5668\u3002"
   propertyModifiers: []
   specialFeatures:
-  - rid: 451547002770030653
+  - rid: 451547002770030690
   references:
     version: 2
     RefIds:
-    - rid: 451547002770030653
+    - rid: 451547002770030690
       type: {class: AddRandomWeaponUpgradeCardEffect, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0

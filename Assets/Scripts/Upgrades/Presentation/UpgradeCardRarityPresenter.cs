@@ -28,6 +28,24 @@ public sealed class UpgradeCardRarityPresenter : MonoBehaviour
         }
     }
 
+    public IReadOnlyList<Material> RuntimeMaterials
+    {
+        get
+        {
+            List<Material> materials = new(runtimeBindings.Count);
+            for (int i = 0; i < runtimeBindings.Count; i++)
+            {
+                Material material = runtimeBindings[i].AppliedMaterial;
+                if (material != null)
+                {
+                    materials.Add(material);
+                }
+            }
+
+            return materials;
+        }
+    }
+
     public void Apply(UpgradeCardRarityPresentationProfile profile)
     {
         ReleaseRuntimeMaterials();
@@ -131,6 +149,7 @@ public sealed class UpgradeCardRarityPresenter : MonoBehaviour
         runtimeBindings.Add(new RuntimeMaterialBinding(
             target,
             originalMaterial,
+            material,
             shaderTarget.InstantiateMaterial ? material : null));
     }
 
@@ -202,15 +221,17 @@ public sealed class UpgradeCardRarityPresenter : MonoBehaviour
 
     private readonly struct RuntimeMaterialBinding
     {
-        public RuntimeMaterialBinding(Graphic target, Material originalMaterial, Material runtimeMaterial)
+        public RuntimeMaterialBinding(Graphic target, Material originalMaterial, Material appliedMaterial, Material runtimeMaterial)
         {
             Target = target;
             OriginalMaterial = originalMaterial;
+            AppliedMaterial = appliedMaterial;
             RuntimeMaterial = runtimeMaterial;
         }
 
         public Graphic Target { get; }
         public Material OriginalMaterial { get; }
+        public Material AppliedMaterial { get; }
         public Material RuntimeMaterial { get; }
     }
 }

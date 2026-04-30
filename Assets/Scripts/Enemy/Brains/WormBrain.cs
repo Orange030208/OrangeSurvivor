@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(RangeAttackComponent))]
+[RequireComponent(typeof(EnemyAttackController))]
 public class WormBrain : EnemyBrain
 {
     public enum WormAIState
@@ -14,21 +14,21 @@ public class WormBrain : EnemyBrain
 
     private readonly StateMachine<WormAIState> stateMachine = new();
 
-    private IAttackable rangeAttack;
+    private EnemyAttackController attackController;
     private WormEnemySO enemyData;
     private MovementStrategyBase currentMoveStrategy;
-    private AttackStrategyBase currentAttackStrategy;
+    private EnemyAttackDefinitionSO currentAttackDefinition;
 
     protected override void OnInitialize(Entity owner)
     {
         base.OnInitialize(owner);
 
-        rangeAttack = owner.GetComponent<RangeAttackComponent>();
+        attackController = owner.GetComponent<EnemyAttackController>();
         enemyData = this.owner.EnemyData as WormEnemySO;
 
-        if (rangeAttack == null)
+        if (attackController == null)
         {
-            throw new MissingComponentException($"{nameof(WormBrain)} requires a {nameof(RangeAttackComponent)}.");
+            throw new MissingComponentException($"{nameof(WormBrain)} requires an {nameof(EnemyAttackController)}.");
         }
 
         if (enemyData == null)
@@ -74,14 +74,14 @@ public class WormBrain : EnemyBrain
             throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.retreatMoveStrategy)}.");
         }
 
-        if (enemyData.attackStrategy == null)
+        if (enemyData.attackDefinition == null)
         {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.attackStrategy)}.");
+            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.attackDefinition)}.");
         }
 
-        if (enemyData.retreatAttackStrategy == null)
+        if (enemyData.retreatAttackDefinition == null)
         {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.retreatAttackStrategy)}.");
+            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.retreatAttackDefinition)}.");
         }
     }
 
@@ -90,9 +90,9 @@ public class WormBrain : EnemyBrain
         currentMoveStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
     }
 
-    private void SetAttackStrategy(AttackStrategyBase strategy)
+    private void SetAttackDefinition(EnemyAttackDefinitionSO attackDefinition)
     {
-        currentAttackStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+        currentAttackDefinition = attackDefinition ?? throw new ArgumentNullException(nameof(attackDefinition));
     }
 
     private float GetDistanceToTarget()
@@ -121,6 +121,7 @@ public class WormBrain : EnemyBrain
 
             if (brain.target == null)
             {
+                Debug.Log("丢失目标");
                 return;
             }
             
@@ -131,7 +132,8 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.rangeAttack.CanAttack && brain.rangeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
             }
@@ -170,7 +172,8 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.rangeAttack.CanAttack && brain.rangeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
             }
@@ -200,7 +203,7 @@ public class WormBrain : EnemyBrain
         public override void OnEnter()
         {
             brain.SetMoveStrategy(brain.enemyData.retreatMoveStrategy);
-            brain.SetAttackStrategy(brain.enemyData.retreatAttackStrategy);
+            brain.SetAttackDefinition(brain.enemyData.retreatAttackDefinition);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -219,7 +222,8 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.rangeAttack.CanAttack && brain.rangeAttack.IsInAttackRange(brain.target))
+            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
+                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
                 return;
@@ -256,7 +260,7 @@ public class WormBrain : EnemyBrain
         {
             attackCommitted = false;
             attackFinished = false;
-            brain.SetAttackStrategy(brain.enemyData.attackStrategy);
+            brain.SetAttackDefinition(brain.enemyData.attackDefinition);
             brain.FaceTarget();
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
             brain.currentMovable.StopMoving();
@@ -277,9 +281,11 @@ public class WormBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (!attackFinished && brain.rangeAttack.CanAttack)
+                if (!attackFinished &&
+                    brain.attackController.CanUse(brain.currentAttackDefinition) &&
+                    brain.attackController.IsInAttackRange(brain.currentAttackDefinition, brain.target))
                 {
-                    brain.currentAttackStrategy.ExecuteAttack(brain.rangeAttack, brain.owner, brain.target);
+                    brain.attackController.TryUse(brain.currentAttackDefinition, brain.target);
                     attackFinished = true;
                 }
             }
@@ -292,7 +298,7 @@ public class WormBrain : EnemyBrain
             {
                 brain.stateMachine.ChangeState(WormAIState.Retreat);
             }
-            else if (!brain.rangeAttack.IsInAttackRange(brain.target))
+            else if (!brain.attackController.IsInAttackRange(brain.currentAttackDefinition, brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Approach);
             }

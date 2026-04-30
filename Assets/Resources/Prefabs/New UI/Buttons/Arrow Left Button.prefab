@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 949713136473417128}
   - component: {fileID: 2738362673911831729}
   - component: {fileID: -484795988758975153}
-  - component: {fileID: 2126647607020705311}
-  - component: {fileID: 6339696588121450102}
-  - component: {fileID: 3291148694776631573}
+  - component: {fileID: 2722825378388985586}
+  - component: {fileID: 7765799541302021056}
   m_Layer: 5
   m_Name: Arrow Left Button
   m_TagString: Untagged
@@ -105,7 +104,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &2126647607020705311
+--- !u!114 &2722825378388985586
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,48 +113,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 3623396138096017967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab32df935b83c62429e04183b836a38e, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: 905f97a38b798664a9c2b3ab76f9c9dd, type: 2}
+  targets:
+    bindings: []
   currentConfigOption: 
-  targetImage: {fileID: 2738362673911831729}
-  useUnscaledTime: 1
-  keepLastFrameOnComplete: 1
-  actionClips:
-  - action: 2
-    frameSourceMode: 0
-    sourceAction: 4
-    frames:
-    - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-    - {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-    timingMode: 0
-    framesPerSecond: 12
-    totalDuration: 0.5
-    reverse: 0
-    deactivateOnComplete: 0
-    frameEvents: []
-  - action: 3
-    frameSourceMode: 1
-    sourceAction: 2
-    frames: []
-    timingMode: 0
-    framesPerSecond: 12
-    totalDuration: 0.5
-    reverse: 1
-    deactivateOnComplete: 0
-    frameEvents: []
-  - action: 0
-    frameSourceMode: 1
-    sourceAction: 4
-    frames:
-    - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-    timingMode: 0
-    framesPerSecond: 12
-    totalDuration: 0.5
-    reverse: 1
-    deactivateOnComplete: 0
-    frameEvents: []
---- !u!114 &6339696588121450102
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+--- !u!114 &7765799541302021056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,177 +131,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 3623396138096017967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24128ce6bc535fb40ad0a405dd6e1cee, type: 3}
+  m_Script: {fileID: 11500000, guid: 4929a3e45707a2e4cbfa06d4755193c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentConfigOption: Button/Soft
-  motionIntensity: 1
-  useUnscaledTime: 1
-  preset: {fileID: 11400000, guid: d024f6662fe08884383d0c65ef6c9b0b, type: 2}
-  actionClips:
-  - action: 7
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 0
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.18
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 1
-    pose:
-      fade: 1
-      alpha: 0
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 0.98
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.14
-    ease: 5
-    deactivateOnComplete: 0
-  - action: 5
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 1}
-      scale: 1
-      scaleMultiplier: 1.01
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 6
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 0
-      scaleMultiplier: 1
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 3
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: 1}
-      scale: 1
-      scaleMultiplier: 1.02
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 2
-    pose:
-      fade: 0
-      alpha: 1
-      move: 1
-      offset: {x: 0, y: -2}
-      scale: 1
-      scaleMultiplier: 0.98
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.08
-    ease: 6
-    deactivateOnComplete: 0
-  - action: 4
-    pose:
-      fade: 0
-      alpha: 1
-      move: 0
-      offset: {x: 0, y: 0}
-      scale: 1
-      scaleMultiplier: 1.08
-      scaleX: 0
-      scaleXMultiplier: 1
-      scaleY: 0
-      scaleYMultiplier: 1
-      rotate: 0
-      rotationZ: 0
-    duration: 0.14
-    ease: 6
-    deactivateOnComplete: 0
---- !u!114 &3291148694776631573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3623396138096017967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c185814a58a85f49b9c59e5ff79f5c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  motionSource: {fileID: 2126647607020705311}
-  playEnterOnEnable: 0
+  player: {fileID: 2722825378388985586}
   bindings:
-  - motionEvent: 0
-    interactionMotion: 1
-    action: 5
-  - motionEvent: 1
-    interactionMotion: 2
-    action: 6
-  - motionEvent: 2
-    interactionMotion: 3
-    action: 2
-  - motionEvent: 3
-    interactionMotion: 4
-    action: 3
-  - motionEvent: 4
-    interactionMotion: 5
-    action: 4
+  - triggerEvent: 1
+    clipId: HoverIn
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 2
+    clipId: HoverOut
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 3
+    clipId: Press
+    requireLeftButton: 1
+    delay: 0
+  - triggerEvent: 4
+    clipId: Release
+    requireLeftButton: 1
+    delay: 0

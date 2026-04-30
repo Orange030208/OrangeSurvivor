@@ -49,6 +49,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private ReorderableList specialFeaturesList;
     private ReorderableList requiredTagsList;
     private ReorderableList requiredWeaponsList;
+    private ReorderableList requiredWeaponTagsList;
     private ReorderableList mutuallyExclusiveList;
     private ReorderableList poolCardsList;
     private ReorderableList profilesList;
@@ -331,7 +332,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
         DrawSection("抽取", () =>
         {
-            EditorGUILayout.PropertyField(cardObject.FindProperty("maxPickCount"), new GUIContent("最大选择次数"));
+            EditorGUILayout.PropertyField(cardObject.FindProperty("maxPickCount"), new GUIContent("最大选择次数", "0 表示不限制。"));
             EditorGUILayout.PropertyField(cardObject.FindProperty("baseWeight"), new GUIContent("基础权重"));
             SerializedProperty conditions = cardObject.FindProperty("offerConditions");
             if (conditions != null)
@@ -339,6 +340,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
                 EditorGUILayout.PropertyField(conditions.FindPropertyRelative("minWave"), new GUIContent("最小波次"));
                 requiredTagsList?.DoLayoutList();
                 requiredWeaponsList?.DoLayoutList();
+                requiredWeaponTagsList?.DoLayoutList();
                 mutuallyExclusiveList?.DoLayoutList();
             }
         });
@@ -655,7 +657,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         Rect titleRect = new(rect.x + 88f, rect.y + 22f, rect.width - 108f, 24f);
         GUI.Label(titleRect, string.IsNullOrWhiteSpace(snapshot.Title) ? "(未命名)" : snapshot.Title, PreviewTitleStyle());
         EditorGUI.LabelField(new Rect(titleRect.x, titleRect.yMax + 2f, titleRect.width, 18f), $"{snapshot.Rarity} · {snapshot.CardId}", EditorStyles.miniLabel);
-        EditorGUI.LabelField(new Rect(titleRect.x, titleRect.yMax + 20f, titleRect.width, 18f), $"可选 {snapshot.PickCount}/{snapshot.MaxPickCount} · 权重 {editingCard.BaseWeight}", EditorStyles.miniLabel);
+        EditorGUI.LabelField(new Rect(titleRect.x, titleRect.yMax + 20f, titleRect.width, 18f), $"{BuildPreviewPickText(snapshot)} · 权重 {editingCard.BaseWeight}", EditorStyles.miniLabel);
 
         Rect tagRect = new(rect.x + 18f, rect.y + 96f, rect.width - 36f, 24f);
         DrawTags(tagRect, snapshot.Tags);
@@ -697,11 +699,18 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             UpgradeCardRarity.Legendary => "传说",
             _ => option.Rarity.ToString()
         };
-        string pickText = option.MaxPickCount > 1
+        string pickText = option.HasPickLimit && option.MaxPickCount > 1
             ? $"\n已选择 {option.PickCount}/{option.MaxPickCount}"
             : string.Empty;
         string tagText = BuildGamePreviewTagText(option.Tags);
         return $"{rarityText}{tagText}\n{option.Description}{pickText}";
+    }
+
+    private static string BuildPreviewPickText(UpgradeCardOptionSnapshot snapshot)
+    {
+        return snapshot.HasPickLimit
+            ? $"可选 {snapshot.PickCount}/{snapshot.MaxPickCount}"
+            : $"已选择 {snapshot.PickCount} · 不限制";
     }
 
     private static string BuildGamePreviewTagText(IReadOnlyList<UpgradeCardTag> tags)
@@ -852,6 +861,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             specialFeaturesList = null;
             requiredTagsList = null;
             requiredWeaponsList = null;
+            requiredWeaponTagsList = null;
             mutuallyExclusiveList = null;
             return;
         }
@@ -863,6 +873,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         SerializedProperty conditions = cardObject.FindProperty("offerConditions");
         requiredTagsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredTagPickCounts"), "要求标签选择数");
         requiredWeaponsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredOwnedWeapons"), "要求已拥有武器");
+        requiredWeaponTagsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredOwnedWeaponTags"), "要求已拥有武器标签");
         mutuallyExclusiveList = CreateSimpleList(conditions?.FindPropertyRelative("mutuallyExclusiveCardIds"), "互斥卡牌 Id");
     }
 
@@ -1376,9 +1387,9 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             messages.Add(CardValidationMessage.Error("基础权重必须大于 0。"));
         }
 
-        if (card.MaxPickCount <= 0)
+        if (card.MaxPickCount < UpgradeCardSO.UNLIMITED_PICK_COUNT)
         {
-            messages.Add(CardValidationMessage.Error("最大选择次数必须大于 0。"));
+            messages.Add(CardValidationMessage.Error("最大选择次数不能小于 0。0 表示不限制。"));
         }
 
         if (!card.HasAnyEffect())
@@ -1474,6 +1485,22 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             }
         }
 
+        IReadOnlyList<WeaponTagRequirement> weaponTagRequirements = conditions.RequiredOwnedWeaponTags;
+        HashSet<WeaponTag> requiredWeaponTags = new();
+        for (int i = 0; i < weaponTagRequirements.Count; i++)
+        {
+            WeaponTagRequirement requirement = weaponTagRequirements[i];
+            if (requirement.MinOwnedCount < 1)
+            {
+                messages.Add(CardValidationMessage.Error($"第 {i + 1} 个武器标签要求数量必须大于 0。"));
+            }
+
+            if (!requiredWeaponTags.Add(requirement.Tag))
+            {
+                messages.Add(CardValidationMessage.Warning($"武器标签要求重复: {requirement.Tag}。"));
+            }
+        }
+
         IReadOnlyList<string> exclusions = conditions.MutuallyExclusiveCardIds;
         HashSet<string> seenExclusions = new(StringComparer.Ordinal);
         for (int i = 0; i < exclusions.Count; i++)
@@ -1527,6 +1554,17 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
                 if (requiredWeapons[i] != null && !context.HasOwnedWeapon(requiredWeapons[i]))
                 {
                     reason = $"当前模拟条件缺少武器: {requiredWeapons[i].ItemName}。";
+                    return false;
+                }
+            }
+
+            IReadOnlyList<WeaponTagRequirement> requiredWeaponTags = card.OfferConditions.RequiredOwnedWeaponTags;
+            for (int i = 0; i < requiredWeaponTags.Count; i++)
+            {
+                WeaponTagRequirement requirement = requiredWeaponTags[i];
+                if (!context.HasOwnedWeaponTag(requirement.Tag, requirement.MinOwnedCount))
+                {
+                    reason = $"当前模拟条件缺少武器标签: {requirement.Tag} x{requirement.MinOwnedCount}。";
                     return false;
                 }
             }

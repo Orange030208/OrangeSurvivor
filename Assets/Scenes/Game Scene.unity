@@ -25883,6 +25883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  coinCollectionSettleDelay: 0.5
 --- !u!114 &542457229
 MonoBehaviour:
   m_ObjectHideFlags: 0

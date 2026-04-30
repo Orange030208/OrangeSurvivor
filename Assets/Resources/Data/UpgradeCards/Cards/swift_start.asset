@@ -29,11 +29,11 @@ MonoBehaviour:
   description: "\u6BCF\u6CE2\u5F00\u59CB\u83B7\u5F97\u77ED\u6682\u8FC5\u6377 Buff\u3002"
   propertyModifiers: []
   specialFeatures:
-  - rid: 451547002770030654
+  - rid: 451547002770030697
   references:
     version: 2
     RefIds:
-    - rid: 451547002770030654
+    - rid: 451547002770030697
       type: {class: WaveStartBuffUpgradeCardEffect, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0

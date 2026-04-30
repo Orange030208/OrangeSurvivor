@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "FlyForestEnemy", menuName = ScriptableObjectMenuPaths.FLY_FOREST, order = 0)]
 public class FlyForestEnemySO : EnemySO
@@ -10,8 +11,18 @@ public class FlyForestEnemySO : EnemySO
     
     public List<PropModifierData> fastBurstModifierData = new List<PropModifierData>();
 
+    [Header("Attacks")]
+    [FormerlySerializedAs("defaultAttackDefinition")]
+    public EnemyAttackDefinitionSO normalAttackDefinition;
+
     [Header("Strategies")]
     public MovementStrategyBase normalMovementStrategy;
-    public AttackStrategyBase normalAttackStrategy;
     public MovementStrategyBase retreatMovementStrategy;
+
+    public override IReadOnlyList<EnemyAttackDefinitionSO> GetAttackDefinitions()
+    {
+        List<EnemyAttackDefinitionSO> results = new();
+        AddAttackDefinition(results, normalAttackDefinition);
+        return results;
+    }
 }

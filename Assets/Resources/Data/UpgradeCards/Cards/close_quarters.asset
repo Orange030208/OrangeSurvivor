@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: close_quarters
+  m_EditorClassIdentifier: 
+  cardId: close_quarters
+  title: "\u8D34\u8EAB\u77ED\u6253"
+  icon: {fileID: 0}
+  rarity: 1
+  tags: 0800000001000000
+  maxPickCount: 0
+  baseWeight: 62
+  offerConditions:
+    minWave: 2
+    requiredTagPickCounts:
+    - tag: 1
+      minPickCount: 1
+    requiredOwnedWeapons: []
+    mutuallyExclusiveCardIds: []
+  description: "\u653B\u51FB\u529B +10%\uFF0C\u62A4\u7532 +2\uFF0C\u653B\u51FB\u8303\u56F4
+    -10%\u3002"
+  propertyModifiers:
+  - propType: 0
+    modifierType: 2
+    value: 0.1
+  - propType: 8
+    modifierType: 0
+    value: 2
+  - propType: 15
+    modifierType: 2
+    value: -0.1
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

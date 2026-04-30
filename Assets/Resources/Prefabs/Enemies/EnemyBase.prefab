@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 924096642633410394}
   - component: {fileID: 6319776215309285148}
   - component: {fileID: 7514695648745959652}
-  - component: {fileID: 8537235242564252096}
   - component: {fileID: 9035684678807474697}
   - component: {fileID: 7382220925090709899}
   - component: {fileID: 7337929490514087635}
@@ -164,13 +163,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1234637727428497752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 798723218d394739a441caebcb478e9f, type: 3}
+  m_Script: {fileID: 11500000, guid: 01a630da01f340ccafe789bb8748d328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 8
-  attackInterval: 1
-  attackDamage: 10
-  projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  attackSlots: []
+  defaultAttack: {fileID: 0}
   firePoint: {fileID: 271397300980425612}
 --- !u!114 &7514695648745959652
 MonoBehaviour:
@@ -184,22 +181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b3fe1ee720f4df5acfaa51e7f3feca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8537235242564252096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1234637727428497752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3da1ff6d8b0b47b0a96d28619efde8c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectionRange: 0
-  attackRange: 1.5
-  attackInterval: 0.8
-  attackDamage: 20
 --- !u!114 &9035684678807474697
 MonoBehaviour:
   m_ObjectHideFlags: 0

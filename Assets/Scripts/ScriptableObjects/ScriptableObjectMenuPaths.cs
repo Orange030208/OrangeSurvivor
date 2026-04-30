@@ -33,7 +33,12 @@ public static class ScriptableObjectMenuPaths
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
     public const string KNOCKBACK_RECEIVER_CONFIG = ENTITY_ROOT + "Combat/Knockback Receiver Config";
+    public const string ENEMY_ATTACK_DEFINITION = ENTITY_ROOT + "Combat/Enemy Attack Definition";
+    public const string CIRCLE_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Circle Hit Shape";
+    public const string SECTOR_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Sector Hit Shape";
+    public const string COLLIDER_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Collider Hit Shape";
     public const string MELEE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Melee Attack Strategy";
+    public const string CONFIGURED_ENEMY_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Configured Enemy Attack Strategy";
     public const string NO_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/No Attack Strategy";
     public const string RANGE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Range Attack Strategy";
     public const string CIRCLE_KITE_STRATEGY = ENTITY_ROOT + "Movement Strategies/Circle Kite Strategy";
@@ -44,9 +49,7 @@ public static class ScriptableObjectMenuPaths
     public const string AUDIO_SFX_CATALOG = SYSTEMS_ROOT + "Audio/Sfx Catalog";
     public const string UI_FRAMEWORK_SETTINGS = SYSTEMS_ROOT + "UI/Framework Settings";
     public const string UI_PREFAB_CATALOG = SYSTEMS_ROOT + "UI/Prefab Catalog";
-    public const string UI_MOTION_PRESET = SYSTEMS_ROOT + "UI/Motion Preset";
-    public const string UI_SIDEBAR_MOTION_PRESET = SYSTEMS_ROOT + "UI/Sidebar Motion Preset";
-    public const string UI_MOTION_PRESET_LIBRARY = SYSTEMS_ROOT + "UI/Motion Preset Library";
+    public const string UI_MOTION_DEFINITION = SYSTEMS_ROOT + "UI/Motion Definition";
 
     public const string ITEM_QUALITY_VISUAL_CONFIG = PRESENTATION_ROOT + "Items/Quality Visual Config";
     public const string DAMAGE_TEXT_VISUAL_CONFIG = PRESENTATION_ROOT + "Combat/Damage Text Visual Config";

@@ -27,6 +27,26 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FlowTex:
+        m_Texture: {fileID: 2800000, guid: dedc4adafc83f3a4d90dc5a940a51b06, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LinearMaskTex:
+        m_Texture: {fileID: 2800000, guid: 5bcf40cddc756a548a92a5c7039cf658, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: b0cc3c2e68ca68149af153c10def5ca3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RadialMaskTex:
+        m_Texture: {fileID: 2800000, guid: 44d33b2691fd23149b1a9d01ad1640a7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShapeMaskTex:
+        m_Texture: {fileID: 2800000, guid: 03cb670c6b26c73478cbcdcab6ba23de, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaScale: 1
@@ -36,11 +56,17 @@ Material:
     - _EffectIntensity: 0.5
     - _FlowSpeed: 0.45
     - _GlowIntensity: 0.5
+    - _InnerDim: 0.34
+    - _InteractionBrightness: 1
+    - _InteractionFlowMultiplier: 1
+    - _InteractionGlowMultiplier: 1
     - _LayerRole: 0
+    - _NoiseDistort: 0.018
     - _PatternIntensity: 0.18
     - _PulseIntensity: 0.25
     - _PulseSpeed: 0.9
     - _Rarity: 0
+    - _SelectedAmount: 0
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0

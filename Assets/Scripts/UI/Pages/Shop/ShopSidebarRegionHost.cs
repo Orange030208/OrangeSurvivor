@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public sealed class ShopSidebarRegionHost
 {
@@ -8,10 +9,10 @@ public sealed class ShopSidebarRegionHost
 
     public ShopSidebarRegionHost(
         string ownerName,
-        UISidebarRevealMotion propertiesSidebar,
+        MonoBehaviour propertiesSidebar,
         UIClickTarget propertiesToggleButton,
         Describer propertiesDescriber,
-        UISidebarRevealMotion inventorySidebar,
+        MonoBehaviour inventorySidebar,
         UIClickTarget inventoryToggleButton)
     {
         string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopSidebarRegionHost) : ownerName;
