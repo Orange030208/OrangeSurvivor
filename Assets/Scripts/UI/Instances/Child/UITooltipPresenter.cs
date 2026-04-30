@@ -16,6 +16,8 @@ public class UITooltipPresenter : MonoBehaviour
     private Canvas parentCanvas;
     private Camera uiCamera;
 
+    public static UITooltipPresenter ActivePresenter { get; private set; }
+
     private void Awake()
     {
         if (root == null)
@@ -57,15 +59,16 @@ public class UITooltipPresenter : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<ShowTooltipRequestedEvent>(OnShowTooltipRequested);
-        GameEventBus.Subscribe<HideTooltipRequestedEvent>(OnHideTooltipRequested);
+        ActivePresenter = this;
         HideImmediate();
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<ShowTooltipRequestedEvent>(OnShowTooltipRequested);
-        GameEventBus.Unsubscribe<HideTooltipRequestedEvent>(OnHideTooltipRequested);
+        if (ActivePresenter == this)
+        {
+            ActivePresenter = null;
+        }
     }
 
     public void Present(IDescribable describable)
@@ -74,15 +77,10 @@ public class UITooltipPresenter : MonoBehaviour
         SetVisible(true);
     }
 
-    private void OnShowTooltipRequested(ShowTooltipRequestedEvent eventData)
+    public void Present(IDescribable describable, Vector2 screenPosition)
     {
-        Present(eventData.Descriptor);
-        SetScreenPosition(eventData.ScreenPosition);
-    }
-
-    private void OnHideTooltipRequested(HideTooltipRequestedEvent _)
-    {
-        HideImmediate();
+        Present(describable);
+        SetScreenPosition(screenPosition);
     }
 
     private void ApplyDocument(IDescribable document)
@@ -135,7 +133,7 @@ public class UITooltipPresenter : MonoBehaviour
         canvasGroup.alpha = visible ? 1f : 0f;
     }
 
-    private void HideImmediate()
+    public void HideImmediate()
     {
         SetVisible(false);
     }
