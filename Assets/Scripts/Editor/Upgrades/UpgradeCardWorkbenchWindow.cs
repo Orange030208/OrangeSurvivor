@@ -28,12 +28,9 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         HideFlags.DontUnloadUnusedAsset;
 
     private readonly List<UpgradeCardSO> cards = new();
-    private readonly List<CardValidationMessage> validationMessages = new();
-    private readonly List<WeaponDataSO> simulatedOwnedWeapons = new();
 
     private UpgradeCardSO selectedCard;
     private UpgradeCardSO editingCard;
-    private UpgradeCardPoolSO selectedPool;
     private UpgradeCardRarityPresentationCatalogSO selectedPresentationCatalog;
     private UpgradeCardRarityPresentationCatalogSO editingPresentationCatalog;
     private Material rarityEffectMaterialTemplate;
@@ -43,7 +40,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private UIUpgradeContainer previewContainer;
     private RenderTexture previewTexture;
     private SerializedObject cardObject;
-    private SerializedObject poolObject;
     private SerializedObject presentationObject;
     private ReorderableList tagsList;
     private ReorderableList propertyModifiersList;
@@ -52,9 +48,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private ReorderableList requiredWeaponsList;
     private ReorderableList requiredWeaponTagsList;
     private ReorderableList mutuallyExclusiveList;
-    private ReorderableList poolCardsList;
     private ReorderableList profilesList;
-    private ReorderableList simulatedWeaponsList;
 
     private Vector2 cardListScroll;
     private Vector2 editorScroll;
@@ -65,7 +59,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private bool useShaderPreview = true;
     private bool cardDirty;
     private bool styleDirty;
-    private int simulationWave = 1;
     private string newCardId = "new_upgrade_card";
     private string newCardTitle = "新升级卡";
     private UpgradeCardRarity newCardRarity = UpgradeCardRarity.Common;
@@ -81,7 +74,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private void OnEnable()
     {
-        selectedPool = AssetDatabase.LoadAssetAtPath<UpgradeCardPoolSO>(DEFAULT_POOL_PATH);
         selectedPresentationCatalog = AssetDatabase.LoadAssetAtPath<UpgradeCardRarityPresentationCatalogSO>(DEFAULT_RARITY_CATALOG_PATH);
         rarityEffectMaterialTemplate = AssetDatabase.LoadAssetAtPath<Material>(DEFAULT_RARITY_MATERIAL_PATH);
         if (selectedPresentationCatalog != null)
@@ -96,7 +88,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             SelectCard(cards[0]);
         }
 
-        BuildSimulatedWeaponsList();
     }
 
     private void OnDisable()
@@ -600,7 +591,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             Texture texture = RenderPrefabPreview();
             if (texture != null)
             {
-                EditorGUI.DrawPreviewTexture(rect, texture, null, ScaleMode.ScaleToFit);
+                EditorGUI.DrawPreviewTexture(rect, texture, null, ScaleMode.ScaleAndCrop);
                 return;
             }
 
@@ -814,12 +805,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private void EnsureSelectionObjects()
     {
-        if (selectedPool != null && poolObject == null)
-        {
-            poolObject = new SerializedObject(selectedPool);
-            BuildPoolList();
-        }
-
         if (selectedCard != null && cardObject == null)
         {
             CreateCardEditCopy();
@@ -1072,7 +1057,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         RefreshCards();
         cardDirty = false;
         SelectCard(card);
-        AddSelectedCardToPool();
     }
 
     private void DuplicateSelectedCard()
@@ -1110,7 +1094,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     {
         SaveCardEdits();
         SaveStyleEdits();
-        SavePoolEdits();
         AssetDatabase.SaveAssets();
         ValidateSelectedCard();
     }
@@ -1641,16 +1624,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         instance.hideFlags = HideFlags.HideAndDontSave;
         instance.transform.SetParent(canvasObject.transform, false);
         previewContainer = instance.GetComponent<UIUpgradeContainer>();
-        RectTransform rectTransform = instance.GetComponent<RectTransform>();
-        if (rectTransform != null)
-        {
-            rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            rectTransform.anchoredPosition = Vector2.zero;
-            rectTransform.sizeDelta = new Vector2(280f, 380f);
-            rectTransform.localScale = Vector3.one;
-        }
+        ResizePreviewContainer();
 
         return previewContainer != null;
     }
@@ -1671,6 +1645,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         }
 
         UpgradeCardOptionSnapshot snapshot = editingCard.ToSnapshot(null);
+        ResizePreviewContainer();
         previewContainer.Configure(new InfoAddIndex<UpgradeCardOptionSnapshot>(snapshot, 0));
 
         UpgradeCardRarityPresenter presenter = previewContainer.GetComponent<UpgradeCardRarityPresenter>();
@@ -1678,6 +1653,37 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         {
             presenter.Apply(ResolvePresentationProfile(snapshot.Rarity));
         }
+    }
+
+    private void ResizePreviewContainer()
+    {
+        if (previewContainer == null)
+        {
+            return;
+        }
+
+        RectTransform rectTransform = previewContainer.GetComponent<RectTransform>();
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        float horizontalPadding = 36f;
+        float verticalPadding = 44f;
+        float targetHeight = PREVIEW_TEXTURE_HEIGHT - verticalPadding;
+        float targetWidth = targetHeight * PREVIEW_ASPECT;
+        if (targetWidth > PREVIEW_TEXTURE_WIDTH - horizontalPadding)
+        {
+            targetWidth = PREVIEW_TEXTURE_WIDTH - horizontalPadding;
+            targetHeight = targetWidth / PREVIEW_ASPECT;
+        }
+
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.sizeDelta = new Vector2(targetWidth, targetHeight);
+        rectTransform.localScale = Vector3.one;
     }
 
     private void RefreshPrefabPreview()
