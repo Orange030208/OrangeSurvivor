@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackSlots: []
-  defaultAttack: {fileID: 0}
   firePoint: {fileID: 271397300980425612}
 --- !u!114 &7514695648745959652
 MonoBehaviour:

@@ -37,10 +37,6 @@ public static class ScriptableObjectMenuPaths
     public const string CIRCLE_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Circle Hit Shape";
     public const string SECTOR_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Sector Hit Shape";
     public const string COLLIDER_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Collider Hit Shape";
-    public const string MELEE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Melee Attack Strategy";
-    public const string CONFIGURED_ENEMY_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Configured Enemy Attack Strategy";
-    public const string NO_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/No Attack Strategy";
-    public const string RANGE_ATTACK_STRATEGY = ENTITY_ROOT + "Attack Strategies/Range Attack Strategy";
     public const string CIRCLE_KITE_STRATEGY = ENTITY_ROOT + "Movement Strategies/Circle Kite Strategy";
     public const string DIRECT_CHASE_STRATEGY = ENTITY_ROOT + "Movement Strategies/Direct Chase Strategy";
     public const string RETREAT_STRATEGY = ENTITY_ROOT + "Movement Strategies/Retreat Strategy";

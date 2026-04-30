@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "WormEnemy", menuName = ScriptableObjectMenuPaths.WORM_ENEMY, order = 1)]
 public class WormEnemySO : EnemySO
@@ -14,7 +13,6 @@ public class WormEnemySO : EnemySO
     [Range(0f, 1f)] public float attackFinishNormalizedTime = 0.95f;
 
     [Header("Attacks")]
-    [FormerlySerializedAs("defaultAttackDefinition")]
     public EnemyAttackDefinitionSO attackDefinition;
     public EnemyAttackDefinitionSO retreatAttackDefinition;
 

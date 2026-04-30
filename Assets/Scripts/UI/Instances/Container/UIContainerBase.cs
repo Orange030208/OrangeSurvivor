@@ -37,12 +37,17 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
         ItemQualityVisualResolver.Apply(this, itemData, colorDependency, iconImage);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public virtual void OnPointerClick(PointerEventData eventData)
     {
-        OnClicked?.Invoke(eventData);
+        RaiseClicked(eventData);
     }
 
     public abstract void Configure(T resource);
+
+    protected void RaiseClicked(PointerEventData eventData)
+    {
+        OnClicked?.Invoke(eventData);
+    }
 
     private void OnDestroy()
     {

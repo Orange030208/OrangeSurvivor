@@ -246,7 +246,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &4564612483417815511
+--- !u!1 &4246869915241815116
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,24 +254,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 834649621879895086}
-  - component: {fileID: 5307455605181085218}
-  - component: {fileID: 1614219068169174166}
+  - component: {fileID: 6284642802786279892}
+  - component: {fileID: 3291445108010273894}
+  - component: {fileID: 7471499887440908460}
   m_Layer: 0
-  m_Name: Rarity Glow
+  m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &834649621879895086
+--- !u!224 &6284642802786279892
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4564612483417815511}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 4246869915241815116}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -281,113 +281,38 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5307455605181085218
+--- !u!222 &3291445108010273894
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4564612483417815511}
+  m_GameObject: {fileID: 4246869915241815116}
   m_CullTransparentMesh: 1
---- !u!114 &1614219068169174166
+--- !u!114 &7471499887440908460
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4564612483417815511}
+  m_GameObject: {fileID: 4246869915241815116}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.24}
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.876148, b: 0.36037737, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 03cb670c6b26c73478cbcdcab6ba23de, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!1 &5216478840727551234
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7189686391839190851}
-  - component: {fileID: 2684123161983304259}
-  - component: {fileID: 2870677616441635675}
-  m_Layer: 0
-  m_Name: Rarity Background
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &7189686391839190851
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5216478840727551234}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8337600168010166629}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &2684123161983304259
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5216478840727551234}
-  m_CullTransparentMesh: 1
---- !u!114 &2870677616441635675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5216478840727551234}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.18}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 03cb670c6b26c73478cbcdcab6ba23de, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: -494595067, guid: 2987684cdf4addb49904547b903511cc, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -442,10 +367,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8337600168010166629}
   - component: {fileID: 3955513483040631225}
+  - component: {fileID: 293202892692610221}
   - component: {fileID: 3600694285946655353}
-  - component: {fileID: 7889412740765118647}
   - component: {fileID: 4075162075622727433}
-  - component: {fileID: 6017423004162769812}
+  - component: {fileID: 823908526393948807}
   m_Layer: 0
   m_Name: Upgrade Container
   m_TagString: Untagged
@@ -465,9 +390,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7189686391839190851}
-  - {fileID: 834649621879895086}
-  - {fileID: 6737981012959219464}
+  - {fileID: 6284642802786279892}
   - {fileID: 5564033512122092647}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -484,6 +407,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7139556483707835314}
   m_CullTransparentMesh: 1
+--- !u!225 &293202892692610221
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139556483707835314}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &3600694285946655353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,19 +449,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7889412740765118647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7139556483707835314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08e0a993b1b728548909c4d0b5ae4fba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactable: 1
 --- !u!114 &4075162075622727433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542,10 +464,9 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   bottom: {fileID: 6246408969122793929}
-  rarityPresenter: {fileID: 6017423004162769812}
-  hexTechEffectController: {fileID: 0}
+  cardMotionPlayer: {fileID: 823908526393948807}
   playRevealSfx: 1
---- !u!114 &6017423004162769812
+--- !u!114 &823908526393948807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -554,168 +475,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 7139556483707835314}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bd161f7bd604a439ad6926749b2b4ac, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shaderTargets:
-  - displayName: Card Background
-    targetGraphic: {fileID: 3600694285946655353}
-    materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-    instantiateMaterial: 1
-    intensityMultiplier: 0.42
-    parameterOverrides:
-    - propertyName: _LayerRole
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _AlphaScale
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 1
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _PatternIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.05
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _SweepIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.04
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _PulseIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - displayName: Rarity Background
-    targetGraphic: {fileID: 2870677616441635675}
-    materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-    instantiateMaterial: 1
-    intensityMultiplier: 0.72
-    parameterOverrides:
-    - propertyName: _LayerRole
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 1
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _AlphaScale
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0.42
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _GlowIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.12
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _BorderGlow
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.1
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - displayName: Rarity Border
-    targetGraphic: {fileID: 7587781164036591210}
-    materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-    instantiateMaterial: 1
-    intensityMultiplier: 1
-    parameterOverrides:
-    - propertyName: _LayerRole
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 2
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _AlphaScale
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0.95
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _GlowIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.48
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _BorderWidth
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0.075
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _BorderGlow
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.56
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  - displayName: Rarity Glow
-    targetGraphic: {fileID: 1614219068169174166}
-    materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-    instantiateMaterial: 1
-    intensityMultiplier: 0.82
-    parameterOverrides:
-    - propertyName: _LayerRole
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 3
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _AlphaScale
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0.46
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _GlowIntensity
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.46
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _BorderWidth
-      parameterType: 0
-      scaleWithTargetIntensity: 0
-      floatValue: 0.14
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-    - propertyName: _BorderGlow
-      parameterType: 0
-      scaleWithTargetIntensity: 1
-      floatValue: 0.32
-      colorValue: {r: 1, g: 1, b: 1, a: 1}
-      vectorValue: {x: 0, y: 0, z: 0, w: 0}
-      textureValue: {fileID: 0}
-  includeSelfGraphicWhenTargetsEmpty: 1
+  definition: {fileID: 11400000, guid: 8a21e0fd2cb8f4d468ff0b63301561a4, type: 2}
+  targets:
+    bindings: []
+  currentConfigOption: 
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
 --- !u!1 &7478104143777634616
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,81 +521,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -6, y: -6}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &8219320244009065453
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6737981012959219464}
-  - component: {fileID: 6451036970783219228}
-  - component: {fileID: 7587781164036591210}
-  m_Layer: 0
-  m_Name: Rarity Border
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6737981012959219464
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8219320244009065453}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8337600168010166629}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6451036970783219228
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8219320244009065453}
-  m_CullTransparentMesh: 1
---- !u!114 &7587781164036591210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8219320244009065453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.78}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 03cb670c6b26c73478cbcdcab6ba23de, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1001 &791113875840716862
 PrefabInstance:
   m_ObjectHideFlags: 0

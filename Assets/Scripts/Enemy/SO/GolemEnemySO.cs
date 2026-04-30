@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "GolemEnemy", menuName = ScriptableObjectMenuPaths.GOLEM_ENEMY, order = 3)]
 public class GolemEnemySO : EnemySO
@@ -20,7 +19,6 @@ public class GolemEnemySO : EnemySO
     [SerializeField] private List<PropModifierData> chargeModifiers = new();
 
     [Header("Attacks")]
-    [FormerlySerializedAs("defaultAttackDefinition")]
     [SerializeField] private EnemyAttackDefinitionSO attackDefinition;
 
     [Header("Strategies")]

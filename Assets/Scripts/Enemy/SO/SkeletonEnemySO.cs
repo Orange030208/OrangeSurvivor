@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SkeletonEnemy", menuName = ScriptableObjectMenuPaths.SKELETON_ENEMY, order = 2)]
@@ -10,7 +9,6 @@ public class SkeletonEnemySO : EnemySO
     [SerializeField, Range(0f, 1f)] private float attackFinishNormalizedTime = 0.95f;
 
     [Header("Attacks")]
-    [FormerlySerializedAs("defaultAttackDefinition")]
     [SerializeField] private EnemyAttackDefinitionSO attackDefinition;
 
     [Header("Strategies")]

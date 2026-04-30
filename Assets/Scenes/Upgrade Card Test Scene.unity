@@ -288,7 +288,7 @@ MonoBehaviour:
   testCharacterData: {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
   playerSpawnPosition: {x: 0, y: 0, z: 0}
   initialUpgradePoints: 272
-  testWaveNumber: 3
+  testWaveNumber: 15
   initialGold: 80
   runSelfTestOnStart: 1
   selfTestTimeoutSeconds: 3

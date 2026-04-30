@@ -31,6 +31,7 @@ public sealed class EnemyAttackDefinitionSO : ScriptableObject
     public float RangeMultiplier => Mathf.Max(0f, rangeMultiplier);
     public bool RequiresHitShape => executionKind == EnemyAttackExecutionKind.DirectDamage;
     public bool RequiresProjectile => executionKind == EnemyAttackExecutionKind.Projectile;
+    public bool IsNoAttack => executionKind == EnemyAttackExecutionKind.None;
 
     private void OnValidate()
     {

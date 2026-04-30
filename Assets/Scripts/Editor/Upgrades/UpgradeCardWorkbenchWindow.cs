@@ -13,7 +13,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private const string DEFAULT_CARD_FOLDER = "Assets/Resources/Data/UpgradeCards/Cards";
     private const string DEFAULT_POOL_PATH = "Assets/Resources/Data/UpgradeCards/Pool/Default Upgrade Card Pool.asset";
     private const string DEFAULT_RARITY_CATALOG_PATH = "Assets/Resources/Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog.asset";
-    private const string DEFAULT_RARITY_MATERIAL_PATH = "Assets/Resources/Materials/UI/UpgradeCardRarityEffect.mat";
     private const string UPGRADE_CONTAINER_PREFAB_PATH = "Assets/Resources/Prefabs/New UI/Container/Upgrade Container.prefab";
     private const float LEFT_WIDTH = 300;
     private const float PREVIEW_WIDTH = 460f;
@@ -33,7 +32,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private UpgradeCardSO editingCard;
     private UpgradeCardRarityPresentationCatalogSO selectedPresentationCatalog;
     private UpgradeCardRarityPresentationCatalogSO editingPresentationCatalog;
-    private Material rarityEffectMaterialTemplate;
     private GameObject previewRoot;
     private Camera previewCamera;
     private Canvas previewCanvas;
@@ -56,7 +54,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private Vector2 styleScroll;
     private string searchText = string.Empty;
     private UpgradeCardRarity? rarityFilter;
-    private bool useShaderPreview = true;
+    private bool usePrefabPreview = true;
     private bool cardDirty;
     private bool styleDirty;
     private string newCardId = "new_upgrade_card";
@@ -75,7 +73,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private void OnEnable()
     {
         selectedPresentationCatalog = AssetDatabase.LoadAssetAtPath<UpgradeCardRarityPresentationCatalogSO>(DEFAULT_RARITY_CATALOG_PATH);
-        rarityEffectMaterialTemplate = AssetDatabase.LoadAssetAtPath<Material>(DEFAULT_RARITY_MATERIAL_PATH);
         if (selectedPresentationCatalog != null)
         {
             CreatePresentationEditCopy();
@@ -116,7 +113,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private void OnInspectorUpdate()
     {
-        if (useShaderPreview)
+        if (usePrefabPreview)
         {
             Repaint();
         }
@@ -373,7 +370,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         styleScroll = EditorGUILayout.BeginScrollView(styleScroll);
 
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("样式 / Shader", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("稀有度音效", EditorStyles.boldLabel);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -382,11 +379,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             "样式目录",
             selectedPresentationCatalog,
             typeof(UpgradeCardRarityPresentationCatalogSO),
-            false);
-        rarityEffectMaterialTemplate = (Material)EditorGUILayout.ObjectField(
-            "预览材质",
-            rarityEffectMaterialTemplate,
-            typeof(Material),
             false);
         if (EditorGUI.EndChangeCheck())
         {
@@ -458,114 +450,13 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("实时预览", EditorStyles.boldLabel);
         GUILayout.FlexibleSpace();
-        useShaderPreview = GUILayout.Toggle(useShaderPreview, "真实UI", EditorStyles.miniButton, GUILayout.Width(62f));
+        usePrefabPreview = GUILayout.Toggle(usePrefabPreview, "真实UI", EditorStyles.miniButton, GUILayout.Width(62f));
         EditorGUILayout.EndHorizontal();
 
         float width = Mathf.Max(260f, EditorGUIUtility.currentViewWidth - LEFT_WIDTH - STYLE_WIDTH - 90f);
         float height = Mathf.Max(420f, width / PREVIEW_ASPECT);
         Rect cardRect = GUILayoutUtility.GetRect(width, height, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
         DrawCardPreview(cardRect);
-    }
-
-    private void DrawValidationPanel()
-    {
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("校验", EditorStyles.boldLabel);
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("校验当前", GUILayout.Width(82f)))
-        {
-            ValidateSelectedCard();
-        }
-        EditorGUILayout.EndHorizontal();
-
-        if (validationMessages.Count == 0)
-        {
-            EditorGUILayout.HelpBox("未发现问题。", MessageType.Info);
-        }
-        else
-        {
-            for (int i = 0; i < validationMessages.Count; i++)
-            {
-                CardValidationMessage message = validationMessages[i];
-                EditorGUILayout.HelpBox(message.Text, message.Type);
-            }
-        }
-        EditorGUILayout.EndVertical();
-    }
-
-    private void DrawPoolPanel()
-    {
-        showPoolTools = EditorGUILayout.Foldout(showPoolTools, "卡池工具", true);
-        if (!showPoolTools)
-        {
-            return;
-        }
-
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUI.BeginChangeCheck();
-        selectedPool = (UpgradeCardPoolSO)EditorGUILayout.ObjectField("目标卡池", selectedPool, typeof(UpgradeCardPoolSO), false);
-        if (EditorGUI.EndChangeCheck())
-        {
-            poolObject = selectedPool != null ? new SerializedObject(selectedPool) : null;
-            BuildPoolList();
-        }
-
-        EditorGUILayout.BeginHorizontal();
-        using (new EditorGUI.DisabledScope(selectedPool == null || selectedCard == null))
-        {
-            if (GUILayout.Button(IsSelectedCardInPool() ? "已在卡池" : "加入卡池"))
-            {
-                AddSelectedCardToPool();
-            }
-
-            if (GUILayout.Button("从卡池移除"))
-            {
-                RemoveSelectedCardFromPool();
-            }
-        }
-        EditorGUILayout.EndHorizontal();
-
-        if (poolObject != null)
-        {
-            poolObject.Update();
-            poolCardsList?.DoLayoutList();
-            if (poolObject.ApplyModifiedProperties())
-            {
-                EditorUtility.SetDirty(selectedPool);
-            }
-        }
-
-        EditorGUILayout.EndVertical();
-    }
-
-    private void DrawSimulationPanel()
-    {
-        showRollSimulation = EditorGUILayout.Foldout(showRollSimulation, "抽取条件模拟", true);
-        if (!showRollSimulation)
-        {
-            return;
-        }
-
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        simulationWave = EditorGUILayout.IntField("模拟波次", Mathf.Max(1, simulationWave));
-        simulatedWeaponsList?.DoLayoutList();
-
-        using (new EditorGUI.DisabledScope(selectedCard == null))
-        {
-            if (GUILayout.Button("判定当前卡牌是否可出现"))
-            {
-                ValidateSelectedCard();
-            }
-        }
-
-        if (selectedCard != null)
-        {
-            bool canOffer = CanOfferSelectedCardInSimulation(out string reason);
-            EditorGUILayout.HelpBox(canOffer ? "当前模拟条件下可以出现。" : reason, canOffer ? MessageType.Info : MessageType.Warning);
-        }
-
-        EditorGUILayout.EndVertical();
     }
 
     private void DrawSection(string title, Action drawContent)
@@ -586,7 +477,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             return;
         }
 
-        if (useShaderPreview)
+        if (usePrefabPreview)
         {
             Texture texture = RenderPrefabPreview();
             if (texture != null)
@@ -749,8 +640,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             cardObject = null;
         }
 
-        BuildPoolList();
-        ValidateSelectedCard();
     }
 
     private List<UpgradeCardSO> GetVisibleCards()
@@ -881,19 +770,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         styleDirty = false;
     }
 
-    private void BuildPoolList()
-    {
-        if (selectedPool == null)
-        {
-            poolObject = null;
-            poolCardsList = null;
-            return;
-        }
-
-        poolObject = new SerializedObject(selectedPool);
-        poolCardsList = CreateSimpleList(poolObject.FindProperty("cards"), "卡池卡牌");
-    }
-
     private void BuildPresentationList()
     {
         if (presentationObject == null)
@@ -919,23 +795,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
                 EditorGUI.PropertyField(rect, element, BuildProfileLabel(element, index), true);
             };
         }
-    }
-
-    private void BuildSimulatedWeaponsList()
-    {
-        simulatedWeaponsList = new ReorderableList(simulatedOwnedWeapons, typeof(WeaponDataSO), true, true, true, true)
-        {
-            drawHeaderCallback = rect => EditorGUI.LabelField(rect, "模拟已拥有武器"),
-            drawElementCallback = (rect, index, _, _) =>
-            {
-                simulatedOwnedWeapons[index] = (WeaponDataSO)EditorGUI.ObjectField(
-                    new Rect(rect.x, rect.y + 1f, rect.width, EditorGUIUtility.singleLineHeight),
-                    simulatedOwnedWeapons[index],
-                    typeof(WeaponDataSO),
-                    false);
-            },
-            onAddCallback = _ => simulatedOwnedWeapons.Add(null)
-        };
     }
 
     private ReorderableList CreateSimpleList(SerializedProperty property, string header)
@@ -1150,19 +1009,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         }
     }
 
-    private void SavePoolEdits()
-    {
-        if (poolObject != null)
-        {
-            poolObject.ApplyModifiedProperties();
-        }
-
-        if (selectedPool != null)
-        {
-            EditorUtility.SetDirty(selectedPool);
-        }
-    }
-
     private void EnsureDefaultPresentationProfiles()
     {
         if (selectedPresentationCatalog == null)
@@ -1229,93 +1075,15 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         RefreshPrefabPreview();
     }
 
-    private void AddSelectedCardToPool()
-    {
-        if (selectedPool == null || selectedCard == null)
-        {
-            return;
-        }
-
-        poolObject ??= new SerializedObject(selectedPool);
-        SerializedProperty cardsProperty = poolObject.FindProperty("cards");
-        for (int i = 0; i < cardsProperty.arraySize; i++)
-        {
-            if (cardsProperty.GetArrayElementAtIndex(i).objectReferenceValue == selectedCard)
-            {
-                return;
-            }
-        }
-
-        cardsProperty.InsertArrayElementAtIndex(cardsProperty.arraySize);
-        cardsProperty.GetArrayElementAtIndex(cardsProperty.arraySize - 1).objectReferenceValue = selectedCard;
-        poolObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(selectedPool);
-        AssetDatabase.SaveAssets();
-    }
-
-    private void RemoveSelectedCardFromPool()
-    {
-        if (selectedPool == null || selectedCard == null)
-        {
-            return;
-        }
-
-        poolObject ??= new SerializedObject(selectedPool);
-        SerializedProperty cardsProperty = poolObject.FindProperty("cards");
-        for (int i = cardsProperty.arraySize - 1; i >= 0; i--)
-        {
-            if (cardsProperty.GetArrayElementAtIndex(i).objectReferenceValue == selectedCard)
-            {
-                cardsProperty.DeleteArrayElementAtIndex(i);
-            }
-        }
-
-        poolObject.ApplyModifiedProperties();
-        EditorUtility.SetDirty(selectedPool);
-        AssetDatabase.SaveAssets();
-    }
-
-    private bool IsSelectedCardInPool()
-    {
-        if (selectedPool == null || selectedCard == null || selectedPool.Cards == null)
-        {
-            return false;
-        }
-
-        return selectedPool.Cards.Contains(selectedCard);
-    }
-
     private void ValidateSelectedCard()
     {
-        validationMessages.Clear();
         if (selectedCard == null)
         {
             return;
         }
 
-        ValidateCard(editingCard != null ? editingCard : selectedCard, validationMessages);
-        CanOfferSelectedCardInSimulation(out string simulationReason);
-        if (!string.IsNullOrWhiteSpace(simulationReason) && !simulationReason.StartsWith("当前", StringComparison.Ordinal))
-        {
-            validationMessages.Add(CardValidationMessage.Info($"模拟抽取: {simulationReason}"));
-        }
-    }
-
-    private void ValidateAllCards()
-    {
-        int errorCount = 0;
-        int warningCount = 0;
         List<CardValidationMessage> messages = new();
-        for (int i = 0; i < cards.Count; i++)
-        {
-            messages.Clear();
-            ValidateCard(cards[i], messages);
-            errorCount += messages.Count(message => message.Type == MessageType.Error);
-            warningCount += messages.Count(message => message.Type == MessageType.Warning);
-        }
-
-        EditorUtility.DisplayDialog("卡牌校验完成", $"共 {cards.Count} 张卡牌。\n错误: {errorCount}\n警告: {warningCount}", "OK");
-        ValidateSelectedCard();
+        ValidateCard(editingCard != null ? editingCard : selectedCard, messages);
     }
 
     private void ValidateCard(UpgradeCardSO card, List<CardValidationMessage> messages)
@@ -1487,60 +1255,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         }
     }
 
-    private bool CanOfferSelectedCardInSimulation(out string reason)
-    {
-        reason = string.Empty;
-        UpgradeCardSO card = editingCard != null ? editingCard : selectedCard;
-        if (card == null)
-        {
-            reason = "未选择卡牌。";
-            return false;
-        }
-
-        UpgradeCardOfferContext context = new(null, simulationWave, simulatedOwnedWeapons);
-        if (card.OfferConditions != null && !card.OfferConditions.AreSatisfied(context))
-        {
-            if (simulationWave < card.OfferConditions.MinWave)
-            {
-                reason = $"当前模拟波次不足，需要第 {card.OfferConditions.MinWave} 波。";
-                return false;
-            }
-
-            IReadOnlyList<WeaponDataSO> requiredWeapons = card.OfferConditions.RequiredOwnedWeapons;
-            for (int i = 0; i < requiredWeapons.Count; i++)
-            {
-                if (requiredWeapons[i] != null && !context.HasOwnedWeapon(requiredWeapons[i]))
-                {
-                    reason = $"当前模拟条件缺少武器: {requiredWeapons[i].ItemName}。";
-                    return false;
-                }
-            }
-
-            IReadOnlyList<WeaponTagRequirement> requiredWeaponTags = card.OfferConditions.RequiredOwnedWeaponTags;
-            for (int i = 0; i < requiredWeaponTags.Count; i++)
-            {
-                WeaponTagRequirement requirement = requiredWeaponTags[i];
-                if (!context.HasOwnedWeaponTag(requirement.Tag, requirement.MinOwnedCount))
-                {
-                    reason = $"当前模拟条件缺少武器标签: {requirement.Tag} x{requirement.MinOwnedCount}。";
-                    return false;
-                }
-            }
-
-            if (card.OfferConditions.RequiredTagPickCounts.Count > 0)
-            {
-                reason = "当前模拟没有历史选择状态，带标签选择数要求的卡牌会被阻挡。";
-                return false;
-            }
-
-            reason = "当前模拟条件不满足。";
-            return false;
-        }
-
-        reason = "当前模拟条件满足。";
-        return true;
-    }
-
     private Texture RenderPrefabPreview()
     {
         if (editingCard == null || !EnsurePrefabPreview())
@@ -1647,12 +1361,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         UpgradeCardOptionSnapshot snapshot = editingCard.ToSnapshot(null);
         ResizePreviewContainer();
         previewContainer.Configure(new InfoAddIndex<UpgradeCardOptionSnapshot>(snapshot, 0));
-
-        UpgradeCardRarityPresenter presenter = previewContainer.GetComponent<UpgradeCardRarityPresenter>();
-        if (presenter != null)
-        {
-            presenter.Apply(ResolvePresentationProfile(snapshot.Rarity));
-        }
     }
 
     private void ResizePreviewContainer()
@@ -1692,17 +1400,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         {
             ConfigurePrefabPreview();
         }
-    }
-
-    private UpgradeCardRarityPresentationProfile ResolvePresentationProfile(UpgradeCardRarity rarity)
-    {
-        UpgradeCardRarityPresentationCatalogSO catalog = editingPresentationCatalog != null
-            ? editingPresentationCatalog
-            : selectedPresentationCatalog;
-        return catalog != null &&
-               catalog.TryGetProfile(rarity, out UpgradeCardRarityPresentationProfile profile)
-            ? profile
-            : UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(rarity);
     }
 
     private void ReleasePrefabPreview()

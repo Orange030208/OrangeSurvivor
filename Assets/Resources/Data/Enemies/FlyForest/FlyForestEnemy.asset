@@ -16,12 +16,11 @@ MonoBehaviour:
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 5b80b26554184b547876d735e9625c9c, type: 2}
   animConfig: {fileID: 11400000, guid: 89d96c6114136f04387029c1f88e012a, type: 2}
-  defaultAttackDefinition: {fileID: 11400000, guid: 0123507837284daa8c9d5a75d7291d68, type: 2}
+  normalAttackDefinition: {fileID: 11400000, guid: 0123507837284daa8c9d5a75d7291d68, type: 2}
   lowHpPercent: 30
   fastBurstModifierData:
   - propType: 1
     modifierType: 3
     value: 2
   normalMovementStrategy: {fileID: 11400000, guid: 9bc8a0a400ea18f41a0c5ac2fe028706, type: 2}
-  normalAttackStrategy: {fileID: 11400000, guid: 73e7bbd07d0ec4b418ecfe779bf64dac, type: 2}
   retreatMovementStrategy: {fileID: 11400000, guid: 360664d2989d726439a9a488e9243431, type: 2}

@@ -112,7 +112,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
 
     public bool IsInAttackRange(EnemyAttackDefinitionSO attackDefinition, Entity target)
     {
-        if (attackDefinition == null || target == null)
+        if (attackDefinition == null || attackDefinition.IsNoAttack || target == null)
         {
             return false;
         }
@@ -138,6 +138,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
         {
             EnemyAttackExecutionKind.DirectDamage => TryApplyDirectDamage(attackDefinition, target),
             EnemyAttackExecutionKind.Projectile => TryFireProjectile(attackDefinition, target),
+            EnemyAttackExecutionKind.None => false,
             _ => false
         };
 
@@ -152,9 +153,8 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
 
     public bool CanUse(EnemyAttackDefinitionSO attackDefinition)
     {
-        // 外部策略可以直接传入任意 AttackDefinition；
-        // Controller 会为它按需创建独立冷却槽，而不是要求 Inspector 预先配置。
-        return attackDefinition != null && GetOrCreateSlot(attackDefinition).CanAttack;
+        // None 是显式“这个状态不攻击”的定义，保留配置可见性，但不会进入出手流程。
+        return attackDefinition != null && !attackDefinition.IsNoAttack && GetOrCreateSlot(attackDefinition).CanAttack;
     }
 
     public void CommitCooldown(EnemyAttackDefinitionSO attackDefinition)

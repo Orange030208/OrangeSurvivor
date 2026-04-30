@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[RequireComponent(typeof(CanvasGroup))]
 public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenceMotion, IStringConfig
 {
     [SerializeField] private UIMotionDefinition definition;
@@ -61,6 +63,15 @@ public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenc
         tween.SetUpdate(definition.UseUnscaledTime);
         RegisterChannelTween(clip.Channel, tween);
         return tween;
+    }
+
+    public IEnumerator PlayAndWait(string clipId, float delay = 0f)
+    {
+        Tween tween = Play(clipId, delay);
+        if (tween != null && tween.IsActive())
+        {
+            yield return tween.WaitForCompletion();
+        }
     }
 
     public void SetImmediate(string clipId, bool atEnd = true)

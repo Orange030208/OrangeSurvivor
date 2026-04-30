@@ -16,7 +16,7 @@ MonoBehaviour:
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 21f41c3b28dac424bb0f532a76a27cde, type: 2}
   animConfig: {fileID: 11400000, guid: 41efa156e817d3c488cb81700223a388, type: 2}
-  defaultAttackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
+  attackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
   attackCommitNormalizedTime: 0.55
   attackFinishNormalizedTime: 0.95
   berserkInterval: 8

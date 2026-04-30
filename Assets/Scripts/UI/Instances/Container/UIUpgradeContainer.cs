@@ -1,11 +1,23 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOptionSnapshot>,Describer>
+public class UIUpgradeContainer :
+    UIContainerBase<InfoAddIndex<UpgradeCardOptionSnapshot>,Describer>,
+    IPointerEnterHandler,
+    IPointerExitHandler,
+    IPointerDownHandler,
+    IPointerUpHandler
 {
     [Header("稀有度表现")]
-    [SerializeField] private UpgradeCardRarityPresenter rarityPresenter;
-    [SerializeField] private UpgradeCardHexTechEffectController hexTechEffectController;
+    [SerializeField] private UIMotionPlayer cardMotionPlayer;
     [SerializeField] private bool playRevealSfx = true;
+
+    private CanvasGroup cardCanvasGroup;
+    private Coroutine submitRoutine;
+    private bool isSubmitting;
+    private bool isPointerPressed;
+    private bool wasRaycastBlockingBeforeSubmit = true;
 
     public override void Configure(InfoAddIndex<UpgradeCardOptionSnapshot> resource)
     {
@@ -18,7 +30,7 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOption
         };
         bottom.Display(describable);
         UpgradeCardRarityPresentationProfile presentationProfile = ResolveRarityPresentationProfile(option.Rarity);
-        ApplyRarityPresentation(presentationProfile);
+        RefreshCardMotionDefaults();
         PlayRevealSfx(presentationProfile);
         CleanClickEvent();
         OnClicked += _ =>
@@ -28,30 +40,158 @@ public class UIUpgradeContainer : UIContainerBase<InfoAddIndex<UpgradeCardOption
         };
     }
 
-    private void ApplyRarityPresentation(UpgradeCardRarityPresentationProfile profile)
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        if (rarityPresenter == null)
+        if (isSubmitting)
         {
-            rarityPresenter = GetComponent<UpgradeCardRarityPresenter>();
+            return;
         }
 
-        rarityPresenter?.Apply(profile);
-        ApplyHexTechEffect(profile);
+        PlayMotion(UIMotionClipIds.HOVER_IN);
     }
 
-    private void ApplyHexTechEffect(UpgradeCardRarityPresentationProfile profile)
+    public void OnPointerExit(PointerEventData eventData)
     {
-        if (hexTechEffectController == null)
+        if (isSubmitting)
         {
-            hexTechEffectController = GetComponent<UpgradeCardHexTechEffectController>();
+            return;
         }
 
-        if (hexTechEffectController == null)
+        if (isPointerPressed)
         {
-            hexTechEffectController = gameObject.AddComponent<UpgradeCardHexTechEffectController>();
+            isPointerPressed = false;
+            PlayMotion(UIMotionClipIds.RELEASE);
         }
 
-        hexTechEffectController.ApplyRarity(profile);
+        PlayMotion(UIMotionClipIds.HOVER_OUT);
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (isSubmitting || !IsLeftButton(eventData))
+        {
+            return;
+        }
+
+        isPointerPressed = true;
+        PlayMotion(UIMotionClipIds.PRESS);
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (isSubmitting || !IsLeftButton(eventData))
+        {
+            return;
+        }
+
+        isPointerPressed = false;
+        PlayMotion(UIMotionClipIds.RELEASE);
+    }
+
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        if (isSubmitting || !IsLeftButton(eventData))
+        {
+            return;
+        }
+
+        if (submitRoutine != null)
+        {
+            StopCoroutine(submitRoutine);
+        }
+
+        submitRoutine = StartCoroutine(SubmitAfterClickMotion(eventData));
+    }
+
+    public override void Dispose()
+    {
+        StopSubmitRoutine();
+        base.Dispose();
+    }
+
+    private void OnDisable()
+    {
+        StopSubmitRoutine();
+    }
+
+    private void RefreshCardMotionDefaults()
+    {
+        if (cardMotionPlayer == null)
+        {
+            cardMotionPlayer = GetComponent<UIMotionPlayer>();
+        }
+
+        // 升级卡片可能被对象池复用，刷新默认快照可避免上一次 hover/press 的缩放或位移残留。
+        cardMotionPlayer?.RefreshDefaults();
+    }
+
+    private IEnumerator SubmitAfterClickMotion(PointerEventData eventData)
+    {
+        isSubmitting = true;
+        isPointerPressed = false;
+        SetRaycastBlocking(false);
+
+        if (cardMotionPlayer != null)
+        {
+            yield return cardMotionPlayer.PlayAndWait(UIMotionClipIds.CLICK_PULSE);
+        }
+
+        SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
+        isSubmitting = false;
+        submitRoutine = null;
+
+        if (isActiveAndEnabled)
+        {
+            RaiseClicked(eventData);
+        }
+    }
+
+    private void StopSubmitRoutine()
+    {
+        if (submitRoutine != null)
+        {
+            StopCoroutine(submitRoutine);
+            submitRoutine = null;
+        }
+
+        SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
+        isSubmitting = false;
+        isPointerPressed = false;
+    }
+
+    private void PlayMotion(string clipId)
+    {
+        if (cardMotionPlayer == null)
+        {
+            cardMotionPlayer = GetComponent<UIMotionPlayer>();
+        }
+
+        cardMotionPlayer?.Play(clipId);
+    }
+
+    private void SetRaycastBlocking(bool blocksRaycasts)
+    {
+        if (cardCanvasGroup == null)
+        {
+            cardCanvasGroup = GetComponent<CanvasGroup>();
+        }
+
+        if (cardCanvasGroup == null)
+        {
+            return;
+        }
+
+        if (!blocksRaycasts)
+        {
+            wasRaycastBlockingBeforeSubmit = cardCanvasGroup.blocksRaycasts;
+        }
+
+        cardCanvasGroup.blocksRaycasts = blocksRaycasts;
+    }
+
+    private static bool IsLeftButton(PointerEventData eventData)
+    {
+        return eventData == null || eventData.button == PointerEventData.InputButton.Left;
     }
 
     private static UpgradeCardRarityPresentationProfile ResolveRarityPresentationProfile(UpgradeCardRarity rarity)

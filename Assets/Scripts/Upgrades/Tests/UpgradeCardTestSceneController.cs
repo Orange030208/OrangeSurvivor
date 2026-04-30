@@ -246,7 +246,7 @@ public class UpgradeCardTestSceneController : MonoBehaviour
             return;
         }
 
-        if (!ValidateRarityPresenters(containers))
+        if (!ValidateUpgradeCardMotion(containers))
         {
             return;
         }
@@ -339,7 +339,7 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         return true;
     }
 
-    private bool ValidateRarityPresenters(UIUpgradeContainer[] containers)
+    private bool ValidateUpgradeCardMotion(UIUpgradeContainer[] containers)
     {
         for (int i = 0; i < containers.Length; i++)
         {
@@ -349,16 +349,15 @@ public class UpgradeCardTestSceneController : MonoBehaviour
                 continue;
             }
 
-            if (container.GetComponent<UpgradeCardRarityPresenter>() == null)
+            if (container.GetComponent<UIMotionPlayer>() == null)
             {
-                FailSelfTest($"upgrade container {container.name} is missing UpgradeCardRarityPresenter.");
+                FailSelfTest($"upgrade container {container.name} is missing UIMotionPlayer.");
                 return false;
             }
 
-            UpgradeCardRarityPresenter presenter = container.GetComponent<UpgradeCardRarityPresenter>();
-            if (presenter.ConfiguredTargetCount <= 0)
+            if (container.GetComponent<UIMotionTrigger>() == null)
             {
-                FailSelfTest($"upgrade container {container.name} has no rarity shader targets.");
+                FailSelfTest($"upgrade container {container.name} is missing UIMotionTrigger.");
                 return false;
             }
         }
@@ -394,12 +393,6 @@ public class UpgradeCardTestSceneController : MonoBehaviour
             if (string.IsNullOrWhiteSpace(profile.PresentationKey))
             {
                 FailSelfTest($"rarity presentation key is invalid for {rarities[i]}.");
-                return false;
-            }
-
-            if (!profile.HasShaderParameters)
-            {
-                FailSelfTest($"rarity presentation profile has no shader parameters for {rarities[i]}.");
                 return false;
             }
         }
