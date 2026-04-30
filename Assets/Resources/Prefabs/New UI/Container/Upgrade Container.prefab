@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.38}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.24}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -379,7 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.52}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.18}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -562,7 +562,7 @@ MonoBehaviour:
     targetGraphic: {fileID: 3600694285946655353}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.28
+    intensityMultiplier: 0.42
     parameterOverrides:
     - propertyName: _LayerRole
       parameterType: 0
@@ -603,7 +603,7 @@ MonoBehaviour:
     targetGraphic: {fileID: 2870677616441635675}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.48
+    intensityMultiplier: 0.72
     parameterOverrides:
     - propertyName: _LayerRole
       parameterType: 0
@@ -615,7 +615,7 @@ MonoBehaviour:
     - propertyName: _AlphaScale
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.32
+      floatValue: 0.42
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -637,7 +637,7 @@ MonoBehaviour:
     targetGraphic: {fileID: 7587781164036591210}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.82
+    intensityMultiplier: 1
     parameterOverrides:
     - propertyName: _LayerRole
       parameterType: 0
@@ -649,7 +649,7 @@ MonoBehaviour:
     - propertyName: _AlphaScale
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.78
+      floatValue: 0.95
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -678,7 +678,7 @@ MonoBehaviour:
     targetGraphic: {fileID: 1614219068169174166}
     materialTemplate: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
     instantiateMaterial: 1
-    intensityMultiplier: 0.58
+    intensityMultiplier: 0.82
     parameterOverrides:
     - propertyName: _LayerRole
       parameterType: 0
@@ -690,7 +690,7 @@ MonoBehaviour:
     - propertyName: _AlphaScale
       parameterType: 0
       scaleWithTargetIntensity: 0
-      floatValue: 0.32
+      floatValue: 0.46
       colorValue: {r: 1, g: 1, b: 1, a: 1}
       vectorValue: {x: 0, y: 0, z: 0, w: 0}
       textureValue: {fileID: 0}
@@ -811,7 +811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 6deed48ff91bfdf4787e63538e23180b, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.86}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.78}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
