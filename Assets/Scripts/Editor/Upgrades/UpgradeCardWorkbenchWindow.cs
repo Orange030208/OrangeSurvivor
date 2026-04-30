@@ -16,10 +16,11 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private const string DEFAULT_RARITY_MATERIAL_PATH = "Assets/Resources/Materials/UI/UpgradeCardRarityEffect.mat";
     private const string UPGRADE_CONTAINER_PREFAB_PATH = "Assets/Resources/Prefabs/New UI/Container/Upgrade Container.prefab";
     private const float LEFT_WIDTH = 300;
-    private const float RIGHT_WIDTH = 400f;
-    private const float TOOLS_WIDTH = 400;
-    private const int PREVIEW_TEXTURE_WIDTH = 512;
-    private const int PREVIEW_TEXTURE_HEIGHT = 720;
+    private const float PREVIEW_WIDTH = 460f;
+    private const float STYLE_WIDTH = 420f;
+    private const float PREVIEW_ASPECT = 0.72f;
+    private const int PREVIEW_TEXTURE_WIDTH = 720;
+    private const int PREVIEW_TEXTURE_HEIGHT = 1000;
     private const HideFlags EDIT_COPY_HIDE_FLAGS =
         HideFlags.HideInHierarchy |
         HideFlags.DontSaveInEditor |
@@ -58,14 +59,10 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private Vector2 cardListScroll;
     private Vector2 editorScroll;
     private Vector2 sideScroll;
-    private Vector2 toolsScroll;
+    private Vector2 styleScroll;
     private string searchText = string.Empty;
     private UpgradeCardRarity? rarityFilter;
-    private bool showPoolTools = true;
-    private bool showRollSimulation = true;
-    private bool showStyleTools = true;
     private bool useShaderPreview = true;
-    private bool liveValidate = true;
     private bool cardDirty;
     private bool styleDirty;
     private int simulationWave = 1;
@@ -78,7 +75,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     public static void Open()
     {
         UpgradeCardWorkbenchWindow window = GetWindow<UpgradeCardWorkbenchWindow>("Card Workbench");
-        window.minSize = new Vector2(1220f, 620f);
+        window.minSize = new Vector2(1320f, 680f);
         window.Show();
     }
 
@@ -142,8 +139,8 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         DrawLeftPane(GUILayout.Width(LEFT_WIDTH));
         DrawEditorPane(GUILayout.ExpandWidth(true));
-        DrawRightPane(GUILayout.Width(RIGHT_WIDTH));
-        DrawToolsPane(GUILayout.Width(TOOLS_WIDTH));
+        DrawPreviewPane(GUILayout.Width(PREVIEW_WIDTH));
+        DrawStylePane(GUILayout.Width(STYLE_WIDTH));
         EditorGUILayout.EndHorizontal();
     }
 
@@ -160,13 +157,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             SaveAllDirty();
         }
 
-        if (GUILayout.Button("校验全部", EditorStyles.toolbarButton, GUILayout.Width(72f)))
-        {
-            ValidateAllCards();
-        }
-
-        GUILayout.Space(8f);
-        liveValidate = GUILayout.Toggle(liveValidate, "实时校验", EditorStyles.toolbarButton, GUILayout.Width(72f));
         GUILayout.FlexibleSpace();
         if (cardDirty)
         {
@@ -369,62 +359,31 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         if (cardObject.ApplyModifiedProperties())
         {
             cardDirty = true;
-            if (liveValidate)
-            {
-                ValidateSelectedCard();
-            }
             RefreshPrefabPreview();
         }
 
         EditorGUILayout.EndVertical();
     }
 
-    private void DrawRightPane(params GUILayoutOption[] options)
+    private void DrawPreviewPane(params GUILayoutOption[] options)
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox, options);
         sideScroll = EditorGUILayout.BeginScrollView(sideScroll);
 
         DrawPreview();
-        EditorGUILayout.Space(6f);
-        DrawStylePanel();
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
     }
 
-    private void DrawToolsPane(params GUILayoutOption[] options)
+    private void DrawStylePane(params GUILayoutOption[] options)
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox, options);
-        toolsScroll = EditorGUILayout.BeginScrollView(toolsScroll);
+        styleScroll = EditorGUILayout.BeginScrollView(styleScroll);
 
-        DrawValidationPanel();
-        EditorGUILayout.Space(6f);
-        DrawPoolPanel();
-        EditorGUILayout.Space(6f);
-        DrawSimulationPanel();
-
-        EditorGUILayout.EndScrollView();
-        EditorGUILayout.EndVertical();
-    }
-
-    private void DrawPreview()
-    {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("实时预览", EditorStyles.boldLabel);
-        GUILayout.FlexibleSpace();
-        useShaderPreview = GUILayout.Toggle(useShaderPreview, "真实UI", EditorStyles.miniButton, GUILayout.Width(62f));
+        EditorGUILayout.LabelField("样式 / Shader", EditorStyles.boldLabel);
         EditorGUILayout.EndHorizontal();
-        Rect cardRect = GUILayoutUtility.GetRect(RIGHT_WIDTH - 28f, 230f);
-        DrawCardPreview(cardRect);
-    }
-
-    private void DrawStylePanel()
-    {
-        showStyleTools = EditorGUILayout.Foldout(showStyleTools, "样式 / Shader", true);
-        if (!showStyleTools)
-        {
-            return;
-        }
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         EditorGUI.BeginChangeCheck();
@@ -499,6 +458,22 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         }
 
         EditorGUILayout.EndVertical();
+        EditorGUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawPreview()
+    {
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("实时预览", EditorStyles.boldLabel);
+        GUILayout.FlexibleSpace();
+        useShaderPreview = GUILayout.Toggle(useShaderPreview, "真实UI", EditorStyles.miniButton, GUILayout.Width(62f));
+        EditorGUILayout.EndHorizontal();
+
+        float width = Mathf.Max(260f, EditorGUIUtility.currentViewWidth - LEFT_WIDTH - STYLE_WIDTH - 90f);
+        float height = Mathf.Max(420f, width / PREVIEW_ASPECT);
+        Rect cardRect = GUILayoutUtility.GetRect(width, height, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        DrawCardPreview(cardRect);
     }
 
     private void DrawValidationPanel()

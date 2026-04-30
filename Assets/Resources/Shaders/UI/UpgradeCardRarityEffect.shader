@@ -228,13 +228,15 @@ Shader "UI/Upgrade Card Rarity Effect"
                 fixed3 glowColor = lerp(_PrimaryColor.rgb, _AccentColor.rgb, 0.68)
                     * (0.5 + glowEnergy * (1.6 + _GlowIntensity * 0.25));
 
+                float smoothShape = saturate(lerp(outerShape, outerShape * shapeMask, 0.18));
                 float role = floor(_LayerRole + 0.5);
                 float cardRole = RoleMask(role, 0.0);
                 float backgroundRole = RoleMask(role, 1.0);
                 float borderRole = RoleMask(role, 2.0);
                 float glowRole = RoleMask(role, 3.0);
-                float smoothShape = saturate(lerp(outerShape, outerShape * shapeMask, 0.18));
-                float layerAlpha = saturate(_AlphaScale) * spriteColor.a * smoothShape;
+                float effectLayer = saturate(backgroundRole + borderRole + glowRole);
+                float sourceAlpha = lerp(spriteColor.a, 1.0, effectLayer);
+                float layerAlpha = saturate(_AlphaScale) * sourceAlpha * smoothShape;
 
                 fixed4 color;
                 color.rgb =
