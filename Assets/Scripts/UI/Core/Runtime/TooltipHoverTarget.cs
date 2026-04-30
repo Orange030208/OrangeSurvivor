@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
 {
     [SerializeField] private MonoBehaviour dataSourceComponent;
+    [SerializeField] private UITooltipPresenter tooltipPresenter;
 
     private IDescribable dataSource;
     private bool isPointerDown;
@@ -18,6 +19,11 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
     {
         dataSource = source;
         dataSourceComponent = source as MonoBehaviour;
+    }
+
+    public void SetTooltipPresenter(UITooltipPresenter presenter)
+    {
+        tooltipPresenter = presenter;
     }
 
     private void OnDisable()
@@ -58,7 +64,13 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        GameEventBus.Publish(new ShowTooltipRequestedEvent(dataSource, screenPosition));
+        UITooltipPresenter presenter = ResolveTooltipPresenter();
+        if (presenter == null)
+        {
+            return;
+        }
+
+        presenter.Present(dataSource, screenPosition);
     }
 
     private void ValidateConfiguration()
@@ -82,6 +94,28 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
         }
 
         isPointerDown = false;
-        GameEventBus.Publish<HideTooltipRequestedEvent>();
+        ResolveTooltipPresenter()?.HideImmediate();
+    }
+
+    private UITooltipPresenter ResolveTooltipPresenter()
+    {
+        if (tooltipPresenter != null)
+        {
+            return tooltipPresenter;
+        }
+
+        tooltipPresenter = GetComponentInParent<UITooltipPresenter>(true);
+        if (tooltipPresenter != null)
+        {
+            return tooltipPresenter;
+        }
+
+        tooltipPresenter = UITooltipPresenter.ActivePresenter;
+        if (tooltipPresenter != null)
+        {
+            return tooltipPresenter;
+        }
+
+        return FindFirstObjectByType<UITooltipPresenter>();
     }
 }
