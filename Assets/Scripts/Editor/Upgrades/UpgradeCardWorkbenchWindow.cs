@@ -14,7 +14,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private const string DEFAULT_POOL_PATH = "Assets/Resources/Data/UpgradeCards/Pool/Default Upgrade Card Pool.asset";
     private const string DEFAULT_RARITY_CATALOG_PATH = "Assets/Resources/Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog.asset";
     private const string DEFAULT_RARITY_MATERIAL_PATH = "Assets/Resources/Materials/UI/UpgradeCardRarityEffect.mat";
-    private const string UPGRADE_CONTAINER_PREFAB_PATH = "Assets/Resources/Prefabs/New UI/Pages/WaveTransition/Upgrade Container.prefab";
+    private const string UPGRADE_CONTAINER_PREFAB_PATH = "Assets/Resources/Prefabs/New UI/Container/Upgrade Container.prefab";
     private const float LEFT_WIDTH = 300;
     private const float RIGHT_WIDTH = 400f;
     private const float TOOLS_WIDTH = 400;
