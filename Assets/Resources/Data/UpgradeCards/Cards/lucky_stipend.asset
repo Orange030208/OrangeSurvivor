@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: lucky_stipend
+  m_Name: lucky_stipend (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: lucky_stipend
   title: "\u5E78\u8FD0\u6D25\u8D34"
-  icon: {fileID: 0}
+  icon: {fileID: -7575623669661878956, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 0
   tags: 0600000005000000
   maxPickCount: 3
@@ -23,6 +23,7 @@ MonoBehaviour:
     minWave: 1
     requiredTagPickCounts: []
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u7ACB\u5373\u83B7\u5F97 10 \u91D1\u5E01\uFF0C\u5E78\u8FD0 +4\u3002"
   propertyModifiers:

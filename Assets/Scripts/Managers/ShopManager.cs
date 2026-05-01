@@ -52,6 +52,10 @@ public class ShopManager : MonoBehaviour
     private int rerollCount;
     private int currentCurrency;
 
+    public event Action<ShopSnapshot> ItemsChanged;
+    public event Action<ShopPurchaseSuccess> PurchaseSucceeded;
+    public event Action<ShopPurchaseFailure> PurchaseFailed;
+
     private void Awake()
     {
         rerollCost = baseRerollCost;
@@ -59,11 +63,7 @@ public class ShopManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<RequestShopSnapshotEvent>(OnRequestSnapshot);
-        GameEventBus.Subscribe<ShopItemClickedEvent>(OnItemClicked);
-        GameEventBus.Subscribe<ShopRerollRequestedEvent>(OnRerollRequested);
         GameEventBus.Subscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
-        GameEventBus.Subscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
@@ -77,11 +77,7 @@ public class ShopManager : MonoBehaviour
     {
         UnbindPropertiesManager();
 
-        GameEventBus.Unsubscribe<RequestShopSnapshotEvent>(OnRequestSnapshot);
-        GameEventBus.Unsubscribe<ShopItemClickedEvent>(OnItemClicked);
-        GameEventBus.Unsubscribe<ShopRerollRequestedEvent>(OnRerollRequested);
         GameEventBus.Unsubscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
-        GameEventBus.Unsubscribe<OperateShopItemLockEvent>(OnOperateShopItemLock);
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
@@ -112,7 +108,7 @@ public class ShopManager : MonoBehaviour
         RefreshShopForWaveEntry();
     }
 
-    private void OnRequestSnapshot()
+    public void RequestSnapshot()
     {
         PublishShopItems();
     }
@@ -128,29 +124,29 @@ public class ShopManager : MonoBehaviour
         PublishShopItems();
     }
 
-    private void OnItemClicked(ShopItemClickedEvent eventData)
+    public void RequestBuyItem(int itemIndex)
     {
-        if (currentItems == null || eventData.ItemIndex < 0 || eventData.ItemIndex >= currentItems.Length)
+        if (currentItems == null || itemIndex < 0 || itemIndex >= currentItems.Length)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Invalid item index."));
+            NotifyPurchaseFailed("Invalid item index.");
             return;
         }
 
         ApplyShopPriceMultiplier();
-        ShopItemData itemData = currentItems[eventData.ItemIndex];
+        ShopItemData itemData = currentItems[itemIndex];
         if (itemData.ItemData == null)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Item data is null."));
+            NotifyPurchaseFailed("Item data is null.");
             return;
         }
 
         if (itemData.ItemData.ItemType == ItemType.Accessory)
         {
-            ProcessAccessoryPurchase(itemData, eventData.ItemIndex);
+            ProcessAccessoryPurchase(itemData, itemIndex);
         }
         else if (itemData.ItemData.ItemType == ItemType.Weapon)
         {
-            ProcessWeaponPurchase(itemData, eventData.ItemIndex);
+            ProcessWeaponPurchase(itemData, itemIndex);
         }
     }
 
@@ -159,28 +155,28 @@ public class ShopManager : MonoBehaviour
         AccessoryDataSO accessoryData = itemData.ItemData as AccessoryDataSO;
         if (accessoryData == null)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Accessory data is null or wrong type."));
+            NotifyPurchaseFailed("Accessory data is null or wrong type.");
             return;
         }
 
         int price = itemData.GetPrice();
         if (currentCurrency < price)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Not enough currency."));
+            NotifyPurchaseFailed("Not enough currency.");
             return;
         }
 
         AccessoryManager playerAccessoryManager = FindFirstObjectByType<AccessoryManager>();
         if (playerAccessoryManager == null)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Accessory manager not found."));
+            NotifyPurchaseFailed("Accessory manager not found.");
             return;
         }
 
         currencyWallet?.ChangeAmount(-price);
         playerAccessoryManager.EquipAccessory(accessoryData);
 
-        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
+        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
         PublishShopItems();
     }
@@ -190,33 +186,33 @@ public class ShopManager : MonoBehaviour
         WeaponDataSO weaponData = itemData.ItemData as WeaponDataSO;
         if (weaponData == null)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Weapon data is null or wrong type."));
+            NotifyPurchaseFailed("Weapon data is null or wrong type.");
             return;
         }
 
         int price = itemData.GetPrice();
         if (currentCurrency < price)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Not enough currency."));
+            NotifyPurchaseFailed("Not enough currency.");
             return;
         }
 
         WeaponsHolder weaponsHolder = FindFirstObjectByType<WeaponsHolder>();
         if (weaponsHolder == null)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("Weapons holder not found."));
+            NotifyPurchaseFailed("Weapons holder not found.");
             return;
         }
 
         if (!weaponsHolder.AddWeapon(weaponData, itemData.Level))
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent("No empty weapon slot available."));
+            NotifyPurchaseFailed("No empty weapon slot available.");
             return;
         }
 
         currencyWallet?.ChangeAmount(-price);
 
-        GameEventBus.Publish(new ShopPurchaseSuccessEvent(itemData.ItemData, itemData.Level));
+        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
         PublishShopItems();
     }
@@ -243,7 +239,7 @@ public class ShopManager : MonoBehaviour
         currentItems = nextItems;
     }
 
-    private void OnRerollRequested()
+    public void RequestReroll()
     {
         if (TryConsumeFreeShopReroll())
         {
@@ -254,7 +250,7 @@ public class ShopManager : MonoBehaviour
 
         if (currentCurrency < rerollCost)
         {
-            GameEventBus.Publish(new ShopPurchaseFailedEvent($"Not enough currency for reroll. Cost: {rerollCost}"));
+            NotifyPurchaseFailed($"Not enough currency for reroll. Cost: {rerollCost}");
             return;
         }
 
@@ -445,7 +441,7 @@ public class ShopManager : MonoBehaviour
 
         ApplyShopPriceMultiplier();
         bool canReroll = currentCurrency >= rerollCost || freeShopRerolls > 0;
-        GameEventBus.Publish(new ShopItemsChangedEvent(currentItems, rerollCost, canReroll));
+        ItemsChanged?.Invoke(new ShopSnapshot(currentItems, rerollCost, canReroll));
     }
 
     private void ApplyShopPriceMultiplier()
@@ -457,15 +453,15 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    private void OnOperateShopItemLock(OperateShopItemLockEvent eventData)
+    public void RequestToggleLock(int itemIndex)
     {
-        if (currentItems == null || eventData.Index < 0 || eventData.Index >= currentItems.Length)
+        if (currentItems == null || itemIndex < 0 || itemIndex >= currentItems.Length)
         {
             return;
         }
 
-        currentItems[eventData.Index].Lock = !currentItems[eventData.Index].Lock;
-        print($"物品:{currentItems[eventData.Index].ItemData.ItemName} 锁定状态:{currentItems[eventData.Index].Lock}");
+        currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
+        print($"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}");
         PublishShopItems();
     }
 
@@ -588,5 +584,15 @@ public class ShopManager : MonoBehaviour
     private void RefreshCurrency()
     {
         currentCurrency = currencyWallet != null ? currencyWallet.CurrentAmount : 0;
+    }
+
+    private void NotifyPurchaseSucceeded(ItemDataSO itemData, int level)
+    {
+        PurchaseSucceeded?.Invoke(new ShopPurchaseSuccess(itemData, level));
+    }
+
+    private void NotifyPurchaseFailed(string message)
+    {
+        PurchaseFailed?.Invoke(new ShopPurchaseFailure(message));
     }
 }

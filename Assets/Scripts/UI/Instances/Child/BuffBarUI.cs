@@ -8,7 +8,7 @@ public class BuffBarUI : MonoBehaviour
 
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
-    private string subscribedPlayerEventBusId = string.Empty;
+    private BuffController buffController;
 
     private void Awake()
     {
@@ -23,29 +23,16 @@ public class BuffBarUI : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        BindPlayer(FindFirstObjectByType<Player>());
-    }
-
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        UnsubscribePlayerEvents();
+        UnbindPlayer();
         SetVisibleItemCount(0);
-        player = null;
     }
 
-    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    public void BindPlayer(Player targetPlayer)
     {
-        BindPlayer(eventData.Player);
-    }
-
-    private void BindPlayer(Player newPlayer)
-    {
-        UnsubscribePlayerEvents();
-        player = newPlayer;
+        UnbindPlayer();
+        player = targetPlayer;
 
         if (player == null)
         {
@@ -53,40 +40,47 @@ public class BuffBarUI : MonoBehaviour
             return;
         }
 
-        subscribedPlayerEventBusId = player.RuntimeId;
-        GameEventBus.Subscribe<ActiveBuffSnapshotChangedEvent, string>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
-        GameEventBus.Publish<RequestActiveBuffSnapshotEvent, string>(subscribedPlayerEventBusId);
-    }
-
-    private void UnsubscribePlayerEvents()
-    {
-        if (string.IsNullOrEmpty(subscribedPlayerEventBusId))
+        buffController = player.GetComponent<BuffController>();
+        if (buffController == null)
         {
+            SetVisibleItemCount(0);
             return;
         }
 
-        GameEventBus.Unsubscribe<ActiveBuffSnapshotChangedEvent, string>(subscribedPlayerEventBusId, OnActiveBuffSnapshotChanged);
-        subscribedPlayerEventBusId = string.Empty;
+        buffController.OnActiveBuffSnapshotChanged += RenderBuffSnapshots;
+        RenderBuffSnapshots(buffController.BuildSnapshots());
     }
 
-    private void OnActiveBuffSnapshotChanged(ActiveBuffSnapshotChangedEvent eventData)
+    public void UnbindPlayer()
+    {
+        if (buffController != null)
+        {
+            buffController.OnActiveBuffSnapshotChanged -= RenderBuffSnapshots;
+            buffController = null;
+        }
+
+        player = null;
+    }
+
+    private void RenderBuffSnapshots(ActiveBuffSnapshot[] snapshots)
     {
         if (player == null)
         {
             return;
         }
 
-        EnsureItemPoolSize(eventData.Buffs.Length);
+        int snapshotCount = snapshots != null ? snapshots.Length : 0;
+        EnsureItemPoolSize(snapshotCount);
 
-        for (int i = 0; i < eventData.Buffs.Length; i++)
+        for (int i = 0; i < snapshotCount; i++)
         {
             BuffIconItem item = spawnedItems[i];
             item.gameObject.SetActive(true);
-            item.Configure(eventData.Buffs[i]);
+            item.Configure(snapshots[i]);
             item.transform.SetSiblingIndex(i);
         }
 
-        SetVisibleItemCount(eventData.Buffs.Length);
+        SetVisibleItemCount(snapshotCount);
     }
 
     private void EnsureItemPoolSize(int requiredCount)

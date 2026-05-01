@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: new_weapon_cache
+  m_Name: new_weapon_cache (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: new_weapon_cache
   title: "\u6B66\u5668\u8865\u7ED9\u7BB1"
-  icon: {fileID: 0}
+  icon: {fileID: -5732010304681906650, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 2
   tags: 07000000
   maxPickCount: 2
@@ -23,6 +23,7 @@ MonoBehaviour:
     minWave: 2
     requiredTagPickCounts: []
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u83B7\u5F97\u4E00\u628A\u968F\u673A 1 \u7EA7\u6B66\u5668\u3002"
   propertyModifiers: []

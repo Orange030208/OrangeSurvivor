@@ -6,7 +6,7 @@ public static class UIPageContextFactory
     {
         Player resolvedPlayer = ResolvePlayer(player);
         bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade();
+        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
         return new GamingPageContext(
             resolvedPlayer,
             resolvedPlayer != null ? resolvedPlayer.GetComponent<CurrencyWallet>() : null,
@@ -19,7 +19,7 @@ public static class UIPageContextFactory
     {
         Player resolvedPlayer = ResolvePlayer(player);
         bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade();
+        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
         return new PauseMenuContext(
             resolvedPlayer,
             resolvedPlayer != null ? resolvedPlayer.GetComponent<CurrencyWallet>() : null,
@@ -35,9 +35,9 @@ public static class UIPageContextFactory
         PropertiesManager propertiesManager = resolvedPlayer != null ? resolvedPlayer.GetComponent<PropertiesManager>() : null;
 
         bool ownsShopFacade = shopFacade == null;
-        IShopUiFacade resolvedShopFacade = shopFacade ?? new EventBusShopUiFacade(currencyWallet);
+        IShopUiFacade resolvedShopFacade = shopFacade ?? CreateShopFacade(currencyWallet);
         bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade();
+        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
 
         return new ShopPageContext(
             resolvedPlayer,
@@ -54,14 +54,26 @@ public static class UIPageContextFactory
         return player != null ? player : Object.FindFirstObjectByType<Player>();
     }
 
-    private static IInventoryUiFacade CreateInventoryFacade()
+    private static IInventoryUiFacade CreateInventoryFacade(Player player)
     {
         InventoryOperateManager inventoryOperateManager = Object.FindFirstObjectByType<InventoryOperateManager>();
         if (inventoryOperateManager != null)
         {
+            inventoryOperateManager.Bind(player);
             return new ManagerInventoryUiFacade(inventoryOperateManager);
         }
 
-        return new EventBusInventoryUiFacade();
+        return new ResolvingInventoryUiFacade();
+    }
+
+    private static IShopUiFacade CreateShopFacade(CurrencyWallet currencyWallet)
+    {
+        ShopManager shopManager = Object.FindFirstObjectByType<ShopManager>();
+        if (shopManager != null)
+        {
+            return new ManagerShopUiFacade(shopManager, currencyWallet);
+        }
+
+        return new ResolvingShopUiFacade(currencyWallet);
     }
 }

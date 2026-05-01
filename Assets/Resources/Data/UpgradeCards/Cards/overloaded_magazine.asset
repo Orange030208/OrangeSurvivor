@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: overloaded_magazine
+  m_Name: overloaded_magazine (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: overloaded_magazine
   title: "\u8FC7\u8F7D\u5F39\u5323"
-  icon: {fileID: 0}
+  icon: {fileID: 8067393534133454600, guid: 0d251fad8b3717f4ea1d6d50c06aae82, type: 3}
   rarity: 2
   tags: 0a00000003000000
   maxPickCount: 1
@@ -25,6 +25,7 @@ MonoBehaviour:
     - tag: 10
       minPickCount: 2
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u6295\u5C04\u7269\u6570\u91CF +1\uFF0C\u653B\u51FB\u901F\u5EA6 -12%\uFF0C\u5F39\u901F
     -10%\u3002"

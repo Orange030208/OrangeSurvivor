@@ -642,10 +642,10 @@ MonoBehaviour:
   revealConfig:
     playOnRefresh: 1
     useUnscaledTime: 1
-    playTogether: 1
+    playTogether: 0
     startDelay: 0
-    itemStagger: 0
-    sequenceEase: 1
+    itemStagger: 0.06
+    sequenceEase: 32
     initialClipId: Hide
     revealClipId: Show
 --- !u!225 &2802882096935603422

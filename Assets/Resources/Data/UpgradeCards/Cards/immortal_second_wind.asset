@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: immortal_second_wind
+  m_Name: immortal_second_wind (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: immortal_second_wind
   title: "\u4E0D\u673D\u56DE\u54CD"
-  icon: {fileID: 0}
+  icon: {fileID: 4660167694634587784, guid: 0d251fad8b3717f4ea1d6d50c06aae82, type: 3}
   rarity: 3
   tags: 010000000c000000
   maxPickCount: 1
@@ -27,6 +27,7 @@ MonoBehaviour:
     - tag: 12
       minPickCount: 1
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u6BCF\u6CE2\u5F00\u59CB\u83B7\u5F97 5 \u79D2\u4E0D\u673D Buff\u3002"
   propertyModifiers: []

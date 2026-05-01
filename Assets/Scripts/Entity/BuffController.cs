@@ -27,7 +27,6 @@ public class BuffController : EntityComponentBase
 
     public override void OnEnableComponent()
     {
-        GameEventBus.Subscribe<RequestActiveBuffSnapshotEvent, string>(owner.RuntimeId, OnRequestSnapshot);
         GameEventBus.Subscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
         GameEventBus.Subscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
@@ -35,7 +34,6 @@ public class BuffController : EntityComponentBase
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<RequestActiveBuffSnapshotEvent, string>(owner.RuntimeId, OnRequestSnapshot);
         GameEventBus.Unsubscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
         GameEventBus.Unsubscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
@@ -435,11 +433,6 @@ public class BuffController : EntityComponentBase
         return !string.IsNullOrWhiteSpace(buffId) && buffStacksById.TryGetValue(buffId, out stacks);
     }
 
-    private void OnRequestSnapshot()
-    {
-        PublishSnapshot();
-    }
-
     private void OnApplyBuffRequested(ApplyBuffRequestedEvent eventData)
     {
         ApplyBuff(eventData.Request);
@@ -467,9 +460,5 @@ public class BuffController : EntityComponentBase
     {
         ActiveBuffSnapshot[] snapshots = BuildSnapshots();
         OnActiveBuffSnapshotChanged?.Invoke(snapshots);
-        if (owner != null)
-        {
-            GameEventBus.Publish(owner.RuntimeId, new ActiveBuffSnapshotChangedEvent(snapshots));
-        }
     }
 }

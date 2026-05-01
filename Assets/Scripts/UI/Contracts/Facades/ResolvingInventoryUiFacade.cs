@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public sealed class EventBusInventoryUiFacade : IInventoryUiFacade
+public sealed class ResolvingInventoryUiFacade : IInventoryUiFacade
 {
     private IInventoryUiFacade directFacade;
     private bool active;
@@ -116,7 +116,7 @@ public sealed class EventBusInventoryUiFacade : IInventoryUiFacade
 
         if (!missingManagerWarningLogged)
         {
-            Debug.LogWarning($"{nameof(EventBusInventoryUiFacade)} failed to resolve {nameof(InventoryOperateManager)}. Inventory UI commands will be ignored.");
+            Debug.LogWarning($"{nameof(ResolvingInventoryUiFacade)} failed to resolve {nameof(InventoryOperateManager)}. Inventory UI commands will be ignored.");
             missingManagerWarningLogged = true;
         }
 

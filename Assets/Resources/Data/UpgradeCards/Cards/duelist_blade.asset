@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: duelist_blade
+  m_Name: duelist_blade (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: duelist_blade
   title: "\u51B3\u6597\u8005\u5200\u5203"
-  icon: {fileID: 0}
+  icon: {fileID: 7435972199681186260, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 1
   tags: 0700000008000000
   maxPickCount: 1
@@ -25,6 +25,7 @@ MonoBehaviour:
     - tag: 8
       minPickCount: 1
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u83B7\u5F97\u4E00\u628A 2 \u7EA7\u730E\u4EBA\u5315\u9996\u3002"
   propertyModifiers: []

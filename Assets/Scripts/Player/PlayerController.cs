@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
+public class PlayerController : EntityComponentBase, IMovable, IMovementLockable, IPlayerMoveInputReceiver
 {
     private float speed = 0;
 
@@ -21,7 +21,6 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
         this.propertiesManager = this.owner.PropertiesManager;
         movementLocks.Clear();
 
-        GameEventBus.Subscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
         propertiesManager.OnPropertyChanged += OnPropertyChanged;
 
@@ -47,7 +46,6 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<PlayerMoveInputChangedEvent>(OnMoveInputChanged);
         if (propertiesManager != null)
         {
             propertiesManager.OnAllPropertiesChanged -= UpdateSpeed;
@@ -66,9 +64,9 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
         rb.velocity = moveDirection.normalized * deltaTime * speed;
     }
 
-    private void OnMoveInputChanged(PlayerMoveInputChangedEvent eventData)
+    public void SetMoveInput(Vector2 moveDirection)
     {
-        moveDirection = eventData.MoveDirection;
+        this.moveDirection = moveDirection;
     }
 
     private void OnPropertyChanged(PropType propType, float newValue)

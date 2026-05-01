@@ -14,46 +14,296 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useUnscaledTime: 1
   clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 590100000000000001
+    - rid: 590100000000000002
+    - rid: 590100000000000003
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 590100000000000004
+    - rid: 590100000000000005
+    - rid: 590100000000000006
+  - clipId: Visible
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 590100000000000007
+    - rid: 590100000000000008
+    - rid: 590100000000000009
+  - clipId: Hidden
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 590100000000000010
+    - rid: 590100000000000011
+    - rid: 590100000000000012
   - clipId: HoverIn
     channel: Interaction
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 590100000000000001
+    - rid: 590100000000000013
+    - rid: 590100000000000014
   - clipId: HoverOut
     channel: Interaction
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 590100000000000002
+    - rid: 590100000000000015
+    - rid: 590100000000000016
   - clipId: Press
     channel: Interaction
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 590100000000000003
+    - rid: 590100000000000017
+    - rid: 590100000000000018
   - clipId: Release
     channel: Interaction
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 590100000000000004
+    - rid: 590100000000000019
+    - rid: 590100000000000020
   - clipId: ClickPulse
     channel: Interaction
-    playMode: 1
+    playMode: 0
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 590100000000000005
-    - rid: 590100000000000006
+    - rid: 590100000000000021
+    - rid: 590100000000000022
+    - rid: 590100000000000023
   references:
     version: 2
     RefIds:
     - rid: 590100000000000001
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.32
+        ease: 6
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 590100000000000002
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.32
+        ease: 9
+        fromMode: 3
+        fromValue: {x: 0, y: -44}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 590100000000000003
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.32
+        ease: 9
+        fromMode: 3
+        fromValue: {x: 0.9, y: 0.9, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 590100000000000004
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 6
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 590100000000000005
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: -36}
+    - rid: 590100000000000006
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.92, y: 0.92, z: 1}
+    - rid: 590100000000000007
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 2
+        fromValue: 1
+        toMode: 2
+        toValue: 1
+    - rid: 590100000000000008
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 1
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 590100000000000009
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 1
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 590100000000000010
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 0
+    - rid: 590100000000000011
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 3
+        fromValue: {x: 0, y: -44}
+        toMode: 3
+        toValue: {x: 0, y: -44}
+    - rid: 590100000000000012
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0
+        ease: 6
+        fromMode: 3
+        fromValue: {x: 0.9, y: 0.9, z: 1}
+        toMode: 4
+        toValue: {x: 0.9, y: 0.9, z: 1}
+    - rid: 590100000000000013
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 12}
+    - rid: 590100000000000014
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.045, y: 1.045, z: 1}
+    - rid: 590100000000000015
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 590100000000000016
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 590100000000000017
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.07
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 4}
+    - rid: 590100000000000018
+      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.07
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.975, y: 0.975, z: 1}
+    - rid: 590100000000000019
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 12}
+    - rid: 590100000000000020
       type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
       data:
         targetKey: Self
@@ -63,59 +313,37 @@ MonoBehaviour:
         fromMode: 0
         fromValue: {x: 1, y: 1, z: 1}
         toMode: 4
-        toValue: {x: 1, y: 1, z: 1}
-    - rid: 590100000000000002
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+        toValue: {x: 1.045, y: 1.045, z: 1}
+    - rid: 590100000000000021
+      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
-        duration: 0.1
+        duration: 0.09
         ease: 6
         fromMode: 0
-        fromValue: {x: 1, y: 1, z: 1}
-        toMode: 4
-        toValue: {x: 1, y: 1, z: 1}
-    - rid: 590100000000000003
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 14}
+    - rid: 590100000000000022
       type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
-        duration: 0.07
-        ease: 6
-        fromMode: 0
-        fromValue: {x: 1, y: 1, z: 1}
-        toMode: 4
-        toValue: {x: 0.972, y: 0.972, z: 1}
-    - rid: 590100000000000004
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0.1
-        ease: 6
-        fromMode: 0
-        fromValue: {x: 1, y: 1, z: 1}
-        toMode: 4
-        toValue: {x: 1, y: 1, z: 1}
-    - rid: 590100000000000005
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0.07
+        duration: 0.09
         ease: 6
         fromMode: 0
         fromValue: {x: 1, y: 1, z: 1}
         toMode: 4
         toValue: {x: 1.065, y: 1.065, z: 1}
-    - rid: 590100000000000006
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+    - rid: 590100000000000023
+      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
-        duration: 0.11
+        duration: 0.09
         ease: 6
         fromMode: 0
-        fromValue: {x: 1, y: 1, z: 1}
-        toMode: 4
-        toValue: {x: 1, y: 1, z: 1}
+        fromValue: 1
+        toMode: 2
+        toValue: 1

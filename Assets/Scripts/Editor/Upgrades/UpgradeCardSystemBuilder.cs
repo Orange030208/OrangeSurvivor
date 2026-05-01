@@ -451,10 +451,10 @@ public static class UpgradeCardSystemBuilder
 
         catalog.InitializeRuntime(new[]
         {
-            UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(UpgradeCardRarity.Common),
-            UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(UpgradeCardRarity.Rare),
-            UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(UpgradeCardRarity.Epic),
-            UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(UpgradeCardRarity.Legendary)
+            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Common),
+            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Rare),
+            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Epic),
+            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Legendary)
         });
         EditorUtility.SetDirty(catalog);
         return catalog;

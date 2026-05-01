@@ -17,20 +17,12 @@ public class InventoryOperateManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-
-        if (weaponsHolder == null || accessoryManager == null)
-        {
-            Bind(FindFirstObjectByType<Player>());
-        }
-
         Subscribe();
         PublishInventorySnapshot();
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         Unsubscribe();
     }
 
@@ -47,11 +39,11 @@ public class InventoryOperateManager : MonoBehaviour
             player.GetComponent<CurrencyWallet>());
     }
 
-    public void Bind(WeaponsHolder newWeaponsHolder, AccessoryManager newAccessoryManager, CurrencyWallet newCurrencyWallet)
+    public void Bind(WeaponsHolder targetWeaponsHolder, AccessoryManager targetAccessoryManager, CurrencyWallet targetCurrencyWallet)
     {
-        bool sameTarget = weaponsHolder == newWeaponsHolder
-                          && accessoryManager == newAccessoryManager
-                          && currencyWallet == newCurrencyWallet;
+        bool sameTarget = weaponsHolder == targetWeaponsHolder
+                          && accessoryManager == targetAccessoryManager
+                          && currencyWallet == targetCurrencyWallet;
         if (sameTarget)
         {
             PublishInventorySnapshot();
@@ -59,16 +51,11 @@ public class InventoryOperateManager : MonoBehaviour
         }
 
         Unsubscribe();
-        weaponsHolder = newWeaponsHolder;
-        accessoryManager = newAccessoryManager;
-        currencyWallet = newCurrencyWallet;
+        weaponsHolder = targetWeaponsHolder;
+        accessoryManager = targetAccessoryManager;
+        currencyWallet = targetCurrencyWallet;
         Subscribe();
         PublishInventorySnapshot();
-    }
-
-    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
-    {
-        Bind(eventData.Player);
     }
 
     private void Subscribe()
@@ -298,11 +285,6 @@ public class InventoryOperateManager : MonoBehaviour
 
         item = default;
         return false;
-    }
-
-    private static IDescribable BuildDisplayDocument(InventoryRuntimeItem item)
-    {
-        return item.ItemData;
     }
 
     private static string BuildWeaponEntryId(Weapon runtimeWeapon)

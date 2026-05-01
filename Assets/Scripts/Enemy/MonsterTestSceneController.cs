@@ -177,8 +177,7 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             }
         }
 
-        _ = CharacterSelectionManager.Instance;
-        GameEventBus.Publish(new CharacterItemClickedEvent(selectedIndex));
+        CharacterSelectionManager.Instance?.SelectCharacter(selectedIndex);
     }
 
 

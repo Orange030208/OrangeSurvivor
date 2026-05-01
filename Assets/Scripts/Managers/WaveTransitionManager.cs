@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public enum TransitionPhase
@@ -25,6 +26,7 @@ public class WaveTransitionManager : MonoBehaviour
     private UpgradeCardSO[] upgradeCardOptions = Array.Empty<UpgradeCardSO>();
     private UpgradeCardOptionSnapshot[] upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
     private AccessoryDataSO currentAccessoryData;
+    private Coroutine refreshUpgradeCardsRoutine;
     private int collectChestCount;
     private int latestCompletedWave = 1;
     private PlayerLevel playerLevel;
@@ -68,6 +70,12 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
+
+        if (refreshUpgradeCardsRoutine != null)
+        {
+            StopCoroutine(refreshUpgradeCardsRoutine);
+            refreshUpgradeCardsRoutine = null;
+        }
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -174,7 +182,41 @@ public class WaveTransitionManager : MonoBehaviour
         ConfigureUpgradeCards();
     }
 
-    [NaughtyAttributes.Button]
+    [NaughtyAttributes.Button("刷新升级卡片")]
+    private void RefreshUpgradeCards()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("[WaveTransitionManager] Refresh upgrade cards can only run in Play Mode.", this);
+            return;
+        }
+
+        if (CurrentPhase != TransitionPhase.UpgradeSelection)
+        {
+            Debug.LogWarning("[WaveTransitionManager] Upgrade cards can only be refreshed during UpgradeSelection phase.", this);
+            return;
+        }
+
+        if (refreshUpgradeCardsRoutine != null)
+        {
+            return;
+        }
+
+        refreshUpgradeCardsRoutine = StartCoroutine(RefreshUpgradeCardsWithMotion());
+    }
+
+    private IEnumerator RefreshUpgradeCardsWithMotion()
+    {
+        WaveTransitionUpgradeCardGroup cardGroup = FindFirstObjectByType<WaveTransitionUpgradeCardGroup>();
+        if (cardGroup != null)
+        {
+            yield return cardGroup.PlayRefreshOutAndWait();
+        }
+
+        ConfigureUpgradeCards();
+        refreshUpgradeCardsRoutine = null;
+    }
+
     private void ConfigureUpgradeCards()
     {
         if (CurrentPhase != TransitionPhase.UpgradeSelection)

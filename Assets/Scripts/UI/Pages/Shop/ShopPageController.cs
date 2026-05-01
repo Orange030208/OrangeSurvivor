@@ -69,20 +69,20 @@ public sealed class ShopPageController : IPageController
         entered = false;
     }
 
-    private void OnSnapshotChanged(ShopItemsChangedEvent eventData)
+    private void OnSnapshotChanged(ShopSnapshot snapshot)
     {
-        view.UpdateRerollState(eventData.RerollCost, eventData.CanReroll);
-        view.RenderShopItems(eventData.Items);
+        view.UpdateRerollState(snapshot.RerollCost, snapshot.CanReroll);
+        view.RenderShopItems(snapshot.Items);
     }
 
-    private void OnPurchaseSucceeded(ShopPurchaseSuccessEvent eventData)
+    private void OnPurchaseSucceeded(ShopPurchaseSuccess result)
     {
-        view.ShowPurchaseSuccess(eventData);
+        view.ShowPurchaseSuccess(result);
     }
 
-    private void OnPurchaseFailed(ShopPurchaseFailedEvent eventData)
+    private void OnPurchaseFailed(ShopPurchaseFailure failure)
     {
-        view.ShowPurchaseFailure(eventData.Message);
+        view.ShowPurchaseFailure(failure.Message);
     }
 
     private void OnCurrencyChanged(int currentAmount)

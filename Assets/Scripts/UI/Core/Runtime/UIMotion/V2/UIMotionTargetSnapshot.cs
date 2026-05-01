@@ -5,6 +5,8 @@ public sealed class UIMotionTargetSnapshot
 {
     public UIMotionTargetSnapshot(Transform transform)
     {
+        // 快照只记录 Track 需要回到的初始 UI 状态，不持有业务数据。
+        // Initial/InitialPlusOffset 模式都依赖这里捕获的值来避免硬编码 Prefab 坐标。
         Transform = transform;
         RectTransform = transform as RectTransform;
         CanvasGroup = transform != null ? transform.GetComponent<CanvasGroup>() : null;

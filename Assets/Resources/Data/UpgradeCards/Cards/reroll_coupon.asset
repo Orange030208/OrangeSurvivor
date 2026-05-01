@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: reroll_coupon
+  m_Name: reroll_coupon (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: reroll_coupon
   title: "\u6539\u7B7E\u5238"
-  icon: {fileID: 0}
+  icon: {fileID: -7026666784180839371, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 1
   tags: 06000000
   maxPickCount: 2
@@ -25,6 +25,7 @@ MonoBehaviour:
     - tag: 6
       minPickCount: 1
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u83B7\u5F97 2 \u6B21\u514D\u8D39\u5237\u65B0\u3002"
   propertyModifiers: []

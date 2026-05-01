@@ -158,7 +158,7 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
         }
 
         ownsFacade = true;
-        return new EventBusInventoryUiFacade();
+        return new ResolvingInventoryUiFacade();
     }
 
     private void StartController()

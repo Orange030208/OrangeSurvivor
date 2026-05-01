@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
+// Inspector 中的一条目标绑定。key 是 Track 使用的稳定名称，target 是实际场景/Prefab Transform。
 public sealed class UIMotionTargetBinding
 {
     [SerializeField] private string key = UIMotionTargetKeys.SELF;
@@ -15,6 +16,8 @@ public sealed class UIMotionTargetBinding
 }
 
 [Serializable]
+// 负责把 Track 的 targetKey 解析成实际组件，并维护 Initial 状态快照。
+// 这样动画配置可以引用“Icon”“Label”等语义目标，而不直接依赖层级路径。
 public sealed class UIMotionTargetRegistry
 {
     [SerializeField] private List<UIMotionTargetBinding> bindings = new();
@@ -27,6 +30,7 @@ public sealed class UIMotionTargetRegistry
     public void Initialize(Transform ownerTransform)
     {
         owner = ownerTransform;
+        // 初始化时同时记录 SELF 与自定义绑定，保证未显式配置 targetKey 的 Track 可以直接作用于宿主。
         RebuildTargetMap();
         RefreshSnapshots();
         initialized = true;
@@ -36,6 +40,7 @@ public sealed class UIMotionTargetRegistry
     {
         EnsureTargetMap();
         snapshotMap.Clear();
+        // 快照是 Initial 系列取值的基准。刷新后，后续播放会以当前 UI 状态作为新的默认值。
         foreach (KeyValuePair<string, Transform> pair in targetMap)
         {
             if (pair.Value == null || snapshotMap.ContainsKey(pair.Key))
@@ -69,6 +74,7 @@ public sealed class UIMotionTargetRegistry
             return false;
         }
 
+        // 目标新增或首次访问时懒创建快照，兼容运行时才填充的绑定。
         snapshot = new UIMotionTargetSnapshot(target);
         snapshotMap[resolvedKey] = snapshot;
         return true;
@@ -124,6 +130,7 @@ public sealed class UIMotionTargetRegistry
         targetMap.Clear();
         if (owner != null)
         {
+            // SELF 始终指向 UIMotionPlayer 所在对象，是最常用、也最稳定的默认目标。
             targetMap[UIMotionTargetKeys.SELF] = owner;
         }
 
@@ -141,6 +148,7 @@ public sealed class UIMotionTargetRegistry
             }
 
             string key = ResolveKey(binding.Key);
+            // 后配置的同名 key 覆盖前者，便于 Prefab 变体在 Inspector 中重定向目标。
             targetMap[key] = binding.Target;
         }
     }

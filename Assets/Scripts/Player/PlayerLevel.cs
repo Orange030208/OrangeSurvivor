@@ -21,6 +21,7 @@ public class PlayerLevel : EntityComponentBase
     private float pendingExperienceGain;
 
     public override Entity Owner => owner;
+    public event Action<PlayerLevelSnapshot> SnapshotChanged;
 
     public bool IsLevelUpInCurrentWave => LevelsGainedInCurrentWave > 0;
     public int LevelUpValue => LevelsGainedInCurrentWave;
@@ -40,19 +41,17 @@ public class PlayerLevel : EntityComponentBase
         }
 
         InitializeProgression();
-        PublishSnapshot();
+        NotifySnapshotChanged();
     }
 
     public override void OnEnableComponent()
     {
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Subscribe<RequestPlayerLevelSnapshotEvent>(PublishSnapshot);
     }
 
     public override void OnDisableComponent()
     {
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Unsubscribe<RequestPlayerLevelSnapshotEvent>(PublishSnapshot);
     }
 
     public void AddXP(int xpToAdd)
@@ -65,7 +64,7 @@ public class PlayerLevel : EntityComponentBase
 
         currentXP += resolvedXp;
         ResolvePendingLevelUps();
-        PublishSnapshot();
+        NotifySnapshotChanged();
     }
 
     public int ConsumeUpgradePoint()
@@ -76,8 +75,13 @@ public class PlayerLevel : EntityComponentBase
         }
 
         unspentUpgradePoints--;
-        PublishSnapshot();
+        NotifySnapshotChanged();
         return unspentUpgradePoints;
+    }
+
+    public PlayerLevelSnapshot CreateSnapshot()
+    {
+        return new PlayerLevelSnapshot(CurrentLevel, CurrentXP, RequiredXP, UnspentUpgradePoints);
     }
 
     private void InitializeProgression()
@@ -112,7 +116,6 @@ public class PlayerLevel : EntityComponentBase
         currentLevel++;
         unspentUpgradePoints += GetUpgradePointsPerLevel();
         requiredXP = CalculateRequiredXP(currentLevel);
-        GameEventBus.Publish(new PlayerLevelChangedEvent(currentLevel, unspentUpgradePoints));
     }
 
     private int CalculateRequiredXP(int level)
@@ -167,9 +170,8 @@ public class PlayerLevel : EntityComponentBase
         levelOnWaveStart = currentLevel;
     }
 
-    private void PublishSnapshot()
+    private void NotifySnapshotChanged()
     {
-        GameEventBus.Publish(new PlayerLevelChangedEvent(CurrentLevel, UnspentUpgradePoints));
-        GameEventBus.Publish(new PlayerXpChangedEvent(CurrentXP, RequiredXP, UnspentUpgradePoints));
+        SnapshotChanged?.Invoke(CreateSnapshot());
     }
 }

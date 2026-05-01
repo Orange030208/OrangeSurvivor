@@ -2,9 +2,9 @@ using System;
 
 public interface IShopUiFacade : IDisposable
 {
-    event Action<ShopItemsChangedEvent> SnapshotChanged;
-    event Action<ShopPurchaseSuccessEvent> PurchaseSucceeded;
-    event Action<ShopPurchaseFailedEvent> PurchaseFailed;
+    event Action<ShopSnapshot> SnapshotChanged;
+    event Action<ShopPurchaseSuccess> PurchaseSucceeded;
+    event Action<ShopPurchaseFailure> PurchaseFailed;
     event Action<int> CurrencyChanged;
 
     void Activate();

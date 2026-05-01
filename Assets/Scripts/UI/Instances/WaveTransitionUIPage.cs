@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class WaveTransitionUIPage : UIPageBase
 {
-    [SerializeField] private UIUpgradeContainer[] upgradeContainers;
-    [SerializeField] private Transform upgradeContainersParent;
+    [Header("升级卡片")]
+    [SerializeField] private WaveTransitionUpgradeCardGroup upgradeCardGroup;
 
     [Header("宝箱")]
     [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
@@ -27,6 +27,7 @@ public class WaveTransitionUIPage : UIPageBase
         GameEventBus.Unsubscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
         accessoryOperateContainer.CleanUp();
+        upgradeCardGroup?.Clear();
     }
 
     private void OnWaveTransitionPhaseChanged(WaveTransitionPhaseChangedEvent eventData)
@@ -55,17 +56,13 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
     {
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        if (upgradeCardGroup == null)
         {
-            bool hasOption = eventData.Options != null && i < eventData.Options.Length;
-            upgradeContainers[i].gameObject.SetActive(hasOption);
-            if (!hasOption)
-            {
-                continue;
-            }
-
-            upgradeContainers[i].Configure(new InfoAddIndex<UpgradeCardOptionSnapshot>(eventData.Options[i], i));
+            Debug.LogError($"{nameof(WaveTransitionUIPage)} missing {nameof(upgradeCardGroup)}.", this);
+            return;
         }
+
+        upgradeCardGroup.Configure(eventData.Options);
     }
 
     private void SetChestSelectionVisible(bool visible)
@@ -80,6 +77,13 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void SetUpgradeSelectionVisible(bool visible)
     {
-        upgradeContainersParent.gameObject.SetActive(visible);
+        if (upgradeCardGroup == null)
+        {
+            Debug.LogError($"{nameof(WaveTransitionUIPage)} missing {nameof(upgradeCardGroup)}.", this);
+            return;
+        }
+
+        upgradeCardGroup.SetVisible(visible);
     }
+
 }

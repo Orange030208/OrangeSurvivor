@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: battle_scavenger
+  m_Name: battle_scavenger (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: battle_scavenger
   title: "\u6218\u573A\u62FE\u8352"
-  icon: {fileID: 0}
+  icon: {fileID: 7291314125192104117, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 0
   tags: 05000000
   maxPickCount: 0
@@ -23,6 +23,7 @@ MonoBehaviour:
     minWave: 1
     requiredTagPickCounts: []
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u62FE\u53D6\u8303\u56F4 +22%\u3002"
   propertyModifiers:

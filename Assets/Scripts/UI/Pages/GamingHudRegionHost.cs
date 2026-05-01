@@ -11,6 +11,7 @@ public sealed class GamingHudRegionHost
     private readonly BuffBarUI buffBarUI;
     private readonly UITooltipPresenter tooltipPresenter;
 
+    private PlayerLevel playerLevel;
     private bool bound;
 
     public GamingHudRegionHost(
@@ -42,19 +43,15 @@ public sealed class GamingHudRegionHost
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
         GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
-        GameEventBus.Subscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
-        GameEventBus.Subscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
-        BindCharacterStatusPanel(context.Player);
+        BindPlayer(context.Player);
         RefreshCurrencyDisplay(context.CurrencyWallet);
 
         buffBarUI.gameObject.SetActive(true);
         tooltipPresenter.gameObject.SetActive(true);
 
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
-        GameEventBus.Publish<RequestPlayerLevelSnapshotEvent>();
         bound = true;
     }
 
@@ -65,27 +62,41 @@ public sealed class GamingHudRegionHost
             GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
             GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
             GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
-            GameEventBus.Unsubscribe<PlayerLevelChangedEvent>(OnPlayerLevelChanged);
-            GameEventBus.Unsubscribe<PlayerXpChangedEvent>(OnPlayerXpChanged);
-            GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
             GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
             bound = false;
         }
 
+        UnbindPlayerLevel();
         characterStatusPanel.Unbind();
-        GameEventBus.Publish<HideTooltipRequestedEvent>();
+        buffBarUI.UnbindPlayer();
+        tooltipPresenter.HideImmediate();
     }
 
-    private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
+    private void BindPlayer(Player player)
     {
-        BindCharacterStatusPanel(eventData.Player);
-        RefreshCurrencyDisplay(eventData.Player.GetComponent<CurrencyWallet>());
-        GameEventBus.Publish<RequestPlayerLevelSnapshotEvent>();
-    }
-
-    private void BindCharacterStatusPanel(Player player)
-    {
+        UnbindPlayerLevel();
         characterStatusPanel.BindPlayer(player);
+        buffBarUI.BindPlayer(player);
+
+        playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
+        if (playerLevel == null)
+        {
+            return;
+        }
+
+        playerLevel.SnapshotChanged += OnPlayerLevelSnapshotChanged;
+        OnPlayerLevelSnapshotChanged(playerLevel.CreateSnapshot());
+    }
+
+    private void UnbindPlayerLevel()
+    {
+        if (playerLevel == null)
+        {
+            return;
+        }
+
+        playerLevel.SnapshotChanged -= OnPlayerLevelSnapshotChanged;
+        playerLevel = null;
     }
 
     private void OnCurrencyChanged(CurrencyChangedEvent eventData)
@@ -98,16 +109,11 @@ public sealed class GamingHudRegionHost
         currencyText.text = wallet != null ? wallet.CurrentAmount.ToString() : "0";
     }
 
-    private void OnPlayerLevelChanged(PlayerLevelChangedEvent eventData)
+    private void OnPlayerLevelSnapshotChanged(PlayerLevelSnapshot snapshot)
     {
-        characterStatusPanel.SetLevel(eventData.CurrentLevel);
-        characterStatusPanel.SetUpgradePoint(eventData.UnspentUpgradePoints);
-    }
-
-    private void OnPlayerXpChanged(PlayerXpChangedEvent eventData)
-    {
-        characterStatusPanel.SetXp(eventData.CurrentXP, eventData.RequiredXP);
-        characterStatusPanel.SetUpgradePoint(eventData.UnspentUpgradePoints);
+        characterStatusPanel.SetLevel(snapshot.CurrentLevel);
+        characterStatusPanel.SetXp(snapshot.CurrentXP, snapshot.RequiredXP);
+        characterStatusPanel.SetUpgradePoint(snapshot.UnspentUpgradePoints);
     }
 
     private void OnWaveStarted(WaveStartedEvent eventData)

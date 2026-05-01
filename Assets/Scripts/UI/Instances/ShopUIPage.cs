@@ -105,9 +105,9 @@ public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
         shopListRegion.UpdateCurrencyAmount(amount);
     }
 
-    public void ShowPurchaseSuccess(ShopPurchaseSuccessEvent eventData)
+    public void ShowPurchaseSuccess(ShopPurchaseSuccess result)
     {
-        Debug.Log($"Purchase successful: {eventData.ItemData.ItemType}");
+        Debug.Log($"Purchase successful: {result.ItemData.ItemType}");
     }
 
     public void ShowPurchaseFailure(string message)

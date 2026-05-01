@@ -290,8 +290,6 @@ MonoBehaviour:
   initialUpgradePoints: 272
   testWaveNumber: 15
   initialGold: 80
-  runSelfTestOnStart: 1
-  selfTestTimeoutSeconds: 3
 --- !u!114 &1363638958
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ public sealed class GamingInputRegionHost
 {
     private readonly Component host;
     private MobileJoystick moveJoystick;
+    private IPlayerMoveInputReceiver moveInputReceiver;
 
     public GamingInputRegionHost(Component host, MobileJoystick moveJoystick)
     {
@@ -24,13 +25,26 @@ public sealed class GamingInputRegionHost
         return moveJoystick != null ? moveJoystick.GetMoveDirection() : Vector2.zero;
     }
 
+    public void Bind(Player player)
+    {
+        moveInputReceiver = player != null ? player.GetComponent<IPlayerMoveInputReceiver>() : null;
+        ResetInput();
+    }
+
+    public void Unbind()
+    {
+        ResetInput();
+        moveInputReceiver = null;
+    }
+
     public void PublishCurrentInput()
     {
-        GameEventBus.Publish(new PlayerMoveInputChangedEvent(ReadMoveDirection()));
+        moveInputReceiver?.SetMoveInput(ReadMoveDirection());
     }
 
     public void ResetInput()
     {
-        GameEventBus.Publish(new PlayerMoveInputChangedEvent(Vector2.zero));
+        moveInputReceiver?.SetMoveInput(Vector2.zero);
     }
+
 }

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: slaughter_rhythm
+  m_Name: slaughter_rhythm (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: slaughter_rhythm
   title: "\u5C60\u622E\u8282\u62CD"
-  icon: {fileID: 0}
+  icon: {fileID: -3949487781178821343, guid: 0d251fad8b3717f4ea1d6d50c06aae82, type: 3}
   rarity: 2
   tags: 0000000003000000
   maxPickCount: 1
@@ -27,6 +27,7 @@ MonoBehaviour:
     - tag: 3
       minPickCount: 1
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u6BCF\u6CE2\u5F00\u59CB\u83B7\u5F97 7 \u79D2\u5C60\u622E Buff\u3002"
   propertyModifiers: []

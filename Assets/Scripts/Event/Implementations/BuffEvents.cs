@@ -1,17 +1,3 @@
-public struct RequestActiveBuffSnapshotEvent : IGameEvent
-{
-}
-
-public struct ActiveBuffSnapshotChangedEvent : IGameEvent
-{
-    public ActiveBuffSnapshot[] Buffs;
-
-    public ActiveBuffSnapshotChangedEvent(ActiveBuffSnapshot[] buffs)
-    {
-        Buffs = buffs;
-    }
-}
-
 public struct BuffStackChangedEvent : IGameEvent
 {
     public Entity Owner;

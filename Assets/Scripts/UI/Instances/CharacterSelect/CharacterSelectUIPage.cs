@@ -7,25 +7,38 @@ public class CharacterSelectUIPage : UIPageBase
     [SerializeField] private CharacterListController characterListController;
     [SerializeField] private UIClickTarget confirm;
     [SerializeField] private UIClickTarget back;
+    [SerializeField] private CharacterSelectionManager characterSelectionManager;
 
+    private ICharacterSelectionService selectionService;
     private int selectedCharacterIndex = -1;
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        GameEventBus.Subscribe<CharacterSelectionSnapshotEvent>(OnCharacterSelectionSnapshot);
-        GameEventBus.Subscribe<CharacterSelectionChangedEvent>(OnCharacterSelectionChanged);
+        selectionService = ResolveSelectionService();
+        if (selectionService != null)
+        {
+            selectionService.SelectionChanged += OnCharacterSelectionChanged;
+        }
+
         confirm.OnClicked += OnConfirmOnClicked;
         back.OnClicked += OnBackOnClicked;
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        GameEventBus.Publish<RequestCharacterSelectionSnapshotEvent>();
+        if (selectionService != null)
+        {
+            ApplyCharacterSelectionSnapshot(selectionService.CreateSnapshot());
+        }
     }
 
     protected override void OnPageClosed()
     {
-        GameEventBus.Unsubscribe<CharacterSelectionSnapshotEvent>(OnCharacterSelectionSnapshot);
-        GameEventBus.Unsubscribe<CharacterSelectionChangedEvent>(OnCharacterSelectionChanged);
+        if (selectionService != null)
+        {
+            selectionService.SelectionChanged -= OnCharacterSelectionChanged;
+            selectionService = null;
+        }
+
         confirm.OnClicked -= OnConfirmOnClicked;
         back.OnClicked -= OnBackOnClicked;
 
@@ -35,27 +48,32 @@ public class CharacterSelectUIPage : UIPageBase
         selectedCharacterIndex = -1;
     }
 
-    private void OnCharacterSelectionSnapshot(CharacterSelectionSnapshotEvent eventData)
+    private void ApplyCharacterSelectionSnapshot(CharacterSelectionSnapshot snapshot)
     {
-        selectedCharacterIndex = eventData.SelectedIndex;
-        characterListController.Render(eventData.Characters, selectedCharacterIndex);
+        selectedCharacterIndex = snapshot.SelectedIndex;
+        characterListController.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
         SetConfirmButtonInteractable(selectedCharacterIndex >= 0);
 
-        if (selectedCharacterIndex < 0 || eventData.Characters == null || selectedCharacterIndex >= eventData.Characters.Length)
+        if (selectedCharacterIndex < 0 || snapshot.Characters == null || selectedCharacterIndex >= snapshot.Characters.Length)
         {
             characterInfoCard.ClearInfo();
             return;
         }
 
-        characterInfoCard.DisplayInfo(eventData.Characters[selectedCharacterIndex]);
+        characterInfoCard.DisplayInfo(snapshot.Characters[selectedCharacterIndex]);
     }
 
-    private void OnCharacterSelectionChanged(CharacterSelectionChangedEvent eventData)
+    private void OnCharacterSelectionChanged(CharacterSelectionChangedArgs args)
     {
-        selectedCharacterIndex = eventData.CharacterIndex;
+        selectedCharacterIndex = args.CharacterIndex;
         characterListController.SetSelectedIndex(selectedCharacterIndex);
-        characterInfoCard.DisplayInfo(eventData.CharacterData);
+        characterInfoCard.DisplayInfo(args.CharacterData);
         SetConfirmButtonInteractable(true);
+    }
+
+    private void OnCharacterSelected(int characterIndex)
+    {
+        selectionService?.SelectCharacter(characterIndex);
     }
 
     private void OnConfirmOnClicked()
@@ -79,5 +97,16 @@ public class CharacterSelectUIPage : UIPageBase
     private void SetConfirmButtonInteractable(bool interactable)
     {
         confirm.Interactable = interactable;
+    }
+
+    private ICharacterSelectionService ResolveSelectionService()
+    {
+        if (characterSelectionManager != null)
+        {
+            return characterSelectionManager;
+        }
+
+        characterSelectionManager = CharacterSelectionManager.Instance;
+        return characterSelectionManager;
     }
 }

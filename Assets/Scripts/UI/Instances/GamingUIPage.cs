@@ -33,6 +33,7 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
         currentContext = PageContextBinding.Resolve<GamingPageContext>(context, () => UIPageContextFactory.CreateGamingPageContext());
 
         inputRegionHost.WarmUp();
+        inputRegionHost.Bind(currentContext.Player);
         InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
         hudRegionHost.Bind(currentContext);
         menuButton.OnClicked += OnPauseClicked;
@@ -40,7 +41,7 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
 
     protected override void OnPageClosed()
     {
-        inputRegionHost.ResetInput();
+        inputRegionHost.Unbind();
         hudRegionHost.Unbind();
         menuButton.OnClicked -= OnPauseClicked;
         InventoryUiHostBinding.Release(inventoryUI);

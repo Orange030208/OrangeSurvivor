@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardId: king_ransom
   title: "\u56FD\u738B\u8D4E\u91D1"
-  icon: {fileID: 0}
+  icon: {fileID: -426004141451082269, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 2
   tags: 06000000
   maxPickCount: 1
@@ -25,6 +25,7 @@ MonoBehaviour:
     - tag: 6
       minPickCount: 2
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u7ACB\u5373\u83B7\u5F97 35 \u91D1\u5E01\uFF0C\u5546\u5E97\u4EF7\u683C\u964D\u4F4E
     6%\u3002"

@@ -14,7 +14,7 @@ public interface IShopPageView
     void RenderShopItems(ShopItemData[] items);
     void UpdateRerollState(int rerollCost, bool canReroll);
     void UpdateCurrencyAmount(int amount);
-    void ShowPurchaseSuccess(ShopPurchaseSuccessEvent eventData);
+    void ShowPurchaseSuccess(ShopPurchaseSuccess result);
     void ShowPurchaseFailure(string message);
     void SetPropertiesSidebarVisible(bool visible);
     void SetInventorySidebarVisible(bool visible);

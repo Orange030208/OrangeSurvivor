@@ -114,7 +114,7 @@ MonoBehaviour:
   statusSidebar: {fileID: 0}
   statusPanelCanvasGroup: {fileID: 0}
   settingsSidebar: {fileID: 8890841199320487850}
-  settingsPanelCanvasGroup: {fileID: 8890841199320487851}
+  settingsPanelCanvasGroup: {fileID: 3764272809142054172}
   slideDuration: 0.25
 --- !u!114 &4513989171235067532
 MonoBehaviour:
@@ -2181,6 +2181,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2272864807976897109, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
   m_PrefabInstance: {fileID: 4106597483569249565}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &3764272809142054172 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 919001000000000001, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
+  m_PrefabInstance: {fileID: 4106597483569249565}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8890841199320487850 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4872626861123807927, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
@@ -2192,11 +2197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!225 &8890841199320487851 stripped
-CanvasGroup:
-  m_CorrespondingSourceObject: {fileID: 919001000000000001, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
-  m_PrefabInstance: {fileID: 4106597483569249565}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4574205973968567354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2802,6 +2802,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7572844890630249405}
     m_Modifications:
+    - target: {fileID: 1250262515819346916, guid: 4eddba26b1bae4948a27ccc0750e7984, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 3783862749586d44b8bfac54f5ca3520, type: 3}
     - target: {fileID: 1524937171917592362, guid: 4eddba26b1bae4948a27ccc0750e7984, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

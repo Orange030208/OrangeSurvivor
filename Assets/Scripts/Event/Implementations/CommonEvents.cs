@@ -46,30 +46,6 @@ public struct StageCompleteReturnToMenuClickedEvent : IGameEvent
 {
 }
 
-public struct RequestStageCompleteSnapshotEvent : IGameEvent
-{
-}
-
-public struct StageCompleteSnapshotEvent : IGameEvent
-{
-    public int CompletedWaves;
-    public float SurvivalTime;
-    public int KillCount;
-    public int GoldEarned;
-    public string CharacterName;
-    public string MainWeaponName;
-
-    public StageCompleteSnapshotEvent(int completedWaves, float survivalTime, int killCount, int goldEarned, string characterName, string mainWeaponName)
-    {
-        CompletedWaves = completedWaves;
-        SurvivalTime = survivalTime;
-        KillCount = killCount;
-        GoldEarned = goldEarned;
-        CharacterName = characterName;
-        MainWeaponName = mainWeaponName;
-    }
-}
-
 public struct EntityDamagedEvent : IGameEvent
 {
     public Entity Entity;

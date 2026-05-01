@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 单局统计管理器：
 /// - 监听运行时事件，汇总本局基础结算数据；
-/// - 在结算页打开时通过快照事件提供只读结果；
+/// - 在结算页打开时提供只读结果；
 /// - 只负责统计，不负责切状态与页面开关。
 /// </summary>
 public class StageCompleteSummaryManager : MonoBehaviour
@@ -25,7 +25,6 @@ public class StageCompleteSummaryManager : MonoBehaviour
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
         GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
-        GameEventBus.Subscribe<RequestStageCompleteSnapshotEvent>(PublishSnapshot);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
 
         TryBindWallet();
@@ -37,7 +36,6 @@ public class StageCompleteSummaryManager : MonoBehaviour
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
         GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
-        GameEventBus.Unsubscribe<RequestStageCompleteSnapshotEvent>(PublishSnapshot);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
@@ -98,16 +96,16 @@ public class StageCompleteSummaryManager : MonoBehaviour
         goldEarned += eventData.ChangeAmount;
     }
 
-    private void PublishSnapshot()
+    public StageCompleteSnapshot CreateSnapshot()
     {
         CaptureLoadoutSummary();
-        GameEventBus.Publish(new StageCompleteSnapshotEvent(
+        return new StageCompleteSnapshot(
             completedWaves,
             survivalTime,
             killCount,
             goldEarned,
             characterName,
-            mainWeaponName));
+            mainWeaponName);
     }
 
     private void ResetSummary()

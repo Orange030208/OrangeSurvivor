@@ -4,6 +4,7 @@ using UnityEngine;
 public class CharacterListController : UIScrollListBase<CharacterButton, CharacterDataSO>
 {
     private int selectedIndex = -1;
+    private System.Action<int> characterSelected;
 
     protected override void Awake()
     {
@@ -11,9 +12,10 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
         ClearItemsImmediate();
     }
 
-    public void Render(CharacterDataSO[] characters, int currentSelectedIndex)
+    public void Render(CharacterDataSO[] characters, int currentSelectedIndex, System.Action<int> onCharacterSelected)
     {
         selectedIndex = currentSelectedIndex;
+        characterSelected = onCharacterSelected;
         Render((IReadOnlyList<CharacterDataSO>)characters);
     }
 
@@ -42,6 +44,7 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
     public new void Clear()
     {
         selectedIndex = -1;
+        characterSelected = null;
         base.Clear();
     }
 
@@ -49,7 +52,7 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
     {
         item.Configure(data.CharacterIcon, () =>
         {
-            GameEventBus.Publish(new CharacterItemClickedEvent(index));
+            characterSelected?.Invoke(index);
         });
 
         item.SetSelected(index == selectedIndex);

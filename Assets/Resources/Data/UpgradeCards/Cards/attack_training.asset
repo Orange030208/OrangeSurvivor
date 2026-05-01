@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: attack_training
+  m_Name: attack_training (Workbench Edit Copy)
   m_EditorClassIdentifier: 
   cardId: attack_training
   title: "\u653B\u51FB\u8BAD\u7EC3"
-  icon: {fileID: 0}
+  icon: {fileID: -4954529191297421364, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 0
   tags: 00000000
   maxPickCount: 0
@@ -23,6 +23,7 @@ MonoBehaviour:
     minWave: 1
     requiredTagPickCounts: []
     requiredOwnedWeapons: []
+    requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
   description: "\u653B\u51FB\u529B +5\u3002"
   propertyModifiers:

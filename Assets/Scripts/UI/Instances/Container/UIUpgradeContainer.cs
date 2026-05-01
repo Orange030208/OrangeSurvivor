@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,20 +8,26 @@ public class UIUpgradeContainer :
     IPointerEnterHandler,
     IPointerExitHandler,
     IPointerDownHandler,
-    IPointerUpHandler
+    IPointerUpHandler,
+    IPointerMoveHandler
 {
     [Header("稀有度表现")]
-    [SerializeField] private UIMotionPlayer cardMotionPlayer;
+    [SerializeField] private UpgradeCardMotionController cardMotionController;
+    [SerializeField] private UpgradeCardRarityVisualController rarityVisualController;
     [SerializeField] private bool playRevealSfx = true;
 
     private CanvasGroup cardCanvasGroup;
     private Coroutine submitRoutine;
+    private Func<int, bool> submitGate;
+    private int containerIndex = -1;
     private bool isSubmitting;
+    private bool interactionLocked;
     private bool isPointerPressed;
     private bool wasRaycastBlockingBeforeSubmit = true;
 
     public override void Configure(InfoAddIndex<UpgradeCardOptionSnapshot> resource)
     {
+        containerIndex = resource.index;
         UpgradeCardOptionSnapshot option = resource.info;
         iconImage.sprite = option.Icon;
         nameText.text = option.Title;
@@ -29,30 +36,70 @@ public class UIUpgradeContainer :
             Description = BuildDescription(option)
         };
         bottom.Display(describable);
-        UpgradeCardRarityPresentationProfile presentationProfile = ResolveRarityPresentationProfile(option.Rarity);
-        RefreshCardMotionDefaults();
-        PlayRevealSfx(presentationProfile);
+        bool hasPresentationProfile = TryResolveRarityPresentationProfile(
+            option.Rarity,
+            out UpgradeCardRarityPresentationProfile presentationProfile);
+        if (hasPresentationProfile)
+        {
+            ApplyRarityVisual(presentationProfile);
+        }
+
+        ConfigureCardMotionForReuse();
+        if (hasPresentationProfile)
+        {
+            PlayRevealSfx(presentationProfile);
+        }
+
         CleanClickEvent();
         OnClicked += _ =>
         {
-            PlaySelectSfx(presentationProfile);
+            if (hasPresentationProfile)
+            {
+                PlaySelectSfx(presentationProfile);
+            }
+
             GameEventBus.Publish<UpgradeContainerClickedEvent>(new UpgradeContainerClickedEvent(resource.index));
         };
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void BindSubmitGate(Func<int, bool> submitGate)
     {
-        if (isSubmitting)
+        this.submitGate = submitGate;
+    }
+
+    public void SetInteractionLocked(bool locked)
+    {
+        interactionLocked = locked;
+        if (!locked)
         {
             return;
         }
 
-        PlayMotion(UIMotionClipIds.HOVER_IN);
+        // 整组锁定时立刻收回未选中卡片的按压/悬停残留，避免视觉状态卡住。
+        if (isPointerPressed)
+        {
+            isPointerPressed = false;
+            GetCardMotionController()?.PlayRelease();
+        }
+
+        GetCardMotionController()?.PlayHoverOut();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked)
+        {
+            return;
+        }
+
+        motionController?.PlayHoverIn(eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (isSubmitting)
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked)
         {
             return;
         }
@@ -60,37 +107,56 @@ public class UIUpgradeContainer :
         if (isPointerPressed)
         {
             isPointerPressed = false;
-            PlayMotion(UIMotionClipIds.RELEASE);
+            motionController?.PlayRelease();
         }
 
-        PlayMotion(UIMotionClipIds.HOVER_OUT);
+        motionController?.PlayHoverOut();
+    }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked || !CanReceivePointerInteraction(motionController))
+        {
+            return;
+        }
+
+        motionController?.UpdatePointerTilt(eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (isSubmitting || !IsLeftButton(eventData))
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked || !CanReceivePointerInteraction(motionController) || !IsLeftButton(eventData))
         {
             return;
         }
 
         isPointerPressed = true;
-        PlayMotion(UIMotionClipIds.PRESS);
+        motionController?.PlayPress();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (isSubmitting || !IsLeftButton(eventData))
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked || !CanReceivePointerInteraction(motionController) || !IsLeftButton(eventData))
         {
             return;
         }
 
         isPointerPressed = false;
-        PlayMotion(UIMotionClipIds.RELEASE);
+        motionController?.PlayRelease();
     }
 
     public override void OnPointerClick(PointerEventData eventData)
     {
-        if (isSubmitting || !IsLeftButton(eventData))
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (isSubmitting || interactionLocked || !CanReceivePointerInteraction(motionController) || !IsLeftButton(eventData))
+        {
+            return;
+        }
+
+        if (submitGate != null && !submitGate.Invoke(containerIndex))
         {
             return;
         }
@@ -109,20 +175,26 @@ public class UIUpgradeContainer :
         base.Dispose();
     }
 
+    public IEnumerator PlayRefreshOutAndWait()
+    {
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (motionController == null)
+        {
+            yield break;
+        }
+
+        yield return motionController.PlayRefreshOutAndWait();
+    }
+
     private void OnDisable()
     {
         StopSubmitRoutine();
     }
 
-    private void RefreshCardMotionDefaults()
+    private void ConfigureCardMotionForReuse()
     {
-        if (cardMotionPlayer == null)
-        {
-            cardMotionPlayer = GetComponent<UIMotionPlayer>();
-        }
-
-        // 升级卡片可能被对象池复用，刷新默认快照可避免上一次 hover/press 的缩放或位移残留。
-        cardMotionPlayer?.RefreshDefaults();
+        // 升级卡片可能被对象池复用，交给专用动效控制器统一处理默认快照与残留状态。
+        GetCardMotionController()?.ConfigureForReuse();
     }
 
     private IEnumerator SubmitAfterClickMotion(PointerEventData eventData)
@@ -131,9 +203,11 @@ public class UIUpgradeContainer :
         isPointerPressed = false;
         SetRaycastBlocking(false);
 
-        if (cardMotionPlayer != null)
+        UpgradeCardMotionController motionController = GetCardMotionController();
+        if (motionController != null)
         {
-            yield return cardMotionPlayer.PlayAndWait(UIMotionClipIds.CLICK_PULSE);
+            yield return motionController.PlaySelectAndWait();
+            motionController.ResetToRest();
         }
 
         SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
@@ -156,17 +230,29 @@ public class UIUpgradeContainer :
 
         SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
         isSubmitting = false;
+        interactionLocked = false;
         isPointerPressed = false;
+        GetCardMotionController()?.CancelAndReset();
     }
 
-    private void PlayMotion(string clipId)
+    private UpgradeCardMotionController GetCardMotionController()
     {
-        if (cardMotionPlayer == null)
+        if (cardMotionController == null)
         {
-            cardMotionPlayer = GetComponent<UIMotionPlayer>();
+            cardMotionController = GetComponent<UpgradeCardMotionController>();
         }
 
-        cardMotionPlayer?.Play(clipId);
+        return cardMotionController;
+    }
+
+    private void ApplyRarityVisual(UpgradeCardRarityPresentationProfile presentationProfile)
+    {
+        if (rarityVisualController == null)
+        {
+            rarityVisualController = GetComponent<UpgradeCardRarityVisualController>();
+        }
+
+        rarityVisualController?.Apply(presentationProfile);
     }
 
     private void SetRaycastBlocking(bool blocksRaycasts)
@@ -194,17 +280,35 @@ public class UIUpgradeContainer :
         return eventData == null || eventData.button == PointerEventData.InputButton.Left;
     }
 
-    private static UpgradeCardRarityPresentationProfile ResolveRarityPresentationProfile(UpgradeCardRarity rarity)
+    private static bool CanReceivePointerInteraction(UpgradeCardMotionController motionController)
+    {
+        return motionController == null || motionController.CanReceiveInteraction;
+    }
+
+    private static bool TryResolveRarityPresentationProfile(
+        UpgradeCardRarity rarity,
+        out UpgradeCardRarityPresentationProfile profile)
     {
         UpgradeCardRarityPresentationCatalogSO catalog = ResourcesManager.GetUpgradeCardRarityPresentationCatalog();
-        return catalog != null && catalog.TryGetProfile(rarity, out UpgradeCardRarityPresentationProfile configuredProfile)
-            ? configuredProfile
-            : UpgradeCardRarityPresentationCatalogSO.GetDefaultProfile(rarity);
+        if (catalog == null)
+        {
+            profile = default;
+            Debug.LogError($"{nameof(UIUpgradeContainer)} could not load Upgrade Card Rarity Presentation Catalog.");
+            return false;
+        }
+
+        if (!catalog.TryGetProfile(rarity, out profile))
+        {
+            Debug.LogError($"{nameof(UIUpgradeContainer)} could not find rarity presentation profile '{rarity}'.");
+            return false;
+        }
+
+        return true;
     }
 
     private void PlayRevealSfx(UpgradeCardRarityPresentationProfile profile)
     {
-        if (!playRevealSfx)
+        if (!playRevealSfx || profile.RevealSfxKey == AudioSfxKey.None)
         {
             return;
         }
@@ -214,10 +318,12 @@ public class UIUpgradeContainer :
 
     private static void PlaySelectSfx(UpgradeCardRarityPresentationProfile profile)
     {
-        AudioSfxKey selectSfxKey = profile.SelectSfxKey != AudioSfxKey.None
-            ? profile.SelectSfxKey
-            : AudioSfxKey.WoodenButtonClicked;
-        AudioSfxBridge.RequestPlay(selectSfxKey);
+        if (profile.SelectSfxKey == AudioSfxKey.None)
+        {
+            return;
+        }
+
+        AudioSfxBridge.RequestPlay(profile.SelectSfxKey);
     }
 
     private static string BuildDescription(UpgradeCardOptionSnapshot option)

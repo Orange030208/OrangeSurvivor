@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
 
-public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>
+public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>, ICharacterSelectionService
 {
     private CharacterDataSO[] characters = Array.Empty<CharacterDataSO>();
     private int selectedIndex = -1;
+
+    public event Action<CharacterSelectionChangedArgs> SelectionChanged;
 
     public int SelectedIndex => selectedIndex;
     public CharacterDataSO SelectedCharacter =>
@@ -12,15 +14,7 @@ public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionMan
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<RequestCharacterSelectionSnapshotEvent>(PublishSnapshot);
-        GameEventBus.Subscribe<CharacterItemClickedEvent>(OnCharacterItemClicked);
         RefreshCharacters();
-    }
-
-    private void OnDisable()
-    {
-        GameEventBus.Unsubscribe<RequestCharacterSelectionSnapshotEvent>(PublishSnapshot);
-        GameEventBus.Unsubscribe<CharacterItemClickedEvent>(OnCharacterItemClicked);
     }
 
     private void RefreshCharacters()
@@ -29,34 +23,35 @@ public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionMan
         selectedIndex = -1;
     }
 
-    private void OnCharacterItemClicked(CharacterItemClickedEvent eventData)
+    public bool SelectCharacter(int characterIndex)
     {
         if (characters.Length == 0)
         {
-            return;
+            return false;
         }
 
-        if (eventData.CharacterIndex < 0 || eventData.CharacterIndex >= characters.Length)
+        if (characterIndex < 0 || characterIndex >= characters.Length)
         {
-            return;
+            return false;
         }
 
-        if (selectedIndex == eventData.CharacterIndex)
+        if (selectedIndex == characterIndex)
         {
-            return;
+            return true;
         }
 
-        selectedIndex = eventData.CharacterIndex;
-        GameEventBus.Publish(new CharacterSelectionChangedEvent(selectedIndex, characters[selectedIndex]));
+        selectedIndex = characterIndex;
+        SelectionChanged?.Invoke(new CharacterSelectionChangedArgs(selectedIndex, characters[selectedIndex]));
+        return true;
     }
 
-    private void PublishSnapshot()
+    public CharacterSelectionSnapshot CreateSnapshot()
     {
         if (characters == null || characters.Length == 0)
         {
             RefreshCharacters();
         }
 
-        GameEventBus.Publish(new CharacterSelectionSnapshotEvent(characters, selectedIndex));
+        return new CharacterSelectionSnapshot(characters, selectedIndex);
     }
 }

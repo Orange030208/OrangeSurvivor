@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Graphic))]
+// 将 Unity UI/EventSystem 事件翻译成 UIMotionPlayer 的 Clip 播放请求。
+// 它不直接创建 Tween，因此交互反馈仍统一经过 Player 的通道与冲突策略。
 public sealed class UIMotionTrigger : MonoBehaviour,
     IPointerEnterHandler,
     IPointerExitHandler,
@@ -19,6 +21,7 @@ public sealed class UIMotionTrigger : MonoBehaviour,
     private sealed class TriggerBinding
     {
         public UIMotionTriggerEvent triggerEvent;
+        // 这里保存 ClipId 而不是直接引用 Clip，方便多个 Prefab 复用同一套事件绑定语义。
         public string clipId;
         public bool requireLeftButton = true;
         [Min(0f)] public float delay;
@@ -110,6 +113,7 @@ public sealed class UIMotionTrigger : MonoBehaviour,
             return;
         }
 
+        // 同一个事件允许触发多条绑定，例如 PointerDown 同时播放按压和音效回调 Track。
         for (int i = 0; i < bindings.Count; i++)
         {
             TriggerBinding binding = bindings[i];
@@ -139,6 +143,7 @@ public sealed class UIMotionTrigger : MonoBehaviour,
             return;
         }
 
+        // 优先绑定本对象上的 Player；找不到时向父级查找，支持按钮子节点只挂 Trigger 的 Prefab 结构。
         player = GetComponent<UIMotionPlayer>();
         if (player == null)
         {

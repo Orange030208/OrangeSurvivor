@@ -11,52 +11,62 @@ public class StageCompleteUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI goldEarnedText;
     [SerializeField] private TextMeshProUGUI characterNameText;
     [SerializeField] private TextMeshProUGUI mainWeaponNameText;
+    [SerializeField] private StageCompleteSummaryManager summaryManager;
 
     protected override void OnPageOpened(UIPageOpenContext context)
     {
-        GameEventBus.Subscribe<StageCompleteSnapshotEvent>(OnStageCompleteSnapshot);
         restartButton.OnClicked += OnRestartClicked;
         menuButton.OnClicked += OnMenuClicked;
-        GameEventBus.Publish<RequestStageCompleteSnapshotEvent>();
+        RenderSnapshot();
     }
 
     protected override void OnPageClosed()
     {
-        GameEventBus.Unsubscribe<StageCompleteSnapshotEvent>(OnStageCompleteSnapshot);
         restartButton.OnClicked -= OnRestartClicked;
         menuButton.OnClicked -= OnMenuClicked;
     }
 
-    private void OnStageCompleteSnapshot(StageCompleteSnapshotEvent eventData)
+    private void RenderSnapshot()
+    {
+        StageCompleteSummaryManager manager = ResolveSummaryManager();
+        if (manager == null)
+        {
+            return;
+        }
+
+        ApplySnapshot(manager.CreateSnapshot());
+    }
+
+    private void ApplySnapshot(StageCompleteSnapshot snapshot)
     {
         if (completedWavesText != null)
         {
-            completedWavesText.text = eventData.CompletedWaves.ToString();
+            completedWavesText.text = snapshot.CompletedWaves.ToString();
         }
 
         if (survivalTimeText != null)
         {
-            survivalTimeText.text = FormatDuration(eventData.SurvivalTime);
+            survivalTimeText.text = FormatDuration(snapshot.SurvivalTime);
         }
 
         if (killCountText != null)
         {
-            killCountText.text = eventData.KillCount.ToString();
+            killCountText.text = snapshot.KillCount.ToString();
         }
 
         if (goldEarnedText != null)
         {
-            goldEarnedText.text = eventData.GoldEarned.ToString();
+            goldEarnedText.text = snapshot.GoldEarned.ToString();
         }
 
         if (characterNameText != null)
         {
-            characterNameText.text = string.IsNullOrWhiteSpace(eventData.CharacterName) ? "-" : eventData.CharacterName;
+            characterNameText.text = string.IsNullOrWhiteSpace(snapshot.CharacterName) ? "-" : snapshot.CharacterName;
         }
 
         if (mainWeaponNameText != null)
         {
-            mainWeaponNameText.text = string.IsNullOrWhiteSpace(eventData.MainWeaponName) ? "-" : eventData.MainWeaponName;
+            mainWeaponNameText.text = string.IsNullOrWhiteSpace(snapshot.MainWeaponName) ? "-" : snapshot.MainWeaponName;
         }
     }
 
@@ -78,5 +88,16 @@ public class StageCompleteUIPage : UIPageBase
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish<StageCompleteReturnToMenuClickedEvent>();
+    }
+
+    private StageCompleteSummaryManager ResolveSummaryManager()
+    {
+        if (summaryManager != null)
+        {
+            return summaryManager;
+        }
+
+        summaryManager = FindFirstObjectByType<StageCompleteSummaryManager>();
+        return summaryManager;
     }
 }
