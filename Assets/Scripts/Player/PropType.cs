@@ -16,10 +16,12 @@ public enum PropType
     ProjectileCount = 13,
     ProjectileSpeed = 14,
     AttackRange = 15,
+    ProjectilePierceCount = 16,
     KnockbackForce = 18,
     ExperienceGain = 20,
     ShopPriceDiscount = 21,
     WaveGoldRewardBonus = 22,
     DamageReduction = 25,
     HealingPower = 26,
+    WeaponSlotCount = 27,
 }

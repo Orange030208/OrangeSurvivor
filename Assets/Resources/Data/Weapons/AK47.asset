@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: AK47
+  m_EditorClassIdentifier: 
+  itemName: AK-47
+  itemIcon: {fileID: 21300000, guid: dceaccc930a314f4e80bbed41f73688b, type: 3}
+  itemPrice: 36
+  itemType: 0
+  itemDescription: Reliable automatic rifle. Fires short bursts with steady mid-range
+    damage.
+  tags: 010000000200000005000000
+  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: abaa23446fa84d042b0cc13d8bb78d49, type: 2}
+  visualForwardAngle: 90
+  stopAimingWhenAttackReady: 0
+  attackSequenceOccupancy: 0.779
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 3
+      novaCount: 1
+      burstInterval: 0.07
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 1, y: 1}
+  meleeHitOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 9
+    attackSpeed: 2
+    criticalChance: 0.06
+    criticalPercent: 1.7
+    range: 8
+    knockbackForce: 1
+  - level: 2
+    attack: 10.62
+    attackSpeed: 2
+    criticalChance: 0.07
+    criticalPercent: 1.78
+    range: 8.25
+    knockbackForce: 1.18
+  - level: 3
+    attack: 12.24
+    attackSpeed: 2
+    criticalChance: 0.08
+    criticalPercent: 1.86
+    range: 8.5
+    knockbackForce: 1.36
+  - level: 4
+    attack: 13.86
+    attackSpeed: 2
+    criticalChance: 0.09
+    criticalPercent: 1.94
+    range: 8.75
+    knockbackForce: 1.54
+  - level: 5
+    attack: 15.48
+    attackSpeed: 2
+    criticalChance: 0.1
+    criticalPercent: 2.02
+    range: 9
+    knockbackForce: 1.72
+  - level: 6
+    attack: 17.1
+    attackSpeed: 2
+    criticalChance: 0.11
+    criticalPercent: 2.1
+    range: 9.25
+    knockbackForce: 1.9

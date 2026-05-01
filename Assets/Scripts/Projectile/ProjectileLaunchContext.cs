@@ -23,6 +23,7 @@ public readonly struct ProjectileLaunchContext
     /// </summary>
     public int SpawnPointIndex { get; }
     public ProjectileDefinitionSO ProjectileDefinition { get; }
+    public int PierceCount { get; }
     /// <summary>
     ///  Burst 连发的分组编号，用来防止同一个 burst 在一次攻击序列里被重复触发多次。
     /// </summary>
@@ -39,6 +40,7 @@ public readonly struct ProjectileLaunchContext
         HitSpec hitSpec,
         LayerMask targetLayerMask,
         ProjectileDefinitionSO projectileDefinition = null,
+        int pierceCount = 0,
         int spawnPointIndex = 0,
         int burstId = 0,
         ProjectileFiringMode firingMode = ProjectileFiringMode.Default,
@@ -50,6 +52,7 @@ public readonly struct ProjectileLaunchContext
         Direction = direction.normalized;
         HitSpec = hitSpec;
         TargetLayerMask = targetLayerMask;
+        PierceCount = Mathf.Max(0, pierceCount);
         SpawnPointIndex = Mathf.Max(0, spawnPointIndex);
         ProjectileDefinition = projectileDefinition;
         BurstId = Mathf.Max(0, burstId);

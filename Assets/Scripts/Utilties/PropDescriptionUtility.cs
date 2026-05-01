@@ -53,6 +53,8 @@ public static class PropDescriptionUtility
             PropType.PickupRadius => "拾取半径",
             PropType.ProjectileCount => "弹体数量",
             PropType.ProjectileSpeed => "弹体速度",
+            PropType.ProjectilePierceCount => "弹射物穿透数量",
+            PropType.WeaponSlotCount => "武器槽位数量",
             PropType.KnockbackForce => "击退强度",
             PropType.ExperienceGain => "经验获取",
             PropType.ShopPriceDiscount => "商店折扣",
@@ -77,7 +79,7 @@ public static class PropDescriptionUtility
             return FormatSignedPercent(value);
         }
 
-        string formatted = value.ToString("F1");
+        string formatted = IsIntegerProp(propType) ? value.ToString("F0") : value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
     }
 
@@ -103,19 +105,27 @@ public static class PropDescriptionUtility
             PropModifierType.BaseMultiplier => FormatSignedNumber(value * 100f) + "%",
             PropModifierType.BonusMultiplier => FormatSignedNumber(value * 100f) + "%",
             PropModifierType.FinalMultiplier => FormatSignedNumber(value * 100f) + "%",
-            _ => IsPercentAdditiveProp(propType) ? FormatSignedNumber(value * 100f) + "%" : FormatSignedNumber(value)
+            _ => IsPercentAdditiveProp(propType)
+                ? FormatSignedNumber(value * 100f) + "%"
+                : FormatSignedNumber(propType, value)
         };
     }
 
     private static string FormatValue(PropType propType, float value)
     {
-        return IsPercentAdditiveProp(propType) ? FormatSignedPercent(value) : FormatSignedNumber(value);
+        return IsPercentAdditiveProp(propType) ? FormatSignedPercent(value) : FormatSignedNumber(propType, value);
     }
 
     private static bool IsPercentAdditiveProp(PropType propType)
     {
         return propType == PropType.ExperienceGain ||
                propType == PropType.ShopPriceDiscount;
+    }
+
+    private static bool IsIntegerProp(PropType propType)
+    {
+        return propType == PropType.WeaponSlotCount ||
+               propType == PropType.ProjectilePierceCount;
     }
 
     private static string FormatSignedPercent(float value)
@@ -128,6 +138,12 @@ public static class PropDescriptionUtility
     private static string FormatSignedNumber(float value)
     {
         string formatted = value.ToString("F1");
+        return value > 0 ? $"+{formatted}" : formatted;
+    }
+
+    private static string FormatSignedNumber(PropType propType, float value)
+    {
+        string formatted = IsIntegerProp(propType) ? value.ToString("F0") : value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
     }
 }

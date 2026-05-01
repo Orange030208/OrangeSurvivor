@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: Shotgun
+  m_EditorClassIdentifier: 
+  itemName: Shotgun
+  itemIcon: {fileID: 21300000, guid: 3450be1940341e847a28915b5de06590, type: 3}
+  itemPrice: 39
+  itemType: 0
+  itemDescription: Wide cone shotgun. Short range, high knockback, strong against
+    packs.
+  tags: 01000000020000000300000006000000
+  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: a19785078fdd8224dbd91313bb788043, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 0
+  attackSequenceOccupancy: 0.9
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+    burstId: 0
+    firingMode: 1
+    patternConfig:
+      spreadCount: 5
+      spreadAngle: 26
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 1, y: 1}
+  meleeHitOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 13
+    attackSpeed: 0.75
+    criticalChance: 0.06
+    criticalPercent: 1.7
+    range: 5.8
+    knockbackForce: 2.4
+  - level: 2
+    attack: 15.34
+    attackSpeed: 0.795
+    criticalChance: 0.07
+    criticalPercent: 1.78
+    range: 6.05
+    knockbackForce: 2.58
+  - level: 3
+    attack: 17.68
+    attackSpeed: 0.84
+    criticalChance: 0.08
+    criticalPercent: 1.86
+    range: 6.3
+    knockbackForce: 2.76
+  - level: 4
+    attack: 20.02
+    attackSpeed: 0.885
+    criticalChance: 0.09
+    criticalPercent: 1.94
+    range: 6.55
+    knockbackForce: 2.94
+  - level: 5
+    attack: 22.36
+    attackSpeed: 0.93
+    criticalChance: 0.1
+    criticalPercent: 2.02
+    range: 6.8
+    knockbackForce: 3.12
+  - level: 6
+    attack: 24.7
+    attackSpeed: 0.975
+    criticalChance: 0.11
+    criticalPercent: 2.1
+    range: 7.05
+    knockbackForce: 3.3

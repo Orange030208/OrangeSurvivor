@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: SniperRifle
+  m_EditorClassIdentifier: 
+  itemName: Sniper Rifle
+  itemIcon: {fileID: 21300000, guid: 4264f29f2e5f4584fab7b47fc0b1838d, type: 3}
+  itemPrice: 54
+  itemType: 0
+  itemDescription: Long rifle built for decisive shots. Lowest cadence, highest precision.
+  tags: 01000000020000000400000006000000
+  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: a19785078fdd8224dbd91313bb788043, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 0
+  attackSequenceOccupancy: 0.9
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 1, y: 1}
+  meleeHitOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 38
+    attackSpeed: 0.38
+    criticalChance: 0.25
+    criticalPercent: 2.8
+    range: 12
+    knockbackForce: 2.4
+  - level: 2
+    attack: 44.84
+    attackSpeed: 0.425
+    criticalChance: 0.26
+    criticalPercent: 2.88
+    range: 12.25
+    knockbackForce: 2.58
+  - level: 3
+    attack: 51.68
+    attackSpeed: 0.47
+    criticalChance: 0.27
+    criticalPercent: 2.96
+    range: 12.5
+    knockbackForce: 2.76
+  - level: 4
+    attack: 58.52
+    attackSpeed: 0.515
+    criticalChance: 0.28
+    criticalPercent: 3.04
+    range: 12.75
+    knockbackForce: 2.94
+  - level: 5
+    attack: 65.36
+    attackSpeed: 0.56
+    criticalChance: 0.29
+    criticalPercent: 3.12
+    range: 13
+    knockbackForce: 3.12
+  - level: 6
+    attack: 72.2
+    attackSpeed: 0.605
+    criticalChance: 0.3
+    criticalPercent: 3.2
+    range: 13.25
+    knockbackForce: 3.3

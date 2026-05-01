@@ -68,7 +68,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
             BasePropData baseProp = values[i];
             AddValue(baseProps, baseProp.propType, baseProp.value);
         }
-        
+
         if (this.owner.TryGetComponent<IPropModifierProvider>(out IPropModifierProvider propModifierProvider))
         {
             var propModifierDataList = propModifierProvider.PropModifierDataList;
@@ -103,7 +103,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         }
 
         modifierSources[sourceId] = new List<PropModifierData>(modifiers);
-        RecalculateAllProps();
+        RecalculateAllProps(notifyAllWhenUnchanged: true);
     }
 
     public void RemoveModifier(string sourceId, PropType propType, PropModifierType modifierType)
@@ -120,7 +120,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
             modifierSources.Remove(sourceId);
         }
 
-        RecalculateAllProps();
+        RecalculateAllProps(notifyAllWhenUnchanged: true);
     }
 
     public void RemoveModifiers(string sourceId)
@@ -135,10 +135,10 @@ public class PropertiesManager : EntityComponentBase, IDescribable
             return;
         }
 
-        RecalculateAllProps();
+        RecalculateAllProps(notifyAllWhenUnchanged: true);
     }
 
-    private void RecalculateAllProps(bool notifyChanges = true)
+    private void RecalculateAllProps(bool notifyChanges = true, bool notifyAllWhenUnchanged = false)
     {
         List<PropType> changedProps = notifyChanges ? new List<PropType>() : null;
 
@@ -167,7 +167,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
             OnPropertyChanged?.Invoke(propType, calculatedProps[propType]);
         }
 
-        if (changedProps.Count > 0)
+        if (changedProps.Count > 0 || notifyAllWhenUnchanged)
         {
             NotifyAllPropertiesChanged();
         }
@@ -176,6 +176,11 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     private float CalculateFinalValue(PropType propType)
     {
         float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType));
+        return CalculateFinalValue(propType, baseValue);
+    }
+
+    private float CalculateFinalValue(PropType propType, float baseValue)
+    {
         float addValue = addProps.GetValueOrDefault(propType, 0f);
         float baseOnlyMultiplierValue = baseOnlyMultiplierProps.GetValueOrDefault(propType, 0f);
         float bonusMultiplierValue = bonusMultiplierProps.GetValueOrDefault(propType, 0f);
@@ -210,8 +215,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         }
 
         float baseValueAfterMultiplier = baseValue * (1f + baseOnlyMultiplierValue);
-        float bonusValue = addValue * (1f + bonusMultiplierValue);
-        float result = baseValueAfterMultiplier + bonusValue;
+        float result = (baseValueAfterMultiplier + addValue) * (1f + bonusMultiplierValue);
         result *= 1f + finalMultiplierValue;
         return result;
     }
@@ -237,6 +241,16 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         return calculatedProps.GetValueOrDefault(propType, GetDefaultValue(propType));
     }
 
+    /// <summary>
+    /// 使用外部系统提供的基础值参与同一套属性修饰结算。
+    /// 例如武器自身攻击力不属于玩家 BasePropGroup，但仍应吃到玩家攻击乘区。
+    /// </summary>
+    public float GetPropValueWithAdditionalBase(PropType propType, float additionalBaseValue)
+    {
+        float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType)) + additionalBaseValue;
+        return CalculateFinalValue(propType, baseValue);
+    }
+
     public float GetBaseValue(PropType propType)
     {
         return baseProps.GetValueOrDefault(propType, GetDefaultValue(propType));
@@ -247,9 +261,11 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         return propType switch
         {
             PropType.AttackSpeed => 1f,
-            PropType.CriticalPercent => 1f,
+            PropType.CriticalPercent => 0f,
             PropType.ProjectileCount => 1f,
             PropType.ProjectileSpeed => 1f,
+            PropType.ProjectilePierceCount => 0f,
+            PropType.WeaponSlotCount => 0,
             _ => 0f
         };
     }

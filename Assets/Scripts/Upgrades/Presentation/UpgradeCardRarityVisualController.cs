@@ -25,6 +25,7 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
     private Color baseGlowColor;
     private Color baseShadowColor;
     private Color baseTitleColor;
+    private Vector2 baseGlowSizeDelta;
 
     private void Awake()
     {
@@ -74,6 +75,7 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         if (glowImage != null)
         {
             glowImage.color = ResolveLayerColor(profile.GlowColor, glowImage);
+            ApplyGlowRange(profile.GlowScaleMultiplier);
         }
 
         if (shadowImage != null)
@@ -110,6 +112,7 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         if (glowImage != null)
         {
             glowImage.color = baseGlowColor;
+            glowImage.rectTransform.sizeDelta = baseGlowSizeDelta;
         }
 
         if (shadowImage != null)
@@ -143,6 +146,7 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         if (glowImage != null)
         {
             baseGlowColor = glowImage.color;
+            baseGlowSizeDelta = glowImage.rectTransform.sizeDelta;
         }
 
         if (shadowImage != null)
@@ -218,6 +222,17 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         }
 
         return resolvedColor;
+    }
+
+    private void ApplyGlowRange(float scaleMultiplier)
+    {
+        if (glowImage == null)
+        {
+            return;
+        }
+
+        float resolvedMultiplier = Mathf.Max(0.1f, scaleMultiplier);
+        glowImage.rectTransform.sizeDelta = baseGlowSizeDelta * resolvedMultiplier;
     }
 
     private static Transform FindChildByName(Transform root, string targetName)

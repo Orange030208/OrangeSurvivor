@@ -18,7 +18,7 @@ public class RangeWeapon : Weapon, IProjectileLauncher
     [Header("Inspector")]
     [Tooltip("默认发射点。单枪口武器通常只需要配置这个点。")]
     [SerializeField] private Transform shootingPoint;
-    [Tooltip("额外发射点。用于双枪、多炮口或多枪管武器。索引由攻击序列中的生成配置指定。")]
+    [Tooltip("旧版额外发射点。新武器优先在 WeaponDataSO 的 Spawn Points 中配置点位。")]
     [SerializeField] private Transform[] additionalShootingPoints;
     [Tooltip("攻击序列资源。为空时会在运行时生成默认远程序列。")]
     [SerializeField] private AttackSequenceDefinitionSO attackSequence;
@@ -189,10 +189,10 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
     private void FireSingle(WeaponSequenceProjectileDefinition projectileConfig, float? angleOffset)
     {
-        Transform origin = ResolveOrigin(projectileConfig.SpawnPointIndex);
+        WeaponSpawnPointPose origin = ResolveSpawnPointPose(projectileConfig.SpawnPointIndex);
         Entity sourceEntity = ResolveAttackSourceEntity();
         HitSpec hitSpec = BuildHitSpec();
-        Vector2 aimDirection = ResolveAttackDirection(pendingTargetPosition, origin);
+        Vector2 aimDirection = ResolveAttackDirection(pendingTargetPosition, origin.Position);
         if (angleOffset.HasValue)
         {
             aimDirection = (Quaternion.Euler(0f, 0f, angleOffset.Value) * aimDirection).normalized;
@@ -201,7 +201,18 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         ExecuteProjectileAttack(sourceEntity, origin, aimDirection, hitSpec, projectileConfig);
     }
 
-    private Transform ResolveOrigin(int spawnPointIndex)
+    private WeaponSpawnPointPose ResolveSpawnPointPose(int spawnPointIndex)
+    {
+        if (WeaponData != null && WeaponData.TryGetSpawnPointPose(spawnPointIndex, transform, out WeaponSpawnPointPose configuredPose))
+        {
+            return configuredPose;
+        }
+
+        Transform legacyOrigin = ResolveLegacyOrigin(spawnPointIndex);
+        return new WeaponSpawnPointPose(legacyOrigin.position, legacyOrigin.rotation);
+    }
+
+    private Transform ResolveLegacyOrigin(int spawnPointIndex)
     {
         if (additionalShootingPoints != null && spawnPointIndex >= 0 && spawnPointIndex < additionalShootingPoints.Length && additionalShootingPoints[spawnPointIndex] != null)
         {
@@ -209,6 +220,17 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         }
 
         return shootingPoint != null ? shootingPoint : transform;
+    }
+
+    private Vector2 ResolveAttackDirection(Vector2 targetPosition, Vector3 originPosition)
+    {
+        Vector2 targetDirection = targetPosition - (Vector2)originPosition;
+        if (targetDirection.sqrMagnitude > 0.0001f)
+        {
+            return targetDirection.normalized;
+        }
+
+        return ResolveFallbackAttackDirection();
     }
 
     public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
@@ -228,24 +250,32 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
     private void ExecuteProjectileAttack(
         Entity sourceEntity,
-        Transform origin,
+        WeaponSpawnPointPose origin,
         Vector2 aimDirection,
         HitSpec hitSpec,
         WeaponSequenceProjectileDefinition projectileConfig)
     {
-        Projectile projectile = ProjectileFactory.CreateProjectile(projectileConfig.ProjectileDefinition, origin.position, Quaternion.identity);
+        Projectile projectile = ProjectileFactory.CreateProjectile(projectileConfig.ProjectileDefinition, origin.Position, Quaternion.identity);
         LaunchProjectile(projectile, new ProjectileLaunchContext(
             this,
             sourceEntity,
-            origin.position,
+            origin.Position,
             aimDirection,
             hitSpec,
             TargetLayerMask,
             projectileConfig.ProjectileDefinition,
+            ResolveProjectilePierceCount(),
             projectileConfig.SpawnPointIndex,
             projectileConfig.BurstId,
             projectileConfig.FiringMode,
             projectileConfig.PatternConfig));
+    }
+
+    private int ResolveProjectilePierceCount()
+    {
+        return propertiesManager != null
+            ? Mathf.Max(0, Mathf.FloorToInt(propertiesManager.GetPropValue(PropType.ProjectilePierceCount)))
+            : 0;
     }
 
     private void PlaySequenceSfx(int eventKey)
@@ -270,9 +300,9 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
         if (definition.VfxPrefab != null)
         {
-            Transform spawnAnchor = ResolveOrigin(definition.SpawnPointIndex);
-            Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
-            Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
+            WeaponSpawnPointPose spawnAnchor = ResolveSpawnPointPose(definition.SpawnPointIndex);
+            Vector3 spawnPosition = spawnAnchor.Position + spawnAnchor.Rotation * definition.LocalOffset;
+            Quaternion spawnRotation = spawnAnchor.Rotation * Quaternion.Euler(definition.LocalEulerAngles);
             RuntimeVfx.Spawn(definition.VfxPrefab, spawnPosition, spawnRotation, null);
         }
     }
@@ -286,14 +316,31 @@ public class RangeWeapon : Weapon, IProjectileLauncher
 
     private void OnDrawGizmosSelected()
     {
-        if (shootingPoint == null)
+        bool hasAnySpawnPoint = false;
+        if (WeaponData != null && WeaponData.SpawnPoints != null && WeaponData.SpawnPoints.Count > 0)
+        {
+            hasAnySpawnPoint = true;
+            Gizmos.color = Color.cyan;
+            for (int i = 0; i < WeaponData.SpawnPoints.Count; i++)
+            {
+                WeaponSpawnPointPose origin = ResolveSpawnPointPose(i);
+                Gizmos.DrawWireSphere(origin.Position, 0.06f);
+                Gizmos.DrawRay(origin.Position, origin.Forward * 0.8f);
+            }
+        }
+
+        if (shootingPoint == null && !hasAnySpawnPoint)
         {
             return;
         }
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(shootingPoint.position, 0.06f);
-        Gizmos.DrawRay(shootingPoint.position, shootingPoint.up * 0.8f);
+        if (shootingPoint != null)
+        {
+            hasAnySpawnPoint = true;
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(shootingPoint.position, 0.06f);
+            Gizmos.DrawRay(shootingPoint.position, shootingPoint.up * 0.8f);
+        }
 
         if (additionalShootingPoints != null)
         {
@@ -326,23 +373,17 @@ public class RangeWeapon : Weapon, IProjectileLauncher
                 continue;
             }
 
-            Transform origin = null;
             if (WeaponData == null || !WeaponData.TryGetSequenceProjectile(keyframe.eventKey, out WeaponSequenceProjectileDefinition projectileConfig))
             {
                 continue;
             }
 
-            origin = ResolveOrigin(projectileConfig.SpawnPointIndex);
-            if (origin == null)
-            {
-                continue;
-            }
-
+            WeaponSpawnPointPose origin = ResolveSpawnPointPose(projectileConfig.SpawnPointIndex);
             DrawProjectilePatternGizmo(origin, projectileConfig);
         }
     }
 
-    private void DrawProjectilePatternGizmo(Transform origin, WeaponSequenceProjectileDefinition projectileConfig)
+    private void DrawProjectilePatternGizmo(WeaponSpawnPointPose origin, WeaponSequenceProjectileDefinition projectileConfig)
     {
         Gizmos.color = projectileConfig.ProjectileDefinition != null ? projectileConfig.ProjectileDefinition.DebugColor : Color.cyan;
 
@@ -355,16 +396,16 @@ public class RangeWeapon : Weapon, IProjectileLauncher
                 DrawNovaPattern(origin, projectileConfig.PatternConfig.NovaCount);
                 break;
             default:
-                Gizmos.DrawRay(origin.position, origin.up * 1.1f);
+                Gizmos.DrawRay(origin.Position, origin.Forward * 1.1f);
                 break;
         }
     }
 
-    private void DrawSpreadPattern(Transform origin, int count, float halfAngle)
+    private void DrawSpreadPattern(WeaponSpawnPointPose origin, int count, float halfAngle)
     {
         if (count <= 1)
         {
-            Gizmos.DrawRay(origin.position, origin.up * 1.1f);
+            Gizmos.DrawRay(origin.Position, origin.Forward * 1.1f);
             return;
         }
 
@@ -372,19 +413,19 @@ public class RangeWeapon : Weapon, IProjectileLauncher
         for (int i = 0; i < count; i++)
         {
             float angle = -halfAngle + step * i;
-            Vector3 direction = Quaternion.Euler(0f, 0f, angle) * origin.up;
-            Gizmos.DrawRay(origin.position, direction * 1.1f);
+            Vector3 direction = Quaternion.Euler(0f, 0f, angle) * origin.Forward;
+            Gizmos.DrawRay(origin.Position, direction * 1.1f);
         }
     }
 
-    private void DrawNovaPattern(Transform origin, int count)
+    private void DrawNovaPattern(WeaponSpawnPointPose origin, int count)
     {
         count = Mathf.Max(1, count);
         for (int i = 0; i < count; i++)
         {
             float angle = (360f / count) * i;
             Vector3 direction = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
-            Gizmos.DrawRay(origin.position, direction * 1f);
+            Gizmos.DrawRay(origin.Position, direction * 1f);
         }
     }
 }

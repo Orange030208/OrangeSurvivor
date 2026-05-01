@@ -62,6 +62,7 @@ public sealed class UpgradeCardRarityPresentationCatalogSO : ScriptableObject
                 new Color(0.6039216f, 0.9098039f, 1f, 1f),
                 new Color(0.83137256f, 0.95686275f, 1f, 1f),
                 new Color(0.3137255f, 0.8235294f, 1f, 0.50980395f),
+                1.18f,
                 new Color(0f, 0.09411765f, 0.14901961f, 1f)),
             UpgradeCardRarity.Epic => new UpgradeCardRarityPresentationProfile(
                 UpgradeCardRarity.Epic,
@@ -73,6 +74,7 @@ public sealed class UpgradeCardRarityPresentationCatalogSO : ScriptableObject
                 new Color(0.89411765f, 0.74509805f, 1f, 1f),
                 new Color(0.9490196f, 0.8784314f, 1f, 1f),
                 new Color(0.7607843f, 0.47058824f, 1f, 0.5686275f),
+                1.38f,
                 new Color(0.10980392f, 0.047058824f, 0.17254902f, 1f)),
             UpgradeCardRarity.Legendary => new UpgradeCardRarityPresentationProfile(
                 UpgradeCardRarity.Legendary,
@@ -84,6 +86,7 @@ public sealed class UpgradeCardRarityPresentationCatalogSO : ScriptableObject
                 new Color(1f, 0.87058824f, 0.5803922f, 1f),
                 new Color(1f, 0.93333334f, 0.7921569f, 1f),
                 new Color(1f, 0.7372549f, 0.29803923f, 0.6666667f),
+                1.62f,
                 new Color(0.1882353f, 0.10980392f, 0.019607844f, 1f)),
             _ => new UpgradeCardRarityPresentationProfile(
                 UpgradeCardRarity.Common,
@@ -95,6 +98,7 @@ public sealed class UpgradeCardRarityPresentationCatalogSO : ScriptableObject
                 new Color(0.9098039f, 0.9254902f, 0.95686275f, 1f),
                 new Color(0.9647059f, 0.972549f, 0.9882353f, 1f),
                 new Color(0.5882353f, 0.6509804f, 0.74509805f, 0.3529412f),
+                1f,
                 new Color(0f, 0f, 0f, 1f))
         };
     }

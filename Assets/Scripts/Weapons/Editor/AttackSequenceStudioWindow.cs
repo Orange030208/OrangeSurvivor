@@ -422,11 +422,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
             return;
         }
 
-        DrawWeaponDataProperty("attack", "Attack");
-        DrawWeaponDataProperty("attackSpeed", "Attack Speed");
-        DrawWeaponDataProperty("criticalChance", "Critical Chance");
-        DrawWeaponDataProperty("criticalPercent", "Critical Percent");
-        DrawWeaponDataProperty("range", "Range");
+        DrawWeaponDataProperty("levelStats", "Level Stats", true);
         EditorGUILayout.EndVertical();
     }
 
@@ -473,6 +469,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         DrawWeaponDataProperty("visualForwardAngle", "Visual Forward Angle");
         DrawWeaponDataProperty("stopAimingWhenAttackReady", "Stop Aiming When Ready");
         DrawWeaponDataProperty("attackSequenceOccupancy", "Sequence Occupancy");
+        DrawWeaponDataProperty("spawnPoints", "Spawn Points", true);
         DrawWeaponDataProperty("hitSfxKey", "Hit SFX");
         DrawWeaponDataProperty("meleeHitVfxPrefab", "Melee Hit VFX");
         DrawWeaponDataProperty("meleeHitBoxSize", "Melee Hit Box Size");

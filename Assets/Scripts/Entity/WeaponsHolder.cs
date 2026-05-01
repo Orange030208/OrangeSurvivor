@@ -12,27 +12,67 @@ using UnityEngine;
 /// </summary>
 public class WeaponsHolder : EntityComponentBase
 {
+    private const float DEFAULT_WEAPON_SLOT_RADIUS = 1.5f;
+    private const float CIRCLE_START_ANGLE_DEGREES = 90f;
+    private const float FULL_CIRCLE_DEGREES = 360f;
+
     [Header("Inspector")]
     [Tooltip("玩家身上的武器槽位列表。每个槽位对应一个 WeaponPosition。")]
     [SerializeField] private WeaponPosition[] weaponPositions;
+    [Tooltip("武器槽位围绕 Entity.Center 排布的半径。")]
+    [SerializeField, Min(0f)] private float weaponSlotRadius = DEFAULT_WEAPON_SLOT_RADIUS;
+    [Tooltip("槽位父节点。留空时会复用现有槽位的父节点，仍为空则使用当前对象。")]
+    [SerializeField] private Transform weaponSlotsRoot;
     [Tooltip("由武器容器显式决定这些武器默认攻击哪些层。")]
     [SerializeField] private LayerMask targetLayerMask;
 
     private readonly List<EquippedWeaponInfo> equippedWeapons = new();
+    private readonly List<WeaponPosition> weaponPositionPool = new();
 
     public event Action OnWeaponsChanged;
     public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => equippedWeapons.AsReadOnly();
+    public int WeaponSlotCount => weaponPositions?.Length ?? 0;
+
     private Entity owner;
+    private PropertiesManager propertiesManager;
+
     public override Entity Owner => owner;
     public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
     public override void Initialize(Entity owner)
     {
-        this.owner = owner;
-        RebuildEquippedWeaponsCache();
-        var initialWeapons = owner.GetComponent<IInitialWeaponProvider>().InitialWeapons;
-        foreach (var weapon in initialWeapons)
+        if (owner == null)
         {
+            throw new ArgumentNullException(nameof(owner));
+        }
+
+        UnsubscribeFromPropertiesManager();
+        this.owner = owner;
+        propertiesManager = owner.GetComponent<PropertiesManager>();
+
+        BuildWeaponPositionPool();
+        ResizeWeaponSlotsFromProperties();
+        RebuildEquippedWeaponsCache();
+        AddInitialWeapons();
+        SubscribeToPropertiesManager();
+    }
+
+    private void AddInitialWeapons()
+    {
+        if (!owner.TryGetComponent(out IInitialWeaponProvider initialWeaponProvider))
+        {
+            return;
+        }
+
+        IReadOnlyList<WeaponEntry> initialWeapons = initialWeaponProvider.InitialWeapons;
+        if (initialWeapons == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < initialWeapons.Count; i++)
+        {
+            WeaponEntry weapon = initialWeapons[i];
             AddWeapon(weapon.weaponData, weapon.level);
         }
     }
@@ -52,6 +92,8 @@ public class WeaponsHolder : EntityComponentBase
 
     public override void OnDisableComponent()
     {
+        UnsubscribeFromPropertiesManager();
+
         if (weaponPositions == null)
         {
             return;
@@ -59,7 +101,7 @@ public class WeaponsHolder : EntityComponentBase
 
         for (int i = 0; i < weaponPositions.Length; i++)
         {
-            weaponPositions[i].Weapon?.OnDisableComponent();
+            weaponPositions[i]?.Weapon?.OnDisableComponent();
         }
     }
 
@@ -82,8 +124,8 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon runtimeWeapon = emptyPosition.AssignWeapon(owner,weaponData, WeaponLevelHelper.ClampLevel(level));
-        
+        Weapon runtimeWeapon = emptyPosition.AssignWeapon(owner, weaponData, WeaponLevelHelper.ClampLevel(level));
+
         if (runtimeWeapon == null)
         {
             return false;
@@ -160,7 +202,7 @@ public class WeaponsHolder : EntityComponentBase
 
         if (!targetPosition.RemoveWeapon(targetWeapon))
         {
-            sourcePosition.AssignWeapon(owner,weaponData, sourceWeapon.Level);
+            sourcePosition.AssignWeapon(owner, weaponData, sourceWeapon.Level);
             if (sourcePosition.Weapon != null)
             {
                 sourcePosition.Weapon.SetTargetLayerMask(targetLayerMask);
@@ -170,7 +212,7 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon mergedWeapon = targetPosition.AssignWeapon(owner,weaponData, mergedLevel);
+        Weapon mergedWeapon = targetPosition.AssignWeapon(owner, weaponData, mergedLevel);
         if (mergedWeapon != null)
         {
             mergedWeapon.SetTargetLayerMask(targetLayerMask);
@@ -197,6 +239,254 @@ public class WeaponsHolder : EntityComponentBase
         }
 
         return null;
+    }
+
+    private void BuildWeaponPositionPool()
+    {
+        weaponPositionPool.Clear();
+
+        if (weaponPositions != null)
+        {
+            for (int i = 0; i < weaponPositions.Length; i++)
+            {
+                AddWeaponPositionToPool(weaponPositions[i]);
+            }
+        }
+
+        WeaponPosition[] childPositions = GetComponentsInChildren<WeaponPosition>(true);
+        for (int i = 0; i < childPositions.Length; i++)
+        {
+            AddWeaponPositionToPool(childPositions[i]);
+        }
+    }
+
+    private void AddWeaponPositionToPool(WeaponPosition weaponPosition)
+    {
+        if (weaponPosition == null || weaponPositionPool.Contains(weaponPosition))
+        {
+            return;
+        }
+
+        weaponPositionPool.Add(weaponPosition);
+    }
+
+    private void ResizeWeaponSlotsFromProperties()
+    {
+        int requestedSlotCount = ResolveWeaponSlotCount();
+        int minimumSlotCount = GetMinimumSlotCountForEquippedWeapons();
+        int resolvedSlotCount = Mathf.Max(requestedSlotCount, minimumSlotCount);
+
+        if (resolvedSlotCount > requestedSlotCount)
+        {
+            Debug.LogWarning(
+                $"[{nameof(WeaponsHolder)}] {owner.name} requested {requestedSlotCount} weapon slots, " +
+                $"but {minimumSlotCount} occupied slots must be kept.");
+        }
+
+        EnsureWeaponPositionPool(resolvedSlotCount);
+        weaponPositions = new WeaponPosition[resolvedSlotCount];
+        for (int i = 0; i < resolvedSlotCount; i++)
+        {
+            weaponPositions[i] = weaponPositionPool[i];
+        }
+
+        SetWeaponPositionActiveStates(resolvedSlotCount);
+        ApplyWeaponSlotLayout();
+    }
+
+    private int ResolveWeaponSlotCount()
+    {
+        float rawSlotCount = propertiesManager.GetPropValue(PropType.WeaponSlotCount);
+
+        return Mathf.Max(0, Mathf.RoundToInt(rawSlotCount));
+    }
+
+    private int GetMinimumSlotCountForEquippedWeapons()
+    {
+        if (weaponPositions == null)
+        {
+            return 0;
+        }
+
+        int minimumSlotCount = 0;
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            if (weaponPositions[i]?.Weapon != null)
+            {
+                minimumSlotCount = i + 1;
+            }
+        }
+
+        return minimumSlotCount;
+    }
+
+    private void EnsureWeaponPositionPool(int slotCount)
+    {
+        Transform slotsRoot = GetWeaponSlotsRoot();
+        for (int i = 0; i < slotCount; i++)
+        {
+            if (i < weaponPositionPool.Count && weaponPositionPool[i] != null)
+            {
+                continue;
+            }
+
+            WeaponPosition createdPosition = CreateWeaponPosition(slotsRoot, i);
+            if (i < weaponPositionPool.Count)
+            {
+                weaponPositionPool[i] = createdPosition;
+                continue;
+            }
+
+            weaponPositionPool.Add(createdPosition);
+        }
+    }
+
+    private Transform GetWeaponSlotsRoot()
+    {
+        if (weaponSlotsRoot != null)
+        {
+            return weaponSlotsRoot;
+        }
+
+        for (int i = 0; i < weaponPositionPool.Count; i++)
+        {
+            WeaponPosition weaponPosition = weaponPositionPool[i];
+            if (weaponPosition != null && weaponPosition.transform.parent != null)
+            {
+                return weaponPosition.transform.parent;
+            }
+        }
+
+        return transform;
+    }
+
+    private WeaponPosition CreateWeaponPosition(Transform parent, int index)
+    {
+        GameObject slotObject = new GameObject($"Weapon Position {index + 1}");
+        slotObject.layer = parent != null ? parent.gameObject.layer : gameObject.layer;
+        slotObject.transform.SetParent(parent, false);
+        return slotObject.AddComponent<WeaponPosition>();
+    }
+
+    private void SetWeaponPositionActiveStates(int activeSlotCount)
+    {
+        for (int i = 0; i < weaponPositionPool.Count; i++)
+        {
+            WeaponPosition weaponPosition = weaponPositionPool[i];
+            if (weaponPosition == null)
+            {
+                continue;
+            }
+
+            bool shouldBeActive = i < activeSlotCount;
+            if (weaponPosition.gameObject.activeSelf != shouldBeActive)
+            {
+                weaponPosition.gameObject.SetActive(shouldBeActive);
+            }
+        }
+    }
+
+    private void ApplyWeaponSlotLayout()
+    {
+        if (owner == null || weaponPositions == null)
+        {
+            return;
+        }
+
+        Transform slotsRoot = GetWeaponSlotsRoot();
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            WeaponPosition weaponPosition = weaponPositions[i];
+            if (weaponPosition == null)
+            {
+                continue;
+            }
+
+            Transform slotTransform = weaponPosition.transform;
+            if (slotTransform.parent != slotsRoot)
+            {
+                slotTransform.SetParent(slotsRoot, true);
+            }
+
+            Vector2 slotOffset = CalculateWeaponSlotOffset(i, weaponPositions.Length);
+            Vector2 slotWorldPosition = owner.Center + slotOffset;
+            Vector3 localPosition = slotsRoot.InverseTransformPoint(
+                new Vector3(slotWorldPosition.x, slotWorldPosition.y, slotsRoot.position.z));
+
+            localPosition.z = 0f;
+            slotTransform.localPosition = localPosition;
+            slotTransform.localRotation = Quaternion.identity;
+        }
+    }
+
+    private Vector2 CalculateWeaponSlotOffset(int slotIndex, int slotCount)
+    {
+        if (slotIndex == 0)
+        {
+            return Vector2.left * weaponSlotRadius;
+        }
+
+        if (slotIndex == 1)
+        {
+            return Vector2.right * weaponSlotRadius;
+        }
+
+        int circleSlotCount = slotCount - 2;
+        if (circleSlotCount <= 1)
+        {
+            return Vector2.up * weaponSlotRadius;
+        }
+
+        // 偶数四分布局会直接撞上左右手槽位，轻微错开能保持环形但避免重叠。
+        float startAngle = CIRCLE_START_ANGLE_DEGREES;
+        if (circleSlotCount % 4 == 0)
+        {
+            startAngle += 180f / circleSlotCount;
+        }
+
+        float angle = startAngle + FULL_CIRCLE_DEGREES * (slotIndex - 2) / circleSlotCount;
+        float radians = angle * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * weaponSlotRadius;
+    }
+
+    private void SubscribeToPropertiesManager()
+    {
+        if (propertiesManager == null)
+        {
+            return;
+        }
+
+        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+    }
+
+    private void UnsubscribeFromPropertiesManager()
+    {
+        if (propertiesManager == null)
+        {
+            return;
+        }
+
+        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+    }
+
+    private void OnPropertyChanged(PropType propType, float newValue)
+    {
+        if (propType != PropType.WeaponSlotCount)
+        {
+            return;
+        }
+
+        int previousSlotCount = WeaponSlotCount;
+        ResizeWeaponSlotsFromProperties();
+
+        if (previousSlotCount == WeaponSlotCount)
+        {
+            return;
+        }
+
+        RebuildEquippedWeaponsCache();
+        OnWeaponsChanged?.Invoke();
     }
 
     private WeaponPosition FindWeaponPosition(Weapon weapon)

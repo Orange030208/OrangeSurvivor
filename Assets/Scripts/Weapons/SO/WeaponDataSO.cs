@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum WeaponConstructionScheme
 {
@@ -17,18 +19,46 @@ public enum WeaponTag
     Heavy = 6
 }
 
+public readonly struct WeaponSpawnPointPose
+{
+    public WeaponSpawnPointPose(Vector3 position, Quaternion rotation)
+    {
+        Position = position;
+        Rotation = rotation;
+    }
+
+    public Vector3 Position { get; }
+    public Quaternion Rotation { get; }
+    public Vector3 Forward => Rotation * Vector3.up;
+}
+
+[Serializable]
+public struct WeaponSpawnPointDefinition
+{
+    [Tooltip("点位名称，仅用于配置和调试识别，例如 muzzle、left_muzzle、slash_vfx。")]
+    [SerializeField] private string id;
+    [Tooltip("相对武器根节点的本地位置。")]
+    [SerializeField] private Vector2 localPosition;
+    [Tooltip("相对武器根节点的Z轴角度偏移，用于调试绘制、VFX朝向或其他基于点位的表现。")]
+    [SerializeField] private float localRotationOffset;
+
+    public string Id => id;
+    public Vector2 LocalPosition => localPosition;
+    public float LocalRotationOffset => localRotationOffset;
+}
+
 [System.Serializable]
 public struct WeaponSequenceProjectileDefinition
 {
-    [Tooltip("使用哪个发射点。0 通常表示默认枪口。")] 
+    [Tooltip("使用哪个武器点位。优先映射到 Spawn Points；未配置时兼容旧的 RangeWeapon 发射点。")]
     [SerializeField] private int spawnPointIndex;
-    [Tooltip("直接引用要发射的弹射物定义资源。")] 
+    [Tooltip("直接引用要发射的弹射物定义资源。")]
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
-    [Tooltip("Burst 分组 id。用于避免同一 burst 重复启动。")] 
+    [Tooltip("Burst 分组 id。用于避免同一 burst 重复启动。")]
     [SerializeField] private int burstId;
-    [Tooltip("本次发射所使用的模式。")] 
+    [Tooltip("本次发射所使用的模式。")]
     [SerializeField] private ProjectileFiringMode firingMode;
-    [Tooltip("多弹模式参数。")] 
+    [Tooltip("多弹模式参数。")]
     [SerializeField] private ProjectilePatternConfig patternConfig;
 
     public int SpawnPointIndex => Mathf.Max(0, spawnPointIndex);
@@ -41,7 +71,7 @@ public struct WeaponSequenceProjectileDefinition
 [System.Serializable]
 public struct WeaponSequenceSfxDefinition
 {
-    [Tooltip("该事件触发时要播放的语义音效。")] 
+    [Tooltip("该事件触发时要播放的语义音效。")]
     [SerializeField] private AudioSfxKey sfxKey;
 
     public AudioSfxKey SfxKey => sfxKey;
@@ -50,19 +80,70 @@ public struct WeaponSequenceSfxDefinition
 [System.Serializable]
 public struct WeaponSequenceVfxDefinition
 {
-    [Tooltip("该事件触发时要生成的特效预制体。")] 
+    [Tooltip("该事件触发时要生成的特效预制体。")]
     [SerializeField] private GameObject vfxPrefab;
-    [Tooltip("生成锚点索引。近战武器会忽略该索引并使用 hitDetectionTransform；远程武器会映射到对应枪口。")] 
+    [Tooltip("生成锚点索引。优先映射到 Spawn Points；未配置时使用各武器自己的旧版默认锚点。")]
     [SerializeField] private int spawnPointIndex;
-    [Tooltip("相对锚点的局部偏移。")] 
+    [Tooltip("相对锚点的局部偏移。")]
     [SerializeField] private Vector3 localOffset;
-    [Tooltip("相对锚点的局部旋转补偿。")] 
+    [Tooltip("相对锚点的局部旋转补偿。")]
     [SerializeField] private Vector3 localEulerAngles;
 
     public GameObject VfxPrefab => vfxPrefab;
     public int SpawnPointIndex => Mathf.Max(0, spawnPointIndex);
     public Vector3 LocalOffset => localOffset;
     public Vector3 LocalEulerAngles => localEulerAngles;
+}
+
+[Serializable]
+public struct WeaponLevelStatData
+{
+    [SerializeField, Min(1)] private int level;
+    [SerializeField, Min(0f)] private float attack;
+    [SerializeField, Min(0.01f)] private float attackSpeed;
+    [SerializeField, Range(0f, 1f)] private float criticalChance;
+    [SerializeField, Min(1f)] private float criticalPercent;
+    [SerializeField, Min(0f)] private float range;
+    [SerializeField, Min(0f)] private float knockbackForce;
+
+    public int Level => Mathf.Max(WeaponLevelHelper.MinLevel, level);
+    public float Attack => Mathf.Max(0f, attack);
+    public float AttackSpeed => Mathf.Max(0.01f, attackSpeed);
+    public float CriticalChance => Mathf.Clamp01(criticalChance);
+    public float CriticalPercent => Mathf.Max(1f, criticalPercent);
+    public float Range => Mathf.Max(0f, range);
+    public float KnockbackForce => Mathf.Max(0f, knockbackForce);
+
+    public WeaponLevelStatData(
+        int level,
+        float attack,
+        float attackSpeed,
+        float criticalChance,
+        float criticalPercent,
+        float range,
+        float knockbackForce)
+    {
+        this.level = Mathf.Max(WeaponLevelHelper.MinLevel, level);
+        this.attack = Mathf.Max(0f, attack);
+        this.attackSpeed = Mathf.Max(0.01f, attackSpeed);
+        this.criticalChance = Mathf.Clamp01(criticalChance);
+        this.criticalPercent = Mathf.Max(1f, criticalPercent);
+        this.range = Mathf.Max(0f, range);
+        this.knockbackForce = Mathf.Max(0f, knockbackForce);
+    }
+
+    public WeaponLevelStatData ValidatedForLevel(int expectedLevel)
+    {
+        return new WeaponLevelStatData(
+            expectedLevel,
+            Attack,
+            AttackSpeed,
+            CriticalChance,
+            CriticalPercent,
+            Range,
+            KnockbackForce);
+    }
+
 }
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = ScriptableObjectMenuPaths.WEAPON_DATA, order = 0)]
@@ -81,6 +162,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private bool stopAimingWhenAttackReady = true;
     [Range(0.1f, 1f)]
     [SerializeField] private float attackSequenceOccupancy = 0.85f;
+    [FormerlySerializedAs("projectileSpawnPoints")]
+    [SerializeField] private WeaponSpawnPointDefinition[] spawnPoints = System.Array.Empty<WeaponSpawnPointDefinition>();
     [SerializeField] private WeaponSequenceProjectileDefinition[] sequenceProjectileList;
     [SerializeField] private WeaponSequenceSfxDefinition[] sequenceSfxList;
     [SerializeField] private WeaponSequenceVfxDefinition[] sequenceVfxList;
@@ -89,21 +172,18 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private Vector2 meleeHitBoxSize = new(1f, 1f);
     [SerializeField] private Vector2 meleeHitOffset;
 
-    [Header("属性")]
-    [SerializeField] protected float attack;
-    [SerializeField] protected float attackSpeed = 1f;
-    [SerializeField] protected float criticalChance;
-    [SerializeField] protected float criticalPercent = 2f;
-    [SerializeField] protected float range;
-    [SerializeField] protected float knockbackForce;
+    [Header("属性等级表")]
+    [SerializeField] private List<WeaponLevelStatData> levelStats = new();
 
     public Weapon WeaponPrefab => weaponPrefab;
-    public IReadOnlyList<WeaponTag> Tags => tags ?? System.Array.Empty<WeaponTag>();
+    public IReadOnlyList<WeaponTag> Tags => tags;
+    public IReadOnlyList<WeaponLevelStatData> LevelStats => levelStats;
     public WeaponConstructionScheme ConstructionScheme => constructionScheme;
     public AttackSequenceDefinitionSO AttackSequence => attackSequence;
     public float VisualForwardAngle => visualForwardAngle;
     public bool StopAimingWhenAttackReady => stopAimingWhenAttackReady;
     public float AttackSequenceOccupancy => Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
+    public IReadOnlyList<WeaponSpawnPointDefinition> SpawnPoints => spawnPoints;
     public IReadOnlyList<WeaponSequenceProjectileDefinition> SequenceProjectileList => sequenceProjectileList;
     public IReadOnlyList<WeaponSequenceSfxDefinition> SequenceSfxList => sequenceSfxList;
     public IReadOnlyList<WeaponSequenceVfxDefinition> SequenceVfxList => sequenceVfxList;
@@ -116,11 +196,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     {
         itemType = ItemType.Weapon;
         tags ??= System.Array.Empty<WeaponTag>();
-        attackSpeed = Mathf.Max(0.01f, attackSpeed);
-        criticalChance = Mathf.Clamp01(criticalChance);
-        criticalPercent = Mathf.Max(1f, criticalPercent);
-        range = Mathf.Max(0f, range);
-        knockbackForce = Mathf.Max(0f, knockbackForce);
+        spawnPoints ??= System.Array.Empty<WeaponSpawnPointDefinition>();
+        EnsureLevelStatsTable();
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
         meleeHitBoxSize.x = Mathf.Max(0.01f, meleeHitBoxSize.x);
         meleeHitBoxSize.y = Mathf.Max(0.01f, meleeHitBoxSize.y);
@@ -144,42 +221,23 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         return false;
     }
 
-    public List<PropModifierData> GetPropsList()
+    public WeaponLevelStatData GetLevelStats(int level)
     {
-        return new List<PropModifierData>
+        int clampedLevel = WeaponLevelHelper.ClampLevel(level);
+        if (levelStats == null || levelStats.Count == 0)
         {
-            new(PropType.Attack, PropModifierType.Add, attack),
-            new(PropType.AttackSpeed, PropModifierType.Add, attackSpeed),
-            new(PropType.CriticalChance, PropModifierType.Add, criticalChance),
-            new(PropType.CriticalPercent, PropModifierType.Add, criticalPercent),
-            new(PropType.AttackRange, PropModifierType.Add, range),
-            new(PropType.KnockbackForce, PropModifierType.Add, knockbackForce)
-        };
-    }
-
-    public List<PropModifierData> GetPropEntriesByLevel(int level)
-    {
-        float multiplier = 1f + (float)level / WeaponLevelScaling.MaxLevel;
-        List<PropModifierData> calculatedProps = new();
-        foreach (PropModifierData propEntry in GetPropsList())
-        {
-            calculatedProps.Add(new PropModifierData(propEntry.propType, propEntry.modifierType, propEntry.value * multiplier));
+            throw new InvalidOperationException(
+                $"{nameof(WeaponDataSO)} '{name}' requires a configured {nameof(levelStats)} table.");
         }
 
-        return calculatedProps;
-    }
-
-    public Dictionary<PropType, float> GetPropsByLevel(int level)
-    {
-        Dictionary<PropType, float> dictionary = new();
-        List<PropModifierData> entries = GetPropEntriesByLevel(level);
-        for (int i = 0; i < entries.Count; i++)
+        int index = clampedLevel - WeaponLevelHelper.MinLevel;
+        if (index < 0 || index >= levelStats.Count)
         {
-            PropModifierData entry = entries[i];
-            dictionary[entry.propType] = entry.value;
+            throw new InvalidOperationException(
+                $"{nameof(WeaponDataSO)} '{name}' is missing stats for weapon level {clampedLevel}.");
         }
 
-        return dictionary;
+        return levelStats[index].ValidatedForLevel(clampedLevel);
     }
 
     public bool TryGetSequenceProjectile(int eventKey, out WeaponSequenceProjectileDefinition definition)
@@ -191,6 +249,32 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         }
 
         definition = sequenceProjectileList[eventKey];
+        return true;
+    }
+
+    public bool TryGetSpawnPoint(int spawnPointIndex, out WeaponSpawnPointDefinition definition)
+    {
+        definition = default;
+        if (spawnPointIndex < 0 || spawnPoints == null || spawnPointIndex >= spawnPoints.Length)
+        {
+            return false;
+        }
+
+        definition = spawnPoints[spawnPointIndex];
+        return true;
+    }
+
+    public bool TryGetSpawnPointPose(int spawnPointIndex, Transform anchor, out WeaponSpawnPointPose pose)
+    {
+        pose = default;
+        if (anchor == null || !TryGetSpawnPoint(spawnPointIndex, out WeaponSpawnPointDefinition definition))
+        {
+            return false;
+        }
+
+        Vector3 worldPosition = anchor.TransformPoint(definition.LocalPosition);
+        Quaternion worldRotation = anchor.rotation * Quaternion.Euler(0f, 0f, definition.LocalRotationOffset);
+        pose = new WeaponSpawnPointPose(worldPosition, worldRotation);
         return true;
     }
 
@@ -220,10 +304,11 @@ public class WeaponDataSO : ItemDataSO, IDescribable
 
     public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
+        WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
         List<DescriptorInfo> infos = new();
-        infos.Add(new DescriptorInfo("攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{attack}"));
-        infos.Add(new DescriptorInfo("攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{attackSpeed}"));
-        infos.Add(new DescriptorInfo("击退", $"{PropType.KnockbackForce.GetIconRichTextWithVOffset()}{knockbackForce}"));
+        infos.Add(new DescriptorInfo("Lv.1攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{previewStats.Attack:0.##}"));
+        infos.Add(new DescriptorInfo("Lv.1攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{previewStats.AttackSpeed:0.##}"));
+        infos.Add(new DescriptorInfo("Lv.1击退", $"{PropType.KnockbackForce.GetIconRichTextWithVOffset()}{previewStats.KnockbackForce:0.##}"));
         if (tags != null && tags.Length > 0)
         {
             infos.Add(new DescriptorInfo("标签", string.Join(" / ", tags)));
@@ -232,9 +317,49 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         infos.Add(new DescriptorInfo("描述", Description));
         return infos;
     }
-}
 
-internal static class WeaponLevelScaling
-{
-    public const int MaxLevel = 6;
+    private void EnsureLevelStatsTable()
+    {
+        levelStats ??= new List<WeaponLevelStatData>();
+
+        if (levelStats.Count == 0)
+        {
+            for (int level = WeaponLevelHelper.MinLevel; level <= WeaponLevelHelper.MaxLevel; level++)
+            {
+                levelStats.Add(CreateDefaultLevelStats(level));
+            }
+
+            return;
+        }
+
+        while (levelStats.Count < WeaponLevelHelper.MaxLevel)
+        {
+            int nextLevel = levelStats.Count + WeaponLevelHelper.MinLevel;
+            WeaponLevelStatData template = levelStats[levelStats.Count - 1];
+            levelStats.Add(template.ValidatedForLevel(nextLevel));
+        }
+
+        if (levelStats.Count > WeaponLevelHelper.MaxLevel)
+        {
+            levelStats.RemoveRange(WeaponLevelHelper.MaxLevel, levelStats.Count - WeaponLevelHelper.MaxLevel);
+        }
+
+        for (int i = 0; i < levelStats.Count; i++)
+        {
+            int expectedLevel = i + WeaponLevelHelper.MinLevel;
+            levelStats[i] = levelStats[i].ValidatedForLevel(expectedLevel);
+        }
+    }
+
+    private static WeaponLevelStatData CreateDefaultLevelStats(int level)
+    {
+        return new WeaponLevelStatData(
+            level,
+            0f,
+            1f,
+            0f,
+            1f,
+            0f,
+            0f);
+    }
 }

@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: MiniUzi
+  m_EditorClassIdentifier: 
+  itemName: Mini Uzi
+  itemIcon: {fileID: 21300000, guid: e17c1c781620a314fbddcf1997eb0955, type: 3}
+  itemPrice: 34
+  itemType: 0
+  itemDescription: Tiny automatic weapon. Floods targets with many weak rounds.
+  tags: 010000000200000005000000
+  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
+  constructionScheme: 0
+  attackSequence: {fileID: 11400000, guid: abaa23446fa84d042b0cc13d8bb78d49, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 0
+  attackSequenceOccupancy: 0.9
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+    burstId: 0
+    firingMode: 2
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 5
+      novaCount: 1
+      burstInterval: 0.045
+  sequenceSfxList: []
+  sequenceVfxList: []
+  hitSfxKey: 0
+  meleeHitVfxPrefab: {fileID: 0}
+  meleeHitBoxSize: {x: 1, y: 1}
+  meleeHitOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 6
+    attackSpeed: 2
+    criticalChance: 0.05
+    criticalPercent: 1.5
+    range: 6.6
+    knockbackForce: 0.35
+  - level: 2
+    attack: 7.08
+    attackSpeed: 2.045
+    criticalChance: 0.06
+    criticalPercent: 1.58
+    range: 6.85
+    knockbackForce: 0.53
+  - level: 3
+    attack: 8.16
+    attackSpeed: 2.09
+    criticalChance: 0.07
+    criticalPercent: 1.66
+    range: 7.1
+    knockbackForce: 0.71
+  - level: 4
+    attack: 9.24
+    attackSpeed: 2.135
+    criticalChance: 0.08
+    criticalPercent: 1.74
+    range: 7.35
+    knockbackForce: 0.89
+  - level: 5
+    attack: 10.32
+    attackSpeed: 2.18
+    criticalChance: 0.09
+    criticalPercent: 1.82
+    range: 7.6
+    knockbackForce: 1.07
+  - level: 6
+    attack: 11.4
+    attackSpeed: 2.225
+    criticalChance: 0.1
+    criticalPercent: 1.9
+    range: 7.85
+    knockbackForce: 1.25

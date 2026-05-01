@@ -217,11 +217,22 @@ public class MeleeWeapon : Weapon
 
         if (definition.VfxPrefab != null)
         {
-            Transform spawnAnchor = hitDetectionTransform != null ? hitDetectionTransform : transform;
-            Vector3 spawnPosition = spawnAnchor.TransformPoint(definition.LocalOffset);
-            Quaternion spawnRotation = spawnAnchor.rotation * Quaternion.Euler(definition.LocalEulerAngles);
+            WeaponSpawnPointPose spawnAnchor = ResolveVfxSpawnPointPose(definition.SpawnPointIndex);
+            Vector3 spawnPosition = spawnAnchor.Position + spawnAnchor.Rotation * definition.LocalOffset;
+            Quaternion spawnRotation = spawnAnchor.Rotation * Quaternion.Euler(definition.LocalEulerAngles);
             RuntimeVfx.Spawn(definition.VfxPrefab, spawnPosition, spawnRotation, null);
         }
+    }
+
+    private WeaponSpawnPointPose ResolveVfxSpawnPointPose(int spawnPointIndex)
+    {
+        if (WeaponData != null && WeaponData.TryGetSpawnPointPose(spawnPointIndex, transform, out WeaponSpawnPointPose configuredPose))
+        {
+            return configuredPose;
+        }
+
+        Transform legacyAnchor = hitDetectionTransform != null ? hitDetectionTransform : transform;
+        return new WeaponSpawnPointPose(legacyAnchor.position, legacyAnchor.rotation);
     }
 
     private void SpawnMeleeHitVfx(Vector2 hitPoint)
@@ -257,6 +268,23 @@ public class MeleeWeapon : Weapon
         Gizmos.matrix = Matrix4x4.TRS(previewPosition, previewRotation, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, HitBoxSize);
         Gizmos.matrix = previousMatrix;
+
+        if (WeaponData == null || WeaponData.SpawnPoints == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < WeaponData.SpawnPoints.Count; i++)
+        {
+            if (!WeaponData.TryGetSpawnPointPose(i, transform, out WeaponSpawnPointPose pose))
+            {
+                continue;
+            }
+
+            Gizmos.DrawWireSphere(pose.Position, 0.06f);
+            Gizmos.DrawRay(pose.Position, pose.Forward * 0.6f);
+        }
     }
 }
 

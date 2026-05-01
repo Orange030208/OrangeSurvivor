@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
@@ -14,6 +15,7 @@ public class Projectile : Entity, IProjectile
     /// 防止刚生成就接触一群敌人
     /// </summary>
     private int currentHitCount = 0;
+    private int currentMaxHitCount;
     private float lifetimeTimer;
     protected ProjectileLaunchContext launchContext;
     private float currentMoveSpeed;
@@ -23,6 +25,7 @@ public class Projectile : Entity, IProjectile
     private Quaternion baseRotation;
     private SpriteRenderer cachedSpriteRenderer;
     private Animator cachedAnimator;
+    private readonly HashSet<HealthComponent> hitTargets = new();
 
     protected virtual void Awake()
     {
@@ -39,6 +42,9 @@ public class Projectile : Entity, IProjectile
     protected virtual void OnEnable()
     {
         lifetimeTimer = 0f;
+        currentHitCount = 0;
+        currentMaxHitCount = Mathf.Max(1, maxHitCount);
+        hitTargets.Clear();
     }
 
     protected virtual void Update()
@@ -54,6 +60,7 @@ public class Projectile : Entity, IProjectile
     {
         launchContext = context;
         targetsLayerMask = context.TargetLayerMask;
+        currentMaxHitCount = Mathf.Max(1, maxHitCount + context.PierceCount);
         ApplyProjectileDefinition(context.ProjectileDefinition);
         transform.position = context.SpawnPosition;
         ApplyFacing(context.Direction, context.ProjectileDefinition);
@@ -68,7 +75,7 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
-        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount >= maxHitCount)
+        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount >= currentMaxHitCount)
         {
             return;
         }
@@ -78,9 +85,17 @@ public class Projectile : Entity, IProjectile
             return;
         }
 
+        if (!hitTargets.Add(healthComponent))
+        {
+            return;
+        }
+
         currentHitCount++;
         ApplyImpact(healthComponent);
-        Destroy(gameObject);
+        if (currentHitCount >= currentMaxHitCount)
+        {
+            Destroy(gameObject);
+        }
     }
 
     protected virtual void ApplyImpact(HealthComponent healthComponent)

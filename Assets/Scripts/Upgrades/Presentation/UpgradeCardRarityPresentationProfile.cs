@@ -13,6 +13,7 @@ public struct UpgradeCardRarityPresentationProfile
     [SerializeField] private Color titleColor;
     [SerializeField] private Color iconTintColor;
     [SerializeField] private Color glowColor;
+    [SerializeField] [Min(0.1f)] private float glowScaleMultiplier;
     [SerializeField] private Color shadowColor;
 
     public UpgradeCardRarityPresentationProfile(
@@ -25,6 +26,7 @@ public struct UpgradeCardRarityPresentationProfile
         Color titleColor,
         Color iconTintColor,
         Color glowColor,
+        float glowScaleMultiplier,
         Color shadowColor)
     {
         this.rarity = rarity;
@@ -36,6 +38,7 @@ public struct UpgradeCardRarityPresentationProfile
         this.titleColor = titleColor;
         this.iconTintColor = iconTintColor;
         this.glowColor = glowColor;
+        this.glowScaleMultiplier = glowScaleMultiplier;
         this.shadowColor = shadowColor;
     }
 
@@ -48,6 +51,7 @@ public struct UpgradeCardRarityPresentationProfile
     public Color TitleColor => titleColor;
     public Color IconTintColor => iconTintColor;
     public Color GlowColor => glowColor;
+    public float GlowScaleMultiplier => glowScaleMultiplier;
     public Color ShadowColor => shadowColor;
 
     public void Validate()
@@ -56,5 +60,21 @@ public struct UpgradeCardRarityPresentationProfile
         {
             presentationKey = rarity.ToString();
         }
+
+        if (glowScaleMultiplier <= 0f)
+        {
+            glowScaleMultiplier = ResolveDefaultGlowScaleMultiplier(rarity);
+        }
+    }
+
+    private static float ResolveDefaultGlowScaleMultiplier(UpgradeCardRarity rarity)
+    {
+        return rarity switch
+        {
+            UpgradeCardRarity.Rare => 1.18f,
+            UpgradeCardRarity.Epic => 1.38f,
+            UpgradeCardRarity.Legendary => 1.62f,
+            _ => 1f
+        };
     }
 }
