@@ -132,8 +132,14 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
+            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target);
+            if (!isTargetInRange)
+            {
+                brain.stateMachine.ChangeState(WormAIState.Approach);
+                return;
+            }
+
+            if (brain.attackController.CanUse(brain.enemyData.attackDefinition))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
             }

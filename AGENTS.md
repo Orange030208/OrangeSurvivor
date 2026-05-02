@@ -23,6 +23,8 @@
 - 所有可编辑参数与配置数据，优先放入 ScriptableObject 资产。
 - 新增 ScriptableObject 类型时，优先添加 `[CreateAssetMenu]`。
 - 运行时避免硬编码魔法值，优先使用 ScriptableObject、常量、枚举或集中配置。
+- 设计或修改角色属性、武器属性、升级卡、饰品、Buff、敌人属性、商店经济、经验收益、掉落收益等玩法数值时，应先查看 `GAMEPLAY_DEVELOPMENT_RULES.md` 中的玩法数值通用规范。
+- 设计或修改敌人行为、敌人属性、敌人攻击、敌人状态机时，应先查看 `GAMEPLAY_DEVELOPMENT_RULES.md` 中的敌人设计专项规则。
 - 逻辑层不直接持有 GameObject、Prefab、场景对象等资源引用；资源访问应通过统一接口或适配层完成。
 - 与引擎强相关的生命周期逻辑保留在 MonoBehaviour 或明确的适配层中；纯逻辑优先下沉为纯 C# 类型。
 - 非必要情况下，不在运行时通过 `AddComponent` 隐式补加组件；应优先在 Prefab、场景对象或明确装配流程中提前准备好所需组件，保持依赖显式、可检查、序列化稳定。

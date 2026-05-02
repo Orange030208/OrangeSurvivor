@@ -4,25 +4,26 @@ using UnityEngine;
 
 public static class ResourcesManager
 {
-    private const string PROP_ICON_SPRITES_PATH = "Sprites/Icons/PropIcons";
     private const string ACCESSORY_DATA_PATH = "Data/Accessory Data List";
     private const string WEAPON_DATA_PATH = "Data/Weapon Data List";
     private const string CHARACTER_DATA_PATH = "Data/Characters";
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
     private const string UPGRADE_CARD_POOL_DATA_PATH = "Data/UpgradeCards/Pool/Default Upgrade Card Pool";
     private const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH = "Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog";
+    // 属性展示目录由 ResourcesManager 统一管理，资产需放在 Assets/Resources/Data/Prop Presentation Catalog.asset。
+    private const string PROP_PRESENTATION_CATALOG_PATH = "Data/Prop Presentation Catalog";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
     private const string PROJECTILE_COMMON_PREFAB_PATH = "Prefabs/Projectiles/Projectile Common";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Character";
 
-    private static readonly Dictionary<PropType, Sprite> propIcons = new();
     private static AccessoryDataSO[] Accessories;
     private static WeaponDataSO[] Weapons;
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
     private static UpgradeCardPoolSO upgradeCardPool;
     private static UpgradeCardRarityPresentationCatalogSO upgradeCardRarityPresentationCatalog;
+    private static PropPresentationCatalogSO propPresentationCatalog;
     private static StageDefinitionSO stageDefinition;
     private const string ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH = "Materials/UI/WeaponQualityIconEffect";
 
@@ -31,23 +32,22 @@ public static class ResourcesManager
 
     public static Sprite GetPropIcon(PropType propType)
     {
-        if (propIcons.TryGetValue(propType, out Sprite cachedIcon))
-        {
-            return cachedIcon;
-        }
+        return TryGetPropPresentationEntry(propType, out PropPresentationEntry entry) ? entry.Icon : null;
+    }
 
-        Sprite[] loadedIcons = Resources.LoadAll<Sprite>(PROP_ICON_SPRITES_PATH);
-        for (int i = 0; i < loadedIcons.Length; i++)
-        {
-            Sprite icon = loadedIcons[i];
-            if (icon != null && string.Equals(icon.name, propType.ToString(), StringComparison.Ordinal))
-            {
-                propIcons[propType] = icon;
-                return icon;
-            }
-        }
+    public static string GetPropDisplayName(PropType propType)
+    {
+        return TryGetPropPresentationEntry(propType, out PropPresentationEntry entry) &&
+               !string.IsNullOrWhiteSpace(entry.ChineseName)
+            ? entry.ChineseName
+            : propType.ToString();
+    }
 
-        return null;
+    public static string GetPropDescription(PropType propType)
+    {
+        return TryGetPropPresentationEntry(propType, out PropPresentationEntry entry)
+            ? entry.Description
+            : string.Empty;
     }
 
     private static void LoadAccessoryData()
@@ -105,6 +105,14 @@ public static class ResourcesManager
         {
             upgradeCardRarityPresentationCatalog =
                 Resources.Load<UpgradeCardRarityPresentationCatalogSO>(UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH);
+        }
+    }
+
+    private static void LoadPropPresentationCatalog()
+    {
+        if (propPresentationCatalog == null)
+        {
+            propPresentationCatalog = Resources.Load<PropPresentationCatalogSO>(PROP_PRESENTATION_CATALOG_PATH);
         }
     }
 
@@ -227,6 +235,37 @@ public static class ResourcesManager
         }
 
         return upgradeCardRarityPresentationCatalog;
+    }
+
+    public static PropPresentationCatalogSO GetPropPresentationCatalog()
+    {
+        LoadPropPresentationCatalog();
+        if (propPresentationCatalog == null)
+        {
+            Debug.LogError(
+                $"{nameof(ResourcesManager)} could not find {nameof(PropPresentationCatalogSO)} at {PROP_PRESENTATION_CATALOG_PATH}. " +
+                $"Create it from {ScriptableObjectMenuPaths.PROP_PRESENTATION_CATALOG} and place it under Assets/Resources/{PROP_PRESENTATION_CATALOG_PATH}.asset.");
+        }
+
+        return propPresentationCatalog;
+    }
+
+    public static bool TryGetPropPresentationEntry(string propName, out PropPresentationEntry entry)
+    {
+        LoadPropPresentationCatalog();
+        PropPresentationCatalogSO catalog = propPresentationCatalog;
+        if (catalog == null)
+        {
+            entry = default;
+            return false;
+        }
+
+        return catalog.TryGetEntry(propName, out entry);
+    }
+
+    public static bool TryGetPropPresentationEntry(PropType propType, out PropPresentationEntry entry)
+    {
+        return TryGetPropPresentationEntry(propType.ToString(), out entry);
     }
 
     public static StageDefinitionSO GetStageDefinition()

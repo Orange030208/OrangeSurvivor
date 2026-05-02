@@ -11,6 +11,8 @@ using UnityEngine;
 /// </summary>
 public class HealthComponent : EntityComponentBase
 {
+    private const float LIFE_STEAL_HEAL_RATE_PER_RATIO = 0.1f;
+
     [Header("Inspector")]
     [Tooltip("没有 PropertiesManager 时使用的默认最大生命值。")]
     [SerializeField]
@@ -234,15 +236,17 @@ public class HealthComponent : EntityComponentBase
             return;
         }
 
+        if (damageEvent.HitResult.Source != owner)
+        {
+            return;
+        }
+
         if (health >= maxHealth || lifeStealRatio <= 0f)
         {
             return;
         }
 
-        float healingPower = propertiesManager != null
-            ? Mathf.Max(0f, propertiesManager.GetPropValue(PropType.HealingPower))
-            : 1f;
-        float lifeStealValue = damageEvent.HitResult.FinalDamage * lifeStealRatio * healingPower;
+        float lifeStealValue = damageEvent.HitResult.FinalDamage * lifeStealRatio * LIFE_STEAL_HEAL_RATE_PER_RATIO;
         float healthToAdd = Math.Min(lifeStealValue, maxHealth - health);
         if (healthToAdd <= 0f)
         {
@@ -261,7 +265,7 @@ public class HealthComponent : EntityComponentBase
                 UpdateMaxHealth();
                 break;
             case PropType.LifeSteal:
-                lifeStealRatio = Mathf.Max(0f, newValue);
+                lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(newValue));
                 break;
             case PropType.HealthRecoverySpeed:
                 healthRecoveryPerSecond = Mathf.Max(0f, newValue);
@@ -272,7 +276,7 @@ public class HealthComponent : EntityComponentBase
     private void UpdateAllProperties()
     {
         UpdateMaxHealth();
-        lifeStealRatio = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.LifeSteal));
+        lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.LifeSteal)));
         healthRecoveryPerSecond = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.HealthRecoverySpeed));
     }
 

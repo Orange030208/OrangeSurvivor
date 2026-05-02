@@ -142,7 +142,7 @@ public class PlayerLevel : EntityComponentBase
         }
 
         float bonus = propertiesManager != null
-            ? Mathf.Max(0f, propertiesManager.GetPropValue(PropType.ExperienceGain))
+            ? Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.ExperienceGain)))
             : 0f;
         pendingExperienceGain += baseXp * (1f + bonus);
         int resolvedXp = Mathf.FloorToInt(pendingExperienceGain);

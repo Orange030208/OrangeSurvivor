@@ -10,19 +10,17 @@ public static class ItemQualityVisualResolver
     private static readonly ItemQualityVisualStyle[] DefaultWeaponStyles =
     {
         CreateDefaultStyle(1, "Common", new Color32(172, 172, 172, 255)),
-        CreateDefaultStyle(2, "Uncommon", new Color32(86, 186, 105, 255)),
-        CreateDefaultStyle(3, "Rare", new Color32(77, 140, 255, 255)),
-        CreateDefaultStyle(4, "Epic", new Color32(163, 104, 255, 255)),
-        CreateDefaultStyle(5, "Legendary", new Color32(255, 166, 52, 255)),
-        CreateDefaultStyle(6, "Mythic", new Color32(255, 86, 86, 255))
+        CreateDefaultStyle(2, "Rare", new Color32(77, 140, 255, 255)),
+        CreateDefaultStyle(3, "Epic", new Color32(163, 104, 255, 255)),
+        CreateDefaultStyle(4, "Legendary", new Color32(255, 166, 52, 255))
     };
 
     private static readonly ItemQualityVisualStyle[] DefaultAccessoryStyles =
     {
-        CreateDefaultStyle(0, "Normal", new Color32(180, 210, 255, 255)),
-        CreateDefaultStyle(1, "Fine", new Color32(210, 180, 255, 255)),
-        CreateDefaultStyle(2, "Rare", new Color32(255, 220, 180, 255)),
-        CreateDefaultStyle(3, "Legendary", new Color32(255, 190, 190, 255))
+        CreateDefaultStyle((int)AccessoryRarity.Common, "Common", new Color32(184, 199, 209, 255)),
+        CreateDefaultStyle((int)AccessoryRarity.Rare, "Rare", new Color32(64, 140, 242, 255)),
+        CreateDefaultStyle((int)AccessoryRarity.Epic, "Epic", new Color32(168, 97, 230, 255)),
+        CreateDefaultStyle((int)AccessoryRarity.Legendary, "Legendary", new Color32(255, 168, 46, 255))
     };
 
     private static ItemQualityVisualConfigSO cachedConfig;
@@ -180,9 +178,8 @@ internal static class ItemQualityShaderHelper
         {
             <= 0 => 0.22f,
             1 => 0.34f,
-            2 => 0.48f,
-            3 => 0.62f,
-            4 => 0.78f,
+            2 => 0.62f,
+            3 => 0.78f,
             _ => 0.92f
         };
     }

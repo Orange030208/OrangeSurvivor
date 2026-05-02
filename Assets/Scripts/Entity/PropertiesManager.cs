@@ -198,16 +198,22 @@ public class PropertiesManager : EntityComponentBase, IDescribable
                 switch (entry.modifierType)
                 {
                     case PropModifierType.Add:
+                        if (PropValueUtility.IsAdditivePercentMultiplierProp(entry.propType))
+                        {
+                            bonusMultiplierValue += PropValueUtility.PercentPointsToRatio(entry.value);
+                            break;
+                        }
+
                         addValue += entry.value;
                         break;
                     case PropModifierType.BaseMultiplier:
-                        baseOnlyMultiplierValue += entry.value;
+                        baseOnlyMultiplierValue += PropValueUtility.PercentPointsToRatio(entry.value);
                         break;
                     case PropModifierType.BonusMultiplier:
-                        bonusMultiplierValue += entry.value;
+                        bonusMultiplierValue += PropValueUtility.PercentPointsToRatio(entry.value);
                         break;
                     case PropModifierType.FinalMultiplier:
-                        finalMultiplierValue += entry.value;
+                        finalMultiplierValue += PropValueUtility.PercentPointsToRatio(entry.value);
                         break;
                 }
             }

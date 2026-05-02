@@ -145,7 +145,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         for (int i = 0; i < propertyModifiers.Count; i++)
         {
             PropModifierData modifier = propertyModifiers[i];
-            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetAutoDescription()));
+            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
         }
 
         for (int i = 0; i < specialFeatures.Count; i++)

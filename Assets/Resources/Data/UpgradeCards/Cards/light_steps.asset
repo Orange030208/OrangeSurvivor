@@ -25,11 +25,11 @@ MonoBehaviour:
     requiredOwnedWeapons: []
     requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
-  description: "\u79FB\u52A8\u901F\u5EA6 +0.8\u3002"
+  description: "\u79FB\u52A8\u901F\u5EA6 +8\u3002"
   propertyModifiers:
   - propType: 4
     modifierType: 0
-    value: 0.8
+    value: 8
   specialFeatures: []
   references:
     version: 2

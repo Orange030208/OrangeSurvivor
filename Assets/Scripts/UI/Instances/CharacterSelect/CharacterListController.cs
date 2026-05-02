@@ -12,6 +12,11 @@ public class CharacterListController : UIScrollListBase<CharacterButton, Charact
         ClearItemsImmediate();
     }
 
+    protected override bool ShouldPlayRevealOnRefresh()
+    {
+        return false;
+    }
+
     public void Render(CharacterDataSO[] characters, int currentSelectedIndex, System.Action<int> onCharacterSelected)
     {
         selectedIndex = currentSelectedIndex;

@@ -729,13 +729,13 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
         float weaponAttack = weaponStats.Attack;
         float weaponAttackSpeed = weaponStats.AttackSpeed;
-        float weaponCriticalChance = weaponStats.CriticalChance;
-        float weaponCriticalMultiplier = weaponStats.CriticalPercent;
+        float weaponCriticalChance = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalChance);
+        float weaponCriticalMultiplier = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalPercent);
         float weaponRange = weaponStats.Range;
         float weaponKnockbackStrength = weaponStats.KnockbackStrength;
 
-        float playerCriticalChance = propertiesManager.GetPropValue(PropType.CriticalChance);
-        float playerCriticalBonus = propertiesManager.GetPropValue(PropType.CriticalPercent);
+        float playerCriticalChance = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalChance));
+        float playerCriticalBonus = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalPercent));
 
         float finalAttackSpeed = Mathf.Max(
             propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed),

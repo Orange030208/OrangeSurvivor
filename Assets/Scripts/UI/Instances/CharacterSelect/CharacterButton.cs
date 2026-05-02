@@ -7,8 +7,6 @@ public class CharacterButton : UIScrollListItemBase
     [SerializeField] private Image characterIconImage;
     [SerializeField] private UIClickTarget clickTarget;
 
-    private bool isSelected;
-
     protected override void Awake()
     {
         base.Awake();
@@ -22,26 +20,12 @@ public class CharacterButton : UIScrollListItemBase
         clickTarget.OnClicked += () =>
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-            RuntimeMotion?.Play(UIMotionClipIds.EMPHASIS);
             onClick?.Invoke();
         };
     }
 
     public void SetSelected(bool selected)
     {
-        isSelected = selected;
-        RuntimeMotion?.Kill();
-        RuntimeMotion?.Play(isSelected ? UIMotionClipIds.HOVER_IN : UIMotionClipIds.HOVER_OUT);
-    }
-
-    protected override void OnPresentationRefreshed()
-    {
-        SetSelectedImmediate(isSelected);
-    }
-
-    private void SetSelectedImmediate(bool selected)
-    {
-        RuntimeMotion?.Kill();
-        RuntimeMotion?.SetImmediate(selected ? UIMotionClipIds.HOVER_IN : UIMotionClipIds.HOVER_OUT);
+        // 角色选择的选中动画暂时停用；保留入口，避免破坏列表选择流程。
     }
 }

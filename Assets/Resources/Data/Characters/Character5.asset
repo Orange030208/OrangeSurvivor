@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -23,10 +23,10 @@ MonoBehaviour:
     value: 25
   - propType: 8
     modifierType: 0
-    value: 0.15
+    value: 17.647
   - propType: 25
     modifierType: 0
-    value: 0.08
+    value: 4
   specialFeatures: []
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 043a46c3a048f654a8313bc5063c32d7, type: 2}

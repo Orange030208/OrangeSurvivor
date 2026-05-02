@@ -18,7 +18,10 @@ MonoBehaviour:
   animConfig: {fileID: 11400000, guid: 84ce5795e7038434ebf1c35467a1f24a, type: 2}
   attackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
   postChargeAttackHitShape: {fileID: 11400000, guid: 9f4b3596ad8b4665b6f7cc08e1c54f02, type: 2}
-  postChargeAttackRangeMultiplier: 1.5
+  postChargeAttackModifiers:
+  - propType: 15
+    modifierType: 3
+    value: 50
   attackCommitNormalizedTime: 0.55
   attackFinishNormalizedTime: 0.95
   berserkInterval: 7

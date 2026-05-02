@@ -96,18 +96,21 @@ public class SkeletonBrain : EnemyBrain
         {
             brain.FaceTarget();
 
+            if (brain.target == null)
+            {
+                return;
+            }
+
             bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target);
+            if (!isTargetInRange)
+            {
+                brain.stateMachine.ChangeState(SkeletonAIState.Chase);
+                return;
+            }
             
             if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
             {
-                if (isTargetInRange)
-                {
-                    brain.stateMachine.ChangeState(SkeletonAIState.Attack);
-                }
-                else
-                {
-                    brain.stateMachine.ChangeState(SkeletonAIState.Chase);
-                }
+                brain.stateMachine.ChangeState(SkeletonAIState.Attack);
             }
         }
     }

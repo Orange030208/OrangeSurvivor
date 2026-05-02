@@ -5,11 +5,9 @@ public static class ItemDisplayHelper
         return WeaponLevelHelper.ClampLevel(level) switch
         {
             1 => "灰",
-            2 => "绿",
-            3 => "蓝",
-            4 => "紫",
-            5 => "橙",
-            6 => "红",
+            2 => "蓝",
+            3 => "紫",
+            4 => "橙",
             _ => string.Empty
         };
     }

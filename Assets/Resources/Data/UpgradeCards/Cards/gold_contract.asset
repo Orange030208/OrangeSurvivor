@@ -27,7 +27,7 @@ MonoBehaviour:
     requiredOwnedWeapons: []
     requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
-  description: "\u6BCF\u6CE2\u7ED3\u675F\u83B7\u5F97 25 \u91D1\u5E01\u3002"
+  description: "\u6BCF\u6CE2\u7ED3\u675F\u83B7\u5F97 5 \u91D1\u5E01\u3002"
   propertyModifiers: []
   specialFeatures:
   - rid: 451547002770030679
@@ -40,4 +40,4 @@ MonoBehaviour:
         hitModifierTiming: 0
         shopDiscountPercent: 0
         freeShopRerolls: 0
-        waveGoldBonus: 25
+        waveGoldBonus: 5

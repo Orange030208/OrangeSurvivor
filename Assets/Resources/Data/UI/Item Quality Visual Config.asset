@@ -16,81 +16,45 @@ MonoBehaviour:
   - qualityValue: 1
     qualityLabel: Common
     primaryColor: {r: 0.6745098, g: 0.6745098, b: 0.6745098, a: 1}
-    secondaryColor: {r: 0.7884314, g: 0.7884314, b: 0.7884314, a: 1}
-    nameColor: {r: 0.8372549, g: 0.8372549, b: 0.8372549, a: 1}
-    glowColor: {r: 0.72333336, g: 0.72333336, b: 0.72333336, a: 1}
-    enablePremiumEffect: 0
-    enablePulseEffect: 0
   - qualityValue: 2
-    qualityLabel: Uncommon
-    primaryColor: {r: 0.3372549, g: 0.7294118, b: 0.4117647, a: 1}
-    secondaryColor: {r: 0.5692157, g: 0.82411766, b: 0.61764705, a: 1}
-    nameColor: {r: 0.66862744, g: 0.8647059, b: 0.7058824, a: 1}
-    glowColor: {r: 0.43666667, g: 0.77000004, b: 0.5, a: 1}
-    enablePremiumEffect: 0
-    enablePulseEffect: 0
-  - qualityValue: 3
     qualityLabel: Rare
     primaryColor: {r: 0.3019608, g: 0.54901963, b: 1, a: 1}
-    secondaryColor: {r: 0.54627454, g: 0.70686275, b: 1, a: 1}
-    nameColor: {r: 0.6509804, g: 0.7745098, b: 1, a: 1}
-    glowColor: {r: 0.40666667, g: 0.6166667, b: 1, a: 1}
-    enablePremiumEffect: 0
-    enablePulseEffect: 0
-  - qualityValue: 4
+  - qualityValue: 3
     qualityLabel: Epic
     primaryColor: {r: 0.6392157, g: 0.40784314, b: 1, a: 1}
-    secondaryColor: {r: 0.76549023, g: 0.61509806, b: 1, a: 1}
-    nameColor: {r: 0.81960785, g: 0.70392156, b: 1, a: 1}
-    glowColor: {r: 0.6933333, g: 0.49666667, b: 1, a: 1}
-    enablePremiumEffect: 1
-    enablePulseEffect: 0
-  - qualityValue: 5
+  - qualityValue: 4
     qualityLabel: Legendary
     primaryColor: {r: 1, g: 0.6509804, b: 0.20392157, a: 1}
-    secondaryColor: {r: 1, g: 0.7731373, b: 0.482549, a: 1}
-    nameColor: {r: 1, g: 0.82549024, b: 0.6019608, a: 1}
-    glowColor: {r: 1, g: 0.7033334, b: 0.32333335, a: 1}
-    enablePremiumEffect: 1
-    enablePulseEffect: 1
-  - qualityValue: 6
-    qualityLabel: Mythic
-    primaryColor: {r: 1, g: 0.3372549, b: 0.3372549, a: 1}
-    secondaryColor: {r: 1, g: 0.5692157, b: 0.5692157, a: 1}
-    nameColor: {r: 1, g: 0.66862744, b: 0.66862744, a: 1}
-    glowColor: {r: 1, g: 0.43666667, b: 0.43666667, a: 1}
-    enablePremiumEffect: 1
-    enablePulseEffect: 1
   accessoryRarityStyles:
   - qualityValue: 0
-    qualityLabel: Normal
-    primaryColor: {r: 0.7058824, g: 0.8235294, b: 1, a: 1}
-    secondaryColor: {r: 0.8088235, g: 0.88529414, b: 1, a: 1}
-    nameColor: {r: 0.85294116, g: 0.91176474, b: 1, a: 1}
-    glowColor: {r: 0.75, g: 0.85, b: 1, a: 1}
+    qualityLabel: Common
+    primaryColor: {r: 0.72156864, g: 0.78039217, b: 0.81960785, a: 1}
+    secondaryColor: {r: 0.832, g: 0.868, b: 0.89, a: 1}
+    nameColor: {r: 0.88, g: 0.91, b: 0.93, a: 1}
+    glowColor: {r: 0.76, g: 0.82, b: 0.86, a: 1}
     enablePremiumEffect: 0
     enablePulseEffect: 0
   - qualityValue: 1
-    qualityLabel: Fine
-    primaryColor: {r: 0.8235294, g: 0.7058824, b: 1, a: 1}
-    secondaryColor: {r: 0.88529414, g: 0.8088235, b: 1, a: 1}
-    nameColor: {r: 0.91176474, g: 0.85294116, b: 1, a: 1}
-    glowColor: {r: 0.85, g: 0.75, b: 1, a: 1}
+    qualityLabel: Rare
+    primaryColor: {r: 0.2509804, g: 0.54901963, b: 0.9490196, a: 1}
+    secondaryColor: {r: 0.475, g: 0.684, b: 0.97, a: 1}
+    nameColor: {r: 0.57, g: 0.73, b: 0.98, a: 1}
+    glowColor: {r: 0.35, g: 0.61, b: 0.96, a: 1}
     enablePremiumEffect: 0
     enablePulseEffect: 0
   - qualityValue: 2
-    qualityLabel: Rare
-    primaryColor: {r: 1, g: 0.8627451, b: 0.7058824, a: 1}
-    secondaryColor: {r: 1, g: 0.9107843, b: 0.8088235, a: 1}
-    nameColor: {r: 1, g: 0.9313725, b: 0.85294116, a: 1}
-    glowColor: {r: 1, g: 0.8833333, b: 0.75, a: 1}
+    qualityLabel: Epic
+    primaryColor: {r: 0.65882355, g: 0.38039216, b: 0.9019608, a: 1}
+    secondaryColor: {r: 0.778, g: 0.597, b: 0.935, a: 1}
+    nameColor: {r: 0.829, g: 0.69, b: 0.952, a: 1}
+    glowColor: {r: 0.7, g: 0.47, b: 0.91, a: 1}
     enablePremiumEffect: 1
     enablePulseEffect: 0
   - qualityValue: 3
     qualityLabel: Legendary
-    primaryColor: {r: 1, g: 0.74509805, b: 0.74509805, a: 1}
-    secondaryColor: {r: 1, g: 0.83431375, b: 0.83431375, a: 1}
-    nameColor: {r: 1, g: 0.87254906, b: 0.87254906, a: 1}
-    glowColor: {r: 1, g: 0.78333336, b: 0.78333336, a: 1}
+    primaryColor: {r: 1, g: 0.65882355, b: 0.18039216, a: 1}
+    secondaryColor: {r: 1, g: 0.778, b: 0.467, a: 1}
+    nameColor: {r: 1, g: 0.829, b: 0.59, a: 1}
+    glowColor: {r: 1, g: 0.7, b: 0.3, a: 1}
     enablePremiumEffect: 1
     enablePulseEffect: 1

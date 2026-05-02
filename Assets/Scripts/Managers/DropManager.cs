@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 public class DropManager : MonoBehaviour
 {
     private const float BASE_CHEST_DROP_CHANCE = 0.01f;
-    private const float CHEST_DROP_CHANCE_PER_LUCK = 0.0001f;
+    private const float CHEST_DROP_CHANCE_PER_LUCK = 0.00005f;
 
     [SerializeField] private CollectionSO coinSO;
     [SerializeField] private CollectionSO chestSO;

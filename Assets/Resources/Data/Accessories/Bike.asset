@@ -22,10 +22,10 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 4
     modifierType: 0
-    value: 1
+    value: 10
   - propType: 8
     modifierType: 0
-    value: -0.05
+    value: -4.762
   customEffects: []
   references:
     version: 2

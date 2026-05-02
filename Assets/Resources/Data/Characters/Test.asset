@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -23,7 +23,7 @@ MonoBehaviour:
     value: 10000
   - propType: 10
     modifierType: 1
-    value: 1
+    value: 100
   - propType: 7
     modifierType: 0
     value: 1000

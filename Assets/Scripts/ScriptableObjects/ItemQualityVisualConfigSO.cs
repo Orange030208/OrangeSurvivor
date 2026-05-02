@@ -20,11 +20,12 @@ public class ItemQualityVisualConfigSO : ScriptableObject
 
     public bool TryGetAccessoryRarityStyle(int rarity, out ItemQualityVisualStyle style)
     {
-        return TryGetStyle(accessoryRarityStyles, Mathf.Clamp(rarity, 0, 3), out style);
+        return TryGetStyle(accessoryRarityStyles, Mathf.Clamp(rarity, 0, (int)AccessoryRarity.Legendary), out style);
     }
 
     private void OnValidate()
     {
+        RemoveUnsupportedWeaponLevelStyles();
         weaponLevelStyles.Sort(CompareStyle);
         accessoryRarityStyles.Sort(CompareStyle);
     }
@@ -39,7 +40,7 @@ public class ItemQualityVisualConfigSO : ScriptableObject
         }
 
         accessoryRarityStyles.Clear();
-        for (int rarity = 0; rarity <= 3; rarity++)
+        for (int rarity = 0; rarity <= (int)AccessoryRarity.Legendary; rarity++)
         {
             accessoryRarityStyles.Add(ItemQualityVisualResolver.GetDefaultAccessoryRarityStyle(rarity));
         }
@@ -48,6 +49,14 @@ public class ItemQualityVisualConfigSO : ScriptableObject
     private static int CompareStyle(ItemQualityVisualStyle left, ItemQualityVisualStyle right)
     {
         return left.QualityValue.CompareTo(right.QualityValue);
+    }
+
+    private void RemoveUnsupportedWeaponLevelStyles()
+    {
+        weaponLevelStyles ??= new List<ItemQualityVisualStyle>();
+        weaponLevelStyles.RemoveAll(style =>
+            style.QualityValue < WeaponLevelHelper.MinLevel ||
+            style.QualityValue > WeaponLevelHelper.MaxLevel);
     }
 
     private static bool TryGetStyle(List<ItemQualityVisualStyle> styles, int qualityValue, out ItemQualityVisualStyle style)

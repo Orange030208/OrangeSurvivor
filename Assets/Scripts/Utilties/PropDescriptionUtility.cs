@@ -14,7 +14,7 @@ public static class PropDescriptionUtility
     {
         return RichTextStringUtility.Create()
             .AppendWithVOffset(propType.GetIconRichText(), iconOffset)
-            .Append(propType.ToString())
+            .Append(ResourcesManager.GetPropDisplayName(propType))
             .ToString();
     }
 
@@ -42,7 +42,7 @@ public static class PropDescriptionUtility
             return FormatSignedPercent(value);
         }
 
-        if (IsPercentAdditiveProp(propType))
+        if (IsPercentModifierProp(propType))
         {
             return FormatSignedPercent(value);
         }
@@ -53,7 +53,7 @@ public static class PropDescriptionUtility
 
     public static string BuildModifierDescription(this PropType propType, PropModifierType modifierType, float value)
     {
-        string propName = propType.ToString();
+        string propName = ResourcesManager.GetPropDisplayName(propType);
         string coloredValue = ColorHelper.WrapRichTextColor(BuildPlainValueText(propType, modifierType, value), ColorHelper.GetColorByValue(value));
 
         return modifierType switch
@@ -70,11 +70,11 @@ public static class PropDescriptionUtility
     {
         return modifierType switch
         {
-            PropModifierType.BaseMultiplier => FormatSignedNumber(value * 100f) + "%",
-            PropModifierType.BonusMultiplier => FormatSignedNumber(value * 100f) + "%",
-            PropModifierType.FinalMultiplier => FormatSignedNumber(value * 100f) + "%",
-            _ => IsPercentAdditiveProp(propType)
-                ? FormatSignedNumber(value * 100f) + "%"
+            PropModifierType.BaseMultiplier => FormatSignedNumber(value) + "%",
+            PropModifierType.BonusMultiplier => FormatSignedNumber(value) + "%",
+            PropModifierType.FinalMultiplier => FormatSignedNumber(value) + "%",
+            _ => IsPercentModifierProp(propType)
+                ? FormatSignedNumber(value) + "%"
                 : FormatSignedNumber(propType, value)
         };
     }
@@ -91,9 +91,13 @@ public static class PropDescriptionUtility
 
     private static bool IsPercentAdditiveProp(PropType propType)
     {
-        return propType == PropType.ExperienceGain ||
-               propType == PropType.ShopPriceDiscount ||
-               propType == PropType.KnockbackResistance;
+        return PropValueUtility.IsPercentPointProp(propType);
+    }
+
+    private static bool IsPercentModifierProp(PropType propType)
+    {
+        return IsPercentAdditiveProp(propType) ||
+               PropValueUtility.IsAdditivePercentMultiplierProp(propType);
     }
 
     private static bool IsIntegerProp(PropType propType)
@@ -104,9 +108,8 @@ public static class PropDescriptionUtility
 
     private static string FormatSignedPercent(float value)
     {
-        float percent = value * 100f;
-        string formatted = percent.ToString("F1");
-        return percent > 0 ? $"+{formatted}%" : $"{formatted}%";
+        string formatted = value.ToString("F1");
+        return value > 0 ? $"+{formatted}%" : $"{formatted}%";
     }
 
     private static string FormatSignedNumber(float value)

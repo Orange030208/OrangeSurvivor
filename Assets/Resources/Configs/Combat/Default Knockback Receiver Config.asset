@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Default Knockback Receiver Config
   m_EditorClassIdentifier: 
   duration: 0.08
-  forceMultiplier: 50
+  distanceMultiplier: 1
   maxVelocity: 100
   disableMovementWhileKnockback: 1
   velocityCurve:

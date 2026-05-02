@@ -544,7 +544,7 @@ public class ShopManager : MonoBehaviour
         }
 
         float discount = propertiesManager != null
-            ? Mathf.Clamp(propertiesManager.GetPropValue(PropType.ShopPriceDiscount), 0f, MAX_SHOP_PRICE_DISCOUNT)
+            ? Mathf.Clamp(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.ShopPriceDiscount)), 0f, MAX_SHOP_PRICE_DISCOUNT)
             : 0f;
         return Mathf.Max(MIN_SHOP_PRICE_MULTIPLIER, 1f - discount);
     }

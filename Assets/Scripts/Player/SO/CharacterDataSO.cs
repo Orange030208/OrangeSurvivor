@@ -49,8 +49,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
         List<DescriptorInfo> infos = new();
         foreach (PropModifierData modifier in extraProps)
         {
-            infos.Add(new DescriptorInfo(modifier.GetDisplayName(),
-                $"额外{modifier.propType.GetIconRichTextWithVOffset()}{modifier.GetDisplayName()}{modifier.GetDisplayValueText()}"));
+            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
         }
 
         foreach (WeaponEntry weapon in initialWeapons)

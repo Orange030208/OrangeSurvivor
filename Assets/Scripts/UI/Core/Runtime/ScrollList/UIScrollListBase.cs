@@ -59,7 +59,7 @@ public abstract class UIScrollListBase<TItem, TData> : MonoBehaviour
 
         Relayout();
 
-        if (revealConfig.PlayOnRefresh)
+        if (ShouldPlayRevealOnRefresh())
         {
             PlayReveal();
         }
@@ -144,6 +144,11 @@ public abstract class UIScrollListBase<TItem, TData> : MonoBehaviour
     }
 
     protected abstract void BindItem(TItem item, TData data, int index);
+
+    protected virtual bool ShouldPlayRevealOnRefresh()
+    {
+        return revealConfig.PlayOnRefresh;
+    }
 
     protected virtual void ResetScrollPosition()
     {

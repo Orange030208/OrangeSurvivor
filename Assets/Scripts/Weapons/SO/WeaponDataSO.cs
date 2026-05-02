@@ -96,8 +96,8 @@ public struct WeaponLevelStatData
     [SerializeField, Min(1)] private int level;
     [SerializeField, Min(0f)] private float attack;
     [SerializeField, Min(0.01f)] private float attackSpeed;
-    [SerializeField, Range(0f, 1f)] private float criticalChance;
-    [SerializeField, Min(1f)] private float criticalPercent;
+    [SerializeField, Range(0f, 100f)] private float criticalChance;
+    [SerializeField, Min(100f)] private float criticalPercent;
     [SerializeField, Min(0f)] private float range;
     [FormerlySerializedAs("knockbackForce")]
     [SerializeField, Min(0f)] private float knockbackStrength;
@@ -105,8 +105,8 @@ public struct WeaponLevelStatData
     public int Level => Mathf.Max(WeaponLevelHelper.MinLevel, level);
     public float Attack => Mathf.Max(0f, attack);
     public float AttackSpeed => Mathf.Max(0.01f, attackSpeed);
-    public float CriticalChance => Mathf.Clamp01(criticalChance);
-    public float CriticalPercent => Mathf.Max(1f, criticalPercent);
+    public float CriticalChance => Mathf.Clamp(criticalChance, 0f, 100f);
+    public float CriticalPercent => Mathf.Max(100f, criticalPercent);
     public float Range => Mathf.Max(0f, range);
     public float KnockbackStrength => Mathf.Max(0f, knockbackStrength);
 
@@ -122,8 +122,8 @@ public struct WeaponLevelStatData
         this.level = Mathf.Max(WeaponLevelHelper.MinLevel, level);
         this.attack = Mathf.Max(0f, attack);
         this.attackSpeed = Mathf.Max(0.01f, attackSpeed);
-        this.criticalChance = Mathf.Clamp01(criticalChance);
-        this.criticalPercent = Mathf.Max(1f, criticalPercent);
+        this.criticalChance = Mathf.Clamp(criticalChance, 0f, 100f);
+        this.criticalPercent = Mathf.Max(100f, criticalPercent);
         this.range = Mathf.Max(0f, range);
         this.knockbackStrength = Mathf.Max(0f, knockbackStrength);
     }
@@ -300,9 +300,9 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     {
         WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
         List<DescriptorInfo> infos = new();
-        infos.Add(new DescriptorInfo("Lv.1攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{previewStats.Attack:0.##}"));
-        infos.Add(new DescriptorInfo("Lv.1攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{previewStats.AttackSpeed:0.##}"));
-        infos.Add(new DescriptorInfo("Lv.1击退", $"{PropType.KnockbackStrength.GetIconRichTextWithVOffset()}{previewStats.KnockbackStrength:0.##}"));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), previewStats.Attack.ToString("0.##")));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), previewStats.AttackSpeed.ToString("0.##")));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), previewStats.KnockbackStrength.ToString("0.##")));
         if (tags != null && tags.Length > 0)
         {
             infos.Add(new DescriptorInfo("标签", string.Join(" / ", tags)));
@@ -352,7 +352,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             0f,
             1f,
             0f,
-            1f,
+            100f,
             0f,
             0f);
     }

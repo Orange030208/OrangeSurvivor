@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -29,14 +29,14 @@ MonoBehaviour:
     requiredOwnedWeapons: []
     requiredOwnedWeaponTags: []
     mutuallyExclusiveCardIds: []
-  description: "\u653B\u51FB\u901F\u5EA6 +14%\uFF0C\u79FB\u52A8\u901F\u5EA6 +0.45\u3002"
+  description: "\u653B\u51FB\u901F\u5EA6 +14%\uFF0C\u79FB\u52A8\u901F\u5EA6 +5\u3002"
   propertyModifiers:
   - propType: 1
     modifierType: 2
-    value: 0.14
+    value: 14
   - propType: 4
     modifierType: 0
-    value: 0.45
+    value: 5
   specialFeatures: []
   references:
     version: 2

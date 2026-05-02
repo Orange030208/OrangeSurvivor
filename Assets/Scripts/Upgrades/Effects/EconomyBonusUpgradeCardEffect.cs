@@ -26,7 +26,7 @@ public sealed class EconomyBonusUpgradeCardEffect : FeatureEffectBase
             string description = string.Empty;
             if (shopDiscountPercent > 0f)
             {
-                description += $"商店价格降低 {shopDiscountPercent:P0}。";
+                description += $"商店价格降低 {shopDiscountPercent:0.#}%。";
             }
 
             if (freeShopRerolls > 0)

@@ -112,26 +112,16 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
 
     public bool IsInAttackRange(EnemyAttackDefinitionSO attackDefinition, Entity target)
     {
-        return IsInAttackRange(attackDefinition, target, null, 1f);
-    }
-
-    public bool IsInAttackRange(
-        EnemyAttackDefinitionSO attackDefinition,
-        Entity target,
-        AttackHitShapeSO hitShapeOverride,
-        float rangeMultiplier)
-    {
         if (attackDefinition == null || attackDefinition.IsNoAttack || target == null)
         {
             return false;
         }
 
-        float range = ResolveRange(attackDefinition) * Mathf.Max(0f, rangeMultiplier);
-        AttackHitShapeSO hitShape = hitShapeOverride != null ? hitShapeOverride : attackDefinition.HitShape;
-        if (hitShape != null)
+        float range = ResolveRange(attackDefinition);
+        if (attackDefinition.HitShape != null)
         {
             AttackHitContext context = CreateHitContext(attackDefinition, target, range);
-            return hitShape.Contains(context);
+            return attackDefinition.HitShape.Contains(context);
         }
 
         return Vector2.Distance(owner.Center, target.Center) <= range;
@@ -171,7 +161,6 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
         EnemyAttackDefinitionSO attackDefinition,
         Entity target,
         AttackHitShapeSO hitShapeOverride,
-        float rangeMultiplier,
         bool commitCooldown)
     {
         if (attackDefinition == null || target == null || attackDefinition.IsNoAttack)
@@ -185,7 +174,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
             return false;
         }
 
-        if (!IsInAttackRange(attackDefinition, target, hitShapeOverride, rangeMultiplier))
+        if (!IsInAttackRange(attackDefinition, target, hitShapeOverride))
         {
             return false;
         }
@@ -198,6 +187,27 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
         }
 
         return true;
+    }
+
+    private bool IsInAttackRange(
+        EnemyAttackDefinitionSO attackDefinition,
+        Entity target,
+        AttackHitShapeSO hitShapeOverride)
+    {
+        if (attackDefinition == null || attackDefinition.IsNoAttack || target == null)
+        {
+            return false;
+        }
+
+        float range = ResolveRange(attackDefinition);
+        AttackHitShapeSO hitShape = hitShapeOverride != null ? hitShapeOverride : attackDefinition.HitShape;
+        if (hitShape != null)
+        {
+            AttackHitContext context = CreateHitContext(attackDefinition, target, range);
+            return hitShape.Contains(context);
+        }
+
+        return Vector2.Distance(owner.Center, target.Center) <= range;
     }
 
     public void CommitCooldown(EnemyAttackDefinitionSO attackDefinition)

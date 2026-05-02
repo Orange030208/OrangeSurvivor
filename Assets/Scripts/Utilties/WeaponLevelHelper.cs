@@ -1,7 +1,7 @@
 public static class WeaponLevelHelper
 {
     public const int MinLevel = 1;
-    public const int MaxLevel = 6;
+    public const int MaxLevel = 4;
 
     public static int ClampLevel(int level)
     {

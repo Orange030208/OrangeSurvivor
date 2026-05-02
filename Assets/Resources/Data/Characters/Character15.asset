@@ -23,7 +23,7 @@ MonoBehaviour:
     value: 2.2
   - propType: 4
     modifierType: 0
-    value: 0.25
+    value: 2.5
   - propType: 13
     modifierType: 0
     value: 1

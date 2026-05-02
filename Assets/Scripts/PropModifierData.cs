@@ -26,6 +26,34 @@ public enum PropModifierType
     FinalMultiplier
 }
 
+public static class PropValueUtility
+{
+    public const float PERCENT_POINT_TO_RATIO = 0.01f;
+
+    public static float PercentPointsToRatio(float value)
+    {
+        return value * PERCENT_POINT_TO_RATIO;
+    }
+
+    public static bool IsPercentPointProp(PropType propType)
+    {
+        return propType == PropType.CriticalChance ||
+               propType == PropType.CriticalPercent ||
+               propType == PropType.Dodge ||
+               propType == PropType.LifeSteal ||
+               propType == PropType.ExperienceGain ||
+               propType == PropType.ShopPriceDiscount ||
+               propType == PropType.KnockbackResistance ||
+               propType == PropType.DamageReduction ||
+               propType == PropType.HealingPower;
+    }
+
+    public static bool IsAdditivePercentMultiplierProp(PropType propType)
+    {
+        return propType == PropType.AttackSpeed;
+    }
+}
+
 /// <summary>
 /// 加成属性数据。
 /// 用于描述某个属性的额外修饰值及其结算类型。
@@ -53,13 +81,14 @@ public struct PropModifierData
 
     public readonly string GetDisplayName()
     {
+        string propName = ResourcesManager.GetPropDisplayName(propType);
         return modifierType switch
         {
-            PropModifierType.Add => propType.ToString(),
-            PropModifierType.BaseMultiplier => $"{propType}（基础乘区）",
-            PropModifierType.BonusMultiplier => $"{propType}（加成乘区）",
-            PropModifierType.FinalMultiplier => $"{propType}（最终乘区）",
-            _ => propType.ToString()
+            PropModifierType.Add => propName,
+            PropModifierType.BaseMultiplier => $"{propName}（基础乘区）",
+            PropModifierType.BonusMultiplier => $"{propName}（加成乘区）",
+            PropModifierType.FinalMultiplier => $"{propName}（最终乘区）",
+            _ => propName
         };
     }
 

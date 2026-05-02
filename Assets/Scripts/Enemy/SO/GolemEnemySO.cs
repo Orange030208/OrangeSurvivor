@@ -21,7 +21,7 @@ public class GolemEnemySO : EnemySO
     [Header("Attacks")]
     [SerializeField] private EnemyAttackDefinitionSO attackDefinition;
     [SerializeField] private CircleAttackHitShapeSO postChargeAttackHitShape;
-    [SerializeField, Min(0f)] private float postChargeAttackRangeMultiplier = 1.5f;
+    [SerializeField] private List<PropModifierData> postChargeAttackModifiers = new();
 
     [Header("Strategies")]
     public MovementStrategyBase chaseMoveStrategy;
@@ -38,7 +38,7 @@ public class GolemEnemySO : EnemySO
     public IReadOnlyList<PropModifierData> ChargeModifiers => chargeModifiers;
     public EnemyAttackDefinitionSO AttackDefinition => attackDefinition;
     public CircleAttackHitShapeSO PostChargeAttackHitShape => postChargeAttackHitShape;
-    public float PostChargeAttackRangeMultiplier => Mathf.Max(0f, postChargeAttackRangeMultiplier);
+    public IReadOnlyList<PropModifierData> PostChargeAttackModifiers => postChargeAttackModifiers;
 
     public override IReadOnlyList<EnemyAttackDefinitionSO> GetAttackDefinitions()
     {
@@ -57,6 +57,5 @@ public class GolemEnemySO : EnemySO
         postChargeStunDuration = Mathf.Max(0f, postChargeStunDuration);
         chargeDamageRadius = Mathf.Max(0f, chargeDamageRadius);
         chargeDamageMultiplier = Mathf.Max(0f, chargeDamageMultiplier);
-        postChargeAttackRangeMultiplier = Mathf.Max(0f, postChargeAttackRangeMultiplier);
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class GolemBrain : EnemyBrain
 {
     private const string CHARGE_MODIFIER_SOURCE = "GolemBrain_Charge";
+    private const string POST_CHARGE_ATTACK_MODIFIER_SOURCE = "GolemBrain_PostChargeAttack";
     private const string CHARGE_HIT_SOURCE_ID = "GolemBrain_ChargeHit";
     private const int CHARGE_HIT_BUFFER_SIZE = 32;
 
@@ -30,6 +31,7 @@ public class GolemBrain : EnemyBrain
     private float berserkTimer;
     private Vector2 chargeDirection = Vector2.right;
     private bool chargeModifiersApplied;
+    private bool postChargeAttackModifiersApplied;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -72,6 +74,7 @@ public class GolemBrain : EnemyBrain
     {
         ResetChargePlaybackSpeed();
         RemoveChargeModifiers();
+        RemovePostChargeAttackModifiers();
         base.StopBrain();
     }
 
@@ -79,6 +82,7 @@ public class GolemBrain : EnemyBrain
     {
         ResetChargePlaybackSpeed();
         RemoveChargeModifiers();
+        RemovePostChargeAttackModifiers();
         ResetBerserkTimer();
         base.StartBrain();
 
@@ -92,6 +96,7 @@ public class GolemBrain : EnemyBrain
     {
         ResetChargePlaybackSpeed();
         RemoveChargeModifiers();
+        RemovePostChargeAttackModifiers();
     }
 
     private void RegisterStates()
@@ -176,6 +181,28 @@ public class GolemBrain : EnemyBrain
 
         propertiesManager.RemoveModifiers(CHARGE_MODIFIER_SOURCE);
         chargeModifiersApplied = false;
+    }
+
+    private void ApplyPostChargeAttackModifiers()
+    {
+        if (postChargeAttackModifiersApplied)
+        {
+            return;
+        }
+
+        propertiesManager.AddModifiers(POST_CHARGE_ATTACK_MODIFIER_SOURCE, enemyData.PostChargeAttackModifiers);
+        postChargeAttackModifiersApplied = true;
+    }
+
+    private void RemovePostChargeAttackModifiers()
+    {
+        if (!postChargeAttackModifiersApplied)
+        {
+            return;
+        }
+
+        propertiesManager.RemoveModifiers(POST_CHARGE_ATTACK_MODIFIER_SOURCE);
+        postChargeAttackModifiersApplied = false;
     }
 
     private void ResetChargePlaybackSpeed()
@@ -265,11 +292,16 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
+            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target);
+            if (!isTargetInRange)
+            {
+                brain.stateMachine.ChangeState(GolemAIState.Chase);
+                return;
+            }
+
             if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
             {
-                brain.stateMachine.ChangeState(brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target)
-                    ? GolemAIState.Attack
-                    : GolemAIState.Chase);
+                brain.stateMachine.ChangeState(GolemAIState.Attack);
             }
         }
     }
@@ -519,6 +551,7 @@ public class GolemBrain : EnemyBrain
             attackCommitted = false;
             attackStateHash = brain.enemyData.AnimConfig.AttackHash;
             brain.currentMovable.StopMoving();
+            brain.ApplyPostChargeAttackModifiers();
             brain.FaceTarget();
             brain.currentAnimatable.PlayState(attackStateHash);
         }
@@ -550,6 +583,11 @@ public class GolemBrain : EnemyBrain
             brain.currentMovable.StopMoving();
         }
 
+        public override void OnExit()
+        {
+            brain.RemovePostChargeAttackModifiers();
+        }
+
         private void TryCommitPostChargeAttack()
         {
             if (brain.target == null)
@@ -561,7 +599,6 @@ public class GolemBrain : EnemyBrain
                 brain.enemyData.AttackDefinition,
                 brain.target,
                 brain.enemyData.PostChargeAttackHitShape,
-                brain.enemyData.PostChargeAttackRangeMultiplier,
                 false);
         }
     }

@@ -8,8 +8,7 @@ public class AccessoryDataSO : ItemDataSO
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
 
-    [Range(0, 3)]
-    [SerializeField] private int rarity;
+    [SerializeField] private AccessoryRarity rarity;
 
     [Header("属性修饰")]
     [Tooltip("按照属性语义填写。倍率统一使用 0~1 表示 0%~100%。")]
@@ -20,7 +19,8 @@ public class AccessoryDataSO : ItemDataSO
 
     public string AccessoryId => accessoryId;
     public int RecyclePrice => recyclePrice;
-    public int Rarity => rarity;
+    public AccessoryRarity RarityGrade => rarity;
+    public int Rarity => (int)rarity;
     
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
@@ -64,8 +64,7 @@ public class AccessoryDataSO : ItemDataSO
         List<DescriptorInfo> infos = new();
         foreach (PropModifierData propEntry in propertyModifiers)
         {
-            infos.Add(new DescriptorInfo(propEntry.GetDisplayName(),
-                propEntry.propType.GetIconRichTextWithVOffset() + propEntry.GetDisplayName() + propEntry.GetDisplayValueText()));
+            infos.Add(new DescriptorInfo(propEntry.GetDisplayName(), propEntry.GetDisplayValueText()));
         }
 
         foreach (FeatureEffectBase feature in specialFeatures)

@@ -3,7 +3,6 @@ using UnityEngine;
 
 /// <summary>
 /// 使用独立 Image 与 TMP 行组件渲染属性列表，替代 TMP 富文本 sprite 标签方案。
-/// 该组件只消费 IDescribable.GetExtraInfos，不主动接入任何现有绑定流程。
 /// </summary>
 public sealed class PropertiesIconTextDescriber : Describer
 {
@@ -11,13 +10,12 @@ public sealed class PropertiesIconTextDescriber : Describer
     [SerializeField] private Transform contentRoot;
     [Tooltip("单行属性 UI 预制体。需要包含 PropContainer 所需的 Image、属性名 TMP 与数值 TMP。")]
     [SerializeField] private PropContainer propContainerPrefab;
-    [Tooltip("属性展示目录表，用 DescriptorInfo.label 查询对应的中文名与图标。")]
-    [SerializeField] private PropPresentationCatalogSO propPresentationCatalog;
 
     private readonly List<PropContainer> propContainers = new List<PropContainer>();
 
     private void Awake()
     {
+        contentRoot.Clear();
         ValidateConfiguration();
     }
 
@@ -88,7 +86,7 @@ public sealed class PropertiesIconTextDescriber : Describer
 
     private PropPresentationEntry ResolvePresentation(string propName)
     {
-        if (propPresentationCatalog != null && propPresentationCatalog.TryGetEntry(propName, out PropPresentationEntry entry))
+        if (ResourcesManager.TryGetPropPresentationEntry(propName, out PropPresentationEntry entry))
         {
             return entry;
         }
@@ -119,11 +117,6 @@ public sealed class PropertiesIconTextDescriber : Describer
         if (propContainerPrefab == null)
         {
             throw new MissingReferenceException($"{nameof(PropertiesIconTextDescriber)} '{name}' is missing prop container prefab.");
-        }
-
-        if (propPresentationCatalog == null)
-        {
-            throw new MissingReferenceException($"{nameof(PropertiesIconTextDescriber)} '{name}' is missing prop presentation catalog.");
         }
     }
 }
