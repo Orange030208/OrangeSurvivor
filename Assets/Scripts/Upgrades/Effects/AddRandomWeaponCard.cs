@@ -2,16 +2,16 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class AddRandomWeaponUpgradeCardEffect : FeatureEffectBase
+public sealed class AddRandomWeaponCard : FeatureEffectBase
 {
     [SerializeField] private WeaponDataSO weaponData;
     [SerializeField] private int level = WeaponLevelHelper.MinLevel;
 
-    public AddRandomWeaponUpgradeCardEffect()
+    public AddRandomWeaponCard()
     {
     }
 
-    public AddRandomWeaponUpgradeCardEffect(WeaponDataSO weaponData, int level)
+    public AddRandomWeaponCard(WeaponDataSO weaponData, int level)
     {
         this.weaponData = weaponData;
         this.level = WeaponLevelHelper.ClampLevel(level);

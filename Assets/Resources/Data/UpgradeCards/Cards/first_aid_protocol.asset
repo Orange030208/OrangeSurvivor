@@ -35,7 +35,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030687
-      type: {class: ApplyBuffUpgradeCardEffect, ns: , asm: Assembly-CSharp}
+      type: {class: ApplyBuffCard, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0
         buffData: {fileID: 11400000, guid: eeef4f39cb1f6204f84f2f1afe73ee50, type: 2}

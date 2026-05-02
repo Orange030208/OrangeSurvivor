@@ -9,7 +9,7 @@ public static class ResourcesManager
     private const string CHARACTER_DATA_PATH = "Data/Characters";
     private const string PLAYER_LEVEL_CONFIG_DATA_PATH = "Data/Player Level Config";
     private const string UPGRADE_CARD_POOL_DATA_PATH = "Data/UpgradeCards/Pool/Default Upgrade Card Pool";
-    private const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH = "Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog";
+    private const string CARD_QUALITY_PRESENTATION_CATALOG_PATH = "Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog";
     // 属性展示目录由 ResourcesManager 统一管理，资产需放在 Assets/Resources/Data/Prop Presentation Catalog.asset。
     private const string PROP_PRESENTATION_CATALOG_PATH = "Data/Prop Presentation Catalog";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
@@ -22,7 +22,7 @@ public static class ResourcesManager
     private static CharacterDataSO[] characters;
     private static PlayerLevelConfigSO playerLevelConfig;
     private static UpgradeCardPoolSO upgradeCardPool;
-    private static UpgradeCardRarityPresentationCatalogSO upgradeCardRarityPresentationCatalog;
+    private static CardQualityPresentationCatalogSO cardQualityPresentationCatalog;
     private static PropPresentationCatalogSO propPresentationCatalog;
     private static StageDefinitionSO stageDefinition;
     private const string ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH = "Materials/UI/WeaponQualityIconEffect";
@@ -99,12 +99,12 @@ public static class ResourcesManager
         }
     }
 
-    private static void LoadUpgradeCardRarityPresentationCatalog()
+    private static void LoadCardQualityPresentationCatalog()
     {
-        if (upgradeCardRarityPresentationCatalog == null)
+        if (cardQualityPresentationCatalog == null)
         {
-            upgradeCardRarityPresentationCatalog =
-                Resources.Load<UpgradeCardRarityPresentationCatalogSO>(UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH);
+            cardQualityPresentationCatalog =
+                Resources.Load<CardQualityPresentationCatalogSO>(CARD_QUALITY_PRESENTATION_CATALOG_PATH);
         }
     }
 
@@ -224,17 +224,17 @@ public static class ResourcesManager
         return upgradeCardPool;
     }
 
-    public static UpgradeCardRarityPresentationCatalogSO GetUpgradeCardRarityPresentationCatalog()
+    public static CardQualityPresentationCatalogSO GetCardQualityPresentationCatalog()
     {
-        LoadUpgradeCardRarityPresentationCatalog();
-        if (upgradeCardRarityPresentationCatalog == null)
+        LoadCardQualityPresentationCatalog();
+        if (cardQualityPresentationCatalog == null)
         {
             Debug.LogError(
-                $"{nameof(ResourcesManager)} could not find {nameof(UpgradeCardRarityPresentationCatalogSO)} at {UPGRADE_CARD_RARITY_PRESENTATION_CATALOG_PATH}. " +
+                $"{nameof(ResourcesManager)} could not find {nameof(CardQualityPresentationCatalogSO)} at {CARD_QUALITY_PRESENTATION_CATALOG_PATH}. " +
                 "Run Survivors/Upgrades/Rebuild Upgrade Card System to generate the configured rarity presentation profiles.");
         }
 
-        return upgradeCardRarityPresentationCatalog;
+        return cardQualityPresentationCatalog;
     }
 
     public static PropPresentationCatalogSO GetPropPresentationCatalog()

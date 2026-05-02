@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class LowHealthExplosionFeatureEffect : FeatureEffectBase
+public class LowHealthExplosionFeature : FeatureEffectBase
 {
     [Range(0.01f, 1f)]
     [SerializeField] private float healthThreshold = 0.3f;

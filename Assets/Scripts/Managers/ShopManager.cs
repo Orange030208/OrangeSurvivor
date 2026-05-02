@@ -33,7 +33,7 @@ public struct ShopItemData
 
 public class ShopManager : MonoBehaviour
 {
-    private const int DEFAULT_CONTAINERS_TO_ADD = 6;
+    private const int DEFAULT_CONTAINERS_TO_ADD = 4;
     private const int BASE_REROLL_COST = 5;
     private const int ACCESSORY_WEIGHT = 2;
     private const int WEAPON_WEIGHT = 1;

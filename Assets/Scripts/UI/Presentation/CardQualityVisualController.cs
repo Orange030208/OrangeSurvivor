@@ -2,8 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[DisallowMultipleComponent]
-public sealed class UpgradeCardRarityVisualController : MonoBehaviour
+public class CardQualityVisualController : MonoBehaviour
 {
     [Header("自动绑定")]
     [SerializeField] private bool autoResolveReferences = true;
@@ -41,7 +40,7 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         }
     }
 
-    public void Apply(UpgradeCardRarityPresentationProfile profile)
+    public void Apply(CardQualityPresentationProfile profile)
     {
         ResolveReferencesIfNeeded();
         CaptureBaseColorsIfNeeded();
@@ -82,6 +81,18 @@ public sealed class UpgradeCardRarityVisualController : MonoBehaviour
         {
             shadowImage.color = ResolveLayerColor(profile.ShadowColor, shadowImage);
         }
+    }
+
+    public bool Apply(CardQuality quality)
+    {
+        CardQualityPresentationCatalogSO catalog = ResourcesManager.GetCardQualityPresentationCatalog();
+        if (catalog == null || !catalog.TryGetProfile(quality, out CardQualityPresentationProfile profile))
+        {
+            return false;
+        }
+
+        Apply(profile);
+        return true;
     }
 
     public void ResetVisuals()

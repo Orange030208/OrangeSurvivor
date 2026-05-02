@@ -3,9 +3,8 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[DisallowMultipleComponent]
 [RequireComponent(typeof(UIMotionPlayer))]
-public sealed class UpgradeCardMotionController : MonoBehaviour
+public class CardMotionController : MonoBehaviour
 {
     private const string VISUAL_ROOT_NAME = "VisualRoot";
     private const string SHADOW_NAME = "Shadow";
@@ -13,7 +12,7 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
 
     [Header("依赖")]
     [SerializeField] private UIMotionPlayer motionPlayer;
-    [SerializeField] private UpgradeCardMotionProfileSO profile;
+    [SerializeField] private CardMotionProfileSO profile;
 
     [Header("复位根节点")]
     [Tooltip("默认使用当前物体。后续如果卡牌拆出VisualRoot，可以把VisualRoot拖进来，避免和外层布局互相影响。")]
@@ -56,7 +55,7 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
 
     public bool CanReceiveInteraction => !isRevealPlaying && !isSubmitting;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
@@ -64,7 +63,7 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
         CaptureVisualLayerPoseIfNeeded();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
@@ -74,12 +73,12 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
         StartIdleFloatIfNeeded();
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         CancelAndReset();
     }
 
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         if (motionPlayer == null)
         {
@@ -104,6 +103,11 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
 
     public void ConfigureForReuse()
     {
+        ConfigureForReuse(playReveal: true);
+    }
+
+    public void ConfigureForReuse(bool playReveal)
+    {
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
         CaptureDynamicPoseIfNeeded();
@@ -123,7 +127,13 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
             motionPlayer?.RefreshDefaults();
         }
 
-        PlayRevealOrStartIdle();
+        if (playReveal)
+        {
+            PlayRevealOrStartIdle();
+            return;
+        }
+
+        StartIdleFloatIfNeeded();
     }
 
     public void PlayHoverIn(PointerEventData eventData = null)
@@ -402,7 +412,7 @@ public sealed class UpgradeCardMotionController : MonoBehaviour
         if (!missingProfileLogged)
         {
             Debug.LogError(
-                $"{nameof(UpgradeCardMotionController)} on '{name}' requires an {nameof(UpgradeCardMotionProfileSO)} asset.",
+                $"{nameof(CardMotionController)} on '{name}' requires an {nameof(CardMotionProfileSO)} asset.",
                 this);
             missingProfileLogged = true;
         }

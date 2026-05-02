@@ -18,7 +18,7 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
         iconImage.sprite = resource.itemData.Icon;
         sellPriceText.text = resource.sellPrice.ToString();
 
-        RenderColor(resource.itemData, resource.colorDependencyNumber);
+        RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
         bottom.Display(resource.itemData);
 
         currentEntryId = resource.entryId;

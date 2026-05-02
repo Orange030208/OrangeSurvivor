@@ -2,17 +2,17 @@ using UnityEngine;
 
 [HideInFeatureMenu]
 [System.Serializable]
-public sealed class PropertyModifierEffect : FeatureEffectBase
+public sealed class PropertyModifierFeature : FeatureEffectBase
 {
     [SerializeField] private PropModifierData modifier;
     [HideInInspector]
     [SerializeField] private string sourceId;
 
-    public PropertyModifierEffect()
+    public PropertyModifierFeature()
     {
     }
 
-    public PropertyModifierEffect(string sourceId, PropModifierData modifier)
+    public PropertyModifierFeature(string sourceId, PropModifierData modifier)
     {
         this.sourceId = sourceId;
         this.modifier = modifier;

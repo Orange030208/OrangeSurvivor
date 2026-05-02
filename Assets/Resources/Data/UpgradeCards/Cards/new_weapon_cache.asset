@@ -33,7 +33,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030690
-      type: {class: AddRandomWeaponUpgradeCardEffect, ns: , asm: Assembly-CSharp}
+      type: {class: AddRandomWeaponCard, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0
         weaponData: {fileID: 0}

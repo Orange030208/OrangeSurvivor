@@ -2,17 +2,17 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class WaveStartBuffUpgradeCardEffect : FeatureEffectBase
+public sealed class WaveStartBuffCard : FeatureEffectBase
 {
     [SerializeField] private BuffDataSO buffData;
     [SerializeField] private float durationSeconds = 8f;
     [SerializeField] private bool applyImmediately = true;
 
-    public WaveStartBuffUpgradeCardEffect()
+    public WaveStartBuffCard()
     {
     }
 
-    public WaveStartBuffUpgradeCardEffect(BuffDataSO buffData, float durationSeconds, bool applyImmediately)
+    public WaveStartBuffCard(BuffDataSO buffData, float durationSeconds, bool applyImmediately)
     {
         this.buffData = buffData;
         this.durationSeconds = durationSeconds;

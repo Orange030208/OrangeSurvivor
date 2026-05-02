@@ -1,7 +1,7 @@
 public sealed class ShopPageState
 {
-    public bool IsPropertiesSidebarVisible { get; private set; } = true;
-    public bool IsInventorySidebarVisible { get; private set; } = true;
+    public bool IsPropertiesSidebarVisible { get; private set; }
+    public bool IsInventorySidebarVisible { get; private set; }
 
     public void TogglePropertiesSidebar()
     {

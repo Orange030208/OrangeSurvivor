@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRender, IDisposable, IPointerClickHandler, IConfigurable<T>
+public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerQualityRender, IDisposable, IPointerClickHandler, IConfigurable<T>
     where K : MonoBehaviour
 {
     [Header("--")]
@@ -20,6 +20,9 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
     [FormerlySerializedAs("recyclePriceText")]
     [SerializeField] protected K bottom;
 
+    [Header("卡片品质表现")]
+    [SerializeField] protected CardQualityVisualController cardQualityVisualController;
+
     public event Action<PointerEventData> OnClicked;
 
     public virtual void Dispose()
@@ -32,9 +35,27 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerColorRend
         OnClicked = null;
     }
 
-    public void RenderColor(ItemDataSO itemData, int colorDependency)
+    public void RenderQuality(CardQuality quality)
     {
-        ItemQualityVisualResolver.Apply(this, itemData, colorDependency, iconImage);
+        if (cardQualityVisualController == null)
+        {
+            cardQualityVisualController = GetComponent<CardQualityVisualController>();
+        }
+
+        if (cardQualityVisualController == null)
+        {
+            return;
+        }
+
+        if (!cardQualityVisualController.Apply(quality))
+        {
+            Debug.LogWarning($"{nameof(UIContainerBase<T, K>)} '{name}' could not resolve card quality '{quality}'.", this);
+        }
+    }
+
+    protected void RenderItemQuality(ItemDataSO itemData, int qualityValue)
+    {
+        RenderQuality(CardQualityResolver.FromItem(itemData, qualityValue));
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)

@@ -10,6 +10,7 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
     [SerializeField] private UIClickTarget lockButton;
     [SerializeField] private Image lockImage;
     [SerializeField] private Sprite lockSprite, unlockSprite;
+    [SerializeField] private CardMotionController cardMotionController;
 
     private int currentIndex = -1;
 
@@ -17,6 +18,11 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
     public event Action<int> LockToggleRequested;
 
     public override void Configure(InfoAddIndex<ShopItemData> resource)
+    {
+        Configure(resource, true);
+    }
+
+    public void Configure(InfoAddIndex<ShopItemData> resource, bool playReveal)
     {
         ShopItemData shopItem = resource.info;
         ItemDataSO itemData = shopItem.ItemData;
@@ -47,7 +53,8 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
         lockImage.sprite = shopItem.Lock ? lockSprite : unlockSprite;
 
         priceText.text = shopItem.GetPrice().ToString();
-        RenderColor(itemData, colorDependency);
+        iconImage.sprite = itemData.ItemIcon;
+        RenderItemQuality(itemData, colorDependency);
 
         CleanClickEvent();
 
@@ -55,6 +62,8 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
         lockButton.OnClicked -= OnLockButtonClicked;
 
         currentIndex = resource.index;
+
+        ConfigureCardMotionForReuse(playReveal);
 
         buyButton.OnClicked += OnBuyButtonClicked;
         lockButton.OnClicked += OnLockButtonClicked;
@@ -85,5 +94,15 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         LockToggleRequested?.Invoke(currentIndex);
+    }
+
+    private void ConfigureCardMotionForReuse(bool playReveal)
+    {
+        if (cardMotionController == null)
+        {
+            cardMotionController = GetComponent<CardMotionController>();
+        }
+
+        cardMotionController?.ConfigureForReuse(playReveal);
     }
 }

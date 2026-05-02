@@ -19,8 +19,9 @@ public class AccessoryOperateContainer : UIContainerBase<AccessoryDataSO, ExtraI
         }
 
         nameText.text = resource.ItemName;
+        iconImage.sprite = resource.ItemIcon;
         recycleText.text = resource.RecyclePrice.ToString();
-        RenderColor(resource, resource.Rarity);
+        RenderItemQuality(resource, resource.Rarity);
         bottom.Display(resource);
 
         takeButton.OnClicked -= OnTakeButtonClicked;

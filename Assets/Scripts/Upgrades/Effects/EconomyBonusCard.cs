@@ -2,17 +2,17 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class EconomyBonusUpgradeCardEffect : FeatureEffectBase
+public sealed class EconomyBonusCard : FeatureEffectBase
 {
     [SerializeField] private float shopDiscountPercent;
     [SerializeField] private int freeShopRerolls;
     [SerializeField] private int waveGoldBonus;
 
-    public EconomyBonusUpgradeCardEffect()
+    public EconomyBonusCard()
     {
     }
 
-    public EconomyBonusUpgradeCardEffect(float shopDiscountPercent, int freeShopRerolls, int waveGoldBonus)
+    public EconomyBonusCard(float shopDiscountPercent, int freeShopRerolls, int waveGoldBonus)
     {
         this.shopDiscountPercent = Mathf.Max(0f, shopDiscountPercent);
         this.freeShopRerolls = Mathf.Max(0, freeShopRerolls);
@@ -60,7 +60,7 @@ public sealed class EconomyBonusUpgradeCardEffect : FeatureEffectBase
             }
             else
             {
-                Debug.LogWarning("[EconomyBonusUpgradeCardEffect] Player is missing PropertiesManager.");
+                Debug.LogWarning("[EconomyBonusCard] Player is missing PropertiesManager.");
             }
         }
 
@@ -79,7 +79,7 @@ public sealed class EconomyBonusUpgradeCardEffect : FeatureEffectBase
             }
             else
             {
-                Debug.LogWarning("[EconomyBonusUpgradeCardEffect] Player is missing PropertiesManager.");
+                Debug.LogWarning("[EconomyBonusCard] Player is missing PropertiesManager.");
             }
         }
     }

@@ -6,7 +6,7 @@ public class AccessoryInfoPopup : UIContainerBase<InventoryItemOperateResource, 
     {
         nameText.text = resource.itemData.ItemName;
         iconImage.sprite = resource.itemData.Icon;
-        RenderColor(resource.itemData, resource.colorDependencyNumber);
+        RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
         bottom.Display(resource.itemData);
         CleanClickEvent();
     }

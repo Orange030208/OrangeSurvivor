@@ -2,15 +2,15 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class GrantCurrencyUpgradeCardEffect : FeatureEffectBase
+public sealed class GrantCurrencyCard : FeatureEffectBase
 {
     [SerializeField] private int amount = 10;
 
-    public GrantCurrencyUpgradeCardEffect()
+    public GrantCurrencyCard()
     {
     }
 
-    public GrantCurrencyUpgradeCardEffect(int amount)
+    public GrantCurrencyCard(int amount)
     {
         this.amount = amount;
     }

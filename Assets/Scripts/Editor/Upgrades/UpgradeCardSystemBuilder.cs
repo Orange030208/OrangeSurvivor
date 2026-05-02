@@ -196,10 +196,10 @@ public static class UpgradeCardSystemBuilder
                 new PropModifierData(PropType.MaxHealth, PropModifierType.FinalMultiplier, -12f)),
             CreateEffectCard("weapon_focus", "武器专注", UpgradeCardRarity.Rare, 75,
                 new[] { UpgradeCardTag.Weapon }, "随机一把已装备武器等级 +1。",
-                new UpgradeRandomEquippedWeaponCardEffect(1)),
+                new UpgradeRandomEquippedWeaponCard(1)),
             CreateEffectCard("field_supplies", "战地补给", UpgradeCardRarity.Common, 70,
                 new[] { UpgradeCardTag.Economy }, "立即获得 18 金币。",
-                new GrantCurrencyUpgradeCardEffect(18)),
+                new GrantCurrencyCard(18)),
             SaveCard("lucky_stipend", "幸运津贴", UpgradeCardRarity.Common, 68,
                 new[] { UpgradeCardTag.Economy, UpgradeCardTag.Pickup }, "立即获得 10 金币，幸运 +4。",
                 new[]
@@ -208,40 +208,40 @@ public static class UpgradeCardSystemBuilder
                 },
                 new FeatureEffectBase[]
                 {
-                    new GrantCurrencyUpgradeCardEffect(10)
+                    new GrantCurrencyCard(10)
                 }),
             CreateEffectCard("bargain_instinct", "砍价直觉", UpgradeCardRarity.Rare, 55,
                 new[] { UpgradeCardTag.Economy }, "商店价格降低 10%，获得 1 次免费刷新。",
-                new EconomyBonusUpgradeCardEffect(10f, 1, 0)),
+                new EconomyBonusCard(10f, 1, 0)),
             CreateEffectCard("reroll_coupon", "改签券", UpgradeCardRarity.Rare, 52,
                 new[] { UpgradeCardTag.Economy }, "获得 2 次免费刷新。",
-                new EconomyBonusUpgradeCardEffect(0f, 2, 0)),
+                new EconomyBonusCard(0f, 2, 0)),
             SaveCard("king_ransom", "国王赎金", UpgradeCardRarity.Epic, 30,
                 new[] { UpgradeCardTag.Economy }, "立即获得 35 金币，商店价格降低 6%。",
                 Array.Empty<PropModifierData>(),
                 new FeatureEffectBase[]
                 {
-                    new GrantCurrencyUpgradeCardEffect(35),
-                    new EconomyBonusUpgradeCardEffect(6f, 0, 0)
+                    new GrantCurrencyCard(35),
+                    new EconomyBonusCard(6f, 0, 0)
                 }),
             CreateEffectCard("gold_contract", "赏金契约", UpgradeCardRarity.Epic, 35,
                 new[] { UpgradeCardTag.Economy }, "每波结束获得 5 金币。",
-                new EconomyBonusUpgradeCardEffect(0f, 0, 5)),
+                new EconomyBonusCard(0f, 0, 5)),
             CreateEffectCard("battle_frenzy", "战斗兴奋", UpgradeCardRarity.Rare, 60,
                 new[] { UpgradeCardTag.AttackSpeed }, "每波开始获得短暂狂乱 Buff。",
-                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_00_狂乱"), 8f, true)),
+                new WaveStartBuffCard(LoadBuff("Buff_00_狂乱"), 8f, true)),
             CreateEffectCard("swift_start", "疾行开局", UpgradeCardRarity.Rare, 55,
                 new[] { UpgradeCardTag.MoveSpeed }, "每波开始获得短暂迅捷 Buff。",
-                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_01_迅捷"), 8f, true)),
+                new WaveStartBuffCard(LoadBuff("Buff_01_迅捷"), 8f, true)),
             CreateEffectCard("first_aid_protocol", "急救协议", UpgradeCardRarity.Rare, 50,
                 new[] { UpgradeCardTag.Recovery }, "立即获得 10 秒再生 Buff。",
-                new ApplyBuffUpgradeCardEffect(LoadBuff("Buff_06_再生"), 10f)),
+                new ApplyBuffCard(LoadBuff("Buff_06_再生"), 10f)),
             CreateEffectCard("bloodthirst_dose", "嗜血剂量", UpgradeCardRarity.Rare, 44,
                 new[] { UpgradeCardTag.Recovery, UpgradeCardTag.Attack }, "立即获得 9 秒嗜血 Buff。",
-                new ApplyBuffUpgradeCardEffect(LoadBuff("Buff_04_嗜血"), 9f)),
+                new ApplyBuffCard(LoadBuff("Buff_04_嗜血"), 9f)),
             CreateEffectCard("slaughter_rhythm", "屠戮节拍", UpgradeCardRarity.Epic, 28,
                 new[] { UpgradeCardTag.Attack, UpgradeCardTag.AttackSpeed }, "每波开始获得 7 秒屠戮 Buff。",
-                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_03_屠戮"), 7f, true)),
+                new WaveStartBuffCard(LoadBuff("Buff_03_屠戮"), 7f, true)),
             SaveCard("emergency_core", "应急核心", UpgradeCardRarity.Epic, 26,
                 new[] { UpgradeCardTag.LowHealth, UpgradeCardTag.AreaDamage, UpgradeCardTag.Defense }, "最大生命 +18。生命较低时触发一次范围爆炸。",
                 new[]
@@ -250,29 +250,29 @@ public static class UpgradeCardSystemBuilder
                 },
                 new FeatureEffectBase[]
                 {
-                    new LowHealthExplosionFeatureEffect()
+                    new LowHealthExplosionFeature()
                 }),
             CreateEffectCard("new_weapon_cache", "武器补给箱", UpgradeCardRarity.Epic, 30,
                 new[] { UpgradeCardTag.Weapon }, "获得一把随机 1 级武器。",
-                new AddRandomWeaponUpgradeCardEffect(null, 1)),
+                new AddRandomWeaponCard(null, 1)),
             CreateEffectCard("arsenal_drop", "军械空投", UpgradeCardRarity.Legendary, 9,
                 new[] { UpgradeCardTag.Weapon }, "获得一把随机 2 级武器。",
-                new AddRandomWeaponUpgradeCardEffect(null, 2)),
+                new AddRandomWeaponCard(null, 2)),
             CreateEffectCard("duelist_blade", "决斗者刀刃", UpgradeCardRarity.Rare, 48,
                 new[] { UpgradeCardTag.Weapon, UpgradeCardTag.Melee }, "获得一把 2 级猎人匕首。",
-                new AddRandomWeaponUpgradeCardEffect(LoadWeapon("HunterDagger"), 2)),
+                new AddRandomWeaponCard(LoadWeapon("HunterDagger"), 2)),
             CreateEffectCard("sun_scepter_cache", "日冕权杖", UpgradeCardRarity.Epic, 22,
                 new[] { UpgradeCardTag.Weapon, UpgradeCardTag.Ranged }, "获得一把 2 级日冕权杖。",
-                new AddRandomWeaponUpgradeCardEffect(LoadWeapon("SunScepter"), 2)),
+                new AddRandomWeaponCard(LoadWeapon("SunScepter"), 2)),
             CreateEffectCard("weapon_overclock", "武器超频", UpgradeCardRarity.Epic, 26,
                 new[] { UpgradeCardTag.Weapon, UpgradeCardTag.AttackSpeed }, "随机一把已装备武器等级 +2。",
-                new UpgradeRandomEquippedWeaponCardEffect(2)),
+                new UpgradeRandomEquippedWeaponCard(2)),
             CreateFeatureCard("sure_critical", "精准杀意", UpgradeCardRarity.Legendary, 10,
                 new[] { UpgradeCardTag.Critical, UpgradeCardTag.Attack }, "所有命中强制视为暴击。",
-                new ForceCriticalFeatureEffect()),
+                new ForceCriticalFeature()),
             CreateEffectCard("immortal_second_wind", "不朽回响", UpgradeCardRarity.Legendary, 8,
                 new[] { UpgradeCardTag.Defense, UpgradeCardTag.LowHealth }, "每波开始获得 5 秒不朽 Buff。",
-                new WaveStartBuffUpgradeCardEffect(LoadBuff("Buff_05_不朽"), 5f, true))
+                new WaveStartBuffCard(LoadBuff("Buff_05_不朽"), 5f, true))
         };
 
         ApplyCardTuning(cards);
@@ -439,22 +439,22 @@ public static class UpgradeCardSystemBuilder
         return card;
     }
 
-    private static UpgradeCardRarityPresentationCatalogSO BuildRarityPresentationCatalog()
+    private static CardQualityPresentationCatalogSO BuildRarityPresentationCatalog()
     {
-        UpgradeCardRarityPresentationCatalogSO catalog =
-            AssetDatabase.LoadAssetAtPath<UpgradeCardRarityPresentationCatalogSO>(RARITY_PRESENTATION_CATALOG_PATH);
+        CardQualityPresentationCatalogSO catalog =
+            AssetDatabase.LoadAssetAtPath<CardQualityPresentationCatalogSO>(RARITY_PRESENTATION_CATALOG_PATH);
         if (catalog == null)
         {
-            catalog = ScriptableObject.CreateInstance<UpgradeCardRarityPresentationCatalogSO>();
+            catalog = ScriptableObject.CreateInstance<CardQualityPresentationCatalogSO>();
             AssetDatabase.CreateAsset(catalog, RARITY_PRESENTATION_CATALOG_PATH);
         }
 
         catalog.InitializeRuntime(new[]
         {
-            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Common),
-            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Rare),
-            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Epic),
-            UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(UpgradeCardRarity.Legendary)
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Common),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Rare),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Epic),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Legendary)
         });
         EditorUtility.SetDirty(catalog);
         return catalog;

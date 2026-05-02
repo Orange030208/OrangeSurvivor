@@ -52,11 +52,11 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451546934818111488
-      type: {class: ForceCriticalFeatureEffect, ns: , asm: Assembly-CSharp}
+      type: {class: ForceCriticalFeature, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 0
     - rid: 451546934818111493
-      type: {class: LowHealthExplosionFeatureEffect, ns: , asm: Assembly-CSharp}
+      type: {class: LowHealthExplosionFeature, ns: , asm: Assembly-CSharp}
       data:
         hitModifierTiming: 1
         healthThreshold: 1

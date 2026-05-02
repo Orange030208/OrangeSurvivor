@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public sealed class ForceCriticalFeatureEffect : FeatureEffectBase
+public sealed class ForceCriticalFeature : FeatureEffectBase
 {
     private FeatureContext installedContext;
     public override bool CanModifyHit => true;

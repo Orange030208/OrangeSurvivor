@@ -24,8 +24,8 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private UpgradeCardSO selectedCard;
     private UpgradeCardSO editingCard;
-    private UpgradeCardRarityPresentationCatalogSO selectedPresentationCatalog;
-    private UpgradeCardRarityPresentationCatalogSO editingPresentationCatalog;
+    private CardQualityPresentationCatalogSO selectedPresentationCatalog;
+    private CardQualityPresentationCatalogSO editingPresentationCatalog;
     private SerializedObject cardObject;
     private SerializedObject presentationObject;
     private ReorderableList tagsList;
@@ -59,7 +59,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private void OnEnable()
     {
-        selectedPresentationCatalog = AssetDatabase.LoadAssetAtPath<UpgradeCardRarityPresentationCatalogSO>(DEFAULT_RARITY_CATALOG_PATH);
+        selectedPresentationCatalog = AssetDatabase.LoadAssetAtPath<CardQualityPresentationCatalogSO>(DEFAULT_RARITY_CATALOG_PATH);
         if (selectedPresentationCatalog != null)
         {
             CreatePresentationEditCopy();
@@ -335,10 +335,10 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         EditorGUI.BeginChangeCheck();
-        UpgradeCardRarityPresentationCatalogSO newCatalog = (UpgradeCardRarityPresentationCatalogSO)EditorGUILayout.ObjectField(
+        CardQualityPresentationCatalogSO newCatalog = (CardQualityPresentationCatalogSO)EditorGUILayout.ObjectField(
             "样式目录",
             selectedPresentationCatalog,
-            typeof(UpgradeCardRarityPresentationCatalogSO),
+            typeof(CardQualityPresentationCatalogSO),
             false);
         if (EditorGUI.EndChangeCheck())
         {
@@ -807,7 +807,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         if (selectedPresentationCatalog == null)
         {
             EnsureFolder(System.IO.Path.GetDirectoryName(DEFAULT_RARITY_CATALOG_PATH)?.Replace("\\", "/"));
-            selectedPresentationCatalog = CreateInstance<UpgradeCardRarityPresentationCatalogSO>();
+            selectedPresentationCatalog = CreateInstance<CardQualityPresentationCatalogSO>();
             AssetDatabase.CreateAsset(selectedPresentationCatalog, DEFAULT_RARITY_CATALOG_PATH);
             CreatePresentationEditCopy();
         }
@@ -817,21 +817,21 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             CreatePresentationEditCopy();
         }
 
-        UpgradeCardRarityPresentationProfile[] existingProfiles = GetPresentationProfiles(editingPresentationCatalog);
-        List<UpgradeCardRarityPresentationProfile> profiles = existingProfiles != null
-            ? new List<UpgradeCardRarityPresentationProfile>(existingProfiles)
-            : new List<UpgradeCardRarityPresentationProfile>();
+        CardQualityPresentationProfile[] existingProfiles = GetPresentationProfiles(editingPresentationCatalog);
+        List<CardQualityPresentationProfile> profiles = existingProfiles != null
+            ? new List<CardQualityPresentationProfile>(existingProfiles)
+            : new List<CardQualityPresentationProfile>();
 
-        foreach (UpgradeCardRarity rarity in Enum.GetValues(typeof(UpgradeCardRarity)))
+        foreach (CardQuality quality in Enum.GetValues(typeof(CardQuality)))
         {
-            bool exists = profiles.Any(profile => profile.Rarity == rarity);
+            bool exists = profiles.Any(profile => profile.Quality == quality);
             if (!exists)
             {
-                profiles.Add(UpgradeCardRarityPresentationCatalogSO.CreateBuiltinProfile(rarity));
+                profiles.Add(CardQualityPresentationCatalogSO.CreateBuiltinProfile(quality));
             }
         }
 
-        profiles.Sort((left, right) => left.Rarity.CompareTo(right.Rarity));
+        profiles.Sort((left, right) => left.Quality.CompareTo(right.Quality));
         editingPresentationCatalog.InitializeRuntime(profiles.ToArray());
         presentationObject = new SerializedObject(editingPresentationCatalog);
         styleDirty = true;
@@ -1144,25 +1144,25 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         }
     }
 
-    private static UpgradeCardRarityPresentationProfile[] GetPresentationProfiles(
-        UpgradeCardRarityPresentationCatalogSO catalog)
+    private static CardQualityPresentationProfile[] GetPresentationProfiles(
+        CardQualityPresentationCatalogSO catalog)
     {
         if (catalog == null)
         {
-            return Array.Empty<UpgradeCardRarityPresentationProfile>();
+            return Array.Empty<CardQualityPresentationProfile>();
         }
 
         SerializedObject serializedCatalog = new(catalog);
         SerializedProperty profilesProperty = serializedCatalog.FindProperty("profiles");
         if (profilesProperty == null || !profilesProperty.isArray)
         {
-            return Array.Empty<UpgradeCardRarityPresentationProfile>();
+            return Array.Empty<CardQualityPresentationProfile>();
         }
 
-        List<UpgradeCardRarityPresentationProfile> profiles = new();
-        foreach (UpgradeCardRarity rarity in Enum.GetValues(typeof(UpgradeCardRarity)))
+        List<CardQualityPresentationProfile> profiles = new();
+        foreach (CardQuality quality in Enum.GetValues(typeof(CardQuality)))
         {
-            if (catalog.TryGetProfile(rarity, out UpgradeCardRarityPresentationProfile profile))
+            if (catalog.TryGetProfile(quality, out CardQualityPresentationProfile profile))
             {
                 profiles.Add(profile);
             }
@@ -1173,10 +1173,10 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
     private static GUIContent BuildProfileLabel(SerializedProperty profileProperty, int index)
     {
-        SerializedProperty rarityProperty = profileProperty.FindPropertyRelative("rarity");
-        if (rarityProperty != null)
+        SerializedProperty qualityProperty = profileProperty.FindPropertyRelative("quality");
+        if (qualityProperty != null)
         {
-            return new GUIContent($"{index}: {(UpgradeCardRarity)rarityProperty.enumValueIndex}");
+            return new GUIContent($"{index}: {(CardQuality)qualityProperty.enumValueIndex}");
         }
 
         return new GUIContent($"Profile {index}");

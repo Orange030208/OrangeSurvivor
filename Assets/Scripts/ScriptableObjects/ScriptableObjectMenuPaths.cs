@@ -20,6 +20,8 @@ public static class ScriptableObjectMenuPaths
     public const string UPGRADE_CARD_POOL = GAMEPLAY_ROOT + "Upgrades/Upgrade Card Pool";
     public const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Upgrades/Upgrade Card Rarity Presentation Catalog";
     public const string UPGRADE_CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Upgrades/Upgrade Card Motion Profile";
+    public const string CARD_QUALITY_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Cards/Card Quality Presentation Catalog";
+    public const string CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Cards/Card Motion Profile";
     public const string PROJECTILE_DEFINITION = GAMEPLAY_ROOT + "Projectiles/Projectile Definition";
     public const string ACCESSORY = GAMEPLAY_ROOT + "Items/Accessories/Accessory";
     public const string ACCESSORY_DATA_LIST = GAMEPLAY_ROOT + "Items/Accessories/Accessory Data List";

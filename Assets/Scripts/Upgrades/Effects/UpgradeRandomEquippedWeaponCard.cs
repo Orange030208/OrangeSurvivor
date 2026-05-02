@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public sealed class UpgradeRandomEquippedWeaponCardEffect : FeatureEffectBase
+public sealed class UpgradeRandomEquippedWeaponCard : FeatureEffectBase
 {
     [SerializeField] private int levelIncrease = 1;
 
-    public UpgradeRandomEquippedWeaponCardEffect()
+    public UpgradeRandomEquippedWeaponCard()
     {
     }
 
-    public UpgradeRandomEquippedWeaponCardEffect(int levelIncrease)
+    public UpgradeRandomEquippedWeaponCard(int levelIncrease)
     {
         this.levelIncrease = Mathf.Max(1, levelIncrease);
     }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public static class ItemQualityVisualResolver
 {
@@ -54,38 +53,6 @@ public static class ItemQualityVisualResolver
     public static ItemQualityVisualStyle GetDefaultAccessoryRarityStyle(int rarity)
     {
         return ResolveDefaultStyle(ItemType.Accessory, rarity);
-    }
-
-    public static void Apply(
-        Component owner,
-        ItemDataSO itemData,
-        int qualityValue,
-        Image iconImage)
-    {
-        if (itemData == null)
-        {
-            return;
-        }
-
-        ItemQualityVisualStyle style = Resolve(itemData, qualityValue);
-
-        if (iconImage != null)
-        {
-            iconImage.sprite = itemData.ItemIcon;
-        }
-
-        if (owner == null)
-        {
-            return;
-        }
-
-        ItemQualityRuntimeEffectController runtimeEffectController = owner.GetComponent<ItemQualityRuntimeEffectController>();
-        if (runtimeEffectController == null)
-        {
-            runtimeEffectController = owner.gameObject.AddComponent<ItemQualityRuntimeEffectController>();
-        }
-
-        runtimeEffectController.Apply(style, iconImage);
     }
 
     public static void Apply(
@@ -198,28 +165,6 @@ internal static class ItemQualityShaderHelper
     {
         color.a = Mathf.Clamp01(alpha);
         return color;
-    }
-}
-
-[DisallowMultipleComponent]
-internal sealed class ItemQualityRuntimeEffectController : MonoBehaviour
-{
-    public void Apply(ItemQualityVisualStyle style, Image iconImage)
-    {
-        if (iconImage == null || iconImage.material == null)
-        {
-            return;
-        }
-
-        float qualityIntensity = ItemQualityShaderHelper.GetQualityIntensity(style);
-        float outlineThickness = Mathf.Lerp(0.28f, 0.62f, qualityIntensity);
-        float outlineSoftness = Mathf.Lerp(0.01f, 0.08f, qualityIntensity);
-        Color outlineColor = ItemQualityShaderHelper.WithAlpha(
-            ItemQualityShaderHelper.BoostColor(style.PrimaryColor, 1.28f, 0.94f), 1f);
-
-        iconImage.material.SetColor(ItemQualityShaderHelper.OutlineColorId, outlineColor);
-        iconImage.material.SetFloat(ItemQualityShaderHelper.OutlineThicknessId, outlineThickness);
-        iconImage.material.SetFloat(ItemQualityShaderHelper.OutlineSoftnessId, outlineSoftness);
     }
 }
 

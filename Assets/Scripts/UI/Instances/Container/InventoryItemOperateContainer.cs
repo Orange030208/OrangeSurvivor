@@ -36,7 +36,8 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
             sellPriceText.text = resource.sellPrice.ToString();
         }
 
-        RenderColor(resource.itemData, resource.colorDependencyNumber);
+        iconImage.sprite = resource.itemData.Icon;
+        RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
         bottom.Display(resource.itemData);
 
         currentEntryId = resource.entryId;

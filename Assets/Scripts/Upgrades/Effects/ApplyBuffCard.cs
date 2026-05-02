@@ -2,18 +2,18 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class ApplyBuffUpgradeCardEffect : FeatureEffectBase
+public sealed class ApplyBuffCard : FeatureEffectBase
 {
     [SerializeField] private BuffDataSO buffData;
     [SerializeField] private bool overrideDuration;
     [SerializeField] private BuffDurationPolicy durationPolicy = BuffDurationPolicy.Timed;
     [SerializeField] private float durationSeconds = 8f;
 
-    public ApplyBuffUpgradeCardEffect()
+    public ApplyBuffCard()
     {
     }
 
-    public ApplyBuffUpgradeCardEffect(BuffDataSO buffData, float durationSeconds)
+    public ApplyBuffCard(BuffDataSO buffData, float durationSeconds)
     {
         this.buffData = buffData;
         overrideDuration = true;

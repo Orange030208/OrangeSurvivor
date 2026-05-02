@@ -13,6 +13,7 @@ public sealed class ShopListRegionView
     private readonly TextMeshProUGUI rerollCostText;
     private readonly TextMeshProUGUI currencyText;
     private readonly List<ShopItemContainer> spawnedItems = new();
+    private readonly List<ShopItemIdentity?> renderedItemIdentities = new();
 
     private bool bound;
 
@@ -67,15 +68,16 @@ public sealed class ShopListRegionView
 
     public void RenderShopItems(ShopItemData[] items)
     {
-        ClearShopItems();
         if (items == null || items.Length == 0)
         {
+            ClearShopItems();
             return;
         }
 
+        TrimExtraItems(items.Length);
         for (int i = 0; i < items.Length; i++)
         {
-            SpawnShopItem(items[i]);
+            RenderShopItem(items[i], i);
         }
     }
 
@@ -90,31 +92,112 @@ public sealed class ShopListRegionView
         currencyText.text = amount.ToString();
     }
 
-    private void SpawnShopItem(ShopItemData itemData)
+    private void RenderShopItem(ShopItemData itemData, int itemIndex)
     {
-        ShopItemContainer container = UnityEngine.Object.Instantiate(shopItemPrefab, shopItemParent);
         if (itemData.ItemData == null)
         {
             Debug.LogWarning($"{nameof(ShopListRegionView)} on '{ownerName}' skipped rendering a shop item without {nameof(ItemDataSO)}.");
-            UnityEngine.Object.Destroy(container.gameObject);
+            ClearShopItemSlot(itemIndex);
             return;
         }
 
-        container.Configure(new InfoAddIndex<ShopItemData>(itemData, spawnedItems.Count));
-        BindShopItemCallbacks(container);
-        spawnedItems.Add(container);
+        ShopItemContainer container = GetOrCreateShopItem(itemIndex);
+        ShopItemIdentity nextIdentity = ShopItemIdentity.From(itemData);
+        EnsureIdentitySlotCount(itemIndex + 1);
+        bool playReveal = !renderedItemIdentities[itemIndex].HasValue
+            || !renderedItemIdentities[itemIndex].Value.Equals(nextIdentity);
+        container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex), playReveal);
+
+        renderedItemIdentities[itemIndex] = nextIdentity;
     }
 
     private void ClearShopItems()
     {
         foreach (ShopItemContainer item in spawnedItems)
         {
+            if (item == null)
+            {
+                continue;
+            }
+
             UnbindShopItemCallbacks(item);
             item.CleanUp();
             UnityEngine.Object.Destroy(item.gameObject);
         }
 
         spawnedItems.Clear();
+        renderedItemIdentities.Clear();
+    }
+
+    private ShopItemContainer GetOrCreateShopItem(int itemIndex)
+    {
+        EnsureItemSlotCount(itemIndex + 1);
+        if (spawnedItems[itemIndex] != null)
+        {
+            return spawnedItems[itemIndex];
+        }
+
+        ShopItemContainer container = UnityEngine.Object.Instantiate(shopItemPrefab, shopItemParent);
+        BindShopItemCallbacks(container);
+        spawnedItems[itemIndex] = container;
+        return container;
+    }
+
+    private void TrimExtraItems(int itemCount)
+    {
+        for (int i = spawnedItems.Count - 1; i >= itemCount; i--)
+        {
+            ClearShopItemSlot(i);
+            spawnedItems.RemoveAt(i);
+        }
+
+        if (renderedItemIdentities.Count > itemCount)
+        {
+            renderedItemIdentities.RemoveRange(itemCount, renderedItemIdentities.Count - itemCount);
+        }
+    }
+
+    private void ClearShopItemSlot(int itemIndex)
+    {
+        if (itemIndex < 0 || itemIndex >= spawnedItems.Count)
+        {
+            if (itemIndex >= 0 && itemIndex < renderedItemIdentities.Count)
+            {
+                renderedItemIdentities[itemIndex] = null;
+            }
+
+            return;
+        }
+
+        ShopItemContainer item = spawnedItems[itemIndex];
+        if (item != null)
+        {
+            UnbindShopItemCallbacks(item);
+            item.CleanUp();
+            UnityEngine.Object.Destroy(item.gameObject);
+            spawnedItems[itemIndex] = null;
+        }
+
+        if (itemIndex < renderedItemIdentities.Count)
+        {
+            renderedItemIdentities[itemIndex] = null;
+        }
+    }
+
+    private void EnsureItemSlotCount(int itemCount)
+    {
+        while (spawnedItems.Count < itemCount)
+        {
+            spawnedItems.Add(null);
+        }
+    }
+
+    private void EnsureIdentitySlotCount(int itemCount)
+    {
+        while (renderedItemIdentities.Count < itemCount)
+        {
+            renderedItemIdentities.Add(null);
+        }
     }
 
     private void BindShopItemCallbacks(ShopItemContainer container)
@@ -149,5 +232,27 @@ public sealed class ShopListRegionView
     private void OnItemLockToggleRequested(int itemIndex)
     {
         ItemLockToggleRequested?.Invoke(itemIndex);
+    }
+
+    private readonly struct ShopItemIdentity : IEquatable<ShopItemIdentity>
+    {
+        private readonly ItemDataSO itemData;
+        private readonly int level;
+
+        private ShopItemIdentity(ItemDataSO itemData, int level)
+        {
+            this.itemData = itemData;
+            this.level = level;
+        }
+
+        public static ShopItemIdentity From(ShopItemData itemData)
+        {
+            return new ShopItemIdentity(itemData.ItemData, itemData.Level);
+        }
+
+        public bool Equals(ShopItemIdentity other)
+        {
+            return itemData == other.itemData && level == other.level;
+        }
     }
 }
