@@ -50,7 +50,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     public float Range { get; private set; } = 0.1f;
     public float CriticalChance { get; private set; }
     public float CriticalMultiplier { get; private set; } = 1f;
-    public float KnockbackForce { get; private set; }
+    public float KnockbackStrength { get; private set; }
     public bool IsAttacking { get; protected set; }
     protected PropertiesManager propertiesManager;
     protected Entity owner;
@@ -175,7 +175,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     protected HitSpec BuildHitSpec()
     {
-        return new HitSpec(Damage, CriticalChance, CriticalMultiplier, KnockbackForce);
+        return new HitSpec(Damage, CriticalChance, CriticalMultiplier, KnockbackStrength);
     }
 
     protected Vector2 ResolveFallbackAttackDirection()
@@ -732,7 +732,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float weaponCriticalChance = weaponStats.CriticalChance;
         float weaponCriticalMultiplier = weaponStats.CriticalPercent;
         float weaponRange = weaponStats.Range;
-        float weaponKnockbackForce = weaponStats.KnockbackForce;
+        float weaponKnockbackStrength = weaponStats.KnockbackStrength;
 
         float playerCriticalChance = propertiesManager.GetPropValue(PropType.CriticalChance);
         float playerCriticalBonus = propertiesManager.GetPropValue(PropType.CriticalPercent);
@@ -745,7 +745,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         CriticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
         Range = Mathf.Max(0.1f, propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange));
-        KnockbackForce = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackForce, weaponKnockbackForce));
+        KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
     }
 
     private void ApplyCurrentConfiguration()
@@ -802,7 +802,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             propType == PropType.CriticalChance ||
             propType == PropType.CriticalPercent ||
             propType == PropType.AttackRange ||
-            propType == PropType.KnockbackForce)
+            propType == PropType.KnockbackStrength)
         {
             RefreshRuntimeStats();
         }

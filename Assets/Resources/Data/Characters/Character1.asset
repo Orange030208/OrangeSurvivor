@@ -29,8 +29,18 @@ MonoBehaviour:
     value: 0.08
   specialFeatures: []
   initialWeapons:
-  - weaponData: {fileID: 11400000, guid: d7c04844678d21f4b9a94eff92d757a2, type: 2}
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
     level: 1
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
+    level: 2
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
+    level: 3
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
+    level: 4
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
+    level: 5
+  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
+    level: 6
   initialAccessories:
   - {fileID: 11400000, guid: 24a31ba773c898546878277eaac8062e, type: 2}
   references:

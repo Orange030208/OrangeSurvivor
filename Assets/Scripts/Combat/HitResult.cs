@@ -7,7 +7,7 @@ public readonly struct HitResult
     public Entity Source { get; }
     public Entity Target { get; }
     public float FinalDamage { get; }
-    public float KnockbackForce { get; }
+    public float KnockbackStrength { get; }
     public Vector2 HitPoint { get; }
     public bool HasKnockbackDirection { get; }
     public Vector2 KnockbackDirection { get; }
@@ -23,8 +23,8 @@ public readonly struct HitResult
     {
     }
 
-    public HitResult(Entity source, Entity target, float finalDamage, float knockbackForce, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, string sourceId)
-        : this(source, target, finalDamage, knockbackForce, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourceId)
+    public HitResult(Entity source, Entity target, float finalDamage, float knockbackStrength, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, string sourceId)
+        : this(source, target, finalDamage, knockbackStrength, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourceId)
     {
     }
 
@@ -32,7 +32,7 @@ public readonly struct HitResult
         Entity source,
         Entity target,
         float finalDamage,
-        float knockbackForce,
+        float knockbackStrength,
         Vector2 hitPoint,
         bool hasKnockbackDirection,
         Vector2 knockbackDirection,
@@ -46,7 +46,7 @@ public readonly struct HitResult
         Source = source;
         Target = target;
         FinalDamage = Mathf.Max(0f, finalDamage);
-        KnockbackForce = Mathf.Max(0f, knockbackForce);
+        KnockbackStrength = Mathf.Max(0f, knockbackStrength);
         HitPoint = hitPoint;
         HasKnockbackDirection = hasKnockbackDirection &&
             knockbackDirection.sqrMagnitude > MIN_KNOCKBACK_DIRECTION_SQR_MAGNITUDE;
@@ -65,7 +65,7 @@ public readonly struct HitResult
             Source,
             Target,
             finalDamage,
-            KnockbackForce,
+            KnockbackStrength,
             HitPoint,
             HasKnockbackDirection,
             KnockbackDirection,

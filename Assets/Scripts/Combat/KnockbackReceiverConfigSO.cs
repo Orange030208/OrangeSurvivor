@@ -7,13 +7,11 @@ public class KnockbackReceiverConfigSO : ScriptableObject
     [SerializeField] private float duration = 0.12f;
     [SerializeField] private float forceMultiplier = 1f;
     [SerializeField] private float maxVelocity = 12f;
-    [SerializeField] private bool disableMovementWhileKnockback = true;
     [SerializeField] private AnimationCurve velocityCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
     public float Duration => Mathf.Max(0.01f, duration);
     public float ForceMultiplier => Mathf.Max(0f, forceMultiplier);
     public float MaxVelocity => Mathf.Max(0.01f, maxVelocity);
-    public bool DisableMovementWhileKnockback => disableMovementWhileKnockback;
     public AnimationCurve VelocityCurve => velocityCurve;
 
     private void OnValidate()

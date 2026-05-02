@@ -49,6 +49,7 @@ public static class ScriptableObjectMenuPaths
     public const string UI_MOTION_DEFINITION = SYSTEMS_ROOT + "UI/Motion Definition";
 
     public const string ITEM_QUALITY_VISUAL_CONFIG = PRESENTATION_ROOT + "Items/Quality Visual Config";
+    public const string PROP_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Properties/Prop Presentation Catalog";
     public const string DAMAGE_TEXT_VISUAL_CONFIG = PRESENTATION_ROOT + "Combat/Damage Text Visual Config";
     public const string MAP_GROUND_THEME = WORLD_ROOT + "Map/Ground Theme";
 }

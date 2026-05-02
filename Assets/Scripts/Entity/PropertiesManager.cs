@@ -24,8 +24,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         List<DescriptorInfo> infos = new();
         foreach (KeyValuePair<PropType, float> info in calculatedProps)
         {
-            infos.Add(new DescriptorInfo(info.Key.GetChineseName(),
-                info.Key.BuildIconNameValueDescription(info.Value)));
+            infos.Add(new DescriptorInfo(info.Key.ToString(), info.Key.FormatDisplayValue(info.Value)));
         }
 
         return infos;

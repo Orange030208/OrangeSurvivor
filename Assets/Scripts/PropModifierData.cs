@@ -55,11 +55,11 @@ public struct PropModifierData
     {
         return modifierType switch
         {
-            PropModifierType.Add => propType.GetChineseName(),
-            PropModifierType.BaseMultiplier => $"{propType.GetChineseName()}（基础乘区）",
-            PropModifierType.BonusMultiplier => $"{propType.GetChineseName()}（加成乘区）",
-            PropModifierType.FinalMultiplier => $"{propType.GetChineseName()}（最终乘区）",
-            _ => propType.GetChineseName()
+            PropModifierType.Add => propType.ToString(),
+            PropModifierType.BaseMultiplier => $"{propType}（基础乘区）",
+            PropModifierType.BonusMultiplier => $"{propType}（加成乘区）",
+            PropModifierType.FinalMultiplier => $"{propType}（最终乘区）",
+            _ => propType.ToString()
         };
     }
 

@@ -31,6 +31,19 @@ public class CharacterDataSO : ScriptableObject, IDescribable
     public IReadOnlyList<WeaponEntry> InitialWeapons => initialWeapons;
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
 
+    private void OnValidate()
+    {
+        if (initialWeapons == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < initialWeapons.Count; i++)
+        {
+            initialWeapons[i] = initialWeapons[i].Validated();
+        }
+    }
+
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         List<DescriptorInfo> infos = new();

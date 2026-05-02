@@ -110,7 +110,7 @@ public class Projectile : Entity, IProjectile
             launchContext.HitSpec.BaseDamage * currentDamageMultiplier,
             launchContext.HitSpec.CritChance,
             launchContext.HitSpec.CritMultiplier,
-            launchContext.HitSpec.KnockbackForce);
+            launchContext.HitSpec.KnockbackStrength);
 
         HitRequest request = new HitRequest(
             launchContext.Source,

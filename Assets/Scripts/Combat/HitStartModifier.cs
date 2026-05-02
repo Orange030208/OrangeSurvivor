@@ -32,6 +32,8 @@ public class HitStartModifier : IHitModifier
             float armor = Mathf.Clamp01(propertiesManager.GetPropValue(PropType.Armor));
             float damageReduction = Mathf.Clamp01(propertiesManager.GetPropValue(PropType.DamageReduction));
             hitContext.DamageReduction = Mathf.Clamp01(armor + damageReduction);
+            float knockbackResistance = Mathf.Clamp01(propertiesManager.GetPropValue(PropType.KnockbackResistance));
+            hitContext.KnockbackStrength = Mathf.Max(0f, hitContext.KnockbackStrength * (1f - knockbackResistance));
         }
 
         hitContext.IsCritical = Random.value <= hitContext.CritChance;

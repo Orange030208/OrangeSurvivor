@@ -17,6 +17,8 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 11d83d5cbe808c64f803388bedcde52c, type: 2}
   animConfig: {fileID: 11400000, guid: 84ce5795e7038434ebf1c35467a1f24a, type: 2}
   attackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
+  postChargeAttackHitShape: {fileID: 11400000, guid: 9f4b3596ad8b4665b6f7cc08e1c54f02, type: 2}
+  postChargeAttackRangeMultiplier: 1.5
   attackCommitNormalizedTime: 0.55
   attackFinishNormalizedTime: 0.95
   berserkInterval: 7

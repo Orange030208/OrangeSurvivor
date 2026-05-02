@@ -16,6 +16,7 @@ public class GolemBrain : EnemyBrain
         Attack,
         BerserkWindup,
         BerserkCharge,
+        PostChargeAttack,
         BerserkRecovery
     }
 
@@ -100,6 +101,7 @@ public class GolemBrain : EnemyBrain
         stateMachine.RegisterState(new AttackState(this));
         stateMachine.RegisterState(new BerserkWindupState(this));
         stateMachine.RegisterState(new BerserkChargeState(this));
+        stateMachine.RegisterState(new PostChargeAttackState(this));
         stateMachine.RegisterState(new BerserkRecoveryState(this));
     }
 
@@ -113,6 +115,11 @@ public class GolemBrain : EnemyBrain
         if (enemyData.AttackDefinition == null)
         {
             throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.AttackDefinition)}.");
+        }
+
+        if (enemyData.PostChargeAttackHitShape == null)
+        {
+            throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.PostChargeAttackHitShape)}.");
         }
     }
 
@@ -140,6 +147,7 @@ public class GolemBrain : EnemyBrain
     {
         return stateMachine.IsCurrentState(GolemAIState.BerserkWindup) ||
                stateMachine.IsCurrentState(GolemAIState.BerserkCharge) ||
+               stateMachine.IsCurrentState(GolemAIState.PostChargeAttack) ||
                stateMachine.IsCurrentState(GolemAIState.BerserkRecovery);
     }
 
@@ -476,7 +484,7 @@ public class GolemBrain : EnemyBrain
             elapsedTime += Time.deltaTime;
             if (elapsedTime >= brain.enemyData.ChargeDuration)
             {
-                brain.stateMachine.ChangeState(GolemAIState.BerserkRecovery);
+                brain.stateMachine.ChangeState(GolemAIState.PostChargeAttack);
             }
         }
 
@@ -492,6 +500,69 @@ public class GolemBrain : EnemyBrain
             brain.currentMovable.StopMoving();
             brain.currentAnimatable.ResetPlaybackSpeed();
             brain.RemoveChargeModifiers();
+        }
+    }
+
+    private sealed class PostChargeAttackState : StateBase<GolemAIState>
+    {
+        private readonly GolemBrain brain;
+        private bool attackCommitted;
+        private int attackStateHash;
+
+        public PostChargeAttackState(GolemBrain brain) : base(GolemAIState.PostChargeAttack)
+        {
+            this.brain = brain;
+        }
+
+        public override void OnEnter()
+        {
+            attackCommitted = false;
+            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
+            brain.currentMovable.StopMoving();
+            brain.FaceTarget();
+            brain.currentAnimatable.PlayState(attackStateHash);
+        }
+
+        public override void OnUpdate()
+        {
+            brain.FaceTarget();
+
+            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
+            {
+                return;
+            }
+
+            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
+            if (!attackCommitted && normalizedTime >= brain.enemyData.AttackCommitNormalizedTime)
+            {
+                attackCommitted = true;
+                TryCommitPostChargeAttack();
+            }
+
+            if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
+            {
+                brain.stateMachine.ChangeState(GolemAIState.BerserkRecovery);
+            }
+        }
+
+        public override void OnFixedUpdate()
+        {
+            brain.currentMovable.StopMoving();
+        }
+
+        private void TryCommitPostChargeAttack()
+        {
+            if (brain.target == null)
+            {
+                return;
+            }
+
+            brain.attackController.TryUseDirectDamageOverride(
+                brain.enemyData.AttackDefinition,
+                brain.target,
+                brain.enemyData.PostChargeAttackHitShape,
+                brain.enemyData.PostChargeAttackRangeMultiplier,
+                false);
         }
     }
 

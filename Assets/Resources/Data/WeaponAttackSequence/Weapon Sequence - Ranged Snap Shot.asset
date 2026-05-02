@@ -15,7 +15,7 @@ MonoBehaviour:
   duration: 0.92
   restoreDefaultPoseOnComplete: 1
   referenceTargetOffset: {x: 0, y: 1}
-  retargetScaleWeight: {x: 0, y: 1}
+  retargetScaleWeight: {x: 0, y: 0}
   motionKeyframes:
   - normalizedTime: 0
     localPositionX: 0

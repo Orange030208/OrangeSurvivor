@@ -112,16 +112,26 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
 
     public bool IsInAttackRange(EnemyAttackDefinitionSO attackDefinition, Entity target)
     {
+        return IsInAttackRange(attackDefinition, target, null, 1f);
+    }
+
+    public bool IsInAttackRange(
+        EnemyAttackDefinitionSO attackDefinition,
+        Entity target,
+        AttackHitShapeSO hitShapeOverride,
+        float rangeMultiplier)
+    {
         if (attackDefinition == null || attackDefinition.IsNoAttack || target == null)
         {
             return false;
         }
 
-        float range = ResolveRange(attackDefinition);
-        if (attackDefinition.HitShape != null)
+        float range = ResolveRange(attackDefinition) * Mathf.Max(0f, rangeMultiplier);
+        AttackHitShapeSO hitShape = hitShapeOverride != null ? hitShapeOverride : attackDefinition.HitShape;
+        if (hitShape != null)
         {
             AttackHitContext context = CreateHitContext(attackDefinition, target, range);
-            return attackDefinition.HitShape.Contains(context);
+            return hitShape.Contains(context);
         }
 
         return Vector2.Distance(owner.Center, target.Center) <= range;
@@ -155,6 +165,39 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
     {
         // None 是显式“这个状态不攻击”的定义，保留配置可见性，但不会进入出手流程。
         return attackDefinition != null && !attackDefinition.IsNoAttack && GetOrCreateSlot(attackDefinition).CanAttack;
+    }
+
+    public bool TryUseDirectDamageOverride(
+        EnemyAttackDefinitionSO attackDefinition,
+        Entity target,
+        AttackHitShapeSO hitShapeOverride,
+        float rangeMultiplier,
+        bool commitCooldown)
+    {
+        if (attackDefinition == null || target == null || attackDefinition.IsNoAttack)
+        {
+            return false;
+        }
+
+        if (attackDefinition.ExecutionKind != EnemyAttackExecutionKind.DirectDamage)
+        {
+            Debug.LogWarning($"{nameof(EnemyAttackController)} on {name} cannot use {attackDefinition.DisplayName} as direct damage: execution kind is {attackDefinition.ExecutionKind}.", this);
+            return false;
+        }
+
+        if (!IsInAttackRange(attackDefinition, target, hitShapeOverride, rangeMultiplier))
+        {
+            return false;
+        }
+
+        ApplyDirectDamage(attackDefinition, target);
+
+        if (commitCooldown)
+        {
+            CommitCooldown(attackDefinition);
+        }
+
+        return true;
     }
 
     public void CommitCooldown(EnemyAttackDefinitionSO attackDefinition)
@@ -195,6 +238,12 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
             return false;
         }
 
+        ApplyDirectDamage(attackDefinition, target);
+        return true;
+    }
+
+    private void ApplyDirectDamage(EnemyAttackDefinitionSO attackDefinition, Entity target)
+    {
         float damage = Mathf.Max(0f, attackDamage * attackDefinition.DamageMultiplier);
         Vector2 knockbackDirection = target.Center - owner.Center;
         HitService.Apply(new HitRequest(
@@ -205,8 +254,6 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
             knockbackDirection,
             HitSourceKind.Direct,
             attackDefinition.Id));
-
-        return true;
     }
 
     private bool TryFireProjectile(EnemyAttackDefinitionSO attackDefinition, Entity target)

@@ -23,6 +23,10 @@ MonoBehaviour:
   visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.779
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: -0.22785732, y: 0.6164285}
+    localRotationOffset: 0
   sequenceProjectileList:
   - spawnPointIndex: 0
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
@@ -44,43 +48,43 @@ MonoBehaviour:
   levelStats:
   - level: 1
     attack: 9
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.06
     criticalPercent: 1.7
     range: 8
-    knockbackForce: 1
+    knockbackStrength: 1
   - level: 2
     attack: 10.62
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.07
     criticalPercent: 1.78
     range: 8.25
-    knockbackForce: 1.18
+    knockbackStrength: 1.18
   - level: 3
     attack: 12.24
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.08
     criticalPercent: 1.86
     range: 8.5
-    knockbackForce: 1.36
+    knockbackStrength: 1.36
   - level: 4
     attack: 13.86
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.09
     criticalPercent: 1.94
     range: 8.75
-    knockbackForce: 1.54
+    knockbackStrength: 1.54
   - level: 5
     attack: 15.48
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.1
     criticalPercent: 2.02
     range: 9
-    knockbackForce: 1.72
+    knockbackStrength: 1.72
   - level: 6
     attack: 17.1
-    attackSpeed: 2
+    attackSpeed: 4
     criticalChance: 0.11
     criticalPercent: 2.1
     range: 9.25
-    knockbackForce: 1.9
+    knockbackStrength: 1.9

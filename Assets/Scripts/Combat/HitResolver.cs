@@ -26,7 +26,7 @@ public sealed class HitResolver
             request.Source,
             request.Target,
             context.Damage,
-            context.KnockbackForce,
+            context.KnockbackStrength,
             request.HitPoint,
             context.HasKnockbackDirection,
             context.KnockbackDirection,

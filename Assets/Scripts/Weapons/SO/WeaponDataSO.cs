@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum WeaponTag
 {
@@ -98,7 +99,8 @@ public struct WeaponLevelStatData
     [SerializeField, Range(0f, 1f)] private float criticalChance;
     [SerializeField, Min(1f)] private float criticalPercent;
     [SerializeField, Min(0f)] private float range;
-    [SerializeField, Min(0f)] private float knockbackForce;
+    [FormerlySerializedAs("knockbackForce")]
+    [SerializeField, Min(0f)] private float knockbackStrength;
 
     public int Level => Mathf.Max(WeaponLevelHelper.MinLevel, level);
     public float Attack => Mathf.Max(0f, attack);
@@ -106,7 +108,7 @@ public struct WeaponLevelStatData
     public float CriticalChance => Mathf.Clamp01(criticalChance);
     public float CriticalPercent => Mathf.Max(1f, criticalPercent);
     public float Range => Mathf.Max(0f, range);
-    public float KnockbackForce => Mathf.Max(0f, knockbackForce);
+    public float KnockbackStrength => Mathf.Max(0f, knockbackStrength);
 
     public WeaponLevelStatData(
         int level,
@@ -115,7 +117,7 @@ public struct WeaponLevelStatData
         float criticalChance,
         float criticalPercent,
         float range,
-        float knockbackForce)
+        float knockbackStrength)
     {
         this.level = Mathf.Max(WeaponLevelHelper.MinLevel, level);
         this.attack = Mathf.Max(0f, attack);
@@ -123,7 +125,7 @@ public struct WeaponLevelStatData
         this.criticalChance = Mathf.Clamp01(criticalChance);
         this.criticalPercent = Mathf.Max(1f, criticalPercent);
         this.range = Mathf.Max(0f, range);
-        this.knockbackForce = Mathf.Max(0f, knockbackForce);
+        this.knockbackStrength = Mathf.Max(0f, knockbackStrength);
     }
 
     public WeaponLevelStatData ValidatedForLevel(int expectedLevel)
@@ -135,7 +137,7 @@ public struct WeaponLevelStatData
             CriticalChance,
             CriticalPercent,
             Range,
-            KnockbackForce);
+            KnockbackStrength);
     }
 
 }
@@ -300,7 +302,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         List<DescriptorInfo> infos = new();
         infos.Add(new DescriptorInfo("Lv.1攻击力", $"{PropType.Attack.GetIconRichTextWithVOffset()}{previewStats.Attack:0.##}"));
         infos.Add(new DescriptorInfo("Lv.1攻速", $"{PropType.AttackSpeed.GetIconRichTextWithVOffset()}{previewStats.AttackSpeed:0.##}"));
-        infos.Add(new DescriptorInfo("Lv.1击退", $"{PropType.KnockbackForce.GetIconRichTextWithVOffset()}{previewStats.KnockbackForce:0.##}"));
+        infos.Add(new DescriptorInfo("Lv.1击退", $"{PropType.KnockbackStrength.GetIconRichTextWithVOffset()}{previewStats.KnockbackStrength:0.##}"));
         if (tags != null && tags.Length > 0)
         {
             infos.Add(new DescriptorInfo("标签", string.Join(" / ", tags)));
