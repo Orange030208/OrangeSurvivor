@@ -21,8 +21,6 @@ MonoBehaviour:
   - 0
   - 4
   - 5
-  weaponPrefab: {fileID: 6802585226729800489, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
-  constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: 05c6b50c53dd3bc4388b2f6c74ebb628, type: 2}
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 1
@@ -31,11 +29,50 @@ MonoBehaviour:
   sequenceSfxList: []
   sequenceVfxList: []
   hitSfxKey: 0
-  meleeHitVfxPrefab: {fileID: 0}
-  meleeHitBoxSize: {x: 0.55, y: 1}
-  meleeHitOffset: {x: 0, y: 0.92}
-  attack: 16
-  attackSpeed: 1.08
-  criticalChance: 0.09
-  criticalPercent: 2
-  range: 4.8
+  enableHitBox: 1
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 0.55, y: 1}
+  hitBoxOffset: {x: 0, y: 0.92}
+  levelStats:
+  - level: 1
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0
+  - level: 2
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0
+  - level: 3
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0
+  - level: 4
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0
+  - level: 5
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0
+  - level: 6
+    attack: 16
+    attackSpeed: 1.08
+    criticalChance: 0.09
+    criticalPercent: 2
+    range: 4.8
+    knockbackForce: 0

@@ -785,7 +785,7 @@ PrefabInstance:
     - target: {fileID: 3011046056889060457, guid: 7026fe890d705004f885f92b5e3bde82, type: 3}
       propertyPath: bottom
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8545736035816999817}
     - target: {fileID: 7139556483707835314, guid: 7026fe890d705004f885f92b5e3bde82, type: 3}
       propertyPath: m_Name
       value: AccessoryOperateContainer
@@ -913,5 +913,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bc8c52462e8147bab3e6526e1814ab01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8545736035816999817 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 357028523194548656, guid: 7026fe890d705004f885f92b5e3bde82, type: 3}
+  m_PrefabInstance: {fileID: 8245218083398027833}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4baf271be0366904788416cfdf4d7f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

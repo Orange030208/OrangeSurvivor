@@ -281,7 +281,7 @@ MonoBehaviour:
   propertiesDescriber: {fileID: 4539172415588371942}
   inventorySidebar: {fileID: 1730573582740224298}
   inventoryToggleButton: {fileID: 6734765040095314348}
-  inventoryUI: {fileID: 0}
+  inventoryUI: {fileID: 5311398793965051210}
 --- !u!114 &3339615293881789033
 MonoBehaviour:
   m_ObjectHideFlags: 0

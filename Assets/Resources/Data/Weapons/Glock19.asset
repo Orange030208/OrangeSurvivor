@@ -18,12 +18,14 @@ MonoBehaviour:
   itemType: 0
   itemDescription: Light sidearm. Low damage, excellent cadence, easy to keep firing.
   tags: 010000000200000005000000
-  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
-  constructionScheme: 0
-  attackSequence: {fileID: 11400000, guid: abaa23446fa84d042b0cc13d8bb78d49, type: 2}
-  visualForwardAngle: 45
+  attackSequence: {fileID: 11400000, guid: 5bc120404a5b6cc4bba80f9a8c7dceae, type: 2}
+  visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.9
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: -0.4433336, y: 0.781111}
+    localRotationOffset: 0
   sequenceProjectileList:
   - spawnPointIndex: 0
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
@@ -38,9 +40,10 @@ MonoBehaviour:
   sequenceSfxList: []
   sequenceVfxList: []
   hitSfxKey: 0
-  meleeHitVfxPrefab: {fileID: 0}
-  meleeHitBoxSize: {x: 1, y: 1}
-  meleeHitOffset: {x: 0, y: 0}
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
   levelStats:
   - level: 1
     attack: 8

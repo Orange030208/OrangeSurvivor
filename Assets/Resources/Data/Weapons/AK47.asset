@@ -19,8 +19,6 @@ MonoBehaviour:
   itemDescription: Reliable automatic rifle. Fires short bursts with steady mid-range
     damage.
   tags: 010000000200000005000000
-  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
-  constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: abaa23446fa84d042b0cc13d8bb78d49, type: 2}
   visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
@@ -39,9 +37,10 @@ MonoBehaviour:
   sequenceSfxList: []
   sequenceVfxList: []
   hitSfxKey: 0
-  meleeHitVfxPrefab: {fileID: 0}
-  meleeHitBoxSize: {x: 1, y: 1}
-  meleeHitOffset: {x: 0, y: 0}
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
   levelStats:
   - level: 1
     attack: 9

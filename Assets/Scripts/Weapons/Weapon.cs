@@ -1,33 +1,48 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 武器运行时基类：
-/// 1. 负责索敌；
-/// 2. 负责根据属性直接维护当前运行时攻击参数；
-/// 3. 在冷却完成后触发具体武器的攻击实现。
-/// 子类只需要关心“如何攻击”，例如近战开命中窗口、远程发射投射物。
+/// 统一武器运行时：
+/// 1. 负责索敌、冷却、朝向和攻击序列播放；
+/// 2. 根据序列事件执行近战命中窗口、投射物发射、音效和特效；
+/// 3. 通过 WeaponDataSO 的 Spawn Points 统一描述子弹、命中盒和表现锚点。
 /// </summary>
-public abstract class Weapon : Entity, ILifecycle
+[RequireComponent(typeof(WeaponSequenceBridge))]
+public class Weapon : Entity, ILifecycle, IProjectileLauncher
 {
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
 
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
+    [Header("Sequence")]
+    [Tooltip("必需组件：负责驱动武器动作序列并把关键帧事件转发回本类。")]
+    [SerializeField] private WeaponSequenceBridge sequenceBridge;
+
+    [Header("Visual")]
+    [Tooltip("接收 WeaponDataSO.VisualForwardAngle 的表现节点。请拖入只负责显示的子 Transform，避免影响武器根节点、发射点和碰撞逻辑。")]
+    [SerializeField] private Transform visualForwardTransform;
+
     [Header("Aim")]
     [Tooltip("平时自动转向目标的插值速度。")]
-    [SerializeField]
-    protected float aimLerp = 10f;
+    [SerializeField] protected float aimLerp = 10f;
 
     [Tooltip("允许发起攻击前，武器当前朝向与目标朝向之间的最大夹角。超过这个角度时会先继续转向，再等待下一帧攻击。")]
-    [SerializeField]
-    private float attackStartAimToleranceDegrees = 8f;
+    [SerializeField] private float attackStartAimToleranceDegrees = 8f;
 
     [Header("Runtime")]
     [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")]
-    [SerializeField]
-    protected LayerMask targetLayerMask;
+    [SerializeField] protected LayerMask targetLayerMask;
+
+    private readonly Dictionary<int, HashSet<HealthComponent>> hitWindowTargets = new();
+    private readonly Dictionary<int, HitBoxDetectionPose> hitWindowLastPoses = new();
+    private readonly HashSet<int> activeHitWindows = new();
+    private HitBoxAttackExecutor hitBoxAttackExecutor;
+    private AttackSequenceDefinitionSO attackSequence;
+    private Vector2 pendingTargetPosition;
+    private int activeBurstId = -1;
 
     public int Level { get; private set; } = DEFAULT_WEAPON_LEVEL;
     public float Damage { get; private set; }
@@ -46,16 +61,20 @@ public abstract class Weapon : Entity, ILifecycle
 
     public Entity Owner => owner;
     public virtual int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
+    public Transform VisualForwardTransform => visualForwardTransform;
+    public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : WeaponData != null ? WeaponData.AttackSequence : null;
+    private Vector2 HitBoxSize => WeaponData != null ? WeaponData.HitBoxSize : Vector2.one;
 
     public virtual void OnFixedTick(float deltaTime)
     {
-
     }
 
     public virtual void Initialize(Entity owner)
     {
         this.owner = owner;
         propertiesManager = GetComponentInParent<PropertiesManager>();
+        sequenceBridge = GetComponent<WeaponSequenceBridge>();
+        hitBoxAttackExecutor = new HitBoxAttackExecutor(SpawnHitVfx);
     }
 
     public virtual void OnEnableComponent()
@@ -66,6 +85,7 @@ public abstract class Weapon : Entity, ILifecycle
             propertiesManager.OnPropertyChanged += OnPropertyChanged;
         }
 
+        SubscribeSequenceEvents();
         ApplyCurrentConfiguration();
         RefreshRuntimeStats();
     }
@@ -77,6 +97,14 @@ public abstract class Weapon : Entity, ILifecycle
             propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
             propertiesManager.OnPropertyChanged -= OnPropertyChanged;
         }
+
+        UnsubscribeSequenceEvents();
+        ForceResetAttackState();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeSequenceEvents();
     }
 
     public virtual void OnTick(float deltaTime)
@@ -94,7 +122,7 @@ public abstract class Weapon : Entity, ILifecycle
     public void SetWeaponData(WeaponDataSO weaponData)
     {
         WeaponData = weaponData ?? throw new ArgumentNullException(nameof(weaponData),
-                $"{nameof(Weapon)} requires a non-null {nameof(WeaponDataSO)}.");
+            $"{nameof(Weapon)} requires a non-null {nameof(WeaponDataSO)}.");
         ApplyCurrentConfiguration();
         RefreshRuntimeStats();
     }
@@ -108,6 +136,12 @@ public abstract class Weapon : Entity, ILifecycle
 
     protected virtual void OnConfiguredFromData()
     {
+        attackSequence = WeaponData.AttackSequence;
+        if (attackSequence == null)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(WeaponDataSO)} '{WeaponData.name}' requires a configured {nameof(WeaponDataSO.AttackSequence)}.");
+        }
     }
 
     public virtual void RefreshRuntimeStats()
@@ -117,22 +151,26 @@ public abstract class Weapon : Entity, ILifecycle
 
     public void ApplyVisualForwardAngle()
     {
-        if (EntityRenderer == null)
+        if (visualForwardTransform == null)
         {
-            throw new MissingComponentException(
-                $"{nameof(EntityRenderer)} is null on {name} when applying visual forward angle. " +
-                $"Ensure {nameof(EntityRenderer)} is assigned in the inspector.");
+            throw new MissingReferenceException(
+                $"{nameof(Weapon)} '{name}' requires {nameof(visualForwardTransform)} to apply " +
+                $"{nameof(WeaponDataSO.VisualForwardAngle)}. Assign the visual-only child transform in the inspector.");
         }
 
-        Transform visualTransform = EntityRenderer.transform;
-        Vector3 localEulerAngles = visualTransform.localEulerAngles;
+        Vector3 localEulerAngles = visualForwardTransform.localEulerAngles;
         localEulerAngles.z = WeaponData.VisualForwardAngle;
-        visualTransform.localEulerAngles = localEulerAngles;
+        visualForwardTransform.localEulerAngles = localEulerAngles;
     }
 
     protected Entity ResolveAttackSourceEntity()
     {
         return owner != null ? owner : this;
+    }
+
+    private Entity GetCurrentTarget()
+    {
+        return currentTarget;
     }
 
     protected HitSpec BuildHitSpec()
@@ -158,7 +196,12 @@ public abstract class Weapon : Entity, ILifecycle
     protected Vector2 ResolveAttackDirection(Vector2 targetPosition, Transform origin = null)
     {
         Vector2 originPosition = origin != null ? (Vector2)origin.position : (Vector2)transform.position;
-        Vector2 targetDirection = targetPosition - originPosition;
+        return ResolveAttackDirection(targetPosition, originPosition);
+    }
+
+    protected Vector2 ResolveAttackDirection(Vector2 targetPosition, Vector3 originPosition)
+    {
+        Vector2 targetDirection = targetPosition - (Vector2)originPosition;
         if (targetDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
             return targetDirection.normalized;
@@ -174,7 +217,7 @@ public abstract class Weapon : Entity, ILifecycle
             return (target.Center - (Vector2)transform.position).normalized;
         }
 
-        if (owner.MoveComponent.MoveDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        if (owner != null && owner.MoveComponent.MoveDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
         {
             return owner.MoveComponent.MoveDirection.normalized;
         }
@@ -246,6 +289,7 @@ public abstract class Weapon : Entity, ILifecycle
 
     protected virtual void TickWeapon(float deltaTime)
     {
+        TickActiveHitWindows();
         attackCooldownTimer += deltaTime;
 
         if (currentTarget == null)
@@ -274,10 +318,23 @@ public abstract class Weapon : Entity, ILifecycle
 
     protected virtual bool CanStartAttack()
     {
-        return !IsAttacking;
+        return !IsAttacking && (sequenceBridge == null || !sequenceBridge.IsPlaying);
     }
 
-    protected abstract void BeginAttack(Entity target);
+    protected virtual void BeginAttack(Entity target)
+    {
+        IsAttacking = true;
+        pendingTargetPosition = target.Center;
+        LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
+        activeBurstId = -1;
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
+
+        float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
+        Vector2 targetLocalOffset = transform.InverseTransformPoint(target.Center);
+        sequenceBridge.Play(attackSequence, targetLocalOffset, sequenceDuration);
+    }
 
     protected virtual void TickTargeting(float deltaTime)
     {
@@ -313,6 +370,350 @@ public abstract class Weapon : Entity, ILifecycle
             ? (Vector3)nextAimDirection
             : transform.up;
         transform.up = Vector3.Lerp(transform.up, targetAimDirection, deltaTime * aimLerp);
+    }
+
+    private void SubscribeSequenceEvents()
+    {
+        if (sequenceBridge == null)
+        {
+            sequenceBridge = GetComponent<WeaponSequenceBridge>();
+        }
+
+        if (sequenceBridge == null)
+        {
+            return;
+        }
+
+        sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted -= FinishAttackSequence;
+        sequenceBridge.SequenceEventTriggered += OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted += FinishAttackSequence;
+    }
+
+    private void UnsubscribeSequenceEvents()
+    {
+        if (sequenceBridge == null)
+        {
+            return;
+        }
+
+        sequenceBridge.SequenceEventTriggered -= OnSequenceEventTriggered;
+        sequenceBridge.SequenceCompleted -= FinishAttackSequence;
+    }
+
+    private void OnSequenceEventTriggered(WeaponSequenceEventType eventType, int eventKey)
+    {
+        switch (eventType)
+        {
+            case WeaponSequenceEventType.OpenHitWindow:
+                OpenHitWindow(eventKey);
+                break;
+            case WeaponSequenceEventType.CloseHitWindow:
+                CloseHitWindow(eventKey);
+                break;
+            case WeaponSequenceEventType.SpawnProjectile:
+                FireProjectiles(eventKey);
+                break;
+            case WeaponSequenceEventType.PlaySfx:
+                PlaySequenceSfx(eventKey);
+                break;
+            case WeaponSequenceEventType.PlayVfx:
+                PlaySequenceVfx(eventKey);
+                break;
+        }
+    }
+
+    private void OpenHitWindow(int eventKey)
+    {
+        if (WeaponData == null || !WeaponData.EnableHitBox)
+        {
+            return;
+        }
+
+        activeHitWindows.Add(eventKey);
+        if (!hitWindowTargets.TryGetValue(eventKey, out HashSet<HealthComponent> hitTargets))
+        {
+            hitTargets = new HashSet<HealthComponent>();
+            hitWindowTargets[eventKey] = hitTargets;
+        }
+        else
+        {
+            hitTargets.Clear();
+        }
+
+        hitWindowLastPoses[eventKey] = CaptureCurrentHitPose(eventKey);
+    }
+
+    private void CloseHitWindow(int eventKey)
+    {
+        activeHitWindows.Remove(eventKey);
+        hitWindowLastPoses.Remove(eventKey);
+    }
+
+    private void TickActiveHitWindows()
+    {
+        if (WeaponData == null || !WeaponData.EnableHitBox || activeHitWindows.Count == 0)
+        {
+            return;
+        }
+
+        foreach (int windowId in activeHitWindows)
+        {
+            if (!hitWindowTargets.TryGetValue(windowId, out HashSet<HealthComponent> hitTargets))
+            {
+                continue;
+            }
+
+            HitBoxDetectionPose currentPose = CaptureCurrentHitPose(windowId);
+            if (!hitWindowLastPoses.TryGetValue(windowId, out HitBoxDetectionPose previousPose))
+            {
+                previousPose = currentPose;
+            }
+
+            hitBoxAttackExecutor.ExecuteAttack(
+                this,
+                ResolveAttackSourceEntity(),
+                BuildHitSpec(),
+                HitBoxSize,
+                hitTargets,
+                targetLayerMask,
+                previousPose,
+                currentPose);
+
+            hitWindowLastPoses[windowId] = currentPose;
+        }
+    }
+
+    private HitBoxDetectionPose CaptureCurrentHitPose(int windowId)
+    {
+        WeaponSpawnPointPose anchorPose = ResolveSpawnPointPose(windowId);
+        Vector2 hitOffset = WeaponData != null ? WeaponData.HitBoxOffset : Vector2.zero;
+        Vector3 localOffset = new(hitOffset.x, hitOffset.y, 0f);
+        Vector3 offsetPosition = anchorPose.Position + anchorPose.Rotation * localOffset;
+        return new HitBoxDetectionPose(offsetPosition, anchorPose.Rotation.eulerAngles.z);
+    }
+
+    private void FireProjectiles(int eventKey)
+    {
+        if (WeaponData == null || !WeaponData.TryGetSequenceProjectile(eventKey, out WeaponSequenceProjectileDefinition projectileConfig))
+        {
+            return;
+        }
+
+        FireProjectiles(projectileConfig);
+    }
+
+    private void FireProjectiles(WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        switch (projectileConfig.FiringMode)
+        {
+            case ProjectileFiringMode.Burst:
+                TryStartBurst(projectileConfig);
+                break;
+            case ProjectileFiringMode.Spread:
+                FireSpread(projectileConfig);
+                break;
+            case ProjectileFiringMode.Nova:
+                FireNova(projectileConfig);
+                break;
+            default:
+                FireSingle(projectileConfig, null);
+                break;
+        }
+    }
+
+    private void TryStartBurst(WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        if (activeBurstId == projectileConfig.BurstId)
+        {
+            return;
+        }
+
+        activeBurstId = projectileConfig.BurstId;
+        StartCoroutine(BurstRoutine(projectileConfig));
+    }
+
+    private IEnumerator BurstRoutine(WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        int burstCount = projectileConfig.PatternConfig.BurstCount;
+        float burstInterval = projectileConfig.PatternConfig.BurstInterval;
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            FireSingle(projectileConfig, null);
+            if (i < burstCount - 1)
+            {
+                yield return new WaitForSeconds(burstInterval);
+            }
+        }
+
+        activeBurstId = -1;
+    }
+
+    private void FireSpread(WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        int spreadCount = projectileConfig.PatternConfig.SpreadCount;
+        if (spreadCount <= 1)
+        {
+            FireSingle(projectileConfig, null);
+            return;
+        }
+
+        float spreadAngle = projectileConfig.PatternConfig.SpreadAngle;
+        float step = spreadCount > 1 ? (spreadAngle * 2f) / (spreadCount - 1) : 0f;
+        for (int i = 0; i < spreadCount; i++)
+        {
+            float angle = -spreadAngle + (step * i);
+            FireSingle(projectileConfig, angle);
+        }
+    }
+
+    private void FireNova(WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        int novaCount = projectileConfig.PatternConfig.NovaCount;
+        for (int i = 0; i < novaCount; i++)
+        {
+            float angle = 360f / novaCount * i;
+            FireSingle(projectileConfig, angle);
+        }
+    }
+
+    private void FireSingle(WeaponSequenceProjectileDefinition projectileConfig, float? angleOffset)
+    {
+        WeaponSpawnPointPose origin = ResolveSpawnPointPose(projectileConfig.SpawnPointIndex);
+        Entity sourceEntity = ResolveAttackSourceEntity();
+        HitSpec hitSpec = BuildHitSpec();
+        Vector2 aimDirection = ResolveAttackDirection(pendingTargetPosition, origin.Position);
+        if (angleOffset.HasValue)
+        {
+            aimDirection = (Quaternion.Euler(0f, 0f, angleOffset.Value) * aimDirection).normalized;
+        }
+
+        ExecuteProjectileAttack(sourceEntity, origin, aimDirection, hitSpec, projectileConfig);
+    }
+
+    private void ExecuteProjectileAttack(
+        Entity sourceEntity,
+        WeaponSpawnPointPose origin,
+        Vector2 aimDirection,
+        HitSpec hitSpec,
+        WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        Projectile projectile = ProjectileFactory.CreateProjectile(projectileConfig.ProjectileDefinition, origin.Position, Quaternion.identity);
+        LaunchProjectile(projectile, new ProjectileLaunchContext(
+            this,
+            sourceEntity,
+            origin.Position,
+            aimDirection,
+            hitSpec,
+            TargetLayerMask,
+            projectileConfig.ProjectileDefinition,
+            ResolveProjectilePierceCount(),
+            projectileConfig.SpawnPointIndex,
+            projectileConfig.BurstId,
+            projectileConfig.FiringMode,
+            projectileConfig.PatternConfig));
+    }
+
+    public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
+    {
+        if (projectile == null)
+        {
+            throw new ArgumentNullException(nameof(projectile), $"{nameof(Weapon)} requires a valid {nameof(IProjectile)} instance.");
+        }
+
+        if (context.ProjectileDefinition != null)
+        {
+            AudioSfxBridge.RequestPlay(context.ProjectileDefinition.LaunchSfxKey);
+        }
+
+        projectile.Launch(context);
+    }
+
+    private int ResolveProjectilePierceCount()
+    {
+        return propertiesManager != null
+            ? Mathf.Max(0, Mathf.FloorToInt(propertiesManager.GetPropValue(PropType.ProjectilePierceCount)))
+            : 0;
+    }
+
+    private void PlaySequenceSfx(int eventKey)
+    {
+        if (WeaponData == null || !WeaponData.TryGetSequenceSfx(eventKey, out WeaponSequenceSfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.SfxKey != AudioSfxKey.None)
+        {
+            AudioSfxBridge.RequestPlay(definition.SfxKey);
+        }
+    }
+
+    private void PlaySequenceVfx(int eventKey)
+    {
+        if (WeaponData == null || !WeaponData.TryGetSequenceVfx(eventKey, out WeaponSequenceVfxDefinition definition))
+        {
+            return;
+        }
+
+        if (definition.VfxPrefab == null)
+        {
+            return;
+        }
+
+        WeaponSpawnPointPose spawnAnchor = ResolveSpawnPointPose(definition.SpawnPointIndex);
+        Vector3 spawnPosition = spawnAnchor.Position + spawnAnchor.Rotation * definition.LocalOffset;
+        Quaternion spawnRotation = spawnAnchor.Rotation * Quaternion.Euler(definition.LocalEulerAngles);
+        RuntimeVfx.Spawn(definition.VfxPrefab, spawnPosition, spawnRotation, null);
+    }
+
+    private void SpawnHitVfx(Vector2 hitPoint)
+    {
+        if (WeaponData == null || !WeaponData.EnableHitBox || WeaponData.HitVfxPrefab == null)
+        {
+            return;
+        }
+
+        Quaternion spawnRotation = ResolveSpawnPointPose(0).Rotation;
+        RuntimeVfx.Spawn(WeaponData.HitVfxPrefab, hitPoint, spawnRotation, null);
+    }
+
+    private WeaponSpawnPointPose ResolveSpawnPointPose(int spawnPointIndex)
+    {
+        if (WeaponData != null && WeaponData.TryGetSpawnPointPose(spawnPointIndex, transform, out WeaponSpawnPointPose configuredPose))
+        {
+            return configuredPose;
+        }
+
+        return ResolveRootSpawnPointPose();
+    }
+
+    private WeaponSpawnPointPose ResolveRootSpawnPointPose()
+    {
+        return new WeaponSpawnPointPose(transform.position, transform.rotation);
+    }
+
+    private void FinishAttackSequence()
+    {
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
+        pendingTargetPosition = Vector2.zero;
+        activeBurstId = -1;
+        CompleteAttackCycle();
+    }
+
+    private void ForceResetAttackState()
+    {
+        activeHitWindows.Clear();
+        hitWindowTargets.Clear();
+        hitWindowLastPoses.Clear();
+        pendingTargetPosition = Vector2.zero;
+        activeBurstId = -1;
+        CompleteAttackCycle();
+        sequenceBridge?.Stop(true);
+        StopAllCoroutines();
     }
 
     protected virtual void RecalculateRuntimeStats()
@@ -356,21 +757,15 @@ public abstract class Weapon : Entity, ILifecycle
                 $"Ensure {nameof(WeaponData)} is assigned before the weapon starts.");
         }
 
-        switch (WeaponData.ConstructionScheme)
-        {
-            case WeaponConstructionScheme.Default:
-            default:
-                ApplyDefaultConstructionScheme();
-                break;
-        }
-
+        ApplyDefaultConfiguration();
         OnConfiguredFromData();
     }
 
-    private void ApplyDefaultConstructionScheme()
+    private void ApplyDefaultConfiguration()
     {
         ApplyDataIcon();
         ApplyVisualForwardAngle();
+        CacheSequenceDefaultPose();
     }
 
     private void ApplyDataIcon()
@@ -383,6 +778,16 @@ public abstract class Weapon : Entity, ILifecycle
         }
 
         EntityRenderer.SetSprite(WeaponData.ItemIcon);
+    }
+
+    private void CacheSequenceDefaultPose()
+    {
+        if (sequenceBridge == null)
+        {
+            sequenceBridge = GetComponent<WeaponSequenceBridge>();
+        }
+
+        sequenceBridge?.CacheDefaultPose();
     }
 
     private bool ShouldStopAimingWhenAttackReady()
@@ -400,6 +805,228 @@ public abstract class Weapon : Entity, ILifecycle
             propType == PropType.KnockbackForce)
         {
             RefreshRuntimeStats();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        DrawSpawnPointGizmos();
+        DrawHitBoxGizmo();
+        DrawProjectilePatternGizmos();
+    }
+
+    private void DrawSpawnPointGizmos()
+    {
+        if (WeaponData == null || WeaponData.SpawnPoints == null)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < WeaponData.SpawnPoints.Count; i++)
+        {
+            if (!WeaponData.TryGetSpawnPointPose(i, transform, out WeaponSpawnPointPose origin))
+            {
+                continue;
+            }
+
+            Gizmos.DrawWireSphere(origin.Position, 0.06f);
+            Gizmos.DrawRay(origin.Position, origin.Forward * 0.8f);
+        }
+    }
+
+    private void DrawHitBoxGizmo()
+    {
+        if (WeaponData == null || !WeaponData.EnableHitBox)
+        {
+            return;
+        }
+
+        HitBoxDetectionPose previewPose = CaptureCurrentHitPose(0);
+        Gizmos.color = Color.red;
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(previewPose.Position, Quaternion.Euler(0f, 0f, previewPose.RotationZ), Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, HitBoxSize);
+        Gizmos.matrix = previousMatrix;
+    }
+
+    private void DrawProjectilePatternGizmos()
+    {
+        AttackSequenceDefinitionSO sequence = DebugAttackSequence;
+        if (WeaponData == null || sequence == null)
+        {
+            return;
+        }
+
+        var events = sequence.EventKeyframes;
+        for (int i = 0; i < events.Count; i++)
+        {
+            WeaponSequenceEventKeyframe keyframe = events[i];
+            if (keyframe.eventType != WeaponSequenceEventType.SpawnProjectile)
+            {
+                continue;
+            }
+
+            if (!WeaponData.TryGetSequenceProjectile(keyframe.eventKey, out WeaponSequenceProjectileDefinition projectileConfig))
+            {
+                continue;
+            }
+
+            WeaponSpawnPointPose origin = ResolveSpawnPointPose(projectileConfig.SpawnPointIndex);
+            DrawProjectilePatternGizmo(origin, projectileConfig);
+        }
+    }
+
+    private void DrawProjectilePatternGizmo(WeaponSpawnPointPose origin, WeaponSequenceProjectileDefinition projectileConfig)
+    {
+        Gizmos.color = projectileConfig.ProjectileDefinition != null ? projectileConfig.ProjectileDefinition.DebugColor : Color.cyan;
+
+        switch (projectileConfig.FiringMode)
+        {
+            case ProjectileFiringMode.Spread:
+                DrawSpreadPattern(origin, projectileConfig.PatternConfig.SpreadCount, projectileConfig.PatternConfig.SpreadAngle);
+                break;
+            case ProjectileFiringMode.Nova:
+                DrawNovaPattern(origin, projectileConfig.PatternConfig.NovaCount);
+                break;
+            default:
+                Gizmos.DrawRay(origin.Position, origin.Forward * 1.1f);
+                break;
+        }
+    }
+
+    private void DrawSpreadPattern(WeaponSpawnPointPose origin, int count, float halfAngle)
+    {
+        if (count <= 1)
+        {
+            Gizmos.DrawRay(origin.Position, origin.Forward * 1.1f);
+            return;
+        }
+
+        float step = (halfAngle * 2f) / (count - 1);
+        for (int i = 0; i < count; i++)
+        {
+            float angle = -halfAngle + (step * i);
+            Vector3 direction = Quaternion.Euler(0f, 0f, angle) * origin.Forward;
+            Gizmos.DrawRay(origin.Position, direction * 1.1f);
+        }
+    }
+
+    private void DrawNovaPattern(WeaponSpawnPointPose origin, int count)
+    {
+        count = Mathf.Max(1, count);
+        for (int i = 0; i < count; i++)
+        {
+            float angle = (360f / count) * i;
+            Vector3 direction = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
+            Gizmos.DrawRay(origin.Position, direction * 1f);
+        }
+    }
+}
+
+internal readonly struct HitBoxDetectionPose
+{
+    public Vector2 Position { get; }
+    public float RotationZ { get; }
+
+    public HitBoxDetectionPose(Vector2 position, float rotationZ)
+    {
+        Position = position;
+        RotationZ = rotationZ;
+    }
+}
+
+internal sealed class HitBoxAttackExecutor
+{
+    private readonly float innerCompensationRadius;
+    private readonly Action<Vector2> hitVfxCallback;
+
+    public HitBoxAttackExecutor(Action<Vector2> hitVfxCallback, float innerCompensationRadius = 1.1f)
+    {
+        this.hitVfxCallback = hitVfxCallback;
+        this.innerCompensationRadius = Mathf.Max(0.05f, innerCompensationRadius);
+    }
+
+    public void ExecuteAttack(
+        Weapon weapon,
+        Entity sourceEntity,
+        HitSpec hitSpec,
+        Vector2 hitBoxSize,
+        HashSet<HealthComponent> hitTargets,
+        LayerMask targetLayerMask,
+        in HitBoxDetectionPose fromPose,
+        in HitBoxDetectionPose toPose)
+    {
+        if (hitTargets == null)
+        {
+            return;
+        }
+
+        int sampleCount = CalculateSampleCount(hitBoxSize, fromPose, toPose);
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = sampleCount == 1 ? 1f : i / (sampleCount - 1f);
+            Vector2 sampledPosition = Vector2.Lerp(fromPose.Position, toPose.Position, t);
+            float sampledAngle = Mathf.LerpAngle(fromPose.RotationZ, toPose.RotationZ, t);
+            Collider2D[] colliders = Physics2D.OverlapBoxAll(sampledPosition, hitBoxSize, sampledAngle, targetLayerMask);
+            ApplyDamage(colliders, weapon, sourceEntity, hitSpec, hitTargets, hitVfxCallback);
+        }
+    }
+
+    private int CalculateSampleCount(Vector2 hitBoxSize, in HitBoxDetectionPose fromPose, in HitBoxDetectionPose toPose)
+    {
+        float positionDelta = Vector2.Distance(fromPose.Position, toPose.Position);
+        float rotationDelta = Mathf.Abs(Mathf.DeltaAngle(fromPose.RotationZ, toPose.RotationZ));
+        float minHitExtent = Mathf.Max(0.05f, Mathf.Min(hitBoxSize.x, hitBoxSize.y) * 0.5f);
+        float positionStep = Mathf.Max(0.05f, minHitExtent / innerCompensationRadius);
+        int positionSamples = Mathf.Max(1, Mathf.CeilToInt(positionDelta / positionStep) + 1);
+        int rotationSamples = Mathf.Max(1, Mathf.CeilToInt(rotationDelta / 12f) + 1);
+        return Mathf.Max(positionSamples, rotationSamples);
+    }
+
+    private static void ApplyDamage(
+        Collider2D[] colliders,
+        Weapon weapon,
+        Entity sourceEntity,
+        HitSpec hitSpec,
+        HashSet<HealthComponent> hitTargets,
+        Action<Vector2> hitVfxCallback)
+    {
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (!colliders[i].TryGetComponent(out HealthComponent healthComponent))
+            {
+                continue;
+            }
+
+            if (hitTargets.Contains(healthComponent))
+            {
+                continue;
+            }
+
+            Entity target = healthComponent.GetComponent<Entity>();
+            if (target == null)
+            {
+                continue;
+            }
+
+            hitTargets.Add(healthComponent);
+            Vector2 knockbackDirection = sourceEntity != null
+                ? target.Center - sourceEntity.Center
+                : target.Center - (Vector2)healthComponent.transform.position;
+            HitRequest request = new HitRequest(
+                sourceEntity,
+                target,
+                hitSpec,
+                healthComponent.transform.position,
+                knockbackDirection,
+                HitSourceKind.Weapon,
+                weapon.GetType().Name);
+            HitResult hitResult = weapon.ApplyHit(request);
+            if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
+            {
+                hitVfxCallback?.Invoke(hitResult.HitPoint);
+            }
         }
     }
 }

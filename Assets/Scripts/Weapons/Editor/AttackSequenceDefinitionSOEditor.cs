@@ -11,7 +11,7 @@ public class AttackSequenceDefinitionSOEditor : Editor
     {
         serializedObject.Update();
 
-        if (GUILayout.Button("Open Attack Sequence Studio"))
+        if (GUILayout.Button("打开武器工作台"))
         {
             AttackSequenceStudioWindow.Open((AttackSequenceDefinitionSO)target);
         }

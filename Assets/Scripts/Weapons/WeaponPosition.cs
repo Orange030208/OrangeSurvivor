@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class WeaponPosition : MonoBehaviour
 {
+    private const string WEAPON_PREFAB_RESOURCE_PATH = "Prefabs/Weapons/Weapon";
+
     public Weapon Weapon { get; private set; }
 
     public Weapon AssignWeapon(Entity owner,WeaponDataSO weaponData, int level)
     {
-        if (weaponData == null || weaponData.WeaponPrefab == null)
+        if (weaponData == null)
         {
             return null;
         }
@@ -17,7 +19,8 @@ public class WeaponPosition : MonoBehaviour
             Weapon = null;
         }
 
-        Weapon = Instantiate(weaponData.WeaponPrefab, transform);
+        Weapon weaponPrefab = LoadWeaponPrefab();
+        Weapon = Instantiate(weaponPrefab, transform);
         
         ItemQualityVisualResolver.Apply(Weapon, weaponData, level, Weapon.EntityRenderer.SpriteRenderer);
         
@@ -28,6 +31,19 @@ public class WeaponPosition : MonoBehaviour
         Weapon.OnEnableComponent();
         Weapon.SetLevel(level);
         return Weapon;
+    }
+
+    private static Weapon LoadWeaponPrefab()
+    {
+        Weapon weaponPrefab = Resources.Load<Weapon>(WEAPON_PREFAB_RESOURCE_PATH);
+        if (weaponPrefab == null)
+        {
+            throw new MissingReferenceException(
+                $"{nameof(WeaponPosition)} requires a {nameof(Weapon)} prefab at " +
+                $"Assets/Resources/{WEAPON_PREFAB_RESOURCE_PATH}.prefab.");
+        }
+
+        return weaponPrefab;
     }
 
     public bool RemoveWeapon(Weapon weapon)

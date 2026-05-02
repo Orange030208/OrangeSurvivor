@@ -22,7 +22,7 @@ public class WeaponEditor : Editor
         EditorGUILayout.Space(8f);
         using (new EditorGUI.DisabledScope(weapon.WeaponData == null))
         {
-            if (GUILayout.Button("打开攻击序列工作台"))
+            if (GUILayout.Button("打开武器工作台"))
             {
                 AttackSequenceStudioWindow.Open(weapon.WeaponData);
             }
@@ -53,31 +53,15 @@ public class WeaponEditor : Editor
             EditorGUILayout.LabelField("Timing Window", timingWindow.ToString("0.###") + "s");
             EditorGUILayout.LabelField("Compression Ratio", (compressionRatio * 100f).ToString("0.#") + "%");
 
-            if (weapon is RangeWeapon)
-            {
-                EditorGUILayout.Space(6f);
-                EditorGUILayout.LabelField("Range Weapon Tips", EditorStyles.boldLabel);
-                EditorGUILayout.HelpBox(
-                    "调远程时建议：\n" +
-                    "1. 先用 Force Attack Current Target 强制打一发；\n" +
-                    "2. 在 AttackSequenceDefinitionSO 中确认是否真的配置了 SpawnProjectile 事件；\n" +
-                    "3. 在 AttackSequenceDefinitionSO 中直接切 ProjectileDefinition；\n" +
-                    "4. 用 ProjectileDefinitionSO 调整 speed / damage / lifetime 倍率；\n" +
-                    "5. stop aiming 和动画占比现在统一在 WeaponDataSO 里调。",
-                    MessageType.Info);
-            }
-
-            if (weapon is MeleeWeapon)
-            {
-                EditorGUILayout.Space(6f);
-                EditorGUILayout.LabelField("Melee Weapon Tips", EditorStyles.boldLabel);
-                EditorGUILayout.HelpBox(
-                    "调近战时建议：\n" +
-                    "1. 先用 Force Attack Current Target 强制出手；\n" +
-                    "2. 看序列里的 OpenHitWindow / CloseHitWindow 是否落在主挥击段；\n" +
-                    "3. 配合 Scene 里的命中盒 Gizmo 看打击范围是否贴合动作。",
-                    MessageType.Info);
-            }
+            EditorGUILayout.Space(6f);
+            EditorGUILayout.LabelField("Weapon Tips", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "调武器时建议：\n" +
+                "1. 先用 Force Attack Current Target 强制出手；\n" +
+                "2. SpawnProjectile 事件负责发射弹射物；\n" +
+                "3. OpenHitWindow / CloseHitWindow 只有在 WeaponDataSO.Enable Hit Box 打开时才会产生碰撞盒检测；\n" +
+                "4. 子弹、VFX、命中盒优先使用 WeaponDataSO.Spawn Points 作为锚点。",
+                MessageType.Info);
         }
         else
         {
@@ -102,17 +86,7 @@ public class WeaponEditor : Editor
 
     private static AttackSequenceDefinitionSO GetCurrentSequence(Weapon weapon)
     {
-        if (weapon is MeleeWeapon meleeWeapon)
-        {
-            return meleeWeapon.DebugAttackSequence;
-        }
-
-        if (weapon is RangeWeapon rangeWeapon)
-        {
-            return rangeWeapon.DebugAttackSequence;
-        }
-
-        return null;
+        return weapon != null ? weapon.DebugAttackSequence : null;
     }
 
     private static void TryForceAttackCurrentTarget(Weapon weapon)
@@ -126,7 +100,7 @@ public class WeaponEditor : Editor
             return;
         }
 
-        Enemy currentTarget = getTargetMethod.Invoke(weapon, null) as Enemy;
+        Entity currentTarget = getTargetMethod.Invoke(weapon, null) as Entity;
         if (currentTarget == null)
         {
             Debug.LogWarning("Weapon debug inspector: no current target in range.", weapon);

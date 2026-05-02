@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
-
-public enum WeaponConstructionScheme
-{
-    Default = 0
-}
 
 public enum WeaponTag
 {
@@ -50,7 +44,7 @@ public struct WeaponSpawnPointDefinition
 [System.Serializable]
 public struct WeaponSequenceProjectileDefinition
 {
-    [Tooltip("使用哪个武器点位。优先映射到 Spawn Points；未配置时兼容旧的 RangeWeapon 发射点。")]
+    [Tooltip("使用哪个武器点位。映射到 WeaponDataSO 的 Spawn Points；未配置对应点位时使用武器根节点。")]
     [SerializeField] private int spawnPointIndex;
     [Tooltip("直接引用要发射的弹射物定义资源。")]
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
@@ -82,7 +76,7 @@ public struct WeaponSequenceVfxDefinition
 {
     [Tooltip("该事件触发时要生成的特效预制体。")]
     [SerializeField] private GameObject vfxPrefab;
-    [Tooltip("生成锚点索引。优先映射到 Spawn Points；未配置时使用各武器自己的旧版默认锚点。")]
+    [Tooltip("生成锚点索引。映射到 WeaponDataSO 的 Spawn Points；未配置对应点位时使用武器根节点。")]
     [SerializeField] private int spawnPointIndex;
     [Tooltip("相对锚点的局部偏移。")]
     [SerializeField] private Vector3 localOffset;
@@ -153,8 +147,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private WeaponTag[] tags = System.Array.Empty<WeaponTag>();
 
     [Header("Runtime")]
-    [SerializeField] protected Weapon weaponPrefab;
-    [SerializeField] private WeaponConstructionScheme constructionScheme = WeaponConstructionScheme.Default;
     [SerializeField] private AttackSequenceDefinitionSO attackSequence;
 
     [Header("Attack Presentation")]
@@ -162,23 +154,22 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private bool stopAimingWhenAttackReady = true;
     [Range(0.1f, 1f)]
     [SerializeField] private float attackSequenceOccupancy = 0.85f;
-    [FormerlySerializedAs("projectileSpawnPoints")]
     [SerializeField] private WeaponSpawnPointDefinition[] spawnPoints = System.Array.Empty<WeaponSpawnPointDefinition>();
     [SerializeField] private WeaponSequenceProjectileDefinition[] sequenceProjectileList;
     [SerializeField] private WeaponSequenceSfxDefinition[] sequenceSfxList;
     [SerializeField] private WeaponSequenceVfxDefinition[] sequenceVfxList;
     [SerializeField] private AudioSfxKey hitSfxKey = AudioSfxKey.None;
-    [SerializeField] private GameObject meleeHitVfxPrefab;
-    [SerializeField] private Vector2 meleeHitBoxSize = new(1f, 1f);
-    [SerializeField] private Vector2 meleeHitOffset;
+    [Tooltip("启用后，攻击序列中的 OpenHitWindow / CloseHitWindow 事件才会产生碰撞盒检测。")]
+    [SerializeField] private bool enableHitBox;
+    [SerializeField] private GameObject hitVfxPrefab;
+    [SerializeField] private Vector2 hitBoxSize = new(1f, 1f);
+    [SerializeField] private Vector2 hitBoxOffset;
 
     [Header("属性等级表")]
     [SerializeField] private List<WeaponLevelStatData> levelStats = new();
 
-    public Weapon WeaponPrefab => weaponPrefab;
     public IReadOnlyList<WeaponTag> Tags => tags;
     public IReadOnlyList<WeaponLevelStatData> LevelStats => levelStats;
-    public WeaponConstructionScheme ConstructionScheme => constructionScheme;
     public AttackSequenceDefinitionSO AttackSequence => attackSequence;
     public float VisualForwardAngle => visualForwardAngle;
     public bool StopAimingWhenAttackReady => stopAimingWhenAttackReady;
@@ -188,9 +179,10 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public IReadOnlyList<WeaponSequenceSfxDefinition> SequenceSfxList => sequenceSfxList;
     public IReadOnlyList<WeaponSequenceVfxDefinition> SequenceVfxList => sequenceVfxList;
     public AudioSfxKey HitSfxKey => hitSfxKey;
-    public GameObject MeleeHitVfxPrefab => meleeHitVfxPrefab;
-    public Vector2 MeleeHitBoxSize => meleeHitBoxSize;
-    public Vector2 MeleeHitOffset => meleeHitOffset;
+    public bool EnableHitBox => enableHitBox;
+    public GameObject HitVfxPrefab => hitVfxPrefab;
+    public Vector2 HitBoxSize => hitBoxSize;
+    public Vector2 HitBoxOffset => hitBoxOffset;
 
     private void OnValidate()
     {
@@ -199,8 +191,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         spawnPoints ??= System.Array.Empty<WeaponSpawnPointDefinition>();
         EnsureLevelStatsTable();
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
-        meleeHitBoxSize.x = Mathf.Max(0.01f, meleeHitBoxSize.x);
-        meleeHitBoxSize.y = Mathf.Max(0.01f, meleeHitBoxSize.y);
+        hitBoxSize.x = Mathf.Max(0.01f, hitBoxSize.x);
+        hitBoxSize.y = Mathf.Max(0.01f, hitBoxSize.y);
     }
 
     public bool HasTag(WeaponTag tag)

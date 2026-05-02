@@ -18,8 +18,6 @@ MonoBehaviour:
   itemType: 0
   itemDescription: Brutal revolver. Very slow, very loud, very good at ending problems.
   tags: 01000000020000000400000006000000
-  weaponPrefab: {fileID: 7505507847465373314, guid: 0b6cbe74c91bd5140b250d234a4587c5, type: 3}
-  constructionScheme: 0
   attackSequence: {fileID: 11400000, guid: a19785078fdd8224dbd91313bb788043, type: 2}
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 0
@@ -38,9 +36,10 @@ MonoBehaviour:
   sequenceSfxList: []
   sequenceVfxList: []
   hitSfxKey: 0
-  meleeHitVfxPrefab: {fileID: 0}
-  meleeHitBoxSize: {x: 1, y: 1}
-  meleeHitOffset: {x: 0, y: 0}
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
   levelStats:
   - level: 1
     attack: 30

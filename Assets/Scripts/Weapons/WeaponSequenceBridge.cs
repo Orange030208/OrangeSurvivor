@@ -40,6 +40,11 @@ public class WeaponSequenceBridge : MonoBehaviour
     /// </summary>
     public void CacheDefaultPose()
     {
+        if (sequencePlayer == null)
+        {
+            return;
+        }
+
         sequencePlayer.CacheDefaultPose();
     }
 
