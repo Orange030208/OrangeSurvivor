@@ -969,7 +969,7 @@ internal sealed class HitBoxAttackExecutor
             Vector2 sampledPosition = Vector2.Lerp(fromPose.Position, toPose.Position, t);
             float sampledAngle = Mathf.LerpAngle(fromPose.RotationZ, toPose.RotationZ, t);
             Collider2D[] colliders = Physics2D.OverlapBoxAll(sampledPosition, hitBoxSize, sampledAngle, targetLayerMask);
-            ApplyDamage(colliders, weapon, sourceEntity, hitSpec, hitTargets, hitVfxCallback);
+            ApplyDamage(colliders, weapon, sourceEntity, hitSpec, hitTargets, sampledPosition, hitVfxCallback);
         }
     }
 
@@ -990,6 +990,7 @@ internal sealed class HitBoxAttackExecutor
         Entity sourceEntity,
         HitSpec hitSpec,
         HashSet<HealthComponent> hitTargets,
+        Vector2 sourcePosition,
         Action<Vector2> hitVfxCallback)
     {
         for (int i = 0; i < colliders.Length; i++)
@@ -1021,7 +1022,8 @@ internal sealed class HitBoxAttackExecutor
                 healthComponent.transform.position,
                 knockbackDirection,
                 HitSourceKind.Weapon,
-                weapon.GetType().Name);
+                weapon.GetType().Name,
+                sourcePosition: sourcePosition);
             HitResult hitResult = weapon.ApplyHit(request);
             if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
             {

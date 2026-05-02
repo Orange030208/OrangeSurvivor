@@ -34,7 +34,8 @@ public class HealthComponentEditor : Editor
                         new HitSpec(debugAmount, 0f, 1f),
                         healthComponent.transform.position,
                         HitSourceKind.Direct,
-                        nameof(HealthComponentEditor)));
+                        nameof(HealthComponentEditor),
+                        sourcePosition: healthComponent.transform.position));
                 }
                 EditorUtility.SetDirty(healthComponent);
             }

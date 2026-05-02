@@ -263,7 +263,8 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
             target.Center,
             knockbackDirection,
             HitSourceKind.Direct,
-            attackDefinition.Id));
+            attackDefinition.Id,
+            sourcePosition: owner.Center));
     }
 
     private bool TryFireProjectile(EnemyAttackDefinitionSO attackDefinition, Entity target)

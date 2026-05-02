@@ -86,7 +86,8 @@ public class LowHealthExplosionFeatureEffect : FeatureEffectBase
                     targetHealth.transform.position,
                     knockbackDirection,
                     HitSourceKind.Explosion,
-                    GetType().Name));
+                    GetType().Name,
+                    sourcePosition: Context.Transform.position));
             }
         }
 

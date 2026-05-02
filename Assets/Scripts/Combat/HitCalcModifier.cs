@@ -12,7 +12,7 @@ public class HitCalcModifier : IHitModifier
             return;
         }
 
-        if (hitContext.IsCancelled || hitContext.IsDodged)
+        if (hitContext.IsCancelled || hitContext.IsDodged || hitContext.IsBlocked)
         {
             hitContext.Damage = 0f;
             return;

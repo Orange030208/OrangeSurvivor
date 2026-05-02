@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: OverloadTrigger
+  m_EditorClassIdentifier: 
+  itemName: "\u8FC7\u8F7D\u6273\u673A"
+  itemIcon: {fileID: 21300000, guid: 3a5fabeb1af72a143b5127826a38b52c, type: 3}
+  itemPrice: 44
+  itemType: 1
+  itemDescription: "\u8FDE\u7EED\u653B\u51FB\u4E00\u6BB5\u65F6\u95F4\u540E\uFF0C\u77ED\u6682\u83B7\u5F97\u989D\u5916\u653B\u901F\uFF1B\u505C\u6B62\u653B\u51FB\u540E\u6D88\u5931\u3002"
+  accessoryId: overload_trigger
+  recyclePrice: 14
+  rarity: 2
+  propertyModifiers:
+  - propType: 1
+    modifierType: 0
+    value: 12
+  - propType: 3
+    modifierType: 0
+    value: 12
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

@@ -8,6 +8,7 @@ public sealed class HitContext
     public float CritChance { get; set; }
     public float CritMultiplier { get; set; }
     public float KnockbackStrength { get; set; }
+    public Vector2 SourcePosition => Request.SourcePosition;
     public bool HasKnockbackDirection { get; set; }
     public Vector2 KnockbackDirection { get; set; }
     public float DodgeChance { get; set; }

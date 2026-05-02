@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: TacticalGloves
+  m_EditorClassIdentifier: 
+  itemName: "\u6218\u672F\u624B\u5957"
+  itemIcon: {fileID: 21300000, guid: 6497807c75cb3c24a9e896e06a3e532a, type: 3}
+  itemPrice: 28
+  itemType: 1
+  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  accessoryId: tactical_gloves
+  recyclePrice: 8
+  rarity: 1
+  propertyModifiers:
+  - propType: 0
+    modifierType: 0
+    value: 4
+  - propType: 1
+    modifierType: 0
+    value: 4
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

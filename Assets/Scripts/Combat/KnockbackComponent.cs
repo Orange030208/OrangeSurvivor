@@ -157,24 +157,7 @@ public class KnockbackComponent : EntityComponentBase
             return result.KnockbackDirection;
         }
 
-        if (result.Source != null)
-        {
-            Vector2 sourceDirection = owner.Center - result.Source.Center;
-            if (sourceDirection.sqrMagnitude > MIN_DIRECTION_SQR_MAGNITUDE)
-            {
-                return sourceDirection;
-            }
-        }
-
-        Vector2 hitPointDirection = owner.Center - result.HitPoint;
-        if (hitPointDirection.sqrMagnitude > MIN_DIRECTION_SQR_MAGNITUDE)
-        {
-            return hitPointDirection;
-        }
-
-        return rb != null && rb.velocity.sqrMagnitude > MIN_DIRECTION_SQR_MAGNITUDE
-            ? -rb.velocity
-            : Vector2.zero;
+        return owner.Center - result.SourcePosition;
     }
 
     private float CalculateStepDistance(float deltaTime)

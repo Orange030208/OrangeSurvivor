@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: UnyieldingCore
+  m_EditorClassIdentifier: 
+  itemName: "\u4E0D\u5C48\u6838\u5FC3"
+  itemIcon: {fileID: 21300000, guid: cd3cbb1b9c1b14340863c83a4518913e, type: 3}
+  itemPrice: 68
+  itemType: 1
+  itemDescription: "\u6BCF\u6CE2\u4E00\u6B21\uFF0C\u751F\u547D\u6781\u4F4E\u65F6\u7ACB\u5373\u56DE\u590D\u5C11\u91CF\u751F\u547D\u3002"
+  accessoryId: unyielding_core
+  recyclePrice: 22
+  rarity: 3
+  propertyModifiers:
+  - propType: 5
+    modifierType: 0
+    value: 35
+  - propType: 8
+    modifierType: 0
+    value: 5
+  - propType: 25
+    modifierType: 0
+    value: 2
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

@@ -11,7 +11,7 @@ public class AccessoryDataSO : ItemDataSO
     [SerializeField] private AccessoryRarity rarity;
 
     [Header("属性修饰")]
-    [Tooltip("按照属性语义填写。倍率统一使用 0~1 表示 0%~100%。")]
+    [Tooltip("按照属性语义填写。百分比与倍率统一使用百分比点：1 表示 1%。")]
     [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]

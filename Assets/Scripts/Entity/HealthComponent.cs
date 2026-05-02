@@ -115,6 +115,11 @@ public class HealthComponent : EntityComponentBase
             return;
         }
 
+        if (result.IsBlocked)
+        {
+            return;
+        }
+
         //暂时不屏蔽超出伤害了，后续有需要再修改
         // float realDamage = Mathf.Min(result.FinalDamage, health);
         float realDamage = result.FinalDamage;

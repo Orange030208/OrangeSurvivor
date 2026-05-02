@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -31,8 +31,7 @@ MonoBehaviour:
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: e8afa3e0c84d4ef4fb82903f4a30c132, type: 2}
     level: 1
-  initialAccessories:
-  - {fileID: 11400000, guid: 2c35fd36a60d0cb4194ed451ed23d89b, type: 2}
+  initialAccessories: []
   references:
     version: 2
     RefIds: []

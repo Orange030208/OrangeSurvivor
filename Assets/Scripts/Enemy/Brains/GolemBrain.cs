@@ -258,7 +258,8 @@ public class GolemBrain : EnemyBrain
                 hitEntity.Center,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                CHARGE_HIT_SOURCE_ID));
+                CHARGE_HIT_SOURCE_ID,
+                sourcePosition: owner.Center));
         }
     }
 

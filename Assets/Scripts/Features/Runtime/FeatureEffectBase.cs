@@ -30,7 +30,7 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
     
     [SerializeField] protected HitModifierTiming hitModifierTiming = HitModifierTiming.Deal;
     
-    public virtual int HitPriority => int.MaxValue;
+    public virtual int HitPriority => HitModifierPriority.Parameter;
 
     public HitModifierTiming HitModifierTiming => hitModifierTiming;
 

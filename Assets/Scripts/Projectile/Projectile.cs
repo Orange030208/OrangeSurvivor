@@ -119,7 +119,8 @@ public class Projectile : Entity, IProjectile
             healthComponent.transform.position,
             launchContext.Direction,
             HitSourceKind.Projectile,
-            GetType().Name);
+            GetType().Name,
+            sourcePosition: launchContext.SpawnPosition);
 
         HitService.Apply(request);
         SpawnImpactEffect(transform.position, launchContext.ProjectileDefinition);

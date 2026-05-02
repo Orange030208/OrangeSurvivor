@@ -35,7 +35,8 @@ public sealed class HitResolver
             context.IsBlocked,
             context.IsCancelled,
             request.SourceKind,
-            request.SourceId);
+            request.SourceId,
+            request.SourcePosition);
     }
 
     private void ApplyModifiers(HitContext context)
