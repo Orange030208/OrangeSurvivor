@@ -1,3 +1,4 @@
+using AXR.Framework.UI;
 using System;
 using TMPro;
 using UnityEngine;
@@ -23,6 +24,11 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
     }
 
     public void Configure(InfoAddIndex<ShopItemData> resource, bool playReveal)
+    {
+        Configure(resource, playReveal, refreshMotion: true);
+    }
+
+    public void Configure(InfoAddIndex<ShopItemData> resource, bool playReveal, bool refreshMotion)
     {
         ShopItemData shopItem = resource.info;
         ItemDataSO itemData = shopItem.ItemData;
@@ -63,7 +69,10 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
 
         currentIndex = resource.index;
 
-        ConfigureCardMotionForReuse(playReveal);
+        if (refreshMotion)
+        {
+            ConfigureCardMotionForReuse(playReveal);
+        }
 
         buyButton.OnClicked += OnBuyButtonClicked;
         lockButton.OnClicked += OnLockButtonClicked;

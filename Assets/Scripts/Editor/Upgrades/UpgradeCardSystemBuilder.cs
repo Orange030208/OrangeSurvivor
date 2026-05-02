@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using AXR.Framework.UI;
 
 public static class UpgradeCardSystemBuilder
 {
@@ -803,3 +804,4 @@ public static class UpgradeCardSystemBuilder
     }
 }
 #endif
+

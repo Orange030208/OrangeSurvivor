@@ -14,7 +14,6 @@ public static class ItemDisplayHelper
 
     public static string GetWeaponDisplayName(string weaponName, int level)
     {
-        int displayLevel = WeaponLevelHelper.ClampLevel(level);
-        return $"Lv.{displayLevel} [{GetLevelPrefix(displayLevel)}] {weaponName}";
+        return weaponName;
     }
 }

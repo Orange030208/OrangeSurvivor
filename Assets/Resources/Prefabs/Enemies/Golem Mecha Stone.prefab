@@ -32,6 +32,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Golem Mecha Stone
       objectReference: {fileID: 0}
+    - target: {fileID: 2576062534117598723, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_Radius
+      value: 0.739724
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576062534117598723, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.02598393
+      objectReference: {fileID: 0}
+    - target: {fileID: 2576062534117598723, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.6757075
+      objectReference: {fileID: 0}
     - target: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

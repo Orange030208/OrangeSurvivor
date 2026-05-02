@@ -1,3 +1,4 @@
+using AXR.Framework.UI;
 using UnityEngine;
 
 public class WaveTransitionUIPage : UIPageBase

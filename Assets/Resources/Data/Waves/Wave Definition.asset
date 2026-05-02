@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_001
   displayName: Wave 1
-  duration: 30
+  duration: 2
   completionType: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 09da824d713de3840b2348b6fc697db0, type: 2}
   spawnPlans:

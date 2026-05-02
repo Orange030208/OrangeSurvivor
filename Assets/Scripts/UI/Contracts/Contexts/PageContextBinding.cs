@@ -1,3 +1,4 @@
+using AXR.Framework.UI;
 using System;
 
 public static class PageContextBinding

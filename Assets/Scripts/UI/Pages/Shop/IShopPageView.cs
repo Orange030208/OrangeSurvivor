@@ -11,7 +11,7 @@ public interface IShopPageView
 
     void PrepareForOpen(ShopPageContext context);
     void ResetAfterClose();
-    void RenderShopItems(ShopItemData[] items);
+    void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason);
     void UpdateRerollState(int rerollCost, bool canReroll);
     void UpdateCurrencyAmount(int amount);
     void ShowPurchaseSuccess(ShopPurchaseSuccess result);

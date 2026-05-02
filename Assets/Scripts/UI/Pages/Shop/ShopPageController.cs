@@ -72,7 +72,7 @@ public sealed class ShopPageController : IPageController
     private void OnSnapshotChanged(ShopSnapshot snapshot)
     {
         view.UpdateRerollState(snapshot.RerollCost, snapshot.CanReroll);
-        view.RenderShopItems(snapshot.Items);
+        view.RenderShopItems(snapshot.Items, snapshot.Reason);
     }
 
     private void OnPurchaseSucceeded(ShopPurchaseSuccess result)

@@ -87,7 +87,7 @@ public class ShopManager : MonoBehaviour
     private void Start()
     {
         GenerateShopItems();
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.Initial);
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -110,7 +110,7 @@ public class ShopManager : MonoBehaviour
 
     public void RequestSnapshot()
     {
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.StateUpdate);
     }
 
     private void OnCurrencyChanged(CurrencyChangedEvent eventData)
@@ -121,7 +121,7 @@ public class ShopManager : MonoBehaviour
         }
 
         currentCurrency = eventData.CurrentAmount;
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.StateUpdate);
     }
 
     public void RequestBuyItem(int itemIndex)
@@ -178,7 +178,7 @@ public class ShopManager : MonoBehaviour
 
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.Purchase);
     }
 
     private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
@@ -214,7 +214,7 @@ public class ShopManager : MonoBehaviour
 
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.Purchase);
     }
 
     private void RemoveItemFromShop(int index)
@@ -244,7 +244,7 @@ public class ShopManager : MonoBehaviour
         if (TryConsumeFreeShopReroll())
         {
             RerollShopItems();
-            PublishShopItems();
+            PublishShopItems(ShopSnapshotReason.Reroll);
             return;
         }
 
@@ -256,14 +256,14 @@ public class ShopManager : MonoBehaviour
 
         currencyWallet?.ChangeAmount(-rerollCost);
         RerollShopItems();
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.Reroll);
     }
 
     private void OnVideoAdRerollRequested()
     {
         Debug.Log("Video ad reroll requested - implement ad integration here.");
         RerollShopItems();
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.Reroll);
     }
 
     private void RefreshShopForWaveEntry()
@@ -271,12 +271,12 @@ public class ShopManager : MonoBehaviour
         if (currentItems == null || currentItems.Length == 0)
         {
             GenerateShopItems();
-            PublishShopItems();
+            PublishShopItems(ShopSnapshotReason.WaveRefresh);
             return;
         }
 
         RefreshKeepingLockedItems();
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.WaveRefresh);
     }
 
     private void RefreshKeepingLockedItems()
@@ -432,7 +432,7 @@ public class ShopManager : MonoBehaviour
         };
     }
 
-    private void PublishShopItems()
+    private void PublishShopItems(ShopSnapshotReason reason = ShopSnapshotReason.StateUpdate)
     {
         if (currentItems == null)
         {
@@ -441,7 +441,7 @@ public class ShopManager : MonoBehaviour
 
         ApplyShopPriceMultiplier();
         bool canReroll = currentCurrency >= rerollCost || freeShopRerolls > 0;
-        ItemsChanged?.Invoke(new ShopSnapshot(currentItems, rerollCost, canReroll));
+        ItemsChanged?.Invoke(new ShopSnapshot(currentItems, rerollCost, canReroll, reason));
     }
 
     private void ApplyShopPriceMultiplier()
@@ -462,7 +462,7 @@ public class ShopManager : MonoBehaviour
 
         currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
         print($"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}");
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.StateUpdate);
     }
 
     private void TryBindWallet()
@@ -507,7 +507,7 @@ public class ShopManager : MonoBehaviour
         }
 
         freeShopRerolls += count;
-        PublishShopItems();
+        PublishShopItems(ShopSnapshotReason.StateUpdate);
     }
 
     private bool TryConsumeFreeShopReroll()
@@ -577,7 +577,7 @@ public class ShopManager : MonoBehaviour
     {
         if (propType == PropType.ShopPriceDiscount)
         {
-            PublishShopItems();
+            PublishShopItems(ShopSnapshotReason.StateUpdate);
         }
     }
 

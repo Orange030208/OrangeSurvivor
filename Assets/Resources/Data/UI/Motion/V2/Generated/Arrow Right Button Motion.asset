@@ -101,7 +101,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030734
-      type: {class: UISpriteSequenceMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISpriteSequenceMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -115,10 +115,9 @@ MonoBehaviour:
         setNativeSizeIfEmpty: 0
         timingMode: 0
         framesPerSecond: 12
-        totalDuration: 0.5
         frameEvents: []
     - rid: 451547002770030735
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -129,7 +128,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030736
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -140,7 +139,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: -2}
     - rid: 451547002770030737
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -151,7 +150,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.98, y: 0.98, z: 0.98}
     - rid: 451547002770030738
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -162,7 +161,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030739
-      type: {class: UISpriteSwapMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISpriteSwapMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -172,7 +171,7 @@ MonoBehaviour:
         restoreInitialOnStart: 0
         setNativeSizeIfEmpty: 0
     - rid: 451547002770030740
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -183,7 +182,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030741
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -194,7 +193,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 1}
     - rid: 451547002770030742
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -205,7 +204,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.02, y: 1.02, z: 1.02}
     - rid: 451547002770030743
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -216,24 +215,23 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030744
-      type: {class: UISpriteSequenceMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISpriteSequenceMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
         duration: 0.5
         ease: 1
         frames:
-        - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-        - {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
+        - {fileID: 0}
+        - {fileID: 0}
         reverse: 1
         keepLastFrameOnComplete: 1
         setNativeSizeIfEmpty: 0
         timingMode: 0
         framesPerSecond: 12
-        totalDuration: 0.5
         frameEvents: []
     - rid: 451547002770030745
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -244,7 +242,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030746
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -255,7 +253,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 451547002770030747
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -266,7 +264,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 451547002770030748
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -277,7 +275,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030749
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -288,7 +286,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030750
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -299,7 +297,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 451547002770030751
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -310,7 +308,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 451547002770030752
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -321,7 +319,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030753
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -332,7 +330,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 0
     - rid: 451547002770030754
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -343,7 +341,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 451547002770030755
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -354,7 +352,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.98, y: 0.98, z: 0.98}
     - rid: 451547002770030756
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -365,7 +363,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030757
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -376,7 +374,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030758
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -387,7 +385,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 1}
     - rid: 451547002770030759
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -398,7 +396,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.01, y: 1.01, z: 1.01}
     - rid: 451547002770030760
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -409,7 +407,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030761
-      type: {class: UISpriteSwapMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISpriteSwapMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -419,7 +417,7 @@ MonoBehaviour:
         restoreInitialOnStart: 0
         setNativeSizeIfEmpty: 0
     - rid: 451547002770030762
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -430,7 +428,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 451547002770030763
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -441,7 +439,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 451547002770030764
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -452,7 +450,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
     - rid: 451547002770030765
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -463,7 +461,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030766
-      type: {class: UIMoveMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -474,7 +472,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 451547002770030767
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -485,7 +483,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.08, y: 1.08, z: 1.08}
     - rid: 451547002770030768
-      type: {class: UIRotateMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: AXR.Framework.UI, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0

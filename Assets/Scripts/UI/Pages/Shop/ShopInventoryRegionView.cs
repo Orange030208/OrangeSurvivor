@@ -1,4 +1,5 @@
 using System;
+using AXR.Framework.UI;
 using UnityEngine;
 
 public sealed class ShopInventoryRegionView : ISidebarRegion

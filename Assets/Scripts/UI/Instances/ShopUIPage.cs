@@ -1,3 +1,4 @@
+using AXR.Framework.UI;
 using System;
 using TMPro;
 using UnityEngine;
@@ -90,9 +91,9 @@ public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
         KillPanelTweens();
     }
 
-    public void RenderShopItems(ShopItemData[] items)
+    public void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
     {
-        shopListRegion.RenderShopItems(items);
+        shopListRegion.RenderShopItems(items, reason);
     }
 
     public void UpdateRerollState(int rerollCost, bool canReroll)
