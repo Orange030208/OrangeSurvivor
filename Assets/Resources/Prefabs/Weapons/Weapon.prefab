@@ -76,7 +76,7 @@ MonoBehaviour:
   <WeaponData>k__BackingField: {fileID: 0}
   sequenceBridge: {fileID: 1614708916331346369}
   visualForwardTransform: {fileID: 7280237146038987481}
-  aimLerp: 12
+  aimLerp: 20
   attackStartAimToleranceDegrees: 8
   targetLayerMask:
     serializedVersion: 2
