@@ -30,9 +30,15 @@ public class ExtraInfoDescriber :Describer
         StringBuilder sb = new();
         foreach (DescriptorInfo descriptorInfo in descriptorInfos)
         {
-            sb.AppendLine(descriptorInfo.value);
+            string line = ItemDescriptionUtility.FormatDescriptorInfo(descriptorInfo);
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            sb.AppendLine(line);
         }
 
-        infoText.text = sb.ToString();
+        infoText.text = sb.ToString().TrimEnd();
     }
 }

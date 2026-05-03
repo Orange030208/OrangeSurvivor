@@ -185,6 +185,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public GameObject HitVfxPrefab => hitVfxPrefab;
     public Vector2 HitBoxSize => hitBoxSize;
     public Vector2 HitBoxOffset => hitBoxOffset;
+    public override string Description => BuildDescription();
 
     private void OnValidate()
     {
@@ -300,16 +301,76 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     {
         WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
         List<DescriptorInfo> infos = new();
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), previewStats.Attack.ToString("0.##")));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), previewStats.AttackSpeed.ToString("0.##")));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), previewStats.KnockbackStrength.ToString("0.##")));
-        if (tags != null && tags.Length > 0)
+        if (!string.IsNullOrWhiteSpace(itemDescription))
         {
-            infos.Add(new DescriptorInfo("标签", string.Join(" / ", tags)));
+            infos.Add(new DescriptorInfo("说明", itemDescription.Trim()));
         }
 
-        infos.Add(new DescriptorInfo("描述", Description));
+        infos.Add(new DescriptorInfo("等级", $"Lv.{previewStats.Level} 基础属性"));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, previewStats.Attack)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, previewStats.AttackSpeed)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, previewStats.CriticalChance)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, previewStats.CriticalPercent)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, previewStats.Range)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, previewStats.KnockbackStrength)));
+        if (tags != null && tags.Length > 0)
+        {
+            infos.Add(new DescriptorInfo("标签", ItemDescriptionUtility.JoinWeaponTags(tags)));
+        }
+
         return infos;
+    }
+
+    private string BuildDescription()
+    {
+        WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
+        return ItemDescriptionUtility.BuildDetailedDescription(
+            itemDescription,
+            null,
+            null,
+            BuildWeaponDescriptionLines(previewStats),
+            "一把可装备武器。");
+    }
+
+    private IEnumerable<ItemDescriptionLine> BuildWeaponDescriptionLines(WeaponLevelStatData previewStats)
+    {
+        yield return new ItemDescriptionLine(
+            "等级",
+            $"Lv.{previewStats.Level} 基础属性",
+            ItemDescriptionLineKind.Meta);
+
+        if (tags != null && tags.Length > 0)
+        {
+            yield return new ItemDescriptionLine(
+                "标签",
+                ItemDescriptionUtility.JoinWeaponTags(tags),
+                ItemDescriptionLineKind.Meta);
+        }
+
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.Attack),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, previewStats.Attack),
+            ItemDescriptionLineKind.Property);
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.AttackSpeed),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, previewStats.AttackSpeed),
+            ItemDescriptionLineKind.Property);
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.CriticalChance),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, previewStats.CriticalChance),
+            ItemDescriptionLineKind.Property);
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.CriticalPercent),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, previewStats.CriticalPercent),
+            ItemDescriptionLineKind.Property);
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.AttackRange),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, previewStats.Range),
+            ItemDescriptionLineKind.Property);
+        yield return new ItemDescriptionLine(
+            ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, previewStats.KnockbackStrength),
+            ItemDescriptionLineKind.Property);
     }
 
     private void EnsureLevelStatsTable()

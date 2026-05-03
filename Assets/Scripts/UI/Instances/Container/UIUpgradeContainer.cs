@@ -31,11 +31,7 @@ public class UIUpgradeContainer :
         UpgradeCardOptionSnapshot option = resource.info;
         iconImage.sprite = option.Icon;
         nameText.text = option.Title;
-        DefaultDescribe describable = new DefaultDescribe
-        {
-            Description = BuildDescription(option)
-        };
-        bottom.Display(describable);
+        bottom.Display(new UpgradeCardDisplayInfo(option, BuildDescription(option)));
         bool hasPresentationProfile = TryResolveQualityPresentationProfile(
             option.Rarity,
             out CardQualityPresentationProfile presentationProfile);
@@ -338,16 +334,34 @@ public class UIUpgradeContainer :
         return $"{rarityText}{tagText}\n{description}{pickText}";
     }
 
+    private sealed class UpgradeCardDisplayInfo : IDescribable
+    {
+        private readonly UpgradeCardOptionSnapshot option;
+
+        public UpgradeCardDisplayInfo(UpgradeCardOptionSnapshot option, string description)
+        {
+            this.option = option;
+            Description = description;
+        }
+
+        public string Title => option.Title;
+        public Sprite Icon => option.Icon;
+        public string Description { get; }
+
+        public System.Collections.Generic.IEnumerable<DescriptorInfo> GetExtraInfos()
+        {
+            if (string.IsNullOrWhiteSpace(Description))
+            {
+                yield break;
+            }
+
+            yield return new DescriptorInfo(string.Empty, Description);
+        }
+    }
+
     private static string GetRarityText(UpgradeCardRarity rarity)
     {
-        return rarity switch
-        {
-            UpgradeCardRarity.Common => "普通",
-            UpgradeCardRarity.Rare => "稀有",
-            UpgradeCardRarity.Epic => "史诗",
-            UpgradeCardRarity.Legendary => "传说",
-            _ => rarity.ToString()
-        };
+        return ItemDescriptionUtility.FormatRarity(rarity);
     }
 
     private static string BuildTagText(UpgradeCardTag[] tags)
@@ -366,32 +380,10 @@ public class UIUpgradeContainer :
                 result += "/";
             }
 
-            result += GetTagText(tags[i]);
+            result += ItemDescriptionUtility.FormatUpgradeCardTag(tags[i]);
         }
 
         return result;
-    }
-
-    private static string GetTagText(UpgradeCardTag tag)
-    {
-        return tag switch
-        {
-            UpgradeCardTag.Attack => "攻击",
-            UpgradeCardTag.Defense => "防御",
-            UpgradeCardTag.Critical => "暴击",
-            UpgradeCardTag.AttackSpeed => "攻速",
-            UpgradeCardTag.MoveSpeed => "移动",
-            UpgradeCardTag.Pickup => "拾取",
-            UpgradeCardTag.Economy => "经济",
-            UpgradeCardTag.Weapon => "武器",
-            UpgradeCardTag.Melee => "近战",
-            UpgradeCardTag.Ranged => "远程",
-            UpgradeCardTag.Projectile => "投射物",
-            UpgradeCardTag.Recovery => "回复",
-            UpgradeCardTag.LowHealth => "低血",
-            UpgradeCardTag.AreaDamage => "范围",
-            _ => tag.ToString()
-        };
     }
 }
 

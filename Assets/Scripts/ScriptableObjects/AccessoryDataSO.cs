@@ -21,6 +21,7 @@ public class AccessoryDataSO : ItemDataSO
     public int RecyclePrice => recyclePrice;
     public AccessoryRarity RarityGrade => rarity;
     public int Rarity => (int)rarity;
+    public override string Description => BuildDescription();
     
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
@@ -61,17 +62,33 @@ public class AccessoryDataSO : ItemDataSO
 
     public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
-        List<DescriptorInfo> infos = new();
-        foreach (PropModifierData propEntry in propertyModifiers)
-        {
-            infos.Add(new DescriptorInfo(propEntry.GetDisplayName(), propEntry.GetDisplayValueText()));
-        }
+        return ItemDescriptionUtility.BuildDescriptorInfos(
+            itemDescription,
+            propertyModifiers,
+            specialFeatures,
+            BuildMetaInfos());
+    }
 
-        foreach (FeatureEffectBase feature in specialFeatures)
-        {
-            infos.Add(new DescriptorInfo(feature.Title, feature.Description));
-        }
+    private string BuildDescription()
+    {
+        return ItemDescriptionUtility.BuildDetailedDescription(
+            itemDescription,
+            propertyModifiers,
+            specialFeatures,
+            BuildMetaLines(),
+            "提供一项饰品效果。");
+    }
 
-        return infos;
+    private IEnumerable<DescriptorInfo> BuildMetaInfos()
+    {
+        yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
+    }
+
+    private IEnumerable<ItemDescriptionLine> BuildMetaLines()
+    {
+        yield return new ItemDescriptionLine(
+            "品质",
+            ItemDescriptionUtility.FormatRarity(rarity),
+            ItemDescriptionLineKind.Meta);
     }
 }

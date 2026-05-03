@@ -36,7 +36,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     public string CardId => cardId;
     public string Title => title;
     public Sprite Icon => icon;
-    public string Description => description;
+    public string Description => BuildDescription();
     public UpgradeCardRarity Rarity => rarity;
     public IReadOnlyList<UpgradeCardTag> Tags => tags;
     public bool HasPickLimit => maxPickCount > UNLIMITED_PICK_COUNT;
@@ -141,50 +141,37 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
 
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
-        List<DescriptorInfo> infos = new();
-        for (int i = 0; i < propertyModifiers.Count; i++)
-        {
-            PropModifierData modifier = propertyModifiers[i];
-            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureEffectBase feature = specialFeatures[i];
-            if (feature == null)
-            {
-                continue;
-            }
-
-            infos.Add(new DescriptorInfo(feature.Title, feature.Description));
-        }
-
-        return infos;
+        return ItemDescriptionUtility.BuildDescriptorInfos(
+            ShouldUseManualDescription() ? description : null,
+            propertyModifiers,
+            specialFeatures,
+            BuildMetaInfos());
     }
 
     private string BuildDescription()
     {
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            return description;
-        }
+        return ItemDescriptionUtility.BuildDetailedDescription(
+            ShouldUseManualDescription() ? description : null,
+            propertyModifiers,
+            specialFeatures,
+            null,
+            "获得一项升级。");
+    }
 
-        List<string> lines = new();
-        for (int i = 0; i < propertyModifiers.Count; i++)
-        {
-            lines.Add(propertyModifiers[i].GetAutoDescription());
-        }
+    private bool ShouldUseManualDescription()
+    {
+        return !HasAnyEffect() && !string.IsNullOrWhiteSpace(description);
+    }
 
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureEffectBase feature = specialFeatures[i];
-            if (feature != null && !string.IsNullOrWhiteSpace(feature.Description))
-            {
-                lines.Add(feature.Description);
-            }
-        }
+    private IEnumerable<DescriptorInfo> BuildMetaInfos()
+    {
+        yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
 
-        return lines.Count > 0 ? string.Join("\n", lines) : "获得一项升级。";
+        string tagText = ItemDescriptionUtility.JoinUpgradeCardTags(tags, tags != null ? tags.Length : 0);
+        if (!string.IsNullOrWhiteSpace(tagText))
+        {
+            yield return new DescriptorInfo("标签", tagText);
+        }
     }
 
     private Sprite ResolveDisplayIcon()
