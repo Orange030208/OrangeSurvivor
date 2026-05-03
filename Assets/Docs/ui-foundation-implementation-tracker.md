@@ -3,15 +3,15 @@
 ## Current Resume State
 
 - Current phase: Phase 0 documentation and memory-management baseline.
-- Current status: Final framework specification exists; implementation plan and tracker have been created.
-- Latest validation: Documentation files exist and mandatory protocol lines were verified.
-- Next concrete task: stage documentation files and commit `Add UIFoundation planning docs`.
+- Current status: Phase 0 documentation baseline has been committed.
+- Latest validation: Documentation files exist, mandatory protocol lines were verified, and baseline commit succeeded.
+- Next concrete task: start Phase 1 by reading this tracker, then implementing core value types, enums, exceptions, and settings assets.
 - Hard rule: every future implementation turn must read this tracker, read the implementation plan, inspect git status, then update this tracker before ending.
 
 ## Milestone Checklist
 
 - [x] Phase 0: Baseline documentation files created.
-- [ ] Phase 0: Baseline documentation commit created.
+- [x] Phase 0: Baseline documentation commit created.
 - [ ] Phase 1: Core types and settings.
 - [ ] Phase 2: Scope, Canvas, Layer, Bootstrap.
 - [ ] Phase 3: Surface lifecycle foundation.
@@ -26,8 +26,8 @@
 
 ## Latest Git State
 
-- Last checked: documentation validation before baseline commit.
-- Known untracked docs:
+- Last checked: after baseline commit `4af7217`.
+- Known tracked baseline docs:
   - `Assets/Docs/universal-ui-framework-development-guide.md`
   - `Assets/Docs/universal-ui-framework-development-guide.md.meta`
   - `Assets/Docs/ui-foundation-implementation-plan.md`
@@ -44,6 +44,7 @@
 - Added Localization as a core framework capability.
 - Created implementation plan at `Assets/Docs/ui-foundation-implementation-plan.md`.
 - Created this tracker at `Assets/Docs/ui-foundation-implementation-tracker.md`.
+- Created baseline commit `4af7217` with message `Add UIFoundation planning docs`.
 
 ## Current Public API
 
@@ -87,8 +88,8 @@
 
 ## Next Step
 
-1. Verify all documentation files exist.
-2. Verify `git status --short`.
-3. Stage documentation files.
-4. Commit baseline planning docs.
-5. Start Phase 1 only after the baseline commit exists.
+1. Start Phase 1 only after reading this tracker and the implementation plan.
+2. Implement core value types, enums, exceptions, and settings assets under `Assets/Scripts/Framework/UIFoundation/`.
+3. Run a Unity compile check.
+4. Update this tracker.
+5. Commit Phase 1 as a separate rollback point.
