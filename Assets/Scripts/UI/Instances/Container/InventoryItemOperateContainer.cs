@@ -39,7 +39,7 @@ public class InventoryItemOperateContainer : UIContainerBase<InventoryItemOperat
 
         iconImage.sprite = resource.itemData.Icon;
         RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
-        bottom.Display(resource.itemData);
+        bottom.Display(resource.describable);
 
         currentEntryId = resource.entryId;
 

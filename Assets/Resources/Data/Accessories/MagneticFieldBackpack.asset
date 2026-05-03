@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 84085e9d57dcf5146b1f702fc55c2dc3, type: 3}
   itemPrice: 44
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: magnetic_field_backpack
   recyclePrice: 14
   rarity: 2

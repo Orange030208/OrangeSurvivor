@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 7103cd799eaffc74bab5049bce573bb5, type: 3}
   itemPrice: 28
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: stabilizing_counterweight
   recyclePrice: 8
   rarity: 1

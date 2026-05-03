@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 81ffdb3754a6fbd4d816b88c585ef1b8, type: 3}
   itemPrice: 16
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: portable_med_patch
   recyclePrice: 4
   rarity: 0

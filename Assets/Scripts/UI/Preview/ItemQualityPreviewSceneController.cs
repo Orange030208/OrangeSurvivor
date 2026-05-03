@@ -255,7 +255,7 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
                 sampleWeapon,
                 WeaponLevelHelper.MaxLevel,
                 WeaponPriceHelper.GetPrice(sampleWeapon.ItemPrice, WeaponLevelHelper.MaxLevel),
-                sampleWeapon));
+                new WeaponLevelDescribable(sampleWeapon, WeaponLevelHelper.MaxLevel)));
             spawnedDisposables.Add(popup);
             spawnedObjects.Add(popup.gameObject);
         }

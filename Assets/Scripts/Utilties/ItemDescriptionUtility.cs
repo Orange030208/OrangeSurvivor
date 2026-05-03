@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -25,6 +26,17 @@ internal readonly struct ItemDescriptionLine
 
 internal static class ItemDescriptionUtility
 {
+    public static string NormalizeManualDescription(string description)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return string.Empty;
+        }
+
+        string trimmedDescription = description.Trim();
+        return IsPlaceholderDescription(trimmedDescription) ? string.Empty : trimmedDescription;
+    }
+
     public static string BuildDetailedDescription(
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
@@ -92,6 +104,11 @@ internal static class ItemDescriptionUtility
         string value = descriptorInfo.value;
 
         if (string.IsNullOrWhiteSpace(label))
+        {
+            return value ?? string.Empty;
+        }
+
+        if (IsDescriptionLabel(label))
         {
             return value ?? string.Empty;
         }
@@ -221,12 +238,13 @@ internal static class ItemDescriptionUtility
 
     private static void AddFlavorLine(List<ItemDescriptionLine> lines, string description)
     {
-        if (string.IsNullOrWhiteSpace(description))
+        string normalizedDescription = NormalizeManualDescription(description);
+        if (string.IsNullOrWhiteSpace(normalizedDescription))
         {
             return;
         }
 
-        lines.Add(new ItemDescriptionLine("说明", description.Trim(), ItemDescriptionLineKind.Flavor));
+        lines.Add(new ItemDescriptionLine(string.Empty, normalizedDescription, ItemDescriptionLineKind.Flavor));
     }
 
     private static void AddPropertyLines(List<ItemDescriptionLine> lines, IReadOnlyList<PropModifierData> propertyModifiers)
@@ -316,24 +334,28 @@ internal static class ItemDescriptionUtility
             return line.Value ?? string.Empty;
         }
 
+        if (line.Kind == ItemDescriptionLineKind.Flavor || IsDescriptionLabel(line.Label))
+        {
+            return line.Value ?? string.Empty;
+        }
+
         if (string.IsNullOrWhiteSpace(line.Value))
         {
             return line.Label;
         }
 
-        return line.Kind == ItemDescriptionLineKind.Flavor
-            ? line.Value
-            : $"{line.Label}: {line.Value}";
+        return $"{line.Label}: {line.Value}";
     }
 
     private static void AddDescriptionInfo(List<DescriptorInfo> infos, string description)
     {
-        if (string.IsNullOrWhiteSpace(description))
+        string normalizedDescription = NormalizeManualDescription(description);
+        if (string.IsNullOrWhiteSpace(normalizedDescription))
         {
             return;
         }
 
-        infos.Add(new DescriptorInfo("说明", description.Trim()));
+        infos.Add(new DescriptorInfo(string.Empty, normalizedDescription));
     }
 
     private static void AddPropertyInfos(List<DescriptorInfo> infos, IReadOnlyList<PropModifierData> propertyModifiers)
@@ -386,5 +408,21 @@ internal static class ItemDescriptionUtility
 
             infos.Add(info);
         }
+    }
+
+    private static bool IsDescriptionLabel(string label)
+    {
+        return string.Equals(label?.Trim(), "说明", StringComparison.Ordinal);
+    }
+
+    private static bool IsPlaceholderDescription(string description)
+    {
+        string compactDescription = description
+            .Replace(" ", string.Empty)
+            .Replace("　", string.Empty)
+            .Replace("。", string.Empty)
+            .Replace(".", string.Empty);
+
+        return string.Equals(compactDescription, "纯属性饰品", StringComparison.Ordinal);
     }
 }

@@ -20,7 +20,7 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
         sellPriceText.text = resource.sellPrice.ToString();
 
         RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
-        bottom.Display(resource.itemData);
+        bottom.Display(resource.describable);
 
         currentEntryId = resource.entryId;
 

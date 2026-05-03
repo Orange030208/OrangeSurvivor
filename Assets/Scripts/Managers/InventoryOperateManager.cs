@@ -123,7 +123,7 @@ public class InventoryOperateManager : MonoBehaviour
             item.ItemData,
             item.ColorDependencyNumber,
             sellPrice,
-            item.ItemData);
+            item.GetDescribable());
 
         OperatePanelOpened?.Invoke(resource);
     }
@@ -333,6 +333,16 @@ public class InventoryOperateManager : MonoBehaviour
             {
                 AccessoryDataSO accessoryData => accessoryData.RecyclePrice,
                 _ => ItemData != null ? ItemData.ItemPrice : 0
+            };
+        }
+
+        public IDescribable GetDescribable()
+        {
+            return ItemData switch
+            {
+                WeaponDataSO weaponData => new WeaponLevelDescribable(weaponData, ColorDependencyNumber),
+                IDescribable describable => describable,
+                _ => IDescribable.Default
             };
         }
     }

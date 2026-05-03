@@ -43,13 +43,13 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
         {
             colorDependency = accessoryData.Rarity;
             nameText.text = itemData.ItemName;
-            bottom.Display(itemData);
+            bottom.Display(accessoryData);
         }
         else if (itemData is WeaponDataSO weaponData)
         {
             colorDependency = shopItem.Level;
             nameText.text = ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level);
-            bottom.Display(weaponData);
+            bottom.Display(new WeaponLevelDescribable(weaponData, shopItem.Level));
         }
         else
         {

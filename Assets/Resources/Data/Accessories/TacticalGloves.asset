@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 6497807c75cb3c24a9e896e06a3e532a, type: 3}
   itemPrice: 28
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: tactical_gloves
   recyclePrice: 8
   rarity: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 9186f57e82fc8ea4fa992fad2cc1f906, type: 3}
   itemPrice: 68
   itemType: 1
-  itemDescription: "\u66B4\u51FB\u540E\uFF0C\u4E0B\u4E00\u6B21\u975E\u66B4\u51FB\u547D\u4E2D\u83B7\u5F97\u989D\u5916\u66B4\u51FB\u7387\u3002"
+  itemDescription: ""
   accessoryId: constellation_scope
   recyclePrice: 22
   rarity: 3

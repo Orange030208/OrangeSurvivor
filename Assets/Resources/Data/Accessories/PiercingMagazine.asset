@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 7c85f15940efe8e4781c4aa009cc1402, type: 3}
   itemPrice: 44
   itemType: 1
-  itemDescription: "\u7A7F\u900F\u540E\u7684\u4F24\u5BB3\u7565\u5FAE\u964D\u4F4E\uFF0C\u907F\u514D\u6E05\u573A\u8FC7\u5F3A\u3002"
+  itemDescription: ""
   accessoryId: piercing_magazine
   recyclePrice: 14
   rarity: 2

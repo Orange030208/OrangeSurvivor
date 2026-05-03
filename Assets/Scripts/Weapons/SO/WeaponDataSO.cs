@@ -185,7 +185,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public GameObject HitVfxPrefab => hitVfxPrefab;
     public Vector2 HitBoxSize => hitBoxSize;
     public Vector2 HitBoxOffset => hitBoxOffset;
-    public override string Description => BuildDescription();
+    public override string Description => BuildDescriptionForLevel(WeaponLevelHelper.MinLevel);
 
     private void OnValidate()
     {
@@ -297,22 +297,33 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         return true;
     }
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
+    public string BuildDescriptionForLevel(int level)
     {
-        WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
+        WeaponLevelStatData stats = GetLevelStats(level);
+        return ItemDescriptionUtility.BuildDetailedDescription(
+            itemDescription,
+            null,
+            null,
+            BuildWeaponDescriptionLines(stats),
+            "一把可装备武器。");
+    }
+
+    public IEnumerable<DescriptorInfo> GetExtraInfosForLevel(int level)
+    {
+        WeaponLevelStatData stats = GetLevelStats(level);
         List<DescriptorInfo> infos = new();
-        if (!string.IsNullOrWhiteSpace(itemDescription))
+        string description = ItemDescriptionUtility.NormalizeManualDescription(itemDescription);
+        if (!string.IsNullOrWhiteSpace(description))
         {
-            infos.Add(new DescriptorInfo("说明", itemDescription.Trim()));
+            infos.Add(new DescriptorInfo(string.Empty, description));
         }
 
-        infos.Add(new DescriptorInfo("等级", $"Lv.{previewStats.Level} 基础属性"));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, previewStats.Attack)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, previewStats.AttackSpeed)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, previewStats.CriticalChance)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, previewStats.CriticalPercent)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, previewStats.Range)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, previewStats.KnockbackStrength)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range)));
+        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength)));
         if (tags != null && tags.Length > 0)
         {
             infos.Add(new DescriptorInfo("标签", ItemDescriptionUtility.JoinWeaponTags(tags)));
@@ -321,24 +332,13 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         return infos;
     }
 
-    private string BuildDescription()
+    public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
-        WeaponLevelStatData previewStats = GetLevelStats(WeaponLevelHelper.MinLevel);
-        return ItemDescriptionUtility.BuildDetailedDescription(
-            itemDescription,
-            null,
-            null,
-            BuildWeaponDescriptionLines(previewStats),
-            "一把可装备武器。");
+        return GetExtraInfosForLevel(WeaponLevelHelper.MinLevel);
     }
 
-    private IEnumerable<ItemDescriptionLine> BuildWeaponDescriptionLines(WeaponLevelStatData previewStats)
+    private IEnumerable<ItemDescriptionLine> BuildWeaponDescriptionLines(WeaponLevelStatData stats)
     {
-        yield return new ItemDescriptionLine(
-            "等级",
-            $"Lv.{previewStats.Level} 基础属性",
-            ItemDescriptionLineKind.Meta);
-
         if (tags != null && tags.Length > 0)
         {
             yield return new ItemDescriptionLine(
@@ -349,27 +349,27 @@ public class WeaponDataSO : ItemDataSO, IDescribable
 
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.Attack),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, previewStats.Attack),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.AttackSpeed),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, previewStats.AttackSpeed),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.CriticalChance),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, previewStats.CriticalChance),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.CriticalPercent),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, previewStats.CriticalPercent),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.AttackRange),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, previewStats.Range),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
             ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength),
-            ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, previewStats.KnockbackStrength),
+            ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength),
             ItemDescriptionLineKind.Property);
     }
 
@@ -416,5 +416,28 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             100f,
             0f,
             0f);
+    }
+}
+
+public sealed class WeaponLevelDescribable : IDescribable
+{
+    private readonly WeaponDataSO weaponData;
+    private readonly int level;
+
+    public WeaponLevelDescribable(WeaponDataSO weaponData, int level)
+    {
+        this.weaponData = weaponData;
+        this.level = WeaponLevelHelper.ClampLevel(level);
+    }
+
+    public string Title => weaponData != null ? weaponData.Title : string.Empty;
+    public Sprite Icon => weaponData != null ? weaponData.Icon : null;
+    public string Description => weaponData != null ? weaponData.BuildDescriptionForLevel(level) : string.Empty;
+
+    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        return weaponData != null
+            ? weaponData.GetExtraInfosForLevel(level)
+            : System.Array.Empty<DescriptorInfo>();
     }
 }

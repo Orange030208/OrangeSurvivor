@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 872cb017640d0e14798e09d9c36ebabd, type: 3}
   itemPrice: 16
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: lightweight_stock
   recyclePrice: 4
   rarity: 0

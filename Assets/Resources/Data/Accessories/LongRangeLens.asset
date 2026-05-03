@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 50e9efa6ee2c3ae4cbc491dd6507d70e, type: 3}
   itemPrice: 28
   itemType: 1
-  itemDescription: "\u8DDD\u79BB\u8F83\u8FDC\u547D\u4E2D\u65F6\uFF0C\u989D\u5916\u83B7\u5F97\u5C11\u91CF\u66B4\u51FB\u4F24\u5BB3\u3002"
+  itemDescription: ""
   accessoryId: long_range_lens
   recyclePrice: 8
   rarity: 1

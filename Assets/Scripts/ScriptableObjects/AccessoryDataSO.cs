@@ -63,7 +63,7 @@ public class AccessoryDataSO : ItemDataSO
     public override IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         return ItemDescriptionUtility.BuildDescriptorInfos(
-            itemDescription,
+            ItemDescriptionUtility.NormalizeManualDescription(itemDescription),
             propertyModifiers,
             specialFeatures,
             BuildMetaInfos());
@@ -72,11 +72,11 @@ public class AccessoryDataSO : ItemDataSO
     private string BuildDescription()
     {
         return ItemDescriptionUtility.BuildDetailedDescription(
-            itemDescription,
+            ItemDescriptionUtility.NormalizeManualDescription(itemDescription),
             propertyModifiers,
             specialFeatures,
             BuildMetaLines(),
-            "提供一项饰品效果。");
+            string.Empty);
     }
 
     private IEnumerable<DescriptorInfo> BuildMetaInfos()

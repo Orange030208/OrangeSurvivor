@@ -16,7 +16,7 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: ab0b1a916541fba4498b2777aaf88a87, type: 3}
   itemPrice: 16
   itemType: 1
-  itemDescription: "\u7EAF\u5C5E\u6027\u9970\u54C1\u3002"
+  itemDescription: ""
   accessoryId: rusty_brooch
   recyclePrice: 4
   rarity: 0
