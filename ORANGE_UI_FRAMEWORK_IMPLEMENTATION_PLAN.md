@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 1，框架目录与基础类型已完成，准备进入阶段 2。
+当前阶段：阶段 2，配置资产与 Catalog 校验已完成，准备进入阶段 3。
 
 已完成：
 
@@ -325,10 +325,13 @@
 - 已创建 `Assets/Scripts/OrangeUIFramework/Core/Runtime/`。
 - 已新增基础运行时类型：`ViewKind`、`ViewRuntimePhase`、`CloseReason`、`OpenContext`、`ViewHandle`、`PopupOptions`、`TooltipOptions`、`ModalResult`、`UIRuntimeDiagnostics`。
 - 为保证阶段 1 可编译闭环，已同步新增最小基类与接口：`IView`、`ViewBase`、`PageBase`、`PopupBase`、`ModalBase<TResult>`、`TooltipBase`、`ViewPartBase`。这些类型只提供后续阶段所需的基础扩展点，完整生命周期和 UIManager 接入仍留到阶段 4。
+- 已完成阶段 2 数据资产与校验脚本：`UIFrameworkSettings`、`CanvasProfile`、`ViewCatalog`、`ViewDefinition`、`LayerDefinition`、`ViewLayer`、`ValidationReport`。
+- `CanvasProfile` 已支持 Overlay / Camera 配置校验，Camera 模式缺少 `uiCamera` 会报错，WorldSpace 会报错。
+- `ViewCatalog` 已校验空 id、重复 id、缺 Prefab、Prefab 根节点缺 `ViewBase`、重复 View 类型、`ViewKind` 与基类不匹配，以及禁止把 `ViewPart` 注册到全局 Catalog。
+- `UIFrameworkSettings` 已提供默认标准层级：Background、Hud、Page、Popup、ModalMask、Modal、Tooltip、System、Debug，并校验重复 Layer。
 
 未完成：
 
-- 尚未实现配置资产、Catalog 校验与 CanvasProfile。
 - 尚未实现新 `UIManager`、Root Canvas、Layer 构建。
 - 尚未接入完整 View 生命周期、异步打开关闭、动画等待、Popup / Modal / Tooltip 管理。
 
@@ -343,11 +346,11 @@
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 1 提交已存在。
-3. 从阶段 2 开始，创建配置资产与 Catalog 校验类型：`UIFrameworkSettings`、`CanvasProfile`、`ViewCatalog`、`ViewDefinition`、`LayerDefinition`。
+2. 确认阶段 2 提交已存在。
+3. 从阶段 3 开始，新建 `UIManager`、`IUIManager`、Root Canvas / Layer 构建能力。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非是阶段 3 明确迁移框架入口时需要。
-6. 阶段 2 重点处理 Overlay / Camera 配置、Layer 枚举/定义、Catalog 重复 id/类型/Prefab 组件校验。
+6. 阶段 3 重点处理 Overlay / Camera Canvas 应用、Root 复用、Layer 根节点构建、启动期调用阶段 2 校验、基础诊断输出。
 
 下一轮禁止：
 
@@ -428,3 +431,46 @@
 
 - 提交阶段 1。
 - 进入阶段 2，优先实现 `UIFrameworkSettings`、`CanvasProfile`、`ViewCatalog`、`ViewDefinition`、`LayerDefinition` 与校验结果结构。
+
+### 2026-05-05 阶段 2 配置资产与 Catalog 校验
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Core/Data/` 目录，承载框架配置与校验数据结构。
+- 新增 `CanvasProfile`，支持 `ScreenSpaceOverlay` 与 `ScreenSpaceCamera` 配置，并校验 Camera 模式必须显式配置 `uiCamera`。
+- 新增 `UIFrameworkSettings`，集中配置实例 id 前缀、Root 名称、DontDestroyOnLoad、UniTask/动画时间尺度策略、池化容量和标准 UI Layer。
+- 新增 `ViewLayer`、`LayerDefinition`，默认提供 Background、Hud、Page、Popup、ModalMask、Modal、Tooltip、System、Debug 层级及推荐 SortingOrder。
+- 新增 `ViewCatalog`、`ViewDefinition`，支持按 id 和类型查找 Definition，并提供启动期可复用的结构化校验。
+- 新增 `ValidationSeverity`、`ValidationMessage`、`ValidationReport`，让 Settings、CanvasProfile、Catalog 校验可以被 UIManager 和 Editor 共同复用。
+- 为 `CanvasProfile`、`UIFrameworkSettings`、`ViewCatalog` 增加 `Log Validation Report` 上下文菜单，便于 Inspector 手动检查。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewLayer.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/ValidationSeverity.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/ValidationMessage.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/ValidationReport.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/LayerDefinition.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/CanvasProfile.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/ViewDefinition.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/ViewCatalog.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Data/UIFrameworkSettings.cs`
+
+验证情况：
+
+- 已检查所有新增 `.cs` 均有对应 `.meta`。
+- 已检查 `CreateAssetMenu` 菜单路径使用 `Orange/UI Framework/...`，类名和字段名没有滥用 `Orange`。
+- 已检查阶段 2 未修改旧 `AXR.Framework.UI` 框架、旧 UIManager 调用和业务 UI 页面。
+- 已进行文件级检查：Settings、CanvasProfile、Catalog 均提供结构化 `Validate()`；Catalog 覆盖重复 id、重复类型、Prefab 缺组件、Kind 与基类不匹配；Settings 覆盖重复 Layer；CanvasProfile 覆盖 Camera 模式缺相机。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，未能在命令行执行完整 C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- 阶段 2 只提供数据资产和校验，不创建实际资源资产；Overlay / Camera Profile 和 Catalog asset 可在 Unity Editor 中按需要创建。
+- `allowDuplicateViewType` 仅为多皮肤扩展保留，阶段 3/4 的默认 UIManager 查找仍应优先使用唯一类型。
+- `ViewPart` 被明确禁止注册到全局 Catalog；页面内部子视图仍需在业务 Prefab 内直接组合。
+
+下一步：
+
+- 提交阶段 2。
+- 进入阶段 3，优先实现新 `UIManager` 与 `IUIManager`，完成 Settings/Catalog 校验、Root Canvas 创建/复用、Overlay/Camera 配置应用、标准 Layer 构建和基础 `LogRuntimeDiagnostics()`。
