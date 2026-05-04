@@ -92,7 +92,7 @@
 - `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md` 存在且包含进度记忆规则。
 - 已提交规划文档。
 
-状态：进行中。
+状态：已完成。
 
 ### 阶段 1：框架目录与基础类型
 
@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 0，规划与准备。
+当前阶段：阶段 1，框架目录与基础类型已完成，准备进入阶段 2。
 
 已完成：
 
@@ -321,27 +321,33 @@
 - 已明确保留 `UIManager` 作为运行时总入口。
 - 已明确示例代码直接引用 `UIManager`。
 - 已明确加入异步防重入、FloatingViewPositioner、运行时诊断、UIMotion refresh defaults 修复。
+- 已提交规划文档，最新规划提交为 `78dbb47 规划 OrangeUIFramework 框架实施方案`。
+- 已创建 `Assets/Scripts/OrangeUIFramework/Core/Runtime/`。
+- 已新增基础运行时类型：`ViewKind`、`ViewRuntimePhase`、`CloseReason`、`OpenContext`、`ViewHandle`、`PopupOptions`、`TooltipOptions`、`ModalResult`、`UIRuntimeDiagnostics`。
+- 为保证阶段 1 可编译闭环，已同步新增最小基类与接口：`IView`、`ViewBase`、`PageBase`、`PopupBase`、`ModalBase<TResult>`、`TooltipBase`、`ViewPartBase`。这些类型只提供后续阶段所需的基础扩展点，完整生命周期和 UIManager 接入仍留到阶段 4。
 
 未完成：
 
-- 尚未实现任何框架代码。
-- 尚未创建 `Assets/Scripts/OrangeUIFramework/`。
-- 尚未提交本轮规划文档。
+- 尚未实现配置资产、Catalog 校验与 CanvasProfile。
+- 尚未实现新 `UIManager`、Root Canvas、Layer 构建。
+- 尚未接入完整 View 生命周期、异步打开关闭、动画等待、Popup / Modal / Tooltip 管理。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
+- 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认规划提交已存在。
-3. 从阶段 1 开始，创建 `Assets/Scripts/OrangeUIFramework/` 目录与基础类型。
+2. 确认阶段 1 提交已存在。
+3. 从阶段 2 开始，创建配置资产与 Catalog 校验类型：`UIFrameworkSettings`、`CanvasProfile`、`ViewCatalog`、`ViewDefinition`、`LayerDefinition`。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非是阶段 3 明确迁移框架入口时需要。
+6. 阶段 2 重点处理 Overlay / Camera 配置、Layer 枚举/定义、Catalog 重复 id/类型/Prefab 组件校验。
 
 下一轮禁止：
 
@@ -375,3 +381,50 @@
 
 - 提交规划文档。
 - 压缩上下文后，从阶段 1 开始搭建框架目录与基础类型。
+
+### 2026-05-04 阶段 1 框架目录与基础类型
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Core/Runtime/` 目录，作为新框架 Runtime 基础类型目录。
+- 新增核心枚举与上下文：`ViewKind`、`ViewRuntimePhase`、`CloseReason`、`OpenContext`。
+- 新增外部句柄与异步结果类型：`ViewHandle`、`ViewHandle<TView>`、`ModalResult`、`ModalResult<TResult>`。
+- 新增浮层选项与诊断快照：`PopupOptions`、`TooltipOptions`、`UIRuntimeDiagnostics`、`ViewDiagnostics`、`PoolDiagnostics`。
+- 补充最小 `IView`、`ViewBase`、`PageBase`、`PopupBase`、`ModalBase<TResult>`、`TooltipBase`、`ViewPartBase`，用于保证基础句柄泛型约束和后续阶段代码可以稳定接续。
+- `PopupOptions` 和 `TooltipOptions` 已处理 `default(...)` 语义，避免 UIManager 后续 API 默认参数产生反向行为。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewKind.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewRuntimePhase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/CloseReason.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/OpenContext.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewHandle.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/PopupOptions.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/TooltipOptions.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ModalResult.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIRuntimeDiagnostics.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/IView.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/PageBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/PopupBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ModalBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/TooltipBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewPartBase.cs`
+
+验证情况：
+
+- 已确认 UniTask 包依赖存在于 `Packages/manifest.json`。
+- 已检查新增类型均位于 `Orange.UIFramework` 命名空间，类名和字段名未滥用 `Orange`。
+- 已检查本轮没有修改旧 UI 页面和旧 UIManager 业务调用。
+- 当前工作树没有 Unity 生成的 `.csproj`，因此未能通过命令行执行完整 C# 编译；下一轮如 Unity Editor 已刷新，应优先检查编译错误。
+
+遗留风险：
+
+- `ViewBase` 当前只是最小骨架，完整异步生命周期、阶段状态机和 UIManager 调用链仍需阶段 4 和阶段 5 完成。
+- `ModalBase<TResult>` 当前只提供结果互斥基础，遮罩、关闭时结果兜底和 ModalStack 仍需阶段 7 完成。
+
+下一步：
+
+- 提交阶段 1。
+- 进入阶段 2，优先实现 `UIFrameworkSettings`、`CanvasProfile`、`ViewCatalog`、`ViewDefinition`、`LayerDefinition` 与校验结果结构。
