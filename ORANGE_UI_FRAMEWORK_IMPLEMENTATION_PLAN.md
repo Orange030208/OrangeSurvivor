@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 2，配置资产与 Catalog 校验已完成，准备进入阶段 3。
+当前阶段：阶段 3，UIManager Root / Canvas / Layer 已完成，准备进入阶段 4。
 
 已完成：
 
@@ -329,11 +329,14 @@
 - `CanvasProfile` 已支持 Overlay / Camera 配置校验，Camera 模式缺少 `uiCamera` 会报错，WorldSpace 会报错。
 - `ViewCatalog` 已校验空 id、重复 id、缺 Prefab、Prefab 根节点缺 `ViewBase`、重复 View 类型、`ViewKind` 与基类不匹配，以及禁止把 `ViewPart` 注册到全局 Catalog。
 - `UIFrameworkSettings` 已提供默认标准层级：Background、Hud、Page、Popup、ModalMask、Modal、Tooltip、System、Debug，并校验重复 Layer。
+- 已新增新框架 `UIManager` 与 `IUIManager`，保留 `UIManager` 作为具体运行时入口。
+- `UIManager` 已支持启动期调用 Settings / Catalog 校验、创建或复用 Root Canvas、应用 Overlay / Camera CanvasProfile、创建标准 Layer 根节点。
+- `UIManager` 已提供 `TryGetLayerRoot()`、`GetRuntimeDiagnostics()`、`LogRuntimeDiagnostics()`，可输出 Root、Canvas 模式、相机、Layer 数量、Layer SortingOrder 与 Raycaster 状态。
 
 未完成：
 
-- 尚未实现新 `UIManager`、Root Canvas、Layer 构建。
 - 尚未接入完整 View 生命周期、异步打开关闭、动画等待、Popup / Modal / Tooltip 管理。
+- `UIManager` 的 Page / Popup / Modal / Tooltip 打开关闭 API 目前只保留接口并显式抛出阶段性未实现异常，需阶段 4 和阶段 7 完成。
 
 当前风险：
 
@@ -346,11 +349,11 @@
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 2 提交已存在。
-3. 从阶段 3 开始，新建 `UIManager`、`IUIManager`、Root Canvas / Layer 构建能力。
+2. 确认阶段 3 提交已存在。
+3. 从阶段 4 开始，完善 `ViewBase` 生命周期，接入 `UIManager` Page 打开/关闭 UniTask API。
 4. 不迁移任何现有业务页面。
-5. 不修改旧 UIManager 业务调用，除非是阶段 3 明确迁移框架入口时需要。
-6. 阶段 3 重点处理 Overlay / Camera Canvas 应用、Root 复用、Layer 根节点构建、启动期调用阶段 2 校验、基础诊断输出。
+5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
+6. 阶段 4 重点处理 `ViewBase` 的 `OpenInternalAsync` / `CloseInternalAsync` 或等价内部生命周期入口、`IViewLoader` 默认 Prefab 加载、PageStack、同步兼容 OpenPage 基础入口、只让需要 Tick 的 View 进入 Tick 列表。
 
 下一轮禁止：
 
@@ -474,3 +477,41 @@
 
 - 提交阶段 2。
 - 进入阶段 3，优先实现新 `UIManager` 与 `IUIManager`，完成 Settings/Catalog 校验、Root Canvas 创建/复用、Overlay/Camera 配置应用、标准 Layer 构建和基础 `LogRuntimeDiagnostics()`。
+
+### 2026-05-05 阶段 3 UIManager Root / Canvas / Layer
+
+完成内容：
+
+- 新增新框架 `IUIManager`，声明 Page、Popup、Modal、Tooltip 的 UniTask API，作为可选解耦接口。
+- 新增新框架 `UIManager`，保留为具体运行时总入口，不引入 `UIService` 平行入口。
+- `UIManager.Awake()` 完成单例保护、Settings/Catalog 启动期校验、Root Canvas 创建或复用、Layer 根节点构建。
+- Root Canvas 支持 `ScreenSpaceOverlay` 与 `ScreenSpaceCamera`：Camera 模式使用 `CanvasProfile.UICamera`，不会静默使用 `Camera.main`。
+- Root Canvas 自动确保 `CanvasScaler` 和 `GraphicRaycaster`，并按 `CanvasProfile` 应用 reference resolution、match、sorting order、plane distance。
+- 标准 Layer 创建在 `UIRoot/Layers` 下，每层独立 `Canvas` 覆盖排序并按 `LayerDefinition.BlocksRaycasts` 配置 `GraphicRaycaster`。
+- 扩展 `UIRuntimeDiagnostics`，新增 Root 和 Layer 诊断字段。
+- `UIManager` 新增 `TryGetLayerRoot()`、`GetRuntimeDiagnostics()`、`LogRuntimeDiagnostics()`，可输出 Root、CanvasMode、Camera、RequestVersion、Layer 名称/排序/射线/激活状态。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/IUIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIRuntimeDiagnostics.cs`
+
+验证情况：
+
+- 已检查所有新增 `.cs` 均有对应 `.meta`。
+- 已检查 `UIManager` 使用 `Orange.UIFramework` 命名空间，具体类名不滥用 `Orange`。
+- 已检查阶段 3 未修改旧 `AXR.Framework.UI` 框架、旧 UIManager 调用和业务 UI 页面。
+- 已进行文件级检查：`UIManager` 包含 Root Canvas 创建/复用、Overlay/Camera 应用、Layer 构建、启动期校验和诊断输出。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，未能在命令行执行完整 C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- `UIManager` 的打开关闭 API 目前只声明并显式抛出阶段性未实现异常，避免在阶段 3 提供半成品行为；阶段 4 会实现 Page 生命周期和 UniTask API。
+- 当前诊断只覆盖 Root 和 Layer；PageStack、PopupStack、ModalStack、Tooltip、池化数量、异步请求状态需阶段 4、7、10 继续补齐。
+- `requestVersion` 字段已进入诊断结构，但正式递增和防旧请求覆盖需阶段 5 实现。
+
+下一步：
+
+- 提交阶段 3。
+- 进入阶段 4，优先实现 `IViewLoader` 默认 Prefab Loader、`ViewBase` 内部异步生命周期入口、PageStack 与 `OpenPageAsync` / `ReplacePageAsync` / `ResetToPageAsync` / `CloseTopPageAsync` / `CloseAllPagesAsync`。

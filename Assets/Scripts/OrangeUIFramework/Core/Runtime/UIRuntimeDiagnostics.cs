@@ -11,7 +11,10 @@ namespace Orange.UIFramework
             int requestVersion,
             IReadOnlyList<ViewDiagnostics> openViews,
             IReadOnlyList<PoolDiagnostics> pools,
-            string currentTooltipInstanceId)
+            string currentTooltipInstanceId,
+            string rootName = "",
+            bool rootActive = false,
+            IReadOnlyList<LayerDiagnostics> layers = null)
         {
             CanvasMode = canvasMode ?? string.Empty;
             CameraName = cameraName ?? string.Empty;
@@ -19,14 +22,43 @@ namespace Orange.UIFramework
             OpenViews = openViews ?? Array.Empty<ViewDiagnostics>();
             Pools = pools ?? Array.Empty<PoolDiagnostics>();
             CurrentTooltipInstanceId = currentTooltipInstanceId ?? string.Empty;
+            RootName = rootName ?? string.Empty;
+            RootActive = rootActive;
+            Layers = layers ?? Array.Empty<LayerDiagnostics>();
         }
 
         public string CanvasMode { get; }
         public string CameraName { get; }
+        public string RootName { get; }
+        public bool RootActive { get; }
         public int RequestVersion { get; }
+        public IReadOnlyList<LayerDiagnostics> Layers { get; }
         public IReadOnlyList<ViewDiagnostics> OpenViews { get; }
         public IReadOnlyList<PoolDiagnostics> Pools { get; }
         public string CurrentTooltipInstanceId { get; }
+    }
+
+    public readonly struct LayerDiagnostics
+    {
+        public LayerDiagnostics(
+            string layerName,
+            ViewLayer layer,
+            int sortingOrder,
+            bool blocksRaycasts,
+            bool active)
+        {
+            LayerName = layerName ?? string.Empty;
+            Layer = layer;
+            SortingOrder = sortingOrder;
+            BlocksRaycasts = blocksRaycasts;
+            Active = active;
+        }
+
+        public string LayerName { get; }
+        public ViewLayer Layer { get; }
+        public int SortingOrder { get; }
+        public bool BlocksRaycasts { get; }
+        public bool Active { get; }
     }
 
     public readonly struct ViewDiagnostics
