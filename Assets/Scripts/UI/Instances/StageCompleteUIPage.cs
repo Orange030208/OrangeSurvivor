@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
@@ -15,13 +16,14 @@ public class StageCompleteUIPage : PageBase
     [SerializeField] private TextMeshProUGUI characterNameText;
     [SerializeField] private TextMeshProUGUI mainWeaponNameText;
     [SerializeField] private TextMeshProUGUI summaryText;
-    [SerializeField] private StageCompleteSummaryManager summaryManager;
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         restartButton.OnClicked += OnRestartClicked;
         menuButton.OnClicked += OnMenuClicked;
-        RenderSnapshot();
+        StageCompletePageContext pageContext = context.GetPayload<StageCompletePageContext>()
+            ?? throw new InvalidOperationException($"{nameof(StageCompleteUIPage)} requires {nameof(StageCompletePageContext)} payload.");
+        ApplySnapshot(pageContext.Snapshot);
         return UniTask.CompletedTask;
     }
 
@@ -29,17 +31,6 @@ public class StageCompleteUIPage : PageBase
     {
         restartButton.OnClicked -= OnRestartClicked;
         menuButton.OnClicked -= OnMenuClicked;
-    }
-
-    private void RenderSnapshot()
-    {
-        StageCompleteSummaryManager manager = ResolveSummaryManager();
-        if (manager == null)
-        {
-            return;
-        }
-
-        ApplySnapshot(manager.CreateSnapshot());
     }
 
     private void ApplySnapshot(StageCompleteSnapshot snapshot)
@@ -106,14 +97,4 @@ public class StageCompleteUIPage : PageBase
         GameEventBus.Publish<StageCompleteReturnToMenuClickedEvent>();
     }
 
-    private StageCompleteSummaryManager ResolveSummaryManager()
-    {
-        if (summaryManager != null)
-        {
-            return summaryManager;
-        }
-
-        summaryManager = FindFirstObjectByType<StageCompleteSummaryManager>();
-        return summaryManager;
-    }
 }

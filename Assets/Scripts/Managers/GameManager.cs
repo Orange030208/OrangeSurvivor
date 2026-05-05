@@ -17,6 +17,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
     [SerializeField] private ShopManager shopManager;
+    [SerializeField] private StageCompleteSummaryManager stageCompleteSummaryManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
@@ -357,7 +358,9 @@ public class GameManager : MonoSingletonBase<GameManager>
                 await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.StageComplete:
-                await uiManager.OpenPageAsync<StageCompleteUIPage>(cancellationToken: cancellationToken);
+                await uiManager.OpenPageAsync<StageCompleteUIPage>(
+                    UIPageContextFactory.CreateStageCompletePageContext(stageCompleteSummaryManager),
+                    cancellationToken);
                 break;
             case GameState.WaveTransition:
                 await uiManager.OpenPageAsync<WaveTransitionUIPage>(cancellationToken: cancellationToken);

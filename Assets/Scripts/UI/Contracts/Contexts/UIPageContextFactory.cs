@@ -53,6 +53,16 @@ public static class UIPageContextFactory
             true);
     }
 
+    public static StageCompletePageContext CreateStageCompletePageContext(StageCompleteSummaryManager summaryManager)
+    {
+        if (summaryManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(UIPageContextFactory)} requires an explicit {nameof(StageCompleteSummaryManager)}.");
+        }
+
+        return new StageCompletePageContext(summaryManager.CreateSnapshot());
+    }
+
     private static IInventoryUiFacade CreateInventoryFacade(Player player, InventoryOperateManager inventoryOperateManager)
     {
         if (inventoryOperateManager == null)
