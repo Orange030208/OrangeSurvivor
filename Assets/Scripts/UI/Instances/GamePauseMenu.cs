@@ -1,17 +1,18 @@
 using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 /// <summary>
 /// 暂停菜单页面本体：负责按钮绑定、属性同步以及暂停栏内容面板的切换动画。
-/// 页面本身不直接管理暂停恢复流程，只发意图事件并接入基类关闭等待管线。
+/// 页面本身不直接管理暂停恢复流程，只发意图事件，关闭时先等待内容面板收起。
 /// </summary>
-public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
+public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
 {
-    private const float DEFAULT_SLIDE_DURATION = 0.25f;
-
     [Header("暂停栏按钮")]
     [SerializeField] private UIClickTarget statusButton;
     [SerializeField] private UIClickTarget continueButton;
@@ -28,8 +29,6 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
     [FormerlySerializedAs("inventorySidebar")]
     [SerializeField] private MonoBehaviour settingsSidebar;
     [SerializeField] private CanvasGroup settingsPanelCanvasGroup;
-
-    [SerializeField] private float slideDuration = DEFAULT_SLIDE_DURATION;
 
     private PauseMenuContext currentContext;
     private PauseMenuPanelBinding statusPanel;
@@ -48,17 +47,25 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         InitContentPanels();
     }
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = PageContextBinding.Resolve<PauseMenuContext>(context, () => UIPageContextFactory.CreatePauseMenuContext());
+        currentContext = context.GetPayload<PauseMenuContext>() ?? UIPageContextFactory.CreatePauseMenuContext();
         InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
         BindButtonEvents();
         HideAllContentPanelsImmediately();
         currentPanel = null;
         panelSwitchVersion = 0;
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        CancelPanelSwitches();
+        return PlayHideAllContentPanelsAsync(cancellationToken);
+    }
+
+    protected override void OnClosed(CloseReason reason)
     {
         UnbindButtonEvents();
         CancelPanelSwitches();
@@ -66,17 +73,6 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         currentPanel = null;
         InventoryUiHostBinding.Release(inventoryUI);
         PageContextBinding.Release(ref currentContext);
-    }
-
-    protected override bool HasAdditionalCloseWaitActions()
-    {
-        return true;
-    }
-
-    protected override void PlayAdditionalCloseWaitActions(bool useUnscaledTime, System.Action onCompleted)
-    {
-        CancelPanelSwitches();
-        PlayHideAllContentPanels(onCompleted);
     }
 
     private void BindButtonEvents()
@@ -192,19 +188,12 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
 
     private void InitContentPanels()
     {
-        ApplySlideDuration();
         ForEachContentPanel(panel => panel.RefreshDefaults());
     }
 
     private void HideAllContentPanelsImmediately()
     {
-        ApplySlideDuration();
         ForEachContentPanel(panel => panel.SetHiddenImmediate());
-    }
-
-    private void ApplySlideDuration()
-    {
-        ForEachContentPanel(panel => panel.ConfigureTimings(slideDuration, Ease.OutCubic, slideDuration, Ease.InCubic));
     }
 
     private void CancelPanelSwitches()
@@ -216,6 +205,48 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
     private void KillContentPanelTweens()
     {
         ForEachContentPanel(panel => panel.Kill());
+    }
+
+    private UniTask PlayHideAllContentPanelsAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        UniTaskCompletionSource completionSource = new UniTaskCompletionSource();
+        CancellationTokenRegistration registration = default;
+        bool completed = false;
+
+        void CompleteOnce()
+        {
+            if (completed)
+            {
+                return;
+            }
+
+            completed = true;
+            registration.Dispose();
+            completionSource.TrySetResult();
+        }
+
+        void CancelOnce()
+        {
+            if (completed)
+            {
+                return;
+            }
+
+            completed = true;
+            KillContentPanelTweens();
+            registration.Dispose();
+            completionSource.TrySetCanceled(cancellationToken);
+        }
+
+        if (cancellationToken.CanBeCanceled)
+        {
+            registration = cancellationToken.Register(CancelOnce);
+        }
+
+        PlayHideAllContentPanels(CompleteOnce);
+        return completionSource.Task;
     }
 
     private void PlayHideAllContentPanels(System.Action onCompleted)
@@ -359,11 +390,6 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         }
     }
 
-    private void OnValidate()
-    {
-        slideDuration = Mathf.Max(0f, slideDuration);
-    }
-
     private sealed class PauseMenuPanelBinding
     {
         private readonly string panelName;
@@ -431,10 +457,6 @@ public class GamePauseMenu : UIPageBase, IInventoryUiFacadeHost
         public void RefreshDefaults()
         {
             motion?.RefreshDefaults();
-        }
-
-        public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
-        {
         }
 
         public void Kill()
