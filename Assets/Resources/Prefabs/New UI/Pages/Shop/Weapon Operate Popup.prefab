@@ -294,6 +294,7 @@ GameObject:
   - component: {fileID: 3955513483040631225}
   - component: {fileID: 3600694285946655353}
   - component: {fileID: 7889412740765118647}
+  - component: {fileID: 6800000000000000001}
   - component: {fileID: 4367177154767920270}
   m_Layer: 0
   m_Name: Weapon Operate Popup
@@ -373,6 +374,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactable: 1
+--- !u!225 &6800000000000000001
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139556483707835314}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &4367177154767920270
 MonoBehaviour:
   m_ObjectHideFlags: 0

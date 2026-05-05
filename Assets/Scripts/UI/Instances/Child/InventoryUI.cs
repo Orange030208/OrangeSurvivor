@@ -1,4 +1,3 @@
-using AXR.Framework.UI;
 using Orange.UIFramework;
 using UnityEngine;
 
@@ -6,17 +5,11 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 {
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
-    [SerializeField] private WeaponOperatePopup weaponPopupPrefab;
-    [SerializeField] private AccessoryInfoPopup accessoryPopupPrefab;
     [SerializeField] private Transform itemContainersParent;
 
     [Header("Facade")]
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
 
-    [Header("关闭")]
-    [SerializeField] private UIClickTarget[] closeInventoryItemOperatePanelButtons;
-
-    private Transform popupLayerRoot;
     private IInventoryUiFacade inventoryFacade;
     private IInventoryUiFacade configuredFacade;
     private bool disposeConfiguredFacade;
@@ -35,9 +28,8 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
     {
         ValidateConfiguration();
         requiresExternalFacadeConfiguration = ResolveRequiresExternalFacadeConfiguration();
-        popupLayerRoot = ResolvePopupLayerRoot();
         listRegion = new InventoryListRegionView(name, itemPrefab, itemContainersParent);
-        popupHost = new InventoryPopupHostView(name, weaponPopupPrefab, accessoryPopupPrefab, popupLayerRoot, closeInventoryItemOperatePanelButtons);
+        popupHost = new InventoryPopupHostView(name);
         listRegion.ItemClicked += OnItemSelected;
         popupHost.CloseRequested += OnCloseRequested;
         popupHost.SellRequested += OnSellRequested;
@@ -108,14 +100,12 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
     public void PrepareForOpen()
     {
-        popupHost.BindCloseHandlers();
         popupHost.CloseCurrent();
     }
 
     public void ResetAfterClose()
     {
         listRegion.Clear();
-        popupHost.UnbindCloseHandlers();
         popupHost.CloseCurrent();
     }
 
@@ -132,16 +122,6 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
     public void CloseOperatePopup()
     {
         popupHost.CloseCurrent();
-    }
-
-    private Transform ResolvePopupLayerRoot()
-    {
-        if (UIManager.Instance != null && UIManager.Instance.TryGetLayerRoot(ViewLayer.Popup, out RectTransform layerRoot))
-        {
-            return layerRoot;
-        }
-
-        return transform;
     }
 
     private IInventoryUiFacade ResolveInventoryFacade(out bool ownsFacade)
@@ -219,24 +199,9 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
             throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(InventoryItem)} prefab.");
         }
 
-        if (weaponPopupPrefab == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(WeaponOperatePopup)} prefab.");
-        }
-
-        if (accessoryPopupPrefab == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(AccessoryInfoPopup)} prefab.");
-        }
-
         if (itemContainersParent == null)
         {
             throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing item containers parent.");
-        }
-
-        if (closeInventoryItemOperatePanelButtons == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing close panel buttons.");
         }
     }
 

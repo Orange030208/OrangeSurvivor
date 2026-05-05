@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已删除静态 ActivePresenter 与全局查找；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已删除静态 ActivePresenter 与全局查找；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
 
 已完成：
 
@@ -436,7 +436,7 @@
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
 3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
-4. 继续最终收口：优先全量扫描 UI 目录内剩余旧 UI 托管、桥接、全局查找、旧资源引用和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
+4. 继续最终收口：优先全量扫描 UI 目录内剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
 5. 保留仍被业务使用的 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件，除非本轮明确迁移它们到新命名空间并同步修 Prefab / 资源引用。
 6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
@@ -2039,3 +2039,56 @@
 
 - 提交 StageComplete 结算上下文显式化。
 - 继续最终收口，先做 UI 目录残留扫描，重点确认是否仍有旧页面托管类型、旧 Catalog 资源引用、桥接层、`FindFirstObjectByType` 和迁移期 API；若无可继续清理无用旧资源或进入最终手动验收准备。
+
+### 2026-05-06 阶段 12 最终收口：背包操作浮层迁入 Orange Popup
+
+完成内容：
+
+- 新增 `InventoryOperatePopupBase`，把背包物品操作浮层抽为基于 `Orange.UIFramework.PopupBase` 的业务 Popup 基类，并在 `OnOpeningAsync()` 中从 `OpenContext.Payload` 读取 `InventoryItemOperateResource`。
+- `WeaponOperatePopup` 与 `AccessoryInfoPopup` 改为继承 `InventoryOperatePopupBase`，继续保留原有展示、出售、合并事件和品质渲染逻辑。
+- `InventoryPopupHostView` 不再持有操作浮层 Prefab、Popup Layer Root、自建透明关闭遮罩或直接 `Instantiate` / `Destroy`；现在通过 `UIManager.ShowPopupAsync()` 打开，通过 `ViewHandle.CloseAsync()` 关闭，并使用 Orange Popup 的外部点击关闭、分组互斥、PopupStack、输入焦点和池化链路。
+- `InventoryUI` 删除 `weaponPopupPrefab`、`accessoryPopupPrefab`、`closeInventoryItemOperatePanelButtons` 序列化字段和 Popup Layer 解析逻辑，只负责持有列表子视图、Facade 和 `InventoryPopupHostView`。
+- `OrangeUIViewCatalog.asset` 注册 `popup.inventory.weaponOperate` 与 `popup.inventory.accessoryInfo` 两个 Popup 条目。
+- `Weapon Operate Popup.prefab` 与 `Accessory Info Popup.prefab` 根节点补充 `CanvasGroup`，满足 `ViewBase` 生命周期要求。
+- `UI Shop.prefab` 清理已删除的背包操作浮层旧序列化字段引用。
+- 删除无脚本 / 资源引用的旧 `InventoryItemOperateContainer` 及 `.meta`，避免迁移后留下第二套背包操作浮层实现。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Container/InventoryOperatePopupBase.cs`
+- `Assets/Scripts/UI/Instances/Container/InventoryOperatePopupBase.cs.meta`
+- `Assets/Scripts/UI/Instances/Container/WeaponOperatePopup.cs`
+- `Assets/Scripts/UI/Instances/Container/AccessoryInfoPopup.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryPopupHostView.cs`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Resources/Prefabs/New UI/Pages/Shop/Weapon Operate Popup.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/Shop/Accessory Info Popup.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Shop.prefab`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+删除范围：
+
+- `Assets/Scripts/UI/Instances/Container/InventoryItemOperateContainer.cs`
+- `Assets/Scripts/UI/Instances/Container/InventoryItemOperateContainer.cs.meta`
+
+验证情况：
+
+- 已按本轮强制流程重新读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity 脚本相关 Skill 说明。
+- 已静态扫描确认 `InventoryItemOperateContainer`、其脚本 GUID、`InventoryOperatePopupCloseMask`、`weaponPopupPrefab`、`accessoryPopupPrefab`、`closeInventoryItemOperatePanelButtons` 不再存在于运行时 Prefab / 资产引用中；预览脚本中的同名局部变量仅用于 `Resources.Load` 样式预览，未纳入运行时托管链路。
+- 已确认两个操作 Popup Prefab 在 `OrangeUIViewCatalog.asset` 中注册为 `ViewKind.Popup`，并且根节点已有 `CanvasGroup` 与对应 `PopupBase` 派生脚本，满足 Catalog 校验的关键条件。
+- 已执行 `git diff --check`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
+- 按用户要求未执行完整 Play Mode；背包点击打开操作浮层、外部点击关闭、出售 / 合并事件回调、重复打开切换和池化复用需最终真实场景验收。
+
+遗留风险：
+
+- `InventoryPopupHostView` 使用 `UniTaskVoid` 承接 UI 点击触发的异步打开 / 关闭，异常会记录到日志；真实输入连点、页面关闭与 Popup 关闭竞态仍需 Play Mode 验证。
+- 背包操作 Popup 当前使用屏幕中心定位，没有恢复旧手工 Popup 的具体锚定偏移；如后续需要锚定到背包格子，需要让 `InventoryListRegionView` 将被点击格子的 `RectTransform` 或屏幕坐标随 entryId 一并传给 `InventoryPopupHostView`。
+- `ItemQualityPreviewSceneController` 仍直接 `Resources.Load` 并实例化操作 Popup 用于样式预览；这不是运行时 UI 框架入口，暂未迁移。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交背包操作浮层迁入 Orange Popup。
+- 继续最终收口，优先扫描仍直接手工实例化业务浮层或仍未接入 Orange Catalog 的 Popup / Tooltip 资源；同时保留 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等老动画 / 点击组件，除非单独迁移并同步修 Prefab / 资源引用。

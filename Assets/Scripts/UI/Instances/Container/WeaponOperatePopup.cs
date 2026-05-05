@@ -1,12 +1,11 @@
 using AXR.Framework.UI;
-using TMPro;
 using UnityEngine;
 
-public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, ExtraInfoDescriber>
+public class WeaponOperatePopup : InventoryOperatePopupBase
 {
     [SerializeField] private UIClickTarget sellButton;
     [SerializeField] private UIClickTarget mergeButton;
-    [SerializeField] private TextMeshProUGUI sellPriceText;
+    [SerializeField] private TMPro.TextMeshProUGUI sellPriceText;
 
     private string currentEntryId;
 
@@ -15,6 +14,11 @@ public class WeaponOperatePopup : UIContainerBase<InventoryItemOperateResource, 
 
     public override void Configure(InventoryItemOperateResource resource)
     {
+        if (resource.itemData == null)
+        {
+            throw new System.ArgumentException($"{nameof(WeaponOperatePopup)} '{name}' received an empty item resource.");
+        }
+
         nameText.text = ItemDisplayHelper.GetWeaponDisplayName(resource.itemData.ItemName, resource.colorDependencyNumber);
         iconImage.sprite = resource.itemData.Icon;
         sellPriceText.text = resource.sellPrice.ToString();

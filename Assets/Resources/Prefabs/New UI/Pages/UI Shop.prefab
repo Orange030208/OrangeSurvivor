@@ -1448,11 +1448,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 1368362119241423224, guid: 6a8748e2299b15c4896d2a062c22c0d5, type: 3}
-  weaponPopupPrefab: {fileID: 4367177154767920270, guid: 32c53ab2a330ed146b8d9e720613f13b, type: 3}
-  accessoryPopupPrefab: {fileID: -5466076070143302565, guid: b5e65ee1abc9e75448634e25fd97b368, type: 3}
   itemContainersParent: {fileID: 7032089879319786788}
   inventoryOperateManager: {fileID: 0}
-  closeInventoryItemOperatePanelButtons: []
 --- !u!114 &1730573582740224298
 MonoBehaviour:
   m_ObjectHideFlags: 0
