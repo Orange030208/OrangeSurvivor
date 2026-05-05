@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: 8811404232182784892}
   - component: {fileID: 1651732239380549356}
   - component: {fileID: 3339615293881789033}
+  - component: {fileID: 3866200215160491881}
   m_Layer: 5
   m_Name: UI Shop
   m_TagString: Untagged
@@ -147,7 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20fbf61079626084c8bfcc689ca35b08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 1
   shopItemPrefab: {fileID: 6212716520622307748, guid: c47cbde30f70ad740a9bdb5d767aaf12, type: 3}
   shopItemParent: {fileID: 8969939917851105321}
   rerollButton: {fileID: 1667616793229232022}
@@ -185,6 +185,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 0.8
+--- !u!114 &3866200215160491881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 3339615293881789033}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1 &5912765927435080413
 GameObject:
   m_ObjectHideFlags: 0

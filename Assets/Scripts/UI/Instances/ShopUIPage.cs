@@ -1,9 +1,11 @@
-using AXR.Framework.UI;
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
+public class ShopUIPage : PageBase, IShopPageView, IInventoryUiFacadeHost
 {
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
@@ -56,14 +58,15 @@ public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
         InitSidebarPanels();
     }
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = PageContextBinding.Resolve<ShopPageContext>(context, () => UIPageContextFactory.CreateShopPageContext());
+        currentContext = context.GetPayload<ShopPageContext>() ?? UIPageContextFactory.CreateShopPageContext();
         controller = new ShopPageController(this, currentContext);
         controller.Enter();
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         controller?.Exit();
         controller = null;
