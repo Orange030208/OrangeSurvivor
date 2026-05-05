@@ -23,6 +23,8 @@ namespace Orange.UIFramework
 
         UniTask CloseTopPageAsync(CancellationToken cancellationToken = default);
         UniTask CloseAllPagesAsync(CancellationToken cancellationToken = default);
+        UniTask<bool> ClosePageAsync<TPage>(CancellationToken cancellationToken = default)
+            where TPage : PageBase;
 
         UniTask<ViewHandle<TPopup>> ShowPopupAsync<TPopup>(
             object payload = null,

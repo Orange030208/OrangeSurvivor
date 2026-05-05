@@ -120,11 +120,11 @@ Assets/Prefabs/UI/
   Parts/
 ```
 
-如果保留旧代码迁移期适配：
+旧命名空间保留规则：
 
-- 旧命名空间 `AXR.Framework.UI` 可保留短期 Adapter。
-- 新业务代码只依赖 `Orange.UIFramework`。
-- Adapter 只负责把旧同步 API 转到新 `IUIManager` API，不新增业务逻辑。`UIManager` 仍然是运行时总入口，不应被替换成另一个 Service。
+- 旧 `AXR.Framework.UI` 仅保留当前仍被业务使用的 UI 动画与点击组件，例如 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 和 Motion Track。
+- 旧页面托管、旧 `UIManager`、旧 Catalog、旧 Navigation 与迁移期桥接 API 不再保留；新业务代码只依赖 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`。
+- `UIManager` 仍然是运行时总入口，不应被替换成另一个 `UIService`。
 
 ## 4. 设计原则
 
@@ -1882,8 +1882,8 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 旧 `IPageContext` 可迁移为 Page Payload 或业务 Context。
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
 - 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
-- 迁移期允许旧页面基类作为临时脚手架保留，但它不是最终交付形态。业务页面全部接入后，必须把页面实现改为直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，并清理旧 `AXR.Framework.UI` 的页面托管、旧 Catalog、临时委托和无用资源。
-- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口第一步已完成：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`。`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 已直接继承新 `PageBase`；阶段清单外旧页面 `BookUIPage` 也已补迁到新 `PageBase` 并注册 `page.goldBook`。升级卡测试场景生成模块已改为写入新 `OrangeUIViewCatalog` 并在场景中挂载新 `Orange.UIFramework.UIManager`。下一步必须清理旧 UIManager、旧 `UIPrefabCatalog`、临时委托和不再使用的旧抽象。
+- 迁移期旧页面基类和旧 UIManager 只允许作为临时脚手架出现，不是最终交付形态。当前已完成脚手架清理：业务页面直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，旧 `AXR.Framework.UI` 页面托管、旧 Catalog、旧 Navigation、临时非泛型 Type API 和旧资源已删除。
+- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口已完成旧页面托管清理：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 与阶段清单外 `BookUIPage` 已直接继承新 `PageBase`；升级卡测试场景生成模块和测试场景已改为挂载新 `Orange.UIFramework.UIManager`。旧 `AXR.Framework.UI` 仅保留动画 / 点击链路。
 - 旧 `AXR.Framework.UI` 不能整体一刀切删除：其中 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 和 Motion 资源仍是当前老动画系统与业务子视图点击链路的一部分。最终清理应先删除旧页面托管、旧 Catalog、旧 Navigation 和迁移期桥接 API，再单独评估动画 / 点击组件是否迁入 `Orange.UIFramework` 命名空间或继续作为老动画模块保留。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。

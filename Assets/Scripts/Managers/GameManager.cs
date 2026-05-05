@@ -431,7 +431,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private UniTask<bool> ClosePageAsync<TPage>(CancellationToken cancellationToken)
         where TPage : PageBase
     {
-        return uiManager.ClosePageAsync(typeof(TPage), cancellationToken);
+        return uiManager.ClosePageAsync<TPage>(cancellationToken);
     }
 
     private void EnsureMapGenerated()

@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using System.Threading;
-using AXR.Framework.UI;
 using Cysharp.Threading.Tasks;
 
 namespace Orange.UIFramework.Tests
@@ -174,33 +173,6 @@ namespace Orange.UIFramework.Tests
             RuntimeTestPopupView.ResetState();
             RuntimeTestTooltipView.ResetState();
             RuntimeTestModalView.ResetState();
-            LegacyRuntimeTestPageView.ResetState();
-        }
-    }
-
-    public sealed class LegacyRuntimeTestPageView : UIPageBase
-    {
-        public static LegacyRuntimeTestPageView LastInstance { get; private set; }
-
-        public int OpenedCount { get; private set; }
-        public int ClosedCount { get; private set; }
-        public UIPageOpenContext LastOpenContext { get; private set; }
-
-        public static void ResetState()
-        {
-            LastInstance = null;
-        }
-
-        protected override void OnPageOpened(UIPageOpenContext context)
-        {
-            LastInstance = this;
-            LastOpenContext = context;
-            OpenedCount++;
-        }
-
-        protected override void OnPageClosed()
-        {
-            ClosedCount++;
         }
     }
 }

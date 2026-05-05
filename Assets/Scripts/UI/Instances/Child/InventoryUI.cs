@@ -1,4 +1,5 @@
 using AXR.Framework.UI;
+using Orange.UIFramework;
 using UnityEngine;
 
 public class InventoryUI : MonoBehaviour, IInventoryRegionView
@@ -135,7 +136,7 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
     private Transform ResolvePopupLayerRoot()
     {
-        if (UIManager.Instance != null && UIManager.Instance.TryGetLayerRoot(UILayerType.Popup, out Transform layerRoot))
+        if (UIManager.Instance != null && UIManager.Instance.TryGetLayerRoot(ViewLayer.Popup, out RectTransform layerRoot))
         {
             return layerRoot;
         }

@@ -25650,7 +25650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3725aa447f4b05967362c38519e395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 2066110831}
+  uiManager: {fileID: 2066110832}
   player: {fileID: 0}
   mapGenerator: {fileID: 595972524}
   initialGameState: 1
@@ -28748,7 +28748,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2066110830}
-  - component: {fileID: 2066110831}
   - component: {fileID: 2066110832}
   m_Layer: 0
   m_Name: UIManager
@@ -28772,21 +28771,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 214015682}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2066110831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2066110829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70a84d527ff33784cad51715be1b7076, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: d2937b0aea51a524183fe265c025bdf3, type: 2}
-  catalog: {fileID: 11400000, guid: e87a28c74ab5eb14a902ec67d925f8e1, type: 2}
-  rootCanvas: {fileID: 1318571376}
 --- !u!114 &2066110832
 MonoBehaviour:
   m_ObjectHideFlags: 0

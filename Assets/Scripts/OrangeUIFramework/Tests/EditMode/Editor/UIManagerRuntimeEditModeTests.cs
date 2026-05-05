@@ -41,30 +41,6 @@ namespace Orange.UIFramework.Tests
         }
 
         [UnityTest]
-        public IEnumerator LegacyUIPageBase_CanOpenAndCloseThroughOrangeManagerTypeApi()
-        {
-            return UniTask.ToCoroutine(async () =>
-            {
-                using UIManagerRuntimeTestHarness harness = new UIManagerRuntimeTestHarness();
-                UIManager manager = harness.Manager;
-
-                ViewHandle handle = await manager.OpenPageAsync(typeof(LegacyRuntimeTestPageView), "legacyPayload");
-
-                Assert.That(handle.IsValid, Is.True);
-                Assert.That(handle.View, Is.InstanceOf<LegacyRuntimeTestPageView>());
-                LegacyRuntimeTestPageView page = (LegacyRuntimeTestPageView)handle.View;
-                Assert.That(page.OpenedCount, Is.EqualTo(1));
-                Assert.That(page.LastOpenContext.GetPayload<string>(), Is.EqualTo("legacyPayload"));
-                Assert.That(manager.IsOpen(typeof(LegacyRuntimeTestPageView)), Is.True);
-
-                await manager.ClosePageAsync(typeof(LegacyRuntimeTestPageView));
-
-                Assert.That(page.ClosedCount, Is.EqualTo(1));
-                Assert.That(manager.IsOpen(typeof(LegacyRuntimeTestPageView)), Is.False);
-            });
-        }
-
-        [UnityTest]
         public IEnumerator LatestReplaceRequest_WinsWhenPreviousOpenIsStillPending()
         {
             return UniTask.ToCoroutine(async () =>
