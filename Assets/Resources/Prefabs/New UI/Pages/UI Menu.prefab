@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: -2954676839165022514}
   - component: {fileID: 8656191343476534832}
   - component: {fileID: 4401061136781019396}
+  - component: {fileID: 7745386225031098841}
   m_Layer: 5
   m_Name: UI Menu
   m_TagString: Untagged
@@ -213,7 +214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c0009bb2232d14a9fe37179bb97e36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 1
   startButton: {fileID: 6256860417183849786}
   characterSelectButton: {fileID: 0}
   settingsButton: {fileID: 6383841706332223335}
@@ -240,6 +240,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 1
+--- !u!114 &7745386225031098841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5453402992543493149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 4401061136781019396}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1001 &920000000000000002
 PrefabInstance:
   m_ObjectHideFlags: 0

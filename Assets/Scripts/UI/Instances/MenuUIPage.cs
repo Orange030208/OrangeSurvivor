@@ -1,7 +1,10 @@
+using System.Threading;
 using AXR.Framework.UI;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class MenuUIPage : UIPageBase
+public class MenuUIPage : PageBase
 {
     [SerializeField] private UIClickTarget startButton;
     [SerializeField] private UIClickTarget characterSelectButton;
@@ -19,7 +22,7 @@ public class MenuUIPage : UIPageBase
         HideSettingsImmediate();
     }
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         startButton.OnClicked += OnStartButtonOnClicked;
         if (settingsButton != null)
@@ -28,9 +31,10 @@ public class MenuUIPage : UIPageBase
         }
 
         HideSettingsImmediate();
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         startButton.OnClicked -= OnStartButtonOnClicked;
         if (settingsButton != null)
