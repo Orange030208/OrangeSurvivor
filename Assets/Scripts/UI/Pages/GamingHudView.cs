@@ -1,4 +1,5 @@
 using System;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
@@ -65,6 +66,11 @@ public sealed class GamingHudView
         UnbindPlayerLevel();
         characterStatusPanel.Unbind();
         buffBarUI.UnbindPlayer();
+    }
+
+    public void ConfigureUIManager(UIManager uiManager)
+    {
+        buffBarUI.ConfigureUIManager(uiManager);
     }
 
     private void BindPlayer(Player player)

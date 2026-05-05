@@ -750,7 +750,8 @@ namespace Orange.UIFramework
                 definition.Kind,
                 closedSource.Task,
                 (reason, token) => CloseByInstanceIdAsync(instanceId, reason, token),
-                view);
+                view,
+                this);
 
             view.Initialize(handle);
             RuntimeView runtimeView = new RuntimeView(instanceId, definition, viewType, view, handle, closedSource, currentRequestVersion);

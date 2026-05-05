@@ -12,6 +12,7 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
     [SerializeField] private MonoBehaviour dataSourceComponent;
 
     private IDescribable dataSource;
+    private UIManager uiManager;
     private bool isPointerDown;
     private bool tooltipRequestInFlight;
     private bool tooltipOpenedForCurrentPress;
@@ -30,6 +31,11 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
         {
             dataSourceComponent = behaviour;
         }
+    }
+
+    public void ConfigureUIManager(UIManager manager)
+    {
+        uiManager = manager;
     }
 
     private void OnDisable()
@@ -152,14 +158,14 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private UIManager ResolveUIManager(bool throwIfMissing)
     {
-        if (UIManager.Instance != null)
+        if (uiManager != null)
         {
-            return UIManager.Instance;
+            return uiManager;
         }
 
         if (throwIfMissing)
         {
-            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' requires an active {nameof(UIManager)} before tooltip can be opened.");
+            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' requires an explicit {nameof(UIManager)} before tooltip can be opened.");
         }
 
         return null;

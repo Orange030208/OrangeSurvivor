@@ -81,7 +81,7 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
             throw new ArgumentNullException(nameof(context));
         }
 
-        InventoryUiBinder.Bind(this, ref inventoryUI, context);
+        InventoryUiBinder.Bind(this, ref inventoryUI, context, OwnerUIManager);
         shopListView.Bind();
         sidebarHost.Bind(context.PropertiesManager);
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);

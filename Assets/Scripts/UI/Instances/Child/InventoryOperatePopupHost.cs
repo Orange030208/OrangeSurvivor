@@ -11,6 +11,7 @@ public sealed class InventoryOperatePopupHost
 
     private int popupVersion;
     private ViewHandle currentPopupHandle;
+    private UIManager uiManager;
 
     public event System.Action CloseRequested;
     public event System.Action<string> SellRequested;
@@ -24,6 +25,11 @@ public sealed class InventoryOperatePopupHost
     public string CurrentEntryId { get; private set; }
 
     public bool HasOpenPopup => !string.IsNullOrEmpty(CurrentEntryId);
+
+    public void ConfigureUIManager(UIManager manager)
+    {
+        uiManager = manager;
+    }
 
     public void Show(InventoryItemOperateResource resource)
     {
@@ -66,9 +72,10 @@ public sealed class InventoryOperatePopupHost
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
+            UIManager uiManager;
             if (resource.itemData.ItemType == ItemType.Weapon)
             {
-                UIManager uiManager = ResolveUIManager();
+                uiManager = ResolveUIManager();
                 ViewHandle<WeaponOperatePopup> handle = await uiManager.ShowPopupAsync<WeaponOperatePopup>(resource, options);
                 if (version != popupVersion)
                 {
@@ -83,7 +90,7 @@ public sealed class InventoryOperatePopupHost
                 return;
             }
 
-            UIManager uiManager = ResolveUIManager();
+            uiManager = ResolveUIManager();
             ViewHandle<AccessoryInfoPopup> accessoryHandle = await uiManager.ShowPopupAsync<AccessoryInfoPopup>(resource, options);
             if (version != popupVersion)
             {
@@ -141,12 +148,12 @@ public sealed class InventoryOperatePopupHost
 
     private UIManager ResolveUIManager()
     {
-        if (UIManager.Instance != null)
+        if (uiManager != null)
         {
-            return UIManager.Instance;
+            return uiManager;
         }
 
-        throw new MissingReferenceException($"{nameof(InventoryUI)} '{ownerName}' requires an active {nameof(UIManager)} before inventory operate popups can be opened.");
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{ownerName}' requires an explicit {nameof(UIManager)} before inventory operate popups can be opened.");
     }
 
     private void OnSellRequested(string entryId)

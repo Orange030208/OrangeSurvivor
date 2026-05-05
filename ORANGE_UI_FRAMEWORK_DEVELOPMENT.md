@@ -1893,6 +1893,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - `ItemQualityPreviewSceneController` 是 `Item Quality Preview` 独立场景的视觉预览工具，不属于运行时 UI 框架入口。该工具只允许在预览场景中直接 `Resources.Load` / `Instantiate` 背包格子、商店卡片和操作 Popup 做品质表现对照；误挂到其他场景会警告并停止执行。运行时 Popup / Tooltip / Page 仍必须走 Orange `UIManager`。
 - `IPlayerHudFacade` 已确认没有实现、调用或 Prefab / Scene 引用并删除；当前保留的是 `UI/Contexts`、`UI/Facades`、`UI/Snapshots` 下的页面 payload、Inventory / Shop Facade 和背包快照等真实业务边界，不再把未集成的 HUD Facade 当成预留抽象。
 - 原 `UI/Contracts` 目录已按职责拆分为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`。这是目录命名收口，不是删除有效边界；页面 payload、Inventory / Shop Facade 和背包快照仍是业务 Manager 到 UI 的明确数据边界。
+- 业务子视图不再直接读取 `UIManager.Instance` 打开 Popup / Tooltip。`ViewHandle` 记录所属 `UIManager`，`ViewBase.OwnerUIManager` 由 Page 显式注入给 `InventoryUI`、`InventoryOperatePopupHost`、`BuffBarUI` 和 `TooltipHoverTarget`，缺少装配时直接报错。
 - 旧 `AXR.Framework.UI` 命名空间已清空：`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track、对应编辑器脚本和 Motion 资产类型记录已迁入 `Orange.UIFramework`；脚本类名保持不变，避免影响业务开发体验。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。

@@ -14,7 +14,8 @@ namespace Orange.UIFramework
             ViewKind kind,
             UniTask closedTask,
             Func<CloseReason, CancellationToken, UniTask> closeAsync,
-            ViewBase view = null)
+            ViewBase view = null,
+            UIManager owner = null)
         {
             if (string.IsNullOrWhiteSpace(instanceId))
             {
@@ -27,6 +28,7 @@ namespace Orange.UIFramework
             ClosedTask = closedTask;
             this.closeAsync = closeAsync;
             View = view;
+            Owner = owner;
         }
 
         public string InstanceId { get; }
@@ -34,6 +36,7 @@ namespace Orange.UIFramework
         public ViewKind Kind { get; }
         public UniTask ClosedTask { get; }
         public ViewBase View { get; }
+        public UIManager Owner { get; }
         public bool IsValid => !string.IsNullOrWhiteSpace(InstanceId) && closeAsync != null;
 
         public UniTask CloseAsync(
@@ -50,7 +53,7 @@ namespace Orange.UIFramework
 
         internal ViewHandle WithView(ViewBase view)
         {
-            return new ViewHandle(InstanceId, ViewId, Kind, ClosedTask, closeAsync, view);
+            return new ViewHandle(InstanceId, ViewId, Kind, ClosedTask, closeAsync, view, Owner);
         }
     }
 
@@ -69,6 +72,7 @@ namespace Orange.UIFramework
         public string ViewId => handle.ViewId;
         public ViewKind Kind => handle.Kind;
         public TView View { get; }
+        public UIManager Owner => handle.Owner;
         public UniTask ClosedTask => handle.ClosedTask;
         public bool IsValid => handle.IsValid && View != null;
 

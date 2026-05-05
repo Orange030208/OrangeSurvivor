@@ -40,7 +40,8 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
 
         inputView.WarmUp();
         inputView.Bind(currentContext.Player);
-        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext);
+        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext, OwnerUIManager);
+        hudView.ConfigureUIManager(OwnerUIManager);
         hudView.Bind(currentContext);
         menuButton.OnClicked += OnPauseClicked;
         return UniTask.CompletedTask;

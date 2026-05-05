@@ -1,3 +1,4 @@
+using Orange.UIFramework;
 using UnityEngine;
 
 public static class InventoryUiBinder
@@ -14,12 +15,18 @@ public static class InventoryUiBinder
 
     public static void Bind(Component host, ref InventoryUI inventoryUI, IInventoryFacadeContext context)
     {
+        Bind(host, ref inventoryUI, context, null);
+    }
+
+    public static void Bind(Component host, ref InventoryUI inventoryUI, IInventoryFacadeContext context, UIManager uiManager)
+    {
         WarmUp(host, ref inventoryUI);
         if (inventoryUI == null || context == null)
         {
             return;
         }
 
+        inventoryUI.ConfigureUIManager(uiManager);
         inventoryUI.ConfigureFacade(context.InventoryFacade);
     }
 

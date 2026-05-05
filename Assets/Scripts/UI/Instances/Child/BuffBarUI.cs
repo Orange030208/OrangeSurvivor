@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Orange.UIFramework;
 using UnityEngine;
 
 public class BuffBarUI : MonoBehaviour
@@ -9,6 +10,7 @@ public class BuffBarUI : MonoBehaviour
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
     private BuffController buffController;
+    private UIManager uiManager;
 
     private void Awake()
     {
@@ -51,6 +53,15 @@ public class BuffBarUI : MonoBehaviour
         RenderBuffSnapshots(buffController.BuildSnapshots());
     }
 
+    public void ConfigureUIManager(UIManager manager)
+    {
+        uiManager = manager;
+        for (int i = 0; i < spawnedItems.Count; i++)
+        {
+            ConfigureTooltipTarget(spawnedItems[i]);
+        }
+    }
+
     public void UnbindPlayer()
     {
         if (buffController != null)
@@ -89,8 +100,20 @@ public class BuffBarUI : MonoBehaviour
         {
             BuffIconItem item = Instantiate(buffIconItemPrefab, itemParent);
             item.gameObject.SetActive(false);
+            ConfigureTooltipTarget(item);
             spawnedItems.Add(item);
         }
+    }
+
+    private void ConfigureTooltipTarget(BuffIconItem item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        TooltipHoverTarget tooltipTarget = item.GetComponent<TooltipHoverTarget>();
+        tooltipTarget?.ConfigureUIManager(uiManager);
     }
 
     private void SetVisibleItemCount(int visibleCount)

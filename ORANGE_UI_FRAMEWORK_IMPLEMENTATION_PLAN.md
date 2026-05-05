@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；业务子视图已不再直接读取 `UIManager.Instance`，由 `ViewHandle.Owner` / `ViewBase.OwnerUIManager` 传递显式 UIManager；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -409,6 +409,7 @@
 - 已完成 UI 子视图 `Region` 命名与目录收口：`GamingHudView`、`GamingInputView`、`ShopListView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`SidebarMotion`、`SidebarToggleView`、`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 等仍作为页面私有协作对象保留，但不再放在 `Assets/Scripts/UI/Regions`，也不再使用会被误解为框架抽象的 `Region` 命名。
 - 已删除未实现、未引用的 `IPlayerHudFacade` 死接口；保留 `IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext`、`IInventoryUiFacadeHost`、页面 Context 和 Snapshot 作为当前真实跨系统边界。
 - 已完成 `UI/Contracts` 目录命名收口：有效页面 payload 移入 `Assets/Scripts/UI/Contexts`，Inventory / Shop Facade 移入 `Assets/Scripts/UI/Facades`，背包快照和操作 payload 移入 `Assets/Scripts/UI/Snapshots`，不再保留容易被误解为无效抽象集合的 `Contracts` 目录。
+- 已完成业务子视图 UIManager 入口显式化：`ViewHandle` 携带 Owner UIManager，`ViewBase` 暴露 `OwnerUIManager` 给页面，`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在打开时把 UIManager 注入背包和 Tooltip 子视图；业务 UI 目录不再直接读取 `UIManager.Instance`。
 
 未完成：
 
@@ -2441,3 +2442,50 @@
 
 - 提交 Contracts 目录命名收口。
 - 继续最终收口，优先处理业务 UI Prefab / Scene 和代码中仍存在的 `UIManager.Instance` 入口；如果目标是完全显式装配，需要为 Tooltip / Inventory Popup Host 设计页面注入链路，避免新增平行服务或兼容层。
+
+### 2026-05-06 阶段 12 最终收口：显式注入子视图 UIManager
+
+完成内容：
+
+- `ViewHandle` 增加 `Owner`，由 `UIManager` 创建运行时 ViewHandle 时写入当前 Manager；泛型 `ViewHandle<TView>` 同步暴露 `Owner`。
+- `ViewBase` 增加受保护的 `OwnerUIManager`，让页面能把自身所属 UIManager 传给页面内部子视图，而不需要子视图回读全局单例。
+- `InventoryOperatePopupHost` 改为通过 `ConfigureUIManager()` 接收显式 UIManager，缺失时抛出明确装配错误，不再访问 `UIManager.Instance`。
+- `InventoryUI` 与 `InventoryUiBinder` 支持把 UIManager 注入背包操作 Popup Host；`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在打开时传入 `OwnerUIManager`。
+- `TooltipHoverTarget` 改为通过 `ConfigureUIManager()` 接收显式 UIManager，缺失时抛出明确装配错误，不再访问 `UIManager.Instance`。
+- `BuffBarUI` 在生成 / 复用 Buff 图标时把页面注入的 UIManager 传给图标上的 `TooltipHoverTarget`；`GamingHudView` 负责把 `GamingUIPage.OwnerUIManager` 转交给 `BuffBarUI`。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewHandle.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryOperatePopupHost.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUiBinder.cs`
+- `Assets/Scripts/UI/Instances/Child/TooltipHoverTarget.cs`
+- `Assets/Scripts/UI/Instances/Child/BuffBarUI.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Scripts/UI/Pages/GamingHudView.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取相关脚本。
+- 已静态扫描 `Assets/Scripts/UI` 与 `Assets/Scripts/OrangeUIFramework`，确认业务 UI 代码不再直接访问 `UIManager.Instance`；当前唯一剩余命中是框架 `UIManager` 自身保留的静态属性定义。
+- 已确认 `BuffIconItem.prefab` 根节点挂载 `TooltipHoverTarget`，`BuffBarUI` 生成 Buff 图标后会把页面 UIManager 注入该组件。
+- 已执行 `git diff --check`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
+- 本轮按用户要求未执行完整 Play Mode；背包 Popup 打开、Tooltip 按下 / 移动 / 松开和页面关闭期间的竞态仍需最终真实场景验收。
+
+遗留风险：
+
+- `UIManager.Instance` 仍作为框架自身的可选全局入口保留，兼容已有框架入口语义；本轮目标是业务 UI 不再依赖它。
+- 如果独立场景中直接启用 `InventoryUI` 而没有 Page 注入 UIManager，则打开背包操作 Popup 会明确报缺少 UIManager；当前运行时业务页面都会在打开时注入。
+- `Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset` 以及两个 UIMotion Editor 文件当前仍有未提交工作树差异，不属于本模块，提交时必须排除或单独处理。
+
+下一步：
+
+- 提交子视图 UIManager 显式注入。
+- 继续最终收口，优先排查剩余无关工作树差异和最终 Play Mode 前的静态风险；如 UIMotion Editor 差异确属编译修复，应单独成模块并更新文档。

@@ -86,6 +86,11 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
+    public void ConfigureUIManager(UIManager manager)
+    {
+        popupHost.ConfigureUIManager(manager);
+    }
+
     public void ReleaseConfiguredFacade()
     {
         if (facadeSessionStarted && ReferenceEquals(inventoryFacade, configuredFacade))

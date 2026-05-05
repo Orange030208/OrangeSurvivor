@@ -21,6 +21,7 @@ namespace Orange.UIFramework
         public virtual bool RequiresTick => false;
         public ViewRuntimePhase Phase { get; private set; } = ViewRuntimePhase.None;
         protected ViewHandle Handle => handle;
+        protected UIManager OwnerUIManager => handle.Owner;
         protected CanvasGroup CanvasGroup => canvasGroup;
 
         protected virtual void Awake()
