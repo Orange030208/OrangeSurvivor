@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3100181562011617892}
   - component: {fileID: 8308606226768845278}
   - component: {fileID: 1502020683537815238}
+  - component: {fileID: 3868261998679627142}
   m_Layer: 5
   m_Name: UI Gaming
   m_TagString: Untagged
@@ -78,7 +79,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73c31e23042f3894b8d1901cbc7c9e29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 1
   waveText: {fileID: 7235176671689471289}
   timerText: {fileID: 682055535760119137}
   currencyText: {fileID: 1500292031166583167}
@@ -111,6 +111,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 1
+--- !u!114 &3868261998679627142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830820297401448628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 1502020683537815238}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1 &1092410870411836870
 GameObject:
   m_ObjectHideFlags: 0

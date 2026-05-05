@@ -1,9 +1,11 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
+public class GamingUIPage : PageBase, IInventoryUiFacadeHost
 {
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timerText;
@@ -19,6 +21,8 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
     private GamingHudRegionHost hudRegionHost;
     private GamingInputRegionHost inputRegionHost;
 
+    public override bool RequiresTick => true;
+
     protected override void Awake()
     {
         base.Awake();
@@ -29,18 +33,19 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
         inputRegionHost.WarmUp();
     }
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = PageContextBinding.Resolve<GamingPageContext>(context, () => UIPageContextFactory.CreateGamingPageContext());
+        currentContext = context.GetPayload<GamingPageContext>() ?? UIPageContextFactory.CreateGamingPageContext();
 
         inputRegionHost.WarmUp();
         inputRegionHost.Bind(currentContext.Player);
         InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
         hudRegionHost.Bind(currentContext);
         menuButton.OnClicked += OnPauseClicked;
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         inputRegionHost.Unbind();
         hudRegionHost.Unbind();
@@ -49,7 +54,7 @@ public class GamingUIPage : UIPageBase, IInventoryUiFacadeHost
         PageContextBinding.Release(ref currentContext);
     }
 
-    protected override void OnPageTick(float deltaTime)
+    protected override void OnTick(float deltaTime)
     {
         inputRegionHost.PublishCurrentInput();
     }

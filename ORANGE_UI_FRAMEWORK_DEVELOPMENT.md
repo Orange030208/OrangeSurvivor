@@ -1868,7 +1868,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 
 1. `MenuUIPage`：已完成直接基类迁移。脚本已改为继承 `Orange.UIFramework.PageBase`，生命周期使用 `OnOpeningAsync()` / `OnClosed()`，Prefab 显式挂载 `UIMotionTransition` 复用现有 `UISequenceDirector` 动画；设置侧栏仍沿用旧 `IUIRuntimeMotion` 动画接口，但页面托管已不依赖旧 `AXR.Framework.UI.UIPageBase`。
 2. `CharacterSelectUIPage`：已完成直接基类迁移。它是 `GameManager` 从菜单进入游戏的主流程必经页；脚本已改为继承 `Orange.UIFramework.PageBase`，生命周期使用 `OnOpeningAsync()` / `OnClosed()`，Prefab 显式挂载 `UIMotionTransition` 复用现有 `UISequenceDirector` 动画；角色选择服务订阅、角色列表渲染和确认 / 返回按钮事件语义保持不变。
-3. `GamingUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Gaming.prefab`，Layer 沿用旧 Catalog 的 `Hud` 层，旧 `GameManager` 打开 / 关闭调用会经迁移委托进入新 UIManager。
+3. `GamingUIPage`：已完成直接基类迁移。脚本已改为继承 `Orange.UIFramework.PageBase`，生命周期使用 `OnOpeningAsync()` / `OnClosed()`，旧 `OnPageTick()` 改为 `RequiresTick` + `OnTick()`；Prefab 显式挂载 `UIMotionTransition` 复用现有 `UISequenceDirector` 动画；战斗 HUD 文本、角色状态、背包 Facade、摇杆输入和 Tooltip Presenter 绑定语义保持不变。
 4. `ShopUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Shop.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中商店打开 / 关闭调用会经迁移委托进入新 UIManager。
 5. `GamePauseMenu`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Pause.prefab`，视图仍是 Page 语义但 Layer 沿用旧 Catalog 的 `Popup` 层，暂停时覆盖在战斗 HUD 之上；旧 `GameManager` 中暂停菜单打开 / 关闭 / 查询调用会经迁移委托进入新 UIManager。
 6. `GameOverUIPage`：已完成直接基类迁移。脚本已改为继承 `Orange.UIFramework.PageBase`，生命周期使用 `OnOpeningAsync()` / `OnClosed()`，Prefab 显式挂载 `UIMotionTransition` 复用现有 `UISequenceDirector` 动画；该页面不再依赖旧 `AXR.Framework.UI.UIPageBase`。
@@ -1883,7 +1883,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
 - 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
 - 迁移期允许旧页面基类作为临时脚手架保留，但它不是最终交付形态。业务页面全部接入后，必须把页面实现改为直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，并清理旧 `AXR.Framework.UI` 的页面托管、旧 Catalog、临时委托和无用资源。
-- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口第一步已完成：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`。`MenuUIPage`、`CharacterSelectUIPage`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 已直接继承新 `PageBase`。下一步必须继续让其余业务页面直接基于新框架类型运行，并清理旧 UIManager、旧 `UIPrefabCatalog`、临时委托和不再使用的旧抽象。
+- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口第一步已完成：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`。`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 已直接继承新 `PageBase`。下一步必须继续让其余业务页面直接基于新框架类型运行，并清理旧 UIManager、旧 `UIPrefabCatalog`、临时委托和不再使用的旧抽象。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 
