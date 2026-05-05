@@ -554,6 +554,9 @@ namespace Orange.UIFramework
         public readonly string GroupId;
         public readonly bool ReplaceSameGroup;
         public readonly bool TrackInStack;
+        public readonly float Margin;
+        public readonly FloatingViewAnchor PreferredAnchor;
+        public readonly bool HasScreenPosition;
 
         public PopupOptions(
             RectTransform anchor = null,
@@ -562,7 +565,10 @@ namespace Orange.UIFramework
             bool closeOnOutsideClick = true,
             string groupId = "",
             bool replaceSameGroup = false,
-            bool trackInStack = true)
+            bool trackInStack = true,
+            float margin = 12f,
+            FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight,
+            bool useScreenPosition = false)
         {
             Anchor = anchor;
             ScreenPosition = screenPosition;
@@ -571,6 +577,9 @@ namespace Orange.UIFramework
             GroupId = groupId;
             ReplaceSameGroup = replaceSameGroup;
             TrackInStack = trackInStack;
+            Margin = margin;
+            PreferredAnchor = preferredAnchor;
+            HasScreenPosition = screenPosition != default || useScreenPosition;
         }
     }
 }
@@ -581,8 +590,8 @@ namespace Orange.UIFramework
 - 物品操作面板推荐使用 Popup。
 - Popup 不应持有具体业务 Manager；通过 payload 或页面传入的回调完成交互。
 - Popup 不负责冻结页面输入，除非 Definition 明确配置。
-- 当前阶段已实现 PopupStack、分组互斥、外部点击关闭和锚点 / 屏幕点基础定位；`TrackInStack` 已保留给后续 Back 行为，当前主要由 PopupStack 维护输入顺序和外部点击顺序。
-- 精确边缘裁剪、自动翻转、布局重测与定位诊断不在 Popup 自身实现，必须由阶段 8 的 `FloatingViewPositioner` 统一提供。
+- 当前已实现 PopupStack、分组互斥、外部点击关闭、锚点 / 屏幕点定位、边缘裁剪、自动翻转和定位诊断；`TrackInStack` 已保留给后续 Back 行为，当前主要由 PopupStack 维护输入顺序和外部点击顺序。
+- Popup 自身不实现坐标换算，必须由 `FloatingViewPositioner` 统一提供，避免业务脚本重复实现。
 
 ## 11. Modal 管理
 
@@ -652,7 +661,7 @@ Tooltip 用于悬浮说明、属性说明、物品说明。
 - Tooltip 默认不阻挡 Raycast。
 - Tooltip 关闭不进入动画等待链路，除非显式配置 Hide 动画。
 - Tooltip 与 Popup 的坐标换算、锚点定位、边缘裁剪必须走统一定位工具，禁止每个业务脚本各写一套。
-- 当前阶段已实现唯一 Tooltip、指针跟随更新和不阻挡输入；坐标只做基础锚点 / 屏幕点换算，边缘裁剪、自动翻转和定位诊断留给阶段 8 的 `FloatingViewPositioner`。
+- 当前已实现唯一 Tooltip、指针跟随更新、不阻挡输入、边缘裁剪、自动翻转和定位诊断；指针跟随只更新位置，不重复绑定 payload。
 
 TooltipOptions：
 
@@ -666,19 +675,25 @@ namespace Orange.UIFramework
         public readonly Vector2 Offset;
         public readonly float Margin;
         public readonly bool FollowPointer;
+        public readonly FloatingViewAnchor PreferredAnchor;
+        public readonly bool HasScreenPosition;
 
         public TooltipOptions(
             RectTransform anchor = null,
             Vector2 screenPosition = default,
             Vector2 offset = default,
             bool followPointer = false,
-            float margin = 12f)
+            float margin = 12f,
+            FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight,
+            bool useScreenPosition = false)
         {
             Anchor = anchor;
             ScreenPosition = screenPosition;
             Offset = offset;
             FollowPointer = followPointer;
             Margin = margin;
+            PreferredAnchor = preferredAnchor;
+            HasScreenPosition = screenPosition != default || useScreenPosition;
         }
     }
 }
@@ -700,7 +715,7 @@ namespace Orange.UIFramework
 - 根据 Root Canvas 模式选择正确相机：Overlay 使用 `null`，Camera 使用 `Canvas.worldCamera`。
 - 支持 `RectTransform Anchor`、屏幕坐标、偏移、边距。
 - 支持锚点优先级，例如右下、右上、左下、左上；当前位置放不下时自动翻转。
-- 支持 `TooltipOptions.Margin` 与 `PopupOptions` 的边缘裁剪。
+- 支持 `TooltipOptions.Margin` 与 `PopupOptions.Margin` 的边缘裁剪。
 - 内容变化后可请求重新测量；普通鼠标移动只更新坐标，不强制 Layout Rebuild。
 - 返回定位结果，方便诊断和测试。
 
@@ -711,9 +726,15 @@ namespace Orange.UIFramework
 {
     public readonly struct FloatingViewPlacement
     {
+        public bool HasValue { get; }
+        public Vector2 RequestedPosition { get; }
         public Vector2 AnchoredPosition { get; }
+        public FloatingViewAnchor RequestedAnchor { get; }
+        public bool WasFlipped { get; }
         public bool WasClamped { get; }
         public FloatingViewAnchor ResolvedAnchor { get; }
+        public Rect LocalRect { get; }
+        public Rect BoundsRect { get; }
     }
 
     public interface IFloatingViewPositioner
@@ -723,9 +744,12 @@ namespace Orange.UIFramework
             RectTransform layerRoot,
             Canvas rootCanvas,
             RectTransform anchor,
+            bool useScreenPosition,
             Vector2 screenPosition,
             Vector2 offset,
-            Vector2 padding);
+            float margin,
+            FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight,
+            bool rebuildLayout = false);
     }
 }
 ```

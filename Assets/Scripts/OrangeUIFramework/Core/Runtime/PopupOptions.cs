@@ -7,6 +7,8 @@ namespace Orange.UIFramework
         private readonly bool valuesAssigned;
         private readonly bool closeOnOutsideClick;
         private readonly bool trackInStack;
+        private readonly bool useScreenPosition;
+        private readonly float margin;
 
         public PopupOptions(
             RectTransform anchor = null,
@@ -15,16 +17,22 @@ namespace Orange.UIFramework
             bool closeOnOutsideClick = true,
             string groupId = "",
             bool replaceSameGroup = false,
-            bool trackInStack = true)
+            bool trackInStack = true,
+            float margin = 12f,
+            FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight,
+            bool useScreenPosition = false)
         {
             valuesAssigned = true;
             this.closeOnOutsideClick = closeOnOutsideClick;
             this.trackInStack = trackInStack;
+            this.useScreenPosition = useScreenPosition;
+            this.margin = margin;
             Anchor = anchor;
             ScreenPosition = screenPosition;
             Offset = offset;
             GroupId = groupId ?? string.Empty;
             ReplaceSameGroup = replaceSameGroup;
+            PreferredAnchor = preferredAnchor;
         }
 
         public RectTransform Anchor { get; }
@@ -34,9 +42,11 @@ namespace Orange.UIFramework
         public string GroupId { get; }
         public bool ReplaceSameGroup { get; }
         public bool TrackInStack => !valuesAssigned || trackInStack;
+        public float Margin => valuesAssigned ? margin : 12f;
+        public FloatingViewAnchor PreferredAnchor { get; }
 
         public bool HasAnchor => Anchor != null;
-        public bool HasScreenPosition => ScreenPosition != default;
+        public bool HasScreenPosition => ScreenPosition != default || useScreenPosition;
         public static PopupOptions Default => new PopupOptions();
     }
 }

@@ -42,6 +42,7 @@ namespace Orange.UIFramework
         private Image popupOutsideClickBlockerImage;
         private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
+        private IFloatingViewPositioner floatingViewPositioner;
         private int requestVersion;
         private bool initialized;
 
@@ -104,6 +105,7 @@ namespace Orange.UIFramework
             BuildLayerRoots();
             BuildFrameworkBlockers();
             viewLoader = new PrefabViewLoader();
+            floatingViewPositioner = new FloatingViewPositioner();
             initialized = true;
         }
 
@@ -176,6 +178,10 @@ namespace Orange.UIFramework
             {
                 ViewDiagnostics view = diagnostics.OpenViews[i];
                 builder.AppendLine($"- View {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, request={view.RequestVersion}, layer={view.LayerName}, input={view.InputActive}, raycast={view.BlocksRaycasts}");
+                if (view.HasPlacement)
+                {
+                    builder.AppendLine($"  Placement: position={view.AnchoredPosition}, anchor={view.ResolvedAnchor}, flipped={view.PlacementWasFlipped}, clamped={view.PlacementWasClamped}");
+                }
             }
 
             for (int i = 0; i < diagnostics.Pools.Count; i++)
@@ -271,7 +277,9 @@ namespace Orange.UIFramework
                 screenPosition,
                 currentOptions.Offset,
                 followPointer: true,
-                margin: currentOptions.Margin);
+                margin: currentOptions.Margin,
+                preferredAnchor: currentOptions.PreferredAnchor,
+                useScreenPosition: true);
             ApplyTooltipPosition(currentTooltip);
         }
 
@@ -908,6 +916,7 @@ namespace Orange.UIFramework
                     layerName = layer.Root.name;
                 }
 
+                FloatingViewPlacement placement = runtimeView.LastPlacement;
                 diagnostics.Add(new ViewDiagnostics(
                     runtimeView.InstanceId,
                     runtimeView.Definition.Id,
@@ -917,7 +926,12 @@ namespace Orange.UIFramework
                     runtimeView.RequestVersion,
                     layerName,
                     runtimeView.View != null && runtimeView.View.InputActive,
-                    runtimeView.View != null && runtimeView.View.BlocksRaycasts));
+                    runtimeView.View != null && runtimeView.View.BlocksRaycasts,
+                    placement.HasValue,
+                    placement.AnchoredPosition,
+                    placement.ResolvedAnchor,
+                    placement.WasFlipped,
+                    placement.WasClamped));
             }
 
             return diagnostics;
@@ -1094,17 +1108,18 @@ namespace Orange.UIFramework
             }
 
             PopupOptions options = runtimeView.PopupOptions;
-            Vector2 position = options.Offset;
-            if (options.HasAnchor)
-            {
-                position += GetAnchoredCenterInLayer(options.Anchor, rectTransform.parent as RectTransform);
-            }
-            else if (options.HasScreenPosition)
-            {
-                position += ScreenToLayerPosition(options.ScreenPosition, rectTransform.parent as RectTransform);
-            }
-
-            rectTransform.anchoredPosition = position;
+            bool hasPlacementOrigin = options.HasAnchor || options.HasScreenPosition;
+            runtimeView.LastPlacement = floatingViewPositioner.Place(
+                rectTransform,
+                rectTransform.parent as RectTransform,
+                rootCanvas,
+                options.Anchor,
+                options.HasScreenPosition,
+                options.ScreenPosition,
+                options.Offset,
+                options.Margin,
+                hasPlacementOrigin ? options.PreferredAnchor : FloatingViewAnchor.Center,
+                rebuildLayout: true);
         }
 
         private void ApplyTooltipPosition(RuntimeView runtimeView)
@@ -1121,48 +1136,18 @@ namespace Orange.UIFramework
             }
 
             TooltipOptions options = runtimeView.TooltipOptions;
-            Vector2 position = options.Offset;
-            if (options.HasAnchor)
-            {
-                position += GetAnchoredCenterInLayer(options.Anchor, rectTransform.parent as RectTransform);
-            }
-            else if (options.HasScreenPosition)
-            {
-                position += ScreenToLayerPosition(options.ScreenPosition, rectTransform.parent as RectTransform);
-            }
-
-            rectTransform.anchoredPosition = position;
-        }
-
-        private Vector2 GetAnchoredCenterInLayer(RectTransform anchor, RectTransform layerRoot)
-        {
-            if (anchor == null || layerRoot == null)
-            {
-                return Vector2.zero;
-            }
-
-            Vector3 worldCenter = anchor.TransformPoint(anchor.rect.center);
-            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(rootCanvas != null ? rootCanvas.worldCamera : null, worldCenter);
-            return ScreenToLayerPosition(screenPosition, layerRoot);
-        }
-
-        private Vector2 ScreenToLayerPosition(Vector2 screenPosition, RectTransform layerRoot)
-        {
-            if (layerRoot == null)
-            {
-                return screenPosition;
-            }
-
-            Camera camera = rootCanvas != null && rootCanvas.renderMode == RenderMode.ScreenSpaceCamera
-                ? rootCanvas.worldCamera
-                : null;
-
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(layerRoot, screenPosition, camera, out Vector2 localPoint))
-            {
-                return localPoint;
-            }
-
-            return Vector2.zero;
+            bool hasPlacementOrigin = options.HasAnchor || options.HasScreenPosition;
+            runtimeView.LastPlacement = floatingViewPositioner.Place(
+                rectTransform,
+                rectTransform.parent as RectTransform,
+                rootCanvas,
+                options.Anchor,
+                options.HasScreenPosition,
+                options.ScreenPosition,
+                options.Offset,
+                options.Margin,
+                hasPlacementOrigin ? options.PreferredAnchor : FloatingViewAnchor.Center,
+                rebuildLayout: false);
         }
 
         private ViewDefinition ResolveDefinition(Type viewType, ViewKind expectedKind)
@@ -1519,6 +1504,7 @@ namespace Orange.UIFramework
             public int RequestVersion { get; }
             public PopupOptions PopupOptions { get; set; }
             public TooltipOptions TooltipOptions { get; set; }
+            public FloatingViewPlacement LastPlacement { get; set; }
             public bool Closing { get; set; }
         }
     }

@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 7，Popup / Modal / Tooltip 基础管理已完成，准备进入阶段 8。
+当前阶段：阶段 8，FloatingViewPositioner 定位裁剪已完成，准备进入阶段 9。
 
 已完成：
 
@@ -354,10 +354,12 @@
 - Modal 已支持统一遮罩、遮罩点击按 `ViewDefinition.CloseOnBackgroundClick` 关闭、顶层 Modal 输入独占、关闭兜底完成取消结果。
 - Tooltip 已支持唯一实例、指针跟随更新位置、不阻挡输入，并废弃静态 ActivePresenter / 全局 Find 作为框架路径。
 - `PopupOptions.trackInStack` 构造赋值 bug 已修复，字段保留给后续 Back 行为使用；当前阶段 PopupStack 主要用于输入顺序、外部点击和分组关闭。
+- 已新增 `FloatingViewPositioner` 定位裁剪工具，统一处理 Popup / Tooltip 的 Overlay / Camera 坐标换算、边缘裁剪、自动翻转和定位结果诊断。
+- `PopupOptions` 与 `TooltipOptions` 已支持 `Margin` 和 `PreferredAnchor`，可控制边缘留白与默认展开方向。
+- `UIManager` 已移除 Popup / Tooltip 内部临时定位计算，改为调用 `IFloatingViewPositioner`，并在 `ViewDiagnostics` / `LogRuntimeDiagnostics()` 输出定位坐标、ResolvedAnchor、是否翻转、是否裁剪。
 
 未完成：
 
-- 尚未实现 `FloatingViewPositioner` 的边缘裁剪、自动翻转和定位诊断。
 - 尚未接入本地化、运行时诊断增强与测试。
 
 当前风险：
@@ -367,19 +369,19 @@
 - 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
 - Stage 6 只完成动画等待和快照修复，尚未通过 Unity PlayMode 验证实际 Prefab 上的 DOTween 行为；需要 Unity Editor 刷新后检查编译，并在测试阶段补动画等待与池化复用测试。
-- Stage 7 的 Popup / Tooltip 定位目前只做锚点中心或屏幕点到 Layer 本地坐标的基础换算，未做边缘裁剪、自动翻转和布局重测；这些必须在阶段 8 收口。
 - Stage 7 暂未实现全局 Back 顺序，`PopupOptions.TrackInStack` 已保留但未作为 Back 行为入口；后续如接 Back 需优先 Modal，再 Popup，再 Page。
+- Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 7 提交已存在。
-3. 从阶段 8 开始，实现 `FloatingViewPositioner` 定位裁剪：Overlay / Camera 坐标换算、锚点和屏幕点定位、边缘裁剪、自动翻转、定位结果诊断。
+2. 确认阶段 8 提交已存在。
+3. 从阶段 9 开始，实现本地化基础能力：`ILocalizationService`、语言表数据来源、`LocalizedText`、语言切换刷新和参数化文本。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 8 重点读取 `UIManager.ApplyPopupPosition()`、`UIManager.ApplyTooltipPosition()`、`PopupOptions`、`TooltipOptions` 和开发文档 `12.1 Popup / Tooltip 定位裁剪工具`，先替换现有基础定位，不引入业务页面改动。
+6. 阶段 9 重点读取开发文档 `16. 多语言`、`21.7 LocalizedText 使用` 和现有项目是否已有 TMP 文本绑定模式；不强制引入 Unity Localization 包。
 
 下一轮禁止：
 
@@ -719,3 +721,52 @@
 
 - 提交阶段 7。
 - 进入阶段 8，实现 `FloatingViewPositioner` 定位裁剪，优先替换 `UIManager` 当前 `ApplyPopupPosition()` / `ApplyTooltipPosition()` 内部基础坐标换算。
+
+### 2026-05-05 阶段 8 FloatingViewPositioner 定位裁剪
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Core/Positioning/` 目录，承载 Popup / Tooltip 统一定位裁剪工具。
+- 新增 `FloatingViewAnchor`，定义 BottomRight、TopRight、BottomLeft、TopLeft、Center，作为浮层相对锚点或屏幕点的展开方向。
+- 新增 `FloatingViewPlacement`，记录请求坐标、最终 anchoredPosition、请求 Anchor、实际 Anchor、是否翻转、是否裁剪、最终本地矩形与边界矩形。
+- 新增 `IFloatingViewPositioner` 与默认 `FloatingViewPositioner`，统一处理 Overlay / Camera 模式相机选择、`RectTransform` Anchor、屏幕坐标、偏移、边距、自动翻转和边缘裁剪。
+- `FloatingViewPositioner` 使用 Root Canvas 模式决定 Camera：Overlay 使用 `null`，ScreenSpaceCamera 使用 `Canvas.worldCamera`；屏幕点 `(0, 0)` 也被视为有效输入，支持屏幕四角测试。
+- `PopupOptions` 与 `TooltipOptions` 补充 `Margin` 和 `PreferredAnchor`，让调用方控制边缘留白与首选展开方向。
+- `UIManager.ApplyPopupPosition()` / `ApplyTooltipPosition()` 已替换为 `floatingViewPositioner.Place()`，不再保留内联坐标换算方法。
+- `RuntimeView` 记录最近一次 `FloatingViewPlacement`，`ViewDiagnostics` 与 `LogRuntimeDiagnostics()` 会输出定位结果，便于定位出屏、翻转和裁剪问题。
+- Tooltip 指针跟随更新时会保留当前 Margin 与 PreferredAnchor，只更新屏幕坐标和位置，不重复绑定 payload。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Positioning.meta`
+- `Assets/Scripts/OrangeUIFramework/Core/Positioning/FloatingViewAnchor.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Positioning/FloatingViewPlacement.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Positioning/IFloatingViewPositioner.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Positioning/FloatingViewPositioner.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/PopupOptions.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/TooltipOptions.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIRuntimeDiagnostics.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree，并确认阶段 7 提交 `12b8ec5` 已存在。
+- 已读取本文当前进度、下一轮入口和阶段 8 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `12.1 Popup / Tooltip 定位裁剪工具` 章节。
+- 已确认本轮不迁移业务页面，不引入 `UIService`，不修改旧 UIManager 业务调用，不搬迁旧 `Regions` / `Contracts`。
+- 已检查新增 Positioning 目录与所有新增 `.cs` 均有对应 `.meta`。
+- 已搜索现有项目 `new PopupOptions()` / `new TooltipOptions()` 调用，除新框架自身默认值和 UIManager 指针跟随外无业务调用，新增可选参数未破坏现有业务代码。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- 定位算法尚未通过 Unity PlayMode 覆盖实际 CanvasScaler、Camera Canvas、LayoutGroup 内容刷新、不同 pivot 和分辨率变化；阶段 11 需要补测试。
+- `FloatingViewPositioner` 当前以 Popup 打开时 `rebuildLayout: true`、Tooltip 指针跟随时 `rebuildLayout: false` 为默认策略；如果 Tooltip 内容动态变化，需要业务刷新内容后重新 Show 或后续提供显式重测入口。
+- 当前诊断已记录定位结果，但尚未实现完整阶段 10 的 PageStack、PopupStack、ModalStack、异步请求状态结构化调试面板。
+
+下一步：
+
+- 提交阶段 8。
+- 进入阶段 9，实现本地化基础能力，优先提供不依赖 Unity Localization 包的 `ILocalizationService`、语言表资产和 `LocalizedText`。

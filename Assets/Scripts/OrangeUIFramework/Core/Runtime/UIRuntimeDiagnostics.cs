@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Orange.UIFramework
 {
@@ -72,7 +73,12 @@ namespace Orange.UIFramework
             int requestVersion,
             string layerName,
             bool inputActive,
-            bool blocksRaycasts)
+            bool blocksRaycasts,
+            bool hasPlacement = false,
+            Vector2 anchoredPosition = default,
+            FloatingViewAnchor resolvedAnchor = FloatingViewAnchor.BottomRight,
+            bool placementWasFlipped = false,
+            bool placementWasClamped = false)
         {
             InstanceId = instanceId ?? string.Empty;
             ViewId = viewId ?? string.Empty;
@@ -83,6 +89,11 @@ namespace Orange.UIFramework
             LayerName = layerName ?? string.Empty;
             InputActive = inputActive;
             BlocksRaycasts = blocksRaycasts;
+            HasPlacement = hasPlacement;
+            AnchoredPosition = anchoredPosition;
+            ResolvedAnchor = resolvedAnchor;
+            PlacementWasFlipped = placementWasFlipped;
+            PlacementWasClamped = placementWasClamped;
         }
 
         public string InstanceId { get; }
@@ -94,6 +105,11 @@ namespace Orange.UIFramework
         public string LayerName { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
+        public bool HasPlacement { get; }
+        public Vector2 AnchoredPosition { get; }
+        public FloatingViewAnchor ResolvedAnchor { get; }
+        public bool PlacementWasFlipped { get; }
+        public bool PlacementWasClamped { get; }
     }
 
     public readonly struct PoolDiagnostics
