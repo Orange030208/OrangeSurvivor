@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Orange.UIFramework.Tests
@@ -70,6 +71,22 @@ namespace Orange.UIFramework.Tests
 
             Assert.That(report.HasErrors, Is.True);
             Assert.That(report.ToDisplayString(), Does.Contain("does not contain ViewBase on the root"));
+        }
+
+        [Test]
+        public void OrangeCatalog_RegistersMigratedMenuAndGamingPages()
+        {
+            ViewCatalog catalog = AssetDatabase.LoadAssetAtPath<ViewCatalog>("Assets/Resources/Data/UI/OrangeUIViewCatalog.asset");
+
+            Assert.That(catalog, Is.Not.Null);
+            ValidationReport report = catalog.Validate();
+            Assert.That(report.HasErrors, Is.False, report.ToDisplayString());
+            Assert.That(catalog.TryFindByType<MenuUIPage>(out ViewDefinition menuDefinition), Is.True);
+            Assert.That(menuDefinition.Id, Is.EqualTo("page.menu"));
+            Assert.That(menuDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<GamingUIPage>(out ViewDefinition gamingDefinition), Is.True);
+            Assert.That(gamingDefinition.Id, Is.EqualTo("page.gaming"));
+            Assert.That(gamingDefinition.Layer, Is.EqualTo(ViewLayer.Hud));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)

@@ -1866,8 +1866,8 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 
 迁移优先级：
 
-1. `MenuUIPage`：已完成迁移期接入。当前采用保守桥接方式：旧 `AXR.Framework.UI.UIPageBase` 暂继承新 `Orange.UIFramework.PageBase`，`MenuUIPage` 继续保留旧页面脚本写法；旧 `AXR.Framework.UI.UIManager` 在发现页面已注册进 Orange `ViewCatalog` 后委托新 `Orange.UIFramework.UIManager` 打开、关闭和查询。`OrangeUIViewCatalog` 当前只注册 `UI Menu.prefab`，避免一次性迁移多个页面。
-2. `GamingUIPage`
+1. `MenuUIPage`：已完成迁移期接入。当前采用保守桥接方式：旧 `AXR.Framework.UI.UIPageBase` 暂继承新 `Orange.UIFramework.PageBase`，`MenuUIPage` 继续保留旧页面脚本写法；旧 `AXR.Framework.UI.UIManager` 在发现页面已注册进 Orange `ViewCatalog` 后委托新 `Orange.UIFramework.UIManager` 打开、关闭和查询。
+2. `GamingUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Gaming.prefab`，Layer 沿用旧 Catalog 的 `Hud` 层，旧 `GameManager` 打开 / 关闭调用会经迁移委托进入新 UIManager。
 3. `ShopUIPage`
 4. `GamePauseMenu`
 5. `GameOverUIPage`
@@ -1881,8 +1881,9 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 旧 `IPageContext` 可迁移为 Page Payload 或业务 Context。
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
 - 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
-- 迁移期允许旧页面基类作为 Adapter 保留，但新增业务页面应优先直接使用 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`。
+- 迁移期允许旧页面基类作为临时脚手架保留，但它不是最终交付形态。业务页面全部接入后，必须把页面实现改为直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，并清理旧 `AXR.Framework.UI` 的页面托管、旧 Catalog、临时委托和无用资源。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
+- 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 
 ## 23. 测试计划
 
