@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 8，FloatingViewPositioner 定位裁剪已完成，准备进入阶段 9。
+当前阶段：阶段 9，本地化基础能力已完成，准备进入阶段 10。
 
 已完成：
 
@@ -357,10 +357,14 @@
 - 已新增 `FloatingViewPositioner` 定位裁剪工具，统一处理 Popup / Tooltip 的 Overlay / Camera 坐标换算、边缘裁剪、自动翻转和定位结果诊断。
 - `PopupOptions` 与 `TooltipOptions` 已支持 `Margin` 和 `PreferredAnchor`，可控制边缘留白与默认展开方向。
 - `UIManager` 已移除 Popup / Tooltip 内部临时定位计算，改为调用 `IFloatingViewPositioner`，并在 `ViewDiagnostics` / `LogRuntimeDiagnostics()` 输出定位坐标、ResolvedAnchor、是否翻转、是否裁剪。
+- 已新增不依赖 Unity Localization 包的本地化模块：`ILocalizationService`、`LocalizationTable`、`LocalizationService`、`LocalizedText`。
+- `LocalizationTable` 支持 ScriptableObject 语言表、重复 key 校验和 `CreateAssetMenu` 创建入口。
+- `LocalizationService` 支持当前语言、默认语言回退、语言切换事件、参数化文本替换和运行时校验。
+- `LocalizedText` 支持 TMP_Text 自动绑定、语言切换自动刷新、运行时设置 key、设置参数、清理参数。
 
 未完成：
 
-- 尚未接入本地化、运行时诊断增强与测试。
+- 尚未实现运行时诊断增强与测试。
 
 当前风险：
 
@@ -371,17 +375,18 @@
 - Stage 6 只完成动画等待和快照修复，尚未通过 Unity PlayMode 验证实际 Prefab 上的 DOTween 行为；需要 Unity Editor 刷新后检查编译，并在测试阶段补动画等待与池化复用测试。
 - Stage 7 暂未实现全局 Back 顺序，`PopupOptions.TrackInStack` 已保留但未作为 Back 行为入口；后续如接 Back 需优先 Modal，再 Popup，再 Page。
 - Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
+- Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 8 提交已存在。
-3. 从阶段 9 开始，实现本地化基础能力：`ILocalizationService`、语言表数据来源、`LocalizedText`、语言切换刷新和参数化文本。
+2. 确认阶段 9 提交已存在。
+3. 从阶段 10 开始，实现运行时诊断增强：PageStack、PopupStack、ModalStack、Tooltip、池化数量、异步请求状态、定位裁剪结果、Modal 遮罩和输入状态。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 9 重点读取开发文档 `16. 多语言`、`21.7 LocalizedText 使用` 和现有项目是否已有 TMP 文本绑定模式；不强制引入 Unity Localization 包。
+6. 阶段 10 重点读取 `UIRuntimeDiagnostics`、`UIManager.GetRuntimeDiagnostics()`、`LogRuntimeDiagnostics()` 和开发文档 `19. 运行时诊断`；不要做业务页面迁移。
 
 下一轮禁止：
 
@@ -770,3 +775,49 @@
 
 - 提交阶段 8。
 - 进入阶段 9，实现本地化基础能力，优先提供不依赖 Unity Localization 包的 `ILocalizationService`、语言表资产和 `LocalizedText`。
+
+### 2026-05-05 阶段 9 本地化基础能力
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Localization/`，拆分 `Runtime` 与 `Data`，作为新框架本地化模块目录。
+- 新增 `ILocalizationService`，定义当前语言、语言切换事件、`SetLanguageAsync()`、`GetText()` 和参数化文本接口。
+- 新增 `LocalizationEntry` 与 `LocalizationTable`，以 ScriptableObject 保存单语言 `key -> value` 表，提供 `Orange/UI Framework/Localization Table` 创建菜单和重复 key 校验。
+- 新增 `LocalizationService` 运行时组件，实现 `ILocalizationService`，维护语言表索引、当前语言、默认语言回退、语言切换通知、参数化文本 `{key}` 替换。
+- 新增 `LocalizedText`，绑定 `TMP_Text`，支持显式引用 `LocalizationService` 或使用 `LocalizationService.Current`，可在语言切换、启用、设置 key、设置参数时刷新文本。
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 已补充当前实现落地规则，明确阶段 9 不迁移业务页面文本、不强制引入 Unity Localization 包、不做字体自动切换。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Localization.meta`
+- `Assets/Scripts/OrangeUIFramework/Localization/Runtime.meta`
+- `Assets/Scripts/OrangeUIFramework/Localization/Data.meta`
+- `Assets/Scripts/OrangeUIFramework/Localization/Runtime/ILocalizationService.cs`
+- `Assets/Scripts/OrangeUIFramework/Localization/Runtime/LocalizationService.cs`
+- `Assets/Scripts/OrangeUIFramework/Localization/Runtime/LocalizedText.cs`
+- `Assets/Scripts/OrangeUIFramework/Localization/Data/LocalizationEntry.cs`
+- `Assets/Scripts/OrangeUIFramework/Localization/Data/LocalizationTable.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree，并确认阶段 8 提交 `8978674` 已存在。
+- 已读取本文当前进度、下一轮入口和阶段 9 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的本地化方案与 `LocalizedText` 示例章节。
+- 已读取 `unity-script`、`unity-async`、`unity-inspector`、`unity-scriptableobject` 技能说明，确认本轮使用 TMP 绑定、ScriptableObject 配置资产和最小 Inspector 字段。
+- 已确认 `Packages/manifest.json` 包含 `com.unity.textmeshpro`，且本轮不引入 Unity Localization 包。
+- 已搜索项目中现有 TMP 使用与 `LocalizedText` / `Localization` 命名，未发现旧本地化系统冲突；本轮未迁移业务页面。
+- 已检查新增 Localization 目录和所有新增 `.cs` 均有对应 `.meta`。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- `LocalizationService` 当前使用场景组件和 `Current` 作为默认解析路径，适合框架基础与迁移期；若后续需要多实例或测试注入，需要在 Bootstrap 阶段明确服务装配策略。
+- 参数替换当前只支持 `{name}` 简单占位符，不支持复数、格式化表达式或富文本模板逻辑。
+- 阶段 9 未迁移业务页面硬编码文本，也未做字体按语言自动切换；这些留到业务迁移或后续真实需求。
+
+下一步：
+
+- 提交阶段 9。
+- 进入阶段 10，实现运行时诊断增强，补齐 Stack、Modal 遮罩、输入状态、异步请求和定位裁剪结果的结构化快照。

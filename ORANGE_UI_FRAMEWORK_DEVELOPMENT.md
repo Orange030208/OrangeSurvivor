@@ -993,6 +993,16 @@ namespace Orange.UIFramework
 - 语言切换触发所有激活 `LocalizedText.Refresh()`。
 - 字体资产按语言配置，可选 `LocalizedFontBinder`，不要散落在业务页面里手动换字体。
 
+当前实现落地规则：
+
+- 框架新增 `Assets/Scripts/OrangeUIFramework/Localization/`，包含 Runtime 与 Data 两层，不依赖 Unity Localization 包。
+- `LocalizationTable` 是 ScriptableObject，使用 `Orange/UI Framework/Localization Table` 菜单创建，按语言保存 `key -> value` 文本。
+- `LocalizationService` 是场景运行时组件，实现 `ILocalizationService`，维护当前语言、语言表索引、语言切换事件和默认语言回退。
+- `LocalizedText` 绑定 `TMP_Text`，可显式引用 `LocalizationService`；未绑定时使用 `LocalizationService.Current` 作为迁移期默认路径。
+- 未找到 key 时返回 key 本身，便于在界面上直接暴露缺失项。
+- 参数化文本使用 `{name}` 占位符做简单替换，当前不做复杂格式化表达式。
+- 阶段 9 只提供框架能力，不批量替换现有业务页面硬编码文本；业务迁移阶段再逐页接入 `LocalizedText`。
+
 ### 15.3 参数化文本
 
 示例：
