@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 11，第一批 EditMode 测试已完成，准备继续补 PlayMode / 运行时测试。
+当前阶段：阶段 11，第二批运行时 EditMode 测试已完成，准备进入测试补强收尾与 PlayMode / 手动验证评估。
 
 已完成：
 
@@ -366,34 +366,37 @@
 - `UIManager.LogRuntimeDiagnostics()` 已输出 Stack 顺序、顶层标记、请求版本、输入状态、遮罩状态、外部点击拦截器状态、定位请求/结果矩形与对象池数量。
 - 已新增 `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs`，在 `UIManager` Inspector 中提供 `Log Runtime Diagnostics` 按钮，复用运行时同一诊断入口。
 - 已新增 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/` 第一批 EditMode 测试，覆盖 `ViewCatalog` 校验、`OpenContext` payload、本地化参数替换 / 默认语言回退 / 缺 key 回退、`FloatingViewPositioner` 自动翻转和边界裁剪。
+- 已完成阶段 11 第二批运行时 EditMode 测试：覆盖 Page 打开关闭与池化复用、连续 Replace request version、重复关闭保护、Popup 外部点击、Modal 输入独占 / 结果互斥 / 遮罩兜底取消、Tooltip 边界定位诊断、运行时诊断快照、`UIMotionPlayer.refreshDefaultsOnEnable` 真实 Motion 复用起点。
+- 可挂载的测试 View 桩已移动到 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/`，并使用 `UNITY_EDITOR` 编译保护；测试方法和测试装配 Harness 仍保留在 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`。
 
 未完成：
 
-- 尚未实现 PlayMode / 运行时测试：Page 打开关闭、Popup 外部点击、Modal 遮罩与结果、Tooltip 屏幕边缘裁剪、UIMotion 池化复用、运行时诊断快照。
+- 尚未实现独立 PlayMode 测试场景；Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
-- 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
+- UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
+- Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
 - Stage 6 只完成动画等待和快照修复，尚未通过 Unity PlayMode 验证实际 Prefab 上的 DOTween 行为；需要 Unity Editor 刷新后检查编译，并在测试阶段补动画等待与池化复用测试。
 - Stage 7 暂未实现全局 Back 顺序，`PopupOptions.TrackInStack` 已保留但未作为 Back 行为入口；后续如接 Back 需优先 Modal，再 Popup，再 Page。
 - Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
 - Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
 - Stage 10 已完成结构化诊断和 Inspector 入口，但尚未在 Unity Editor 中点击按钮验证实际日志输出；阶段 11 或手动验证时需补。
-- Stage 11 第一批测试是 EditMode 文件级 / 轻量 Unity 对象测试；PlayMode、真实 Prefab、动画和输入事件仍需第二批测试覆盖。
+- Stage 11 已有 19 个 EditMode 测试通过，但其中运行时测试仍是轻量 Unity 对象 / 手动按钮触发，不等同于真实 PlayMode 场景、真实 Prefab 和完整 EventSystem 输入验证。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 11 第一批 EditMode 测试提交已存在。
-3. 继续阶段 11，优先补 PlayMode / 运行时测试：Page 打开关闭、Popup 外部点击关闭、Modal 遮罩阻挡与结果互斥、Tooltip 屏幕边缘裁剪、UIMotion refresh defaults 池化复用、`GetRuntimeDiagnostics()` Stack / 输入 / 遮罩快照。
+2. 确认阶段 11 第二批运行时 EditMode 测试提交已存在。
+3. 继续阶段 11 收尾，优先评估是否补最小 PlayMode 场景或手动验证清单；重点验证 Overlay / Camera 真实 Canvas、真实 Prefab、CanvasScaler、EventSystem 输入、DOTween 实际播放和 Inspector 诊断按钮。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 下一轮仍需先读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 和本文阶段 11 日志；不要做业务页面迁移。
+6. 下一轮仍需先读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 和本文阶段 11 日志；使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
 
 下一轮禁止：
 
@@ -925,3 +928,54 @@
 
 - 提交阶段 11 第一批 EditMode 测试。
 - 继续阶段 11 第二批测试，优先补 PlayMode / 运行时覆盖：Page 打开关闭、Popup 外部点击关闭、Modal 遮罩阻挡与结果互斥、Tooltip 屏幕边缘裁剪、UIMotion refresh defaults 池化复用、`GetRuntimeDiagnostics()` Stack / 输入 / 遮罩快照。
+
+### 2026-05-05 阶段 11 第二批运行时 EditMode 测试
+
+完成内容：
+
+- 新增 `RuntimeTestViews`，提供可挂载到测试 GameObject 的 Page / Popup / Modal / Tooltip 测试 View 桩，覆盖生命周期计数、延迟打开 / 关闭、Modal 确认 / 取消触发与静态状态重置。
+- 新增 `UIManagerRuntimeTestHarness`，用运行时临时 `CanvasProfile`、`UIFrameworkSettings`、`ViewCatalog` 和 Prefab GameObject 装配真实 `UIManager`，避免依赖项目业务 Prefab。
+- 新增 `UIManagerRuntimeEditModeTests`，覆盖 Page 打开关闭和池化复用、连续 Replace request version、重复关闭保护、Popup 外部点击、Modal 结果互斥与下层输入阻断、遮罩点击兜底取消、Tooltip 边界定位诊断和运行时诊断快照。
+- 新增 `UIMotionPlayerEditModeTests`，通过旧动画系统真实 `UIMotionPlayer`、`UIMotionDefinition`、`UIMoveMotionTrack` 验证 `refreshDefaultsOnEnable` 修复：禁用后改变位置，再启用并 `SetHiddenImmediate()` 会以新坐标作为默认起点。
+- 将第一批测试使用的 `TestViews` 从 `EditMode/Editor/` 移到 `EditMode/`，并使用 `UNITY_EDITOR` 包裹；原因是 Unity 不允许把 `Editor` 程序集中的 `MonoBehaviour` 脚本通过 `AddComponent<T>()` 挂到 GameObject 上。
+- `TestReflection` 补充 `using System;`，修复 `MissingFieldException` / `MissingMethodException` 引用缺失。
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 已记录第二批测试覆盖范围和测试目录规则。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/TestViews.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/TestViews.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/RuntimeTestViews.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/RuntimeTestViews.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/TestReflection.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeEditModeTests.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeTestHarness.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeTestHarness.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIMotionPlayerEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIMotionPlayerEditModeTests.cs.meta`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree，并确认上一提交为 `d566586 补充 UI 框架第一批 EditMode 测试`。
+- 已读取本文当前进度、下一轮入口和阶段 11 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`。
+- 已读取 `unity-project-scout`、`unity-async`、`unity-test`、`unity-testability` 技能说明，确认本轮用 EditMode 覆盖可在轻量 Unity 对象中验证的运行时逻辑，不迁移业务页面。
+- 发现 UnitySkills 当前连接主工作区 `E:\AXR_Projects\unity\Survivors`，不是 worktree；因此改用 Unity batchmode 显式指定 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 验证。
+- worktree 缺少 `.gitignore` 忽略的 Behavior Designer / DOTween DLL 时会导致 Unity 编译失败；本轮仅从主工作区复制这些 ignored DLL 到 worktree 用于本地验证，未纳入 Git。
+- 发现 `com.unity.test-framework@1.1.33` 命令行带 `-quit` 时不会实际进入 Test Runner 并生成 XML；已改用不带 `-quit` 的命令让 Test Runner 自行退出。
+- 初次真实运行测试得到 `total=19 passed=10 failed=9`，失败原因是测试 View 桩在 `Editor` 目录下无法挂载；移动到 `EditMode/` 并加 `UNITY_EDITOR` 后重新验证通过。
+- 已执行 Unity batchmode EditMode 全量测试：`total=19 passed=19 failed=0 skipped=0 result=Passed`，结果文件为 `Logs/OrangeUIFrameworkEditModeTests-Runtime-7.xml`，日志为 `Logs/OrangeUIFrameworkEditModeTests-Runtime-7.log`。
+
+遗留风险：
+
+- 本轮第二批仍属于 EditMode 运行时覆盖，尚未覆盖真实 PlayMode 场景、真实 Prefab、真实 EventSystem 指针输入、CanvasScaler 动态分辨率和 Camera Canvas。
+- `UIMotionPlayer` 测试验证了默认快照刷新和 `SetHiddenImmediate()` 起点，但未验证 DOTween 实际播放时长、取消等待和暂停时 unscaled time 策略。
+- Unity batchmode 会生成 ignored 的 `Library/`、`Logs/`、`Temp/`、`UserSettings/` 以及本地复制的 ignored DLL；后续提交不得包含这些内容。
+- Unity 批处理触发了 `ProjectSettings/ProjectSettings.asset` 与 `ProjectSettings/ShaderGraphSettings.asset` 的行尾/导入痕迹，本轮不应纳入提交。
+
+下一步：
+
+- 提交阶段 11 第二批运行时 EditMode 测试。
+- 继续阶段 11 收尾，优先决定是否补最小 PlayMode 测试场景；如不补，应至少形成手动验证清单并明确阶段 12 业务迁移前必须完成的真实场景验证项。

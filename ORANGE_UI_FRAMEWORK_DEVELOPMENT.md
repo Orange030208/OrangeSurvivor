@@ -1894,19 +1894,25 @@ EditMode 测试：
 - `LocalizationService.GetText()` 参数替换。
 - `FloatingViewPositioner` 在 Overlay / Camera 模式下的坐标转换和边缘裁剪。
 
-当前已落地的第一批 EditMode 测试位于 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`，覆盖：
+当前已落地的 EditMode 测试分为两类：测试用例位于 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`，需要被 `AddComponent<T>()` 挂载到测试 GameObject 上的 View 桩位于 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/`，并使用 `UNITY_EDITOR` 限定，避免进入正式 Player 构建。
+
+第一批规则测试覆盖：
 
 - `ViewCatalog` 重复 Id、Kind 与基类不匹配、禁止注册 `Part`、Prefab 根节点缺 `ViewBase`。
 - `OpenContext.GetPayload<T>()` 与 `TryGetPayload<T>()`。
 - `LocalizationService.GetText()` 参数替换、默认语言回退、缺 key 返回 key。
 - `FloatingViewPositioner` 首选方向出界时自动翻转，以及超大浮层边界裁剪。
 
-下一批 EditMode / PlayMode 测试优先补：
+第二批运行时 EditMode 测试覆盖：
 
-- `UIManager` Page request version、重复关闭保护、池化二次打开。
-- `ModalBase<TResult>` 多次完成互斥与外部关闭兜底取消。
-- `UIMotionPlayer.refreshDefaultsOnEnable` 在真实 Motion 组件上的池化复用表现。
-- `GetRuntimeDiagnostics()` 对 PageStack、PopupStack、ModalStack、Tooltip、遮罩和输入状态的结构化输出。
+- `UIManager` Page 打开关闭后 PageStack 更新、关闭后池化、二次打开复用同一实例。
+- 连续 `ReplacePageAsync` 时 request version 只允许最新请求生效，旧请求取消后不覆盖新页面。
+- 同一 `ViewHandle` 重复关闭只触发一次关闭生命周期和一次回收。
+- Popup 外部点击关闭顶层 Popup。
+- Modal 结果只完成一次，Modal 打开时阻断下层 Page 输入，遮罩点击可兜底返回取消结果。
+- Tooltip 靠近屏幕边缘时记录裁剪 / 翻转定位诊断。
+- `GetRuntimeDiagnostics()` 输出 PageStack、PopupStack、ModalStack、Tooltip、遮罩、外部点击拦截器和输入焦点状态。
+- `UIMotionPlayer.refreshDefaultsOnEnable` 使用真实 `UIMotionPlayer` + `UIMoveMotionTrack` 验证池化复用后重新启用会以当前坐标作为动画默认起点。
 
 PlayMode 测试：
 

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 namespace Orange.UIFramework.Tests
 {
     public sealed class TestPageView : PageBase
@@ -12,3 +13,4 @@ namespace Orange.UIFramework.Tests
     {
     }
 }
+#endif
