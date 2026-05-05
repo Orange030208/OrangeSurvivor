@@ -16,9 +16,9 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     private System.Collections.IEnumerator Start()
     {
+        ValidateConfiguration();
         EnsurePlayer();
         yield return null;
-        EnsureManagers();
         PublishPlayerReady();
         GrantUpgradePoints();
         OpenUpgradePage();
@@ -47,11 +47,11 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         field.SetValue(targetPlayer, testCharacterData);
     }
 
-    private void EnsureManagers()
+    private void ValidateConfiguration()
     {
         if (uiManager == null)
         {
-            uiManager = FindFirstObjectByType<UIManager>();
+            throw new MissingReferenceException($"{nameof(UpgradeCardTestSceneController)} requires an explicit {nameof(UIManager)} reference.");
         }
     }
 

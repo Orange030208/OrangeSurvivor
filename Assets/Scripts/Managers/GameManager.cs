@@ -440,11 +440,6 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void ResolveSceneReferences()
     {
-        if (uiManager == null)
-        {
-            uiManager = FindFirstObjectByType<UIManager>();
-        }
-
         if (mapGenerator == null)
         {
             mapGenerator = FindFirstObjectByType<MapGenerator>();
@@ -452,7 +447,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
         if (uiManager == null)
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
         }
     }
 

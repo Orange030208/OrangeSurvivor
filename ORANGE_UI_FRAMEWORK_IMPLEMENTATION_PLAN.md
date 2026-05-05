@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -2237,3 +2237,37 @@
 
 - 提交背包页面局部 Region 抽象收口。
 - 继续最终收口，优先处理 `GameManager` 与 `UpgradeCardTestSceneController` 中对 `FindFirstObjectByType<UIManager>()` 的兜底，主场景和升级卡测试场景已显式绑定 `uiManager`，可改为缺失即报错；同时继续评估 `ItemQualityPreviewSceneController` 是否作为预览工具保留或隔离。
+
+### 2026-05-06 阶段 12 最终收口：UIManager 入口显式装配
+
+完成内容：
+
+- `GameManager.ResolveSceneReferences()` 不再通过 `FindFirstObjectByType<UIManager>()` 查找 UIManager；主业务入口必须由场景 Inspector 显式绑定 Orange `UIManager`。
+- `UpgradeCardTestSceneController` 不再在启动时查找 UIManager，启动第一步先校验显式 `uiManager` 引用，避免配置错误时继续实例化测试玩家并打开升级卡页面。
+- 缺少 UIManager 时的错误信息改为明确要求 explicit reference，避免把场景装配错误隐藏成运行时全局查找结果。
+
+修改文件：
+
+- `Assets/Scripts/Managers/GameManager.cs`
+- `Assets/Scripts/Upgrades/Tests/UpgradeCardTestSceneController.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`。
+- 已静态扫描确认 `Assets/Scripts`、Prefab 和 Scene 中不再残留 `FindFirstObjectByType<UIManager>()`。
+- 已确认 `Game Scene.unity` 的 `GameManager.uiManager` 指向 `{fileID: 2066110832}`，且场景中存在 `UIManager` 对象；`Upgrade Card Test Scene.unity` 的 `UpgradeCardTestSceneController.uiManager` 指向 `{fileID: 450740442}`。
+- 已确认 `Weapon Test Scene.unity` 中 `GameManager.uiManager` 当前仍为空且场景内没有 `UIManager` 对象；该测试场景原本也无法通过旧 UIManager 查找兜底获得 UIManager，本轮不改无关测试场景装配。
+- 本轮按用户要求未执行完整 Play Mode；主场景启动、升级卡测试场景打开升级页面和 Weapon Test Scene 是否仍需要 UIManager 需最终真实场景验收。
+
+遗留风险：
+
+- `GameManager` 仍会为 `MapGenerator` 做场景查找兜底，这属于地图 / 玩法装配，不在本轮 UIManager 收口范围内。
+- `TooltipHoverTarget` 与 `InventoryPopupHostView` 仍使用 `UIManager.Instance` 作为新框架子视图打开 Popup / Tooltip 的运行时入口；这不是旧桥接层，但如果后续要求所有业务子视图显式注入 UIManager，需要单独改页面绑定链路。
+- `Weapon Test Scene.unity` 仍有空 `GameManager.uiManager` 字段；如果该场景需要打开业务 UI，后续要补 Orange UIManager 与 Catalog / Settings 装配。
+
+下一步：
+
+- 提交 UIManager 入口显式装配。
+- 继续最终收口，优先评估 `ItemQualityPreviewSceneController`：它仍直接 `Resources.Load` 并实例化部分 UI Prefab 做品质样式预览，需要决定是明确标记为预览工具保留，还是迁移 / 隔离避免被误认为运行时 UI 框架入口。
