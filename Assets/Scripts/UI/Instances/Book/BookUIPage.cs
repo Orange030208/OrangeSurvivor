@@ -1,8 +1,6 @@
-using AXR.Framework.UI;
-using DG.Tweening;
-using UnityEngine;
+using Orange.UIFramework;
 
-public class BookUIPage : UIPageBase
+public class BookUIPage : PageBase
 {
 
 }

@@ -105,6 +105,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<WaveTransitionUIPage>(out ViewDefinition waveTransitionDefinition), Is.True);
             Assert.That(waveTransitionDefinition.Id, Is.EqualTo("page.waveTransition"));
             Assert.That(waveTransitionDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<BookUIPage>(out ViewDefinition goldBookDefinition), Is.True);
+            Assert.That(goldBookDefinition.Id, Is.EqualTo("page.goldBook"));
+            Assert.That(goldBookDefinition.Layer, Is.EqualTo(ViewLayer.Page));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)

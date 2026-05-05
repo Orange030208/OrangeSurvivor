@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；`GamePauseMenu` 已完成直接基类迁移。`GameManager` 已直接使用 Orange UIManager，`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 已直接继承新 `PageBase`。下一步核查阶段 12 清单外仍继承旧基类的页面，例如 `BookUIPage`，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager` 已直接使用 Orange UIManager，`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 与 `BookUIPage` 已直接继承新 `PageBase`。下一步进入旧 UI 托管、旧 Catalog、临时委托和无用抽象清理。
 
 已完成：
 
@@ -395,19 +395,20 @@
 - 已完成 `GameOverUIPage` 直接基类迁移：脚本改为继承 `Orange.UIFramework.PageBase`，旧 `OnPageOpened()` / `OnPageClosed()` 生命周期迁到 `OnOpeningAsync()` / `OnClosed()`，对应 Prefab 增加 `UIMotionTransition` 继续复用原 `UISequenceDirector` 入退场动画。
 - 已完成 `StageCompleteUIPage` 直接基类迁移：脚本改为继承 `Orange.UIFramework.PageBase`，旧 `OnPageOpened()` / `OnPageClosed()` 生命周期迁到 `OnOpeningAsync()` / `OnClosed()`，对应 Prefab 增加 `UIMotionTransition` 继续复用原 `UISequenceDirector` 入退场动画。
 - 已完成 `WaveTransitionUIPage` 直接基类迁移：脚本改为继承 `Orange.UIFramework.PageBase`，旧 `OnPageOpened()` / `OnPageClosed()` 生命周期迁到 `OnOpeningAsync()` / `OnClosed()`，对应 Prefab 增加 `UIMotionTransition` 指向原 `UISequenceDirector`。
+- 已完成阶段 12 清单外补漏页面 `BookUIPage` 直接基类迁移：脚本改为继承 `Orange.UIFramework.PageBase`，`UI Gold Book.prefab` 增加 `UIMotionTransition` 并移除旧 `autoPlaySequenceDirector` 字段，`OrangeUIViewCatalog` 新增 `page.goldBook`，Catalog 校验测试增加类型断言。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 阶段 12 既定业务页面已直接继承新 `Orange.UIFramework.PageBase`；额外静态扫描发现 `Assets/Scripts/UI/Instances/Book/BookUIPage.cs` 仍继承旧 `UIPageBase`，需要判断其是否仍是有效业务 UI 并迁移或清理。旧 `AXR.Framework.UI.UIManager` 仍在代码库中，但已不再作为 `GameManager` 业务入口。页面基类和旧 UIManager 清理尚未完成，尚未达到用户要求的最终形态。
+- 阶段 12 既定业务页面与补漏页面 `BookUIPage` 已直接继承新 `Orange.UIFramework.PageBase`；旧 `AXR.Framework.UI.UIManager` 仍在代码库中，但已不再作为 `GameManager` 业务入口。旧 UIManager、旧 Catalog、旧页面托管和迁移期非泛型 Type API 清理尚未完成，尚未达到用户要求的最终形态。
 - 尚未清理旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧页面托管、临时非泛型委托、旧 Region / Contract 无用抽象与旧资源引用。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前迁移策略的桥接范围已收窄：`GameManager` 已直连新 `UIManager`，阶段 12 既定业务页面均已直接继承新 `PageBase`，但旧 `UIPageBase` 仍暂继承新 `PageBase`，且 `BookUIPage` 仍使用旧基类。该桥接只是迁移脚手架，不是最终交付形态；下一阶段必须继续让业务 UI 直接基于 OrangeUIFramework，并清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
+- 当前迁移策略的桥接范围已收窄：`GameManager` 已直连新 `UIManager`，阶段 12 既定业务页面与 `BookUIPage` 均已直接继承新 `PageBase`，但旧 `UIPageBase` 仍暂继承新 `PageBase`，旧 UIManager 和旧 Catalog 仍存在。该桥接只是迁移脚手架，不是最终交付形态；下一阶段必须清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -426,8 +427,8 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `GamePauseMenu` 直接基类迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一步最终收口相关变更。
-4. 核查 `BookUIPage` 是否仍有有效 Prefab、Catalog 注册或业务入口；如果仍有效，按同样规则迁移到 `Orange.UIFramework.PageBase` 并提交；如果已废弃，记录引用链后清理或纳入旧资源清理批次。
+3. 确认 `BookUIPage` 补漏迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一步最终收口相关变更。
+4. 进入旧 UI 托管清理：先核查 `AXR.Framework.UI.UIManager`、`UIPageBase`、`IUIPage`、`UIPageOpenContext`、`UIPrefabCatalog.asset`、`UIFrameworkSettings.asset` 旧引用链，按可回退边界删除或替换，不得一次性大删未确认引用。
 5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 6. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
@@ -1708,3 +1709,43 @@
 
 - 提交 `GamePauseMenu` 直接基类迁移。
 - 核查并处理 `BookUIPage`：先查 Prefab、Catalog、业务调用和资源引用，再决定迁移到新 `PageBase` 还是作为旧无用资源清理，完成后继续进入旧 UIManager / 旧 Catalog / 临时委托清理。
+
+### 2026-05-05 阶段 12 最终收口：BookUIPage 补漏直接继承 PageBase
+
+完成内容：
+
+- 核查阶段 12 清单外仍继承旧 `UIPageBase` 的 `BookUIPage`。
+- 确认 `BookUIPage` 挂载在真实 Prefab `Assets/Resources/Prefabs/New UI/Pages/UI Gold Book.prefab` 根节点，且旧 `UIPrefabCatalog.asset` 和 `UpgradeCardSystemBuilder.ConfigureUIPrefabCatalog()` 均包含 `UI Gold Book.prefab` 条目，因此不能直接当作无用脚本删除。
+- 将 `BookUIPage` 从旧 `AXR.Framework.UI.UIPageBase` 改为直接继承 `Orange.UIFramework.PageBase`。
+- `UI Gold Book.prefab` 根节点新增 `UIMotionTransition`，显式指向现有 `UISequenceDirector`，并移除旧页面组件上的 `autoPlaySequenceDirector` 字段。
+- `OrangeUIViewCatalog.asset` 新增 `page.goldBook`，Layer 使用 `Page`，Prefab 指向 `UI Gold Book.prefab`，确保后续如需打开该页面可由新 UIManager 按类型解析。
+- 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，加入 `BookUIPage` 类型解析、Id 和 Layer 断言。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Book/BookUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Gold Book.prefab`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `GamePauseMenu` 直接基类迁移提交 `27137c6` 已存在。
+- 已读取 `BookUIPage.cs`、`BookUIPage.cs.meta`、`UI Gold Book.prefab` 根节点组件、旧 `UIPrefabCatalog.asset`、新 `OrangeUIViewCatalog.asset` 和 `UpgradeCardSystemBuilder.ConfigureUIPrefabCatalog()` 中的旧构建逻辑。
+- 已确认 `BookUIPage.cs` 不再残留 `AXR.Framework.UI`、`UIPageBase`、无用 `DG.Tweening` using 或无用 `UnityEngine` using。
+- 已确认 `UI Gold Book.prefab` 根节点仍保留 `CanvasGroup`、`BookUIPage`、原 `UISequenceDirector`，并新增 `UIMotionTransition` 指向 `UISequenceDirector`；旧序列化字段 `autoPlaySequenceDirector` 已从页面组件移除。
+- 已确认 `OrangeUIViewCatalog.asset` 新增 `page.goldBook`，`ViewCatalogEditModeTests` 已增加 `BookUIPage` 断言。
+
+遗留风险：
+
+- 没有找到运行时代码直接调用 `OpenPage<BookUIPage>()` 或资源加载 `UI Gold Book.prefab`；目前判断它是旧升级卡测试 / 生成流程遗留页面，迁移是为了清除旧基类和旧 Catalog 残留，不改变业务入口。
+- `UpgradeCardSystemBuilder` 仍使用旧 `UIPrefabCatalog` 和旧 `UIManager` 类型生成测试场景；旧托管清理阶段需要迁移或删除这段编辑器生成逻辑。
+- `BookUIPage` 尚未在真实 Play Mode 中验证金书页面动画和打开 / 关闭流程。
+- 旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧 `UIPageBase` 和迁移期非泛型 Type API 尚未删除。
+
+下一步：
+
+- 提交 `BookUIPage` 补漏直接基类迁移。
+- 进入旧 UI 托管清理：先核查 `AXR.Framework.UI.UIManager`、`UIPageBase`、`IUIPage`、`UIPageOpenContext`、旧 `UIPrefabCatalog.asset`、旧 `UIFrameworkSettings.asset`、`UpgradeCardSystemBuilder` 旧生成逻辑和新 `UIManager` 迁移期非泛型 Type API 引用链，再分批清理。

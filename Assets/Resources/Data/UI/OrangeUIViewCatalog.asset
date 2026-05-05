@@ -101,3 +101,14 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
+  - id: page.goldBook
+    kind: 0
+    layer: 2
+    prefab: {fileID: 7343879705630972211, guid: 151de15897bd1e04ead2c9dda7a1ee16, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
