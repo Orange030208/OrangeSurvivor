@@ -1,6 +1,6 @@
 using System;
 
-public sealed class ShopPageContext : IPageContext, IInventoryFacadeContext
+public sealed class ShopPageContext : IDisposable, IInventoryFacadeContext
 {
     private readonly bool disposeShopFacadeOnDispose;
     private readonly bool disposeInventoryFacadeOnDispose;

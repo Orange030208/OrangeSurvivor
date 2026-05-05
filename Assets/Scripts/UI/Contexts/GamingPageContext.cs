@@ -1,6 +1,6 @@
 using System;
 
-public sealed class GamingPageContext : IPageContext, IInventoryFacadeContext
+public sealed class GamingPageContext : IDisposable, IInventoryFacadeContext
 {
     private readonly bool disposeInventoryFacadeOnDispose;
 

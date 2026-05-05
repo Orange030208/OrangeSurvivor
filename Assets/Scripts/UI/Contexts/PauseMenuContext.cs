@@ -1,6 +1,6 @@
 using System;
 
-public sealed class PauseMenuContext : IPageContext, IInventoryFacadeContext
+public sealed class PauseMenuContext : IDisposable, IInventoryFacadeContext
 {
     private readonly bool disposeInventoryFacadeOnDispose;
 

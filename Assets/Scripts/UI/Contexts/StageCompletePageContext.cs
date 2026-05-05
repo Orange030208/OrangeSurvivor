@@ -1,4 +1,4 @@
-public sealed class StageCompletePageContext : IPageContext
+public sealed class StageCompletePageContext
 {
     public StageCompletePageContext(StageCompleteSnapshot snapshot)
     {
@@ -6,8 +6,4 @@ public sealed class StageCompletePageContext : IPageContext
     }
 
     public StageCompleteSnapshot Snapshot { get; }
-
-    public void Dispose()
-    {
-    }
 }
