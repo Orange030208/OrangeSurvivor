@@ -23,6 +23,7 @@ public enum AudioSfxKey
     ShopPurchaseSucceeded = 110,
     ShopPurchaseFailed = 111,
     ShopRerolled = 112,
+    GameStart = 113,
 
     #endregion
 
@@ -39,7 +40,6 @@ public enum AudioSfxKey
     Slap = 3,
     GunshotLight = 300,
     GunshotHeavy = 301,
-    GunshotMuffled = 302,
     EnergyShot = 303,
     SwordSlash = 304,
     SwordHeavySlash = 305,

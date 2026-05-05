@@ -43,7 +43,7 @@ public class MenuUIPage : UIPageBase
 
     private void OnStartButtonOnClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GameStart);
         GameEventBus.Publish<MenuStartClickedEvent>();
     }
 
