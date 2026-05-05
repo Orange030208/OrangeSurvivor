@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GamingUIPage : PageBase, IInventoryUiFacadeHost
+public class GamingUIPage : PageBase
 {
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timerText;

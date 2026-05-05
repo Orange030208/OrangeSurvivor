@@ -5,7 +5,7 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class ShopUIPage : PageBase, IInventoryUiFacadeHost
+public class ShopUIPage : PageBase
 {
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;

@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
 /// 暂停菜单页面本体：负责按钮绑定、属性同步以及暂停栏内容面板的切换动画。
 /// 页面本身不直接管理暂停恢复流程，只发意图事件，关闭时先等待内容面板收起。
 /// </summary>
-public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
+public class GamePauseMenu : PageBase
 {
     [Header("暂停栏按钮")]
     [SerializeField] private UIClickTarget statusButton;

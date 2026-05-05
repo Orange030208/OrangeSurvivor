@@ -15,7 +15,6 @@ public class InventoryUI : MonoBehaviour
     private IInventoryUiFacade configuredFacade;
     private bool disposeConfiguredFacade;
     private bool ownsInventoryFacade;
-    private bool requiresExternalFacadeConfiguration;
     private bool facadeSessionStarted;
     private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
     private string currentSelectedEntryId;
@@ -26,7 +25,6 @@ public class InventoryUI : MonoBehaviour
     private void Awake()
     {
         ValidateConfiguration();
-        requiresExternalFacadeConfiguration = ResolveRequiresExternalFacadeConfiguration();
         listView = new InventoryListView(name, itemPrefab, itemContainersParent);
         popupHost = new InventoryOperatePopupHost(name);
         listView.ItemClicked += OnItemSelected;
@@ -157,7 +155,7 @@ public class InventoryUI : MonoBehaviour
             return;
         }
 
-        if (requiresExternalFacadeConfiguration && configuredFacade == null)
+        if (configuredFacade == null && ResolveInventoryOperateManager() == null)
         {
             return;
         }
@@ -195,20 +193,6 @@ public class InventoryUI : MonoBehaviour
 
         inventoryFacade = null;
         ownsInventoryFacade = false;
-    }
-
-    private bool ResolveRequiresExternalFacadeConfiguration()
-    {
-        MonoBehaviour[] parentBehaviours = GetComponentsInParent<MonoBehaviour>(true);
-        for (int i = 0; i < parentBehaviours.Length; i++)
-        {
-            if (parentBehaviours[i] is IInventoryUiFacadeHost)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private InventoryOperateManager ResolveInventoryOperateManager()
