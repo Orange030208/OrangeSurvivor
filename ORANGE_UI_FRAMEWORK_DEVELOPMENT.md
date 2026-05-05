@@ -1928,12 +1928,40 @@ PlayMode 测试：
 - Modal 确认、取消、销毁、外部取消不会重复完成结果。
 - `LogRuntimeDiagnostics()` 与 `GetRuntimeDiagnostics()` 能输出当前运行时状态。
 
-手动验证：
+手动验证（业务迁移前强制门禁）：
 
-- 暂停时 UI 动画仍播放。
-- 快速连点打开/关闭不会重复实例化或卡死。
-- 切换语言后当前界面文本全部刷新。
-- 商店左右栏、购物栏、背包 Popup 与 Tooltip 同时工作时层级正确。
+业务页面迁移开始前必须完成以下真实场景手动验证。此清单不是建议项；任一阻断问题未解决前，不进入阶段 12。验证结果必须记录到 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md` 的详细进度日志，至少包含验证日期、Unity 场景、Canvas 模式、分辨率、通过 / 失败项、失败日志或截图位置、处理结论。若用户明确要求跳过某项，必须记录跳过原因和对应风险。
+
+验证前置条件：
+
+- 必须在当前 worktree 项目中验证：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`，不能误用主工作区 `E:\AXR_Projects\unity\Survivors`。
+- Unity Editor 编译无错误；现有 OrangeUIFramework EditMode 测试重新通过，当前基线应为 `total=19 passed=19 failed=0 skipped=0`。
+- 使用真实 `UIManager`、`UIFrameworkSettings`、`ViewCatalog`、`CanvasProfile`、Prefab、`EventSystem`、`CanvasScaler`、`GraphicRaycaster` 和 `UIMotionPlayer`；不能只用测试 Harness 或临时纯代码对象替代。
+- 验证场景必须包含 Overlay 和 Camera 两套配置。Camera 模式必须显式绑定 `uiCamera`，不得依赖 `Camera.main` 静默兜底。
+- 验证 Prefab 不直接迁移现有业务页面逻辑，但需要覆盖业务迁移会依赖的真实结构：Page、页面子级 `ViewPart`、Popup、Modal、Tooltip、入场 / 退场动画、TMP 文本、本地化组件。
+
+迁移前必须逐项验证：
+
+- Root 与 Canvas：Overlay 模式能创建或复用 Root Canvas，标准 Layer 全部存在，SortingOrder、Raycaster、CanvasScaler 参数正确；Camera 模式能绑定指定 UI Camera，`planeDistance` 正确，Root 不漂移、不重复创建。
+- Catalog 与 Prefab：Catalog 校验能发现缺 Prefab、缺 `ViewBase`、Kind 与基类不匹配、重复 id；所有真实验证 Prefab 根节点具备 `RectTransform`、`CanvasGroup` 和对应 View 脚本，无 Missing Script、无丢失引用。
+- Page 生命周期：真实 Page 能打开、替换、重置、关闭；`PageStack` 顺序正确；只有顶层 Page 可交互；关闭必须等待退场动画完成后再回收；二次打开池化实例不会残留旧事件、旧 payload、旧输入状态。
+- 异步与防重入：快速连续点击打开、关闭、Replace、Reset 时最终只保留最后一次请求的页面；关闭中重复关闭不重复触发 `OnClosed()`；打开中取消、关闭中退出播放或切场景不会让 View 卡在 `Opening` / `Closing`。
+- UIMotion 与池化复用：真实 DOTween 入场 / 退场动画能被 UniTask 等待；暂停时间缩放为 0 时 UI 动画仍按预期播放；复用后 `refreshDefaultsOnEnable` 会重新采样起点，Hover / Click / Alpha / Scale / Position 不沿用上次关闭前的错误状态。
+- Popup：锚定到格子、按钮或列表项时位置正确；屏幕坐标打开正确；点击外部按配置关闭；同组互斥只保留最新 Popup；多 Popup 场景只让栈顶处理外部点击；关闭回收后再次打开不重复订阅业务事件。
+- Modal：Modal 打开时遮罩显示并阻挡下层 Page / Popup 输入；只有最顶层 Modal 可交互；确认、取消、遮罩点击、外部取消、对象销毁都只能完成一次结果；多层 Modal 关闭后下层 Modal 或 Page 输入恢复正确。
+- Tooltip：指针进入、移动、退出流程正确；Tooltip 跟随指针但不阻挡 Raycast；屏幕四角和边缘会自动翻转 / 裁剪；Camera Canvas 下不漂移；内容变化或语言切换后尺寸与位置不会溢出。
+- ViewPart：使用类似商店页面的真实结构验证左右滑动栏、购物栏、列表和详情区；这些子级只由 Page 持有和绑定，不注册进全局 Catalog；Page 关闭时子级解绑一次，重新打开后事件和动画状态正确。
+- 本地化：打开中的 Page、Modal、Tooltip 切换语言后文本刷新；参数化文本正确替换；缺 key 能回退为 key 并输出可定位日志；TMP 字体 fallback 在中英文和数字混排下显示正常。
+- 分辨率与边界：至少验证 `1920x1080`、`1366x768`、`2560x1440`、竖向或超宽窗口；窗口尺寸变化后 Popup / Tooltip 重新定位，CanvasScaler 不导致文本、按钮、遮罩、浮层越界或点击区域错位。
+- 输入链路：真实 `EventSystem` 下鼠标点击、指针移动、滚动列表、按钮连点、外部点击关闭都正确；Modal 打开时下层按钮、滚动和拖拽不响应；Tooltip 不抢占点击。
+- 诊断入口：Play Mode 中点击 `UIManager` Inspector 的 `Log Runtime Diagnostics` 按钮，日志必须包含 PageStack、PopupStack、ModalStack、Tooltip、ModalMask、外部点击拦截器、输入焦点、池化数量、定位裁剪结果和卡住的 Opening / Closing View。
+- 退出与回收：关闭所有 UI、退出 Play Mode、重新进入 Play Mode 后无异常日志；对象池数量符合预期；场景中没有残留多余 Root、Layer、遮罩、外部点击拦截器或未关闭 Tooltip。
+
+通过标准：
+
+- 全部必测项通过，且验证记录已写入实施计划。
+- 失败项必须先修复并提交，再重新执行相关手动验证。
+- 只有清单通过后，才能开始迁移 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 等现有业务页面。
 
 ## 24. 不应加入的冗余功能
 

@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 11，第二批运行时 EditMode 测试已完成，准备进入测试补强收尾与 PlayMode / 手动验证评估。
+当前阶段：阶段 11，业务迁移前真实场景手动验证清单已形成，下一步必须先执行清单或补最小 PlayMode 场景，尚未进入业务迁移。
 
 已完成：
 
@@ -368,10 +368,13 @@
 - 已新增 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/` 第一批 EditMode 测试，覆盖 `ViewCatalog` 校验、`OpenContext` payload、本地化参数替换 / 默认语言回退 / 缺 key 回退、`FloatingViewPositioner` 自动翻转和边界裁剪。
 - 已完成阶段 11 第二批运行时 EditMode 测试：覆盖 Page 打开关闭与池化复用、连续 Replace request version、重复关闭保护、Popup 外部点击、Modal 输入独占 / 结果互斥 / 遮罩兜底取消、Tooltip 边界定位诊断、运行时诊断快照、`UIMotionPlayer.refreshDefaultsOnEnable` 真实 Motion 复用起点。
 - 可挂载的测试 View 桩已移动到 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/`，并使用 `UNITY_EDITOR` 编译保护；测试方法和测试装配 Harness 仍保留在 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`。
+- 已在 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 中形成业务迁移前必须执行的真实场景手动验证清单，明确它是阶段 12 前的强制门禁，而不是普通建议项。
+- 手动验证清单已覆盖 worktree 验证前置条件、Overlay / Camera Canvas、真实 Prefab、Catalog、Page 生命周期、异步防重入、UIMotion / DOTween、Popup、Modal、Tooltip、ViewPart、本地化、分辨率、真实 EventSystem 输入、诊断入口、退出与回收。
 
 未完成：
 
-- 尚未实现独立 PlayMode 测试场景；Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
+- 尚未执行业务迁移前真实场景手动验证清单；Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
+- 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
 
 当前风险：
 
@@ -386,17 +389,20 @@
 - Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
 - Stage 10 已完成结构化诊断和 Inspector 入口，但尚未在 Unity Editor 中点击按钮验证实际日志输出；阶段 11 或手动验证时需补。
 - Stage 11 已有 19 个 EditMode 测试通过，但其中运行时测试仍是轻量 Unity 对象 / 手动按钮触发，不等同于真实 PlayMode 场景、真实 Prefab 和完整 EventSystem 输入验证。
+- 业务迁移前手动验证清单尚未执行；清单未通过前迁移业务页面会把 Canvas、输入、动画、定位和池化复用风险带入真实页面。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 11 第二批运行时 EditMode 测试提交已存在。
-3. 继续阶段 11 收尾，优先评估是否补最小 PlayMode 场景或手动验证清单；重点验证 Overlay / Camera 真实 Canvas、真实 Prefab、CanvasScaler、EventSystem 输入、DOTween 实际播放和 Inspector 诊断按钮。
-4. 不迁移任何现有业务页面。
-5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 下一轮仍需先读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 和本文阶段 11 日志；使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
+2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`，尤其是“手动验证（业务迁移前强制门禁）”。
+3. 确认阶段 11 第二批运行时 EditMode 测试提交 `1c7f4f6` 和本轮手动验证清单提交均已存在。
+4. 先执行业务迁移前真实场景手动验证清单，或先补一个最小 PlayMode 场景来降低手动验证成本；无论是否补 PlayMode，真实场景手动验证仍必须执行并记录结果。
+5. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
+6. 手动验证结果必须写入本文详细进度日志：记录场景、Canvas 模式、分辨率、通过 / 失败项、日志或截图位置、处理结论。
+7. 不迁移任何现有业务页面，除非清单通过并已记录，或用户明确要求跳过且已记录风险。
+8. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
 
 下一轮禁止：
 
@@ -979,3 +985,36 @@
 
 - 提交阶段 11 第二批运行时 EditMode 测试。
 - 继续阶段 11 收尾，优先决定是否补最小 PlayMode 测试场景；如不补，应至少形成手动验证清单并明确阶段 12 业务迁移前必须完成的真实场景验证项。
+
+### 2026-05-05 阶段 11 业务迁移前真实场景手动验证清单
+
+完成内容：
+
+- 在 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 中补充“手动验证（业务迁移前强制门禁）”，明确清单是阶段 12 业务页面迁移前必须完成的门槛。
+- 清单明确要求验证结果必须回写本文详细进度日志，记录验证日期、场景、Canvas 模式、分辨率、通过 / 失败项、失败日志或截图位置、处理结论。
+- 清单明确验证必须在当前 worktree `C:\Users\AXR\.codex\worktrees\f02c\Survivors` 执行，不能误用主工作区 `E:\AXR_Projects\unity\Survivors`。
+- 清单覆盖 Overlay / Camera Canvas、真实 Prefab、Catalog、Page 生命周期、异步防重入、UIMotion / DOTween、Popup、Modal、Tooltip、ViewPart、本地化、分辨率、真实 EventSystem 输入、诊断入口、退出与回收。
+- 更新本文 `当前进度快照`、`当前风险` 和 `下一轮入口`，把下一步改为先执行真实场景手动验证或补最小 PlayMode 场景降低验证成本，清单未通过前不进入业务迁移。
+
+修改文件：
+
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree。
+- 已读取本文当前进度、下一轮入口和阶段 11 日志，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`。
+- 已读取 `unity-testability` 和 `unity-validation` 技能说明，确认真实场景手动验证应覆盖无法由 EditMode 轻量对象充分证明的 Unity-facing 链路。
+- 本轮只修改文档，不改框架代码、不新增 Unity 资产、不迁移业务页面。
+- 尚未执行清单中的真实场景手动验证；该清单是后续阶段 12 前必须执行的验证任务。
+
+遗留风险：
+
+- 清单已经形成但尚未执行；Overlay / Camera 真实 Canvas、真实 Prefab、真实 EventSystem 输入、CanvasScaler、DOTween 实际播放和 Inspector 诊断按钮仍未被真实场景验收。
+- 若下一轮选择先补 PlayMode 测试，PlayMode 测试只能降低手动验证成本，不能替代真实场景手动验证。
+
+下一步：
+
+- 提交本轮文档变更。
+- 下一轮必须优先执行业务迁移前真实场景手动验证清单，或先补最小 PlayMode 场景辅助验证；清单通过并记录前，禁止迁移 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 等业务页面。
