@@ -1,8 +1,10 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class StageCompleteUIPage : UIPageBase
+public class StageCompleteUIPage : PageBase
 {
     [SerializeField] private UIClickTarget restartButton;
     [SerializeField] private UIClickTarget menuButton;
@@ -15,14 +17,15 @@ public class StageCompleteUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI summaryText;
     [SerializeField] private StageCompleteSummaryManager summaryManager;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         restartButton.OnClicked += OnRestartClicked;
         menuButton.OnClicked += OnMenuClicked;
         RenderSnapshot();
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         restartButton.OnClicked -= OnRestartClicked;
         menuButton.OnClicked -= OnMenuClicked;
