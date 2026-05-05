@@ -11,6 +11,8 @@ public sealed class EnemyAttackDefinitionSO : ScriptableObject
     [SerializeField] private EnemyAttackExecutionKind executionKind = EnemyAttackExecutionKind.DirectDamage;
     [SerializeField] private AttackHitShapeSO hitShape;
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
+    [Tooltip("该敌人攻击成功出手时播放的语义音效。命中音效仍由子弹或受击表现负责。")]
+    [SerializeField] private AudioSfxKey attackSfxKey = AudioSfxKey.None;
 
     [Header("Stats")]
     [SerializeField, Min(0f)] private float cooldown = 1f;
@@ -24,6 +26,7 @@ public sealed class EnemyAttackDefinitionSO : ScriptableObject
     public EnemyAttackExecutionKind ExecutionKind => executionKind;
     public AttackHitShapeSO HitShape => hitShape;
     public ProjectileDefinitionSO ProjectileDefinition => projectileDefinition;
+    public AudioSfxKey AttackSfxKey => attackSfxKey;
     public float Cooldown => Mathf.Max(0f, cooldown);
     public float DamageMultiplier => Mathf.Max(0f, damageMultiplier);
     public AttackRangeSource RangeSource => rangeSource;

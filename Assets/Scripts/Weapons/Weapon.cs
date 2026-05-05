@@ -1027,6 +1027,7 @@ internal sealed class HitBoxAttackExecutor
             HitResult hitResult = weapon.ApplyHit(request);
             if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
             {
+                AudioSfxBridge.RequestPlay(weapon.WeaponData.HitSfxKey);
                 hitVfxCallback?.Invoke(hitResult.HitPoint);
             }
         }

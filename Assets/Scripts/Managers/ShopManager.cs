@@ -176,6 +176,7 @@ public class ShopManager : MonoBehaviour
         currencyWallet?.ChangeAmount(-price);
         playerAccessoryManager.EquipAccessory(accessoryData);
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
         PublishShopItems(ShopSnapshotReason.Purchase);
@@ -212,6 +213,7 @@ public class ShopManager : MonoBehaviour
 
         currencyWallet?.ChangeAmount(-price);
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
         PublishShopItems(ShopSnapshotReason.Purchase);
@@ -244,6 +246,7 @@ public class ShopManager : MonoBehaviour
         if (TryConsumeFreeShopReroll())
         {
             RerollShopItems();
+            AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
             PublishShopItems(ShopSnapshotReason.Reroll);
             return;
         }
@@ -256,6 +259,7 @@ public class ShopManager : MonoBehaviour
 
         currencyWallet?.ChangeAmount(-rerollCost);
         RerollShopItems();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishShopItems(ShopSnapshotReason.Reroll);
     }
 
@@ -263,6 +267,7 @@ public class ShopManager : MonoBehaviour
     {
         Debug.Log("Video ad reroll requested - implement ad integration here.");
         RerollShopItems();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishShopItems(ShopSnapshotReason.Reroll);
     }
 
@@ -593,6 +598,7 @@ public class ShopManager : MonoBehaviour
 
     private void NotifyPurchaseFailed(string message)
     {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseFailed);
         PurchaseFailed?.Invoke(new ShopPurchaseFailure(message));
     }
 }

@@ -16,17 +16,18 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: d8e43336cd6357f43b8f01e21bf528f6, type: 3}
   itemPrice: 22
   itemType: 0
-  tags:
-  - 0
-  - 4
+  itemDescription: 
+  tags: 0000000004000000
   attackSequence: {fileID: 11400000, guid: 4b6467a8bf27d664d9d9493cb1d84bc3, type: 2}
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 1
   attackSequenceOccupancy: 0.86
+  spawnPoints: []
   sequenceProjectileList: []
-  sequenceSfxList: []
+  sequenceSfxList:
+  - sfxKey: 304
   sequenceVfxList: []
-  hitSfxKey: 0
+hitSfxKey: 309
   enableHitBox: 1
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 0.85, y: 1.4}
@@ -38,25 +39,25 @@ MonoBehaviour:
     criticalChance: 7
     criticalPercent: 200
     range: 4.1
-    knockbackForce: 0
+    knockbackStrength: 0
   - level: 2
     attack: 18
     attackSpeed: 0.95
     criticalChance: 7
     criticalPercent: 200
     range: 4.1
-    knockbackForce: 0
+    knockbackStrength: 0
   - level: 3
     attack: 18
     attackSpeed: 0.95
     criticalChance: 7
     criticalPercent: 200
     range: 4.1
-    knockbackForce: 0
+    knockbackStrength: 0
   - level: 4
     attack: 18
     attackSpeed: 0.95
     criticalChance: 7
     criticalPercent: 200
     range: 4.1
-    knockbackForce: 0
+    knockbackStrength: 0

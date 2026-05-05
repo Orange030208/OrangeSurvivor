@@ -16,7 +16,6 @@ public class WaveTransitionManager : MonoBehaviour
 {
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
-    [SerializeField] private PropertiesManager propertiesManager;
     [SerializeField] private CurrencyWallet currencyWallet;
     [SerializeField] private UpgradeCardPoolSO upgradeCardPool;
 
@@ -27,7 +26,6 @@ public class WaveTransitionManager : MonoBehaviour
     private UpgradeCardOptionSnapshot[] upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
     private AccessoryDataSO currentAccessoryData;
     private Coroutine refreshUpgradeCardsRoutine;
-    private int collectChestCount;
     private int latestCompletedWave = 1;
     private PlayerLevel playerLevel;
     private TransitionPhase currentPhase = TransitionPhase.None;
@@ -54,7 +52,6 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
 
@@ -67,7 +64,6 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
 
@@ -93,11 +89,6 @@ public class WaveTransitionManager : MonoBehaviour
         }
     }
 
-    private void OnChestCollected()
-    {
-        collectChestCount++;
-    }
-
     private void OnWaveCompleted(WaveCompletedEvent eventData)
     {
         latestCompletedWave = Mathf.Max(1, eventData.WaveNumber);
@@ -107,7 +98,6 @@ public class WaveTransitionManager : MonoBehaviour
     {
         player = eventData.Player;
         accessoryManager = player.GetComponent<AccessoryManager>();
-        propertiesManager = player.GetComponent<PropertiesManager>();
         playerLevel = player.GetComponent<PlayerLevel>();
         currencyWallet = player.GetComponent<CurrencyWallet>();
     }
@@ -124,7 +114,7 @@ public class WaveTransitionManager : MonoBehaviour
 
     private void TryEnterNextPhase()
     {
-        if (collectChestCount > 0)
+        if (HasPendingChestSelection())
         {
             EnterChestSelection();
             return;
@@ -163,7 +153,7 @@ public class WaveTransitionManager : MonoBehaviour
             print($"回收了{eventData.accessoryData.ItemName},回收价格:{eventData.accessoryData.RecyclePrice}");
         }
 
-        collectChestCount = Mathf.Max(0, collectChestCount - 1);
+        ConsumePendingChestSelection();
         currentAccessoryData = null;
         TryEnterNextPhase();
     }
@@ -333,7 +323,6 @@ public class WaveTransitionManager : MonoBehaviour
         if (player == null)
         {
             accessoryManager = null;
-            propertiesManager = null;
             playerLevel = null;
             currencyWallet = null;
             return;
@@ -342,11 +331,6 @@ public class WaveTransitionManager : MonoBehaviour
         if (accessoryManager == null)
         {
             accessoryManager = player.GetComponent<AccessoryManager>();
-        }
-
-        if (propertiesManager == null)
-        {
-            propertiesManager = player.GetComponent<PropertiesManager>();
         }
 
         if (playerLevel == null)
@@ -359,9 +343,17 @@ public class WaveTransitionManager : MonoBehaviour
             currencyWallet = player.GetComponent<CurrencyWallet>();
         }
 
-        if (currencyWallet == null)
-        {
-            currencyWallet = player.GetComponent<CurrencyWallet>();
-        }
+    }
+
+    private static bool HasPendingChestSelection()
+    {
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        return gameManager != null && gameManager.PendingChestSelectionCount > 0;
+    }
+
+    private static void ConsumePendingChestSelection()
+    {
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        gameManager?.ConsumePendingChestSelection();
     }
 }

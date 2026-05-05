@@ -38,9 +38,10 @@ MonoBehaviour:
       burstCount: 3
       novaCount: 1
       burstInterval: 0.07
-  sequenceSfxList: []
+  sequenceSfxList:
+  - sfxKey: 300
   sequenceVfxList: []
-  hitSfxKey: 0
+  hitSfxKey: 307
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}

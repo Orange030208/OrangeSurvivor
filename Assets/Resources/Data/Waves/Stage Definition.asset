@@ -17,3 +17,21 @@ MonoBehaviour:
   waves:
   - {fileID: 11400000, guid: d194a116d7784954db3703ea10c9f7d4, type: 2}
   - {fileID: 11400000, guid: 39b49dffe75813849bfec1645e9dbf27, type: 2}
+  - {fileID: 11400000, guid: 028a170ac587474683eec0781c9422cd, type: 2}
+  - {fileID: 11400000, guid: 64d574d53b094b4ea0dbe430e4637479, type: 2}
+  - {fileID: 11400000, guid: 84c95cd9d3c74318b52ef4fee3a6655f, type: 2}
+  - {fileID: 11400000, guid: 04d3a00961184ee0920440edc3b1bdd1, type: 2}
+  - {fileID: 11400000, guid: 5b2e93ec90cb40c0853e0e58753a3f38, type: 2}
+  - {fileID: 11400000, guid: 8c63a409d70b49289b3f0ee0f5093a33, type: 2}
+  - {fileID: 11400000, guid: 926d4107193f4b60b657aea53cded495, type: 2}
+  - {fileID: 11400000, guid: cb68c9d0449a425a8699aa2529bd140e, type: 2}
+  - {fileID: 11400000, guid: 9b0d475b647143478e73dedb9af15919, type: 2}
+  - {fileID: 11400000, guid: 83bd5814213f4997baf8b3f3cfc476cd, type: 2}
+  - {fileID: 11400000, guid: 6b4a9f4783df4defab678240204e03da, type: 2}
+  - {fileID: 11400000, guid: 9b97d6ecb9c14a37ba270161ac81f542, type: 2}
+  - {fileID: 11400000, guid: 942cfc42606c4b5db6f675916d724cfe, type: 2}
+  - {fileID: 11400000, guid: 5393350a30074130905bfc28da5dbe17, type: 2}
+  - {fileID: 11400000, guid: 5929ef1536314448b7dea08af4099202, type: 2}
+  - {fileID: 11400000, guid: f384dc2121fc42a391988dd78f4391a2, type: 2}
+  - {fileID: 11400000, guid: 9b82c9aa71734bdcbed8396739f942fc, type: 2}
+  - {fileID: 11400000, guid: 586e948ed8b943328c940d1267ecbbc3, type: 2}

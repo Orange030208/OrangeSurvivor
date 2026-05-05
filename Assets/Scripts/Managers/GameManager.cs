@@ -18,6 +18,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private GameState currentGameState = GameState.None;
     private bool isPaused;
     private bool hasMoreWaves;
+    private int pendingChestSelectionCount;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -30,7 +31,7 @@ public class GameManager : MonoSingletonBase<GameManager>
             throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
         }
 
-        GameEventBus.Subscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
+        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
@@ -45,12 +46,13 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Subscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Publish(new RequestWaveRuntimeSnapshotEvent());
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
+        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
@@ -65,6 +67,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Unsubscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
     }
 
     private void Start()
@@ -89,9 +92,19 @@ public class GameManager : MonoSingletonBase<GameManager>
         TransitionToState(GameState.GameOver);
     }
 
-    private void OnWaveFlowDecision(WaveFlowDecisionEvent eventData)
+    private void OnChestCollected()
     {
-        TransitionToState(eventData.NextState);
+        pendingChestSelectionCount++;
+    }
+
+    private void OnWaveCompleted(WaveCompletedEvent eventData)
+    {
+        if (currentGameState != GameState.Game)
+        {
+            return;
+        }
+
+        StartWaveEndFlow(eventData);
     }
 
     private void OnUpgradeSelectionCompleted()
@@ -249,6 +262,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         {
             GameEventBus.Publish(new ResetWavesRequestedEvent());
             GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+            pendingChestSelectionCount = 0;
         }
     }
 
@@ -284,6 +298,50 @@ public class GameManager : MonoSingletonBase<GameManager>
 
         GameEventBus.Publish(new StartFirstWaveRequestedEvent());
     }
+
+    private void StartWaveEndFlow(WaveCompletedEvent completedEvent)
+    {
+        GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+
+        if (!completedEvent.HasNextWave)
+        {
+            GameEventBus.Publish<AllWavesCompletedEvent>();
+            TransitionToState(GameState.StageComplete);
+            return;
+        }
+
+        if (ShouldEnterWaveTransition())
+        {
+            TransitionToState(GameState.WaveTransition);
+            return;
+        }
+
+        TransitionToState(GameState.Shop);
+    }
+
+    private bool ShouldEnterWaveTransition()
+    {
+        if (pendingChestSelectionCount > 0)
+        {
+            return true;
+        }
+
+        PlayerLevel playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
+        return playerLevel != null && playerLevel.IsLevelUpInCurrentWave;
+    }
+
+    public int ConsumePendingChestSelection()
+    {
+        if (pendingChestSelectionCount <= 0)
+        {
+            return 0;
+        }
+
+        pendingChestSelectionCount--;
+        return pendingChestSelectionCount;
+    }
+
+    public int PendingChestSelectionCount => pendingChestSelectionCount;
 
     private void AppendCloseCurrentStatePage(IUITransitionSequence transition)
     {

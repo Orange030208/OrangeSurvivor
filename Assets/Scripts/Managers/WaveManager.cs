@@ -1,16 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// 敌波管理器：只负责波次数据推进、计时和刷怪。
-/// 状态切换与流程编排交给 WaveFlowCoordinator / GameManager。
+/// 敌波管理器：负责波次数据推进、计时和刷怪。
+/// 波次当前固定为计时结束，波末状态切换由 GameManager 根据玩家本波收益决定。
 /// </summary>
 public class WaveManager : MonoBehaviour
 {
     private StageDefinitionSO stageDefinition;
     private SpawnPositionResolver spawnPositionResolver;
-    private WaveCompletionService waveCompletionService;
     private WaveSpawnExecutionService waveSpawnExecutionService;
-    private EnemyRuntimeRegistry enemyRuntimeRegistry;
     private EnemyFactory enemyFactory;
     private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
     private Wave[] runtimeWaves = System.Array.Empty<Wave>();
@@ -42,14 +40,12 @@ public class WaveManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(WaveManager)} requires at least one valid wave in {stageDefinition.name}.");
         }
 
-        enemyRuntimeRegistry = FindFirstObjectByType<EnemyRuntimeRegistry>();
-        if (enemyRuntimeRegistry == null)
+        if (FindFirstObjectByType<EnemyRuntimeRegistry>() == null)
         {
             throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRuntimeRegistry)} in the scene.");
         }
 
         enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);
-        waveCompletionService = new WaveCompletionService(enemyRuntimeRegistry);
         waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory);
         ApplySpawnPositionPolicy(0);
     }
@@ -64,7 +60,6 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Subscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
 
         TryBindSpawnAnchor();
         PublishWaveRuntimeSnapshot();
@@ -80,7 +75,6 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Unsubscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
     }
 
     private void Update()
@@ -91,14 +85,13 @@ public class WaveManager : MonoBehaviour
         }
 
         ProcessCurrentWaveSpawns();
-        WaveCompletionCheckResult completionResult = waveCompletionService.EvaluatePerFrame(runtimeState, CurrentWaveDuration);
-        if (completionResult.ShouldComplete)
+        runtimeState.Timer += Time.deltaTime;
+        if (CurrentTimer >= CurrentWaveDuration)
         {
-            CompleteCurrentWave(completionResult.CompletionReason);
+            CompleteCurrentWave();
             return;
         }
 
-        runtimeState.Timer += Time.deltaTime;
         PublishWaveProgress();
     }
 
@@ -152,20 +145,6 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Publish<DefeatAllTrackedEnemiesRequestedEvent>();
     }
 
-    private void OnEntityDied(EntityDiedEvent eventData)
-    {
-        if (!IsTimerOn || runtimeState.CompletionTriggered)
-        {
-            return;
-        }
-
-        WaveCompletionCheckResult completionResult = waveCompletionService.EvaluateEntityDeath(runtimeState, eventData);
-        if (completionResult.ShouldComplete)
-        {
-            CompleteCurrentWave(completionResult.CompletionReason);
-        }
-    }
-
     private void ProcessCurrentWaveSpawns()
     {
         if (CurrentWaveIndex < 0 || CurrentWaveIndex >= runtimeWaves.Length)
@@ -181,6 +160,17 @@ public class WaveManager : MonoBehaviour
         }
 
         float waveDuration = CurrentWaveDuration;
+        WaveSpawnContext spawnContext = new WaveSpawnContext(
+            CurrentWaveIndex,
+            CurrentWave,
+            currentWave.WaveId,
+            currentWave.Name,
+            CurrentTimer,
+            waveDuration,
+            spawnAroundEntity,
+            transform);
+        waveSpawnExecutionService.ExecuteModifierOnlyRequests(spawnContext, spawnPositionResolver);
+
         for (int i = 0; i < segments.Length; i++)
         {
             WaveSpawnExecutionRequest request = new WaveSpawnExecutionRequest(
@@ -189,6 +179,8 @@ public class WaveManager : MonoBehaviour
                 CurrentTimer,
                 waveDuration,
                 CurrentWaveIndex,
+                currentWave.WaveId,
+                currentWave.Name,
                 spawnAroundEntity,
                 transform);
             WaveSegmentRuntimeState segmentState = runtimeState.SegmentStates[i];
@@ -213,18 +205,23 @@ public class WaveManager : MonoBehaviour
             0f,
             true,
             CreateSegmentStates(wave),
-            wave.CompletionType,
-            wave.WaveTags,
-            wave.RewardSnapshot,
-            wave.FlowSnapshot,
             false);
 
         PublishWaveRuntimeSnapshot();
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
         GameEventBus.Publish(new WaveProgressEvent(CurrentWaveDuration, CurrentWaveDuration));
+        WaveSpawnModifierRegistry.NotifyWaveStarted(new WaveSpawnContext(
+            CurrentWaveIndex,
+            CurrentWave,
+            wave.WaveId,
+            wave.Name,
+            0f,
+            CurrentWaveDuration,
+            spawnAroundEntity,
+            transform));
     }
 
-    private void CompleteCurrentWave(WaveCompletionReason completionReason)
+    private void CompleteCurrentWave()
     {
         if (runtimeState.CompletionTriggered)
         {
@@ -233,19 +230,23 @@ public class WaveManager : MonoBehaviour
 
         runtimeState.IsRunning = false;
         runtimeState.CompletionTriggered = true;
+        Wave currentWave = runtimeWaves[CurrentWaveIndex];
+        WaveSpawnModifierRegistry.NotifyWaveEnded(new WaveSpawnContext(
+            CurrentWaveIndex,
+            CurrentWave,
+            currentWave.WaveId,
+            currentWave.Name,
+            CurrentTimer,
+            CurrentWaveDuration,
+            spawnAroundEntity,
+            transform));
         PublishWaveRuntimeSnapshot();
         WaveCompletedEvent completedEvent = new WaveCompletedEvent(
             CurrentWave,
             TotalWaves,
-            completionReason,
             CurrentTimer,
             HasMoreWaves);
         GameEventBus.Publish(completedEvent);
-        GameEventBus.Publish(new WaveRewardGrantedEvent(
-            CurrentWave,
-            completedEvent,
-            runtimeState.RewardSnapshot,
-            runtimeState.FlowSnapshot));
     }
 
     private WaveSegmentRuntimeState[] CreateSegmentStates(Wave wave)
@@ -316,9 +317,7 @@ public class WaveManager : MonoBehaviour
             HasMoreWaves,
             IsTimerOn,
             CurrentTimer,
-            HasStarted ? CurrentWaveDuration : 0f,
-            runtimeState.CompletionType,
-            runtimeState.WaveTags));
+            HasStarted ? CurrentWaveDuration : 0f));
     }
 
     private void ApplySpawnPositionPolicy(int waveIndex)

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abaf31889146f044589aea6affc5d459, type: 3}
+  m_Name: Wave Definition 19
+  m_EditorClassIdentifier: 
+  waveId: Wave_019
+  displayName: Wave 19
+  duration: 120
+  spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
+  spawnPlans:
+  - trackId: Final Pressure Mix
+    triggerMode: 0
+    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
+    enemyTags: 1
+    enemyPool:
+    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
+      weight: 18
+      tags: 9
+    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+      weight: 28
+      tags: 5
+    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+      weight: 27
+      tags: 33
+    - enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
+      weight: 17
+      tags: 2
+    - enemyDefinition: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
+      weight: 10
+      tags: 18
+    spawnFrequency: 2.0
+    spawnCountPerBatch: 5
+    maxSpawnBatches: 0
+    normalizedTimeRange: {x: 0, y: 100}
+  - trackId: Orange March
+    triggerMode: 0
+    enemyDefinition: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
+    enemyTags: 18
+    enemyPool: []
+    spawnFrequency: 0.04
+    spawnCountPerBatch: 1
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 20, y: 100}
+  - trackId: Final Swarm Surge
+    triggerMode: 1
+    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
+    enemyTags: 9
+    enemyPool: []
+    spawnFrequency: 0.01
+    spawnCountPerBatch: 14
+    maxSpawnBatches: 1
+    normalizedTimeRange: {x: 75, y: 76}

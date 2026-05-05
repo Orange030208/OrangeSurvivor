@@ -3,6 +3,7 @@ using Random = UnityEngine.Random;
 
 public class SpawnPositionResolver
 {
+    private readonly SpawnLocationPolicyType policyType;
     private readonly float minDistance;
     private readonly float maxDistance;
     private readonly float boundsPadding;
@@ -11,6 +12,7 @@ public class SpawnPositionResolver
     private readonly Vector2 maxBounds;
 
     private SpawnPositionResolver(
+        SpawnLocationPolicyType policyType,
         float minDistance,
         float maxDistance,
         float boundsPadding,
@@ -18,6 +20,7 @@ public class SpawnPositionResolver
         Vector2 minBounds,
         Vector2 maxBounds)
     {
+        this.policyType = policyType;
         this.minDistance = minDistance;
         this.maxDistance = maxDistance;
         this.boundsPadding = boundsPadding;
@@ -34,6 +37,7 @@ public class SpawnPositionResolver
         }
 
         return new SpawnPositionResolver(
+            policy.PolicyType,
             policy.MinDistance,
             policy.MaxDistance,
             policy.BoundsPadding,
@@ -60,7 +64,16 @@ public class SpawnPositionResolver
 
         ApplyBoundsPadding(ref resolvedMinBounds, ref resolvedMaxBounds);
 
-        Vector2 anchorPosition = context.AnchorEntity.Center;
+        return policyType switch
+        {
+            SpawnLocationPolicyType.RandomInsideMap => CreateRandomInsideMapPosition(resolvedMinBounds, resolvedMaxBounds),
+            SpawnLocationPolicyType.RandomMapEdge => CreateRandomMapEdgePosition(resolvedMinBounds, resolvedMaxBounds),
+            _ => ResolveAroundPlayerRing(context.AnchorEntity.Center, resolvedMinBounds, resolvedMaxBounds)
+        };
+    }
+
+    private Vector2 ResolveAroundPlayerRing(Vector2 anchorPosition, Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
+    {
         for (int i = 0; i < resolveAttempts; i++)
         {
             Vector2 targetPosition = CreateRingPosition(anchorPosition);
@@ -71,6 +84,25 @@ public class SpawnPositionResolver
         }
 
         return ClampInsideBounds(CreateRingPosition(anchorPosition), resolvedMinBounds, resolvedMaxBounds);
+    }
+
+    private static Vector2 CreateRandomInsideMapPosition(Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
+    {
+        return new Vector2(
+            Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x),
+            Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y));
+    }
+
+    private static Vector2 CreateRandomMapEdgePosition(Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
+    {
+        int edgeIndex = Random.Range(0, 4);
+        return edgeIndex switch
+        {
+            0 => new Vector2(Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x), resolvedMaxBounds.y),
+            1 => new Vector2(Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x), resolvedMinBounds.y),
+            2 => new Vector2(resolvedMinBounds.x, Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y)),
+            _ => new Vector2(resolvedMaxBounds.x, Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y))
+        };
     }
 
     private Vector2 CreateRingPosition(Vector2 anchorPosition)

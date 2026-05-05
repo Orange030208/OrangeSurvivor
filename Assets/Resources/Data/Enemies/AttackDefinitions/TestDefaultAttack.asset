@@ -17,6 +17,7 @@ MonoBehaviour:
   executionKind: 0
   hitShape: {fileID: 11400000, guid: 9e76b2d746e5d184888a6382488f678c, type: 2}
   projectileDefinition: {fileID: 0}
+  attackSfxKey: 3
   cooldown: 1
   damageMultiplier: 1
   rangeSource: 1

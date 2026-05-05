@@ -78,7 +78,6 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         GameEventBus.Publish(new WaveCompletedEvent(
             Mathf.Max(1, testWaveNumber),
             testWaveNumber + 1,
-            WaveCompletionReason.DurationElapsed,
             0f,
             true));
         GameEventBus.Publish(new GameStateChangedEvent(GameState.Game, GameState.WaveTransition));

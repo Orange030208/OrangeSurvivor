@@ -37,9 +37,10 @@ MonoBehaviour:
       burstCount: 1
       novaCount: 1
       burstInterval: 0
-  sequenceSfxList: []
+  sequenceSfxList:
+  - sfxKey: 300
   sequenceVfxList: []
-  hitSfxKey: 0
+  hitSfxKey: 307
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}
@@ -51,25 +52,25 @@ MonoBehaviour:
     criticalChance: 6
     criticalPercent: 160
     range: 7
-    knockbackForce: 0.5
+    knockbackStrength: 0.5
   - level: 2
     attack: 9.44
     attackSpeed: 1.795
     criticalChance: 7
     criticalPercent: 168
     range: 7.25
-    knockbackForce: 0.68
+    knockbackStrength: 0.68
   - level: 3
     attack: 10.88
     attackSpeed: 1.84
     criticalChance: 8
     criticalPercent: 176
     range: 7.5
-    knockbackForce: 0.86
+    knockbackStrength: 0.86
   - level: 4
     attack: 12.32
     attackSpeed: 1.885
     criticalChance: 9
     criticalPercent: 184
     range: 7.75
-    knockbackForce: 1.04
+    knockbackStrength: 1.04

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: -7630175410232958358, guid: 738b1782fb179a84ead2b226f6070a75, type: 3}
   AnimationConfig: {fileID: 11400000, guid: f66f2dade06fded46a9676dcd25d617d, type: 2}
+  collectSfxKey: 200

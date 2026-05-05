@@ -23,6 +23,7 @@ MonoBehaviour:
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.9
+  spawnPoints: []
   sequenceProjectileList:
   - spawnPointIndex: 0
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
@@ -34,9 +35,10 @@ MonoBehaviour:
       burstCount: 1
       novaCount: 1
       burstInterval: 0
-  sequenceSfxList: []
+  sequenceSfxList:
+  - sfxKey: 301
   sequenceVfxList: []
-  hitSfxKey: 0
+  hitSfxKey: 308
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}
@@ -48,25 +50,25 @@ MonoBehaviour:
     criticalChance: 6
     criticalPercent: 170
     range: 5.8
-    knockbackForce: 2.4
+    knockbackStrength: 2.4
   - level: 2
     attack: 15.34
     attackSpeed: 0.795
     criticalChance: 7
     criticalPercent: 178
     range: 6.05
-    knockbackForce: 2.58
+    knockbackStrength: 2.58
   - level: 3
     attack: 17.68
     attackSpeed: 0.84
     criticalChance: 8
     criticalPercent: 186
     range: 6.3
-    knockbackForce: 2.76
+    knockbackStrength: 2.76
   - level: 4
     attack: 20.02
     attackSpeed: 0.885
     criticalChance: 9
     criticalPercent: 194
     range: 6.55
-    knockbackForce: 2.94
+    knockbackStrength: 2.94

@@ -15,5 +15,7 @@ MonoBehaviour:
   policyType: 0
   minDistance: 6
   maxDistance: 10
+  boundsPadding: 1
+  resolveAttempts: 16
   minBounds: {x: -12, y: -12}
   maxBounds: {x: 12, y: 12}

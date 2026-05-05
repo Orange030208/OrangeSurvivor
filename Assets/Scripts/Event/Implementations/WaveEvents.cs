@@ -12,32 +12,22 @@ public struct WaveStartedEvent : IGameEvent
     }
 }
 
-public enum WaveCompletionReason
-{
-    Unknown,
-    DurationElapsed,
-    ClearedAllEnemies,
-    BossDefeated
-}
-
 public struct WaveCompletedEvent : IGameEvent
 {
     public int WaveNumber;
     public int TotalWaves;
-    public WaveCompletionReason CompletionReason;
     public float ElapsedTime;
     public bool HasNextWave;
 
     public WaveCompletedEvent(int waveNumber)
-        : this(waveNumber, 0, WaveCompletionReason.Unknown, 0f, false)
+        : this(waveNumber, 0, 0f, false)
     {
     }
 
-    public WaveCompletedEvent(int waveNumber, int totalWaves, WaveCompletionReason completionReason, float elapsedTime, bool hasNextWave)
+    public WaveCompletedEvent(int waveNumber, int totalWaves, float elapsedTime, bool hasNextWave)
     {
         WaveNumber = waveNumber;
         TotalWaves = totalWaves;
-        CompletionReason = completionReason;
         ElapsedTime = elapsedTime;
         HasNextWave = hasNextWave;
     }
@@ -68,11 +58,9 @@ public struct WaveRuntimeChangedEvent : IGameEvent
     public bool IsRunning;
     public float ElapsedTime;
     public float CurrentWaveDuration;
-    public WaveCompletionType CompletionType;
-    public WaveTag WaveTags;
 
     public WaveRuntimeChangedEvent(int currentWave, int totalWaves, bool hasStarted, bool hasMoreWaves, bool isRunning)
-        : this(currentWave, totalWaves, hasStarted, hasMoreWaves, isRunning, 0f, 0f, WaveCompletionType.DurationElapsed, WaveTag.None)
+        : this(currentWave, totalWaves, hasStarted, hasMoreWaves, isRunning, 0f, 0f)
     {
     }
 
@@ -83,9 +71,7 @@ public struct WaveRuntimeChangedEvent : IGameEvent
         bool hasMoreWaves,
         bool isRunning,
         float elapsedTime,
-        float currentWaveDuration,
-        WaveCompletionType completionType,
-        WaveTag waveTags)
+        float currentWaveDuration)
     {
         CurrentWave = currentWave;
         TotalWaves = totalWaves;
@@ -94,48 +80,6 @@ public struct WaveRuntimeChangedEvent : IGameEvent
         IsRunning = isRunning;
         ElapsedTime = elapsedTime;
         CurrentWaveDuration = currentWaveDuration;
-        CompletionType = completionType;
-        WaveTags = waveTags;
-    }
-}
-
-public struct WaveRewardGrantedEvent : IGameEvent
-{
-    public int WaveNumber;
-    public WaveCompletedEvent WaveCompletedEvent;
-    public WaveRewardSnapshot RewardSnapshot;
-    public WaveFlowSnapshot FlowSnapshot;
-
-    public WaveRewardGrantedEvent(int waveNumber, WaveCompletedEvent waveCompletedEvent, WaveRewardSnapshot rewardSnapshot, WaveFlowSnapshot flowSnapshot)
-    {
-        WaveNumber = waveNumber;
-        WaveCompletedEvent = waveCompletedEvent;
-        RewardSnapshot = rewardSnapshot;
-        FlowSnapshot = flowSnapshot;
-    }
-}
-
-public struct WaveFlowDecisionRequestedEvent : IGameEvent
-{
-    public WaveCompletedEvent WaveCompletedEvent;
-    public WaveRewardSnapshot RewardSnapshot;
-    public WaveFlowSnapshot FlowSnapshot;
-
-    public WaveFlowDecisionRequestedEvent(WaveCompletedEvent waveCompletedEvent, WaveRewardSnapshot rewardSnapshot, WaveFlowSnapshot flowSnapshot)
-    {
-        WaveCompletedEvent = waveCompletedEvent;
-        RewardSnapshot = rewardSnapshot;
-        FlowSnapshot = flowSnapshot;
-    }
-}
-
-public struct WaveFlowDecisionEvent : IGameEvent
-{
-    public GameState NextState;
-
-    public WaveFlowDecisionEvent(GameState nextState)
-    {
-        NextState = nextState;
     }
 }
 

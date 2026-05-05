@@ -147,6 +147,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher, I
             return false;
         }
 
+        AudioSfxBridge.RequestPlay(attackDefinition.AttackSfxKey);
         CommitCooldown(attackDefinition);
         return true;
     }

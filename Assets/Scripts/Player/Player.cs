@@ -14,7 +14,7 @@ using UnityEngine;
 [RequireComponent(typeof(PropertiesManager))]
 public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitialWeaponProvider, IInitialAccessoryProvider,IFeatureEffectsProvider
 {
-    [Header("组件")] [SerializeField] private new CircleCollider2D collider;
+    [Header("组件")]
     private Rigidbody2D rb;
     private PlayerLevel playerLevel;
     private PlayerController playerController;
@@ -26,8 +26,6 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     [SerializeField]private CharacterDataSO characterData;
 
     public override IMovable MoveComponent => playerController;
-    public override Vector2 Center => (Vector2)transform.position + collider.offset;
-
     public Rigidbody2D Rb => rb;
     public PropertiesManager PropertiesManager => propertiesManager;
 

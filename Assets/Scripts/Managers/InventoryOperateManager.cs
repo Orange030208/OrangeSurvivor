@@ -147,6 +147,7 @@ public class InventoryOperateManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(item.GetSellPrice());
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyOperatePanelShouldClose(item.EntryId);
     }
 
@@ -186,6 +187,7 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         NotifyOperatePanelShouldClose(selectedItem.EntryId);
     }
 

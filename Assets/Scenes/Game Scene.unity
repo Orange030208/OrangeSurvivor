@@ -25819,8 +25819,6 @@ GameObject:
   m_Component:
   - component: {fileID: 542457225}
   - component: {fileID: 542457226}
-  - component: {fileID: 542457229}
-  - component: {fileID: 542457228}
   - component: {fileID: 542457227}
   m_Layer: 0
   m_Name: Wave Manager
@@ -25870,34 +25868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 361fc90fb589191499c91296c60cb371, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &542457228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542457224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed3feb4fc0325d045a4267241a6fc3f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  coinCollectionSettleDelay: 0.5
---- !u!114 &542457229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542457224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28115ad5cecd1a24e9ba31fde518d90c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallet: {fileID: 0}
-  player: {fileID: 0}
 --- !u!1 &595972523
 GameObject:
   m_ObjectHideFlags: 0
@@ -28644,7 +28614,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   accessoryManager: {fileID: 0}
   player: {fileID: 0}
-  propertiesManager: {fileID: 0}
   currencyWallet: {fileID: 0}
   upgradeCardPool: {fileID: 0}
 --- !u!1 &1566269876

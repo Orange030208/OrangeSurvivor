@@ -8,8 +8,6 @@ using UnityEngine;
 [RequireComponent(typeof(PropertiesManager))]
 public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEntityAttackDefinitionProvider
 {
-    [Header("组件")] [SerializeField] private new Collider2D collider;
-
     private IAnimatable animComponent;
     private HealthComponent healthComponent;
     private PropertiesManager propertiesManager;
@@ -22,9 +20,6 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEnti
 
     public override IMovable MoveComponent => activeMovement;
 
-    public override Vector2 Center =>
-        transform.position + new Vector3(0f, collider != null ? collider.offset.y : 0f, 0f);
-
     public IAnimatable AnimComponent => animComponent;
     public HealthComponent HealthComponent => healthComponent;
     public EnemyRole Role => enemyData != null ? enemyData.role : EnemyRole.Normal;
@@ -35,6 +30,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEnti
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
     public EntityAnimationConfig AnimationConfig => enemyData.AnimConfig;
+
     public IReadOnlyList<EnemyAttackDefinitionSO> AttackDefinitions =>
         enemyData != null ? enemyData.GetAttackDefinitions() : Array.Empty<EnemyAttackDefinitionSO>();
 
@@ -102,10 +98,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEnti
         brain?.StartBrain();
         activeMovement?.EnableMovement();
 
-        if (collider != null)
-        {
-            collider.enabled = true;
-        }
+        EntityCollider.enabled = true;
     }
 
     public override void DisableRuntime()
@@ -115,15 +108,9 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEnti
         activeMovement?.StopMoving();
         activeMovement?.DisableMovement();
 
-        if (rb != null)
-        {
-            rb.velocity = Vector2.zero;
-        }
+        rb.velocity = Vector2.zero;
 
-        if (collider != null)
-        {
-            collider.enabled = false;
-        }
+        EntityCollider.enabled = false;
     }
 
     public void DefeatSilently()

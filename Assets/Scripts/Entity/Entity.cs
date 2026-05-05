@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IEntity
 {
+    Collider2D EntityCollider { get; }
     Transform Transform { get; }
     Vector2 Center { get; }
     EntityRenderer EntityRenderer { get; }
@@ -22,13 +23,33 @@ public abstract class Entity : MonoBehaviour, IEntity
 {
     private EntityComponentBase[] cachedComponents = Array.Empty<EntityComponentBase>();
     private EntityRenderer cachedEntityRenderer;
+    private Collider2D cachedCollider;
 
     private string runtimeId;
     private bool isRuntimeEnabled = true;
 
+    public virtual Collider2D EntityCollider
+    {
+        get
+        {
+            if (cachedCollider == null)
+            {
+                cachedCollider = GetComponent<Collider2D>();
+            }
+
+            return cachedCollider;
+        }
+        protected set => cachedCollider = value;
+    }
+
     public virtual IMovable MoveComponent => IMovable.Empty;
     public virtual Transform Transform => transform;
-    public virtual Vector2 Center => transform.position;
+
+    public virtual Vector2 Center =>
+        EntityCollider != null
+            ? EntityCollider.bounds.center
+            : (Vector2)transform.position;
+
     public bool IsRuntimeEnabled => isRuntimeEnabled;
 
     public string RuntimeId
@@ -55,6 +76,7 @@ public abstract class Entity : MonoBehaviour, IEntity
 
             return cachedEntityRenderer;
         }
+        protected set => cachedEntityRenderer = value;
     }
 
 

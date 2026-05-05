@@ -6,7 +6,9 @@ using UnityEngine;
 /// </summary>
 public enum SpawnLocationPolicyType
 {
-    AroundPlayerRing = 0
+    AroundPlayerRing = 0,
+    RandomInsideMap = 1,
+    RandomMapEdge = 2
 }
 
 [CreateAssetMenu(fileName = "Spawn Location Policy", menuName = ScriptableObjectMenuPaths.SPAWN_LOCATION_POLICY, order = 0)]

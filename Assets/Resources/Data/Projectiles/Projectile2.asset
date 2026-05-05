@@ -27,7 +27,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   launchSfxKey: 0
-  impactSfxKey: 0
+  impactSfxKey: 308
   launchVfxPrefab: {fileID: 8045101923008439785, guid: c38c59187e252e64cb479d7187288073, type: 3}
   impactVfxPrefab: {fileID: 8045101923008439785, guid: c38c59187e252e64cb479d7187288073, type: 3}
   useDirectionFacing: 1

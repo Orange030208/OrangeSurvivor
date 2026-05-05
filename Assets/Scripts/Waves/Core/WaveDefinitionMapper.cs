@@ -38,16 +38,11 @@ public static class WaveDefinitionMapper
             ? $"Wave {waveIndex + 1}"
             : waveDefinition.DisplayName;
         WaveSegment[] segments = ToRuntimeSegments(waveDefinition.SpawnPlans);
-        WaveRewardSnapshot rewardSnapshot = CreateRewardSnapshot(waveDefinition.RewardDefinition);
-        WaveFlowSnapshot flowSnapshot = CreateFlowSnapshot(waveDefinition.FlowDefinition);
         return new Wave(
+            waveDefinition.WaveId,
             waveName,
             waveDefinition.Duration,
-            segments,
-            waveDefinition.CompletionType,
-            waveDefinition.WaveTags,
-            rewardSnapshot,
-            flowSnapshot);
+            segments);
     }
 
     public static WaveSegment[] ToRuntimeSegments(WaveSpawnPlan[] spawnPlans)
@@ -61,16 +56,20 @@ public static class WaveDefinitionMapper
         for (int i = 0; i < spawnPlans.Length; i++)
         {
             WaveSpawnPlan spawnPlan = spawnPlans[i];
-            if (spawnPlan.EnemyDefinition == null)
+            WaveEnemySpawnOption[] enemyPool = FilterEnemyPool(spawnPlan.GetEffectiveEnemyPool());
+            if (enemyPool.Length == 0)
             {
                 continue;
             }
 
             Vector2 normalizedTimeRange = NormalizeTimeRange(spawnPlan.NormalizedTimeRange);
             WaveSpawnIdentity spawnIdentity = new WaveSpawnIdentity(
-                spawnPlan.EnemyDefinition,
+                spawnPlan.TrackId,
+                spawnPlan.TriggerMode,
+                enemyPool,
                 spawnPlan.SpawnFrequency,
                 spawnPlan.SpawnCountPerBatch,
+                spawnPlan.MaxSpawnBatches,
                 normalizedTimeRange);
             segments.Add(new WaveSegment(spawnIdentity, normalizedTimeRange));
         }
@@ -78,36 +77,32 @@ public static class WaveDefinitionMapper
         return segments.ToArray();
     }
 
-    private static WaveRewardSnapshot CreateRewardSnapshot(WaveRewardDefinitionSO rewardDefinition)
-    {
-        if (rewardDefinition == null)
-        {
-            return WaveRewardSnapshot.CreateDefault();
-        }
-
-        return new WaveRewardSnapshot(
-            rewardDefinition.GoldReward,
-            rewardDefinition.ChestRewardCount,
-            rewardDefinition.GrantShopEntry);
-    }
-
-    private static WaveFlowSnapshot CreateFlowSnapshot(WaveFlowDefinitionSO flowDefinition)
-    {
-        if (flowDefinition == null)
-        {
-            return WaveFlowSnapshot.CreateDefault();
-        }
-
-        return new WaveFlowSnapshot(
-            flowDefinition.TransitionMode,
-            flowDefinition.ShopMode,
-            flowDefinition.SkipToNextWaveImmediately);
-    }
-
     private static Vector2 NormalizeTimeRange(Vector2 normalizedTimeRange)
     {
         float start = Mathf.Clamp(normalizedTimeRange.x, 0f, 100f);
         float end = Mathf.Clamp(normalizedTimeRange.y, start, 100f);
         return new Vector2(start, end);
+    }
+
+    private static WaveEnemySpawnOption[] FilterEnemyPool(WaveEnemySpawnOption[] enemyPool)
+    {
+        if (enemyPool == null || enemyPool.Length == 0)
+        {
+            return Array.Empty<WaveEnemySpawnOption>();
+        }
+
+        List<WaveEnemySpawnOption> results = new(enemyPool.Length);
+        for (int i = 0; i < enemyPool.Length; i++)
+        {
+            WaveEnemySpawnOption option = enemyPool[i];
+            if (option.EnemyDefinition == null || option.Weight <= 0f)
+            {
+                continue;
+            }
+
+            results.Add(option);
+        }
+
+        return results.ToArray();
     }
 }

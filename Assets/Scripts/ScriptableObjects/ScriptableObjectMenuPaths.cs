@@ -31,8 +31,6 @@ public static class ScriptableObjectMenuPaths
     public const string SPAWN_LOCATION_POLICY = GAMEPLAY_ROOT + "Waves/Spawn Location Policy";
     public const string STAGE_DEFINITION = GAMEPLAY_ROOT + "Waves/Stage Definition";
     public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
-    public const string WAVE_FLOW_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Flow Definition";
-    public const string WAVE_REWARD_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Reward Definition";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
     public const string KNOCKBACK_RECEIVER_CONFIG = ENTITY_ROOT + "Combat/Knockback Receiver Config";

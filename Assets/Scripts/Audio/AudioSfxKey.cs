@@ -17,6 +17,19 @@ public enum AudioSfxKey
     UpgradeCardRareSelected = 104,
     UpgradeCardEpicSelected = 105,
     UpgradeCardLegendarySelected = 106,
+    UiCancel = 107,
+    UiConfirm = 108,
+    UiError = 109,
+    ShopPurchaseSucceeded = 110,
+    ShopPurchaseFailed = 111,
+    ShopRerolled = 112,
+
+    #endregion
+
+    #region 拾取音效
+
+    CoinCollected = 200,
+    ChestCollected = 201,
 
     #endregion
 
@@ -24,6 +37,16 @@ public enum AudioSfxKey
 
     Swipe = 2,
     Slap = 3,
+    GunshotLight = 300,
+    GunshotHeavy = 301,
+    GunshotMuffled = 302,
+    EnergyShot = 303,
+    SwordSlash = 304,
+    SwordHeavySlash = 305,
+    DaggerStab = 306,
+    GenericProjectileImpact = 307,
+    HeavyImpact = 308,
+    SwordClash = 309,
 
     #endregion
 }

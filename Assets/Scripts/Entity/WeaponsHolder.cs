@@ -218,6 +218,7 @@ public class WeaponsHolder : EntityComponentBase
             mergedWeapon.SetTargetLayerMask(targetLayerMask);
         }
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
         return true;

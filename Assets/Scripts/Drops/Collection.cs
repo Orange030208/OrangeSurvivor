@@ -60,7 +60,18 @@ public abstract class Collection : Entity, IAnimationConfigProvider
     {
         _collectRoutine = null;
         OnCollected(entity);
+        PlayCollectSfx();
         Destroy(gameObject);
+    }
+
+    private void PlayCollectSfx()
+    {
+        if (collectionData == null || collectionData.CollectSfxKey == AudioSfxKey.None)
+        {
+            return;
+        }
+
+        AudioSfxBridge.RequestPlay(collectionData.CollectSfxKey);
     }
 
     /// <summary>

@@ -7,6 +7,8 @@ public readonly struct WaveSpawnExecutionRequest
     public readonly float CurrentTimer;
     public readonly float WaveDuration;
     public readonly int CurrentWaveIndex;
+    public readonly string CurrentWaveId;
+    public readonly string CurrentWaveName;
     public readonly Entity SpawnAnchor;
     public readonly Transform SpawnParent;
 
@@ -16,6 +18,8 @@ public readonly struct WaveSpawnExecutionRequest
         float currentTimer,
         float waveDuration,
         int currentWaveIndex,
+        string currentWaveId,
+        string currentWaveName,
         Entity spawnAnchor,
         Transform spawnParent)
     {
@@ -24,6 +28,8 @@ public readonly struct WaveSpawnExecutionRequest
         CurrentTimer = currentTimer;
         WaveDuration = waveDuration;
         CurrentWaveIndex = currentWaveIndex;
+        CurrentWaveId = currentWaveId;
+        CurrentWaveName = currentWaveName;
         SpawnAnchor = spawnAnchor;
         SpawnParent = spawnParent;
     }

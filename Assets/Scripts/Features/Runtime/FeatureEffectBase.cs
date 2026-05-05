@@ -45,5 +45,49 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
     {
         return new List<DescriptorInfo>();
     }
+
+    public virtual FeatureEffectBase CreateRuntimeCopy()
+    {
+        Type type = GetType();
+        FeatureEffectBase copy = Activator.CreateInstance(type) as FeatureEffectBase;
+        if (copy == null)
+        {
+            return this;
+        }
+
+        CopySerializableFields(this, copy, type);
+        return copy;
+    }
+
+    private static void CopySerializableFields(FeatureEffectBase source, FeatureEffectBase target, Type type)
+    {
+        while (type != null && type != typeof(object))
+        {
+            System.Reflection.FieldInfo[] fields = type.GetFields(
+                System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic
+                | System.Reflection.BindingFlags.DeclaredOnly);
+            for (int i = 0; i < fields.Length; i++)
+            {
+                System.Reflection.FieldInfo field = fields[i];
+                if (field.IsInitOnly || field.IsStatic)
+                {
+                    continue;
+                }
+
+                if (!field.IsPublic
+                    && !Attribute.IsDefined(field, typeof(SerializeField), true)
+                    && !Attribute.IsDefined(field, typeof(SerializeReference), true))
+                {
+                    continue;
+                }
+
+                field.SetValue(target, field.GetValue(source));
+            }
+
+            type = type.BaseType;
+        }
+    }
 }
 

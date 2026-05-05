@@ -64,7 +64,16 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
         RemoveFeature(sourceId);
 
-        var runtimeEffects = new List<FeatureEffectBase>(featureEffects);
+        var runtimeEffects = new List<FeatureEffectBase>();
+        if (featureEffects != null)
+        {
+            for (int i = 0; i < featureEffects.Count; i++)
+            {
+                FeatureEffectBase sourceEffect = featureEffects[i];
+                runtimeEffects.Add(sourceEffect != null ? sourceEffect.CreateRuntimeCopy() : null);
+            }
+        }
+
         for (int i = 0; i < runtimeEffects.Count; i++)
         {
             FeatureEffectBase effect = runtimeEffects[i];
