@@ -1,13 +1,13 @@
 using System;
 
-public sealed class ShopPageController : IPageController
+public sealed class ShopPageController
 {
-    private readonly IShopPageView view;
+    private readonly ShopUIPage view;
     private readonly ShopPageContext context;
     private readonly ShopPageState state = new ShopPageState();
     private bool entered;
 
-    public ShopPageController(IShopPageView view, ShopPageContext context)
+    public ShopPageController(ShopUIPage view, ShopPageContext context)
     {
         this.view = view ?? throw new ArgumentNullException(nameof(view));
         this.context = context ?? throw new ArgumentNullException(nameof(context));

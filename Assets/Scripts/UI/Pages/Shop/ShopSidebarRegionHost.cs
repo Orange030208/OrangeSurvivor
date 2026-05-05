@@ -6,7 +6,6 @@ public sealed class ShopSidebarRegionHost
 {
     private readonly ShopPropertiesRegionView propertiesRegion;
     private readonly ShopInventoryRegionView inventoryRegion;
-    private readonly SidebarRegionGroup regionGroup;
 
     public ShopSidebarRegionHost(
         string ownerName,
@@ -21,7 +20,6 @@ public sealed class ShopSidebarRegionHost
         inventoryRegion = new ShopInventoryRegionView(resolvedOwnerName, inventorySidebar, inventoryToggleButton);
         propertiesRegion.ToggleRequested += OnPropertiesToggleRequested;
         inventoryRegion.ToggleRequested += OnInventoryToggleRequested;
-        regionGroup = new SidebarRegionGroup(propertiesRegion, inventoryRegion);
     }
 
     public event Action PropertiesToggleRequested;
@@ -51,12 +49,14 @@ public sealed class ShopSidebarRegionHost
 
     public void RefreshDefaults()
     {
-        regionGroup.RefreshDefaults();
+        propertiesRegion.RefreshDefaults();
+        inventoryRegion.RefreshDefaults();
     }
 
     public void Kill()
     {
-        regionGroup.Kill();
+        propertiesRegion.Kill();
+        inventoryRegion.Kill();
     }
 
     private void OnPropertiesToggleRequested()

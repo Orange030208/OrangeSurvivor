@@ -2,7 +2,7 @@ using System;
 using AXR.Framework.UI;
 using UnityEngine;
 
-public sealed class ShopInventoryRegionView : ISidebarRegion
+public sealed class ShopInventoryRegionView
 {
     private readonly SidebarToggleRegionView toggleRegion;
 

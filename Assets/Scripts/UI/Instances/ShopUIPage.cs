@@ -5,7 +5,7 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class ShopUIPage : PageBase, IShopPageView, IInventoryUiFacadeHost
+public class ShopUIPage : PageBase, IInventoryUiFacadeHost
 {
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
@@ -25,7 +25,7 @@ public class ShopUIPage : PageBase, IShopPageView, IInventoryUiFacadeHost
     [SerializeField] private InventoryUI inventoryUI;
 
     private ShopPageContext currentContext;
-    private IPageController controller;
+    private ShopPageController controller;
     private ShopListRegionView shopListRegion;
     private ShopSidebarRegionHost sidebarRegionHost;
 
