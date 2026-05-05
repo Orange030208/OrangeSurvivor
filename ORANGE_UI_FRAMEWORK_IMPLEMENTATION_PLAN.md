@@ -2271,3 +2271,35 @@
 
 - 提交 UIManager 入口显式装配。
 - 继续最终收口，优先评估 `ItemQualityPreviewSceneController`：它仍直接 `Resources.Load` 并实例化部分 UI Prefab 做品质样式预览，需要决定是明确标记为预览工具保留，还是迁移 / 隔离避免被误认为运行时 UI 框架入口。
+
+### 2026-05-06 阶段 12 最终收口：隔离物品品质 UI 预览工具
+
+完成内容：
+
+- `ItemQualityPreviewSceneController` 明确收口为 `Item Quality Preview` 场景专用的视觉预览工具，不作为运行时业务 UI 框架入口。
+- 新增预览场景名校验：只有当前激活场景名为 `Item Quality Preview` 时才会构建 Canvas、加载资源并实例化预览对象；误挂到其他场景时会输出警告并停止执行。
+- 保留该工具对 `InventoryItem`、`ShopItemContainer`、`WeaponOperatePopup`、`AccessoryInfoPopup` 的直接 `Resources.Load` / `Instantiate`，用途仅为品质表现视觉对照；运行时背包操作 Popup 仍由 `InventoryPopupHostView` 通过 Orange `UIManager.ShowPopupAsync()` 打开。
+
+修改文件：
+
+- `Assets/Scripts/UI/Preview/ItemQualityPreviewSceneController.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`。
+- 已确认 `ItemQualityPreviewSceneController` 只被 `Item Quality Preview.unity` 引用，未出现在业务场景、业务 Prefab 或运行时页面引用链中。
+- 已静态扫描 UI 目录的 `Resources.Load` / `Instantiate` / `Destroy`，确认该预览脚本之外的运行时直接实例化主要是列表项、Buff 图标、商店卡片、背包格子等页面内部子视图，不是全局 Page / Popup / Modal / Tooltip 托管入口。
+- 本轮按用户要求未执行完整 Play Mode；`Item Quality Preview` 场景样式展示仍需手动打开场景验证。
+
+遗留风险：
+
+- 该预览工具仍直接实例化 Orange Popup 派生 Prefab，因此只适合视觉静态检查，不应拿它验证 PopupStack、外部点击关闭、遮罩或 UIManager 生命周期。
+- 如果后续把预览工具纳入自动化验收，应另建专用 Preview / Editor 工具目录或测试场景说明，不要把它并入运行时 UI 打开链路。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交物品品质 UI 预览工具隔离。
+- 继续最终收口，先做一次 `Assets/Scripts/UI` 与 `Assets/Resources/Prefabs/New UI` 的剩余抽象和旧资源扫描：重点确认是否还有旧页面托管资源、旧 Catalog 引用、无用 Contract / Region 类型或未说明的全局浮层入口。
