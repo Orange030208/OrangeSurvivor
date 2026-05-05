@@ -296,12 +296,13 @@
 顺序：
 
 1. `MenuUIPage`
-2. `GamingUIPage`
-3. `ShopUIPage`
-4. `GamePauseMenu`
-5. `GameOverUIPage`
-6. `StageCompleteUIPage`
-7. `WaveTransitionUIPage`
+2. `CharacterSelectUIPage`
+3. `GamingUIPage`
+4. `ShopUIPage`
+5. `GamePauseMenu`
+6. `GameOverUIPage`
+7. `StageCompleteUIPage`
+8. `WaveTransitionUIPage`
 
 要求：
 
@@ -311,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 迁移期接入已完成，下一步进入最终收口：业务入口直接使用 Orange UIManager，业务页面直接基于新框架运行，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
+当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 迁移期接入已完成，下一步进入最终收口：业务入口直接使用 Orange UIManager，业务页面直接基于新框架运行，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
 
 已完成：
 
@@ -372,6 +373,7 @@
 - 手动验证清单已覆盖 worktree 验证前置条件、Overlay / Camera Canvas、真实 Prefab、Catalog、Page 生命周期、异步防重入、UIMotion / DOTween、Popup、Modal、Tooltip、ViewPart、本地化、分辨率、真实 EventSystem 输入、诊断入口、退出与回收。
 - 2026-05-05 用户明确要求“开始迁移”，并要求每迁移完一个模块更新文档和提交；该指令视为对迁移前真实场景手动验证门禁的显式跳过，风险已记录。
 - 已完成 `MenuUIPage` 第一模块迁移：采用迁移期桥接方式，让旧 `AXR.Framework.UI.UIPageBase` 继承新 `Orange.UIFramework.PageBase`，保留旧页面生命周期钩子和 `IUIPage` 兼容面。
+- 已补迁 `CharacterSelectUIPage` 主流程漏项：`OrangeUIViewCatalog` 新增 `page.characterSelect`，Prefab 指向 `UI Character Selection.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；该页面是 `GameManager` 从菜单进入游戏前的角色选择必经页。
 - 旧 `AXR.Framework.UI.UIManager` 已对注册进 Orange `ViewCatalog` 的页面委托新 `Orange.UIFramework.UIManager` 打开、关闭和查询；未注册页面继续走旧 UIManager，避免一次性迁移所有页面。
 - 已在 `Game Scene` 的现有 `UIManager` GameObject 上挂载新 `Orange.UIFramework.UIManager`，并复用现有 Root Canvas。
 - 已新增 `OrangeCanvasProfile`、`OrangeUIFrameworkSettings`、`OrangeUIViewCatalog` 资产；当前 Catalog 只注册 `UI Menu.prefab` / `MenuUIPage`，不把其他页面提前纳入新框架。
@@ -383,7 +385,7 @@
 - 已完成 `GameOverUIPage` 第五模块迁移：`OrangeUIViewCatalog` 新增 `page.gameOver`，Prefab 指向 `UI Game Over.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<GameOverUIPage>()` 和 `transition.ClosePage<GameOverUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `StageCompleteUIPage` 第六模块迁移：原项目缺少对应 Prefab 和旧 Catalog 注册，本轮补齐 `UI Stage Complete.prefab`，`OrangeUIViewCatalog` 新增 `page.stageComplete`，Layer 使用 `Default/Page`；旧 `GameManager` 中 `uiManager.OpenPage<StageCompleteUIPage>()` 和 `transition.ClosePage<StageCompleteUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `WaveTransitionUIPage` 第七模块迁移：`OrangeUIViewCatalog` 新增 `page.waveTransition`，Prefab 指向 `UI Wave Transition.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<WaveTransitionUIPage>()` 和 `transition.ClosePage<WaveTransitionUIPage>()` 会通过旧 UIManager 委托新 UIManager。
-- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 均可按类型解析并通过 Catalog 校验。
+- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 均可按类型解析并通过 Catalog 校验。
 
 未完成：
 
@@ -415,7 +417,7 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `WaveTransitionUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或最终收口相关变更。
+3. 确认 `CharacterSelectUIPage` 补迁提交已存在，并检查是否只剩 Unity 导入痕迹或最终收口相关变更。
 4. 进入最终收口第一步：梳理旧 `AXR.Framework.UI.UIManager`、旧 `UIPageBase`、旧 `UIPrefabCatalog.asset`、迁移期非泛型委托 API、旧 Region / Contract 目录与业务入口之间的真实依赖，先制定本轮最小删除 / 替换边界。
 5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 6. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
@@ -1314,4 +1316,39 @@
 下一步：
 
 - 提交 `WaveTransitionUIPage` 迁移。
+- 进入最终收口第一步：业务入口直接依赖 `Orange.UIFramework.UIManager`，再逐步让业务页面直接基于新框架类型，之后删除旧 `AXR.Framework.UI.UIManager`、旧 Catalog、迁移期委托和无用抽象。
+
+### 2026-05-05 阶段 12 CharacterSelectUIPage 补迁
+
+完成内容：
+
+- 补迁主流程漏掉的 `CharacterSelectUIPage`。该页面是 `GameManager` 从 `Menu` 进入 `CharacterSelection` 再进入 `Game` 的必经页面，最终移除旧 UI 桥接前必须由 `OrangeUIViewCatalog` 注册。
+- 读取并确认 `CharacterSelectUIPage` 仍继承旧 `UIPageBase`，负责角色列表、角色详情、确认 / 返回按钮事件和 `CharacterSelectionManager` 服务订阅；本轮只做 Catalog 接入，不改业务脚本生命周期。
+- 确认旧 `UIPrefabCatalog.asset` 中 `UI Character Selection.prefab` 位于默认页面层；新 `OrangeUIViewCatalog.asset` 新增 `page.characterSelect`，`ViewKind.Page`，`ViewLayer.Page`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Character Selection.prefab`。
+- 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，增加 `CharacterSelectUIPage` 类型解析、Id 和 Layer 断言。
+- 更新开发文档和实施计划，把 `CharacterSelectUIPage` 标记为主流程漏项补迁，避免下一轮最终收口时遗漏菜单到战斗的入口链路。
+
+修改文件：
+
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `WaveTransitionUIPage` 迁移提交 `f96e1e2` 已存在。
+- 已读取 `CharacterSelectUIPage.cs`、旧 `UIPrefabCatalog.asset` 记录和 `UI Character Selection.prefab` 元数据。
+- 已确认 `UI Character Selection.prefab` 根节点具备 `RectTransform`、`CanvasGroup`、`CharacterSelectUIPage` 和 `UISequenceDirector`，Prefab GUID 为 `02f7f2fe1141a9b4cb409ce8b556f135`，根 fileID 为 `3816208830851736021`。
+- 本轮按用户要求不执行耗时完整回归；提交前采用静态资源检查与 `git diff --check` 作为最小验证。
+
+遗留风险：
+
+- `CharacterSelectUIPage` 尚未在真实 Play Mode 中验证角色列表渲染、角色详情刷新、确认进入游戏、返回菜单、按钮事件解绑和退场动画。
+- `CharacterSelectUIPage` 仍通过迁移期旧 `UIPageBase` 桥接，而不是直接继承新 `Orange.UIFramework.PageBase`；最终收口阶段必须清理该脚手架。
+- Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `CharacterSelectUIPage` 补迁。
 - 进入最终收口第一步：业务入口直接依赖 `Orange.UIFramework.UIManager`，再逐步让业务页面直接基于新框架类型，之后删除旧 `AXR.Framework.UI.UIManager`、旧 Catalog、迁移期委托和无用抽象。

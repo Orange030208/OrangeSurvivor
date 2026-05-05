@@ -84,6 +84,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<MenuUIPage>(out ViewDefinition menuDefinition), Is.True);
             Assert.That(menuDefinition.Id, Is.EqualTo("page.menu"));
             Assert.That(menuDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<CharacterSelectUIPage>(out ViewDefinition characterSelectDefinition), Is.True);
+            Assert.That(characterSelectDefinition.Id, Is.EqualTo("page.characterSelect"));
+            Assert.That(characterSelectDefinition.Layer, Is.EqualTo(ViewLayer.Page));
             Assert.That(catalog.TryFindByType<GamingUIPage>(out ViewDefinition gamingDefinition), Is.True);
             Assert.That(gamingDefinition.Id, Is.EqualTo("page.gaming"));
             Assert.That(gamingDefinition.Layer, Is.EqualTo(ViewLayer.Hud));
