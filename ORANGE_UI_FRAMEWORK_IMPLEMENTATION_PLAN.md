@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage` 迁移已完成，下一步继续按单模块提交边界迁移 `StageCompleteUIPage`。
+当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 迁移已完成，下一步继续按单模块提交边界迁移 `WaveTransitionUIPage`。
 
 已完成：
 
@@ -381,13 +381,14 @@
 - 已完成 `ShopUIPage` 第三模块迁移：`OrangeUIViewCatalog` 新增 `page.shop`，Prefab 指向 `UI Shop.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<ShopUIPage>(...)` 和 `transition.ClosePage<ShopUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `GamePauseMenu` 第四模块迁移：`OrangeUIViewCatalog` 新增 `page.pause`，Prefab 指向 `UI Pause.prefab`，ViewKind 仍为 Page，Layer 沿用旧 UI Catalog 的 `Popup` 层；旧 `GameManager` 中 `uiManager.OpenPage<GamePauseMenu>(...)`、`transition.ClosePage<GamePauseMenu>()` 和 `uiManager.IsPageOpen<GamePauseMenu>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `GameOverUIPage` 第五模块迁移：`OrangeUIViewCatalog` 新增 `page.gameOver`，Prefab 指向 `UI Game Over.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<GameOverUIPage>()` 和 `transition.ClosePage<GameOverUIPage>()` 会通过旧 UIManager 委托新 UIManager。
-- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 与 `GameOverUIPage` 均可按类型解析并通过 Catalog 校验。
+- 已完成 `StageCompleteUIPage` 第六模块迁移：原项目缺少对应 Prefab 和旧 Catalog 注册，本轮补齐 `UI Stage Complete.prefab`，`OrangeUIViewCatalog` 新增 `page.stageComplete`，Layer 使用 `Default/Page`；旧 `GameManager` 中 `uiManager.OpenPage<StageCompleteUIPage>()` 和 `transition.ClosePage<StageCompleteUIPage>()` 会通过旧 UIManager 委托新 UIManager。
+- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage` 与 `StageCompleteUIPage` 均可按类型解析并通过 Catalog 校验。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；本轮是按用户明确要求跳过门禁后先迁移 `MenuUIPage`，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 尚未迁移 `StageCompleteUIPage`、`WaveTransitionUIPage`。
+- 尚未迁移 `WaveTransitionUIPage`。
 
 当前风险：
 
@@ -412,8 +413,8 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `GameOverUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
-4. 继续迁移第六个模块 `StageCompleteUIPage`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
+3. 确认 `StageCompleteUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
+4. 继续迁移第七个模块 `WaveTransitionUIPage`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
 5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；如果能顺手补真实场景验证，应优先补并写入本文详细日志。
 6. 每迁移完一个模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
@@ -1233,3 +1234,45 @@
 
 - 提交 `GameOverUIPage` 迁移。
 - 继续阶段 12 第六个模块 `StageCompleteUIPage`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。
+
+### 2026-05-05 阶段 12 StageCompleteUIPage 迁移
+
+完成内容：
+
+- 按阶段 12 单模块迁移策略迁移第六个页面 `StageCompleteUIPage`。
+- 读取并确认 `StageCompleteUIPage` 继承旧 `UIPageBase`，负责重启 / 返回主菜单按钮事件，以及从 `StageCompleteSummaryManager` 创建通关结算快照并渲染波数、生存时间、击杀、金币、角色和主武器信息。
+- 确认旧 `GameManager` 已有打开 / 关闭入口：`uiManager.OpenPage<StageCompleteUIPage>()` 与 `transition.ClosePage<StageCompleteUIPage>()`，但原项目没有 `StageCompleteUIPage` 对应 Prefab，也没有旧 `UIPrefabCatalog.asset` 注册。
+- 补齐真实业务资源 `Assets/Resources/Prefabs/New UI/Pages/UI Stage Complete.prefab`，使用现有结算页按钮与动画结构作为基础，根节点脚本替换为 `StageCompleteUIPage`，按钮引用绑定到重启 / 主菜单按钮。
+- 为 `StageCompleteUIPage` 增加可选 `summaryText` 字段，在没有六个细分 TMP 字段的最小 Prefab 中仍能显示完整通关快照；原有细分字段保留，后续更精细 Prefab 可直接逐项绑定。
+- 新 `OrangeUIViewCatalog.asset` 新增 `page.stageComplete`，`ViewKind.Page`，`ViewLayer.Page`，Prefab 指向 `UI Stage Complete.prefab`。
+- 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，增加 `StageCompleteUIPage` 类型解析、Id 和 Layer 断言。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/StageCompleteUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Stage Complete.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Stage Complete.prefab.meta`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `GameOverUIPage` 迁移提交 `d427761` 已存在。
+- 已读取 `StageCompleteUIPage.cs`、`StageCompleteUIPage.cs.meta`、`GameManager.cs` 中的打开 / 关闭调用、旧 `UIPrefabCatalog.asset` 和现有 UI Prefab 列表。
+- 已确认 `StageCompleteUIPage` 脚本 GUID `b8a0dd6e4c5b4d4bb36a2e9f3c6f0c1a` 原先没有出现在任何 Prefab / Scene / Catalog 中，因此本轮补 Prefab 是修复真实资源缺口，而不是额外冗余功能。
+- 曾尝试使用 Unity batchmode 生成 Prefab，但 Unity 多次只完成导入 / 编译或停在初始化扩展，没有进入生成方法；按用户要求不继续在测试 / 工具启动上耗时，改用现有稳定 Prefab 结构派生最小可运行资源。
+- 已确认新 Prefab 根节点引用 `StageCompleteUIPage`，Root fileID 与 Catalog 注册一致，按钮引用和 `summaryText` 已绑定；提交前采用静态资源检查与 `git diff --check` 作为最小验证。
+
+遗留风险：
+
+- `UI Stage Complete.prefab` 当前复用 `UI Game Over.prefab` 的按钮和动画结构，并用一个汇总 TMP 文本显示完整快照；视觉排版不是最终精细版，全部迁移完成后的 Play Mode 验收需要重点检查通关结算布局。
+- `StageCompleteUIPage.ResolveSummaryManager()` 仍有 `FindFirstObjectByType<StageCompleteSummaryManager>()` 兜底；这是既有业务依赖，最终收口时应改为明确上下文 / 场景引用 / 服务注入，避免隐藏装配错误。
+- `StageCompleteUIPage` 仍通过迁移期旧 `UIPageBase` 桥接，而不是直接继承新 `Orange.UIFramework.PageBase`；最终收口时必须清理该脚手架。
+- Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `StageCompleteUIPage` 迁移。
+- 继续阶段 12 第七个模块 `WaveTransitionUIPage`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。

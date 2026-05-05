@@ -96,6 +96,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<GameOverUIPage>(out ViewDefinition gameOverDefinition), Is.True);
             Assert.That(gameOverDefinition.Id, Is.EqualTo("page.gameOver"));
             Assert.That(gameOverDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<StageCompleteUIPage>(out ViewDefinition stageCompleteDefinition), Is.True);
+            Assert.That(stageCompleteDefinition.Id, Is.EqualTo("page.stageComplete"));
+            Assert.That(stageCompleteDefinition.Layer, Is.EqualTo(ViewLayer.Page));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)

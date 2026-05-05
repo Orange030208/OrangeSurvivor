@@ -68,3 +68,14 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
+  - id: page.stageComplete
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: dcd920d2d54f4d2aae7103d64ce365a6, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
