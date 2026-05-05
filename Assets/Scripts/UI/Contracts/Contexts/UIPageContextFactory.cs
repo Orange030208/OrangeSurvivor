@@ -1,79 +1,84 @@
+using System;
 using UnityEngine;
 
 public static class UIPageContextFactory
 {
-    public static GamingPageContext CreateGamingPageContext(Player player = null, IInventoryUiFacade inventoryFacade = null)
+    public static GamingPageContext CreateGamingPageContext(
+        Player player,
+        InventoryOperateManager inventoryOperateManager)
     {
-        Player resolvedPlayer = ResolvePlayer(player);
-        bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
+        EnsurePlayer(player);
+        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
         return new GamingPageContext(
-            resolvedPlayer,
-            resolvedPlayer != null ? resolvedPlayer.GetComponent<CurrencyWallet>() : null,
-            resolvedPlayer != null ? resolvedPlayer.GetComponent<PropertiesManager>() : null,
-            resolvedInventoryFacade,
-            ownsInventoryFacade);
+            player,
+            player.GetComponent<CurrencyWallet>(),
+            player.GetComponent<PropertiesManager>(),
+            inventoryFacade,
+            true);
     }
 
-    public static PauseMenuContext CreatePauseMenuContext(Player player = null, IInventoryUiFacade inventoryFacade = null)
+    public static PauseMenuContext CreatePauseMenuContext(
+        Player player,
+        InventoryOperateManager inventoryOperateManager)
     {
-        Player resolvedPlayer = ResolvePlayer(player);
-        bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
+        EnsurePlayer(player);
+        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
         return new PauseMenuContext(
-            resolvedPlayer,
-            resolvedPlayer != null ? resolvedPlayer.GetComponent<CurrencyWallet>() : null,
-            resolvedPlayer != null ? resolvedPlayer.GetComponent<PropertiesManager>() : null,
-            resolvedInventoryFacade,
-            ownsInventoryFacade);
+            player,
+            player.GetComponent<CurrencyWallet>(),
+            player.GetComponent<PropertiesManager>(),
+            inventoryFacade,
+            true);
     }
 
-    public static ShopPageContext CreateShopPageContext(Player player = null, IShopUiFacade shopFacade = null, IInventoryUiFacade inventoryFacade = null)
+    public static ShopPageContext CreateShopPageContext(
+        Player player,
+        ShopManager shopManager,
+        InventoryOperateManager inventoryOperateManager)
     {
-        Player resolvedPlayer = ResolvePlayer(player);
-        CurrencyWallet currencyWallet = resolvedPlayer != null ? resolvedPlayer.GetComponent<CurrencyWallet>() : null;
-        PropertiesManager propertiesManager = resolvedPlayer != null ? resolvedPlayer.GetComponent<PropertiesManager>() : null;
+        EnsurePlayer(player);
+        CurrencyWallet currencyWallet = player.GetComponent<CurrencyWallet>();
+        PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
 
-        bool ownsShopFacade = shopFacade == null;
-        IShopUiFacade resolvedShopFacade = shopFacade ?? CreateShopFacade(currencyWallet);
-        bool ownsInventoryFacade = inventoryFacade == null;
-        IInventoryUiFacade resolvedInventoryFacade = inventoryFacade ?? CreateInventoryFacade(resolvedPlayer);
+        IShopUiFacade shopFacade = CreateShopFacade(shopManager, currencyWallet);
+        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
 
         return new ShopPageContext(
-            resolvedPlayer,
+            player,
             currencyWallet,
             propertiesManager,
-            resolvedShopFacade,
-            ownsShopFacade,
-            resolvedInventoryFacade,
-            ownsInventoryFacade);
+            shopFacade,
+            true,
+            inventoryFacade,
+            true);
     }
 
-    private static Player ResolvePlayer(Player player)
+    private static IInventoryUiFacade CreateInventoryFacade(Player player, InventoryOperateManager inventoryOperateManager)
     {
-        return player != null ? player : Object.FindFirstObjectByType<Player>();
-    }
-
-    private static IInventoryUiFacade CreateInventoryFacade(Player player)
-    {
-        InventoryOperateManager inventoryOperateManager = Object.FindFirstObjectByType<InventoryOperateManager>();
-        if (inventoryOperateManager != null)
+        if (inventoryOperateManager == null)
         {
-            inventoryOperateManager.Bind(player);
-            return new ManagerInventoryUiFacade(inventoryOperateManager);
+            throw new MissingReferenceException($"{nameof(UIPageContextFactory)} requires an explicit {nameof(InventoryOperateManager)}.");
         }
 
-        return new ResolvingInventoryUiFacade();
+        inventoryOperateManager.Bind(player);
+        return new ManagerInventoryUiFacade(inventoryOperateManager);
     }
 
-    private static IShopUiFacade CreateShopFacade(CurrencyWallet currencyWallet)
+    private static IShopUiFacade CreateShopFacade(ShopManager shopManager, CurrencyWallet currencyWallet)
     {
-        ShopManager shopManager = Object.FindFirstObjectByType<ShopManager>();
-        if (shopManager != null)
+        if (shopManager == null)
         {
-            return new ManagerShopUiFacade(shopManager, currencyWallet);
+            throw new MissingReferenceException($"{nameof(UIPageContextFactory)} requires an explicit {nameof(ShopManager)}.");
         }
 
-        return new ResolvingShopUiFacade(currencyWallet);
+        return new ManagerShopUiFacade(shopManager, currencyWallet);
+    }
+
+    private static void EnsurePlayer(Player player)
+    {
+        if (player == null)
+        {
+            throw new ArgumentNullException(nameof(player), $"{nameof(UIPageContextFactory)} requires an explicit {nameof(Player)}.");
+        }
     }
 }

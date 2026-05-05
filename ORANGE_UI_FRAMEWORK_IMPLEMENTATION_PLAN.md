@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager，并删除两个 Resolving Facade；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
 
 已完成：
 
@@ -401,19 +401,20 @@
 - 已删除旧资源 `UIFrameworkSettings.asset`、`UIPrefabCatalog.asset`、`UIPrefabCatalogTest.asset`，并将 `Game Scene`、`UI Test Scene`、`Upgrade Card Test Scene` 的旧 UIManager 组件引用收口到新 Orange `UIManager`。
 - 新 `IUIManager` / `UIManager` 已补正式 `ClosePageAsync<TPage>()`，`GameManager` 和 `InventoryUI` 不再依赖旧 Type API 或旧 `UILayerType.Popup`；迁移期 `OpenPageAsync(Type)`、`OpenPage(Type)`、`ClosePageAsync(Type)`、`IsOpen(Type)` 和旧基类兼容测试已删除。
 - 已完成商店页面内部局部无用抽象收口：`ShopUIPage` 直接持有 `ShopPageController`，`ShopPageController` 直接持有 `ShopUIPage`，商店侧栏 Host 直接操作 `ShopPropertiesRegionView` 与 `ShopInventoryRegionView`，删除只服务该页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup` 和未使用 `SidebarRegionMotionGroup`。
+- 已完成 UI 页面上下文装配收口：`GameManager` 主场景序列化引用 `InventoryOperateManager` 与 `ShopManager`，打开 `GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 时显式创建 payload；`UIPageContextFactory` 不再扫描场景，不再创建延迟解析 Facade；三个页面缺少 payload 时直接抛出明确异常；独立 `InventoryUI` 不再退回到 Resolving Facade。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
 - 旧 `AXR.Framework.UI` 动画 / 点击组件仍在使用，尚未迁入 Orange 命名空间；这是老动画系统沿用范围，不再承担页面托管桥接职责。
-- `UI/Regions/Inventory`、`UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 仍有业务调用链，需要继续按模块核查；不能一刀切删除。
+- `UI/Regions/Inventory`、`UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 仍有业务调用链，需要继续按模块核查；不能一刀切删除。`UI/Contracts/Facades` 当前仅保留有效的接口和 Manager Facade。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前旧页面托管桥接已删除；商店页面内部局部接口已收口。后续风险集中在业务子视图里仍沿用旧动画 / 点击命名空间，以及背包 / Facade / Context 是否存在隐藏装配依赖。
+- 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade 已删除。后续风险集中在业务子视图里仍沿用旧动画 / 点击命名空间，以及 `TooltipHoverTarget`、`StageCompleteUIPage` 等 UI 脚本仍存在局部 `FindFirstObjectByType` 兜底。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -433,7 +434,7 @@
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
 3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
-4. 继续最终收口：优先核查 `Assets/Scripts/UI/Contracts/Contexts`、`Assets/Scripts/UI/Contracts/Facades` 和仍使用 `FindFirstObjectByType` 的 UI 装配入口，减少隐藏依赖；只删除无真实业务入口和无 Prefab / 脚本引用的内容。
+4. 继续最终收口：优先核查 UI 目录内剩余 `FindFirstObjectByType` 装配入口，当前已知重点为 `TooltipHoverTarget` 的 Tooltip Presenter 兜底和 `StageCompleteUIPage` 的 `StageCompleteSummaryManager` 兜底；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
 5. 保留仍被业务使用的 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件，除非本轮明确迁移它们到新命名空间并同步修 Prefab / 资源引用。
 6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
@@ -1907,3 +1908,54 @@
 
 - 提交商店页面局部无用抽象收口。
 - 继续最终收口，优先处理 `UIPageContextFactory` 和 Resolving Facade 中的 `FindFirstObjectByType` 隐藏依赖，目标是让业务 UI 打开时依赖明确 payload 或场景装配。
+
+### 2026-05-05 阶段 12 最终收口：显式装配页面上下文依赖
+
+完成内容：
+
+- 将 `GameManager` 扩展为战斗 / 商店 / 暂停页面上下文的显式装配入口，新增序列化引用 `InventoryOperateManager` 与 `ShopManager`。
+- `Game Scene` 的 `GameManager` 已绑定主场景真实 `InventoryOperateManager` 与 `ShopManager` 组件，避免打开业务页面时由 UI 层扫描场景。
+- `UIPageContextFactory` 改为只接受显式 `Player`、`InventoryOperateManager`、`ShopManager` 参数，内部只创建 `ManagerInventoryUiFacade` / `ManagerShopUiFacade`，并保留 `InventoryOperateManager.Bind(player)` 绑定逻辑。
+- `GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 不再在 payload 缺失时自行调用工厂兜底；缺少对应 Context 时直接抛出明确异常，暴露装配错误。
+- `InventoryUI` 独立运行时不再退回到 `ResolvingInventoryUiFacade`；没有外部配置 Facade 且没有显式 `InventoryOperateManager` 时直接抛出明确异常。
+- 删除延迟扫描场景的 `ResolvingInventoryUiFacade` 与 `ResolvingShopUiFacade` 及 `.meta` 文件。
+
+修改文件：
+
+- `Assets/Scripts/Managers/GameManager.cs`
+- `Assets/Scripts/UI/Contracts/Contexts/UIPageContextFactory.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scenes/Game Scene.unity`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+删除范围：
+
+- `Assets/Scripts/UI/Contracts/Facades/ResolvingInventoryUiFacade.cs`
+- `Assets/Scripts/UI/Contracts/Facades/ResolvingInventoryUiFacade.cs.meta`
+- `Assets/Scripts/UI/Contracts/Facades/ResolvingShopUiFacade.cs`
+- `Assets/Scripts/UI/Contracts/Facades/ResolvingShopUiFacade.cs.meta`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并确认当前仅有无关 `ProjectSettings/ProjectSettings.asset` 未提交变更需排除。
+- 已读取 `GameManager`、`UIPageContextFactory`、两个 Manager Facade、两个 Resolving Facade、三个业务页面和 `InventoryUI` 的当前实现，确认本轮只收口上下文装配与延迟解析 Facade。
+- 已静态扫描确认 C# 代码中不再残留 `ResolvingInventoryUiFacade`、`ResolvingShopUiFacade`、无参 `CreateGamingPageContext()` / `CreatePauseMenuContext()` / `CreateShopPageContext()`、`FindFirstObjectByType<InventoryOperateManager>`、`FindFirstObjectByType<ShopManager>` 或页面 payload 兜底调用。
+- 已静态扫描 `Assets/Scripts/UI`，当前剩余 `FindFirstObjectByType` 只在 `TooltipHoverTarget` 解析 `UITooltipPresenter`、`StageCompleteUIPage` 解析 `StageCompleteSummaryManager`，已记录为下一轮候选收口点。
+- 已确认 `Game Scene` 中 `GameManager` 绑定 `inventoryOperateManager: {fileID: 1941351701}` 与 `shopManager: {fileID: 59292223}`。
+- 已执行 `git diff --check`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
+
+遗留风险：
+
+- 本轮未运行 Unity Play Mode，也未打开 Unity Editor 检查 `GameManager` Inspector 新字段；主场景 YAML 已静态绑定，仍需最终真实场景验收确认打开游戏后页面上下文装配正确。
+- `Weapon Test Scene` 中存在旧 `GameManager` 场景对象但未绑定新增业务 Manager 字段；该场景原本也缺 UIManager 引用，当前不作为本轮目标，若后续要恢复测试场景可单独整理。
+- `TooltipHoverTarget` 仍有 `UITooltipPresenter` 的 `FindFirstObjectByType` 兜底，`StageCompleteUIPage` 仍有 `StageCompleteSummaryManager` 兜底，需要后续按真实引用链逐个收口。
+- 老动画 / 点击组件仍在旧 `AXR.Framework.UI` 命名空间中，尚未迁入 Orange 命名空间。
+
+下一步：
+
+- 提交显式装配页面上下文依赖。
+- 继续最终收口，优先处理 UI 目录剩余 `FindFirstObjectByType`：先核查 `TooltipHoverTarget` 与 `UITooltipPresenter` 的 Prefab / 页面引用关系，再决定接入 Orange Tooltip API 还是改为显式页面注入；同时评估 `StageCompleteUIPage` 的 `StageCompleteSummaryManager` 是否可由 `GameManager` 或页面 payload 显式传入。

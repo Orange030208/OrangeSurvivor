@@ -159,8 +159,7 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
             return new ManagerInventoryUiFacade(resolvedManager);
         }
 
-        ownsFacade = true;
-        return new ResolvingInventoryUiFacade();
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires either an externally configured {nameof(IInventoryUiFacade)} or an explicit {nameof(InventoryOperateManager)} reference.");
     }
 
     private void StartController()
@@ -210,12 +209,7 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
     private InventoryOperateManager ResolveInventoryOperateManager()
     {
-        if (inventoryOperateManager != null)
-        {
-            return inventoryOperateManager;
-        }
-
-        return FindFirstObjectByType<InventoryOperateManager>();
+        return inventoryOperateManager;
     }
 
     private void ValidateConfiguration()

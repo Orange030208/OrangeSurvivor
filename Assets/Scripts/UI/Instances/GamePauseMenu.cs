@@ -1,4 +1,5 @@
 using AXR.Framework.UI;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -49,7 +50,8 @@ public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = context.GetPayload<PauseMenuContext>() ?? UIPageContextFactory.CreatePauseMenuContext();
+        currentContext = context.GetPayload<PauseMenuContext>()
+            ?? throw new InvalidOperationException($"{nameof(GamePauseMenu)} requires {nameof(PauseMenuContext)} payload.");
         InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
         BindButtonEvents();
         HideAllContentPanelsImmediately();

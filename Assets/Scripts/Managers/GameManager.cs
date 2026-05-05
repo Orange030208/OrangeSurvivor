@@ -15,6 +15,8 @@ public class GameManager : MonoSingletonBase<GameManager>
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
     [SerializeField] private MapGenerator mapGenerator;
+    [SerializeField] private InventoryOperateManager inventoryOperateManager;
+    [SerializeField] private ShopManager shopManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
@@ -27,12 +29,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnEnable()
     {
-        uiManager = FindFirstObjectByType<UIManager>();
-        mapGenerator = FindFirstObjectByType<MapGenerator>();
-        if (uiManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
-        }
+        ResolveSceneReferences();
 
         GameEventBus.Subscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
         GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
@@ -352,7 +349,9 @@ public class GameManager : MonoSingletonBase<GameManager>
                 await uiManager.OpenPageAsync<CharacterSelectUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Game:
-                await uiManager.OpenPageAsync<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player), cancellationToken);
+                await uiManager.OpenPageAsync<GamingUIPage>(
+                    UIPageContextFactory.CreateGamingPageContext(player, inventoryOperateManager),
+                    cancellationToken);
                 break;
             case GameState.GameOver:
                 await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
@@ -364,7 +363,9 @@ public class GameManager : MonoSingletonBase<GameManager>
                 await uiManager.OpenPageAsync<WaveTransitionUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Shop:
-                await uiManager.OpenPageAsync<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player), cancellationToken);
+                await uiManager.OpenPageAsync<ShopUIPage>(
+                    UIPageContextFactory.CreateShopPageContext(player, shopManager, inventoryOperateManager),
+                    cancellationToken);
                 break;
         }
     }
@@ -384,7 +385,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         try
         {
             await uiManager.OpenPageAsync<GamePauseMenu>(
-                UIPageContextFactory.CreatePauseMenuContext(player),
+                UIPageContextFactory.CreatePauseMenuContext(player, inventoryOperateManager),
                 this.GetCancellationTokenOnDestroy());
         }
         catch (OperationCanceledException)
@@ -432,6 +433,24 @@ public class GameManager : MonoSingletonBase<GameManager>
         where TPage : PageBase
     {
         return uiManager.ClosePageAsync<TPage>(cancellationToken);
+    }
+
+    private void ResolveSceneReferences()
+    {
+        if (uiManager == null)
+        {
+            uiManager = FindFirstObjectByType<UIManager>();
+        }
+
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
+
+        if (uiManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
+        }
     }
 
     private void EnsureMapGenerated()

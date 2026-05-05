@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
@@ -35,7 +36,8 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = context.GetPayload<GamingPageContext>() ?? UIPageContextFactory.CreateGamingPageContext();
+        currentContext = context.GetPayload<GamingPageContext>()
+            ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
         inputRegionHost.WarmUp();
         inputRegionHost.Bind(currentContext.Player);

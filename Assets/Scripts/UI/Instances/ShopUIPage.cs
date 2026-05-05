@@ -60,7 +60,8 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = context.GetPayload<ShopPageContext>() ?? UIPageContextFactory.CreateShopPageContext();
+        currentContext = context.GetPayload<ShopPageContext>()
+            ?? throw new InvalidOperationException($"{nameof(ShopUIPage)} requires {nameof(ShopPageContext)} payload.");
         controller = new ShopPageController(this, currentContext);
         controller.Enter();
         return UniTask.CompletedTask;

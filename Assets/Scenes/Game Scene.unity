@@ -25653,6 +25653,8 @@ MonoBehaviour:
   uiManager: {fileID: 2066110832}
   player: {fileID: 0}
   mapGenerator: {fileID: 595972524}
+  inventoryOperateManager: {fileID: 1941351701}
+  shopManager: {fileID: 59292223}
   initialGameState: 1
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
