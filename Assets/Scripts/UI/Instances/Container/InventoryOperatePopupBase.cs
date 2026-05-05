@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class InventoryOperatePopupBase : PopupBase, IContainerQualityRender, IDisposable, IPointerClickHandler, IConfigurable<InventoryItemOperateResource>
+public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPointerClickHandler
 {
     [Header("--")]
     [FormerlySerializedAs("IconImage")]

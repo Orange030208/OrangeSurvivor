@@ -414,6 +414,7 @@
 - 已完成页面 Context 空标记接口收口：删除无额外语义的 `IPageContext`，`GamingPageContext`、`PauseMenuContext`、`ShopPageContext` 直接实现 `IDisposable` 托管 Facade 生命周期，`StageCompletePageContext` 保持纯 payload，`PageContextBinding` 只依赖标准 `IDisposable`。
 - 已完成页面 Context 释放辅助类收口：删除只转发 `Dispose + null` 的 `PageContextBinding`，`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在 `OnClosed()` 中直接释放并清空当前上下文。
 - 已完成背包 Facade Host 空标记接口收口：删除 `IInventoryUiFacadeHost`，`InventoryUI` 不再通过父级扫描判断页面宿主，而是根据外部配置的 Facade 或本地显式 `InventoryOperateManager` 决定是否启动。
+- 已完成业务容器未消费接口收口：删除仅出现在实现声明中的 `IContainerQualityRender` 和 `IConfigurable<T>`，`UIContainerBase`、`InventoryOperatePopupBase` 继续保留具体 `RenderQuality()` / `Configure()` 方法。
 
 未完成：
 
@@ -2638,3 +2639,38 @@
 
 - 提交背包 Facade Host 空标记接口清理。
 - 继续最终静态风险扫描，重点检查业务 UI Prefab / Scene 的旧脚本 GUID、旧资源引用、Missing Script 风险和剩余 UI 空接口；不处理非 UI 框架范围的 Manager 层场景查找。
+
+### 2026-05-06 阶段 12 最终收口：删除业务容器未消费接口
+
+完成内容：
+
+- 核查 `IContainerQualityRender` 与 `IConfigurable<T>` 的调用链，确认它们只出现在容器基类实现声明中，没有任何代码按接口类型消费。
+- 删除 `IContainerQualityRender.cs` 与 `.meta`。
+- 删除 `UIContainerBase.cs` 文件末尾的 `IConfigurable<T>` 接口声明。
+- `UIContainerBase<T, K>` 与 `InventoryOperatePopupBase` 不再实现上述未消费接口，但继续保留具体 `RenderQuality()`、`RenderItemQuality()`、`Configure()` 方法，现有子类和调用点不需要改调用方式。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Container/UIContainerBase.cs`
+- `Assets/Scripts/UI/Instances/Container/InventoryOperatePopupBase.cs`
+- `Assets/Scripts/UI/Instances/Container/IContainerQualityRender.cs`
+- `Assets/Scripts/UI/Instances/Container/IContainerQualityRender.cs.meta`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`。
+- 已通过 `git grep` 确认改动前 `IContainerQualityRender` 与 `IConfigurable<` 没有接口消费调用链，只存在实现声明和接口定义；删除后 `Assets/Scripts` 下已无这两个接口的运行时代码引用。
+- 已确认 `Configure()` 调用点仍是具体类型调用，例如商店物品、升级卡、背包物品、品质预览和 Orange Popup 打开 payload；本轮不改变这些调用。
+- 本轮按用户要求未执行完整 Unity 编译和 Play Mode；容器渲染与 Popup payload 配置仍需最终真实场景验收。
+
+遗留风险：
+
+- `UIContainerBase` 和 `InventoryOperatePopupBase` 仍是业务 UI 容器基类，不属于 Orange 全局框架抽象；后续若要进一步拆分，需要围绕真实重复逻辑和 Prefab 继承关系单独评估。
+- `Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset` 以及 Tabsil/Mineral 插件删除状态当前仍是无关工作树差异，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交业务容器未消费接口清理。
+- 继续最终静态风险扫描；若业务 UI 运行时代码已无旧托管 / 空接口 / 未迁入全局 View 残留，则更新文档记录静态收口点并准备最终真实场景验收。

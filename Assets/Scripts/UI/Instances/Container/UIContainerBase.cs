@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerQualityRender, IDisposable, IPointerClickHandler, IConfigurable<T>
+public abstract class UIContainerBase<T, K> : MonoBehaviour, IDisposable, IPointerClickHandler
     where K : MonoBehaviour
 {
     [Header("--")]
@@ -74,9 +74,4 @@ public abstract class UIContainerBase<T, K> : MonoBehaviour, IContainerQualityRe
     {
         Dispose();
     }
-}
-
-public interface IConfigurable<T>
-{
-    public void Configure(T resource);
 }
