@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 5，异步防重入与 request version 已完成，准备进入阶段 6。
+当前阶段：阶段 6，UIMotion UniTask 适配与快照修复已完成，准备进入阶段 7。
 
 已完成：
 
@@ -343,10 +343,15 @@
 - 关闭流程已改为一旦开始就使用框架内部关闭令牌完成关闭，避免调用方取消导致 View 卡在半关闭状态。
 - 同实例重复关闭会等待已有关闭任务，不会重复触发 `OnClosed()`、重复回收或重复完成 `ClosedTask`。
 - View 诊断已包含每个打开 View 的 request version。
+- 已新增 `Assets/Scripts/OrangeUIFramework/Motions/Runtime/`，包含 `IViewTransition`、`UIMotionTransition` 与 DOTween -> UniTask 等待包装。
+- `ViewBase` 已接入可选 `IViewTransition`：打开时等待 `PlayEnterAsync()`，关闭时等待 `PlayExitAsync()`，无动画组件时直接完成。
+- 旧 `UIMotionPlayer.refreshDefaultsOnEnable` 已修复为每次启用均刷新快照。
+- `IUISequenceMotion` 已补充 `RefreshDefaults()`，`UISequenceDirector` 会向子 Motion 传播刷新；`UIMotionTransition` 会在入场前刷新快照再采样 Hidden 状态。
+- 已删除旧 `SidebarRegionMotion` / `SidebarRegionMotionGroup` 中无实际效果的空 `ConfigureTimings()` API；业务私有 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 暂未迁移，留待业务页面迁移阶段处理。
 
 未完成：
 
-- 尚未接入动画等待、Popup / Modal / Tooltip 管理、定位裁剪、本地化与测试。
+- 尚未接入 Popup / Modal / Tooltip 管理、定位裁剪、本地化与测试。
 - `UIManager` 的 Popup / Modal / Tooltip API 目前仍显式抛出阶段性未实现异常，需阶段 7 完成。
 
 当前风险：
@@ -356,17 +361,18 @@
 - 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
 - Stage 5 只处理 Page 操作防重入；Popup 分组互斥、Modal 结果互斥和 Tooltip 唯一实例仍需阶段 7 分别实现。
+- Stage 6 只完成动画等待和快照修复，尚未通过 Unity PlayMode 验证实际 Prefab 上的 DOTween 行为；需要 Unity Editor 刷新后检查编译，并在测试阶段补动画等待与池化复用测试。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 5 提交已存在。
-3. 从阶段 6 开始，沿用现有 UIMotion 系统，接入 UniTask 等待适配，并修复 `refreshDefaultsOnEnable` 池化复用后动画起点不准的问题。
+2. 确认阶段 6 提交已存在。
+3. 从阶段 7 开始，实现 Popup / Modal / Tooltip 基础管理：PopupStack、ModalStack、当前 Tooltip，接入已完成的 ViewBase 生命周期和动画等待。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 6 重点读取旧 `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/`，先判断复制、适配还是最小迁移；不得为了动画接入引入平行 UI 服务。
+6. 阶段 7 重点读取 `UIManager` 已有 Page 打开/关闭公共流程，优先抽出或复用创建、注册、关闭、回收逻辑，不引入 `UIService` 平行入口。
 
 下一轮禁止：
 
@@ -614,3 +620,52 @@
 
 - 提交阶段 5。
 - 进入阶段 6，沿用旧 UIMotion 动画系统，提供 UniTask 等待适配，并修复 `UIMotionPlayer.refreshDefaultsOnEnable` 池化复用后动画起点不准的问题。
+
+### 2026-05-05 阶段 6 UIMotion UniTask 适配与快照修复
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Motions/Runtime/`，作为新框架动画适配层目录。
+- 新增 `IViewTransition`，定义 `PlayEnterAsync()`、`PlayExitAsync()`、`SetVisibleImmediate()`、`SetHiddenImmediate()`、`Kill()`，让 `ViewBase` 不直接依赖 DOTween。
+- 新增 `DOTweenUniTaskExtensions.WaitForCompletionAsync()`，把 DOTween `Tween` 包装为 UniTask，保留旧 `onComplete` / `onKill` 回调，并处理完成、Kill、取消和已完成 Tween。
+- 新增 `UIMotionTransition`，适配旧 `AXR.Framework.UI.IUISequenceMotion`，可自动查找 `UIMotionPlayer` 或 `UISequenceDirector`，不复制旧 UIMotion 系统。
+- `ViewBase` 已接入可选 `IViewTransition`，打开会等待入场动画，关闭会等待退场动画；没有动画组件时保持原有 CompletedTask 行为。
+- 关闭完成后 `ViewBase` 会把动画状态恢复到可作为下一次打开基准的可见状态，再禁用对象，避免池化对象下一次启用时先捕获 Hide 后状态。
+- 修复旧 `UIMotionPlayer.OnEnable()`：只要 `refreshDefaultsOnEnable == true` 就调用 `RefreshDefaults()`，不再受 `defaultsCaptured` 阻挡。
+- `IUISequenceMotion` 补充 `RefreshDefaults()`，`UISequenceDirector` 向 enter / exit 组内 Motion 传播刷新；`UIMotionTransition.PlayEnterAsync()` 会先刷新快照再采样 Hidden 起点。
+- 删除旧 `SidebarRegionMotion` 与 `SidebarRegionMotionGroup` 的空 `ConfigureTimings()` API，避免继续暴露无效抽象。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/IViewTransition.cs`
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/DOTweenUniTaskExtensions.cs`
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/UIMotionTransition.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewBase.cs`
+- `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/IUISequenceMotion.cs`
+- `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/UISequenceDirector.cs`
+- `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/V2/UIMotionPlayer.cs`
+- `Assets/Scripts/UI/Regions/SidebarRegionMotion.cs`
+- `Assets/Scripts/UI/Regions/SidebarRegionMotionGroup.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree。
+- 已读取本文当前进度、下一轮入口和阶段 6 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `IViewTransition`、UIMotion、`refreshDefaultsOnEnable`、Timing API 章节。
+- 已读取旧 `UIMotionPlayer`、`UISequenceDirector`、`IUIRuntimeMotion`、`IUISequenceMotion`、Motion Track 与快照注册表，确认采用最小适配而非复制整套旧动画系统。
+- 已检查 `IUISequenceMotion` 实现点只有旧 `UIMotionPlayer` 和 `UISequenceDirector`，新增 `RefreshDefaults()` 不会漏实现。
+- 已确认旧 `SidebarRegionMotion` / `SidebarRegionMotionGroup` 的 `ConfigureTimings()` 已无外部调用；仍存在的 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 是业务私有空方法，留待业务迁移阶段处理。
+- 已确认所有新增脚本和目录均有 `.meta`。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- `UIMotionTransition` 当前依赖旧 `AXR.Framework.UI.IUISequenceMotion`，这是过渡期最小适配；后续如果把 UIMotion 正式迁入新命名空间，需要保留同等接口语义。
+- DOTween 等待包装通过回调链完成 UniTask，需 PlayMode 验证 AutoKill / 非 AutoKill / 手动 Kill / 取消等待几类行为。
+- `UISequenceDirector.useUnscaledTime` 与新 `UIFrameworkSettings.UseUnscaledTime` 的统一策略尚未落地，本轮只保持旧动画系统现状。
+
+下一步：
+
+- 提交阶段 6。
+- 进入阶段 7，实现 Popup / Modal / Tooltip 基础管理，优先复用当前 `UIManager` 的 RuntimeView 创建、关闭、回收链路，并保持动画等待、request version 和关闭任务复用语义。

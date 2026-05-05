@@ -42,14 +42,6 @@ public sealed class SidebarRegionMotionGroup
         }
     }
 
-    public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
-    {
-        for (int i = 0; i < motions.Length; i++)
-        {
-            motions[i]?.ConfigureTimings(showDuration, showEase, hideDuration, hideEase);
-        }
-    }
-
     public void PlayHideAll(Action onCompleted)
     {
         int pendingCount = 0;

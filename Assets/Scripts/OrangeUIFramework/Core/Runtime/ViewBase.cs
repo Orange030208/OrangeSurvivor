@@ -9,8 +9,10 @@ namespace Orange.UIFramework
     public abstract class ViewBase : MonoBehaviour, IView
     {
         private CanvasGroup canvasGroup;
+        private IViewTransition viewTransition;
         private ViewHandle handle;
         private bool initialized;
+        private bool transitionResolved;
 
         public string InstanceId => handle.InstanceId;
         public bool IsOpen { get; private set; }
@@ -79,6 +81,8 @@ namespace Orange.UIFramework
             {
                 await OnOpeningAsync(context, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
+                await PlayEnterTransitionAsync(cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
 
                 IsOpen = true;
                 Phase = ViewRuntimePhase.Opened;
@@ -109,10 +113,13 @@ namespace Orange.UIFramework
             {
                 await OnClosingAsync(reason, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
+                await PlayExitTransitionAsync(cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
 
+                ResetTransitionForInactiveState();
                 OnClosed(reason);
                 IsOpen = false;
-                canvasGroup.alpha = 0f;
+                canvasGroup.alpha = 1f;
                 Phase = ViewRuntimePhase.Closed;
                 gameObject.SetActive(false);
             }
@@ -158,6 +165,55 @@ namespace Orange.UIFramework
 
         protected virtual void OnTick(float deltaTime)
         {
+        }
+
+        private async UniTask PlayEnterTransitionAsync(CancellationToken cancellationToken)
+        {
+            IViewTransition transition = ResolveTransition();
+            if (transition == null)
+            {
+                return;
+            }
+
+            await transition.PlayEnterAsync(cancellationToken);
+        }
+
+        private async UniTask PlayExitTransitionAsync(CancellationToken cancellationToken)
+        {
+            IViewTransition transition = ResolveTransition();
+            if (transition == null)
+            {
+                return;
+            }
+
+            await transition.PlayExitAsync(cancellationToken);
+        }
+
+        private void ResetTransitionForInactiveState()
+        {
+            IViewTransition transition = ResolveTransition();
+            transition?.SetVisibleImmediate();
+        }
+
+        private IViewTransition ResolveTransition()
+        {
+            if (transitionResolved)
+            {
+                return viewTransition;
+            }
+
+            MonoBehaviour[] behaviours = GetComponentsInChildren<MonoBehaviour>(true);
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                if (behaviours[i] is IViewTransition transition)
+                {
+                    viewTransition = transition;
+                    break;
+                }
+            }
+
+            transitionResolved = true;
+            return viewTransition;
         }
 
         private void ResolveReferences()

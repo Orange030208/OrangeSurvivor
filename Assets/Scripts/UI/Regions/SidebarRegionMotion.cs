@@ -43,10 +43,6 @@ public sealed class SidebarRegionMotion
         runtimeMotion.Kill();
     }
 
-    public void ConfigureTimings(float showDuration, Ease showEase, float hideDuration, Ease hideEase)
-    {
-    }
-
     private static IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source)
     {
         if (source is IUIRuntimeMotion directMotion)

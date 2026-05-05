@@ -36,7 +36,7 @@ public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenc
     private void OnEnable()
     {
         InitializeIfNeeded();
-        if (refreshDefaultsOnEnable && !defaultsCaptured)
+        if (refreshDefaultsOnEnable)
         {
             RefreshDefaults();
         }

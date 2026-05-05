@@ -18,7 +18,7 @@ OrangeUIFramework 是面向 Unity 2022.3、UGUI、TextMeshPro 的通用 UI 框�
 
 - Unity 版本：`2022.3.62f3c1`。
 - UI 技术栈：UGUI、TextMeshPro、DOTween。
-- 异步技术栈：OrangeUIFramework 使用 UniTask；当前 `Packages/manifest.json` 未发现 UniTask，正式实现前需要补充 `Cysharp.Threading.Tasks` 依赖。
+- 异步技术栈：OrangeUIFramework 使用 UniTask；当前 `Packages/manifest.json` 已接入 `com.cysharp.unitask`。
 - 渲染管线：URP 14。
 - 当前没有发现项目级 `asmdef`，不应强行引入程序集拆分；如果后续引入，应先拆 Runtime / Editor / Tests。
 - 当前 UI 框架核心位于 `Assets/Scripts/Framework/UI/Core`，命名空间为 `AXR.Framework.UI`。
@@ -903,6 +903,14 @@ namespace Orange.UIFramework
 
 `UIMotionTransition` 内部可继续使用 `UIMotionPlayer` 和 `UISequenceDirector`。
 
+当前实现落地规则：
+
+- 新框架在 `Assets/Scripts/OrangeUIFramework/Motions/Runtime/` 提供 `IViewTransition`、`UIMotionTransition` 和 DOTween -> UniTask 等待包装。
+- `ViewBase` 只查找 `IViewTransition`，不直接引用 DOTween；没有动画组件时打开/关闭直接返回完成。
+- `UIMotionTransition` 适配旧 `AXR.Framework.UI.IUISequenceMotion`，现阶段沿用旧 `UIMotionPlayer` / `UISequenceDirector`，不复制整套 UIMotion 到新命名空间。
+- `UIMotionTransition.PlayEnterAsync()` 会在播放 Hidden -> Show 前调用 `RefreshDefaults()`，再执行 `SetHiddenImmediate()`，避免池化对象把上一轮 Hide 后的位置、Scale、Alpha 当成新的 Initial。
+- DOTween 等待包装需要保留已有 `onComplete` / `onKill` 回调，等待完成、Kill、取消均能完成 UniTask；取消等待时 Kill 当前 Tween。
+
 ## 15. 本地化方案
 
 不引入 Unity Localization 包作为强依赖，避免把 UI 框架绑死到某个数据来源。框架只定义服务和绑定组件，语言数据可来自 ScriptableObject、CSV、JSON 或后续包适配。
@@ -1006,6 +1014,7 @@ rerollCostText.text = localization.GetText(
 - `OnEnable` 中只要 `refreshDefaultsOnEnable == true` 就调用 `RefreshDefaults()`，不再受 `defaultsCaptured` 阻挡。
 - `InitializeIfNeeded()` 只负责建立目标映射和首次快照，不再把“已经初始化”误当成“不需要刷新默认值”。
 - 池化 View 从关闭态重新打开时，应在播放 `Hidden -> Show` 前刷新默认快照，避免隐藏态覆盖设计态。
+- `IUISequenceMotion` 需要暴露 `RefreshDefaults()`，让 `UISequenceDirector` 可以把刷新传播到实际子 Motion。
 - 如果某个动画需要固定 Prefab 原始值作为起点，应新增明确选项，例如 `captureDefaultsOnAwakeOnly` 或在 MotionDefinition 中声明，不要复用 `refreshDefaultsOnEnable` 表达相反语义。
 
 建议实现方向：

@@ -45,6 +45,12 @@ public class UISequenceDirector : MonoBehaviour, IUISequenceMotion
         ForEachMotion(enterGroups, motion => motion.PrepareEnter());
     }
 
+    public void RefreshDefaults()
+    {
+        ForEachMotion(enterGroups, motion => motion.RefreshDefaults());
+        ForEachMotion(exitGroups, motion => motion.RefreshDefaults());
+    }
+
     public Tween PlayEnter(float delay = 0f)
     {
         PrepareEnter();
