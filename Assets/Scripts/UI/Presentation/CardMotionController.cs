@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(UIMotionPlayer))]
-public class CardMotionController : MonoBehaviour
+public class CardMotionController : ViewPartBase
 {
     private const string VISUAL_ROOT_NAME = "VisualRoot";
     private const string SHADOW_NAME = "Shadow";

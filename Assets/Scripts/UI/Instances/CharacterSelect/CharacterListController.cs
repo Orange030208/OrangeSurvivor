@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterListController : MonoBehaviour
+public class CharacterListController : ViewPartBase
 {
     [SerializeField] private CharacterButton itemPrefab;
     [SerializeField] private Transform contentRoot;

@@ -1,4 +1,5 @@
 using System;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,7 +7,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-public abstract class UIContainerBase<T, K> : MonoBehaviour, IDisposable, IPointerClickHandler
+public abstract class UIContainerBase<T, K> : ViewPartBase, IDisposable, IPointerClickHandler
     where K : MonoBehaviour
 {
     [Header("--")]

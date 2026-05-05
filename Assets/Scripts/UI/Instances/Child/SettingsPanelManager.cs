@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
+public class SettingsPanelManager : ViewPartBase, IPointerClickHandler
 {
     private const string MASTER_VOLUME_KEY = "Settings.MasterVolume";
     private const string SFX_VOLUME_KEY = "Settings.SfxVolume";

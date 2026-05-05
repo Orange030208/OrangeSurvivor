@@ -4,7 +4,7 @@ using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
+public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
 {
     private static readonly Vector2 TOOLTIP_OFFSET = new Vector2(18f, -18f);
     private const float TOOLTIP_MARGIN = 12f;

@@ -40,7 +40,7 @@ public class GamingUIPage : PageBase
 
         inputView.WarmUp();
         inputView.Bind(currentContext.Player);
-        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext, OwnerUIManager);
+        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext.InventoryOperateManager, OwnerUIManager);
         hudView.ConfigureUIManager(OwnerUIManager);
         hudView.Bind(currentContext);
         menuButton.OnClicked += OnPauseClicked;
@@ -53,7 +53,6 @@ public class GamingUIPage : PageBase
         hudView.Unbind();
         menuButton.OnClicked -= OnPauseClicked;
         InventoryUiBinder.Release(inventoryUI);
-        currentContext?.Dispose();
         currentContext = null;
     }
 

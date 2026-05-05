@@ -1,9 +1,10 @@
 using System;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PropContainer : MonoBehaviour
+public class PropContainer : ViewPartBase
 {
     [SerializeField] private Image propImage;
     [SerializeField] private TextMeshProUGUI propText;

@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IDisposable
+public class InventoryItem : ViewPartBase, IDisposable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private UIClickTarget button;

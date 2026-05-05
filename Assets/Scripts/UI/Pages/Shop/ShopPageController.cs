@@ -5,12 +5,14 @@ public sealed class ShopPageController
     private readonly ShopUIPage view;
     private readonly ShopPageContext context;
     private readonly ShopPageState state = new ShopPageState();
+    private readonly CurrencyWallet currencyWallet;
     private bool entered;
 
     public ShopPageController(ShopUIPage view, ShopPageContext context)
     {
         this.view = view ?? throw new ArgumentNullException(nameof(view));
         this.context = context ?? throw new ArgumentNullException(nameof(context));
+        currencyWallet = context.CurrencyWallet;
     }
 
     public void Enter()
@@ -27,11 +29,10 @@ public sealed class ShopPageController
         view.ItemBuyRequested += OnItemBuyRequested;
         view.ItemLockToggleRequested += OnItemLockToggleRequested;
 
-        context.ShopFacade.SnapshotChanged += OnSnapshotChanged;
-        context.ShopFacade.PurchaseSucceeded += OnPurchaseSucceeded;
-        context.ShopFacade.PurchaseFailed += OnPurchaseFailed;
-        context.ShopFacade.CurrencyChanged += OnCurrencyChanged;
-        context.ShopFacade.Activate();
+        context.ShopManager.ItemsChanged += OnSnapshotChanged;
+        context.ShopManager.PurchaseSucceeded += OnPurchaseSucceeded;
+        context.ShopManager.PurchaseFailed += OnPurchaseFailed;
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         view.PrepareForOpen(context);
         view.SetPropertiesSidebarVisible(state.IsPropertiesSidebarVisible);
@@ -41,7 +42,7 @@ public sealed class ShopPageController
             view.UpdateCurrencyAmount(context.CurrencyWallet.CurrentAmount);
         }
 
-        context.ShopFacade.RequestSnapshot();
+        context.ShopManager.RequestSnapshot();
         entered = true;
     }
 
@@ -59,11 +60,10 @@ public sealed class ShopPageController
         view.ItemBuyRequested -= OnItemBuyRequested;
         view.ItemLockToggleRequested -= OnItemLockToggleRequested;
 
-        context.ShopFacade.SnapshotChanged -= OnSnapshotChanged;
-        context.ShopFacade.PurchaseSucceeded -= OnPurchaseSucceeded;
-        context.ShopFacade.PurchaseFailed -= OnPurchaseFailed;
-        context.ShopFacade.CurrencyChanged -= OnCurrencyChanged;
-        context.ShopFacade.Deactivate();
+        context.ShopManager.ItemsChanged -= OnSnapshotChanged;
+        context.ShopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
+        context.ShopManager.PurchaseFailed -= OnPurchaseFailed;
+        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
 
         view.ResetAfterClose();
         entered = false;
@@ -85,19 +85,24 @@ public sealed class ShopPageController
         view.ShowPurchaseFailure(failure.Message);
     }
 
-    private void OnCurrencyChanged(int currentAmount)
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
     {
-        view.UpdateCurrencyAmount(currentAmount);
+        if (currencyWallet != null && eventData.Wallet != currencyWallet)
+        {
+            return;
+        }
+
+        view.UpdateCurrencyAmount(eventData.CurrentAmount);
     }
 
     private void OnRerollRequested()
     {
-        context.ShopFacade.RequestReroll();
+        context.ShopManager.RequestReroll();
     }
 
     private void OnContinueRequested()
     {
-        context.ShopFacade.RequestContinue();
+        GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
     private void OnPropertiesToggleRequested()
@@ -114,11 +119,11 @@ public sealed class ShopPageController
 
     private void OnItemBuyRequested(int itemIndex)
     {
-        context.ShopFacade.RequestBuyItem(itemIndex);
+        context.ShopManager.RequestBuyItem(itemIndex);
     }
 
     private void OnItemLockToggleRequested(int itemIndex)
     {
-        context.ShopFacade.RequestToggleLock(itemIndex);
+        context.ShopManager.RequestToggleLock(itemIndex);
     }
 }

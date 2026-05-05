@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(UIClickTarget))]
-public class CharacterButton : MonoBehaviour
+public class CharacterButton : ViewPartBase
 {
     [SerializeField] private Image characterIconImage;
     [SerializeField] private UIClickTarget clickTarget;

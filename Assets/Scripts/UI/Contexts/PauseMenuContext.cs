@@ -1,35 +1,22 @@
 using System;
 
-public sealed class PauseMenuContext : IDisposable, IInventoryFacadeContext
+public sealed class PauseMenuContext
 {
-    private readonly bool disposeInventoryFacadeOnDispose;
-
     public PauseMenuContext(
         Player player,
         CurrencyWallet currencyWallet,
         PropertiesManager propertiesManager,
-        IInventoryUiFacade inventoryFacade,
-        bool disposeInventoryFacadeOnDispose)
+        InventoryOperateManager inventoryOperateManager)
     {
         Player = player;
         CurrencyWallet = currencyWallet;
         PropertiesManager = propertiesManager;
-        InventoryFacade = inventoryFacade ?? throw new ArgumentNullException(nameof(inventoryFacade));
-        this.disposeInventoryFacadeOnDispose = disposeInventoryFacadeOnDispose;
+        InventoryOperateManager = inventoryOperateManager
+            ?? throw new ArgumentNullException(nameof(inventoryOperateManager));
     }
 
     public Player Player { get; }
     public CurrencyWallet CurrencyWallet { get; }
     public PropertiesManager PropertiesManager { get; }
-    public IInventoryUiFacade InventoryFacade { get; }
-
-    public void Dispose()
-    {
-        if (!disposeInventoryFacadeOnDispose)
-        {
-            return;
-        }
-
-        InventoryFacade.Dispose();
-    }
+    public InventoryOperateManager InventoryOperateManager { get; }
 }

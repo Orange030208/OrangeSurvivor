@@ -1,46 +1,25 @@
 using System;
 
-public sealed class ShopPageContext : IDisposable, IInventoryFacadeContext
+public sealed class ShopPageContext
 {
-    private readonly bool disposeShopFacadeOnDispose;
-    private readonly bool disposeInventoryFacadeOnDispose;
-
     public ShopPageContext(
         Player player,
         CurrencyWallet currencyWallet,
         PropertiesManager propertiesManager,
-        IShopUiFacade shopFacade,
-        bool disposeShopFacadeOnDispose,
-        IInventoryUiFacade inventoryFacade,
-        bool disposeInventoryFacadeOnDispose)
+        ShopManager shopManager,
+        InventoryOperateManager inventoryOperateManager)
     {
         Player = player;
         CurrencyWallet = currencyWallet;
         PropertiesManager = propertiesManager;
-        ShopFacade = shopFacade ?? throw new ArgumentNullException(nameof(shopFacade));
-        InventoryFacade = inventoryFacade ?? throw new ArgumentNullException(nameof(inventoryFacade));
-        this.disposeShopFacadeOnDispose = disposeShopFacadeOnDispose;
-        this.disposeInventoryFacadeOnDispose = disposeInventoryFacadeOnDispose;
+        ShopManager = shopManager ?? throw new ArgumentNullException(nameof(shopManager));
+        InventoryOperateManager = inventoryOperateManager
+            ?? throw new ArgumentNullException(nameof(inventoryOperateManager));
     }
 
     public Player Player { get; }
     public CurrencyWallet CurrencyWallet { get; }
     public PropertiesManager PropertiesManager { get; }
-    public IShopUiFacade ShopFacade { get; }
-    public IInventoryUiFacade InventoryFacade { get; }
-
-    public void Dispose()
-    {
-        if (disposeShopFacadeOnDispose)
-        {
-            ShopFacade.Dispose();
-        }
-
-        if (!disposeInventoryFacadeOnDispose)
-        {
-            return;
-        }
-
-        InventoryFacade.Dispose();
-    }
+    public ShopManager ShopManager { get; }
+    public InventoryOperateManager InventoryOperateManager { get; }
 }

@@ -8,13 +8,12 @@ public static class UIPageContextFactory
         InventoryOperateManager inventoryOperateManager)
     {
         EnsurePlayer(player);
-        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
+        BindInventoryManager(player, inventoryOperateManager);
         return new GamingPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
             player.GetComponent<PropertiesManager>(),
-            inventoryFacade,
-            true);
+            inventoryOperateManager);
     }
 
     public static PauseMenuContext CreatePauseMenuContext(
@@ -22,13 +21,12 @@ public static class UIPageContextFactory
         InventoryOperateManager inventoryOperateManager)
     {
         EnsurePlayer(player);
-        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
+        BindInventoryManager(player, inventoryOperateManager);
         return new PauseMenuContext(
             player,
             player.GetComponent<CurrencyWallet>(),
             player.GetComponent<PropertiesManager>(),
-            inventoryFacade,
-            true);
+            inventoryOperateManager);
     }
 
     public static ShopPageContext CreateShopPageContext(
@@ -40,17 +38,15 @@ public static class UIPageContextFactory
         CurrencyWallet currencyWallet = player.GetComponent<CurrencyWallet>();
         PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
 
-        IShopUiFacade shopFacade = CreateShopFacade(shopManager, currencyWallet);
-        IInventoryUiFacade inventoryFacade = CreateInventoryFacade(player, inventoryOperateManager);
+        EnsureShopManager(shopManager);
+        BindInventoryManager(player, inventoryOperateManager);
 
         return new ShopPageContext(
             player,
             currencyWallet,
             propertiesManager,
-            shopFacade,
-            true,
-            inventoryFacade,
-            true);
+            shopManager,
+            inventoryOperateManager);
     }
 
     public static StageCompletePageContext CreateStageCompletePageContext(StageCompleteSummaryManager summaryManager)
@@ -63,7 +59,7 @@ public static class UIPageContextFactory
         return new StageCompletePageContext(summaryManager.CreateSnapshot());
     }
 
-    private static IInventoryUiFacade CreateInventoryFacade(Player player, InventoryOperateManager inventoryOperateManager)
+    private static void BindInventoryManager(Player player, InventoryOperateManager inventoryOperateManager)
     {
         if (inventoryOperateManager == null)
         {
@@ -71,17 +67,14 @@ public static class UIPageContextFactory
         }
 
         inventoryOperateManager.Bind(player);
-        return new ManagerInventoryUiFacade(inventoryOperateManager);
     }
 
-    private static IShopUiFacade CreateShopFacade(ShopManager shopManager, CurrencyWallet currencyWallet)
+    private static void EnsureShopManager(ShopManager shopManager)
     {
         if (shopManager == null)
         {
             throw new MissingReferenceException($"{nameof(UIPageContextFactory)} requires an explicit {nameof(ShopManager)}.");
         }
-
-        return new ManagerShopUiFacade(shopManager, currencyWallet);
     }
 
     private static void EnsurePlayer(Player player)

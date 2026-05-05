@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Orange.UIFramework;
 using UnityEngine;
 
-public class BuffBarUI : MonoBehaviour
+public class BuffBarUI : ViewPartBase
 {
     [SerializeField] private BuffIconItem buffIconItemPrefab;
     [SerializeField] private Transform itemParent;

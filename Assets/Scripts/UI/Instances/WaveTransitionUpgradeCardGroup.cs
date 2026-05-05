@@ -1,7 +1,8 @@
 using System.Collections;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class WaveTransitionUpgradeCardGroup : MonoBehaviour
+public class WaveTransitionUpgradeCardGroup : ViewPartBase
 {
     private const float REFRESH_OUT_STAGGER_SECONDS = 0.04f;
 

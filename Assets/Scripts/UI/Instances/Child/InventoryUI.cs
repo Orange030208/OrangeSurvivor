@@ -2,20 +2,18 @@ using System;
 using Orange.UIFramework;
 using UnityEngine;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : ViewPartBase
 {
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
     [SerializeField] private Transform itemContainersParent;
 
-    [Header("Facade")]
+    [Header("运行时 Manager")]
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
 
-    private IInventoryUiFacade inventoryFacade;
-    private IInventoryUiFacade configuredFacade;
-    private bool disposeConfiguredFacade;
-    private bool ownsInventoryFacade;
-    private bool facadeSessionStarted;
+    private InventoryOperateManager inventoryOperateManagerSession;
+    private InventoryOperateManager configuredInventoryOperateManager;
+    private bool inventorySessionStarted;
     private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
     private string currentSelectedEntryId;
     private string currentOperateEntryId;
@@ -35,7 +33,7 @@ public class InventoryUI : MonoBehaviour
 
     private void OnEnable()
     {
-        StartFacadeSession();
+        StartInventorySession();
     }
 
     private void Update()
@@ -54,33 +52,32 @@ public class InventoryUI : MonoBehaviour
 
     private void OnDisable()
     {
-        StopFacadeSession();
+        StopInventorySession();
     }
 
-    public void ConfigureFacade(IInventoryUiFacade facade, bool takeOwnership = false)
+    public void ConfigureInventoryOperateManager(InventoryOperateManager manager)
     {
-        if (configuredFacade == facade && disposeConfiguredFacade == takeOwnership)
+        if (configuredInventoryOperateManager == manager)
         {
-            if (!facadeSessionStarted && isActiveAndEnabled && facade != null)
+            if (!inventorySessionStarted && isActiveAndEnabled && manager != null)
             {
-                StartFacadeSession();
+                StartInventorySession();
             }
 
             return;
         }
 
-        bool shouldRebind = facadeSessionStarted && isActiveAndEnabled;
+        bool shouldRebind = inventorySessionStarted && isActiveAndEnabled;
         if (shouldRebind)
         {
-            StopFacadeSession();
+            StopInventorySession();
         }
 
-        configuredFacade = facade;
-        disposeConfiguredFacade = takeOwnership;
+        configuredInventoryOperateManager = manager;
 
-        if (isActiveAndEnabled && facade != null)
+        if (isActiveAndEnabled && manager != null)
         {
-            StartFacadeSession();
+            StartInventorySession();
         }
     }
 
@@ -89,15 +86,14 @@ public class InventoryUI : MonoBehaviour
         popupHost.ConfigureUIManager(manager);
     }
 
-    public void ReleaseConfiguredFacade()
+    public void ReleaseConfiguredInventoryOperateManager()
     {
-        if (facadeSessionStarted && ReferenceEquals(inventoryFacade, configuredFacade))
+        if (inventorySessionStarted && ReferenceEquals(inventoryOperateManagerSession, configuredInventoryOperateManager))
         {
-            StopFacadeSession();
+            StopInventorySession();
         }
 
-        configuredFacade = null;
-        disposeConfiguredFacade = false;
+        configuredInventoryOperateManager = null;
     }
 
     private void PrepareForOpen()
@@ -130,69 +126,58 @@ public class InventoryUI : MonoBehaviour
         popupHost.CloseCurrent();
     }
 
-    private IInventoryUiFacade ResolveInventoryFacade(out bool ownsFacade)
+    private InventoryOperateManager ResolveInventoryOperateManagerSession()
     {
-        if (configuredFacade != null)
+        if (configuredInventoryOperateManager != null)
         {
-            ownsFacade = disposeConfiguredFacade;
-            return configuredFacade;
+            return configuredInventoryOperateManager;
         }
 
         InventoryOperateManager resolvedManager = ResolveInventoryOperateManager();
         if (resolvedManager != null)
         {
-            ownsFacade = true;
-            return new ManagerInventoryUiFacade(resolvedManager);
+            return resolvedManager;
         }
 
-        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires either an externally configured {nameof(IInventoryUiFacade)} or an explicit {nameof(InventoryOperateManager)} reference.");
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires either an externally configured or locally serialized {nameof(InventoryOperateManager)} reference.");
     }
 
-    private void StartFacadeSession()
+    private void StartInventorySession()
     {
-        if (facadeSessionStarted)
+        if (inventorySessionStarted)
         {
             return;
         }
 
-        if (configuredFacade == null && ResolveInventoryOperateManager() == null)
+        if (configuredInventoryOperateManager == null && ResolveInventoryOperateManager() == null)
         {
             return;
         }
 
-        inventoryFacade = ResolveInventoryFacade(out ownsInventoryFacade);
-        inventoryFacade.SnapshotChanged += OnSnapshotChanged;
-        inventoryFacade.OperatePanelOpened += OnOperatePanelOpened;
-        inventoryFacade.OperatePanelShouldClose += OnOperatePanelShouldClose;
-        inventoryFacade.Activate();
+        inventoryOperateManagerSession = ResolveInventoryOperateManagerSession();
+        inventoryOperateManagerSession.SnapshotChanged += OnSnapshotChanged;
+        inventoryOperateManagerSession.OperatePanelOpened += OnOperatePanelOpened;
+        inventoryOperateManagerSession.OperatePanelShouldClose += OnOperatePanelShouldClose;
 
         PrepareForOpen();
-        inventoryFacade.RequestSnapshot();
-        facadeSessionStarted = true;
+        inventoryOperateManagerSession.RequestSnapshot();
+        inventorySessionStarted = true;
     }
 
-    private void StopFacadeSession()
+    private void StopInventorySession()
     {
-        if (!facadeSessionStarted)
+        if (!inventorySessionStarted)
         {
             return;
         }
 
-        inventoryFacade.SnapshotChanged -= OnSnapshotChanged;
-        inventoryFacade.OperatePanelOpened -= OnOperatePanelOpened;
-        inventoryFacade.OperatePanelShouldClose -= OnOperatePanelShouldClose;
-        inventoryFacade.Deactivate();
+        inventoryOperateManagerSession.SnapshotChanged -= OnSnapshotChanged;
+        inventoryOperateManagerSession.OperatePanelOpened -= OnOperatePanelOpened;
+        inventoryOperateManagerSession.OperatePanelShouldClose -= OnOperatePanelShouldClose;
 
         ResetAfterClose();
-        facadeSessionStarted = false;
-
-        if (inventoryFacade != null && ownsInventoryFacade)
-        {
-            inventoryFacade.Dispose();
-        }
-
-        inventoryFacade = null;
-        ownsInventoryFacade = false;
+        inventorySessionStarted = false;
+        inventoryOperateManagerSession = null;
     }
 
     private InventoryOperateManager ResolveInventoryOperateManager()
@@ -215,13 +200,13 @@ public class InventoryUI : MonoBehaviour
 
     private void OnItemSelected(string entryId)
     {
-        if (string.IsNullOrEmpty(entryId) || inventoryFacade == null)
+        if (string.IsNullOrEmpty(entryId) || inventoryOperateManagerSession == null)
         {
             return;
         }
 
         currentSelectedEntryId = entryId;
-        inventoryFacade.RequestOpenItemPanel(entryId);
+        inventoryOperateManagerSession.RequestOpenItemPanel(entryId);
     }
 
     private void OnCloseRequested()
@@ -236,22 +221,22 @@ public class InventoryUI : MonoBehaviour
 
     private void OnSellRequested(string entryId)
     {
-        if (!IsShowingItem(entryId) || inventoryFacade == null)
+        if (!IsShowingItem(entryId) || inventoryOperateManagerSession == null)
         {
             return;
         }
 
-        inventoryFacade.RequestSellItem(entryId);
+        inventoryOperateManagerSession.RequestSellItem(entryId);
     }
 
     private void OnMergeRequested(string entryId)
     {
-        if (!IsShowingItem(entryId) || inventoryFacade == null)
+        if (!IsShowingItem(entryId) || inventoryOperateManagerSession == null)
         {
             return;
         }
 
-        inventoryFacade.RequestMergeItem(entryId);
+        inventoryOperateManagerSession.RequestMergeItem(entryId);
     }
 
     private void OnSnapshotChanged(InventoryUIItemSnapshot[] items)
@@ -267,7 +252,7 @@ public class InventoryUI : MonoBehaviour
 
         if (!string.IsNullOrEmpty(popupEntryIdToRestore))
         {
-            inventoryFacade.RequestOpenItemPanel(popupEntryIdToRestore);
+            inventoryOperateManagerSession.RequestOpenItemPanel(popupEntryIdToRestore);
         }
     }
 

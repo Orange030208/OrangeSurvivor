@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffIconItem : MonoBehaviour,IDescribable
+public class BuffIconItem : ViewPartBase, IDescribable
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Image borderImage;

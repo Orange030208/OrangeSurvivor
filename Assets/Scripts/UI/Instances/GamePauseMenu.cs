@@ -51,7 +51,7 @@ public class GamePauseMenu : PageBase
     {
         currentContext = context.GetPayload<PauseMenuContext>()
             ?? throw new InvalidOperationException($"{nameof(GamePauseMenu)} requires {nameof(PauseMenuContext)} payload.");
-        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext, OwnerUIManager);
+        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext.InventoryOperateManager, OwnerUIManager);
         BindButtonEvents();
         HideAllContentPanelsImmediately();
         currentPanel = null;
@@ -73,7 +73,6 @@ public class GamePauseMenu : PageBase
         HideAllContentPanelsImmediately();
         currentPanel = null;
         InventoryUiBinder.Release(inventoryUI);
-        currentContext?.Dispose();
         currentContext = null;
     }
 

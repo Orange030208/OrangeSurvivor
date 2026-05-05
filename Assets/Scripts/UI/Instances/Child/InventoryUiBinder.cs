@@ -13,25 +13,25 @@ public static class InventoryUiBinder
         inventoryUI = host.GetComponentInChildren<InventoryUI>(true);
     }
 
-    public static void Bind(Component host, ref InventoryUI inventoryUI, IInventoryFacadeContext context)
+    public static void Bind(Component host, ref InventoryUI inventoryUI, InventoryOperateManager inventoryOperateManager)
     {
-        Bind(host, ref inventoryUI, context, null);
+        Bind(host, ref inventoryUI, inventoryOperateManager, null);
     }
 
-    public static void Bind(Component host, ref InventoryUI inventoryUI, IInventoryFacadeContext context, UIManager uiManager)
+    public static void Bind(Component host, ref InventoryUI inventoryUI, InventoryOperateManager inventoryOperateManager, UIManager uiManager)
     {
         WarmUp(host, ref inventoryUI);
-        if (inventoryUI == null || context == null)
+        if (inventoryUI == null || inventoryOperateManager == null)
         {
             return;
         }
 
         inventoryUI.ConfigureUIManager(uiManager);
-        inventoryUI.ConfigureFacade(context.InventoryFacade);
+        inventoryUI.ConfigureInventoryOperateManager(inventoryOperateManager);
     }
 
     public static void Release(InventoryUI inventoryUI)
     {
-        inventoryUI?.ReleaseConfiguredFacade();
+        inventoryUI?.ReleaseConfiguredInventoryOperateManager();
     }
 }

@@ -1,8 +1,9 @@
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardQualityVisualController : MonoBehaviour
+public class CardQualityVisualController : ViewPartBase
 {
     [Header("自动绑定")]
     [SerializeField] private bool autoResolveReferences = true;
