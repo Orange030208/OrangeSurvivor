@@ -53,7 +53,8 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
         hudView.Unbind();
         menuButton.OnClicked -= OnPauseClicked;
         InventoryUiBinder.Release(inventoryUI);
-        PageContextBinding.Release(ref currentContext);
+        currentContext?.Dispose();
+        currentContext = null;
     }
 
     protected override void OnTick(float deltaTime)

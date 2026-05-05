@@ -1,4 +1,3 @@
-using Orange.UIFramework;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -74,7 +73,8 @@ public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
         HideAllContentPanelsImmediately();
         currentPanel = null;
         InventoryUiBinder.Release(inventoryUI);
-        PageContextBinding.Release(ref currentContext);
+        currentContext?.Dispose();
+        currentContext = null;
     }
 
     private void BindButtonEvents()

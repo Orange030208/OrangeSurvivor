@@ -71,7 +71,8 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
     {
         controller?.Exit();
         controller = null;
-        PageContextBinding.Release(ref currentContext);
+        currentContext?.Dispose();
+        currentContext = null;
     }
 
     public void PrepareForOpen(ShopPageContext context)
