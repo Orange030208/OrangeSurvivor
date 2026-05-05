@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，`UI/Contracts` 当前只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -408,12 +408,13 @@
 - 已完成旧动画 / 点击组件命名空间迁移：`UIClickTarget`、`IUIRuntimeMotion`、`IUISequenceMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track 与对应编辑器脚本迁入 `Assets/Scripts/OrangeUIFramework/` 和 `Orange.UIFramework`，并同步更新 Motion 资产中的 `SerializeReference` 类型记录。
 - 已完成 UI 子视图 `Region` 命名与目录收口：`GamingHudView`、`GamingInputView`、`ShopListView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`SidebarMotion`、`SidebarToggleView`、`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 等仍作为页面私有协作对象保留，但不再放在 `Assets/Scripts/UI/Regions`，也不再使用会被误解为框架抽象的 `Region` 命名。
 - 已删除未实现、未引用的 `IPlayerHudFacade` 死接口；保留 `IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext`、`IInventoryUiFacadeHost`、页面 Context 和 Snapshot 作为当前真实跨系统边界。
+- 已完成 `UI/Contracts` 目录命名收口：有效页面 payload 移入 `Assets/Scripts/UI/Contexts`，Inventory / Shop Facade 移入 `Assets/Scripts/UI/Facades`，背包快照和操作 payload 移入 `Assets/Scripts/UI/Snapshots`，不再保留容易被误解为无效抽象集合的 `Contracts` 目录。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- `UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；不能一刀切删除。`UI/Contracts/Facades` 当前保留 Inventory / Shop 相关接口和 Manager Facade。
+- `UI/Contexts`、`UI/Facades` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；不能一刀切删除。`UI/Facades` 当前保留 Inventory / Shop 相关接口和 Manager Facade。
 
 当前风险：
 
@@ -439,7 +440,7 @@
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
 3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
-4. 继续最终收口：优先扫描 `Assets/Scripts/UI/Contracts`、业务 UI Prefab 和 Scene 中剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
+4. 继续最终收口：优先扫描业务 UI Prefab 和 Scene 中剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。`UI/Contexts`、`UI/Facades`、`UI/Snapshots` 是当前有效业务边界，不能当作旧 Contract 包袱一刀切删除。
 5. 确认旧 `AXR.Framework.UI` 命名空间、旧 `Assets/Scripts/Framework` 目录和旧 Motion 资产类型记录不再回流；`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件现在属于 `Orange.UIFramework`。
 6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
@@ -2397,3 +2398,46 @@
 
 - 提交未使用 HUD Facade 抽象清理。
 - 继续最终收口，优先检查业务 UI Prefab / Scene 是否仍引用旧 UI 资源或存在未迁入 Orange Catalog 的 Page / Popup / Modal / Tooltip；再评估 `UI/Contracts` 是否需要仅做目录命名收口，而不是删除有效边界。
+
+### 2026-05-06 阶段 12 最终收口：收口 Contracts 目录命名
+
+完成内容：
+
+- 将原 `Assets/Scripts/UI/Contracts/Contexts` 移为 `Assets/Scripts/UI/Contexts`，保留 `GamingPageContext`、`ShopPageContext`、`PauseMenuContext`、`StageCompletePageContext`、`UIPageContextFactory`、`PageContextBinding` 等页面 payload 与装配工具。
+- 将原 `Assets/Scripts/UI/Contracts/Facades` 移为 `Assets/Scripts/UI/Facades`，保留 `IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext`、`IInventoryUiFacadeHost`、`ManagerInventoryUiFacade`、`ManagerShopUiFacade` 等真实跨系统边界。
+- 将原 `Assets/Scripts/UI/Contracts/Snapshots` 移为 `Assets/Scripts/UI/Snapshots`，保留 `InventoryUIItemSnapshot` 与 `InventoryItemOperateResource`。
+- 删除空的 `Assets/Scripts/UI/Contracts.meta`，当前业务 UI 不再保留 `Contracts` 目录；这一步只收口目录语义，不改类名、不改 API、不删除有效边界。
+
+移动范围：
+
+- `Assets/Scripts/UI/Contracts/Contexts/**` -> `Assets/Scripts/UI/Contexts/**`
+- `Assets/Scripts/UI/Contracts/Facades/**` -> `Assets/Scripts/UI/Facades/**`
+- `Assets/Scripts/UI/Contracts/Snapshots/**` -> `Assets/Scripts/UI/Snapshots/**`
+
+删除范围：
+
+- `Assets/Scripts/UI/Contracts.meta`
+
+修改文件：
+
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并在删除 `IPlayerHudFacade` 后重新核查 `UI/Contracts` 的有效调用链。
+- 已通过 `git mv` 移动目录和 `.meta`，保留脚本 GUID，降低 Unity 脚本引用丢失风险。
+- 已静态扫描业务 UI 运行时脚本、New UI Prefab、Scene 和 Orange Catalog，确认当前全局 `PageBase`、`PopupBase`、`TooltipBase` 派生业务类型均已有 Orange Catalog 注册或作为页面内部子视图保留；本轮没有新增未登记全局视图。
+- 已确认类型名和 API 未修改，因此业务脚本引用不需要 using 或命名空间调整。
+- 本轮按用户要求未执行完整 Play Mode；Unity Editor 导入后仍需确认移动目录不会触发脚本引用异常。
+
+遗留风险：
+
+- 文档历史日志仍保留旧 `Assets/Scripts/UI/Contracts/**` 路径作为历史迁移记录；当前进度快照和本条日志之后应以 `UI/Contexts`、`UI/Facades`、`UI/Snapshots` 为准。
+- `UI/Facades` 仍保留 Inventory / Shop Manager Facade，这是当前业务 UI 与 Manager 解耦边界，不应作为“桥接层”删除，除非后续把页面 payload 和 Manager 调用链整体重构。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交 Contracts 目录命名收口。
+- 继续最终收口，优先处理业务 UI Prefab / Scene 和代码中仍存在的 `UIManager.Instance` 入口；如果目标是完全显式装配，需要为 Tooltip / Inventory Popup Host 设计页面注入链路，避免新增平行服务或兼容层。
