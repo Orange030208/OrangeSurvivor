@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 4，ViewBase / PageBase 生命周期与 UniTask Page API 已完成，准备进入阶段 5。
+当前阶段：阶段 5，异步防重入与 request version 已完成，准备进入阶段 6。
 
 已完成：
 
@@ -338,10 +338,14 @@
 - `UIManager` 已实现 Page 的 `OpenPageAsync()`、`ReplacePageAsync()`、`ResetToPageAsync()`、`CloseTopPageAsync()`、`CloseAllPagesAsync()` 与同步兼容 `OpenPage()`。
 - `UIManager` 已维护 PageStack、运行时实例表、单例实例表、按类型对象池，以及只包含 `RequiresTick` View 的 Tick 列表。
 - `UIManager.GetRuntimeDiagnostics()` / `LogRuntimeDiagnostics()` 已包含当前打开 View 与对象池快照。
+- `UIManager` 已为 Page 操作加入串行通道，`OpenPageAsync`、`ReplacePageAsync`、`ResetToPageAsync`、`CloseTopPageAsync`、`CloseAllPagesAsync` 不会交叉修改 PageStack。
+- `requestVersion` 已作为 Page 操作版本号使用，连续 Replace / Reset / Close / Open 时旧请求会被标记为过期，过期请求不会覆盖最新请求。
+- 关闭流程已改为一旦开始就使用框架内部关闭令牌完成关闭，避免调用方取消导致 View 卡在半关闭状态。
+- 同实例重复关闭会等待已有关闭任务，不会重复触发 `OnClosed()`、重复回收或重复完成 `ClosedTask`。
+- View 诊断已包含每个打开 View 的 request version。
 
 未完成：
 
-- 尚未实现阶段 5 的 request version 旧请求拦截、防重复关闭等待、打开/替换并发串行化和取消清理。
 - 尚未接入动画等待、Popup / Modal / Tooltip 管理、定位裁剪、本地化与测试。
 - `UIManager` 的 Popup / Modal / Tooltip API 目前仍显式抛出阶段性未实现异常，需阶段 7 完成。
 
@@ -351,17 +355,18 @@
 - 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
 - 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
+- Stage 5 只处理 Page 操作防重入；Popup 分组互斥、Modal 结果互斥和 Tooltip 唯一实例仍需阶段 7 分别实现。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 4 提交已存在。
-3. 从阶段 5 开始，完善 request version、防重入、重复关闭等待和取消清理。
+2. 确认阶段 5 提交已存在。
+3. 从阶段 6 开始，沿用现有 UIMotion 系统，接入 UniTask 等待适配，并修复 `refreshDefaultsOnEnable` 池化复用后动画起点不准的问题。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 5 重点处理连续 `ReplacePageAsync` / `ResetToPageAsync` 的串行执行，旧请求不能覆盖新请求；重复关闭应返回同一关闭任务或等待已有关闭完成；取消请求不能泄漏运行时实例、CTS 或事件。
+6. 阶段 6 重点读取旧 `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/`，先判断复制、适配还是最小迁移；不得为了动画接入引入平行 UI 服务。
 
 下一轮禁止：
 
@@ -569,3 +574,43 @@
 
 - 提交阶段 4。
 - 进入阶段 5，优先实现异步防重入、request version 旧请求拦截、关闭任务复用和取消清理。
+
+### 2026-05-05 阶段 5 异步防重入与 request version
+
+完成内容：
+
+- `UIManager` 新增 Page 操作串行通道，所有 Page 打开、替换、重置、关闭顶层、关闭全部操作都会按顺序修改 PageStack，避免并发交叉写运行时状态。
+- Page 操作进入时递增 `requestVersion`，并将版本写入 `OpenContext` 与 `RuntimeView`。
+- `ReplacePageAsync()` / `ResetToPageAsync()` 会在关键步骤检查版本；如果已有更新请求进入，旧请求会以 `OperationCanceledException` 结束，不再继续覆盖最新请求。
+- 过期或取消的打开请求如果已经实例化 View，会执行关闭生命周期并按池化策略回收或释放，避免残留半打开实例。
+- `CloseRuntimeViewAsync()` 改为关闭开始后使用框架内部取消策略完成关闭，调用方取消不会让 View 卡在半关闭状态。
+- 同一个 RuntimeView 重复关闭会等待已存在的关闭任务，不会重复执行 `OnClosed()`、重复回收或重复完成 `ClosedTask`。
+- 单例 View 如果正在关闭，再次打开会等待旧实例关闭完成后再按当前请求创建新实例。
+- `ViewDiagnostics` 增加 `RequestVersion` 字段，`LogRuntimeDiagnostics()` 输出每个打开 View 所属请求版本。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIRuntimeDiagnostics.cs`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree。
+- 已读取本文当前进度、下一轮入口和阶段 5 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的异步策略、request version、防重入、取消归属和诊断章节。
+- 已确认本轮未修改旧 `AXR.Framework.UI` 框架、旧 UIManager 调用和业务 UI 页面。
+- 已检查本地 UniTask 包提供 `AttachExternalCancellation()`，可用于重复关闭等待时响应调用方取消。
+- 已确认本轮无新增脚本，因此无需新增 `.meta`。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- Stage 5 目前只覆盖 Page 操作；Popup 分组互斥、Modal 多次完成、Tooltip 唯一实例仍需阶段 7 处理。
+- 关闭流程已按“关闭一旦开始必须完成”处理，后续 UIMotion 适配需要遵守这个约束，不能让退出动画取消后遗留半关闭状态。
+- 当前没有 PlayMode 测试验证快速连续 Replace 的最终页面状态，阶段 11 需要补测试。
+
+下一步：
+
+- 提交阶段 5。
+- 进入阶段 6，沿用旧 UIMotion 动画系统，提供 UniTask 等待适配，并修复 `UIMotionPlayer.refreshDefaultsOnEnable` 池化复用后动画起点不准的问题。

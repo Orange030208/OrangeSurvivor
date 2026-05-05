@@ -24,6 +24,7 @@ namespace Orange.UIFramework
         private readonly Dictionary<Type, Queue<ViewBase>> pooledViewsByType = new Dictionary<Type, Queue<ViewBase>>();
         private readonly List<RuntimeView> pageStack = new List<RuntimeView>();
         private readonly List<ViewBase> tickingViews = new List<ViewBase>();
+        private readonly SemaphoreSlim pageOperationSemaphore = new SemaphoreSlim(1, 1);
         private Canvas rootCanvas;
         private CanvasScaler rootCanvasScaler;
         private GraphicRaycaster rootGraphicRaycaster;
@@ -160,7 +161,7 @@ namespace Orange.UIFramework
             for (int i = 0; i < diagnostics.OpenViews.Count; i++)
             {
                 ViewDiagnostics view = diagnostics.OpenViews[i];
-                builder.AppendLine($"- View {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, layer={view.LayerName}, input={view.InputActive}, raycast={view.BlocksRaycasts}");
+                builder.AppendLine($"- View {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, request={view.RequestVersion}, layer={view.LayerName}, input={view.InputActive}, raycast={view.BlocksRaycasts}");
             }
 
             for (int i = 0; i < diagnostics.Pools.Count; i++)
@@ -198,18 +199,12 @@ namespace Orange.UIFramework
 
         public UniTask CloseTopPageAsync(CancellationToken cancellationToken = default)
         {
-            if (pageStack.Count == 0)
-            {
-                return UniTask.CompletedTask;
-            }
-
-            RuntimeView topPage = pageStack[pageStack.Count - 1];
-            return CloseRuntimeViewAsync(topPage, CloseReason.Back, cancellationToken);
+            return CloseTopPageInternalAsync(cancellationToken);
         }
 
         public UniTask CloseAllPagesAsync(CancellationToken cancellationToken = default)
         {
-            return CloseAllPagesInternalAsync(CloseReason.Reset, cancellationToken);
+            return CloseAllPagesWithGateAsync(cancellationToken);
         }
 
         public ViewHandle<TPage> OpenPage<TPage>(object payload = null)
@@ -277,29 +272,60 @@ namespace Orange.UIFramework
         {
             EnsureInitialized();
             cancellationToken.ThrowIfCancellationRequested();
+            int currentRequestVersion = ++requestVersion;
+
+            await pageOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                return await OpenPageLockedAsync<TPage>(payload, mode, currentRequestVersion, cancellationToken);
+            }
+            finally
+            {
+                pageOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask<ViewHandle<TPage>> OpenPageLockedAsync<TPage>(
+            object payload,
+            PageOpenMode mode,
+            int currentRequestVersion,
+            CancellationToken cancellationToken)
+            where TPage : PageBase
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
 
             Type pageType = typeof(TPage);
             ViewDefinition definition = ResolveDefinition(pageType, ViewKind.Page);
-            int currentRequestVersion = ++requestVersion;
 
             if (mode == PageOpenMode.ReplaceTop && pageStack.Count > 0)
             {
                 RuntimeView topPage = pageStack[pageStack.Count - 1];
-                await CloseRuntimeViewAsync(topPage, CloseReason.Replace, cancellationToken);
+                await CloseRuntimeViewAsync(topPage, CloseReason.Replace, CancellationToken.None);
+                ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
             }
             else if (mode == PageOpenMode.Reset)
             {
-                await CloseAllPagesInternalAsync(CloseReason.Reset, cancellationToken);
+                await CloseAllPagesInternalAsync(CloseReason.Reset, CancellationToken.None);
+                ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
             }
 
             if (definition.Singleton && singletonViewsByType.TryGetValue(pageType, out RuntimeView openedSingleton))
             {
-                MovePageToTop(openedSingleton);
-                ApplyPageInputState();
-                return new ViewHandle<TPage>(openedSingleton.Handle, (TPage)openedSingleton.View);
+                if (openedSingleton.Closing)
+                {
+                    await openedSingleton.CloseTask.AttachExternalCancellation(cancellationToken);
+                    ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
+                }
+                else
+                {
+                    MovePageToTop(openedSingleton);
+                    ApplyPageInputState();
+                    return new ViewHandle<TPage>(openedSingleton.Handle, (TPage)openedSingleton.View);
+                }
             }
 
-            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, pageType, cancellationToken);
+            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, pageType, currentRequestVersion, cancellationToken);
             OpenContext context = new OpenContext(
                 pageType,
                 definition.Id,
@@ -311,21 +337,68 @@ namespace Orange.UIFramework
             try
             {
                 await runtimeView.View.OpenInternalAsync(context, cancellationToken);
+                if (IsStaleTransition(mode, currentRequestVersion))
+                {
+                    throw CreateStaleOperationException(cancellationToken);
+                }
+
                 RegisterOpenedPage(runtimeView);
                 ApplyPageInputState();
                 return new ViewHandle<TPage>(runtimeView.Handle, (TPage)runtimeView.View);
             }
             catch (Exception exception)
             {
-                runtimeView.ClosedSource.TrySetException(exception);
-                viewLoader.Release(runtimeView.View, runtimeView.Definition);
+                await CleanupFailedOpenAsync(runtimeView, exception);
                 throw;
+            }
+        }
+
+        private async UniTask CloseTopPageInternalAsync(CancellationToken cancellationToken)
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            ++requestVersion;
+
+            await pageOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (pageStack.Count == 0)
+                {
+                    return;
+                }
+
+                RuntimeView topPage = pageStack[pageStack.Count - 1];
+                await CloseRuntimeViewAsync(topPage, CloseReason.Back, CancellationToken.None);
+            }
+            finally
+            {
+                pageOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask CloseAllPagesWithGateAsync(CancellationToken cancellationToken)
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            ++requestVersion;
+
+            await pageOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await CloseAllPagesInternalAsync(CloseReason.Reset, CancellationToken.None);
+            }
+            finally
+            {
+                pageOperationSemaphore.Release();
             }
         }
 
         private async UniTask<RuntimeView> CreateRuntimeViewAsync(
             ViewDefinition definition,
             Type viewType,
+            int currentRequestVersion,
             CancellationToken cancellationToken)
         {
             if (!TryGetLayerRoot(definition.Layer, out RectTransform layerRoot))
@@ -354,7 +427,7 @@ namespace Orange.UIFramework
                 (reason, token) => CloseByInstanceIdAsync(instanceId, reason, token));
 
             view.Initialize(handle);
-            return new RuntimeView(instanceId, definition, viewType, view, handle, closedSource);
+            return new RuntimeView(instanceId, definition, viewType, view, handle, closedSource, currentRequestVersion);
         }
 
         private void RegisterOpenedPage(RuntimeView runtimeView)
@@ -396,23 +469,33 @@ namespace Orange.UIFramework
             CloseReason reason,
             CancellationToken cancellationToken)
         {
-            if (runtimeView == null || runtimeView.Closing)
+            if (runtimeView == null)
             {
                 return;
             }
 
+            if (runtimeView.Closing)
+            {
+                await runtimeView.CloseTask.AttachExternalCancellation(cancellationToken);
+                return;
+            }
+
             runtimeView.Closing = true;
+            runtimeView.CloseSource = new UniTaskCompletionSource();
             try
             {
-                await runtimeView.View.CloseInternalAsync(reason, cancellationToken);
+                // Once close starts it must finish, otherwise the view can be left half-closed and unrecyclable.
+                await runtimeView.View.CloseInternalAsync(reason, CancellationToken.None);
                 UnregisterRuntimeView(runtimeView);
                 RecycleOrRelease(runtimeView);
                 runtimeView.ClosedSource.TrySetResult();
+                runtimeView.CloseSource.TrySetResult();
                 ApplyPageInputState();
             }
             catch (Exception exception)
             {
                 runtimeView.ClosedSource.TrySetException(exception);
+                runtimeView.CloseSource.TrySetException(exception);
                 throw;
             }
         }
@@ -524,6 +607,7 @@ namespace Orange.UIFramework
                     runtimeView.ViewType.Name,
                     runtimeView.Definition.Kind,
                     runtimeView.View != null ? runtimeView.View.Phase : ViewRuntimePhase.None,
+                    runtimeView.RequestVersion,
                     layerName,
                     runtimeView.View != null && runtimeView.View.InputActive,
                     runtimeView.View != null && runtimeView.View.BlocksRaycasts));
@@ -552,6 +636,66 @@ namespace Orange.UIFramework
             }
 
             return diagnostics;
+        }
+
+        private bool IsStaleTransition(PageOpenMode mode, int operationVersion)
+        {
+            return mode != PageOpenMode.Push && operationVersion != requestVersion;
+        }
+
+        private void ThrowIfStaleTransition(
+            PageOpenMode mode,
+            int operationVersion,
+            CancellationToken cancellationToken)
+        {
+            if (!IsStaleTransition(mode, operationVersion))
+            {
+                return;
+            }
+
+            throw CreateStaleOperationException(cancellationToken);
+        }
+
+        private OperationCanceledException CreateStaleOperationException(CancellationToken cancellationToken)
+        {
+            return cancellationToken.IsCancellationRequested
+                ? new OperationCanceledException(cancellationToken)
+                : new OperationCanceledException("UIManager page transition was superseded by a newer request.");
+        }
+
+        private async UniTask CleanupFailedOpenAsync(RuntimeView runtimeView, Exception exception)
+        {
+            if (exception is OperationCanceledException operationCanceledException)
+            {
+                runtimeView.ClosedSource.TrySetCanceled(operationCanceledException.CancellationToken);
+            }
+            else
+            {
+                runtimeView.ClosedSource.TrySetException(exception);
+            }
+
+            if (runtimeView.View != null &&
+                runtimeView.View.Phase != ViewRuntimePhase.Closed &&
+                runtimeView.View.Phase != ViewRuntimePhase.Recycled)
+            {
+                try
+                {
+                    await runtimeView.View.CloseInternalAsync(CloseReason.Cancel, CancellationToken.None);
+                }
+                catch (Exception closeException)
+                {
+                    Debug.LogException(closeException, this);
+                }
+            }
+
+            if (exception is OperationCanceledException)
+            {
+                RecycleOrRelease(runtimeView);
+            }
+            else
+            {
+                viewLoader.Release(runtimeView.View, runtimeView.Definition);
+            }
         }
 
         private string CreateInstanceId()
@@ -797,7 +941,8 @@ namespace Orange.UIFramework
                 Type viewType,
                 ViewBase view,
                 ViewHandle handle,
-                UniTaskCompletionSource closedSource)
+                UniTaskCompletionSource closedSource,
+                int requestVersion)
             {
                 InstanceId = instanceId;
                 Definition = definition;
@@ -805,6 +950,7 @@ namespace Orange.UIFramework
                 View = view;
                 Handle = handle;
                 ClosedSource = closedSource;
+                RequestVersion = requestVersion;
             }
 
             public string InstanceId { get; }
@@ -813,6 +959,9 @@ namespace Orange.UIFramework
             public ViewBase View { get; }
             public ViewHandle Handle { get; }
             public UniTaskCompletionSource ClosedSource { get; }
+            public UniTaskCompletionSource CloseSource { get; set; }
+            public UniTask CloseTask => CloseSource != null ? CloseSource.Task : UniTask.CompletedTask;
+            public int RequestVersion { get; }
             public bool Closing { get; set; }
         }
     }

@@ -69,6 +69,7 @@ namespace Orange.UIFramework
             string viewTypeName,
             ViewKind kind,
             ViewRuntimePhase phase,
+            int requestVersion,
             string layerName,
             bool inputActive,
             bool blocksRaycasts)
@@ -78,6 +79,7 @@ namespace Orange.UIFramework
             ViewTypeName = viewTypeName ?? string.Empty;
             Kind = kind;
             Phase = phase;
+            RequestVersion = requestVersion;
             LayerName = layerName ?? string.Empty;
             InputActive = inputActive;
             BlocksRaycasts = blocksRaycasts;
@@ -88,6 +90,7 @@ namespace Orange.UIFramework
         public string ViewTypeName { get; }
         public ViewKind Kind { get; }
         public ViewRuntimePhase Phase { get; }
+        public int RequestVersion { get; }
         public string LayerName { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
