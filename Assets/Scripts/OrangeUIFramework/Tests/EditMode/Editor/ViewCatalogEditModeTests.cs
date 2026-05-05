@@ -74,7 +74,7 @@ namespace Orange.UIFramework.Tests
         }
 
         [Test]
-        public void OrangeCatalog_RegistersMigratedMenuAndGamingPages()
+        public void OrangeCatalog_RegistersMigratedBusinessPages()
         {
             ViewCatalog catalog = AssetDatabase.LoadAssetAtPath<ViewCatalog>("Assets/Resources/Data/UI/OrangeUIViewCatalog.asset");
 
@@ -87,6 +87,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<GamingUIPage>(out ViewDefinition gamingDefinition), Is.True);
             Assert.That(gamingDefinition.Id, Is.EqualTo("page.gaming"));
             Assert.That(gamingDefinition.Layer, Is.EqualTo(ViewLayer.Hud));
+            Assert.That(catalog.TryFindByType<ShopUIPage>(out ViewDefinition shopDefinition), Is.True);
+            Assert.That(shopDefinition.Id, Is.EqualTo("page.shop"));
+            Assert.That(shopDefinition.Layer, Is.EqualTo(ViewLayer.Page));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)
