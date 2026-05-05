@@ -49,4 +49,11 @@ public enum AudioSfxKey
     SwordClash = 309,
 
     #endregion
+
+    #region 敌人音效
+
+    EnemyHurtGeneric = 400,
+    EnemyHurtSkeleton = 401,
+
+    #endregion
 }

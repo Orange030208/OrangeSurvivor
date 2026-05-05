@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 1.18
   restoreDefaultPoseOnComplete: 1
-  referenceTargetOffset: {x: 0, y: 1}
+  referenceTargetOffset: {x: 0, y: 0.65}
   retargetScaleWeight: {x: 0, y: 1}
   motionKeyframes:
   - normalizedTime: 0

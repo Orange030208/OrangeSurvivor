@@ -10,8 +10,10 @@ public abstract class EnemySO : ScriptableObject
     public EnemyRole role;
     [SerializeField] private BasePropGroupSO basePropsAsset;
     [SerializeField] private EntityAnimationConfig animConfig;
+    [SerializeField] private AudioSfxKey damagedSfxKey = AudioSfxKey.None;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
     public EntityAnimationConfig AnimConfig => animConfig;
+    public AudioSfxKey DamagedSfxKey => damagedSfxKey;
 
     public abstract IReadOnlyList<EnemyAttackDefinitionSO> GetAttackDefinitions();
 

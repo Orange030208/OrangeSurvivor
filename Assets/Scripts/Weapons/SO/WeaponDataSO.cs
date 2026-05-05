@@ -160,7 +160,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private WeaponSequenceProjectileDefinition[] sequenceProjectileList;
     [SerializeField] private WeaponSequenceSfxDefinition[] sequenceSfxList;
     [SerializeField] private WeaponSequenceVfxDefinition[] sequenceVfxList;
-    [SerializeField] private AudioSfxKey hitSfxKey = AudioSfxKey.None;
     [Tooltip("启用后，攻击序列中的 OpenHitWindow / CloseHitWindow 事件才会产生碰撞盒检测。")]
     [SerializeField] private bool enableHitBox;
     [SerializeField] private GameObject hitVfxPrefab;
@@ -180,7 +179,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public IReadOnlyList<WeaponSequenceProjectileDefinition> SequenceProjectileList => sequenceProjectileList;
     public IReadOnlyList<WeaponSequenceSfxDefinition> SequenceSfxList => sequenceSfxList;
     public IReadOnlyList<WeaponSequenceVfxDefinition> SequenceVfxList => sequenceVfxList;
-    public AudioSfxKey HitSfxKey => hitSfxKey;
     public bool EnableHitBox => enableHitBox;
     public GameObject HitVfxPrefab => hitVfxPrefab;
     public Vector2 HitBoxSize => hitBoxSize;

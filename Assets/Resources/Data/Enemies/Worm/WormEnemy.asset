@@ -16,6 +16,7 @@ MonoBehaviour:
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 9deac3c96a64e7a4595e498cf6b7fe6d, type: 2}
   animConfig: {fileID: 11400000, guid: 8e77b9a949c2bbf4891931c4deb20cd1, type: 2}
+  damagedSfxKey: 400
   attackDefinition: {fileID: 11400000, guid: 0123507837284daa8c9d5a75d7291d68, type: 2}
   retreatAttackDefinition: {fileID: 11400000, guid: 1f9e8f3f6d6543b79d7710f8a8f8df23, type: 2}
   retreatTriggerDistance: 4

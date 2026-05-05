@@ -153,3 +153,13 @@ MonoBehaviour:
     busType: 1
     playbackMode: 0
     pitch: 1
+  - sfxKey: 400
+    clip: {fileID: 8300000, guid: 0336426ef5a94380b55d051a9fbf71b0, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1
+  - sfxKey: 401
+    clip: {fileID: 8300000, guid: 0e1f35f87e35d9147b766b7442d2d908, type: 3}
+    busType: 1
+    playbackMode: 0
+    pitch: 1

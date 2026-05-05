@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: AK47
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   itemName: AK-47
   itemIcon: {fileID: 21300000, guid: dceaccc930a314f4e80bbed41f73688b, type: 3}
   itemPrice: 36
@@ -41,7 +41,6 @@ MonoBehaviour:
   sequenceSfxList:
   - sfxKey: 300
   sequenceVfxList: []
-  hitSfxKey: 307
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}

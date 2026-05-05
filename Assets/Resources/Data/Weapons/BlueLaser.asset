@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: BlueLaser
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   itemName: Blue Laser
   itemIcon: {fileID: 21300000, guid: a287e99e4dc2e734d9720612ff56c835, type: 3}
   itemPrice: 42
@@ -37,7 +37,6 @@ MonoBehaviour:
   sequenceSfxList:
   - sfxKey: 303
   sequenceVfxList: []
-  hitSfxKey: 308
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}

@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5f21ea603ecfe74f8c2bbd0188a6bbc, type: 3}
   m_Name: Projectile2
-  m_EditorClassIdentifier: 
-  id: 
-  displayName: 
+  m_EditorClassIdentifier:
+  id:
+  displayName:
   templateKind: 0
   projectilePrefab: {fileID: 0}
   damageMultiplier: 1
@@ -27,9 +27,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   debugColor: {r: 1, g: 1, b: 1, a: 1}
   launchSfxKey: 0
-  impactSfxKey: 308
   launchVfxPrefab: {fileID: 8045101923008439785, guid: c38c59187e252e64cb479d7187288073, type: 3}
   impactVfxPrefab: {fileID: 8045101923008439785, guid: c38c59187e252e64cb479d7187288073, type: 3}
   useDirectionFacing: 1
   rotationOffset: 0
-  launchAnimationTrigger: 
+  launchAnimationTrigger:

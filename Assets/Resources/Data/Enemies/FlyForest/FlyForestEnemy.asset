@@ -16,6 +16,7 @@ MonoBehaviour:
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 5b80b26554184b547876d735e9625c9c, type: 2}
   animConfig: {fileID: 11400000, guid: 89d96c6114136f04387029c1f88e012a, type: 2}
+  damagedSfxKey: 400
   normalAttackDefinition: {fileID: 11400000, guid: 0123507837284daa8c9d5a75d7291d68, type: 2}
   lowHpPercent: 30
   fastBurstModifierData:

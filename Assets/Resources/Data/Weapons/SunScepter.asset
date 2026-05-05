@@ -11,12 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: SunScepter
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   itemName: "\u66DC\u91D1\u6743\u6756"
   itemIcon: {fileID: 21300000, guid: 1e81b3e36f57b914ea642a98fa34727d, type: 3}
   itemPrice: 24
   itemType: 0
-  itemDescription: 
+  itemDescription:
   tags: 010000000200000003000000
   attackSequence: {fileID: 11400000, guid: 5bc120404a5b6cc4bba80f9a8c7dceae, type: 2}
   visualForwardAngle: 45
@@ -37,7 +37,6 @@ MonoBehaviour:
   sequenceSfxList:
   - sfxKey: 303
   sequenceVfxList: []
-  hitSfxKey: 308
   enableHitBox: 0
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}

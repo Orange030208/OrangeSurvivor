@@ -210,11 +210,6 @@ public class Projectile : Entity, IProjectile
             return;
         }
 
-        if (projectileDefinition.ImpactSfxKey != AudioSfxKey.None)
-        {
-            AudioSfxBridge.RequestPlay(projectileDefinition.ImpactSfxKey);
-        }
-
         RuntimeVfx.Spawn(projectileDefinition.ImpactVfxPrefab, impactPosition, transform.rotation);
     }
 

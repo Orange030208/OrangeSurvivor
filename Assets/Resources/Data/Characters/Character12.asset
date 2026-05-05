@@ -33,9 +33,6 @@ MonoBehaviour:
   - propType: 0
     modifierType: 3
     value: 200
-  - propType: 15
-    modifierType: 0
-    value: 5
   - propType: 0
     modifierType: 0
     value: 5
@@ -44,9 +41,7 @@ MonoBehaviour:
   - rid: 451546934818111493
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
-    level: 4
-  - weaponData: {fileID: 11400000, guid: 226812e54d6907d4d95d3d40982df8f4, type: 2}
-    level: 1
+    level: 2
   initialAccessories: []
   references:
     version: 2

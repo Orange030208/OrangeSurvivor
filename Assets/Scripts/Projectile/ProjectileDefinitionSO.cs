@@ -40,8 +40,6 @@ public class ProjectileDefinitionSO : ScriptableObject
     [SerializeField] private Color debugColor = Color.white;
     [Tooltip("子弹发射时播放的音效")]
     [SerializeField] private AudioSfxKey launchSfxKey = AudioSfxKey.None;
-    [Tooltip("子弹命中有效目标时播放的音效")]
-    [SerializeField] private AudioSfxKey impactSfxKey = AudioSfxKey.None;
     [Tooltip("发射时生成的可选特效预制体")]
     [SerializeField] private GameObject launchVfxPrefab;
     [Tooltip("命中时生成的可选特效预制体")]
@@ -71,7 +69,6 @@ public class ProjectileDefinitionSO : ScriptableObject
     public Sprite Icon => icon;
     public Color DebugColor => debugColor;
     public AudioSfxKey LaunchSfxKey => launchSfxKey;
-    public AudioSfxKey ImpactSfxKey => impactSfxKey;
     public GameObject LaunchVfxPrefab => launchVfxPrefab;
     public GameObject ImpactVfxPrefab => impactVfxPrefab;
     public bool UseDirectionFacing => useDirectionFacing;
