@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage` 迁移已完成，下一步继续按单模块提交边界迁移 `GamePauseMenu`。
+当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 迁移已完成，下一步继续按单模块提交边界迁移 `GameOverUIPage`。
 
 已完成：
 
@@ -379,13 +379,14 @@
 - 已新增 `LegacyUIPageBase_CanOpenAndCloseThroughOrangeManagerTypeApi` EditMode 测试，覆盖旧 `UIPageBase` 经 Orange Manager 类型 API 打开 / 关闭的桥接路径。
 - 已完成 `GamingUIPage` 第二模块迁移：`OrangeUIViewCatalog` 新增 `page.gaming`，Prefab 指向 `UI Gaming.prefab`，Layer 沿用旧 UI Catalog 的 `Hud` 层；旧 `GameManager` 中 `uiManager.OpenPage<GamingUIPage>(...)` 和 `transition.ClosePage<GamingUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `ShopUIPage` 第三模块迁移：`OrangeUIViewCatalog` 新增 `page.shop`，Prefab 指向 `UI Shop.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<ShopUIPage>(...)` 和 `transition.ClosePage<ShopUIPage>()` 会通过旧 UIManager 委托新 UIManager。
-- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage` 与 `ShopUIPage` 均可按类型解析并通过 Catalog 校验。
+- 已完成 `GamePauseMenu` 第四模块迁移：`OrangeUIViewCatalog` 新增 `page.pause`，Prefab 指向 `UI Pause.prefab`，ViewKind 仍为 Page，Layer 沿用旧 UI Catalog 的 `Popup` 层；旧 `GameManager` 中 `uiManager.OpenPage<GamePauseMenu>(...)`、`transition.ClosePage<GamePauseMenu>()` 和 `uiManager.IsPageOpen<GamePauseMenu>()` 会通过旧 UIManager 委托新 UIManager。
+- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 与 `GamePauseMenu` 均可按类型解析并通过 Catalog 校验。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；本轮是按用户明确要求跳过门禁后先迁移 `MenuUIPage`，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 尚未迁移 `GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage`。
+- 尚未迁移 `GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage`。
 
 当前风险：
 
@@ -410,8 +411,8 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `ShopUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
-4. 继续迁移第四个模块 `GamePauseMenu`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
+3. 确认 `GamePauseMenu` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
+4. 继续迁移第五个模块 `GameOverUIPage`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
 5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；如果能顺手补真实场景验证，应优先补并写入本文详细日志。
 6. 每迁移完一个模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
@@ -1160,3 +1161,39 @@
 
 - 提交 `ShopUIPage` 迁移。
 - 继续阶段 12 第四个模块 `GamePauseMenu`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。
+
+### 2026-05-05 阶段 12 GamePauseMenu 迁移
+
+完成内容：
+
+- 按阶段 12 单模块迁移策略迁移第四个页面 `GamePauseMenu`。
+- 读取并确认 `GamePauseMenu` 仍继承旧 `UIPageBase`，依赖 `PauseMenuContext`、`InventoryUiHostBinding`、`GameEventBus`、`PauseMenuPanelBinding` 和旧 `IUIRuntimeMotion` 侧栏动画；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
+- 确认旧 `GameManager` 打开 / 关闭 / 查询入口是 `uiManager.OpenPage<GamePauseMenu>(UIPageContextFactory.CreatePauseMenuContext(player))`、`transition.ClosePage<GamePauseMenu>()` 与 `uiManager.IsPageOpen<GamePauseMenu>()`，因此页面注册进 Orange Catalog 后会自动由旧 UIManager 委托新 UIManager。
+- 确认旧 `UIPrefabCatalog.asset` 中 `UI Pause.prefab` 位于 Popup 层；新 `OrangeUIViewCatalog.asset` 新增 `page.pause`，`ViewKind.Page`，`ViewLayer.Popup`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Pause.prefab`。
+- 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，增加 `GamePauseMenu` 类型解析、Id 和 Layer 断言。
+
+修改文件：
+
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `ShopUIPage` 迁移提交 `49c8402` 已存在。
+- 已读取 `GamePauseMenu.cs`、`PauseMenuContext.cs`、`GameManager.cs` 中的打开 / 关闭 / 查询调用、旧 `UIPrefabCatalog.asset` 记录和 `UI Pause.prefab` 元数据。
+- 已确认 `UI Pause.prefab` 根节点具备 `RectTransform`、`CanvasGroup`、`GamePauseMenu` 和 `UISequenceDirector`，Prefab GUID 为 `a3b9b07b8f661b249b31e24e92419cff`。
+- 已确认本轮只做 Catalog 接入和资产断言，不执行耗时完整回归；提交前采用脚本静态检查与 `git diff --check` 作为最小验证。
+
+遗留风险：
+
+- `GamePauseMenu` 尚未在真实 Play Mode 中验证暂停恢复、返回主菜单、背包绑定、设置侧栏显示 / 隐藏、时间缩放为 0 时的 UI 动画和事件解绑。
+- `GamePauseMenu` 仍通过迁移期旧 `UIPageBase` 桥接，而不是直接继承新 `Orange.UIFramework.PageBase`；这是为了保持暂停菜单业务依赖稳定，最终收口时必须清理该脚手架。
+- `PauseMenuPanelBinding.ConfigureTimings()` 仍是旧业务私有空方法；当前旧 `IUIRuntimeMotion` 没有公开运行时覆盖 Clip 时长 / Ease 的接口，本轮不通过反射或修改共享动画资产强行接入，最终收口时需要删除该空 API 或给 UIMotion 提供明确的 Timing 覆盖能力。
+- Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `GamePauseMenu` 迁移。
+- 继续阶段 12 第五个模块 `GameOverUIPage`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。

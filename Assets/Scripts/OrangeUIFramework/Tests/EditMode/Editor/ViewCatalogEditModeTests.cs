@@ -90,6 +90,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<ShopUIPage>(out ViewDefinition shopDefinition), Is.True);
             Assert.That(shopDefinition.Id, Is.EqualTo("page.shop"));
             Assert.That(shopDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<GamePauseMenu>(out ViewDefinition pauseDefinition), Is.True);
+            Assert.That(pauseDefinition.Id, Is.EqualTo("page.pause"));
+            Assert.That(pauseDefinition.Layer, Is.EqualTo(ViewLayer.Popup));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)
