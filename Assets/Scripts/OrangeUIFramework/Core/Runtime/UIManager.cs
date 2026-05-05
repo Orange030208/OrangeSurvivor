@@ -23,12 +23,24 @@ namespace Orange.UIFramework
         private readonly Dictionary<Type, RuntimeView> singletonViewsByType = new Dictionary<Type, RuntimeView>();
         private readonly Dictionary<Type, Queue<ViewBase>> pooledViewsByType = new Dictionary<Type, Queue<ViewBase>>();
         private readonly List<RuntimeView> pageStack = new List<RuntimeView>();
+        private readonly List<RuntimeView> popupStack = new List<RuntimeView>();
+        private readonly List<RuntimeView> modalStack = new List<RuntimeView>();
         private readonly List<ViewBase> tickingViews = new List<ViewBase>();
         private readonly SemaphoreSlim pageOperationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim popupOperationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim modalOperationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim tooltipOperationSemaphore = new SemaphoreSlim(1, 1);
         private Canvas rootCanvas;
         private CanvasScaler rootCanvasScaler;
         private GraphicRaycaster rootGraphicRaycaster;
         private RectTransform layersRoot;
+        private RuntimeView currentTooltip;
+        private RectTransform modalMaskRoot;
+        private Image modalMaskImage;
+        private Button modalMaskButton;
+        private RectTransform popupOutsideClickBlockerRoot;
+        private Image popupOutsideClickBlockerImage;
+        private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
         private int requestVersion;
         private bool initialized;
@@ -90,6 +102,7 @@ namespace Orange.UIFramework
             ValidateConfigurationOrThrow();
             BuildRootCanvas();
             BuildLayerRoots();
+            BuildFrameworkBlockers();
             viewLoader = new PrefabViewLoader();
             initialized = true;
         }
@@ -131,7 +144,7 @@ namespace Orange.UIFramework
                 requestVersion,
                 BuildViewDiagnostics(),
                 BuildPoolDiagnostics(),
-                string.Empty,
+                currentTooltip != null ? currentTooltip.InstanceId : string.Empty,
                 rootCanvas != null ? rootCanvas.name : string.Empty,
                 rootCanvas != null && rootCanvas.gameObject.activeInHierarchy,
                 layerDiagnostics);
@@ -148,6 +161,7 @@ namespace Orange.UIFramework
             builder.AppendLine($"CanvasMode: {diagnostics.CanvasMode}");
             builder.AppendLine($"Camera: {(string.IsNullOrWhiteSpace(diagnostics.CameraName) ? "None" : diagnostics.CameraName)}");
             builder.AppendLine($"RequestVersion: {diagnostics.RequestVersion}");
+            builder.AppendLine($"CurrentTooltip: {(string.IsNullOrWhiteSpace(diagnostics.CurrentTooltipInstanceId) ? "None" : diagnostics.CurrentTooltipInstanceId)}");
             builder.AppendLine($"Layers: {diagnostics.Layers.Count}");
             builder.AppendLine($"OpenViews: {diagnostics.OpenViews.Count}");
             builder.AppendLine($"Pools: {diagnostics.Pools.Count}");
@@ -219,7 +233,7 @@ namespace Orange.UIFramework
             CancellationToken cancellationToken = default)
             where TPopup : PopupBase
         {
-            throw CreateStageNotImplementedException(nameof(ShowPopupAsync));
+            return ShowPopupInternalAsync<TPopup>(payload, options, cancellationToken);
         }
 
         public UniTask<ModalResult<TResult>> ShowModalAsync<TModal, TResult>(
@@ -227,7 +241,7 @@ namespace Orange.UIFramework
             CancellationToken cancellationToken = default)
             where TModal : ModalBase<TResult>
         {
-            throw CreateStageNotImplementedException(nameof(ShowModalAsync));
+            return ShowModalInternalAsync<TModal, TResult>(payload, cancellationToken);
         }
 
         public UniTask<ViewHandle<TTooltip>> ShowTooltipAsync<TTooltip>(
@@ -236,25 +250,42 @@ namespace Orange.UIFramework
             CancellationToken cancellationToken = default)
             where TTooltip : TooltipBase
         {
-            throw CreateStageNotImplementedException(nameof(ShowTooltipAsync));
+            return ShowTooltipInternalAsync<TTooltip>(payload, options, cancellationToken);
         }
 
         public void UpdateTooltipPosition(Vector2 screenPosition)
         {
-            throw CreateStageNotImplementedException(nameof(UpdateTooltipPosition));
+            if (currentTooltip == null || currentTooltip.View == null)
+            {
+                return;
+            }
+
+            TooltipOptions currentOptions = currentTooltip.TooltipOptions;
+            if (!currentOptions.FollowPointer)
+            {
+                return;
+            }
+
+            currentTooltip.TooltipOptions = new TooltipOptions(
+                currentOptions.Anchor,
+                screenPosition,
+                currentOptions.Offset,
+                followPointer: true,
+                margin: currentOptions.Margin);
+            ApplyTooltipPosition(currentTooltip);
         }
 
         public void HideTooltip()
         {
-            throw CreateStageNotImplementedException(nameof(HideTooltip));
+            HideTooltipWithGateAsync(CloseReason.Normal, CancellationToken.None).Forget();
         }
 
         public bool IsOpen<TView>() where TView : ViewBase
         {
             Type viewType = typeof(TView);
-            for (int i = 0; i < pageStack.Count; i++)
+            foreach (KeyValuePair<string, RuntimeView> pair in openedViewsByInstance)
             {
-                RuntimeView runtimeView = pageStack[i];
+                RuntimeView runtimeView = pair.Value;
                 if (runtimeView.View != null && runtimeView.View.GetType() == viewType && runtimeView.View.IsOpen)
                 {
                     return true;
@@ -320,7 +351,7 @@ namespace Orange.UIFramework
                 else
                 {
                     MovePageToTop(openedSingleton);
-                    ApplyPageInputState();
+                    RefreshInputState();
                     return new ViewHandle<TPage>(openedSingleton.Handle, (TPage)openedSingleton.View);
                 }
             }
@@ -343,7 +374,7 @@ namespace Orange.UIFramework
                 }
 
                 RegisterOpenedPage(runtimeView);
-                ApplyPageInputState();
+                RefreshInputState();
                 return new ViewHandle<TPage>(runtimeView.Handle, (TPage)runtimeView.View);
             }
             catch (Exception exception)
@@ -395,6 +426,184 @@ namespace Orange.UIFramework
             }
         }
 
+        private async UniTask<ViewHandle<TPopup>> ShowPopupInternalAsync<TPopup>(
+            object payload,
+            PopupOptions options,
+            CancellationToken cancellationToken)
+            where TPopup : PopupBase
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            await popupOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                PopupOptions resolvedOptions = options;
+
+                Type popupType = typeof(TPopup);
+                ViewDefinition definition = ResolveDefinition(popupType, ViewKind.Popup);
+
+                if (resolvedOptions.ReplaceSameGroup && !string.IsNullOrWhiteSpace(resolvedOptions.GroupId))
+                {
+                    await ClosePopupGroupAsync(resolvedOptions.GroupId, CloseReason.Replace, CancellationToken.None);
+                }
+
+                RuntimeView runtimeView = await OpenRuntimeViewAsync(
+                    definition,
+                    popupType,
+                    ViewKind.Popup,
+                    payload,
+                    ++requestVersion,
+                    cancellationToken);
+
+                runtimeView.PopupOptions = resolvedOptions;
+                if (!IsRuntimeViewOpened(runtimeView))
+                {
+                    RegisterOpenedPopup(runtimeView);
+                }
+
+                MovePopupToTop(runtimeView);
+                ApplyPopupPosition(runtimeView);
+                RefreshInputState();
+                return new ViewHandle<TPopup>(runtimeView.Handle, (TPopup)runtimeView.View);
+            }
+            finally
+            {
+                popupOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask<ModalResult<TResult>> ShowModalInternalAsync<TModal, TResult>(
+            object payload,
+            CancellationToken cancellationToken)
+            where TModal : ModalBase<TResult>
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            await modalOperationSemaphore.WaitAsync(cancellationToken);
+            RuntimeView runtimeView = null;
+            TModal modal = null;
+            try
+            {
+                Type modalType = typeof(TModal);
+                ViewDefinition definition = ResolveDefinition(modalType, ViewKind.Modal);
+                runtimeView = await OpenRuntimeViewAsync(
+                    definition,
+                    modalType,
+                    ViewKind.Modal,
+                    payload,
+                    ++requestVersion,
+                    cancellationToken);
+
+                modal = (TModal)runtimeView.View;
+                if (!IsRuntimeViewOpened(runtimeView))
+                {
+                    RegisterOpenedModal(runtimeView);
+                }
+
+                MoveModalToTop(runtimeView);
+                RefreshInputState();
+            }
+            finally
+            {
+                modalOperationSemaphore.Release();
+            }
+
+            ModalResult<TResult> result;
+            try
+            {
+                result = await modal.ResultTask.AttachExternalCancellation(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                ((IModalView)modal).CompleteResultIfNeeded(CloseReason.Cancel);
+                await CloseRuntimeViewAsync(runtimeView, CloseReason.Cancel, CancellationToken.None);
+                throw;
+            }
+
+            await CloseRuntimeViewAsync(runtimeView, result.CloseReason, CancellationToken.None);
+            return result;
+        }
+
+        private async UniTask<ViewHandle<TTooltip>> ShowTooltipInternalAsync<TTooltip>(
+            object payload,
+            TooltipOptions options,
+            CancellationToken cancellationToken)
+            where TTooltip : TooltipBase
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            await tooltipOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                await HideTooltipLockedAsync(CloseReason.Replace, CancellationToken.None);
+
+                Type tooltipType = typeof(TTooltip);
+                ViewDefinition definition = ResolveDefinition(tooltipType, ViewKind.Tooltip);
+                RuntimeView runtimeView = await OpenRuntimeViewAsync(
+                    definition,
+                    tooltipType,
+                    ViewKind.Tooltip,
+                    payload,
+                    ++requestVersion,
+                    cancellationToken);
+
+                runtimeView.TooltipOptions = options;
+                if (!IsRuntimeViewOpened(runtimeView))
+                {
+                    RegisterOpenedTooltip(runtimeView);
+                }
+
+                ApplyTooltipPosition(runtimeView);
+                RefreshInputState();
+                return new ViewHandle<TTooltip>(runtimeView.Handle, (TTooltip)runtimeView.View);
+            }
+            finally
+            {
+                tooltipOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask<RuntimeView> OpenRuntimeViewAsync(
+            ViewDefinition definition,
+            Type viewType,
+            ViewKind kind,
+            object payload,
+            int currentRequestVersion,
+            CancellationToken cancellationToken)
+        {
+            if (definition.Singleton && singletonViewsByType.TryGetValue(viewType, out RuntimeView openedSingleton))
+            {
+                if (openedSingleton.Closing)
+                {
+                    await openedSingleton.CloseTask.AttachExternalCancellation(cancellationToken);
+                }
+                else
+                {
+                    return openedSingleton;
+                }
+            }
+
+            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, viewType, currentRequestVersion, cancellationToken);
+            OpenContext context = new OpenContext(
+                viewType,
+                definition.Id,
+                runtimeView.InstanceId,
+                kind,
+                payload,
+                currentRequestVersion);
+
+            try
+            {
+                await runtimeView.View.OpenInternalAsync(context, cancellationToken);
+                return runtimeView;
+            }
+            catch (Exception exception)
+            {
+                await CleanupFailedOpenAsync(runtimeView, exception);
+                throw;
+            }
+        }
+
         private async UniTask<RuntimeView> CreateRuntimeViewAsync(
             ViewDefinition definition,
             Type viewType,
@@ -435,6 +644,32 @@ namespace Orange.UIFramework
             openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
             pageStack.Add(runtimeView);
 
+            RegisterSharedRuntimeState(runtimeView);
+        }
+
+        private void RegisterOpenedPopup(RuntimeView runtimeView)
+        {
+            openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
+            popupStack.Add(runtimeView);
+            RegisterSharedRuntimeState(runtimeView);
+        }
+
+        private void RegisterOpenedModal(RuntimeView runtimeView)
+        {
+            openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
+            modalStack.Add(runtimeView);
+            RegisterSharedRuntimeState(runtimeView);
+        }
+
+        private void RegisterOpenedTooltip(RuntimeView runtimeView)
+        {
+            openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
+            currentTooltip = runtimeView;
+            RegisterSharedRuntimeState(runtimeView);
+        }
+
+        private void RegisterSharedRuntimeState(RuntimeView runtimeView)
+        {
             if (runtimeView.Definition.Singleton)
             {
                 singletonViewsByType[runtimeView.ViewType] = runtimeView;
@@ -444,6 +679,13 @@ namespace Orange.UIFramework
             {
                 tickingViews.Add(runtimeView.View);
             }
+        }
+
+        private bool IsRuntimeViewOpened(RuntimeView runtimeView)
+        {
+            return runtimeView != null &&
+                   !string.IsNullOrWhiteSpace(runtimeView.InstanceId) &&
+                   openedViewsByInstance.ContainsKey(runtimeView.InstanceId);
         }
 
         private UniTask CloseByInstanceIdAsync(
@@ -486,11 +728,12 @@ namespace Orange.UIFramework
             {
                 // Once close starts it must finish, otherwise the view can be left half-closed and unrecyclable.
                 await runtimeView.View.CloseInternalAsync(reason, CancellationToken.None);
+                CompleteModalResultIfNeeded(runtimeView, reason);
                 UnregisterRuntimeView(runtimeView);
                 RecycleOrRelease(runtimeView);
                 runtimeView.ClosedSource.TrySetResult();
                 runtimeView.CloseSource.TrySetResult();
-                ApplyPageInputState();
+                RefreshInputState();
             }
             catch (Exception exception)
             {
@@ -516,11 +759,75 @@ namespace Orange.UIFramework
             }
         }
 
+        private async UniTask ClosePopupGroupAsync(
+            string groupId,
+            CloseReason reason,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(groupId) || popupStack.Count == 0)
+            {
+                return;
+            }
+
+            List<RuntimeView> popups = new List<RuntimeView>(popupStack);
+            for (int i = popups.Count - 1; i >= 0; i--)
+            {
+                RuntimeView popup = popups[i];
+                if (string.Equals(popup.PopupOptions.GroupId, groupId, StringComparison.Ordinal))
+                {
+                    await CloseRuntimeViewAsync(popup, reason, cancellationToken);
+                }
+            }
+        }
+
+        private async UniTask HideTooltipWithGateAsync(CloseReason reason, CancellationToken cancellationToken)
+        {
+            await tooltipOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                await HideTooltipLockedAsync(reason, cancellationToken);
+            }
+            finally
+            {
+                tooltipOperationSemaphore.Release();
+            }
+        }
+
+        private UniTask HideTooltipLockedAsync(CloseReason reason, CancellationToken cancellationToken)
+        {
+            if (currentTooltip == null)
+            {
+                return UniTask.CompletedTask;
+            }
+
+            return CloseRuntimeViewAsync(currentTooltip, reason, cancellationToken);
+        }
+
+        private void CompleteModalResultIfNeeded(RuntimeView runtimeView, CloseReason reason)
+        {
+            if (runtimeView == null || runtimeView.View == null || runtimeView.Definition.Kind != ViewKind.Modal)
+            {
+                return;
+            }
+
+            if (runtimeView.View is IModalView modalView)
+            {
+                modalView.CompleteResultIfNeeded(reason);
+            }
+        }
+
         private void UnregisterRuntimeView(RuntimeView runtimeView)
         {
             openedViewsByInstance.Remove(runtimeView.InstanceId);
             pageStack.Remove(runtimeView);
+            popupStack.Remove(runtimeView);
+            modalStack.Remove(runtimeView);
             tickingViews.Remove(runtimeView.View);
+
+            if (ReferenceEquals(currentTooltip, runtimeView))
+            {
+                currentTooltip = null;
+            }
 
             if (runtimeView.Definition.Singleton &&
                 singletonViewsByType.TryGetValue(runtimeView.ViewType, out RuntimeView singleton) &&
@@ -715,15 +1022,147 @@ namespace Orange.UIFramework
             runtimeView.View.transform.SetAsLastSibling();
         }
 
-        private void ApplyPageInputState()
+        private void MovePopupToTop(RuntimeView runtimeView)
         {
+            if (runtimeView == null || !popupStack.Remove(runtimeView))
+            {
+                return;
+            }
+
+            popupStack.Add(runtimeView);
+            runtimeView.View.transform.SetAsLastSibling();
+        }
+
+        private void MoveModalToTop(RuntimeView runtimeView)
+        {
+            if (runtimeView == null || !modalStack.Remove(runtimeView))
+            {
+                return;
+            }
+
+            modalStack.Add(runtimeView);
+            runtimeView.View.transform.SetAsLastSibling();
+        }
+
+        private void RefreshInputState()
+        {
+            RuntimeView topModal = modalStack.Count > 0 ? modalStack[modalStack.Count - 1] : null;
+            RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
             RuntimeView topPage = pageStack.Count > 0 ? pageStack[pageStack.Count - 1] : null;
+
             for (int i = 0; i < pageStack.Count; i++)
             {
                 RuntimeView page = pageStack[i];
-                bool isTop = ReferenceEquals(page, topPage);
-                page.View.ApplyInputState(isTop, isTop);
+                bool active = topModal == null && ReferenceEquals(page, topPage);
+                page.View.ApplyInputState(active, active);
             }
+
+            for (int i = 0; i < popupStack.Count; i++)
+            {
+                RuntimeView popup = popupStack[i];
+                bool active = topModal == null && ReferenceEquals(popup, topPopup);
+                popup.View.ApplyInputState(active, active);
+            }
+
+            for (int i = 0; i < modalStack.Count; i++)
+            {
+                RuntimeView modal = modalStack[i];
+                bool active = ReferenceEquals(modal, topModal);
+                modal.View.ApplyInputState(active, active);
+            }
+
+            if (currentTooltip != null && currentTooltip.View != null)
+            {
+                currentTooltip.View.ApplyInputState(false, false);
+            }
+
+            RefreshModalMask();
+            RefreshPopupOutsideClickBlocker();
+        }
+
+        private void ApplyPopupPosition(RuntimeView runtimeView)
+        {
+            if (runtimeView == null || runtimeView.View == null)
+            {
+                return;
+            }
+
+            RectTransform rectTransform = runtimeView.View.transform as RectTransform;
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            PopupOptions options = runtimeView.PopupOptions;
+            Vector2 position = options.Offset;
+            if (options.HasAnchor)
+            {
+                position += GetAnchoredCenterInLayer(options.Anchor, rectTransform.parent as RectTransform);
+            }
+            else if (options.HasScreenPosition)
+            {
+                position += ScreenToLayerPosition(options.ScreenPosition, rectTransform.parent as RectTransform);
+            }
+
+            rectTransform.anchoredPosition = position;
+        }
+
+        private void ApplyTooltipPosition(RuntimeView runtimeView)
+        {
+            if (runtimeView == null || runtimeView.View == null)
+            {
+                return;
+            }
+
+            RectTransform rectTransform = runtimeView.View.transform as RectTransform;
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            TooltipOptions options = runtimeView.TooltipOptions;
+            Vector2 position = options.Offset;
+            if (options.HasAnchor)
+            {
+                position += GetAnchoredCenterInLayer(options.Anchor, rectTransform.parent as RectTransform);
+            }
+            else if (options.HasScreenPosition)
+            {
+                position += ScreenToLayerPosition(options.ScreenPosition, rectTransform.parent as RectTransform);
+            }
+
+            rectTransform.anchoredPosition = position;
+        }
+
+        private Vector2 GetAnchoredCenterInLayer(RectTransform anchor, RectTransform layerRoot)
+        {
+            if (anchor == null || layerRoot == null)
+            {
+                return Vector2.zero;
+            }
+
+            Vector3 worldCenter = anchor.TransformPoint(anchor.rect.center);
+            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(rootCanvas != null ? rootCanvas.worldCamera : null, worldCenter);
+            return ScreenToLayerPosition(screenPosition, layerRoot);
+        }
+
+        private Vector2 ScreenToLayerPosition(Vector2 screenPosition, RectTransform layerRoot)
+        {
+            if (layerRoot == null)
+            {
+                return screenPosition;
+            }
+
+            Camera camera = rootCanvas != null && rootCanvas.renderMode == RenderMode.ScreenSpaceCamera
+                ? rootCanvas.worldCamera
+                : null;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(layerRoot, screenPosition, camera, out Vector2 localPoint))
+            {
+                return localPoint;
+            }
+
+            return Vector2.zero;
         }
 
         private ViewDefinition ResolveDefinition(Type viewType, ViewKind expectedKind)
@@ -875,6 +1314,127 @@ namespace Orange.UIFramework
             }
         }
 
+        private void BuildFrameworkBlockers()
+        {
+            modalMaskRoot = CreateBlockingImage(
+                ViewLayer.ModalMask,
+                "ModalMask",
+                new Color(0f, 0f, 0f, 0.55f),
+                out modalMaskImage,
+                out modalMaskButton);
+            modalMaskButton.onClick.AddListener(OnModalMaskClicked);
+            modalMaskRoot.gameObject.SetActive(false);
+
+            popupOutsideClickBlockerRoot = CreateBlockingImage(
+                ViewLayer.Popup,
+                "PopupOutsideClickBlocker",
+                new Color(0f, 0f, 0f, 0f),
+                out popupOutsideClickBlockerImage,
+                out popupOutsideClickBlockerButton);
+            popupOutsideClickBlockerButton.onClick.AddListener(OnPopupOutsideClick);
+            popupOutsideClickBlockerRoot.gameObject.SetActive(false);
+        }
+
+        private RectTransform CreateBlockingImage(
+            ViewLayer layer,
+            string blockerName,
+            Color color,
+            out Image image,
+            out Button button)
+        {
+            if (!TryGetLayerRoot(layer, out RectTransform layerRoot))
+            {
+                throw new KeyNotFoundException($"UIManager failed to create '{blockerName}': layer '{layer}' is not configured.");
+            }
+
+            RectTransform blockerRoot = EnsureChildRect(layerRoot, blockerName);
+            image = blockerRoot.GetComponent<Image>();
+            if (image == null)
+            {
+                image = blockerRoot.gameObject.AddComponent<Image>();
+            }
+
+            image.color = color;
+            image.raycastTarget = true;
+
+            button = blockerRoot.GetComponent<Button>();
+            if (button == null)
+            {
+                button = blockerRoot.gameObject.AddComponent<Button>();
+            }
+
+            button.transition = Selectable.Transition.None;
+            return blockerRoot;
+        }
+
+        private void RefreshModalMask()
+        {
+            if (modalMaskRoot == null)
+            {
+                return;
+            }
+
+            bool hasModal = modalStack.Count > 0;
+            modalMaskRoot.gameObject.SetActive(hasModal);
+            if (!hasModal)
+            {
+                return;
+            }
+
+            modalMaskRoot.SetAsLastSibling();
+        }
+
+        private void RefreshPopupOutsideClickBlocker()
+        {
+            if (popupOutsideClickBlockerRoot == null)
+            {
+                return;
+            }
+
+            RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
+            bool active = modalStack.Count == 0 && topPopup != null && topPopup.PopupOptions.CloseOnOutsideClick;
+            popupOutsideClickBlockerRoot.gameObject.SetActive(active);
+            if (!active)
+            {
+                return;
+            }
+
+            popupOutsideClickBlockerRoot.SetAsLastSibling();
+            topPopup.View.transform.SetAsLastSibling();
+        }
+
+        private void OnModalMaskClicked()
+        {
+            if (modalStack.Count == 0)
+            {
+                return;
+            }
+
+            RuntimeView topModal = modalStack[modalStack.Count - 1];
+            if (!topModal.Definition.CloseOnBackgroundClick)
+            {
+                return;
+            }
+
+            CloseRuntimeViewAsync(topModal, CloseReason.OutsideClick, CancellationToken.None).Forget();
+        }
+
+        private void OnPopupOutsideClick()
+        {
+            if (popupStack.Count == 0)
+            {
+                return;
+            }
+
+            RuntimeView topPopup = popupStack[popupStack.Count - 1];
+            if (!topPopup.PopupOptions.CloseOnOutsideClick)
+            {
+                return;
+            }
+
+            CloseRuntimeViewAsync(topPopup, CloseReason.OutsideClick, CancellationToken.None).Forget();
+        }
+
         private static RectTransform EnsureChildRect(Transform parent, string childName)
         {
             Transform existing = parent.Find(childName);
@@ -905,11 +1465,6 @@ namespace Orange.UIFramework
             rectTransform.offsetMax = Vector2.zero;
             rectTransform.localScale = Vector3.one;
             rectTransform.localRotation = Quaternion.identity;
-        }
-
-        private static NotImplementedException CreateStageNotImplementedException(string apiName)
-        {
-            return new NotImplementedException($"UIManager.{apiName} is scheduled for a later OrangeUIFramework implementation stage.");
         }
 
         private enum PageOpenMode
@@ -962,6 +1517,8 @@ namespace Orange.UIFramework
             public UniTaskCompletionSource CloseSource { get; set; }
             public UniTask CloseTask => CloseSource != null ? CloseSource.Task : UniTask.CompletedTask;
             public int RequestVersion { get; }
+            public PopupOptions PopupOptions { get; set; }
+            public TooltipOptions TooltipOptions { get; set; }
             public bool Closing { get; set; }
         }
     }

@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 6，UIMotion UniTask 适配与快照修复已完成，准备进入阶段 7。
+当前阶段：阶段 7，Popup / Modal / Tooltip 基础管理已完成，准备进入阶段 8。
 
 已完成：
 
@@ -348,11 +348,17 @@
 - 旧 `UIMotionPlayer.refreshDefaultsOnEnable` 已修复为每次启用均刷新快照。
 - `IUISequenceMotion` 已补充 `RefreshDefaults()`，`UISequenceDirector` 会向子 Motion 传播刷新；`UIMotionTransition` 会在入场前刷新快照再采样 Hidden 状态。
 - 已删除旧 `SidebarRegionMotion` / `SidebarRegionMotionGroup` 中无实际效果的空 `ConfigureTimings()` API；业务私有 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 暂未迁移，留待业务页面迁移阶段处理。
+- `UIManager` 已实现 `ShowPopupAsync()`、`ShowModalAsync()`、`ShowTooltipAsync()`、`UpdateTooltipPosition()`、`HideTooltip()`，不再抛阶段性未实现异常。
+- `UIManager` 已维护 `PopupStack`、`ModalStack` 和当前 Tooltip，并复用 `ViewBase` 生命周期、动画等待、关闭任务复用、池化回收链路。
+- Popup 已支持分组互斥、外部点击关闭、锚点 / 屏幕点基础定位；默认不冻结 Page 输入，只让栈顶 Popup 自身可交互。
+- Modal 已支持统一遮罩、遮罩点击按 `ViewDefinition.CloseOnBackgroundClick` 关闭、顶层 Modal 输入独占、关闭兜底完成取消结果。
+- Tooltip 已支持唯一实例、指针跟随更新位置、不阻挡输入，并废弃静态 ActivePresenter / 全局 Find 作为框架路径。
+- `PopupOptions.trackInStack` 构造赋值 bug 已修复，字段保留给后续 Back 行为使用；当前阶段 PopupStack 主要用于输入顺序、外部点击和分组关闭。
 
 未完成：
 
-- 尚未接入 Popup / Modal / Tooltip 管理、定位裁剪、本地化与测试。
-- `UIManager` 的 Popup / Modal / Tooltip API 目前仍显式抛出阶段性未实现异常，需阶段 7 完成。
+- 尚未实现 `FloatingViewPositioner` 的边缘裁剪、自动翻转和定位诊断。
+- 尚未接入本地化、运行时诊断增强与测试。
 
 当前风险：
 
@@ -360,19 +366,20 @@
 - 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
 - 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
-- Stage 5 只处理 Page 操作防重入；Popup 分组互斥、Modal 结果互斥和 Tooltip 唯一实例仍需阶段 7 分别实现。
 - Stage 6 只完成动画等待和快照修复，尚未通过 Unity PlayMode 验证实际 Prefab 上的 DOTween 行为；需要 Unity Editor 刷新后检查编译，并在测试阶段补动画等待与池化复用测试。
+- Stage 7 的 Popup / Tooltip 定位目前只做锚点中心或屏幕点到 Layer 本地坐标的基础换算，未做边缘裁剪、自动翻转和布局重测；这些必须在阶段 8 收口。
+- Stage 7 暂未实现全局 Back 顺序，`PopupOptions.TrackInStack` 已保留但未作为 Back 行为入口；后续如接 Back 需优先 Modal，再 Popup，再 Page。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 6 提交已存在。
-3. 从阶段 7 开始，实现 Popup / Modal / Tooltip 基础管理：PopupStack、ModalStack、当前 Tooltip，接入已完成的 ViewBase 生命周期和动画等待。
+2. 确认阶段 7 提交已存在。
+3. 从阶段 8 开始，实现 `FloatingViewPositioner` 定位裁剪：Overlay / Camera 坐标换算、锚点和屏幕点定位、边缘裁剪、自动翻转、定位结果诊断。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 7 重点读取 `UIManager` 已有 Page 打开/关闭公共流程，优先抽出或复用创建、注册、关闭、回收逻辑，不引入 `UIService` 平行入口。
+6. 阶段 8 重点读取 `UIManager.ApplyPopupPosition()`、`UIManager.ApplyTooltipPosition()`、`PopupOptions`、`TooltipOptions` 和开发文档 `12.1 Popup / Tooltip 定位裁剪工具`，先替换现有基础定位，不引入业务页面改动。
 
 下一轮禁止：
 
@@ -669,3 +676,46 @@
 
 - 提交阶段 6。
 - 进入阶段 7，实现 Popup / Modal / Tooltip 基础管理，优先复用当前 `UIManager` 的 RuntimeView 创建、关闭、回收链路，并保持动画等待、request version 和关闭任务复用语义。
+
+### 2026-05-05 阶段 7 Popup / Modal / Tooltip 基础管理
+
+完成内容：
+
+- `UIManager` 新增 `popupStack`、`modalStack`、`currentTooltip`，并为 Popup、Modal、Tooltip 分别加入串行操作通道，避免显示、隐藏和分组关闭交叉修改运行时状态。
+- `ShowPopupAsync()` 已接入框架生命周期：按 Catalog 创建或复用 Popup，支持 `PopupOptions.GroupId` + `ReplaceSameGroup` 分组互斥，支持外部点击关闭，支持锚点 / 屏幕点基础定位。
+- `ShowModalAsync()` 已接入 ModalStack 和结果等待，打开后释放 Modal 操作锁以允许多层 Modal，关闭时兜底完成取消结果，避免调用方取消或外部关闭导致结果任务悬挂。
+- `ShowTooltipAsync()` 已接入唯一 Tooltip 管理，显示新 Tooltip 前关闭旧 Tooltip，`UpdateTooltipPosition()` 支持指针跟随更新，`HideTooltip()` 走同一串行关闭链路。
+- `UIManager` 新增统一 Modal 遮罩和 Popup 外部点击透明拦截对象，由标准 Layer 创建，Modal 遮罩点击按 `ViewDefinition.CloseOnBackgroundClick` 判断是否关闭。
+- `RefreshInputState()` 已统一处理 Page / Popup / Modal / Tooltip 输入状态：Modal 顶层独占输入，Popup 只让栈顶 Popup 可交互且不默认冻结 Page，Tooltip 不阻挡输入。
+- `IsOpen<TView>()` 改为从全部已打开 View 运行时表判断，覆盖 Page、Popup、Modal、Tooltip。
+- `ModalBase<TResult>` 新增内部 `IModalView` 接口，由 `UIManager` 在框架关闭路径兜底完成 Modal 结果。
+- 修复 `PopupOptions` 构造函数中 `trackInStack` 字段未写入实例字段的问题。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ModalBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/PopupOptions.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree。
+- 已读取本文当前进度、下一轮入口和阶段 7 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 Popup、Modal、Tooltip、输入焦点、定位裁剪和诊断相关章节。
+- 已读取 `unity-script`、`unity-async`、`unity-project-scout` 技能说明，确认本轮继续使用 UniTask、显式生命周期归属和有限范围代码读取。
+- 已确认本轮不迁移业务页面，不引入 `UIService`，不搬迁旧 `Regions` / `Contracts`。
+- 已检查 `UIManager` 中 `CreateStageNotImplementedException`、`NotImplementedException`、`ApplyPageInputState` 均无残留。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- 阶段 7 只做基础定位，Popup / Tooltip 的边缘裁剪、自动翻转、布局重测和定位诊断必须在阶段 8 通过 `FloatingViewPositioner` 收口。
+- Popup 外部点击透明拦截器当前只覆盖顶层 Popup，并且 Popup 默认不冻结 Page；如业务需要阻塞式轻浮层，应通过 Modal 或后续明确配置实现。
+- `PopupOptions.TrackInStack` 当前保留给 Back 行为，尚未接入全局 Back 顺序；后续 Back 入口需遵守 Modal -> Popup -> Page 的关闭优先级。
+
+下一步：
+
+- 提交阶段 7。
+- 进入阶段 8，实现 `FloatingViewPositioner` 定位裁剪，优先替换 `UIManager` 当前 `ApplyPopupPosition()` / `ApplyTooltipPosition()` 内部基础坐标换算。

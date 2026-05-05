@@ -2,7 +2,12 @@ using Cysharp.Threading.Tasks;
 
 namespace Orange.UIFramework
 {
-    public abstract class ModalBase<TResult> : ViewBase
+    internal interface IModalView
+    {
+        void CompleteResultIfNeeded(CloseReason reason);
+    }
+
+    public abstract class ModalBase<TResult> : ViewBase, IModalView
     {
         private UniTaskCompletionSource<ModalResult<TResult>> resultSource;
         private bool resultCompleted;
@@ -26,7 +31,7 @@ namespace Orange.UIFramework
             CompleteResult(ModalResult<TResult>.Cancel(reason));
         }
 
-        internal void CompleteResultIfNeeded(CloseReason reason)
+        void IModalView.CompleteResultIfNeeded(CloseReason reason)
         {
             if (resultCompleted)
             {

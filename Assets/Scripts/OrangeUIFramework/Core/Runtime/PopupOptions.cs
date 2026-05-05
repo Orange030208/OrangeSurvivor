@@ -19,7 +19,7 @@ namespace Orange.UIFramework
         {
             valuesAssigned = true;
             this.closeOnOutsideClick = closeOnOutsideClick;
-            trackInStack = trackInStack;
+            this.trackInStack = trackInStack;
             Anchor = anchor;
             ScreenPosition = screenPosition;
             Offset = offset;
