@@ -1872,7 +1872,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 4. `GamePauseMenu`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Pause.prefab`，视图仍是 Page 语义但 Layer 沿用旧 Catalog 的 `Popup` 层，暂停时覆盖在战斗 HUD 之上；旧 `GameManager` 中暂停菜单打开 / 关闭 / 查询调用会经迁移委托进入新 UIManager。
 5. `GameOverUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Game Over.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中 GameOver 状态打开 / 关闭调用会经迁移委托进入新 UIManager。
 6. `StageCompleteUIPage`：已完成迁移期接入。原项目存在业务脚本和 `GameManager` 打开 / 关闭入口，但没有对应 Prefab 或旧 Catalog 注册；本次补齐 `UI Stage Complete.prefab`，并在 `OrangeUIViewCatalog` 注册 `page.stageComplete`。当前 Prefab 复用现有结算页按钮与动画结构，使用汇总文本显示通关快照，后续最终 Play Mode 验收时需要重点检查视觉排版。
-7. `WaveTransitionUIPage`
+7. `WaveTransitionUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Wave Transition.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层；旧 `GameManager` 中波次过渡打开 / 关闭调用会经迁移委托进入新 UIManager。该页面包含升级卡片组和宝箱饰品选择容器，最终 Play Mode 验收需要重点检查波次切换状态快照、升级卡刷新、饰品选择和事件解绑。
 
 迁移时：
 
@@ -1882,6 +1882,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
 - 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
 - 迁移期允许旧页面基类作为临时脚手架保留，但它不是最终交付形态。业务页面全部接入后，必须把页面实现改为直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，并清理旧 `AXR.Framework.UI` 的页面托管、旧 Catalog、临时委托和无用资源。
+- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。后续不再继续扩大桥接范围，下一步必须进入最终收口：业务入口直接引用新 `Orange.UIFramework.UIManager`，页面直接基于新框架类型运行，并清理旧 UIManager、旧 `UIPrefabCatalog`、临时委托和不再使用的旧抽象。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 

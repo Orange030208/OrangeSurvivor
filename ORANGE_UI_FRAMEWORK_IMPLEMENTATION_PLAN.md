@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 迁移已完成，下一步继续按单模块提交边界迁移 `WaveTransitionUIPage`。
+当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 迁移期接入已完成，下一步进入最终收口：业务入口直接使用 Orange UIManager，业务页面直接基于新框架运行，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
 
 已完成：
 
@@ -382,19 +382,21 @@
 - 已完成 `GamePauseMenu` 第四模块迁移：`OrangeUIViewCatalog` 新增 `page.pause`，Prefab 指向 `UI Pause.prefab`，ViewKind 仍为 Page，Layer 沿用旧 UI Catalog 的 `Popup` 层；旧 `GameManager` 中 `uiManager.OpenPage<GamePauseMenu>(...)`、`transition.ClosePage<GamePauseMenu>()` 和 `uiManager.IsPageOpen<GamePauseMenu>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `GameOverUIPage` 第五模块迁移：`OrangeUIViewCatalog` 新增 `page.gameOver`，Prefab 指向 `UI Game Over.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<GameOverUIPage>()` 和 `transition.ClosePage<GameOverUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已完成 `StageCompleteUIPage` 第六模块迁移：原项目缺少对应 Prefab 和旧 Catalog 注册，本轮补齐 `UI Stage Complete.prefab`，`OrangeUIViewCatalog` 新增 `page.stageComplete`，Layer 使用 `Default/Page`；旧 `GameManager` 中 `uiManager.OpenPage<StageCompleteUIPage>()` 和 `transition.ClosePage<StageCompleteUIPage>()` 会通过旧 UIManager 委托新 UIManager。
-- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage` 与 `StageCompleteUIPage` 均可按类型解析并通过 Catalog 校验。
+- 已完成 `WaveTransitionUIPage` 第七模块迁移：`OrangeUIViewCatalog` 新增 `page.waveTransition`，Prefab 指向 `UI Wave Transition.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<WaveTransitionUIPage>()` 和 `transition.ClosePage<WaveTransitionUIPage>()` 会通过旧 UIManager 委托新 UIManager。
+- 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 均可按类型解析并通过 Catalog 校验。
 
 未完成：
 
-- 业务迁移前真实场景手动验证清单仍未执行；本轮是按用户明确要求跳过门禁后先迁移 `MenuUIPage`，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
+- 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 尚未迁移 `WaveTransitionUIPage`。
+- 业务页面目前仍通过迁移期旧 `UIPageBase` / 旧 `UIManager` 委托进入新框架；这只是过渡状态，尚未达到用户要求的最终形态。
+- 尚未清理旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧页面托管、临时非泛型委托、旧 Region / Contract 无用抽象与旧资源引用。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前迁移策略是保守桥接：旧 `UIPageBase` 暂继承新 `PageBase`，业务页面代码暂不直接改为继承新基类。该桥接只是迁移脚手架，不是最终交付形态；最终必须让业务 UI 直接基于 OrangeUIFramework，并清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
+- 当前迁移策略是保守桥接：旧 `UIPageBase` 暂继承新 `PageBase`，业务页面代码暂不直接改为继承新基类。该桥接只是迁移脚手架，不是最终交付形态；下一阶段必须让业务 UI 直接基于 OrangeUIFramework，并清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -413,17 +415,17 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `StageCompleteUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
-4. 继续迁移第七个模块 `WaveTransitionUIPage`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
-5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；如果能顺手补真实场景验证，应优先补并写入本文详细日志。
-6. 每迁移完一个模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
+3. 确认 `WaveTransitionUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或最终收口相关变更。
+4. 进入最终收口第一步：梳理旧 `AXR.Framework.UI.UIManager`、旧 `UIPageBase`、旧 `UIPrefabCatalog.asset`、迁移期非泛型委托 API、旧 Region / Contract 目录与业务入口之间的真实依赖，先制定本轮最小删除 / 替换边界。
+5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
+6. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
 8. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
-9. 全部页面迁移完成后必须进入“最终收口”阶段：业务入口改为直接引用 `Orange.UIFramework.UIManager`，业务页面直接继承新框架基类或使用明确的新框架适配方式，删除旧 UIManager / 旧 Catalog / 临时委托 / 无用 Region 与 Contract 抽象，确保打开游戏即可基于新 UI 框架测试。
+9. 最终收口必须按可回退边界拆分：先业务入口直连新 `Orange.UIFramework.UIManager`，再业务页面直接继承新框架基类，最后删除旧 UIManager / 旧 Catalog / 临时委托 / 无用 Region 与 Contract 抽象，确保打开游戏即可基于新 UI 框架测试。
 
 下一轮禁止：
 
-- 禁止一次性迁移多个业务页面。
+- 禁止一次性删除大批旧 UI 资源或脚本而不先确认引用链。
 - 禁止跳过文档进度更新和单模块提交。
 - 禁止新建 `UIService` 平行入口。
 - 禁止把旧 `Regions` / `Contracts` 整体搬进框架。
@@ -1276,3 +1278,40 @@
 
 - 提交 `StageCompleteUIPage` 迁移。
 - 继续阶段 12 第七个模块 `WaveTransitionUIPage`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。
+
+### 2026-05-05 阶段 12 WaveTransitionUIPage 迁移
+
+完成内容：
+
+- 按阶段 12 单模块迁移策略迁移第七个页面 `WaveTransitionUIPage`。
+- 读取并确认 `WaveTransitionUIPage` 仍继承旧 `UIPageBase`，负责订阅波次过渡状态、升级选项变化和饰品选择事件，并驱动 `WaveTransitionUpgradeCardGroup` 与 `AccessoryOperateContainer` 的显示 / 清理。
+- 确认旧 `GameManager` 打开 / 关闭入口是 `uiManager.OpenPage<WaveTransitionUIPage>()` 与 `transition.ClosePage<WaveTransitionUIPage>()`，因此页面注册进 Orange Catalog 后会自动由旧 UIManager 委托新 UIManager。
+- 确认旧 `UIPrefabCatalog.asset` 中 `UI Wave Transition.prefab` 位于默认页面层；新 `OrangeUIViewCatalog.asset` 新增 `page.waveTransition`，`ViewKind.Page`，`ViewLayer.Page`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Wave Transition.prefab`。
+- 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，增加 `WaveTransitionUIPage` 类型解析、Id 和 Layer 断言。
+- 更新开发文档和实施计划，记录阶段 12 既定业务页面已全部完成迁移期接入，下一阶段必须进入最终收口，不能继续扩大桥接范围。
+
+修改文件：
+
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程重新读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `StageCompleteUIPage` 迁移提交 `cc86422` 已存在。
+- 已读取 `WaveTransitionUIPage.cs`、`WaveTransitionUIPage.cs.meta`、`GameManager.cs` 中的打开 / 关闭调用、旧 `UIPrefabCatalog.asset` 记录和 `UI Wave Transition.prefab` 元数据。
+- 已确认 `UI Wave Transition.prefab` 根节点具备 `RectTransform`、`CanvasGroup`、`WaveTransitionUIPage` 和 `UISequenceDirector`，Prefab GUID 为 `7a7ebd4679f38d64d85b9322f65b5589`，根 fileID 为 `5453402992543493149`。
+- 已确认本轮只做 Catalog 接入和资产断言，不执行耗时完整回归；提交前采用静态资源检查与 `git diff --check` 作为最小验证。
+
+遗留风险：
+
+- `WaveTransitionUIPage` 尚未在真实 Play Mode 中验证波次过渡状态快照、升级卡刷新、升级选择、饰品选择、宝箱容器显示 / 隐藏和事件解绑。
+- `WaveTransitionManager.RefreshUpgradeCards()` 仍通过 `FindFirstObjectByType<WaveTransitionUpgradeCardGroup>()` 兜底查找 UI 组件；这是既有业务依赖，最终收口时应改成明确上下文 / 事件 / 页面引用，不应让业务管理器隐藏依赖 UI 场景对象。
+- `WaveTransitionUIPage` 仍通过迁移期旧 `UIPageBase` 桥接，而不是直接继承新 `Orange.UIFramework.PageBase`；最终收口阶段必须清理该脚手架。
+- Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `WaveTransitionUIPage` 迁移。
+- 进入最终收口第一步：业务入口直接依赖 `Orange.UIFramework.UIManager`，再逐步让业务页面直接基于新框架类型，之后删除旧 `AXR.Framework.UI.UIManager`、旧 Catalog、迁移期委托和无用抽象。

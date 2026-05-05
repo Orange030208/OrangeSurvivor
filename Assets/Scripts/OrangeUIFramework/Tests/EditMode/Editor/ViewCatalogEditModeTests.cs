@@ -99,6 +99,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<StageCompleteUIPage>(out ViewDefinition stageCompleteDefinition), Is.True);
             Assert.That(stageCompleteDefinition.Id, Is.EqualTo("page.stageComplete"));
             Assert.That(stageCompleteDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<WaveTransitionUIPage>(out ViewDefinition waveTransitionDefinition), Is.True);
+            Assert.That(waveTransitionDefinition.Id, Is.EqualTo("page.waveTransition"));
+            Assert.That(waveTransitionDefinition.Layer, Is.EqualTo(ViewLayer.Page));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)
