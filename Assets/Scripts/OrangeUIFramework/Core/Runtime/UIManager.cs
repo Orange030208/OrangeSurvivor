@@ -19,6 +19,7 @@ namespace Orange.UIFramework
         [SerializeField] private Canvas existingRootCanvas;
 
         private readonly Dictionary<ViewLayer, LayerRuntime> layersByType = new Dictionary<ViewLayer, LayerRuntime>();
+        private readonly Dictionary<string, RuntimeView> trackedViewsByInstance = new Dictionary<string, RuntimeView>();
         private readonly Dictionary<string, RuntimeView> openedViewsByInstance = new Dictionary<string, RuntimeView>();
         private readonly Dictionary<Type, RuntimeView> singletonViewsByType = new Dictionary<Type, RuntimeView>();
         private readonly Dictionary<Type, Queue<ViewBase>> pooledViewsByType = new Dictionary<Type, Queue<ViewBase>>();
@@ -149,7 +150,15 @@ namespace Orange.UIFramework
                 currentTooltip != null ? currentTooltip.InstanceId : string.Empty,
                 rootCanvas != null ? rootCanvas.name : string.Empty,
                 rootCanvas != null && rootCanvas.gameObject.activeInHierarchy,
-                layerDiagnostics);
+                layerDiagnostics,
+                BuildStackDiagnostics(pageStack),
+                BuildStackDiagnostics(popupStack),
+                BuildStackDiagnostics(modalStack),
+                BuildTooltipDiagnostics(),
+                BuildOperationDiagnostics(),
+                BuildModalMaskDiagnostics(),
+                BuildPopupOutsideClickBlockerDiagnostics(),
+                BuildInputDiagnostics());
         }
 
         [ContextMenu("Log Runtime Diagnostics")]
@@ -165,8 +174,15 @@ namespace Orange.UIFramework
             builder.AppendLine($"RequestVersion: {diagnostics.RequestVersion}");
             builder.AppendLine($"CurrentTooltip: {(string.IsNullOrWhiteSpace(diagnostics.CurrentTooltipInstanceId) ? "None" : diagnostics.CurrentTooltipInstanceId)}");
             builder.AppendLine($"Layers: {diagnostics.Layers.Count}");
-            builder.AppendLine($"OpenViews: {diagnostics.OpenViews.Count}");
+            builder.AppendLine($"PageStack: {diagnostics.PageStack.Count}");
+            builder.AppendLine($"PopupStack: {diagnostics.PopupStack.Count}");
+            builder.AppendLine($"ModalStack: {diagnostics.ModalStack.Count}");
+            builder.AppendLine($"OpenViews: {diagnostics.OpenViews.Count} (live tracked views)");
             builder.AppendLine($"Pools: {diagnostics.Pools.Count}");
+            builder.AppendLine($"Operations: pageBusy={diagnostics.Operations.PageOperationBusy}, popupBusy={diagnostics.Operations.PopupOperationBusy}, modalBusy={diagnostics.Operations.ModalOperationBusy}, tooltipBusy={diagnostics.Operations.TooltipOperationBusy}, tracked={diagnostics.Operations.TrackedViewCount}, opening={diagnostics.Operations.OpeningViewCount}, closing={diagnostics.Operations.ClosingViewCount}, failed={diagnostics.Operations.FailedViewCount}");
+            builder.AppendLine($"Input: topPage={FormatId(diagnostics.Input.TopPageInstanceId)}, topPopup={FormatId(diagnostics.Input.TopPopupInstanceId)}, topModal={FormatId(diagnostics.Input.TopModalInstanceId)}, modalBlocks={diagnostics.Input.ModalBlocksUnderlyingInput}, inputActive={diagnostics.Input.InputActiveViewCount}, raycastBlocking={diagnostics.Input.RaycastBlockingViewCount}, tooltipRaycast={diagnostics.Input.TooltipBlocksRaycasts}");
+            AppendBlockerDiagnostics(builder, "ModalMask", diagnostics.ModalMask);
+            AppendBlockerDiagnostics(builder, "PopupOutsideClickBlocker", diagnostics.PopupOutsideClickBlocker);
 
             for (int i = 0; i < diagnostics.Layers.Count; i++)
             {
@@ -174,13 +190,18 @@ namespace Orange.UIFramework
                 builder.AppendLine($"- {layer.Layer}: name={layer.LayerName}, sorting={layer.SortingOrder}, raycast={layer.BlocksRaycasts}, active={layer.Active}");
             }
 
+            AppendStackDiagnostics(builder, "PageStack", diagnostics.PageStack);
+            AppendStackDiagnostics(builder, "PopupStack", diagnostics.PopupStack);
+            AppendStackDiagnostics(builder, "ModalStack", diagnostics.ModalStack);
+            AppendTooltipDiagnostics(builder, diagnostics.Tooltip);
+
             for (int i = 0; i < diagnostics.OpenViews.Count; i++)
             {
                 ViewDiagnostics view = diagnostics.OpenViews[i];
                 builder.AppendLine($"- View {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, request={view.RequestVersion}, layer={view.LayerName}, input={view.InputActive}, raycast={view.BlocksRaycasts}");
                 if (view.HasPlacement)
                 {
-                    builder.AppendLine($"  Placement: position={view.AnchoredPosition}, anchor={view.ResolvedAnchor}, flipped={view.PlacementWasFlipped}, clamped={view.PlacementWasClamped}");
+                    builder.AppendLine($"  Placement: requested={view.RequestedPosition}, position={view.AnchoredPosition}, anchor={view.ResolvedAnchor}, flipped={view.PlacementWasFlipped}, clamped={view.PlacementWasClamped}, rect={view.LocalRect}, bounds={view.BoundsRect}");
                 }
             }
 
@@ -191,6 +212,54 @@ namespace Orange.UIFramework
             }
 
             Debug.Log(builder.ToString(), this);
+        }
+
+        private static void AppendStackDiagnostics(
+            StringBuilder builder,
+            string title,
+            IReadOnlyList<ViewStackDiagnostics> stack)
+        {
+            for (int i = 0; i < stack.Count; i++)
+            {
+                ViewStackDiagnostics view = stack[i];
+                builder.AppendLine($"- {title}[{view.Index}] {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, top={view.IsTop}, request={view.RequestVersion}, input={view.InputActive}, raycast={view.BlocksRaycasts}, closing={view.Closing}");
+                if (view.Kind == ViewKind.Popup)
+                {
+                    builder.AppendLine($"  PopupOptions: group={FormatId(view.PopupGroupId)}, outsideClick={view.CloseOnOutsideClick}, trackInStack={view.PopupTrackInStack}");
+                }
+                else if (view.Kind == ViewKind.Modal)
+                {
+                    builder.AppendLine($"  ModalOptions: closeOnBackgroundClick={view.CloseOnBackgroundClick}");
+                }
+            }
+        }
+
+        private static void AppendTooltipDiagnostics(StringBuilder builder, TooltipDiagnostics tooltip)
+        {
+            if (!tooltip.HasTooltip)
+            {
+                builder.AppendLine("- Tooltip: None");
+                return;
+            }
+
+            builder.AppendLine($"- Tooltip {tooltip.ViewTypeName}: id={tooltip.ViewId}, instance={tooltip.InstanceId}, phase={tooltip.Phase}, followPointer={tooltip.FollowPointer}, input={tooltip.InputActive}, raycast={tooltip.BlocksRaycasts}");
+            if (tooltip.HasPlacement)
+            {
+                builder.AppendLine($"  Placement: position={tooltip.AnchoredPosition}, anchor={tooltip.ResolvedAnchor}, flipped={tooltip.PlacementWasFlipped}, clamped={tooltip.PlacementWasClamped}");
+            }
+        }
+
+        private static void AppendBlockerDiagnostics(
+            StringBuilder builder,
+            string label,
+            UIBlockerDiagnostics blocker)
+        {
+            builder.AppendLine($"{label}: exists={blocker.Exists}, active={blocker.Active}, raycast={blocker.BlocksRaycasts}, button={blocker.ButtonEnabled}, top={FormatId(blocker.TopViewInstanceId)}, closeTop={blocker.ClickCanCloseTopView}, sibling={blocker.SiblingIndex}");
+        }
+
+        private static string FormatId(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? "None" : value;
         }
 
         public UniTask<ViewHandle<TPage>> OpenPageAsync<TPage>(
@@ -291,7 +360,7 @@ namespace Orange.UIFramework
         public bool IsOpen<TView>() where TView : ViewBase
         {
             Type viewType = typeof(TView);
-            foreach (KeyValuePair<string, RuntimeView> pair in openedViewsByInstance)
+            foreach (KeyValuePair<string, RuntimeView> pair in trackedViewsByInstance)
             {
                 RuntimeView runtimeView = pair.Value;
                 if (runtimeView.View != null && runtimeView.View.GetType() == viewType && runtimeView.View.IsOpen)
@@ -644,7 +713,9 @@ namespace Orange.UIFramework
                 (reason, token) => CloseByInstanceIdAsync(instanceId, reason, token));
 
             view.Initialize(handle);
-            return new RuntimeView(instanceId, definition, viewType, view, handle, closedSource, currentRequestVersion);
+            RuntimeView runtimeView = new RuntimeView(instanceId, definition, viewType, view, handle, closedSource, currentRequestVersion);
+            trackedViewsByInstance[instanceId] = runtimeView;
+            return runtimeView;
         }
 
         private void RegisterOpenedPage(RuntimeView runtimeView)
@@ -845,6 +916,16 @@ namespace Orange.UIFramework
             }
         }
 
+        private void ForgetTrackedRuntimeView(RuntimeView runtimeView)
+        {
+            if (runtimeView == null || string.IsNullOrWhiteSpace(runtimeView.InstanceId))
+            {
+                return;
+            }
+
+            trackedViewsByInstance.Remove(runtimeView.InstanceId);
+        }
+
         private void RecycleOrRelease(RuntimeView runtimeView)
         {
             if (settings.EnablePooling && runtimeView.Definition.CacheOnClose)
@@ -859,11 +940,13 @@ namespace Orange.UIFramework
                     runtimeView.View.MarkRecycled();
                     runtimeView.View.gameObject.SetActive(false);
                     pool.Enqueue(runtimeView.View);
+                    ForgetTrackedRuntimeView(runtimeView);
                     return;
                 }
             }
 
             viewLoader.Release(runtimeView.View, runtimeView.Definition);
+            ForgetTrackedRuntimeView(runtimeView);
         }
 
         private ViewBase SpawnFromPool(Type viewType, ViewDefinition definition, Transform parent)
@@ -931,7 +1014,11 @@ namespace Orange.UIFramework
                     placement.AnchoredPosition,
                     placement.ResolvedAnchor,
                     placement.WasFlipped,
-                    placement.WasClamped));
+                    placement.WasClamped,
+                    placement.RequestedPosition,
+                    placement.RequestedAnchor,
+                    placement.LocalRect,
+                    placement.BoundsRect));
             }
 
             return diagnostics;
@@ -957,6 +1044,191 @@ namespace Orange.UIFramework
             }
 
             return diagnostics;
+        }
+
+        private IReadOnlyList<ViewStackDiagnostics> BuildStackDiagnostics(IReadOnlyList<RuntimeView> stack)
+        {
+            if (stack == null || stack.Count == 0)
+            {
+                return Array.Empty<ViewStackDiagnostics>();
+            }
+
+            List<ViewStackDiagnostics> diagnostics = new List<ViewStackDiagnostics>(stack.Count);
+            for (int i = 0; i < stack.Count; i++)
+            {
+                RuntimeView runtimeView = stack[i];
+                diagnostics.Add(BuildStackDiagnostics(runtimeView, i, i == stack.Count - 1));
+            }
+
+            return diagnostics;
+        }
+
+        private ViewStackDiagnostics BuildStackDiagnostics(RuntimeView runtimeView, int index, bool isTop)
+        {
+            if (runtimeView == null)
+            {
+                return new ViewStackDiagnostics(index, isTop, string.Empty, string.Empty, string.Empty, ViewKind.Part, ViewRuntimePhase.None, 0, false, false, false);
+            }
+
+            return new ViewStackDiagnostics(
+                index,
+                isTop,
+                runtimeView.InstanceId,
+                runtimeView.Definition.Id,
+                runtimeView.ViewType.Name,
+                runtimeView.Definition.Kind,
+                runtimeView.View != null ? runtimeView.View.Phase : ViewRuntimePhase.None,
+                runtimeView.RequestVersion,
+                runtimeView.View != null && runtimeView.View.InputActive,
+                runtimeView.View != null && runtimeView.View.BlocksRaycasts,
+                runtimeView.Closing,
+                runtimeView.PopupOptions.GroupId,
+                runtimeView.PopupOptions.TrackInStack,
+                runtimeView.PopupOptions.CloseOnOutsideClick,
+                runtimeView.Definition.CloseOnBackgroundClick);
+        }
+
+        private TooltipDiagnostics BuildTooltipDiagnostics()
+        {
+            if (currentTooltip == null)
+            {
+                return default;
+            }
+
+            FloatingViewPlacement placement = currentTooltip.LastPlacement;
+            return new TooltipDiagnostics(
+                true,
+                currentTooltip.InstanceId,
+                currentTooltip.Definition.Id,
+                currentTooltip.ViewType.Name,
+                currentTooltip.View != null ? currentTooltip.View.Phase : ViewRuntimePhase.None,
+                currentTooltip.TooltipOptions.FollowPointer,
+                currentTooltip.View != null && currentTooltip.View.InputActive,
+                currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
+                placement.HasValue,
+                placement.AnchoredPosition,
+                placement.ResolvedAnchor,
+                placement.WasFlipped,
+                placement.WasClamped);
+        }
+
+        private UIOperationDiagnostics BuildOperationDiagnostics()
+        {
+            int openingCount = 0;
+            int closingCount = 0;
+            int failedCount = 0;
+            foreach (KeyValuePair<string, RuntimeView> pair in trackedViewsByInstance)
+            {
+                RuntimeView runtimeView = pair.Value;
+                ViewRuntimePhase phase = runtimeView != null && runtimeView.View != null
+                    ? runtimeView.View.Phase
+                    : ViewRuntimePhase.None;
+
+                if (phase == ViewRuntimePhase.Opening || phase == ViewRuntimePhase.Loading || phase == ViewRuntimePhase.Loaded)
+                {
+                    openingCount++;
+                }
+
+                if (phase == ViewRuntimePhase.Closing || (runtimeView != null && runtimeView.Closing))
+                {
+                    closingCount++;
+                }
+
+                if (phase == ViewRuntimePhase.Failed)
+                {
+                    failedCount++;
+                }
+            }
+
+            return new UIOperationDiagnostics(
+                requestVersion,
+                pageOperationSemaphore.CurrentCount == 0,
+                popupOperationSemaphore.CurrentCount == 0,
+                modalOperationSemaphore.CurrentCount == 0,
+                tooltipOperationSemaphore.CurrentCount == 0,
+                trackedViewsByInstance.Count,
+                openingCount,
+                closingCount,
+                failedCount);
+        }
+
+        private UIBlockerDiagnostics BuildModalMaskDiagnostics()
+        {
+            RuntimeView topModal = modalStack.Count > 0 ? modalStack[modalStack.Count - 1] : null;
+            return BuildBlockerDiagnostics(
+                modalMaskRoot,
+                modalMaskImage,
+                modalMaskButton,
+                topModal,
+                topModal != null && topModal.Definition.CloseOnBackgroundClick);
+        }
+
+        private UIBlockerDiagnostics BuildPopupOutsideClickBlockerDiagnostics()
+        {
+            RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
+            return BuildBlockerDiagnostics(
+                popupOutsideClickBlockerRoot,
+                popupOutsideClickBlockerImage,
+                popupOutsideClickBlockerButton,
+                topPopup,
+                topPopup != null && topPopup.PopupOptions.CloseOnOutsideClick);
+        }
+
+        private static UIBlockerDiagnostics BuildBlockerDiagnostics(
+            RectTransform blockerRoot,
+            Image image,
+            Button button,
+            RuntimeView topView,
+            bool clickCanCloseTopView)
+        {
+            bool exists = blockerRoot != null;
+            return new UIBlockerDiagnostics(
+                exists ? blockerRoot.name : string.Empty,
+                exists,
+                exists && blockerRoot.gameObject.activeInHierarchy,
+                image != null && image.raycastTarget && image.enabled,
+                button != null && button.enabled,
+                topView != null ? topView.InstanceId : string.Empty,
+                topView != null ? topView.Definition.Id : string.Empty,
+                topView != null ? topView.ViewType.Name : string.Empty,
+                clickCanCloseTopView,
+                exists ? blockerRoot.GetSiblingIndex() : -1);
+        }
+
+        private UIInputDiagnostics BuildInputDiagnostics()
+        {
+            int inputActiveCount = 0;
+            int raycastBlockingCount = 0;
+            foreach (KeyValuePair<string, RuntimeView> pair in openedViewsByInstance)
+            {
+                RuntimeView runtimeView = pair.Value;
+                if (runtimeView.View == null)
+                {
+                    continue;
+                }
+
+                if (runtimeView.View.InputActive)
+                {
+                    inputActiveCount++;
+                }
+
+                if (runtimeView.View.BlocksRaycasts)
+                {
+                    raycastBlockingCount++;
+                }
+            }
+
+            RuntimeView topPage = pageStack.Count > 0 ? pageStack[pageStack.Count - 1] : null;
+            RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
+            RuntimeView topModal = modalStack.Count > 0 ? modalStack[modalStack.Count - 1] : null;
+            return new UIInputDiagnostics(
+                topPage != null ? topPage.InstanceId : string.Empty,
+                topPopup != null ? topPopup.InstanceId : string.Empty,
+                topModal != null ? topModal.InstanceId : string.Empty,
+                topModal != null,
+                inputActiveCount,
+                raycastBlockingCount,
+                currentTooltip != null && currentTooltip.View != null && currentTooltip.View.BlocksRaycasts);
         }
 
         private bool IsStaleTransition(PageOpenMode mode, int operationVersion)
@@ -1016,6 +1288,7 @@ namespace Orange.UIFramework
             else
             {
                 viewLoader.Release(runtimeView.View, runtimeView.Definition);
+                ForgetTrackedRuntimeView(runtimeView);
             }
         }
 

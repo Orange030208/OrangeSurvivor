@@ -1153,17 +1153,18 @@ Back / Esc 优先级：
 
 - 当前 Canvas 模式。
 - 当前 UI Camera。
-- 当前打开 PageStack。
+- 当前 PageStack。
+- 当前 PopupStack。
 - 当前 ModalStack。
-- 当前 Popup 列表。
 - 当前 Tooltip。
 - 当前池化数量。
-- 当前正在加载/关闭的请求。
+- 当前异步请求状态：request version、各操作通道是否被占用、Opening / Closing / Failed 数量。
 - 当前 request version。
-- 每个打开 View 的 `InstanceId`、类型、Kind、Layer、Phase、InputActive、BlocksRaycasts。
-- 每个 View 的动画状态：是否正在 Enter / Exit，是否有活跃 Motion Channel。
-- 当前 Modal 遮罩状态：是否显示、sorting order、是否拦截射线。
-- 当前 Tooltip/Popup 定位结果：是否被裁剪、最终锚点、最终坐标。
+- 每个生命周期追踪 View 的 `InstanceId`、类型、Kind、Layer、Phase、InputActive、BlocksRaycasts。
+- 当前 Modal 遮罩状态：是否存在、是否显示、是否拦截射线、顶层 Modal、点击遮罩是否可关闭。
+- 当前 Popup 外部点击拦截器状态：是否显示、是否拦截射线、顶层 Popup、点击外部是否可关闭。
+- 当前输入焦点状态：顶层 Page / Popup / Modal、输入激活数量、射线阻挡数量、Tooltip 是否错误阻挡输入。
+- 当前 Tooltip / Popup 定位结果：请求坐标、最终坐标、请求锚点、最终锚点、是否翻转、是否裁剪、最终矩形与边界矩形。
 
 建议结构：
 
@@ -1174,10 +1175,21 @@ namespace Orange.UIFramework
     {
         public string CanvasMode { get; }
         public string CameraName { get; }
+        public string RootName { get; }
+        public bool RootActive { get; }
         public int RequestVersion { get; }
+        public IReadOnlyList<LayerDiagnostics> Layers { get; }
+        public IReadOnlyList<ViewStackDiagnostics> PageStack { get; }
+        public IReadOnlyList<ViewStackDiagnostics> PopupStack { get; }
+        public IReadOnlyList<ViewStackDiagnostics> ModalStack { get; }
         public IReadOnlyList<ViewDiagnostics> OpenViews { get; }
         public IReadOnlyList<PoolDiagnostics> Pools { get; }
         public string CurrentTooltipInstanceId { get; }
+        public TooltipDiagnostics Tooltip { get; }
+        public UIOperationDiagnostics Operations { get; }
+        public UIBlockerDiagnostics ModalMask { get; }
+        public UIBlockerDiagnostics PopupOutsideClickBlocker { get; }
+        public UIInputDiagnostics Input { get; }
     }
 
     public readonly struct ViewDiagnostics
@@ -1189,6 +1201,41 @@ namespace Orange.UIFramework
         public string LayerName { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
+        public bool HasPlacement { get; }
+        public Vector2 RequestedPosition { get; }
+        public Vector2 AnchoredPosition { get; }
+        public FloatingViewAnchor RequestedAnchor { get; }
+        public FloatingViewAnchor ResolvedAnchor { get; }
+        public bool PlacementWasFlipped { get; }
+        public bool PlacementWasClamped { get; }
+    }
+
+    public readonly struct ViewStackDiagnostics
+    {
+        public int Index { get; }
+        public bool IsTop { get; }
+        public string InstanceId { get; }
+        public string ViewId { get; }
+        public string ViewTypeName { get; }
+        public ViewKind Kind { get; }
+        public ViewRuntimePhase Phase { get; }
+        public int RequestVersion { get; }
+        public bool InputActive { get; }
+        public bool BlocksRaycasts { get; }
+        public bool Closing { get; }
+    }
+
+    public readonly struct UIOperationDiagnostics
+    {
+        public int RequestVersion { get; }
+        public bool PageOperationBusy { get; }
+        public bool PopupOperationBusy { get; }
+        public bool ModalOperationBusy { get; }
+        public bool TooltipOperationBusy { get; }
+        public int TrackedViewCount { get; }
+        public int OpeningViewCount { get; }
+        public int ClosingViewCount { get; }
+        public int FailedViewCount { get; }
     }
 }
 ```
@@ -1198,8 +1245,9 @@ namespace Orange.UIFramework
 - `LogRuntimeDiagnostics()` 输出人类可读日志。
 - `GetRuntimeDiagnostics()` 返回结构化快照。
 - 诊断代码不得依赖 `FindObjectsOfType` 扫场景，应从 UIManager 自己维护的运行时状态生成。
-- 诊断输出必须能定位异步卡住的请求，例如哪个 View 停在 `Opening` 或 `Closing`。
+- 诊断输出必须能定位异步卡住的请求，例如哪个 View 停在 `Opening` 或 `Closing`；因此 `OpenViews` 实际输出当前生命周期内仍被 `UIManager` 追踪的运行时实例，而不只限于已经进入 Stack 的 View。
 - 编辑器下可加 Inspector 按钮，运行时 Debug 菜单可调用同一份快照。
+- 当前实现已在 `UIManager` Inspector 中提供 `Log Runtime Diagnostics` 按钮；按钮只调用同一份 `LogRuntimeDiagnostics()`，不维护第二套调试路径。
 
 典型错误信息：
 

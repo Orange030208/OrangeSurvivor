@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 9，本地化基础能力已完成，准备进入阶段 10。
+当前阶段：阶段 10，运行时诊断与调试入口已完成，准备进入阶段 11。
 
 已完成：
 
@@ -361,10 +361,14 @@
 - `LocalizationTable` 支持 ScriptableObject 语言表、重复 key 校验和 `CreateAssetMenu` 创建入口。
 - `LocalizationService` 支持当前语言、默认语言回退、语言切换事件、参数化文本替换和运行时校验。
 - `LocalizedText` 支持 TMP_Text 自动绑定、语言切换自动刷新、运行时设置 key、设置参数、清理参数。
+- `UIRuntimeDiagnostics` 已扩展为结构化快照，包含 PageStack、PopupStack、ModalStack、Tooltip、ModalMask、Popup 外部点击拦截器、输入焦点、异步请求状态、池化数量和定位裁剪详情。
+- `UIManager.GetRuntimeDiagnostics()` 已从自身维护的运行时状态生成完整诊断，不依赖全局 `FindObjectsOfType` 扫场景；Opening / Closing / Failed 的 View 也会通过生命周期追踪表进入诊断快照。
+- `UIManager.LogRuntimeDiagnostics()` 已输出 Stack 顺序、顶层标记、请求版本、输入状态、遮罩状态、外部点击拦截器状态、定位请求/结果矩形与对象池数量。
+- 已新增 `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs`，在 `UIManager` Inspector 中提供 `Log Runtime Diagnostics` 按钮，复用运行时同一诊断入口。
 
 未完成：
 
-- 尚未实现运行时诊断增强与测试。
+- 尚未实现测试。
 
 当前风险：
 
@@ -376,17 +380,18 @@
 - Stage 7 暂未实现全局 Back 顺序，`PopupOptions.TrackInStack` 已保留但未作为 Back 行为入口；后续如接 Back 需优先 Modal，再 Popup，再 Page。
 - Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
 - Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
+- Stage 10 已完成结构化诊断和 Inspector 入口，但尚未在 Unity Editor 中点击按钮验证实际日志输出；阶段 11 或手动验证时需补。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 9 提交已存在。
-3. 从阶段 10 开始，实现运行时诊断增强：PageStack、PopupStack、ModalStack、Tooltip、池化数量、异步请求状态、定位裁剪结果、Modal 遮罩和输入状态。
+2. 确认阶段 10 提交已存在。
+3. 从阶段 11 开始补测试，优先覆盖 Catalog 校验、request version、防重复关闭、FloatingViewPositioner、本地化参数替换、Modal 结果互斥和 UIMotion refresh defaults。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 10 重点读取 `UIRuntimeDiagnostics`、`UIManager.GetRuntimeDiagnostics()`、`LogRuntimeDiagnostics()` 和开发文档 `19. 运行时诊断`；不要做业务页面迁移。
+6. 阶段 11 重点读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`，并优先查看 Unity 项目是否已有测试目录和 asmdef；不要做业务页面迁移。
 
 下一轮禁止：
 
@@ -821,3 +826,46 @@
 
 - 提交阶段 9。
 - 进入阶段 10，实现运行时诊断增强，补齐 Stack、Modal 遮罩、输入状态、异步请求和定位裁剪结果的结构化快照。
+
+### 2026-05-05 阶段 10 运行时诊断与调试入口
+
+完成内容：
+
+- 扩展 `UIRuntimeDiagnostics`，新增 PageStack、PopupStack、ModalStack、Tooltip、操作状态、Modal 遮罩、Popup 外部点击拦截器和输入焦点结构化诊断。
+- `ViewDiagnostics` 已补齐定位请求坐标、最终坐标、请求锚点、最终锚点、是否翻转、是否裁剪、最终矩形与边界矩形。
+- `UIManager` 新增生命周期追踪表，`GetRuntimeDiagnostics()` 不只输出已进入 Stack 的 View，也能定位卡在 `Opening`、`Closing` 或 `Failed` 的运行时实例。
+- `LogRuntimeDiagnostics()` 已输出 Stack 顺序、顶层标记、请求版本、输入状态、遮罩状态、外部点击拦截器状态、Tooltip 状态、定位结果和对象池数量。
+- 新增 `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs`，在 `UIManager` Inspector 提供 `Log Runtime Diagnostics` 按钮，按钮复用 `LogRuntimeDiagnostics()`，不引入第二套诊断逻辑。
+- 已更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的错误与诊断章节，记录当前落地结构和规则。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIRuntimeDiagnostics.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Editor.meta`
+- `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs`
+- `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs.meta`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree，并确认阶段 9 提交 `631af32` 已存在。
+- 已读取本文当前进度、下一轮入口和阶段 10 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `19. 错误与诊断` 章节。
+- 已读取 `unity-project-scout`、`unity-script`、`unity-inspector` 技能说明，确认本轮只做诊断结构与 Inspector 调试入口。
+- 已确认本轮不迁移业务页面，不引入 `UIService`，不修改旧 UIManager 业务调用，不搬迁旧 `Regions` / `Contracts`。
+- 已检查新增 Editor 目录与脚本均有 `.meta`。
+- 已对本轮代码文件执行关键词静态检查，未发现 `TODO`、`NotImplementedException`、`UIService`、`FindObjectsOfType`、`FindFirstObjectByType`。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- `SemaphoreSlim.CurrentCount == 0` 只能表达当前操作通道是否被占用，不能表达等待队列长度；本轮没有为了诊断引入额外队列状态，避免增加运行时复杂度。
+- Inspector 按钮尚未在 Unity Editor 中实际点击验证，需 Unity 刷新编译后手动确认日志输出。
+- `OpenViews` 现在按生命周期追踪表输出 live tracked views，用于定位 Opening / Closing；如果后续测试希望区分“已进入 Stack”和“生命周期追踪实例”，可使用 `PageStack` / `PopupStack` / `ModalStack` 字段区分。
+
+下一步：
+
+- 提交阶段 10。
+- 进入阶段 11，优先补 EditMode 测试：Catalog 校验、`OpenContext.GetPayload<T>()`、`LocalizationService.GetText()` 参数替换、`FloatingViewPositioner` 边界裁剪；再评估 PlayMode 测试对 Page / Popup / Modal / Tooltip / UIMotion 的覆盖。
