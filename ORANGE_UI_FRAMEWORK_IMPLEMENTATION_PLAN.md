@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 10，运行时诊断与调试入口已完成，准备进入阶段 11。
+当前阶段：阶段 11，第一批 EditMode 测试已完成，准备继续补 PlayMode / 运行时测试。
 
 已完成：
 
@@ -365,10 +365,11 @@
 - `UIManager.GetRuntimeDiagnostics()` 已从自身维护的运行时状态生成完整诊断，不依赖全局 `FindObjectsOfType` 扫场景；Opening / Closing / Failed 的 View 也会通过生命周期追踪表进入诊断快照。
 - `UIManager.LogRuntimeDiagnostics()` 已输出 Stack 顺序、顶层标记、请求版本、输入状态、遮罩状态、外部点击拦截器状态、定位请求/结果矩形与对象池数量。
 - 已新增 `Assets/Scripts/OrangeUIFramework/Editor/UIManagerEditor.cs`，在 `UIManager` Inspector 中提供 `Log Runtime Diagnostics` 按钮，复用运行时同一诊断入口。
+- 已新增 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/` 第一批 EditMode 测试，覆盖 `ViewCatalog` 校验、`OpenContext` payload、本地化参数替换 / 默认语言回退 / 缺 key 回退、`FloatingViewPositioner` 自动翻转和边界裁剪。
 
 未完成：
 
-- 尚未实现测试。
+- 尚未实现 PlayMode / 运行时测试：Page 打开关闭、Popup 外部点击、Modal 遮罩与结果、Tooltip 屏幕边缘裁剪、UIMotion 池化复用、运行时诊断快照。
 
 当前风险：
 
@@ -381,17 +382,18 @@
 - Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
 - Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
 - Stage 10 已完成结构化诊断和 Inspector 入口，但尚未在 Unity Editor 中点击按钮验证实际日志输出；阶段 11 或手动验证时需补。
+- Stage 11 第一批测试是 EditMode 文件级 / 轻量 Unity 对象测试；PlayMode、真实 Prefab、动画和输入事件仍需第二批测试覆盖。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 10 提交已存在。
-3. 从阶段 11 开始补测试，优先覆盖 Catalog 校验、request version、防重复关闭、FloatingViewPositioner、本地化参数替换、Modal 结果互斥和 UIMotion refresh defaults。
+2. 确认阶段 11 第一批 EditMode 测试提交已存在。
+3. 继续阶段 11，优先补 PlayMode / 运行时测试：Page 打开关闭、Popup 外部点击关闭、Modal 遮罩阻挡与结果互斥、Tooltip 屏幕边缘裁剪、UIMotion refresh defaults 池化复用、`GetRuntimeDiagnostics()` Stack / 输入 / 遮罩快照。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 11 重点读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`，并优先查看 Unity 项目是否已有测试目录和 asmdef；不要做业务页面迁移。
+6. 下一轮仍需先读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 和本文阶段 11 日志；不要做业务页面迁移。
 
 下一轮禁止：
 
@@ -869,3 +871,57 @@
 
 - 提交阶段 10。
 - 进入阶段 11，优先补 EditMode 测试：Catalog 校验、`OpenContext.GetPayload<T>()`、`LocalizationService.GetText()` 参数替换、`FloatingViewPositioner` 边界裁剪；再评估 PlayMode 测试对 Page / Popup / Modal / Tooltip / UIMotion 的覆盖。
+
+### 2026-05-05 阶段 11 第一批 EditMode 测试
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`，作为 OrangeUIFramework 的第一批 Unity Test Runner EditMode 测试目录。
+- 新增测试支撑 `TestReflection` 和测试 View 类型 `TestPageView`、`OtherTestPageView`、`TestPopupView`，只用于构造框架数据校验所需的最小 Prefab 根对象。
+- 新增 `ViewCatalogEditModeTests`，覆盖重复 id、Kind 与基类不匹配、禁止注册 `Part`、Prefab 根节点缺少 `ViewBase`。
+- 新增 `OpenContextEditModeTests`，覆盖 `GetPayload<T>()` 和 `TryGetPayload<T>()` 的正确类型 / 错误类型返回。
+- 新增 `LocalizationServiceEditModeTests`，覆盖 `{cost}` 参数替换、当前语言缺 key 时默认语言回退、缺失 key 返回 key。
+- 新增 `FloatingViewPositionerEditModeTests`，覆盖首选方向出界自动翻转，以及超大浮层边界裁剪和安全边距边界。
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 已补充当前已落地测试范围和下一批测试优先级。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Tests.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/TestReflection.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/TestReflection.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/TestViews.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/TestViews.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/ViewCatalogEditModeTests.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/OpenContextEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/OpenContextEditModeTests.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/LocalizationServiceEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/LocalizationServiceEditModeTests.cs.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/FloatingViewPositionerEditModeTests.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/FloatingViewPositionerEditModeTests.cs.meta`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程执行 `git status --short --branch`，确认处于 `codex/orange-ui-framework-plan` worktree，并确认阶段 10 提交 `deb4989` 已存在。
+- 已读取本文当前进度、下一轮入口和阶段 11 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`。
+- 已读取 `unity-test`、`unity-testability`、`unity-project-scout`、`unity-script` 技能说明，确认第一批测试优先覆盖不依赖真实场景 / Prefab / 动画的 EditMode 规则。
+- 已确认项目没有 asmdef，`Packages/manifest.json` 包含 `com.unity.test-framework`，现有 `Assets/Scripts/Upgrades/Tests` 更像手动测试脚本而非 Test Runner 用例。
+- 已检查新增 Tests 目录和所有新增 `.cs` 均有对应 `.meta`。
+- 已执行测试源码 ASCII 检查、关键词静态检查和 `git diff --check`，无问题。
+- 已通过 UnitySkills 调用当前打开的 Unity Editor 执行 `debug_check_compilation`，结果 `success=true`、`isCompiling=false`、`isUpdating=false`。
+- 已通过 UnitySkills 按具体测试方法名运行新增 10 个 EditMode 测试方法，均为 `1/1 passed`：4 个 Catalog 校验测试、1 个 OpenContext 测试、3 个 LocalizationService 测试、2 个 FloatingViewPositioner 测试。
+
+遗留风险：
+
+- UnitySkills 的 `test_list` 当前返回 0，`test_run` 无过滤和按类名运行的汇总都只显示 `1/1 passed`，发现列表 / 汇总粒度不可靠；本轮通过逐个方法名运行确认新增测试实际可执行。
+- 本轮尚未补 PlayMode 测试，Page / Popup / Modal / Tooltip / UIMotion / 诊断按钮仍需真实 Unity 生命周期和 Prefab 级验证。
+- 本轮测试使用反射填充私有序列化字段，只限测试装配 ScriptableObject / MonoBehaviour 的私有配置，不进入运行时代码。
+
+下一步：
+
+- 提交阶段 11 第一批 EditMode 测试。
+- 继续阶段 11 第二批测试，优先补 PlayMode / 运行时覆盖：Page 打开关闭、Popup 外部点击关闭、Modal 遮罩阻挡与结果互斥、Tooltip 屏幕边缘裁剪、UIMotion refresh defaults 池化复用、`GetRuntimeDiagnostics()` Stack / 输入 / 遮罩快照。

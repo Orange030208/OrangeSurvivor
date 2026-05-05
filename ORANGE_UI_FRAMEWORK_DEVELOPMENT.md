@@ -1894,6 +1894,20 @@ EditMode 测试：
 - `LocalizationService.GetText()` 参数替换。
 - `FloatingViewPositioner` 在 Overlay / Camera 模式下的坐标转换和边缘裁剪。
 
+当前已落地的第一批 EditMode 测试位于 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`，覆盖：
+
+- `ViewCatalog` 重复 Id、Kind 与基类不匹配、禁止注册 `Part`、Prefab 根节点缺 `ViewBase`。
+- `OpenContext.GetPayload<T>()` 与 `TryGetPayload<T>()`。
+- `LocalizationService.GetText()` 参数替换、默认语言回退、缺 key 返回 key。
+- `FloatingViewPositioner` 首选方向出界时自动翻转，以及超大浮层边界裁剪。
+
+下一批 EditMode / PlayMode 测试优先补：
+
+- `UIManager` Page request version、重复关闭保护、池化二次打开。
+- `ModalBase<TResult>` 多次完成互斥与外部关闭兜底取消。
+- `UIMotionPlayer.refreshDefaultsOnEnable` 在真实 Motion 组件上的池化复用表现。
+- `GetRuntimeDiagnostics()` 对 PageStack、PopupStack、ModalStack、Tooltip、遮罩和输入状态的结构化输出。
+
 PlayMode 测试：
 
 - Overlay 模式打开/关闭 Page。
