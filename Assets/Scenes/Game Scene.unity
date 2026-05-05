@@ -28749,6 +28749,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2066110830}
   - component: {fileID: 2066110831}
+  - component: {fileID: 2066110832}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -28786,6 +28787,21 @@ MonoBehaviour:
   settings: {fileID: 11400000, guid: d2937b0aea51a524183fe265c025bdf3, type: 2}
   catalog: {fileID: 11400000, guid: e87a28c74ab5eb14a902ec67d925f8e1, type: 2}
   rootCanvas: {fileID: 1318571376}
+--- !u!114 &2066110832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066110829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a25e5e8ceb51427aaf74ee03305abf97, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  settings: {fileID: 11400000, guid: 76cf6f97e1b841d8a2dcb758aebcdb3b, type: 2}
+  catalog: {fileID: 11400000, guid: 0cb15e6d9ea54f2c98b2b58fb1e8d81b, type: 2}
+  existingRootCanvas: {fileID: 1318571376}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 11，业务迁移前真实场景手动验证清单已形成，下一步必须先执行清单或补最小 PlayMode 场景，尚未进入业务迁移。
+当前阶段：阶段 12，已按用户明确指示开始业务页面迁移；`MenuUIPage` 迁移已完成，下一步继续按单模块提交边界迁移 `GamingUIPage`。
 
 已完成：
 
@@ -370,16 +370,25 @@
 - 可挂载的测试 View 桩已移动到 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/`，并使用 `UNITY_EDITOR` 编译保护；测试方法和测试装配 Harness 仍保留在 `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/`。
 - 已在 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 中形成业务迁移前必须执行的真实场景手动验证清单，明确它是阶段 12 前的强制门禁，而不是普通建议项。
 - 手动验证清单已覆盖 worktree 验证前置条件、Overlay / Camera Canvas、真实 Prefab、Catalog、Page 生命周期、异步防重入、UIMotion / DOTween、Popup、Modal、Tooltip、ViewPart、本地化、分辨率、真实 EventSystem 输入、诊断入口、退出与回收。
+- 2026-05-05 用户明确要求“开始迁移”，并要求每迁移完一个模块更新文档和提交；该指令视为对迁移前真实场景手动验证门禁的显式跳过，风险已记录。
+- 已完成 `MenuUIPage` 第一模块迁移：采用迁移期桥接方式，让旧 `AXR.Framework.UI.UIPageBase` 继承新 `Orange.UIFramework.PageBase`，保留旧页面生命周期钩子和 `IUIPage` 兼容面。
+- 旧 `AXR.Framework.UI.UIManager` 已对注册进 Orange `ViewCatalog` 的页面委托新 `Orange.UIFramework.UIManager` 打开、关闭和查询；未注册页面继续走旧 UIManager，避免一次性迁移所有页面。
+- 已在 `Game Scene` 的现有 `UIManager` GameObject 上挂载新 `Orange.UIFramework.UIManager`，并复用现有 Root Canvas。
+- 已新增 `OrangeCanvasProfile`、`OrangeUIFrameworkSettings`、`OrangeUIViewCatalog` 资产；当前 Catalog 只注册 `UI Menu.prefab` / `MenuUIPage`，不把其他页面提前纳入新框架。
+- 新 `UIManager` 已补充迁移期所需的非泛型 Page API：`OpenPageAsync(Type)`、`OpenPage(Type)`、`ClosePageAsync(Type)`、`IsOpen(Type)`；`ViewHandle` 已暴露非泛型 `View` 引用，供旧 UIManager 委托后返回 `IUIPage`。
+- 已新增 `LegacyUIPageBase_CanOpenAndCloseThroughOrangeManagerTypeApi` EditMode 测试，覆盖旧 `UIPageBase` 经 Orange Manager 类型 API 打开 / 关闭的桥接路径。
 
 未完成：
 
-- 尚未执行业务迁移前真实场景手动验证清单；Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
+- 业务迁移前真实场景手动验证清单仍未执行；本轮是按用户明确要求跳过门禁后先迁移 `MenuUIPage`，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
+- 尚未迁移 `GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage`。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
-- 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
+- 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
+- 当前迁移策略是保守桥接：旧 `UIPageBase` 暂继承新 `PageBase`，业务页面代码暂不直接改为继承新基类。彻底迁移页面脚本需要等对应页面业务依赖清理后逐页推进。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
 - Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
@@ -388,25 +397,26 @@
 - Stage 8 定位算法已做文件级检查，但尚未在 Unity PlayMode 下验证不同 pivot、LayoutGroup、Canvas Scaler、Camera Canvas 和分辨率变化场景；阶段 11 需要补 `FloatingViewPositioner` EditMode 测试和 PlayMode 边界验证。
 - Stage 9 只提供框架级本地化基础能力，尚未迁移现有业务页面硬编码文本，也未实现字体按语言自动切换；业务迁移阶段再逐页接入。
 - Stage 10 已完成结构化诊断和 Inspector 入口，但尚未在 Unity Editor 中点击按钮验证实际日志输出；阶段 11 或手动验证时需补。
-- Stage 11 已有 19 个 EditMode 测试通过，但其中运行时测试仍是轻量 Unity 对象 / 手动按钮触发，不等同于真实 PlayMode 场景、真实 Prefab 和完整 EventSystem 输入验证。
-- 业务迁移前手动验证清单尚未执行；清单未通过前迁移业务页面会把 Canvas、输入、动画、定位和池化复用风险带入真实页面。
+- Stage 11 已有 20 个 EditMode 测试通过，但其中运行时测试仍是轻量 Unity 对象 / 手动按钮触发，不等同于真实 PlayMode 场景、真实 Prefab 和完整 EventSystem 输入验证。
+- 业务迁移前手动验证清单尚未执行；已按用户明确要求跳过门禁开始迁移，因此必须在后续迁移中持续记录该风险，并优先补真实场景验证。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划`，尤其是“手动验证（业务迁移前强制门禁）”。
-3. 确认阶段 11 第二批运行时 EditMode 测试提交 `1c7f4f6` 和本轮手动验证清单提交均已存在。
-4. 先执行业务迁移前真实场景手动验证清单，或先补一个最小 PlayMode 场景来降低手动验证成本；无论是否补 PlayMode，真实场景手动验证仍必须执行并记录结果。
-5. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
-6. 手动验证结果必须写入本文详细进度日志：记录场景、Canvas 模式、分辨率、通过 / 失败项、日志或截图位置、处理结论。
-7. 不迁移任何现有业务页面，除非清单通过并已记录，或用户明确要求跳过且已记录风险。
+2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
+3. 确认 `MenuUIPage` 迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一模块相关变更。
+4. 继续迁移第二个模块 `GamingUIPage`；开始前先查看其脚本、Prefab、旧 Catalog 注册和调用入口，只做一个模块的最小迁移闭环。
+5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；如果能顺手补真实场景验证，应优先补并写入本文详细日志。
+6. 每迁移完一个模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
+7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
 8. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
 
 下一轮禁止：
 
-- 禁止直接迁移 `ShopUIPage`、`GamingUIPage` 等业务页面。
+- 禁止一次性迁移多个业务页面。
+- 禁止跳过文档进度更新和单模块提交。
 - 禁止新建 `UIService` 平行入口。
 - 禁止把旧 `Regions` / `Contracts` 整体搬进框架。
 - 禁止一次性大改旧 UI 框架和业务页面。
@@ -1018,3 +1028,58 @@
 
 - 提交本轮文档变更。
 - 下一轮必须优先执行业务迁移前真实场景手动验证清单，或先补最小 PlayMode 场景辅助验证；清单通过并记录前，禁止迁移 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 等业务页面。
+
+### 2026-05-05 阶段 12 MenuUIPage 迁移
+
+完成内容：
+
+- 按用户明确指示开始业务页面迁移，并记录“真实场景手动验证清单尚未执行但已被用户要求跳过”的风险。
+- 为旧 `AXR.Framework.UI.UIPageBase` 增加迁移期桥接：旧页面基类现在继承 `Orange.UIFramework.PageBase`，保留 `IUIPage`、`OnPageOpened()`、`OnPageClosed()`、`OnActivationChanged()`、`OnPageTick()` 等旧业务扩展点。
+- `UIPageBase` 新增 Orange 生命周期桥接：`OnOpeningAsync()` 转换为旧 `UIPageOpenContext` 后调用 `HandleOpen()` 和 `PlayOpenTransition()`；`OnClosingAsync()` 等待旧关闭等待管线；`OnClosed()` 调用旧 `HandleClose()`。
+- `UIPageBase` 补充 `CanvasGroup`、`RectTransform`、`UISequenceDirector` 懒解析，修复通过 Orange Manager 测试路径打开旧页面时 `Awake` 之外生命周期拿不到旧私有引用的问题。
+- `UIPageBase` 移除关闭等待管线中的 0 秒 DOTween 占位；没有 SequenceDirector 或额外关闭等待动作时会同步完成，避免 EditMode / batchmode 中关闭桥接卡住。
+- 新 `Orange.UIFramework.UIManager` 增加非泛型迁移入口：`OpenPageAsync(Type)`、`OpenPage(Type)`、`ClosePageAsync(Type)`、`IsOpen(Type)`，并让非泛型 `ViewHandle` 保存 `ViewBase View`。
+- 旧 `AXR.Framework.UI.UIManager` 对已注册到 Orange `ViewCatalog` 的页面委托新 UIManager 打开、关闭和查询；未注册页面继续走旧 UIManager。
+- 新增 `Assets/Resources/Data/UI/OrangeCanvasProfile.asset`、`OrangeUIFrameworkSettings.asset`、`OrangeUIViewCatalog.asset`，当前 Catalog 仅注册 `UI Menu.prefab` / `MenuUIPage`。
+- 在 `Assets/Scenes/Game Scene.unity` 的现有 `UIManager` GameObject 上挂载新 `Orange.UIFramework.UIManager`，复用现有 Root Canvas。
+- 新增 EditMode 测试 `LegacyUIPageBase_CanOpenAndCloseThroughOrangeManagerTypeApi`，验证旧页面基类可通过 Orange Manager 类型 API 打开、传 payload、关闭并更新打开状态。
+
+修改文件：
+
+- `Assets/Scripts/Framework/UI/Core/Runtime/UIPageBase.cs`
+- `Assets/Scripts/Framework/UI/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewHandle.cs`
+- `Assets/Scenes/Game Scene.unity`
+- `Assets/Resources/Data/UI/OrangeCanvasProfile.asset`
+- `Assets/Resources/Data/UI/OrangeCanvasProfile.asset.meta`
+- `Assets/Resources/Data/UI/OrangeUIFrameworkSettings.asset`
+- `Assets/Resources/Data/UI/OrangeUIFrameworkSettings.asset.meta`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset.meta`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/RuntimeTestViews.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeTestHarness.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIManagerRuntimeEditModeTests.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取本文和 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 `unity-project-scout`、`unity-script`、`unity-async`、`unity-test` 技能说明。
+- 已确认 UnitySkills 当前仍连接主工作区，因此本轮使用 Unity batchmode 显式指定 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 验证 worktree。
+- 首次新增桥接测试时曾失败：`LegacyRuntimeTestPageViewPrefab(Clone)` 缺旧 `UIPageBase` 私有 `CanvasGroup` 引用。已通过旧基类懒解析修复。
+- 随后一次测试卡在 Test Runner 开始后未生成 XML；定位为旧关闭等待管线的 0 秒 DOTween 占位在 EditMode / batchmode 下可能不推进。已移除该占位，并只停止指向当前 worktree 的 Unity batchmode 进程。
+- 已执行 Unity batchmode EditMode 测试：`Logs/OrangeUIFrameworkEditModeTests-MenuMigration-4.xml`，结果 `total=20 passed=20 failed=0 skipped=0 result=Passed`。
+- 测试 XML 生成后 Unity batchmode 进程未自动退出；已只停止当前 worktree 的测试进程，未处理主工作区 Unity Editor 和 ImportWorker。
+
+遗留风险：
+
+- 本轮没有直接改 `Assets/Scripts/UI/Instances/MenuUIPage.cs`，而是通过旧 `UIPageBase` 继承新 `PageBase` 的桥接方式迁移；这是为了降低第一模块迁移风险，后续可在页面业务依赖清理后再做彻底继承切换。
+- `MenuUIPage` 尚未在真实 Play Mode 中手动验证按钮输入、DOTween 实际播放、CanvasScaler、EventSystem 和 Inspector 诊断按钮。
+- 当前 `OrangeUIViewCatalog` 只注册 `MenuUIPage`，后续迁移页面必须逐个注册，不能批量塞入 Catalog。
+- Unity 批处理仍可能留下 `ProjectSettings/ProjectSettings.asset` 的行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `MenuUIPage` 迁移。
+- 继续阶段 12 第二个模块 `GamingUIPage`，先读取脚本、Prefab、旧 Catalog 注册和旧 UIManager 调用入口，再按同样规则更新文档、验证并提交。

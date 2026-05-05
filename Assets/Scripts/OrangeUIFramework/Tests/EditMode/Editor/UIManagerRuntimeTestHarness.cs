@@ -112,6 +112,7 @@ namespace Orange.UIFramework.Tests
                 CreateDefinition<SecondRuntimeTestPageView>("page.secondRuntime", ViewKind.Page, ViewLayer.Page, false, true),
                 CreateDefinition<RuntimeSlowOpeningPageView>("page.slowOpening", ViewKind.Page, ViewLayer.Page, false, true),
                 CreateDefinition<RuntimeSlowClosingPageView>("page.slowClosing", ViewKind.Page, ViewLayer.Page, false, true),
+                CreateDefinition<LegacyRuntimeTestPageView>("page.legacyRuntime", ViewKind.Page, ViewLayer.Page, false, true),
                 CreateDefinition<RuntimeTestPopupView>("popup.runtime", ViewKind.Popup, ViewLayer.Popup, false, true),
                 CreateDefinition<RuntimeTestModalView>("modal.runtime", ViewKind.Modal, ViewLayer.Modal, false, true, closeOnBackgroundClick: true),
                 CreateDefinition<RuntimeTestTooltipView>("tooltip.runtime", ViewKind.Tooltip, ViewLayer.Tooltip, true, true)

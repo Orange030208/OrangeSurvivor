@@ -1866,7 +1866,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 
 迁移优先级：
 
-1. `MenuUIPage`
+1. `MenuUIPage`：已完成迁移期接入。当前采用保守桥接方式：旧 `AXR.Framework.UI.UIPageBase` 暂继承新 `Orange.UIFramework.PageBase`，`MenuUIPage` 继续保留旧页面脚本写法；旧 `AXR.Framework.UI.UIManager` 在发现页面已注册进 Orange `ViewCatalog` 后委托新 `Orange.UIFramework.UIManager` 打开、关闭和查询。`OrangeUIViewCatalog` 当前只注册 `UI Menu.prefab`，避免一次性迁移多个页面。
 2. `GamingUIPage`
 3. `ShopUIPage`
 4. `GamePauseMenu`
@@ -1880,6 +1880,9 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 商店、背包等业务内部可保留子视图类，但按 `ViewPart` 简化。
 - 旧 `IPageContext` 可迁移为 Page Payload 或业务 Context。
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
+- 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
+- 迁移期允许旧页面基类作为 Adapter 保留，但新增业务页面应优先直接使用 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`。
+- 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 
 ## 23. 测试计划
 
@@ -1961,7 +1964,8 @@ PlayMode 测试：
 
 - 全部必测项通过，且验证记录已写入实施计划。
 - 失败项必须先修复并提交，再重新执行相关手动验证。
-- 只有清单通过后，才能开始迁移 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 等现有业务页面。
+- 原规则要求只有清单通过后才能开始迁移 `MenuUIPage`、`GamingUIPage`、`ShopUIPage` 等现有业务页面；2026-05-05 用户明确要求先开始迁移，因此当前已作为例外记录风险并完成 `MenuUIPage` 迁移期接入。
+- 该例外不取消清单本身：后续仍需尽快执行真实场景手动验证，且每个业务模块迁移完成后都必须记录验证情况和遗留风险。
 
 ## 24. 不应加入的冗余功能
 

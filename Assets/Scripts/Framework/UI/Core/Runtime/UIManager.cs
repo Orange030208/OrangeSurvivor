@@ -4,6 +4,8 @@ namespace AXR.Framework.UI
 {
     using System;
     using System.Collections.Generic;
+    using Cysharp.Threading.Tasks;
+    using Orange.UIFramework;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -41,6 +43,25 @@ namespace AXR.Framework.UI
         public bool TryGetLayerRoot(UILayerType layerType, out Transform layerRoot)
         {
             return layerRoots.TryGetValue(layerType, out layerRoot);
+        }
+
+        private bool TryGetOrangeManager(out Orange.UIFramework.UIManager manager)
+        {
+            manager = Orange.UIFramework.UIManager.Instance;
+            return manager != null && manager.IsInitialized;
+        }
+
+        private bool IsOrangeManagedPage(Type pageType)
+        {
+            if (pageType == null || !typeof(PageBase).IsAssignableFrom(pageType))
+            {
+                return false;
+            }
+
+            return TryGetOrangeManager(out Orange.UIFramework.UIManager manager) &&
+                   manager.Catalog != null &&
+                   manager.Catalog.TryFindByType(pageType, out ViewDefinition definition) &&
+                   definition.Kind == ViewKind.Page;
         }
 
         private void Awake()
@@ -129,6 +150,19 @@ namespace AXR.Framework.UI
             // 打开流程：校验类型 -> 查配置 -> 复用单例/取实例 -> 注册运行时状态 -> 调页面生命周期。
             // 注意：这里只触发页面进入流程，不等待 UISequenceDirector 的 enter 完成；PageOpened 会立即广播。
             ValidatePageType(pageType);
+            if (IsOrangeManagedPage(pageType) && TryGetOrangeManager(out Orange.UIFramework.UIManager orangeManager))
+            {
+                ViewHandle handle = orangeManager.OpenPage(pageType, payload);
+                RaisePageOpened(pageType, handle.InstanceId);
+                if (handle.View is IUIPage openedPage)
+                {
+                    return openedPage;
+                }
+
+                throw new InvalidOperationException(
+                    $"OpenPage failed: Orange-managed page '{pageType.FullName}' does not implement {nameof(IUIPage)}.");
+            }
+
             UIPrefabEntry entry = ResolveEntry(pageType);
 
             if (entry.singleton && runtimeState.TryGetLastInstance(pageType, out string singletonInstanceId))
@@ -162,6 +196,17 @@ namespace AXR.Framework.UI
         private bool ClosePageByType(Type pageType)
         {
             ValidatePageType(pageType);
+            if (IsOrangeManagedPage(pageType) && TryGetOrangeManager(out Orange.UIFramework.UIManager orangeManager))
+            {
+                if (!orangeManager.IsOpen(pageType))
+                {
+                    return false;
+                }
+
+                CloseOrangePageAsync(orangeManager, pageType).Forget();
+                return true;
+            }
+
             if (!runtimeState.TryGetLastInstance(pageType, out string instanceId))
             {
                 return false;
@@ -235,7 +280,30 @@ namespace AXR.Framework.UI
         private bool IsPageOpenByType(Type pageType)
         {
             ValidatePageType(pageType);
+            if (IsOrangeManagedPage(pageType) && TryGetOrangeManager(out Orange.UIFramework.UIManager orangeManager))
+            {
+                return orangeManager.IsOpen(pageType);
+            }
+
             return runtimeState.TryGetLastInstance(pageType, out _);
+        }
+
+        private async UniTaskVoid CloseOrangePageAsync(Orange.UIFramework.UIManager orangeManager, Type pageType)
+        {
+            try
+            {
+                bool closed = await orangeManager.ClosePageAsync(pageType);
+                if (closed)
+                {
+                    RaisePageClosed(pageType, string.Empty);
+                    transitionRunner.NotifyTransitionClosuresCompleted();
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+                transitionRunner.NotifyTransitionClosuresCompleted();
+            }
         }
 
         private void ValidateSettings()

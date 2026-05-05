@@ -302,6 +302,26 @@ namespace Orange.UIFramework
             return OpenPageAsync<TPage>(payload).GetAwaiter().GetResult();
         }
 
+        public UniTask<ViewHandle> OpenPageAsync(
+            Type pageType,
+            object payload = null,
+            CancellationToken cancellationToken = default)
+        {
+            return OpenPageInternalAsync(pageType, payload, PageOpenMode.Push, cancellationToken);
+        }
+
+        public ViewHandle OpenPage(Type pageType, object payload = null)
+        {
+            return OpenPageAsync(pageType, payload).GetAwaiter().GetResult();
+        }
+
+        public UniTask<bool> ClosePageAsync(
+            Type pageType,
+            CancellationToken cancellationToken = default)
+        {
+            return ClosePageByTypeWithGateAsync(pageType, CloseReason.Normal, cancellationToken);
+        }
+
         public UniTask<ViewHandle<TPopup>> ShowPopupAsync<TPopup>(
             object payload = null,
             PopupOptions options = default,
@@ -359,7 +379,16 @@ namespace Orange.UIFramework
 
         public bool IsOpen<TView>() where TView : ViewBase
         {
-            Type viewType = typeof(TView);
+            return IsOpen(typeof(TView));
+        }
+
+        public bool IsOpen(Type viewType)
+        {
+            if (viewType == null)
+            {
+                return false;
+            }
+
             foreach (KeyValuePair<string, RuntimeView> pair in trackedViewsByInstance)
             {
                 RuntimeView runtimeView = pair.Value;
@@ -370,6 +399,28 @@ namespace Orange.UIFramework
             }
 
             return false;
+        }
+
+        private async UniTask<ViewHandle> OpenPageInternalAsync(
+            Type pageType,
+            object payload,
+            PageOpenMode mode,
+            CancellationToken cancellationToken)
+        {
+            EnsurePageType(pageType);
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            int currentRequestVersion = ++requestVersion;
+
+            await pageOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                return await OpenPageLockedAsync(pageType, payload, mode, currentRequestVersion, cancellationToken);
+            }
+            finally
+            {
+                pageOperationSemaphore.Release();
+            }
         }
 
         private async UniTask<ViewHandle<TPage>> OpenPageInternalAsync<TPage>(
@@ -461,6 +512,73 @@ namespace Orange.UIFramework
             }
         }
 
+        private async UniTask<ViewHandle> OpenPageLockedAsync(
+            Type pageType,
+            object payload,
+            PageOpenMode mode,
+            int currentRequestVersion,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
+
+            ViewDefinition definition = ResolveDefinition(pageType, ViewKind.Page);
+
+            if (mode == PageOpenMode.ReplaceTop && pageStack.Count > 0)
+            {
+                RuntimeView topPage = pageStack[pageStack.Count - 1];
+                await CloseRuntimeViewAsync(topPage, CloseReason.Replace, CancellationToken.None);
+                ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
+            }
+            else if (mode == PageOpenMode.Reset)
+            {
+                await CloseAllPagesInternalAsync(CloseReason.Reset, CancellationToken.None);
+                ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
+            }
+
+            if (definition.Singleton && singletonViewsByType.TryGetValue(pageType, out RuntimeView openedSingleton))
+            {
+                if (openedSingleton.Closing)
+                {
+                    await openedSingleton.CloseTask.AttachExternalCancellation(cancellationToken);
+                    ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
+                }
+                else
+                {
+                    MovePageToTop(openedSingleton);
+                    RefreshInputState();
+                    return openedSingleton.Handle;
+                }
+            }
+
+            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, pageType, currentRequestVersion, cancellationToken);
+            OpenContext context = new OpenContext(
+                pageType,
+                definition.Id,
+                runtimeView.InstanceId,
+                ViewKind.Page,
+                payload,
+                currentRequestVersion);
+
+            try
+            {
+                await runtimeView.View.OpenInternalAsync(context, cancellationToken);
+                if (IsStaleTransition(mode, currentRequestVersion))
+                {
+                    throw CreateStaleOperationException(cancellationToken);
+                }
+
+                RegisterOpenedPage(runtimeView);
+                RefreshInputState();
+                return runtimeView.Handle;
+            }
+            catch (Exception exception)
+            {
+                await CleanupFailedOpenAsync(runtimeView, exception);
+                throw;
+            }
+        }
+
         private async UniTask CloseTopPageInternalAsync(CancellationToken cancellationToken)
         {
             EnsureInitialized();
@@ -496,6 +614,40 @@ namespace Orange.UIFramework
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await CloseAllPagesInternalAsync(CloseReason.Reset, CancellationToken.None);
+            }
+            finally
+            {
+                pageOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask<bool> ClosePageByTypeWithGateAsync(
+            Type pageType,
+            CloseReason reason,
+            CancellationToken cancellationToken)
+        {
+            EnsurePageType(pageType);
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+            ++requestVersion;
+
+            await pageOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                for (int i = pageStack.Count - 1; i >= 0; i--)
+                {
+                    RuntimeView page = pageStack[i];
+                    if (page.ViewType != pageType)
+                    {
+                        continue;
+                    }
+
+                    await CloseRuntimeViewAsync(page, reason, CancellationToken.None);
+                    return true;
+                }
+
+                return false;
             }
             finally
             {
@@ -710,7 +862,8 @@ namespace Orange.UIFramework
                 definition.Id,
                 definition.Kind,
                 closedSource.Task,
-                (reason, token) => CloseByInstanceIdAsync(instanceId, reason, token));
+                (reason, token) => CloseByInstanceIdAsync(instanceId, reason, token),
+                view);
 
             view.Initialize(handle);
             RuntimeView runtimeView = new RuntimeView(instanceId, definition, viewType, view, handle, closedSource, currentRequestVersion);
@@ -1441,6 +1594,21 @@ namespace Orange.UIFramework
             }
 
             return definition;
+        }
+
+        private static void EnsurePageType(Type pageType)
+        {
+            if (pageType == null)
+            {
+                throw new ArgumentNullException(nameof(pageType));
+            }
+
+            if (!typeof(PageBase).IsAssignableFrom(pageType))
+            {
+                throw new ArgumentException(
+                    $"UIManager page operation failed: type '{pageType.FullName}' does not inherit from PageBase.",
+                    nameof(pageType));
+            }
         }
 
         private void EnsureInitialized()

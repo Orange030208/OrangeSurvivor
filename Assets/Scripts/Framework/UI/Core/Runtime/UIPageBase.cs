@@ -2,9 +2,12 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AXR.Framework.UI
 {
+    using System.Threading;
+    using Cysharp.Threading.Tasks;
     using DG.Tweening;
-using UnityEngine;
-using UnityEngine.UI;
+    using Orange.UIFramework;
+    using UnityEngine;
+    using UnityEngine.UI;
 
 /// <summary>
 /// 所有 UI 页面公共基类：负责页面壳体状态、内容导演自动接入以及关闭等待管线。
@@ -14,7 +17,7 @@ using UnityEngine.UI;
 /// - PlayCloseTransition：会等待关闭等待管线完成；若启用了 UISequenceDirector，会等待 exit 完成后再回调。
 /// </summary>
 [RequireComponent(typeof(CanvasGroup))]
-public abstract class UIPageBase : MonoBehaviour, IUIPage
+public abstract class UIPageBase : PageBase, IUIPage
 {
     private UISequenceDirector sequenceDirector;
     [SerializeField] private bool autoPlaySequenceDirector = true;
@@ -32,16 +35,15 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
     private System.Action closeWaitCallbacks;
 
     public System.Type PageType => GetType();
-    public string InstanceId => instanceId;
+    public new string InstanceId => string.IsNullOrWhiteSpace(instanceId) ? base.InstanceId : instanceId;
     public bool IsVisible => isVisible;
 
     protected UISequenceDirector SequenceDirector => sequenceDirector;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-        rectTransform = GetComponent<RectTransform>();
-        ResolveSequenceDirector();
+        base.Awake();
+        ResolveLegacyReferences();
         CacheDefaultTransform();
         ValidateRectTransform();
     }
@@ -58,6 +60,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     public void HandleOpen(UIPageOpenContext context)
     {
+        ResolveLegacyReferences();
         ValidateCanvasGroup();
         CacheDefaultTransform();
         ResetCloseWaitState();
@@ -72,6 +75,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     public void HandleClose()
     {
+        ResolveLegacyReferences();
         ValidateCanvasGroup();
         sequenceDirector?.Kill();
         sequenceDirector?.SetHiddenImmediate();
@@ -87,6 +91,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     public void HandleActivationChanged(bool visualActive, bool inputActive)
     {
+        ResolveLegacyReferences();
         ValidateCanvasGroup();
         ApplyActivationState(visualActive, inputActive);
         OnActivationChanged(visualActive, inputActive);
@@ -104,6 +109,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     public void PlayOpenTransition(bool useUnscaledTime)
     {
+        ResolveLegacyReferences();
         ValidateCanvasGroup();
         CacheDefaultTransform();
         ResetTransformState();
@@ -113,6 +119,7 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     public void PlayCloseTransition(bool useUnscaledTime, System.Action onCompleted)
     {
+        ResolveLegacyReferences();
         ValidateCanvasGroup();
         CacheDefaultTransform();
         canvasGroup.interactable = false;
@@ -151,23 +158,6 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
             }
         }
 
-        pendingCount++;
-        bool baseCloseCompleted = false;
-
-        void CompleteBaseCloseOnce()
-        {
-            if (baseCloseCompleted)
-            {
-                return;
-            }
-
-            baseCloseCompleted = true;
-            MarkCompleted();
-        }
-
-        Tween baseCloseTween = DOVirtual.DelayedCall(0f, CompleteBaseCloseOnce).SetUpdate(useUnscaledTime);
-        baseCloseTween.OnKill(CompleteBaseCloseOnce);
-
         if (ShouldAutoPlaySequenceDirector())
         {
             pendingCount++;
@@ -201,6 +191,11 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
             pendingCount++;
             PlayAdditionalCloseWaitActions(useUnscaledTime, MarkCompleted);
         }
+
+        if (pendingCount <= 0)
+        {
+            CompleteCloseWaitPipeline();
+        }
     }
 
     protected virtual bool HasAdditionalCloseWaitActions()
@@ -227,6 +222,39 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     protected virtual void OnPageTick(float deltaTime)
     {
+    }
+
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        UIPageOpenContext legacyContext = new UIPageOpenContext(context.ViewType, context.InstanceId, context.Payload);
+        SetupInstance(context.InstanceId);
+        HandleOpen(legacyContext);
+        PlayOpenTransition(useUnscaledTime: true);
+        return UniTask.CompletedTask;
+    }
+
+    protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        UniTaskCompletionSource completionSource = new UniTaskCompletionSource();
+        PlayCloseTransition(useUnscaledTime: true, () => completionSource.TrySetResult());
+        return completionSource.Task;
+    }
+
+    protected override void OnClosed(CloseReason reason)
+    {
+        HandleClose();
+    }
+
+    protected override void OnInputChanged(bool interactable, bool blocksRaycasts)
+    {
+        OnActivationChanged(isVisible, interactable && blocksRaycasts);
+    }
+
+    protected override void OnTick(float deltaTime)
+    {
+        OnPageTick(deltaTime);
     }
 
     protected virtual bool ShouldAutoPlaySequenceDirector()
@@ -281,8 +309,26 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
         sequenceDirector = GetComponentInChildren<UISequenceDirector>(true);
     }
 
+    private void ResolveLegacyReferences()
+    {
+        if (canvasGroup == null)
+        {
+            canvasGroup = GetComponent<CanvasGroup>();
+        }
+
+        if (rectTransform == null)
+        {
+            rectTransform = GetComponent<RectTransform>();
+        }
+
+        ResolveSequenceDirector();
+    }
+
     private void CacheDefaultTransform()
     {
+        ResolveLegacyReferences();
+        ValidateRectTransform();
+
         if (transformCached)
         {
             return;
@@ -295,12 +341,18 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
 
     private void ResetTransformState()
     {
+        ResolveLegacyReferences();
+        ValidateRectTransform();
+
         rectTransform.anchoredPosition = defaultAnchoredPosition;
         rectTransform.localScale = defaultScale;
     }
 
     private void ApplyActivationState(bool visualActive, bool inputActive)
     {
+        ResolveLegacyReferences();
+        ValidateCanvasGroup();
+
         if (!visualActive)
         {
             canvasGroup.alpha = 0f;
@@ -318,12 +370,22 @@ public abstract class UIPageBase : MonoBehaviour, IUIPage
     {
         if (canvasGroup == null)
         {
+            canvasGroup = GetComponent<CanvasGroup>();
+        }
+
+        if (canvasGroup == null)
+        {
             throw new MissingReferenceException($"UIPage '{name}' is missing CanvasGroup reference.");
         }
     }
 
     private void ValidateRectTransform()
     {
+        if (rectTransform == null)
+        {
+            rectTransform = GetComponent<RectTransform>();
+        }
+
         if (rectTransform == null)
         {
             throw new MissingComponentException($"UIPage '{name}' requires RectTransform.");
