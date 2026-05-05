@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(UIMotionDefinition))]
-public sealed class UIMotionDefinitionEditor : Editor
+public sealed class UIMotionDefinitionEditor : UnityEditor.Editor
 {
     private static readonly (string Label, Type TrackType)[] TrackTypes =
     {

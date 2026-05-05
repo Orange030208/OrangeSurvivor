@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；业务子视图已不再直接读取 `UIManager.Instance`，由 `ViewHandle.Owner` / `ViewBase.OwnerUIManager` 传递显式 UIManager；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；业务子视图已不再直接读取 `UIManager.Instance`，由 `ViewHandle.Owner` / `ViewBase.OwnerUIManager` 传递显式 UIManager；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码；UIMotion 自定义 Inspector 已显式继承 `UnityEditor.Editor`，避免与 `Orange.UIFramework.Editor` 命名空间发生基类解析冲突。
 
 已完成：
 
@@ -410,6 +410,7 @@
 - 已删除未实现、未引用的 `IPlayerHudFacade` 死接口；保留 `IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext`、`IInventoryUiFacadeHost`、页面 Context 和 Snapshot 作为当前真实跨系统边界。
 - 已完成 `UI/Contracts` 目录命名收口：有效页面 payload 移入 `Assets/Scripts/UI/Contexts`，Inventory / Shop Facade 移入 `Assets/Scripts/UI/Facades`，背包快照和操作 payload 移入 `Assets/Scripts/UI/Snapshots`，不再保留容易被误解为无效抽象集合的 `Contracts` 目录。
 - 已完成业务子视图 UIManager 入口显式化：`ViewHandle` 携带 Owner UIManager，`ViewBase` 暴露 `OwnerUIManager` 给页面，`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在打开时把 UIManager 注入背包和 Tooltip 子视图；业务 UI 目录不再直接读取 `UIManager.Instance`。
+- 已修复 UIMotion 编辑器基类解析风险：`UIMotionDefinitionEditor` 与 `UIMotionPlayerEditor` 显式继承 `UnityEditor.Editor`，避免 `Orange.UIFramework.Editor` 子命名空间被误解析为基类类型。
 
 未完成：
 
@@ -2489,3 +2490,35 @@
 
 - 提交子视图 UIManager 显式注入。
 - 继续最终收口，优先排查剩余无关工作树差异和最终 Play Mode 前的静态风险；如 UIMotion Editor 差异确属编译修复，应单独成模块并更新文档。
+
+### 2026-05-06 阶段 12 最终收口：修复 UIMotion 编辑器基类消歧
+
+完成内容：
+
+- `UIMotionDefinitionEditor` 从继承 `Editor` 改为显式继承 `UnityEditor.Editor`。
+- `UIMotionPlayerEditor` 从继承 `Editor` 改为显式继承 `UnityEditor.Editor`。
+- 该修复避免在 `Orange.UIFramework` 命名空间内由于存在 `Orange.UIFramework.Editor` 子命名空间，导致 `Editor` 被解析成命名空间而不是 Unity 编辑器基类。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Editor/UIMotionDefinitionEditor.cs`
+- `Assets/Scripts/OrangeUIFramework/Editor/UIMotionPlayerEditor.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文和 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`。
+- 已静态检查 `Assets/Scripts/OrangeUIFramework/Editor`，确认当前存在 `Orange.UIFramework.Editor` 命名空间，因此显式 `UnityEditor.Editor` 是必要消歧。
+- 已执行 `git diff --check`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
+- 本轮按用户要求未执行完整 Unity 编译和 Play Mode；Unity Editor 导入后仍需确认两个自定义 Inspector 可正常打开。
+
+遗留风险：
+
+- 两个 Editor 文件仍位于 `namespace Orange.UIFramework`，不是本轮要做的命名空间重排；如后续希望统一 Editor 脚本命名空间，可单独迁移并验证自定义 Inspector。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交 UIMotion 编辑器基类消歧。
+- 继续最终收口，当前工作树应只剩 Unity 自动导入痕迹；随后进入最终静态风险扫描和真实 Play Mode 验收准备。

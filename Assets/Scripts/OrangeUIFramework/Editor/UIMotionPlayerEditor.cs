@@ -5,7 +5,7 @@ namespace Orange.UIFramework
 using UnityEngine;
 
 [CustomEditor(typeof(UIMotionPlayer))]
-public sealed class UIMotionPlayerEditor : Editor
+public sealed class UIMotionPlayerEditor : UnityEditor.Editor
 {
     public override void OnInspectorGUI()
     {
