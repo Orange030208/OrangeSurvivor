@@ -1870,7 +1870,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 2. `GamingUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Gaming.prefab`，Layer 沿用旧 Catalog 的 `Hud` 层，旧 `GameManager` 打开 / 关闭调用会经迁移委托进入新 UIManager。
 3. `ShopUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Shop.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中商店打开 / 关闭调用会经迁移委托进入新 UIManager。
 4. `GamePauseMenu`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Pause.prefab`，视图仍是 Page 语义但 Layer 沿用旧 Catalog 的 `Popup` 层，暂停时覆盖在战斗 HUD 之上；旧 `GameManager` 中暂停菜单打开 / 关闭 / 查询调用会经迁移委托进入新 UIManager。
-5. `GameOverUIPage`
+5. `GameOverUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Game Over.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中 GameOver 状态打开 / 关闭调用会经迁移委托进入新 UIManager。
 6. `StageCompleteUIPage`
 7. `WaveTransitionUIPage`
 

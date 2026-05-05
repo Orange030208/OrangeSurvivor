@@ -57,3 +57,14 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
+  - id: page.gameOver
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: e6ab8e1c786b9d4409cedc1cc5d99d58, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0

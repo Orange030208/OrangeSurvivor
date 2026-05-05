@@ -93,6 +93,9 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<GamePauseMenu>(out ViewDefinition pauseDefinition), Is.True);
             Assert.That(pauseDefinition.Id, Is.EqualTo("page.pause"));
             Assert.That(pauseDefinition.Layer, Is.EqualTo(ViewLayer.Popup));
+            Assert.That(catalog.TryFindByType<GameOverUIPage>(out ViewDefinition gameOverDefinition), Is.True);
+            Assert.That(gameOverDefinition.Id, Is.EqualTo("page.gameOver"));
+            Assert.That(gameOverDefinition.Layer, Is.EqualTo(ViewLayer.Page));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)
