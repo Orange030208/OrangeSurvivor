@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: -2954676839165022514}
   - component: {fileID: 3177162744404213053}
   - component: {fileID: 8734120655063267002}
+  - component: {fileID: 1396330961952481906}
   m_Layer: 5
   m_Name: UI Wave Transition
   m_TagString: Untagged
@@ -142,7 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb78a889f6e26d4999be4c40f11077c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 0
   upgradeCardGroup: {fileID: 3447819284013907601}
   accessoryOperateContainer: {fileID: 6603829865121023568}
   chestContainerParent: {fileID: 3428852142773430343}
@@ -163,6 +163,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 0.8
+--- !u!114 &1396330961952481906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5453402992543493149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 8734120655063267002}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1 &8196674466882526671
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class WaveTransitionUIPage : UIPageBase
+public class WaveTransitionUIPage : PageBase
 {
     [Header("升级卡片")]
     [SerializeField] private WaveTransitionUpgradeCardGroup upgradeCardGroup;
@@ -10,7 +12,7 @@ public class WaveTransitionUIPage : UIPageBase
     [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
     [SerializeField] private Transform chestContainerParent;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
@@ -19,9 +21,10 @@ public class WaveTransitionUIPage : UIPageBase
         SetChestSelectionVisible(false);
         SetUpgradeSelectionVisible(false);
         GameEventBus.Publish(new RequestWaveTransitionStateSnapshotEvent());
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
