@@ -120,9 +120,9 @@ Assets/Prefabs/UI/
   Parts/
 ```
 
-旧命名空间保留规则：
+旧命名空间清理规则：
 
-- 旧 `AXR.Framework.UI` 仅保留当前仍被业务使用的 UI 动画与点击组件，例如 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 和 Motion Track。
+- 旧 `AXR.Framework.UI` 不再保留运行时代码。仍被业务使用的 UI 动画与点击组件，例如 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 和 Motion Track，已迁入 `Orange.UIFramework` 命名空间。
 - 旧页面托管、旧 `UIManager`、旧 Catalog、旧 Navigation 与迁移期桥接 API 不再保留；新业务代码只依赖 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`。
 - `UIManager` 仍然是运行时总入口，不应被替换成另一个 `UIService`。
 
@@ -1883,12 +1883,12 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - Facade 只在跨系统边界保留，例如 UI 调用 ShopManager、InventoryManager。
 - 每迁移一个模块必须更新本文和 `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，执行匹配验证并提交。
 - 迁移期旧页面基类和旧 UIManager 只允许作为临时脚手架出现，不是最终交付形态。当前已完成脚手架清理：业务页面直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，旧 `AXR.Framework.UI` 页面托管、旧 Catalog、旧 Navigation、临时非泛型 Type API 和旧资源已删除。
-- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口已完成旧页面托管清理：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 与阶段清单外 `BookUIPage` 已直接继承新 `PageBase`；升级卡测试场景生成模块和测试场景已改为挂载新 `Orange.UIFramework.UIManager`。旧 `AXR.Framework.UI` 仅保留动画 / 点击链路。
+- 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口已完成旧页面托管清理：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 与阶段清单外 `BookUIPage` 已直接继承新 `PageBase`；升级卡测试场景生成模块和测试场景已改为挂载新 `Orange.UIFramework.UIManager`。
 - 商店页面内部不再保留只服务单一页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup` 和未使用的 `SidebarRegionMotionGroup`。`ShopUIPage`、`ShopPageController` 与商店侧栏 Host 直接组合具体业务子视图；这类子视图仍是页面私有结构，不进入 Orange 全局 Catalog。
 - 页面上下文装配已从 UI 层延迟解析改为业务入口显式装配：`GameManager` 在主场景序列化引用 `InventoryOperateManager`、`ShopManager` 与 `StageCompleteSummaryManager`，再通过 `UIPageContextFactory` 生成 `GamingPageContext`、`ShopPageContext`、`PauseMenuContext` 和 `StageCompletePageContext`；页面本身只接受 `OpenContext` payload，缺失时直接抛出可定位异常，不再自行 `FindFirstObjectByType` 兜底，也不再保留 `ResolvingInventoryUiFacade` / `ResolvingShopUiFacade` 这类延迟解析桥接层。
 - 战斗 HUD 的 Buff Tooltip 已从静态 `UITooltipPresenter.ActivePresenter` / 全局查找、页面内 Presenter 注入链路迁入 Orange Tooltip 管理：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 直接调用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 已注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 不再内嵌旧 Tooltip 实例；Tooltip 的唯一实例、指针跟随、边缘裁剪、Raycast 不阻挡、诊断和池化由框架处理。
 - 背包物品操作浮层已从页面内部手工 `Instantiate` / `Destroy` 和自建透明关闭遮罩迁移到 Orange Popup 管理：`WeaponOperatePopup` 与 `AccessoryInfoPopup` 继承 `PopupBase`，由 `InventoryPopupHostView` 调用 `UIManager.ShowPopupAsync()` 打开并用 `ViewHandle.CloseAsync()` 关闭；两个 Prefab 已注册到 `OrangeUIViewCatalog`，外部点击关闭、PopupStack、池化和输入焦点交由框架处理。
-- 旧 `AXR.Framework.UI` 不能整体一刀切删除：其中 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 和 Motion 资源仍是当前老动画系统与业务子视图点击链路的一部分。最终清理应先删除旧页面托管、旧 Catalog、旧 Navigation 和迁移期桥接 API，再单独评估动画 / 点击组件是否迁入 `Orange.UIFramework` 命名空间或继续作为老动画模块保留。
+- 旧 `AXR.Framework.UI` 命名空间已清空：`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track、对应编辑器脚本和 Motion 资产类型记录已迁入 `Orange.UIFramework`；脚本类名保持不变，避免影响业务开发体验。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 

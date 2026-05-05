@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using AXR.Framework.UI;
 using DG.Tweening;
 using NUnit.Framework;
 using UnityEngine;

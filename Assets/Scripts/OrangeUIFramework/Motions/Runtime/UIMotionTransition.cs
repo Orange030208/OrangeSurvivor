@@ -1,5 +1,4 @@
 using System.Threading;
-using AXR.Framework.UI;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;

@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -405,19 +405,19 @@
 - 已完成战斗 HUD Buff Tooltip 显式注入收口：`UITooltipPresenter.ActivePresenter` 已删除，`TooltipHoverTarget` 不再全局查找 Presenter，改由 `GamingHudRegionHost` 注入到 `BuffBarUI` 并配置到动态生成的 Buff 图标；该阶段仍保留页面内 Presenter 视觉实现。
 - 已完成描述 Tooltip 迁入 Orange Tooltip：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 改用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 删除旧内嵌 Tooltip PrefabInstance 和页面字段引用，Tooltip 定位、唯一实例、裁剪、诊断与池化交由 Orange TooltipStack 处理。
 - 已完成 StageComplete 结算页上下文显式化：新增 `StageCompletePageContext`，`GameManager` 通过显式引用的 `StageCompleteSummaryManager` 创建快照 payload 打开 `StageCompleteUIPage`，页面不再持有或查找 `StageCompleteSummaryManager`。
+- 已完成旧动画 / 点击组件命名空间迁移：`UIClickTarget`、`IUIRuntimeMotion`、`IUISequenceMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track 与对应编辑器脚本迁入 `Assets/Scripts/OrangeUIFramework/` 和 `Orange.UIFramework`，并同步更新 Motion 资产中的 `SerializeReference` 类型记录。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 旧 `AXR.Framework.UI` 动画 / 点击组件仍在使用，尚未迁入 Orange 命名空间；这是老动画系统沿用范围，不再承担页面托管桥接职责。
 - `UI/Regions/Inventory`、`UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 仍有业务调用链，需要继续按模块核查；不能一刀切删除。`UI/Contracts/Facades` 当前仅保留有效的接口和 Manager Facade。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找已删除。后续风险集中在业务子视图里仍沿用旧动画 / 点击命名空间，以及业务 Manager 层仍存在非 UI 框架范围的场景查找。
+- 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找、旧动画 / 点击命名空间已删除。后续风险集中在业务 Manager 层仍存在非 UI 框架范围的场景查找，以及最终真实 Play Mode 验收尚未执行。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -438,7 +438,7 @@
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
 3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
 4. 继续最终收口：优先全量扫描 UI 目录内剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
-5. 保留仍被业务使用的 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件，除非本轮明确迁移它们到新命名空间并同步修 Prefab / 资源引用。
+5. 确认旧 `AXR.Framework.UI` 命名空间、旧 `Assets/Scripts/Framework` 目录和旧 Motion 资产类型记录不再回流；`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件现在属于 `Orange.UIFramework`。
 6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 8. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
@@ -2139,3 +2139,59 @@
 
 - 提交描述 Tooltip 迁入 Orange Tooltip。
 - 继续最终收口，优先扫描仍未接入 Orange Catalog 的 Modal / Popup / Tooltip 资源、仍手工管理全局浮层的业务入口，以及 `Assets/Scripts/UI/Regions` / `Assets/Scripts/UI/Contracts` 中是否还有可删除的无用抽象；继续保留老动画 / 点击组件，除非单独迁移并同步修 Prefab / 资源引用。
+
+### 2026-05-06 阶段 12 最终收口：旧动画与点击组件迁入 Orange 命名空间
+
+完成内容：
+
+- 将仍被业务使用的 `UIClickTarget`、`IUIRuntimeMotion`、`IUISequenceMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track、`UISidebarEdgeDirection` 和对应编辑器脚本从 `Assets/Scripts/Framework/UI` 移入 `Assets/Scripts/OrangeUIFramework/`。
+- 这些类型统一改为 `Orange.UIFramework` 命名空间，类名、字段名和函数名保持不变，业务脚本继续直接使用熟悉的 `UIClickTarget` / `UIMotionPlayer` 等类型。
+- `UIMotionDefinition` 的创建菜单从旧 `Survivors/Systems/UI/Motion Definition` 收口到 `Orange/UI Framework/Motion Definition`。
+- `Arrow Left Button Motion.asset`、`Arrow Right Button Motion.asset`、`Rect Button Motion.asset` 的 `SerializeReference` 类型记录从 `AXR.Framework.UI` 更新为 `Orange.UIFramework`，避免迁移后 Motion Track 丢类型。
+- 删除旧 `Assets/Scripts/Framework` 目录剩余空 `.meta`，避免仓库继续保留旧 UI 框架目录。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Data/UIFrameworkConstants.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIClickTarget.cs`
+- `Assets/Scripts/OrangeUIFramework/Editor/UIMotionDefinitionEditor.cs`
+- `Assets/Scripts/OrangeUIFramework/Editor/UIMotionPlayerEditor.cs`
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/UISidebarEdgeDirection.cs`
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/UIMotion/**`
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/UIMotionTransition.cs`
+- `Assets/Scripts/OrangeUIFramework/Tests/EditMode/Editor/UIMotionPlayerEditModeTests.cs`
+- `Assets/Scripts/UI/**` 中引用旧命名空间的业务脚本
+- `Assets/Resources/Data/UI/Motion/V2/Generated/Arrow Left Button Motion.asset`
+- `Assets/Resources/Data/UI/Motion/V2/Generated/Arrow Right Button Motion.asset`
+- `Assets/Resources/Data/UI/Motion/V2/Generated/Rect Button Motion.asset`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+删除范围：
+
+- `Assets/Scripts/Framework.meta`
+- `Assets/Scripts/Framework/UI.meta`
+- `Assets/Scripts/Framework/UI/Core.meta`
+- `Assets/Scripts/Framework/UI/Core/Data.meta`
+- `Assets/Scripts/Framework/UI/Core/Editor.meta`
+- `Assets/Scripts/Framework/UI/Core/Runtime.meta`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity 项目 / 脚本 / 资产相关 Skill 说明。
+- 已静态扫描 `Assets`，确认不再残留 `AXR.Framework.UI` 字符串。
+- 已静态扫描 Motion 资产，确认三个生成的 Motion Definition 资产中 104 处 managed-reference 类型记录均为 `ns: Orange.UIFramework`，不再引用旧命名空间。
+- 已确认业务脚本中的旧 `using AXR.Framework.UI` 已替换为 `using Orange.UIFramework`，新 `UIMotionTransition` 与测试脚本不再保留同命名空间冗余 using。
+- 已尝试执行 `dotnet build .\Assembly-CSharp.csproj --no-restore -v:minimal`，失败原因是被 `.gitignore` 忽略的 Unity 生成 `.csproj` 尚未随本轮脚本移动 / 删除重新生成，仍引用旧 `Assets/Scripts/Framework/UI/**`、旧 `UITooltipPresenter.cs` 和旧 `InventoryItemOperateContainer.cs` 路径；该结果不能作为 Unity 编译是否通过的判定。
+- 本轮尚未运行 Unity Editor 重新生成工程或 Play Mode；按用户要求只做最小静态验证，真实按钮点击、卡牌 Motion、侧栏 Motion、页面入退场动画和 `refreshDefaultsOnEnable` 复用行为留到最终真实场景验收。
+
+遗留风险：
+
+- 由于 `SerializeReference` 类型记录发生命名空间迁移，必须在 Unity Editor 打开项目后确认三个 Motion Definition 资产 Inspector 中 Track 列表不丢类型。
+- 本轮保留脚本 GUID 和类名，Prefab 上的 `MonoScript` 引用应稳定；仍需 Unity 导入后确认没有 Missing Script。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交旧动画与点击组件迁入 Orange 命名空间。
+- 继续最终收口，优先扫描仍未接入 Orange Catalog 的 Modal / Popup / Tooltip 资源、仍手工管理浮层的业务入口，以及 `Assets/Scripts/UI/Regions` / `Assets/Scripts/UI/Contracts` 中是否还有可删除的无用抽象；不要再引入旧 `AXR.Framework.UI` 命名空间或旧 `Assets/Scripts/Framework` 目录。
