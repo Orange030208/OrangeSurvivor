@@ -1897,6 +1897,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 业务子视图不再直接读取 `UIManager.Instance` 打开 Popup / Tooltip。`ViewHandle` 记录所属 `UIManager`，`ViewBase.OwnerUIManager` 由 Page 显式注入给 `InventoryUI`、`InventoryOperatePopupHost`、`BuffBarUI` 和 `TooltipHoverTarget`，缺少装配时直接报错。
 - 旧 `AXR.Framework.UI` 命名空间已清空：`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track、对应编辑器脚本和 Motion 资产类型记录已迁入 `Orange.UIFramework`；脚本类名保持不变，避免影响业务开发体验。
 - `UIMotionDefinitionEditor` 与 `UIMotionPlayerEditor` 已显式继承 `UnityEditor.Editor`，避免 `Orange.UIFramework.Editor` 子命名空间与 Unity 编辑器基类名发生解析冲突。
+- 2026-05-06 已完成阶段 12 静态收口扫描：业务 UI 运行时代码中未发现旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录、页面手工 Tooltip / Popup 托管、业务 UI 直接读取 `UIManager.Instance`、无消费空接口或 Missing Script 残留；`OrangeUIViewCatalog.asset` 当前注册全部业务 Page、Inventory Popup 和描述 Tooltip。
 - 当前真实场景手动验证清单尚未执行；用户已明确要求先开始迁移，因此 `MenuUIPage` 已在记录风险后推进。后续迁移仍应尽快补真实场景验证，不能把 EditMode 测试等同于完整 Play Mode 验收。
 - 按用户最新要求，迁移过程不再对每个模块执行耗时完整回归；每个模块保留最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏，并在全部迁移完成后做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 

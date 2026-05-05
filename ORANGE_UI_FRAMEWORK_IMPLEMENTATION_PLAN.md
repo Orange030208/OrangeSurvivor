@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade`、无额外语义的 `IPageContext` / `IInventoryUiFacadeHost` 空标记接口和只转发释放的 `PageContextBinding` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；业务子视图已不再直接读取 `UIManager.Instance`，由 `ViewHandle.Owner` / `ViewBase.OwnerUIManager` 传递显式 UIManager；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码；UIMotion 自定义 Inspector 已显式继承 `UnityEditor.Editor`，避免与 `Orange.UIFramework.Editor` 命名空间发生基类解析冲突。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；未使用的 `IPlayerHudFacade`、无额外语义的 `IPageContext` / `IInventoryUiFacadeHost` 空标记接口和只转发释放的 `PageContextBinding` 已删除，原 `UI/Contracts` 已按职责拆为 `UI/Contexts`、`UI/Facades`、`UI/Snapshots`，只保留页面 payload、Inventory / Shop Facade、背包快照等真实业务边界；业务子视图已不再直接读取 `UIManager.Instance`，由 `ViewHandle.Owner` / `ViewBase.OwnerUIManager` 传递显式 UIManager；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码；UIMotion 自定义 Inspector 已显式继承 `UnityEditor.Editor`，避免与 `Orange.UIFramework.Editor` 命名空间发生基类解析冲突；2026-05-06 已完成阶段 12 静态收口扫描，当前业务 UI 运行时代码未发现旧托管、空接口、未登记全局 View、Missing Script 或旧 UI 资源引用残留。
 
 已完成：
 
@@ -415,18 +415,21 @@
 - 已完成页面 Context 释放辅助类收口：删除只转发 `Dispose + null` 的 `PageContextBinding`，`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在 `OnClosed()` 中直接释放并清空当前上下文。
 - 已完成背包 Facade Host 空标记接口收口：删除 `IInventoryUiFacadeHost`，`InventoryUI` 不再通过父级扫描判断页面宿主，而是根据外部配置的 Facade 或本地显式 `InventoryOperateManager` 决定是否启动。
 - 已完成业务容器未消费接口收口：删除仅出现在实现声明中的 `IContainerQualityRender` 和 `IConfigurable<T>`，`UIContainerBase`、`InventoryOperatePopupBase` 继续保留具体 `RenderQuality()` / `Configure()` 方法。
+- 已完成阶段 12 静态收口扫描：旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录、页面手工 Tooltip / Popup 托管、业务 UI 中的 `UIManager.Instance` 直接读取、无消费空接口和 Missing Script 均未发现运行时代码或真实资源残留；`OrangeUIViewCatalog.asset` 当前注册 9 个 Page、2 个 Inventory Popup 和 1 个 Tooltip。
 
 未完成：
 
-- 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
+- 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移并完成静态收口，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 除已删除的 `IPageContext` / `IInventoryUiFacadeHost` 空标记接口和 `PageContextBinding` 转发辅助类外，`UI/Contexts`、`UI/Facades` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；不能一刀切删除。`UI/Facades` 当前保留 Inventory / Shop 相关接口和 Manager Facade。
+- `UI/Contexts`、`UI/Facades` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；不能一刀切删除。`UI/Facades` 当前保留 Inventory / Shop 相关接口和 Manager Facade，它们是业务 Manager 到 UI 的真实边界，不按桥接层处理。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
 - 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找、旧动画 / 点击命名空间已删除。后续风险集中在业务 Manager 层仍存在非 UI 框架范围的场景查找，以及最终真实 Play Mode 验收尚未执行。
+- 阶段 12 静态收口已完成，未发现业务 UI 运行时代码层面的旧框架残留；剩余主要风险从“迁移遗漏”转为“真实 Play Mode 场景装配、Prefab 引用、输入事件和动画播放是否符合预期”。
+- 当前 worktree 仍有无关 Unity 自动导入痕迹和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`。这些变更不属于 Orange UI 迁移，后续提交必须继续排除，除非用户明确要求处理。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -445,14 +448,14 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
-4. 继续最终收口：优先扫描业务 UI Prefab 和 Scene 中剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。`IPageContext` / `IInventoryUiFacadeHost` 空标记接口和 `PageContextBinding` 转发辅助类已删除；`UI/Contexts`、`UI/Facades`、`UI/Snapshots` 中其余类型仍按有效业务边界逐项核查，不能当作旧 Contract 包袱一刀切删除。
-5. 确认旧 `AXR.Framework.UI` 命名空间、旧 `Assets/Scripts/Framework` 目录和旧 Motion 资产类型记录不再回流；`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件现在属于 `Orange.UIFramework`。
-6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
-7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
-8. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
-9. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
-10. 最终收口必须按可回退边界拆分，确保打开游戏即可基于新 UI 框架测试。
+3. 确认最新提交包含阶段 12 静态收口记录，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
+4. 进入真实场景验收准备：优先打开当前 worktree 项目，检查 `Game Scene`、`UI Test Scene`、`Upgrade Card Test Scene` 是否能基于 Orange `UIManager` 正常进入 Play Mode。
+5. 按 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `23. 测试计划` 执行手动清单的高优先级路径：主菜单 -> 角色选择 -> 战斗 HUD -> 暂停菜单 -> 商店 / 背包 Popup -> Buff Tooltip -> 波次奖励 -> 结算 / 游戏结束。
+6. 验收时必须确认旧 `AXR.Framework.UI` 命名空间、旧 `Assets/Scripts/Framework` 目录和旧 Motion 资产类型记录没有因为 Unity 导入或资源合并回流；`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件现在属于 `Orange.UIFramework`。
+7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
+8. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
+9. 如果真实场景验收发现问题，按页面或功能模块拆小修复、更新两份文档并单独提交；不要重新引入旧 UI 托管、兼容桥接层或 `UIService` 平行入口。
+10. 如果验收无阻断问题，更新两份文档记录真实场景通过项、未覆盖项和剩余建议，再提交最终验收记录。
 
 下一轮禁止：
 
@@ -2674,3 +2677,40 @@
 
 - 提交业务容器未消费接口清理。
 - 继续最终静态风险扫描；若业务 UI 运行时代码已无旧托管 / 空接口 / 未迁入全局 View 残留，则更新文档记录静态收口点并准备最终真实场景验收。
+
+### 2026-05-06 阶段 12 最终收口：完成业务 UI 静态收口扫描
+
+完成内容：
+
+- 按强制流程重新读取 Git 状态、本文和 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity Script / Project Scout 技能说明，确认本轮只做最终静态收口记录，不改代码、不改 Prefab、不改场景。
+- 扫描 `Assets/Scripts`、`Assets/Resources`、`Assets/Scenes`、`Assets/Prefabs`、`Packages`、`ProjectSettings` 中旧 UI 托管关键字，未发现真实旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录残留；`UIPageContextFactory` 命中只来自当前有效类名，不是旧 `IPageContext` 引用。
+- 扫描真实资源中的 Missing Script，未发现 `m_Script: {fileID: 0}`。
+- 扫描业务 `PageBase` / `PopupBase` / `TooltipBase` 派生类型并核对 `OrangeUIViewCatalog.asset`，确认当前 9 个业务 Page、2 个 Inventory Popup 和 1 个描述 Tooltip 已注册；测试桩不进入业务 Catalog。
+- 扫描接口定义，确认剩余接口属于 Orange 框架扩展点或 Inventory / Shop 真实业务边界，没有发现新的空标记接口或无消费业务接口。
+- 扫描 `UIManager.Instance`、`FindFirstObjectByType<UIManager>`、旧资源名和旧 `Assets/Scripts/Framework` 目录，确认业务 UI 不再直接读取全局 UIManager，旧 Framework 目录不存在；剩余 `FindFirstObjectByType` 命中位于非 UI 框架范围的业务 Manager、测试控制器或预览工具。
+
+修改文件：
+
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已执行 `git grep -n -E "AXR\\.Framework\\.UI|UIPageBase|UIPageOpenContext|UIPrefabCatalog|UIPrefabEntry|UILayerType|BeginTransition|FindFirstObjectByType<UIManager>|ActivePresenter|IPageContext|IInventoryUiFacadeHost|PageContextBinding|IContainerQualityRender|IConfigurable<" -- Assets/Scripts Assets/Resources Assets/Scenes Packages ProjectSettings`，结果只命中 `UIPageContextFactory` 子串，不是旧接口或旧托管残留。
+- 已执行 `git grep -n "m_Script: {fileID: 0" -- Assets/Resources Assets/Scenes Assets/Prefabs`，未发现 Missing Script。
+- 已执行 `git grep -n -E "class .*:.*(PageBase|PopupBase|TooltipBase|ModalBase)" -- Assets/Scripts/UI Assets/Scripts/OrangeUIFramework`，业务派生类型与 Catalog 注册关系符合预期。
+- 已执行 `git grep -n -E "^[[:space:]]*(public |internal |private |protected )?interface " -- Assets/Scripts/UI Assets/Scripts/OrangeUIFramework`，剩余接口均有真实边界。
+- 已执行 `git grep -n -E "UIManager\\.Instance|FindFirstObjectByType|FindAnyObjectByType|FindObjectOfType|Resources\\.Load<.*(UIManager|UIFrameworkSettings|ViewCatalog|UIPrefabCatalog)|AXR\\.Framework\\.UI" -- Assets/Scripts Assets/Resources Assets/Scenes Assets/Prefabs`，确认 UI 框架范围无旧入口残留。
+- 已执行 `git diff --check -- ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，仅有 LF/CRLF 转换提示，无空白错误。
+- 本轮按用户要求未执行完整 Unity 编译和 Play Mode；当前结论是静态收口完成，不等同于真实场景验收通过。
+
+遗留风险：
+
+- 真实场景手动验证仍未执行，必须在当前 worktree 中打开 Unity 后验证主菜单、角色选择、战斗 HUD、暂停、商店 / 背包 Popup、Buff Tooltip、波次奖励、结算和游戏结束链路。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`；本轮不纳入提交。
+- 非 UI 框架范围的业务 Manager 仍存在 `FindFirstObjectByType` 等场景查找，这不是本轮 Orange UI 迁移收口目标；若后续要收口，需要按业务系统单独规划。
+
+下一步：
+
+- 提交阶段 12 静态收口记录。
+- 进入真实场景验收准备，按开发文档 `23. 测试计划` 优先验证核心玩法路径，发现问题后按页面或功能模块拆小修复、更新文档并提交。
