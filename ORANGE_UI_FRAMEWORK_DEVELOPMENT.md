@@ -1871,7 +1871,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 3. `GamingUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Gaming.prefab`，Layer 沿用旧 Catalog 的 `Hud` 层，旧 `GameManager` 打开 / 关闭调用会经迁移委托进入新 UIManager。
 4. `ShopUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Shop.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中商店打开 / 关闭调用会经迁移委托进入新 UIManager。
 5. `GamePauseMenu`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Pause.prefab`，视图仍是 Page 语义但 Layer 沿用旧 Catalog 的 `Popup` 层，暂停时覆盖在战斗 HUD 之上；旧 `GameManager` 中暂停菜单打开 / 关闭 / 查询调用会经迁移委托进入新 UIManager。
-6. `GameOverUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Game Over.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层，旧 `GameManager` 中 GameOver 状态打开 / 关闭调用会经迁移委托进入新 UIManager。
+6. `GameOverUIPage`：已完成直接基类迁移。脚本已改为继承 `Orange.UIFramework.PageBase`，生命周期使用 `OnOpeningAsync()` / `OnClosed()`，Prefab 显式挂载 `UIMotionTransition` 复用现有 `UISequenceDirector` 动画；该页面不再依赖旧 `AXR.Framework.UI.UIPageBase`。
 7. `StageCompleteUIPage`：已完成迁移期接入。原项目存在业务脚本和 `GameManager` 打开 / 关闭入口，但没有对应 Prefab 或旧 Catalog 注册；本次补齐 `UI Stage Complete.prefab`，并在 `OrangeUIViewCatalog` 注册 `page.stageComplete`。当前 Prefab 复用现有结算页按钮与动画结构，使用汇总文本显示通关快照，后续最终 Play Mode 验收时需要重点检查视觉排版。
 8. `WaveTransitionUIPage`：已完成迁移期接入。`OrangeUIViewCatalog` 已注册 `UI Wave Transition.prefab`，Layer 沿用旧 Catalog 的 `Default/Page` 层；旧 `GameManager` 中波次过渡打开 / 关闭调用会经迁移委托进入新 UIManager。该页面包含升级卡片组和宝箱饰品选择容器，最终 Play Mode 验收需要重点检查波次切换状态快照、升级卡刷新、饰品选择和事件解绑。
 

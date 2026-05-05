@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 迁移期接入已完成，`GameManager` 已直接使用 Orange UIManager。下一步继续让业务页面直接基于新框架运行，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
+当前阶段：阶段 12 最终收口；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`StageCompleteUIPage`、`WaveTransitionUIPage` 迁移期接入已完成，`GameManager` 已直接使用 Orange UIManager，`GameOverUIPage` 已直接继承新 `PageBase`。下一步继续让其余业务页面直接基于新框架运行，并清理旧 UI 托管、旧 Catalog、临时委托和无用抽象。
 
 已完成：
 
@@ -387,19 +387,20 @@
 - 已完成 `WaveTransitionUIPage` 第七模块迁移：`OrangeUIViewCatalog` 新增 `page.waveTransition`，Prefab 指向 `UI Wave Transition.prefab`，Layer 沿用旧 UI Catalog 的 `Default/Page` 层；旧 `GameManager` 中 `uiManager.OpenPage<WaveTransitionUIPage>()` 和 `transition.ClosePage<WaveTransitionUIPage>()` 会通过旧 UIManager 委托新 UIManager。
 - 已新增真实 `OrangeUIViewCatalog.asset` 校验测试，确认 `MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage` 与 `WaveTransitionUIPage` 均可按类型解析并通过 Catalog 校验。
 - 已完成最终收口第一步：`Assets/Scripts/Managers/GameManager.cs` 直接引用 `Orange.UIFramework.UIManager`，页面打开 / 关闭改为 `OpenPageAsync<T>()` 与 `ClosePageAsync(Type)`，状态切换和暂停菜单关闭流程使用 UniTask 顺序等待，并用本地 transition version 避免旧异步结果覆盖新状态。
+- 已完成 `GameOverUIPage` 直接基类迁移：脚本改为继承 `Orange.UIFramework.PageBase`，旧 `OnPageOpened()` / `OnPageClosed()` 生命周期迁到 `OnOpeningAsync()` / `OnClosed()`，对应 Prefab 增加 `UIMotionTransition` 继续复用原 `UISequenceDirector` 入退场动画。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- 业务页面目前仍继承迁移期旧 `UIPageBase`；旧 `AXR.Framework.UI.UIManager` 仍在代码库中，但已不再作为 `GameManager` 业务入口。页面基类和旧 UIManager 清理尚未完成，尚未达到用户要求的最终形态。
+- 除 `GameOverUIPage` 外，其余业务页面目前仍继承迁移期旧 `UIPageBase`；旧 `AXR.Framework.UI.UIManager` 仍在代码库中，但已不再作为 `GameManager` 业务入口。页面基类和旧 UIManager 清理尚未完成，尚未达到用户要求的最终形态。
 - 尚未清理旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧页面托管、临时非泛型委托、旧 Region / Contract 无用抽象与旧资源引用。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前迁移策略的桥接范围已收窄：`GameManager` 已直连新 `UIManager`，但旧 `UIPageBase` 仍暂继承新 `PageBase`，业务页面代码暂未直接继承新基类。该桥接只是迁移脚手架，不是最终交付形态；下一阶段必须让业务 UI 直接基于 OrangeUIFramework，并清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
+- 当前迁移策略的桥接范围已收窄：`GameManager` 已直连新 `UIManager`，`GameOverUIPage` 已直接继承新 `PageBase`，但旧 `UIPageBase` 仍暂继承新 `PageBase`，其余业务页面代码暂未直接继承新基类。该桥接只是迁移脚手架，不是最终交付形态；下一阶段必须继续让业务 UI 直接基于 OrangeUIFramework，并清理旧 `AXR.Framework.UI` 托管、旧 Catalog、临时委托和无用资源。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -418,8 +419,8 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认 `GameManager` 直连 Orange UIManager 的提交已存在，并检查是否只剩 Unity 导入痕迹或下一步最终收口相关变更。
-4. 进入最终收口第二步：业务页面直接继承 `Orange.UIFramework.PageBase`，移除页面脚本对 `AXR.Framework.UI.UIPageBase`、`UIPageOpenContext`、旧 `OnPageOpened()` / `OnPageClosed()` 钩子的依赖；本轮先选择一个低风险页面做可回退提交。
+3. 确认 `GameOverUIPage` 直接基类迁移提交已存在，并检查是否只剩 Unity 导入痕迹或下一步最终收口相关变更。
+4. 继续最终收口第二步：迁移下一个低风险业务页面直接继承 `Orange.UIFramework.PageBase`，移除页面脚本对 `AXR.Framework.UI.UIPageBase`、`UIPageOpenContext`、旧 `OnPageOpened()` / `OnPageClosed()` 钩子的依赖，并确保 Prefab 显式挂载 `UIMotionTransition` 继续复用现有动画。
 5. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 6. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
 7. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
@@ -1388,3 +1389,40 @@
 
 - 提交 `GameManager` 直连 Orange UIManager。
 - 进入最终收口第二步：业务页面直接继承新框架 `PageBase`，先迁移低风险页面并提交，再逐步清理旧 `UIPageBase` 与旧 UIManager。
+
+### 2026-05-05 阶段 12 最终收口：GameOverUIPage 直接继承 PageBase
+
+完成内容：
+
+- 迁移低风险页面 `GameOverUIPage`，作为业务页面直接继承新框架基类的第一批收口模块。
+- 脚本从旧 `AXR.Framework.UI.UIPageBase` 改为直接继承 `Orange.UIFramework.PageBase`。
+- 旧 `OnPageOpened(UIPageOpenContext)` / `OnPageClosed()` 生命周期迁移为新 `OnOpeningAsync(OpenContext, CancellationToken)` / `OnClosed(CloseReason)`。
+- 保留重启和返回主菜单按钮事件绑定 / 解绑语义，不引入额外业务抽象。
+- `UI Game Over.prefab` 根节点新增 `UIMotionTransition`，显式指向现有 `UISequenceDirector`，确保直接使用新 `ViewBase` 生命周期后仍能复用老动画系统。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/GameOverUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Game Over.prefab`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态。
+- 已读取新 `ViewBase` / `PageBase` / `UIMotionTransition`，确认直接迁移后动画入口依赖 `IViewTransition`，因此 Prefab 需要显式挂载 `UIMotionTransition`。
+- 已确认 `GameOverUIPage.cs` 不再残留 `AXR.Framework.UI`、`UIPageBase`、`UIPageOpenContext`、`OnPageOpened()`、`OnPageClosed()`。
+- 已确认 `UI Game Over.prefab` 根节点仍保留 `CanvasGroup`、`GameOverUIPage`、原 `UISequenceDirector`，并新增 `UIMotionTransition` 指向 `UISequenceDirector`。
+- 已执行 `git diff --check`，修复 Prefab 新增 YAML 空值行的尾随空格后无空白错误。
+
+遗留风险：
+
+- `GameOverUIPage` 尚未在真实 Play Mode 中验证重启、返回主菜单、入场动画、退场动画和按钮事件解绑。
+- 其他业务页面仍继承旧 `UIPageBase`，需要逐页迁移生命周期并为对应 Prefab 补 `UIMotionTransition`。
+- 旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧 `UIPageBase` 和迁移期非泛型 Type API 尚未删除。
+- Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
+
+下一步：
+
+- 提交 `GameOverUIPage` 直接基类迁移。
+- 继续迁移下一个低风险页面直接继承 `Orange.UIFramework.PageBase`，优先考虑 `StageCompleteUIPage` 或 `MenuUIPage`，并同步处理 Prefab 的 `UIMotionTransition`。
