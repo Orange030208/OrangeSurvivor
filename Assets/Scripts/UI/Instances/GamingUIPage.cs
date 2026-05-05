@@ -16,7 +16,6 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
     [SerializeField] private UIClickTarget menuButton;
     [SerializeField] private MobileJoystick moveJoystick;
     [SerializeField] private BuffBarUI buffBarUI;
-    [SerializeField] private UITooltipPresenter tooltipPresenter;
 
     private GamingPageContext currentContext;
     private GamingHudRegionHost hudRegionHost;
@@ -29,7 +28,7 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
         base.Awake();
         ValidateConfiguration();
         InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
-        hudRegionHost = new GamingHudRegionHost(name, waveText, timerText, currencyText, characterStatusPanel, buffBarUI, tooltipPresenter);
+        hudRegionHost = new GamingHudRegionHost(name, waveText, timerText, currencyText, characterStatusPanel, buffBarUI);
         inputRegionHost = new GamingInputRegionHost(this, moveJoystick);
         inputRegionHost.WarmUp();
     }
@@ -97,11 +96,6 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
         if (buffBarUI == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing buff bar UI.");
-        }
-
-        if (tooltipPresenter == null)
-        {
-            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing tooltip presenter.");
         }
 
         if (moveJoystick == null)

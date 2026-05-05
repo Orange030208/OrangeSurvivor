@@ -1,13 +1,21 @@
+using System;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler, IPointerExitHandler
 {
+    private static readonly Vector2 TOOLTIP_OFFSET = new Vector2(18f, -18f);
+    private const float TOOLTIP_MARGIN = 12f;
+
     [SerializeField] private MonoBehaviour dataSourceComponent;
-    [SerializeField] private UITooltipPresenter tooltipPresenter;
 
     private IDescribable dataSource;
     private bool isPointerDown;
+    private bool tooltipRequestInFlight;
+    private bool tooltipOpenedForCurrentPress;
+    private Vector2 pendingScreenPosition;
 
     private void Awake()
     {
@@ -18,12 +26,10 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void SetDataSource(IDescribable source)
     {
         dataSource = source;
-        dataSourceComponent = source as MonoBehaviour;
-    }
-
-    public void SetTooltipPresenter(UITooltipPresenter presenter)
-    {
-        tooltipPresenter = presenter;
+        if (source is MonoBehaviour behaviour)
+        {
+            dataSourceComponent = behaviour;
+        }
     }
 
     private void OnDisable()
@@ -39,6 +45,7 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void OnPointerDown(PointerEventData eventData)
     {
         isPointerDown = true;
+        tooltipOpenedForCurrentPress = false;
         Show(eventData.position);
     }
 
@@ -64,7 +71,14 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        ResolveTooltipPresenter(true)?.Present(dataSource, screenPosition);
+        pendingScreenPosition = screenPosition;
+        if (tooltipRequestInFlight || tooltipOpenedForCurrentPress)
+        {
+            ResolveUIManager(false)?.UpdateTooltipPosition(screenPosition);
+            return;
+        }
+
+        ShowAsync(screenPosition).Forget();
     }
 
     private void ValidateConfiguration()
@@ -88,25 +102,64 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
         }
 
         isPointerDown = false;
-        ResolveTooltipPresenter(false)?.HideImmediate();
+        tooltipOpenedForCurrentPress = false;
+        ResolveUIManager(false)?.HideTooltip();
     }
 
-    private UITooltipPresenter ResolveTooltipPresenter(bool throwIfMissing)
+    private async UniTaskVoid ShowAsync(Vector2 screenPosition)
     {
-        if (tooltipPresenter != null)
+        try
         {
-            return tooltipPresenter;
-        }
+            tooltipRequestInFlight = true;
+            UIManager uiManager = ResolveUIManager(true);
+            if (uiManager == null)
+            {
+                return;
+            }
 
-        tooltipPresenter = GetComponentInParent<UITooltipPresenter>(true);
-        if (tooltipPresenter != null)
+            TooltipOptions options = new TooltipOptions(
+                screenPosition: screenPosition,
+                offset: TOOLTIP_OFFSET,
+                followPointer: true,
+                margin: TOOLTIP_MARGIN,
+                preferredAnchor: FloatingViewAnchor.BottomRight,
+                useScreenPosition: true);
+
+            ViewHandle<DescribableTooltip> handle = await uiManager.ShowTooltipAsync<DescribableTooltip>(dataSource, options);
+            if (!isPointerDown)
+            {
+                await handle.CloseAsync(CloseReason.Cancel);
+                return;
+            }
+
+            tooltipOpenedForCurrentPress = true;
+            if (pendingScreenPosition != screenPosition)
+            {
+                uiManager.UpdateTooltipPosition(pendingScreenPosition);
+            }
+        }
+        catch (Exception exception)
         {
-            return tooltipPresenter;
+            Debug.LogException(exception);
+            isPointerDown = false;
+            tooltipOpenedForCurrentPress = false;
+        }
+        finally
+        {
+            tooltipRequestInFlight = false;
+        }
+    }
+
+    private UIManager ResolveUIManager(bool throwIfMissing)
+    {
+        if (UIManager.Instance != null)
+        {
+            return UIManager.Instance;
         }
 
         if (throwIfMissing)
         {
-            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' requires an explicit {nameof(UITooltipPresenter)} reference.");
+            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' requires an active {nameof(UIManager)} before tooltip can be opened.");
         }
 
         return null;

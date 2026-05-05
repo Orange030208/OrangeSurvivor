@@ -9,7 +9,6 @@ public sealed class GamingHudRegionHost
     private readonly TextMeshProUGUI currencyText;
     private readonly CharacterStatusPanel characterStatusPanel;
     private readonly BuffBarUI buffBarUI;
-    private readonly UITooltipPresenter tooltipPresenter;
 
     private PlayerLevel playerLevel;
     private bool bound;
@@ -20,8 +19,7 @@ public sealed class GamingHudRegionHost
         TextMeshProUGUI timerText,
         TextMeshProUGUI currencyText,
         CharacterStatusPanel characterStatusPanel,
-        BuffBarUI buffBarUI,
-        UITooltipPresenter tooltipPresenter)
+        BuffBarUI buffBarUI)
     {
         string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(GamingHudRegionHost) : ownerName;
         this.waveText = waveText ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing wave text.");
@@ -29,7 +27,6 @@ public sealed class GamingHudRegionHost
         this.currencyText = currencyText ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing currency text.");
         this.characterStatusPanel = characterStatusPanel ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing character status panel.");
         this.buffBarUI = buffBarUI ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing buff bar UI.");
-        this.tooltipPresenter = tooltipPresenter ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing tooltip presenter.");
     }
 
     public void Bind(GamingPageContext context)
@@ -49,8 +46,6 @@ public sealed class GamingHudRegionHost
         RefreshCurrencyDisplay(context.CurrencyWallet);
 
         buffBarUI.gameObject.SetActive(true);
-        buffBarUI.SetTooltipPresenter(tooltipPresenter);
-        tooltipPresenter.gameObject.SetActive(true);
 
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
         bound = true;
@@ -70,8 +65,6 @@ public sealed class GamingHudRegionHost
         UnbindPlayerLevel();
         characterStatusPanel.Unbind();
         buffBarUI.UnbindPlayer();
-        buffBarUI.SetTooltipPresenter(null);
-        tooltipPresenter.HideImmediate();
     }
 
     private void BindPlayer(Player player)

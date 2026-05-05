@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已删除静态 ActivePresenter 与全局查找；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧命名空间仅保留仍被业务使用的动画 / 点击组件。
 
 已完成：
 
@@ -402,7 +402,8 @@
 - 新 `IUIManager` / `UIManager` 已补正式 `ClosePageAsync<TPage>()`，`GameManager` 和 `InventoryUI` 不再依赖旧 Type API 或旧 `UILayerType.Popup`；迁移期 `OpenPageAsync(Type)`、`OpenPage(Type)`、`ClosePageAsync(Type)`、`IsOpen(Type)` 和旧基类兼容测试已删除。
 - 已完成商店页面内部局部无用抽象收口：`ShopUIPage` 直接持有 `ShopPageController`，`ShopPageController` 直接持有 `ShopUIPage`，商店侧栏 Host 直接操作 `ShopPropertiesRegionView` 与 `ShopInventoryRegionView`，删除只服务该页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup` 和未使用 `SidebarRegionMotionGroup`。
 - 已完成 UI 页面上下文装配收口：`GameManager` 主场景序列化引用 `InventoryOperateManager` 与 `ShopManager`，打开 `GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 时显式创建 payload；`UIPageContextFactory` 不再扫描场景，不再创建延迟解析 Facade；三个页面缺少 payload 时直接抛出明确异常；独立 `InventoryUI` 不再退回到 Resolving Facade。
-- 已完成战斗 HUD Buff Tooltip 显式注入收口：`UITooltipPresenter.ActivePresenter` 已删除，`TooltipHoverTarget` 不再全局查找 Presenter，改由 `GamingHudRegionHost` 注入到 `BuffBarUI` 并配置到动态生成的 Buff 图标；`UITooltipPresenter` 运行时强制不拦截 Raycast。
+- 已完成战斗 HUD Buff Tooltip 显式注入收口：`UITooltipPresenter.ActivePresenter` 已删除，`TooltipHoverTarget` 不再全局查找 Presenter，改由 `GamingHudRegionHost` 注入到 `BuffBarUI` 并配置到动态生成的 Buff 图标；该阶段仍保留页面内 Presenter 视觉实现。
+- 已完成描述 Tooltip 迁入 Orange Tooltip：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 改用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 删除旧内嵌 Tooltip PrefabInstance 和页面字段引用，Tooltip 定位、唯一实例、裁剪、诊断与池化交由 Orange TooltipStack 处理。
 - 已完成 StageComplete 结算页上下文显式化：新增 `StageCompletePageContext`，`GameManager` 通过显式引用的 `StageCompleteSummaryManager` 创建快照 payload 打开 `StageCompleteUIPage`，页面不再持有或查找 `StageCompleteSummaryManager`。
 
 未完成：
@@ -416,7 +417,7 @@
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
-- 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、StageComplete 页面级 Manager 查找已删除。后续风险集中在业务子视图里仍沿用旧动画 / 点击命名空间，以及业务 Manager 层仍存在非 UI 框架范围的场景查找。
+- 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找已删除。后续风险集中在业务子视图里仍沿用旧动画 / 点击命名空间，以及业务 Manager 层仍存在非 UI 框架范围的场景查找。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
 - Unity 2022.3.62f3c1 + `com.unity.test-framework@1.1.33` 命令行运行测试时不要同时传 `-quit`；该版本会警告 `Running tests from command line arguments will not work when "quit" is specified.`，并可能只完成导入后退出不生成 XML。当前可靠命令是使用 `-batchmode -nographics -projectPath ... -runTests -testPlatform EditMode -testResults ... -logFile ...`，让 Test Runner 的 ExitCallbacks 自行退出。
@@ -2092,3 +2093,49 @@
 
 - 提交背包操作浮层迁入 Orange Popup。
 - 继续最终收口，优先扫描仍直接手工实例化业务浮层或仍未接入 Orange Catalog 的 Popup / Tooltip 资源；同时保留 `UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等老动画 / 点击组件，除非单独迁移并同步修 Prefab / 资源引用。
+
+### 2026-05-06 阶段 12 最终收口：描述 Tooltip 迁入 Orange Tooltip
+
+完成内容：
+
+- 将旧 `UITooltipPresenter` 重命名为 `DescribableTooltip`，并改为继承 `Orange.UIFramework.TooltipBase`，在 `OnOpeningAsync()` 中从 `OpenContext.Payload` 读取 `IDescribable` 并刷新图标、标题和描述列表。
+- `TooltipHoverTarget` 不再持有或解析 Presenter，也不再调用页面内 `Present()` / `HideImmediate()`；现在直接通过 `UIManager.ShowTooltipAsync<DescribableTooltip>()` 打开，通过 `UIManager.UpdateTooltipPosition()` 跟随指针，通过 `UIManager.HideTooltip()` 关闭。
+- `TooltipHoverTarget` 对打开中的异步请求做了轻量防重入：同一次按压只发起一个打开请求，移动时只更新 pending 位置；若松手早于打开完成，会在拿到 `ViewHandle` 后立即以 `CloseReason.Cancel` 关闭，避免 Tooltip 残留。
+- `BuffBarUI`、`GamingHudRegionHost`、`GamingUIPage` 删除 Tooltip Presenter 注入字段和绑定链路，战斗 HUD 不再内嵌和管理 Tooltip 实例。
+- `Tooltip.prefab` 根节点继续复用原视觉结构，但脚本已是 `DescribableTooltip`，旧 `screenOffset` / `screenPadding` 字段已清理，定位偏移和边距改由 `TooltipOptions` 提供。
+- `OrangeUIViewCatalog.asset` 新增 `tooltip.describable`，注册独立 `Tooltip.prefab` 到 `ViewKind.Tooltip` / `ViewLayer.Tooltip`。
+- `UI Gaming.prefab` 删除旧内嵌 `Tooltip.prefab` 实例和 `tooltipPresenter` 序列化字段引用，避免运行时存在第二套 Tooltip 管理路径。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Child/DescribableTooltip.cs`
+- `Assets/Scripts/UI/Instances/Child/DescribableTooltip.cs.meta`
+- `Assets/Scripts/UI/Instances/Child/TooltipHoverTarget.cs`
+- `Assets/Scripts/UI/Instances/Child/BuffBarUI.cs`
+- `Assets/Scripts/UI/Pages/GamingHudRegionHost.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Container/Tooltip.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Gaming.prefab`
+- `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并在提交前先提交上一轮背包操作 Popup 模块。
+- 已静态扫描确认 `UITooltipPresenter`、`SetTooltipPresenter`、`HideImmediate()`、`tooltipPresenter` 字段、`UI Gaming.prefab` 内嵌 Tooltip PrefabInstance、旧 Tooltip 实例 fileID 均不再残留于业务脚本和运行时资源。
+- 已确认 `Tooltip.prefab` 根节点脚本 GUID 仍指向重命名后的 `DescribableTooltip`，并且 `OrangeUIViewCatalog.asset` 已注册 `tooltip.describable`。
+- 已确认 `DescribableTooltip` 继承 `TooltipBase`，满足 `ViewCatalog` 对 `ViewKind.Tooltip` 的基类校验要求。
+- 本轮按用户要求未执行完整 Play Mode；Buff Tooltip 指针按下、移动、松手、退出、快速点按取消、边缘裁剪、Camera Canvas 下定位和池化复用需最终真实场景验收。
+
+遗留风险：
+
+- `TooltipHoverTarget` 使用 `UniTaskVoid` 承接 UI 指针触发的异步打开，异常会记录到日志；真实输入连点、页面关闭与 Tooltip 关闭竞态仍需 Play Mode 验证。
+- 当前 Tooltip 显示方式沿用旧交互语义：按下显示、移动跟随、松手或退出隐藏；如果后续希望 PC Hover 即显示，需要单独调整输入语义并验证不会影响移动端长按。
+- `ItemQualityPreviewSceneController` 仍直接加载并实例化部分 UI Prefab 做样式预览；这不是运行时 UI 框架入口，暂未迁移。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交描述 Tooltip 迁入 Orange Tooltip。
+- 继续最终收口，优先扫描仍未接入 Orange Catalog 的 Modal / Popup / Tooltip 资源、仍手工管理全局浮层的业务入口，以及 `Assets/Scripts/UI/Regions` / `Assets/Scripts/UI/Contracts` 中是否还有可删除的无用抽象；继续保留老动画 / 点击组件，除非单独迁移并同步修 Prefab / 资源引用。

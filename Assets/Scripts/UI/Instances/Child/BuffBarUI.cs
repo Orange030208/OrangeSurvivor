@@ -9,7 +9,6 @@ public class BuffBarUI : MonoBehaviour
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
     private BuffController buffController;
-    private UITooltipPresenter tooltipPresenter;
 
     private void Awake()
     {
@@ -52,15 +51,6 @@ public class BuffBarUI : MonoBehaviour
         RenderBuffSnapshots(buffController.BuildSnapshots());
     }
 
-    public void SetTooltipPresenter(UITooltipPresenter presenter)
-    {
-        tooltipPresenter = presenter;
-        for (int i = 0; i < spawnedItems.Count; i++)
-        {
-            ConfigureTooltipPresenter(spawnedItems[i]);
-        }
-    }
-
     public void UnbindPlayer()
     {
         if (buffController != null)
@@ -98,21 +88,9 @@ public class BuffBarUI : MonoBehaviour
         for (int i = spawnedItems.Count; i < requiredCount; i++)
         {
             BuffIconItem item = Instantiate(buffIconItemPrefab, itemParent);
-            ConfigureTooltipPresenter(item);
             item.gameObject.SetActive(false);
             spawnedItems.Add(item);
         }
-    }
-
-    private void ConfigureTooltipPresenter(BuffIconItem item)
-    {
-        if (item == null)
-        {
-            return;
-        }
-
-        TooltipHoverTarget hoverTarget = item.GetComponent<TooltipHoverTarget>();
-        hoverTarget?.SetTooltipPresenter(tooltipPresenter);
     }
 
     private void SetVisibleItemCount(int visibleCount)

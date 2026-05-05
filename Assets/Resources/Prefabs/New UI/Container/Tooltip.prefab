@@ -470,8 +470,6 @@ MonoBehaviour:
   iconImage: {fileID: 1716956652630395141}
   titleText: {fileID: 8880651086283948212}
   extraInfoDescriber: {fileID: 7320099189892984723}
-  screenOffset: {x: 18, y: -18}
-  screenPadding: {x: 12, y: 12}
 --- !u!225 &7159224700685861253
 CanvasGroup:
   m_ObjectHideFlags: 0
