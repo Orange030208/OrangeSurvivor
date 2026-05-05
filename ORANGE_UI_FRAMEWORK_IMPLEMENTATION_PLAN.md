@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -2195,3 +2195,45 @@
 
 - 提交旧动画与点击组件迁入 Orange 命名空间。
 - 继续最终收口，优先扫描仍未接入 Orange Catalog 的 Modal / Popup / Tooltip 资源、仍手工管理浮层的业务入口，以及 `Assets/Scripts/UI/Regions` / `Assets/Scripts/UI/Contracts` 中是否还有可删除的无用抽象；不要再引入旧 `AXR.Framework.UI` 命名空间或旧 `Assets/Scripts/Framework` 目录。
+
+### 2026-05-06 阶段 12 最终收口：收口背包页面局部 Region 抽象
+
+完成内容：
+
+- 删除只被 `InventoryUI` 单点使用的 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState`，不再保留一套没有接入 Orange 框架核心的背包 Region 抽象。
+- `InventoryUI` 直接负责 Facade 会话生命周期：订阅 / 解绑 `SnapshotChanged`、`OperatePanelOpened`、`OperatePanelShouldClose`，在启用时请求快照，在禁用或释放外部 Facade 时统一清理。
+- 原 `InventoryRegionState` 的选中项、当前操作项、快照同步、物品存在性判断逻辑内聚到 `InventoryUI`，避免跨三个局部类型转发同一状态。
+- `InventoryListRegionView` 与 `InventoryPopupHostView` 保留为具体页面子视图协作对象；背包物品操作浮层仍通过 Orange `UIManager.ShowPopupAsync()` 打开，不回退到手工实例化。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+删除范围：
+
+- `Assets/Scripts/UI/Regions/Inventory/IInventoryRegionView.cs`
+- `Assets/Scripts/UI/Regions/Inventory/IInventoryRegionView.cs.meta`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryRegionController.cs`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryRegionController.cs.meta`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryRegionState.cs`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryRegionState.cs.meta`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity UI / 架构 / 脚本 Skill 说明。
+- 已静态扫描确认 `InventoryRegionController`、`InventoryRegionState`、`IInventoryRegionView` 不再残留于 `Assets/Scripts`、Prefab 和 Scene 引用中。
+- 已检查 `InventoryUI` 当前实现，确认外部页面仍通过 `ConfigureFacade()` / `ReleaseConfiguredFacade()` 与 `InventoryUiHostBinding` 装配，不需要修改 Prefab 序列化字段。
+- 本轮按用户要求未执行完整 Play Mode；背包页面打开、物品点击、Popup 重开、出售 / 合并、背包快照刷新后恢复或关闭当前 Popup 仍需最终真实场景验收。
+
+遗留风险：
+
+- `InventoryUI` 现在承担原控制器和状态类职责，逻辑更直接，但后续如果背包交互继续膨胀，应优先拆成真实可复用子视图或纯状态测试对象，而不是恢复旧 Region 接口。
+- `InventoryPopupHostView` 仍使用 `UIManager.Instance` 作为新框架全局入口，属于当前 Popup / Tooltip 子视图打开路径；如后续要求全部入口显式注入，可单独做 UIManager 引用传递模块。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交背包页面局部 Region 抽象收口。
+- 继续最终收口，优先处理 `GameManager` 与 `UpgradeCardTestSceneController` 中对 `FindFirstObjectByType<UIManager>()` 的兜底，主场景和升级卡测试场景已显式绑定 `uiManager`，可改为缺失即报错；同时继续评估 `ItemQualityPreviewSceneController` 是否作为预览工具保留或隔离。

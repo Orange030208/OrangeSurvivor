@@ -1,7 +1,8 @@
+using System;
 using Orange.UIFramework;
 using UnityEngine;
 
-public class InventoryUI : MonoBehaviour, IInventoryRegionView
+public class InventoryUI : MonoBehaviour
 {
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
@@ -15,14 +16,12 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
     private bool disposeConfiguredFacade;
     private bool ownsInventoryFacade;
     private bool requiresExternalFacadeConfiguration;
-    private InventoryRegionController controller;
+    private bool facadeSessionStarted;
+    private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
+    private string currentSelectedEntryId;
+    private string currentOperateEntryId;
     private InventoryListRegionView listRegion;
     private InventoryPopupHostView popupHost;
-
-    public event System.Action<string> ItemSelected;
-    public event System.Action CloseRequested;
-    public event System.Action<string> SellRequested;
-    public event System.Action<string> MergeRequested;
 
     private void Awake()
     {
@@ -38,7 +37,7 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
     private void OnEnable()
     {
-        StartController();
+        StartFacadeSession();
     }
 
     private void Update()
@@ -51,31 +50,31 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-            CloseRequested?.Invoke();
+            OnCloseRequested();
         }
     }
 
     private void OnDisable()
     {
-        StopController();
+        StopFacadeSession();
     }
 
     public void ConfigureFacade(IInventoryUiFacade facade, bool takeOwnership = false)
     {
         if (configuredFacade == facade && disposeConfiguredFacade == takeOwnership)
         {
-            if (controller == null && isActiveAndEnabled && facade != null)
+            if (!facadeSessionStarted && isActiveAndEnabled && facade != null)
             {
-                StartController();
+                StartFacadeSession();
             }
 
             return;
         }
 
-        bool shouldRebind = controller != null && isActiveAndEnabled;
+        bool shouldRebind = facadeSessionStarted && isActiveAndEnabled;
         if (shouldRebind)
         {
-            StopController();
+            StopFacadeSession();
         }
 
         configuredFacade = facade;
@@ -83,43 +82,47 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
         if (isActiveAndEnabled && facade != null)
         {
-            StartController();
+            StartFacadeSession();
         }
     }
 
     public void ReleaseConfiguredFacade()
     {
-        if (controller != null && ReferenceEquals(inventoryFacade, configuredFacade))
+        if (facadeSessionStarted && ReferenceEquals(inventoryFacade, configuredFacade))
         {
-            StopController();
+            StopFacadeSession();
         }
 
         configuredFacade = null;
         disposeConfiguredFacade = false;
     }
 
-    public void PrepareForOpen()
+    private void PrepareForOpen()
     {
+        ClosePopupState();
         popupHost.CloseCurrent();
     }
 
-    public void ResetAfterClose()
+    private void ResetAfterClose()
     {
+        currentItems = Array.Empty<InventoryUIItemSnapshot>();
+        currentSelectedEntryId = null;
+        ClosePopupState();
         listRegion.Clear();
         popupHost.CloseCurrent();
     }
 
-    public void RenderItems(InventoryUIItemSnapshot[] items)
+    private void RenderItems(InventoryUIItemSnapshot[] items)
     {
         listRegion.Render(items);
     }
 
-    public void ShowOperatePopup(InventoryItemOperateResource resource)
+    private void ShowOperatePopup(InventoryItemOperateResource resource)
     {
         popupHost.Show(resource);
     }
 
-    public void CloseOperatePopup()
+    private void CloseOperatePopup()
     {
         popupHost.CloseCurrent();
     }
@@ -142,9 +145,9 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
         throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires either an externally configured {nameof(IInventoryUiFacade)} or an explicit {nameof(InventoryOperateManager)} reference.");
     }
 
-    private void StartController()
+    private void StartFacadeSession()
     {
-        if (controller != null)
+        if (facadeSessionStarted)
         {
             return;
         }
@@ -155,14 +158,30 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
         }
 
         inventoryFacade = ResolveInventoryFacade(out ownsInventoryFacade);
-        controller = new InventoryRegionController(this, inventoryFacade);
-        controller.Enter();
+        inventoryFacade.SnapshotChanged += OnSnapshotChanged;
+        inventoryFacade.OperatePanelOpened += OnOperatePanelOpened;
+        inventoryFacade.OperatePanelShouldClose += OnOperatePanelShouldClose;
+        inventoryFacade.Activate();
+
+        PrepareForOpen();
+        inventoryFacade.RequestSnapshot();
+        facadeSessionStarted = true;
     }
 
-    private void StopController()
+    private void StopFacadeSession()
     {
-        controller?.Exit();
-        controller = null;
+        if (!facadeSessionStarted)
+        {
+            return;
+        }
+
+        inventoryFacade.SnapshotChanged -= OnSnapshotChanged;
+        inventoryFacade.OperatePanelOpened -= OnOperatePanelOpened;
+        inventoryFacade.OperatePanelShouldClose -= OnOperatePanelShouldClose;
+        inventoryFacade.Deactivate();
+
+        ResetAfterClose();
+        facadeSessionStarted = false;
 
         if (inventoryFacade != null && ownsInventoryFacade)
         {
@@ -207,21 +226,162 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
 
     private void OnItemSelected(string entryId)
     {
-        ItemSelected?.Invoke(entryId);
+        if (string.IsNullOrEmpty(entryId) || inventoryFacade == null)
+        {
+            return;
+        }
+
+        currentSelectedEntryId = entryId;
+        inventoryFacade.RequestOpenItemPanel(entryId);
     }
 
     private void OnCloseRequested()
     {
-        CloseRequested?.Invoke();
+        if (!HasOpenPopup)
+        {
+            return;
+        }
+
+        ClosePopup();
     }
 
     private void OnSellRequested(string entryId)
     {
-        SellRequested?.Invoke(entryId);
+        if (!IsShowingItem(entryId) || inventoryFacade == null)
+        {
+            return;
+        }
+
+        inventoryFacade.RequestSellItem(entryId);
     }
 
     private void OnMergeRequested(string entryId)
     {
-        MergeRequested?.Invoke(entryId);
+        if (!IsShowingItem(entryId) || inventoryFacade == null)
+        {
+            return;
+        }
+
+        inventoryFacade.RequestMergeItem(entryId);
+    }
+
+    private void OnSnapshotChanged(InventoryUIItemSnapshot[] items)
+    {
+        SyncSnapshot(items, out bool shouldClosePopup, out string popupEntryIdToRestore);
+        RenderItems(items);
+
+        if (shouldClosePopup)
+        {
+            CloseOperatePopup();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(popupEntryIdToRestore))
+        {
+            inventoryFacade.RequestOpenItemPanel(popupEntryIdToRestore);
+        }
+    }
+
+    private void OnOperatePanelOpened(InventoryItemOperateResource resource)
+    {
+        if (resource.itemData == null || string.IsNullOrEmpty(resource.entryId))
+        {
+            return;
+        }
+
+        if (!HasItem(resource.entryId))
+        {
+            return;
+        }
+
+        OpenPopupState(resource.entryId);
+        ShowOperatePopup(resource);
+    }
+
+    private void OnOperatePanelShouldClose(string entryId)
+    {
+        if (!IsShowingItem(entryId))
+        {
+            return;
+        }
+
+        ClosePopup();
+    }
+
+    private void ClosePopup()
+    {
+        ClosePopupState();
+        CloseOperatePopup();
+    }
+
+    private void OpenPopupState(string entryId)
+    {
+        currentSelectedEntryId = entryId;
+        currentOperateEntryId = entryId;
+    }
+
+    private void ClosePopupState()
+    {
+        currentSelectedEntryId = null;
+        currentOperateEntryId = null;
+    }
+
+    private bool HasOpenPopup => !string.IsNullOrEmpty(currentOperateEntryId);
+
+    private bool IsShowingItem(string entryId)
+    {
+        return currentOperateEntryId == entryId;
+    }
+
+    private bool HasItem(string entryId)
+    {
+        return ContainsEntry(currentItems, entryId);
+    }
+
+    private void SyncSnapshot(
+        InventoryUIItemSnapshot[] items,
+        out bool shouldClosePopup,
+        out string popupEntryIdToRestore)
+    {
+        bool hadOpenPopup = HasOpenPopup;
+        string previousPopupEntryId = currentOperateEntryId;
+
+        currentItems = items ?? Array.Empty<InventoryUIItemSnapshot>();
+
+        if (!ContainsEntry(currentItems, currentSelectedEntryId))
+        {
+            currentSelectedEntryId = null;
+        }
+
+        bool popupStillExists = ContainsEntry(currentItems, previousPopupEntryId);
+        if (!popupStillExists)
+        {
+            currentOperateEntryId = null;
+            shouldClosePopup = hadOpenPopup;
+            popupEntryIdToRestore = null;
+            return;
+        }
+
+        currentOperateEntryId = previousPopupEntryId;
+        shouldClosePopup = false;
+        popupEntryIdToRestore = previousPopupEntryId;
+    }
+
+    private static bool ContainsEntry(InventoryUIItemSnapshot[] items, string entryId)
+    {
+        if (items == null || items.Length == 0 || string.IsNullOrEmpty(entryId))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].EntryId == entryId)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
