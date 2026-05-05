@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
-public sealed class InventoryPopupHostView
+public sealed class InventoryOperatePopupHost
 {
     private const string POPUP_GROUP_ID = "inventory.operate";
 
@@ -16,9 +16,9 @@ public sealed class InventoryPopupHostView
     public event System.Action<string> SellRequested;
     public event System.Action<string> MergeRequested;
 
-    public InventoryPopupHostView(string ownerName)
+    public InventoryOperatePopupHost(string ownerName)
     {
-        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(InventoryPopupHostView) : ownerName;
+        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(InventoryOperatePopupHost) : ownerName;
     }
 
     public string CurrentEntryId { get; private set; }

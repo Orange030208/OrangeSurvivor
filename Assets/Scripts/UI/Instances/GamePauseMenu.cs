@@ -42,7 +42,7 @@ public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
     {
         base.Awake();
         ValidateConfiguration();
-        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
+        InventoryUiBinder.WarmUp(this, ref inventoryUI);
         statusPanel = new PauseMenuPanelBinding("status panel", statusButton, statusSidebar, statusPanelCanvasGroup);
         settingsPanel = new PauseMenuPanelBinding("settings panel", settingsButton, settingsSidebar, settingsPanelCanvasGroup);
         InitContentPanels();
@@ -52,7 +52,7 @@ public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
     {
         currentContext = context.GetPayload<PauseMenuContext>()
             ?? throw new InvalidOperationException($"{nameof(GamePauseMenu)} requires {nameof(PauseMenuContext)} payload.");
-        InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
+        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext);
         BindButtonEvents();
         HideAllContentPanelsImmediately();
         currentPanel = null;
@@ -73,7 +73,7 @@ public class GamePauseMenu : PageBase, IInventoryUiFacadeHost
         CancelPanelSwitches();
         HideAllContentPanelsImmediately();
         currentPanel = null;
-        InventoryUiHostBinding.Release(inventoryUI);
+        InventoryUiBinder.Release(inventoryUI);
         PageContextBinding.Release(ref currentContext);
     }
 

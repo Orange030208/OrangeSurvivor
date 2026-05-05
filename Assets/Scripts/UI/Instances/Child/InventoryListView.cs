@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class InventoryListRegionView
+public sealed class InventoryListView
 {
     private readonly string ownerName;
     private readonly InventoryItem itemPrefab;
     private readonly Transform itemContainersParent;
     private readonly List<InventoryItem> spawnedItems = new();
 
-    public InventoryListRegionView(
+    public InventoryListView(
         string ownerName,
         InventoryItem itemPrefab,
         Transform itemContainersParent)
     {
-        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(InventoryListRegionView) : ownerName;
+        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(InventoryListView) : ownerName;
         this.itemPrefab = itemPrefab ?? throw new MissingReferenceException($"{nameof(InventoryUI)} '{this.ownerName}' is missing {nameof(InventoryItem)} prefab.");
         this.itemContainersParent = itemContainersParent ?? throw new MissingReferenceException($"{nameof(InventoryUI)} '{this.ownerName}' is missing item containers parent.");
 

@@ -2,14 +2,14 @@ using Orange.UIFramework;
 using System;
 using UnityEngine;
 
-public sealed class SidebarToggleRegionView
+public sealed class SidebarToggleView
 {
-    private readonly SidebarRegionMotion motion;
+    private readonly SidebarMotion motion;
     private readonly UIClickTarget toggleButton;
 
     private bool bound;
 
-    public SidebarToggleRegionView(
+    public SidebarToggleView(
         string ownerTypeName,
         string ownerName,
         string missingSidebarFieldName,
@@ -17,7 +17,7 @@ public sealed class SidebarToggleRegionView
         MonoBehaviour sidebar,
         UIClickTarget toggleButton)
     {
-        motion = new SidebarRegionMotion(ownerTypeName, ownerName, missingSidebarFieldName, sidebar);
+        motion = new SidebarMotion(ownerTypeName, ownerName, missingSidebarFieldName, sidebar);
         this.toggleButton = toggleButton ?? throw new MissingReferenceException($"{ownerTypeName} '{ownerName}' is missing {missingToggleButtonFieldName}.");
     }
 

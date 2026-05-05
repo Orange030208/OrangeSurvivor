@@ -3,7 +3,7 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public sealed class ShopListRegionView
+public sealed class ShopListView
 {
     private readonly string ownerName;
     private readonly ShopItemGroupView shopItemGroup;
@@ -14,7 +14,7 @@ public sealed class ShopListRegionView
 
     private bool bound;
 
-    public ShopListRegionView(
+    public ShopListView(
         string ownerName,
         ShopItemContainer shopItemPrefab,
         Transform shopItemParent,
@@ -23,7 +23,7 @@ public sealed class ShopListRegionView
         TextMeshProUGUI rerollCostText,
         TextMeshProUGUI currencyText)
     {
-        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopListRegionView) : ownerName;
+        this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopListView) : ownerName;
         shopItemGroup = new ShopItemGroupView(this.ownerName, shopItemPrefab, shopItemParent);
         this.rerollButton = rerollButton ?? throw new MissingReferenceException($"{nameof(ShopUIPage)} '{this.ownerName}' is missing reroll button.");
         this.continueButton = continueButton ?? throw new MissingReferenceException($"{nameof(ShopUIPage)} '{this.ownerName}' is missing continue button.");

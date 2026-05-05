@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public sealed class GamingInputRegionHost
+public sealed class GamingInputView
 {
     private readonly Component host;
     private MobileJoystick moveJoystick;
     private IPlayerMoveInputReceiver moveInputReceiver;
 
-    public GamingInputRegionHost(Component host, MobileJoystick moveJoystick)
+    public GamingInputView(Component host, MobileJoystick moveJoystick)
     {
         this.host = host;
         this.moveJoystick = moveJoystick;

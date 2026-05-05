@@ -18,8 +18,8 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
     [SerializeField] private BuffBarUI buffBarUI;
 
     private GamingPageContext currentContext;
-    private GamingHudRegionHost hudRegionHost;
-    private GamingInputRegionHost inputRegionHost;
+    private GamingHudView hudView;
+    private GamingInputView inputView;
 
     public override bool RequiresTick => true;
 
@@ -27,10 +27,10 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
     {
         base.Awake();
         ValidateConfiguration();
-        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
-        hudRegionHost = new GamingHudRegionHost(name, waveText, timerText, currencyText, characterStatusPanel, buffBarUI);
-        inputRegionHost = new GamingInputRegionHost(this, moveJoystick);
-        inputRegionHost.WarmUp();
+        InventoryUiBinder.WarmUp(this, ref inventoryUI);
+        hudView = new GamingHudView(name, waveText, timerText, currencyText, characterStatusPanel, buffBarUI);
+        inputView = new GamingInputView(this, moveJoystick);
+        inputView.WarmUp();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
@@ -38,26 +38,26 @@ public class GamingUIPage : PageBase, IInventoryUiFacadeHost
         currentContext = context.GetPayload<GamingPageContext>()
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
-        inputRegionHost.WarmUp();
-        inputRegionHost.Bind(currentContext.Player);
-        InventoryUiHostBinding.Bind(this, ref inventoryUI, currentContext);
-        hudRegionHost.Bind(currentContext);
+        inputView.WarmUp();
+        inputView.Bind(currentContext.Player);
+        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext);
+        hudView.Bind(currentContext);
         menuButton.OnClicked += OnPauseClicked;
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        inputRegionHost.Unbind();
-        hudRegionHost.Unbind();
+        inputView.Unbind();
+        hudView.Unbind();
         menuButton.OnClicked -= OnPauseClicked;
-        InventoryUiHostBinding.Release(inventoryUI);
+        InventoryUiBinder.Release(inventoryUI);
         PageContextBinding.Release(ref currentContext);
     }
 
     protected override void OnTick(float deltaTime)
     {
-        inputRegionHost.PublishCurrentInput();
+        inputView.PublishCurrentInput();
     }
 
     private void OnPauseClicked()

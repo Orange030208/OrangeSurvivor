@@ -2,51 +2,51 @@ using System;
 using Orange.UIFramework;
 using UnityEngine;
 
-public sealed class ShopInventoryRegionView
+public sealed class ShopInventorySidebarView
 {
-    private readonly SidebarToggleRegionView toggleRegion;
+    private readonly SidebarToggleView toggleView;
 
-    public ShopInventoryRegionView(
+    public ShopInventorySidebarView(
         string ownerName,
         MonoBehaviour sidebar,
         UIClickTarget toggleButton)
     {
-        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopInventoryRegionView) : ownerName;
-        toggleRegion = new SidebarToggleRegionView(
+        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopInventorySidebarView) : ownerName;
+        toggleView = new SidebarToggleView(
             nameof(ShopUIPage),
             resolvedOwnerName,
             "inventory sidebar",
             "inventory toggle button",
             sidebar,
             toggleButton);
-        toggleRegion.ToggleRequested += OnToggleRequested;
+        toggleView.ToggleRequested += OnToggleRequested;
     }
 
     public event Action ToggleRequested;
 
     public void Bind()
     {
-        toggleRegion.Bind();
+        toggleView.Bind();
     }
 
     public void Unbind()
     {
-        toggleRegion.Unbind();
+        toggleView.Unbind();
     }
 
     public void SetVisible(bool visible)
     {
-        toggleRegion.SetVisible(visible);
+        toggleView.SetVisible(visible);
     }
 
     public void RefreshDefaults()
     {
-        toggleRegion.RefreshDefaults();
+        toggleView.RefreshDefaults();
     }
 
     public void Kill()
     {
-        toggleRegion.Kill();
+        toggleView.Kill();
     }
 
     private void OnToggleRequested()

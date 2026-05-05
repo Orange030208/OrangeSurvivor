@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarRegionMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
+当前阶段：阶段 12 最终收口；阶段 12 既定业务页面与补漏页面 `BookUIPage` 均已完成直接基类迁移。`GameManager`、升级卡测试场景生成模块、`Game Scene`、`UI Test Scene` 与 `Upgrade Card Test Scene` 已直接使用 Orange `UIManager`、Orange Settings 和 Orange `ViewCatalog`，`GameManager` 与 `UpgradeCardTestSceneController` 不再通过 `FindFirstObjectByType<UIManager>()` 兜底，缺少 UIManager 会直接暴露装配错误。旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；商店页面内部 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、未使用 `SidebarMotionGroup` 已收口删除；背包页面内部 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState` 已收口删除，`InventoryUI` 直接组合 Facade、列表子视图和 Orange Popup Host；页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录收口到普通 `View` / `Host` / `Binder` 命名；`UIPageContextFactory` 与页面 payload 装配已改为由 `GameManager` 显式提供 Player / InventoryOperateManager / ShopManager / StageCompleteSummaryManager，并删除两个 Resolving Facade；战斗 HUD Buff Tooltip 已从页面内 Presenter 注入链路迁入 Orange Tooltip 管理；背包物品操作浮层已迁入 Orange Popup 管理并删除旧未引用操作容器；旧动画 / 点击组件和 Motion 资产类型记录已迁入 `Orange.UIFramework`，旧 `AXR.Framework.UI` 命名空间不再保留运行时代码。
 
 已完成：
 
@@ -348,7 +348,7 @@
 - `ViewBase` 已接入可选 `IViewTransition`：打开时等待 `PlayEnterAsync()`，关闭时等待 `PlayExitAsync()`，无动画组件时直接完成。
 - 旧 `UIMotionPlayer.refreshDefaultsOnEnable` 已修复为每次启用均刷新快照。
 - `IUISequenceMotion` 已补充 `RefreshDefaults()`，`UISequenceDirector` 会向子 Motion 传播刷新；`UIMotionTransition` 会在入场前刷新快照再采样 Hidden 状态。
-- 已删除旧 `SidebarRegionMotion` / `SidebarRegionMotionGroup` 中无实际效果的空 `ConfigureTimings()` API；业务私有 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 暂未迁移，留待业务页面迁移阶段处理。
+- 已删除旧 `SidebarMotion` / `SidebarMotionGroup` 中无实际效果的空 `ConfigureTimings()` API；业务私有 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 暂未迁移，留待业务页面迁移阶段处理。
 - `UIManager` 已实现 `ShowPopupAsync()`、`ShowModalAsync()`、`ShowTooltipAsync()`、`UpdateTooltipPosition()`、`HideTooltip()`，不再抛阶段性未实现异常。
 - `UIManager` 已维护 `PopupStack`、`ModalStack` 和当前 Tooltip，并复用 `ViewBase` 生命周期、动画等待、关闭任务复用、池化回收链路。
 - Popup 已支持分组互斥、外部点击关闭、锚点 / 屏幕点基础定位；默认不冻结 Page 输入，只让栈顶 Popup 自身可交互。
@@ -400,18 +400,19 @@
 - 已完成旧 UI 页面托管清理：删除旧 `AXR.Framework.UI.UIManager`、旧 `UIPageBase`、旧 `IUIPage` / `IUIManager`、旧 `UIPageOpenContext` / `UIPageEventArgs` / `UIRuntimeState`、旧 Navigation、旧 `UIPrefabCatalog` / `UIPrefabEntry` / `UILayerType` / `UIFrameworkSettings` 和旧 `UIManagerEditor`。
 - 已删除旧资源 `UIFrameworkSettings.asset`、`UIPrefabCatalog.asset`、`UIPrefabCatalogTest.asset`，并将 `Game Scene`、`UI Test Scene`、`Upgrade Card Test Scene` 的旧 UIManager 组件引用收口到新 Orange `UIManager`。
 - 新 `IUIManager` / `UIManager` 已补正式 `ClosePageAsync<TPage>()`，`GameManager` 和 `InventoryUI` 不再依赖旧 Type API 或旧 `UILayerType.Popup`；迁移期 `OpenPageAsync(Type)`、`OpenPage(Type)`、`ClosePageAsync(Type)`、`IsOpen(Type)` 和旧基类兼容测试已删除。
-- 已完成商店页面内部局部无用抽象收口：`ShopUIPage` 直接持有 `ShopPageController`，`ShopPageController` 直接持有 `ShopUIPage`，商店侧栏 Host 直接操作 `ShopPropertiesRegionView` 与 `ShopInventoryRegionView`，删除只服务该页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup` 和未使用 `SidebarRegionMotionGroup`。
+- 已完成商店页面内部局部无用抽象收口：`ShopUIPage` 直接持有 `ShopPageController`，`ShopPageController` 直接持有 `ShopUIPage`，商店侧栏 Host 直接操作 `ShopPropertiesSidebarView` 与 `ShopInventorySidebarView`，删除只服务该页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup` 和未使用 `SidebarMotionGroup`。
 - 已完成 UI 页面上下文装配收口：`GameManager` 主场景序列化引用 `InventoryOperateManager` 与 `ShopManager`，打开 `GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 时显式创建 payload；`UIPageContextFactory` 不再扫描场景，不再创建延迟解析 Facade；三个页面缺少 payload 时直接抛出明确异常；独立 `InventoryUI` 不再退回到 Resolving Facade。
-- 已完成战斗 HUD Buff Tooltip 显式注入收口：`UITooltipPresenter.ActivePresenter` 已删除，`TooltipHoverTarget` 不再全局查找 Presenter，改由 `GamingHudRegionHost` 注入到 `BuffBarUI` 并配置到动态生成的 Buff 图标；该阶段仍保留页面内 Presenter 视觉实现。
+- 已完成战斗 HUD Buff Tooltip 显式注入收口：`UITooltipPresenter.ActivePresenter` 已删除，`TooltipHoverTarget` 不再全局查找 Presenter，改由 `GamingHudView` 注入到 `BuffBarUI` 并配置到动态生成的 Buff 图标；该阶段仍保留页面内 Presenter 视觉实现。
 - 已完成描述 Tooltip 迁入 Orange Tooltip：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 改用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 删除旧内嵌 Tooltip PrefabInstance 和页面字段引用，Tooltip 定位、唯一实例、裁剪、诊断与池化交由 Orange TooltipStack 处理。
 - 已完成 StageComplete 结算页上下文显式化：新增 `StageCompletePageContext`，`GameManager` 通过显式引用的 `StageCompleteSummaryManager` 创建快照 payload 打开 `StageCompleteUIPage`，页面不再持有或查找 `StageCompleteSummaryManager`。
 - 已完成旧动画 / 点击组件命名空间迁移：`UIClickTarget`、`IUIRuntimeMotion`、`IUISequenceMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track 与对应编辑器脚本迁入 `Assets/Scripts/OrangeUIFramework/` 和 `Orange.UIFramework`，并同步更新 Motion 资产中的 `SerializeReference` 类型记录。
+- 已完成 UI 子视图 `Region` 命名与目录收口：`GamingHudView`、`GamingInputView`、`ShopListView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`SidebarMotion`、`SidebarToggleView`、`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 等仍作为页面私有协作对象保留，但不再放在 `Assets/Scripts/UI/Regions`，也不再使用会被误解为框架抽象的 `Region` 命名。
 
 未完成：
 
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- `UI/Regions/Inventory`、`UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 仍有业务调用链，需要继续按模块核查；不能一刀切删除。`UI/Contracts/Facades` 当前仅保留有效的接口和 Manager Facade。
+- `UI/Contracts/Contexts`、`UI/Contracts/Facades` 与 `UI/Contracts/Snapshots` 仍有业务调用链，需要继续按模块核查；不能一刀切删除。`UI/Contracts/Facades` 当前仅保留有效的接口和 Manager Facade。
 
 当前风险：
 
@@ -437,7 +438,7 @@
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
 3. 确认旧 UI 页面托管清理提交已存在，并检查是否只剩 Unity 导入痕迹或下一步业务迁移清理相关变更。
-4. 继续最终收口：优先全量扫描 UI 目录内剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
+4. 继续最终收口：优先扫描 `Assets/Scripts/UI/Contracts`、业务 UI Prefab 和 Scene 中剩余旧 UI 托管、桥接、全局查找、旧资源引用、页面手工浮层和无用抽象；减少隐藏依赖时只删除无真实业务入口和无 Prefab / 脚本引用的内容。
 5. 确认旧 `AXR.Framework.UI` 命名空间、旧 `Assets/Scripts/Framework` 目录和旧 Motion 资产类型记录不再回流；`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer` 等动画 / 点击组件现在属于 `Orange.UIFramework`。
 6. 当前阶段已由用户授权跳过真实场景手动验证门禁，但每轮仍必须记录该风险；最终收口完成后必须做一次真实 Play Mode 验收，目标是打开游戏即可直接测试。
 7. 每完成一个最终收口模块，必须更新 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和本文，再执行匹配验证并提交。
@@ -705,7 +706,7 @@
 - 关闭完成后 `ViewBase` 会把动画状态恢复到可作为下一次打开基准的可见状态，再禁用对象，避免池化对象下一次启用时先捕获 Hide 后状态。
 - 修复旧 `UIMotionPlayer.OnEnable()`：只要 `refreshDefaultsOnEnable == true` 就调用 `RefreshDefaults()`，不再受 `defaultsCaptured` 阻挡。
 - `IUISequenceMotion` 补充 `RefreshDefaults()`，`UISequenceDirector` 向 enter / exit 组内 Motion 传播刷新；`UIMotionTransition.PlayEnterAsync()` 会先刷新快照再采样 Hidden 起点。
-- 删除旧 `SidebarRegionMotion` 与 `SidebarRegionMotionGroup` 的空 `ConfigureTimings()` API，避免继续暴露无效抽象。
+- 删除旧 `SidebarMotion` 与 `SidebarMotionGroup` 的空 `ConfigureTimings()` API，避免继续暴露无效抽象。
 
 修改文件：
 
@@ -716,8 +717,8 @@
 - `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/IUISequenceMotion.cs`
 - `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/UISequenceDirector.cs`
 - `Assets/Scripts/Framework/UI/Core/Runtime/UIMotion/V2/UIMotionPlayer.cs`
-- `Assets/Scripts/UI/Regions/SidebarRegionMotion.cs`
-- `Assets/Scripts/UI/Regions/SidebarRegionMotionGroup.cs`
+- `Assets/Scripts/UI/Regions/SidebarMotion.cs`
+- `Assets/Scripts/UI/Regions/SidebarMotionGroup.cs`
 - `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
 - `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
 
@@ -727,7 +728,7 @@
 - 已读取本文当前进度、下一轮入口和阶段 6 目标，并读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `IViewTransition`、UIMotion、`refreshDefaultsOnEnable`、Timing API 章节。
 - 已读取旧 `UIMotionPlayer`、`UISequenceDirector`、`IUIRuntimeMotion`、`IUISequenceMotion`、Motion Track 与快照注册表，确认采用最小适配而非复制整套旧动画系统。
 - 已检查 `IUISequenceMotion` 实现点只有旧 `UIMotionPlayer` 和 `UISequenceDirector`，新增 `RefreshDefaults()` 不会漏实现。
-- 已确认旧 `SidebarRegionMotion` / `SidebarRegionMotionGroup` 的 `ConfigureTimings()` 已无外部调用；仍存在的 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 是业务私有空方法，留待业务迁移阶段处理。
+- 已确认旧 `SidebarMotion` / `SidebarMotionGroup` 的 `ConfigureTimings()` 已无外部调用；仍存在的 `GamePauseMenu.PauseMenuPanelBinding.ConfigureTimings()` 是业务私有空方法，留待业务迁移阶段处理。
 - 已确认所有新增脚本和目录均有 `.meta`。
 - 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
 
@@ -1121,7 +1122,7 @@
 完成内容：
 
 - 按阶段 12 单模块迁移策略迁移第二个页面 `GamingUIPage`。
-- 读取并确认 `GamingUIPage` 仍继承旧 `UIPageBase`，依赖 `GamingPageContext`、`GamingHudRegionHost`、`GamingInputRegionHost`、`InventoryUiHostBinding`、`UITooltipPresenter` 和移动摇杆等战斗 HUD 业务组件；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
+- 读取并确认 `GamingUIPage` 仍继承旧 `UIPageBase`，依赖 `GamingPageContext`、`GamingHudView`、`GamingInputView`、`InventoryUiBinder`、`UITooltipPresenter` 和移动摇杆等战斗 HUD 业务组件；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
 - 确认旧 `GameManager` 打开 / 关闭入口仍是 `uiManager.OpenPage<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player))` 与 `transition.ClosePage<GamingUIPage>()`，因此页面注册进 Orange Catalog 后会自动由旧 UIManager 委托新 UIManager。
 - 确认旧 `UIPrefabCatalog.asset` 中 `UI Gaming.prefab` 位于 `Hud` 层；新 `OrangeUIViewCatalog.asset` 新增 `page.gaming`，`ViewKind.Page`，`ViewLayer.Hud`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Gaming.prefab`。
 - 新增真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedMenuAndGamingPages`，验证 `OrangeUIViewCatalog.asset` 可以通过校验，并可按类型解析 `MenuUIPage` 与 `GamingUIPage`。
@@ -1156,7 +1157,7 @@
 完成内容：
 
 - 按阶段 12 单模块迁移策略迁移第三个页面 `ShopUIPage`。
-- 读取并确认 `ShopUIPage` 仍继承旧 `UIPageBase`，依赖 `ShopPageContext`、`ShopPageController`、`ShopListRegionView`、`ShopSidebarRegionHost`、`InventoryUiHostBinding` 和背包 / 属性侧栏等商店业务组件；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
+- 读取并确认 `ShopUIPage` 仍继承旧 `UIPageBase`，依赖 `ShopPageContext`、`ShopPageController`、`ShopListView`、`ShopSidebarHost`、`InventoryUiBinder` 和背包 / 属性侧栏等商店业务组件；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
 - 确认旧 `GameManager` 打开 / 关闭入口是 `uiManager.OpenPage<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player))` 与 `transition.ClosePage<ShopUIPage>()`，因此页面注册进 Orange Catalog 后会自动由旧 UIManager 委托新 UIManager。
 - 确认旧 `UIPrefabCatalog.asset` 中 `UI Shop.prefab` 位于默认页面层；新 `OrangeUIViewCatalog.asset` 新增 `page.shop`，`ViewKind.Page`，`ViewLayer.Page`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Shop.prefab`。
 - 将真实 Catalog 资产测试重命名为 `OrangeCatalog_RegistersMigratedBusinessPages`，并增加 `ShopUIPage` 类型解析、Id 和 Layer 断言。
@@ -1193,7 +1194,7 @@
 完成内容：
 
 - 按阶段 12 单模块迁移策略迁移第四个页面 `GamePauseMenu`。
-- 读取并确认 `GamePauseMenu` 仍继承旧 `UIPageBase`，依赖 `PauseMenuContext`、`InventoryUiHostBinding`、`GameEventBus`、`PauseMenuPanelBinding` 和旧 `IUIRuntimeMotion` 侧栏动画；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
+- 读取并确认 `GamePauseMenu` 仍继承旧 `UIPageBase`，依赖 `PauseMenuContext`、`InventoryUiBinder`、`GameEventBus`、`PauseMenuPanelBinding` 和旧 `IUIRuntimeMotion` 侧栏动画；本轮不改业务脚本，继续通过旧页面基类桥接新 `PageBase`。
 - 确认旧 `GameManager` 打开 / 关闭 / 查询入口是 `uiManager.OpenPage<GamePauseMenu>(UIPageContextFactory.CreatePauseMenuContext(player))`、`transition.ClosePage<GamePauseMenu>()` 与 `uiManager.IsPageOpen<GamePauseMenu>()`，因此页面注册进 Orange Catalog 后会自动由旧 UIManager 委托新 UIManager。
 - 确认旧 `UIPrefabCatalog.asset` 中 `UI Pause.prefab` 位于 Popup 层；新 `OrangeUIViewCatalog.asset` 新增 `page.pause`，`ViewKind.Page`，`ViewLayer.Popup`，Prefab 指向 `Assets/Resources/Prefabs/New UI/Pages/UI Pause.prefab`。
 - 扩展真实 Catalog 资产测试 `OrangeCatalog_RegistersMigratedBusinessPages`，增加 `GamePauseMenu` 类型解析、Id 和 Layer 断言。
@@ -1647,7 +1648,7 @@
 - 脚本从旧 `AXR.Framework.UI.UIPageBase` 改为直接继承 `Orange.UIFramework.PageBase`。
 - 旧 `OnPageOpened(UIPageOpenContext)` / `OnPageClosed()` 生命周期迁移为新 `OnOpeningAsync(OpenContext, CancellationToken)` / `OnClosed(CloseReason)`。
 - 打开上下文改为直接从 `OpenContext.GetPayload<ShopPageContext>()` 读取，不再依赖旧 `UIPageOpenContext`；无 payload 时继续使用 `UIPageContextFactory.CreateShopPageContext()` 作为既有业务兜底。
-- 保留 `ShopPageController`、`ShopListRegionView`、`ShopSidebarRegionHost`、`InventoryUiHostBinding` 和商店内部侧栏 Motion 逻辑，作为页面私有业务子视图继续运行，不注册到全局 Catalog。
+- 保留 `ShopPageController`、`ShopListView`、`ShopSidebarHost`、`InventoryUiBinder` 和商店内部侧栏 Motion 逻辑，作为页面私有业务子视图继续运行，不注册到全局 Catalog。
 - `UI Shop.prefab` 根节点新增 `UIMotionTransition`，显式指向现有 `UISequenceDirector`，确保直接使用新 `ViewBase` 生命周期后仍能复用老动画系统。
 
 修改文件：
@@ -1660,7 +1661,7 @@
 验证情况：
 
 - 已按本轮强制流程读取本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 和 Git 状态，并确认 `GamingUIPage` 直接基类迁移提交 `5ce914a` 已存在。
-- 已读取 `ShopUIPage`、`OpenContext`、`ViewBase`、`PageBase`、`UIMotionTransition`、`ShopPageContext`、`UIPageContextFactory`、`ShopListRegionView`、`ShopSidebarRegionHost` 和 `UI Shop.prefab` 根节点组件，确认本轮只迁移页面生命周期、上下文读取和动画适配。
+- 已读取 `ShopUIPage`、`OpenContext`、`ViewBase`、`PageBase`、`UIMotionTransition`、`ShopPageContext`、`UIPageContextFactory`、`ShopListView`、`ShopSidebarHost` 和 `UI Shop.prefab` 根节点组件，确认本轮只迁移页面生命周期、上下文读取和动画适配。
 - 已确认 `ShopUIPage.cs` 不再残留 `AXR.Framework.UI`、`UIPageBase`、`UIPageOpenContext`、`OnPageOpened()`、`OnPageClosed()`。
 - 已确认 `UI Shop.prefab` 根节点仍保留 `CanvasGroup`、`ShopUIPage`、原 `UISequenceDirector`，并新增 `UIMotionTransition` 指向 `UISequenceDirector`；旧序列化字段 `autoPlaySequenceDirector` 已从页面组件移除。
 - 已执行 `git diff --check -- Assets/Scripts/UI/Instances/ShopUIPage.cs "Assets/Resources/Prefabs/New UI/Pages/UI Shop.prefab" ORANGE_UI_FRAMEWORK_DEVELOPMENT.md ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
@@ -1668,7 +1669,7 @@
 遗留风险：
 
 - `ShopUIPage` 尚未在真实 Play Mode 中验证商店刷新、购买、锁定、继续按钮、左右侧栏切换、背包绑定、属性展示、入场动画、退场动画和事件解绑。
-- `ShopSidebarRegionHost` / `ShopListRegionView` 仍沿用旧 `AXR.Framework.UI` 下的业务动画接口与点击组件；这些属于当前老动画系统和业务 UI 子视图沿用，不再承担页面托管桥接职责，后续清理旧命名空间时需要单独收口。
+- `ShopSidebarHost` / `ShopListView` 仍沿用旧 `AXR.Framework.UI` 下的业务动画接口与点击组件；这些属于当前老动画系统和业务 UI 子视图沿用，不再承担页面托管桥接职责，后续清理旧命名空间时需要单独收口。
 - `UIPageContextFactory` 仍存在 `FindFirstObjectByType` 兜底解析 Player、InventoryOperateManager、ShopManager；这是既有业务上下文装配方式，后续业务依赖清理时应改为明确 payload / 场景引用 / 服务注入。
 - 旧 `AXR.Framework.UI.UIManager`、旧 `UIPrefabCatalog.asset`、旧 `UIPageBase` 和迁移期非泛型 Type API 尚未删除。
 - Unity 批处理或 Editor 导入仍可能留下 `ProjectSettings/ProjectSettings.asset` 行尾 / 导入痕迹；提交时不得纳入无关导入变更。
@@ -1871,18 +1872,18 @@
 
 - 将 `ShopUIPage` 的控制器字段从通用 `IPageController` 改为具体 `ShopPageController`，删除只服务单一页面的 `IPageController`。
 - 将 `ShopPageController` 的视图依赖从 `IShopPageView` 改为具体 `ShopUIPage`，删除只服务商店页面的 `IShopPageView`。
-- 将 `ShopPropertiesRegionView` 与 `ShopInventoryRegionView` 从 `ISidebarRegion` 接口实现改为普通页面内部子视图。
-- `ShopSidebarRegionHost` 直接组合 `ShopPropertiesRegionView` 与 `ShopInventoryRegionView`，删除 `SidebarRegionGroup`。
-- 删除未被任何代码引用的 `SidebarRegionMotionGroup`。
-- 保留 `SidebarRegionMotion`、`SidebarToggleRegionView`、`PropertiesDescriberBinding`、`Inventory` 子视图和老动画 / 点击组件，因为它们仍有真实业务调用链。
+- 将 `ShopPropertiesSidebarView` 与 `ShopInventorySidebarView` 从 `ISidebarRegion` 接口实现改为普通页面内部子视图。
+- `ShopSidebarHost` 直接组合 `ShopPropertiesSidebarView` 与 `ShopInventorySidebarView`，删除 `SidebarRegionGroup`。
+- 删除未被任何代码引用的 `SidebarMotionGroup`。
+- 保留 `SidebarMotion`、`SidebarToggleView`、`PropertiesDescriberBinding`、`Inventory` 子视图和老动画 / 点击组件，因为它们仍有真实业务调用链。
 
 修改文件：
 
 - `Assets/Scripts/UI/Instances/ShopUIPage.cs`
 - `Assets/Scripts/UI/Pages/Shop/ShopPageController.cs`
-- `Assets/Scripts/UI/Pages/Shop/ShopSidebarRegionHost.cs`
-- `Assets/Scripts/UI/Pages/Shop/ShopPropertiesRegionView.cs`
-- `Assets/Scripts/UI/Pages/Shop/ShopInventoryRegionView.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopSidebarHost.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopPropertiesSidebarView.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopInventorySidebarView.cs`
 - `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
 - `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
 
@@ -1892,13 +1893,13 @@
 - `Assets/Scripts/UI/Pages/Shop/IShopPageView.cs`
 - `Assets/Scripts/UI/Regions/ISidebarRegion.cs`
 - `Assets/Scripts/UI/Regions/SidebarRegionGroup.cs`
-- `Assets/Scripts/UI/Regions/SidebarRegionMotionGroup.cs`
+- `Assets/Scripts/UI/Regions/SidebarMotionGroup.cs`
 
 验证情况：
 
 - 已按下一轮入口核查 `Assets/Scripts/UI/Regions` 与 `Assets/Scripts/UI/Contracts` 的文件列表、类型定义和引用链。
-- 已确认 `Inventory` 区域子视图、`PropertiesDescriberBinding`、`SidebarRegionMotion`、`SidebarToggleRegionView`、Context、Facade 与 Snapshot 仍有业务调用链，本轮未删除。
-- 已静态扫描确认 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、`SidebarRegionMotionGroup` 已无脚本引用。
+- 已确认 `Inventory` 区域子视图、`PropertiesDescriberBinding`、`SidebarMotion`、`SidebarToggleView`、Context、Facade 与 Snapshot 仍有业务调用链，本轮未删除。
+- 已静态扫描确认 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、`SidebarMotionGroup` 已无脚本引用。
 - 本轮未运行 Unity Play Mode；按用户要求只做最小静态验证，商店刷新、购买、锁定、侧栏切换和背包绑定留到最终统一验收。
 
 遗留风险：
@@ -1969,7 +1970,7 @@
 
 - 删除 `UITooltipPresenter.ActivePresenter` 静态入口和启用 / 禁用时维护全局 Presenter 的逻辑。
 - `TooltipHoverTarget` 不再通过静态 Presenter 或 `FindFirstObjectByType<UITooltipPresenter>()` 兜底；只接受显式字段、页面父级或运行时注入的 Presenter。
-- `GamingHudRegionHost` 在绑定 HUD 时将当前页面的 `UITooltipPresenter` 注入 `BuffBarUI`，解绑时清空。
+- `GamingHudView` 在绑定 HUD 时将当前页面的 `UITooltipPresenter` 注入 `BuffBarUI`，解绑时清空。
 - `BuffBarUI` 保存当前 Tooltip Presenter，并在动态实例化 Buff 图标时配置其 `TooltipHoverTarget`。
 - `UITooltipPresenter` 在显示 / 隐藏时强制 `interactable = false`、`blocksRaycasts = false`，避免 Tooltip 遮挡真实输入。
 
@@ -1978,14 +1979,14 @@
 - `Assets/Scripts/UI/Instances/Child/TooltipHoverTarget.cs`
 - `Assets/Scripts/UI/Instances/Child/UITooltipPresenter.cs`
 - `Assets/Scripts/UI/Instances/Child/BuffBarUI.cs`
-- `Assets/Scripts/UI/Pages/GamingHudRegionHost.cs`
+- `Assets/Scripts/UI/Pages/GamingHudView.cs`
 - `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
 - `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
 
 验证情况：
 
 - 已重新读取 Git 状态、本文尾部和 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 相关迁移记录，确认本轮只处理 Tooltip 全局查找链路。
-- 已读取 `TooltipHoverTarget`、`UITooltipPresenter`、`BuffBarUI`、`GamingHudRegionHost`，并通过 Prefab GUID 静态确认 `TooltipHoverTarget` 挂在 `BuffIconItem.prefab`，`UITooltipPresenter` 存在于 `UI Gaming.prefab` 和独立 `Tooltip.prefab`。
+- 已读取 `TooltipHoverTarget`、`UITooltipPresenter`、`BuffBarUI`、`GamingHudView`，并通过 Prefab GUID 静态确认 `TooltipHoverTarget` 挂在 `BuffIconItem.prefab`，`UITooltipPresenter` 存在于 `UI Gaming.prefab` 和独立 `Tooltip.prefab`。
 - 已静态扫描 `Assets/Scripts/UI`，确认不再残留 `ActivePresenter` 或 `FindFirstObjectByType<UITooltipPresenter>()`；当前 UI 目录唯一剩余 `FindFirstObjectByType` 是 `StageCompleteUIPage` 解析 `StageCompleteSummaryManager`。
 - 本轮未运行 Play Mode；Buff Tooltip 的指针按下、移动、抬起、退出和不阻挡输入仍需最终真实场景验收。
 
@@ -2047,8 +2048,8 @@
 
 - 新增 `InventoryOperatePopupBase`，把背包物品操作浮层抽为基于 `Orange.UIFramework.PopupBase` 的业务 Popup 基类，并在 `OnOpeningAsync()` 中从 `OpenContext.Payload` 读取 `InventoryItemOperateResource`。
 - `WeaponOperatePopup` 与 `AccessoryInfoPopup` 改为继承 `InventoryOperatePopupBase`，继续保留原有展示、出售、合并事件和品质渲染逻辑。
-- `InventoryPopupHostView` 不再持有操作浮层 Prefab、Popup Layer Root、自建透明关闭遮罩或直接 `Instantiate` / `Destroy`；现在通过 `UIManager.ShowPopupAsync()` 打开，通过 `ViewHandle.CloseAsync()` 关闭，并使用 Orange Popup 的外部点击关闭、分组互斥、PopupStack、输入焦点和池化链路。
-- `InventoryUI` 删除 `weaponPopupPrefab`、`accessoryPopupPrefab`、`closeInventoryItemOperatePanelButtons` 序列化字段和 Popup Layer 解析逻辑，只负责持有列表子视图、Facade 和 `InventoryPopupHostView`。
+- `InventoryOperatePopupHost` 不再持有操作浮层 Prefab、Popup Layer Root、自建透明关闭遮罩或直接 `Instantiate` / `Destroy`；现在通过 `UIManager.ShowPopupAsync()` 打开，通过 `ViewHandle.CloseAsync()` 关闭，并使用 Orange Popup 的外部点击关闭、分组互斥、PopupStack、输入焦点和池化链路。
+- `InventoryUI` 删除 `weaponPopupPrefab`、`accessoryPopupPrefab`、`closeInventoryItemOperatePanelButtons` 序列化字段和 Popup Layer 解析逻辑，只负责持有列表子视图、Facade 和 `InventoryOperatePopupHost`。
 - `OrangeUIViewCatalog.asset` 注册 `popup.inventory.weaponOperate` 与 `popup.inventory.accessoryInfo` 两个 Popup 条目。
 - `Weapon Operate Popup.prefab` 与 `Accessory Info Popup.prefab` 根节点补充 `CanvasGroup`，满足 `ViewBase` 生命周期要求。
 - `UI Shop.prefab` 清理已删除的背包操作浮层旧序列化字段引用。
@@ -2061,7 +2062,7 @@
 - `Assets/Scripts/UI/Instances/Container/WeaponOperatePopup.cs`
 - `Assets/Scripts/UI/Instances/Container/AccessoryInfoPopup.cs`
 - `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
-- `Assets/Scripts/UI/Regions/Inventory/InventoryPopupHostView.cs`
+- `Assets/Scripts/UI/Regions/Inventory/InventoryOperatePopupHost.cs`
 - `Assets/Resources/Data/UI/OrangeUIViewCatalog.asset`
 - `Assets/Resources/Prefabs/New UI/Pages/Shop/Weapon Operate Popup.prefab`
 - `Assets/Resources/Prefabs/New UI/Pages/Shop/Accessory Info Popup.prefab`
@@ -2084,8 +2085,8 @@
 
 遗留风险：
 
-- `InventoryPopupHostView` 使用 `UniTaskVoid` 承接 UI 点击触发的异步打开 / 关闭，异常会记录到日志；真实输入连点、页面关闭与 Popup 关闭竞态仍需 Play Mode 验证。
-- 背包操作 Popup 当前使用屏幕中心定位，没有恢复旧手工 Popup 的具体锚定偏移；如后续需要锚定到背包格子，需要让 `InventoryListRegionView` 将被点击格子的 `RectTransform` 或屏幕坐标随 entryId 一并传给 `InventoryPopupHostView`。
+- `InventoryOperatePopupHost` 使用 `UniTaskVoid` 承接 UI 点击触发的异步打开 / 关闭，异常会记录到日志；真实输入连点、页面关闭与 Popup 关闭竞态仍需 Play Mode 验证。
+- 背包操作 Popup 当前使用屏幕中心定位，没有恢复旧手工 Popup 的具体锚定偏移；如后续需要锚定到背包格子，需要让 `InventoryListView` 将被点击格子的 `RectTransform` 或屏幕坐标随 entryId 一并传给 `InventoryOperatePopupHost`。
 - `ItemQualityPreviewSceneController` 仍直接 `Resources.Load` 并实例化操作 Popup 用于样式预览；这不是运行时 UI 框架入口，暂未迁移。
 - `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
 
@@ -2101,7 +2102,7 @@
 - 将旧 `UITooltipPresenter` 重命名为 `DescribableTooltip`，并改为继承 `Orange.UIFramework.TooltipBase`，在 `OnOpeningAsync()` 中从 `OpenContext.Payload` 读取 `IDescribable` 并刷新图标、标题和描述列表。
 - `TooltipHoverTarget` 不再持有或解析 Presenter，也不再调用页面内 `Present()` / `HideImmediate()`；现在直接通过 `UIManager.ShowTooltipAsync<DescribableTooltip>()` 打开，通过 `UIManager.UpdateTooltipPosition()` 跟随指针，通过 `UIManager.HideTooltip()` 关闭。
 - `TooltipHoverTarget` 对打开中的异步请求做了轻量防重入：同一次按压只发起一个打开请求，移动时只更新 pending 位置；若松手早于打开完成，会在拿到 `ViewHandle` 后立即以 `CloseReason.Cancel` 关闭，避免 Tooltip 残留。
-- `BuffBarUI`、`GamingHudRegionHost`、`GamingUIPage` 删除 Tooltip Presenter 注入字段和绑定链路，战斗 HUD 不再内嵌和管理 Tooltip 实例。
+- `BuffBarUI`、`GamingHudView`、`GamingUIPage` 删除 Tooltip Presenter 注入字段和绑定链路，战斗 HUD 不再内嵌和管理 Tooltip 实例。
 - `Tooltip.prefab` 根节点继续复用原视觉结构，但脚本已是 `DescribableTooltip`，旧 `screenOffset` / `screenPadding` 字段已清理，定位偏移和边距改由 `TooltipOptions` 提供。
 - `OrangeUIViewCatalog.asset` 新增 `tooltip.describable`，注册独立 `Tooltip.prefab` 到 `ViewKind.Tooltip` / `ViewLayer.Tooltip`。
 - `UI Gaming.prefab` 删除旧内嵌 `Tooltip.prefab` 实例和 `tooltipPresenter` 序列化字段引用，避免运行时存在第二套 Tooltip 管理路径。
@@ -2112,7 +2113,7 @@
 - `Assets/Scripts/UI/Instances/Child/DescribableTooltip.cs.meta`
 - `Assets/Scripts/UI/Instances/Child/TooltipHoverTarget.cs`
 - `Assets/Scripts/UI/Instances/Child/BuffBarUI.cs`
-- `Assets/Scripts/UI/Pages/GamingHudRegionHost.cs`
+- `Assets/Scripts/UI/Pages/GamingHudView.cs`
 - `Assets/Scripts/UI/Instances/GamingUIPage.cs`
 - `Assets/Resources/Prefabs/New UI/Container/Tooltip.prefab`
 - `Assets/Resources/Prefabs/New UI/Pages/UI Gaming.prefab`
@@ -2203,7 +2204,7 @@
 - 删除只被 `InventoryUI` 单点使用的 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState`，不再保留一套没有接入 Orange 框架核心的背包 Region 抽象。
 - `InventoryUI` 直接负责 Facade 会话生命周期：订阅 / 解绑 `SnapshotChanged`、`OperatePanelOpened`、`OperatePanelShouldClose`，在启用时请求快照，在禁用或释放外部 Facade 时统一清理。
 - 原 `InventoryRegionState` 的选中项、当前操作项、快照同步、物品存在性判断逻辑内聚到 `InventoryUI`，避免跨三个局部类型转发同一状态。
-- `InventoryListRegionView` 与 `InventoryPopupHostView` 保留为具体页面子视图协作对象；背包物品操作浮层仍通过 Orange `UIManager.ShowPopupAsync()` 打开，不回退到手工实例化。
+- `InventoryListView` 与 `InventoryOperatePopupHost` 保留为具体页面子视图协作对象；背包物品操作浮层仍通过 Orange `UIManager.ShowPopupAsync()` 打开，不回退到手工实例化。
 
 修改文件：
 
@@ -2224,13 +2225,13 @@
 
 - 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity UI / 架构 / 脚本 Skill 说明。
 - 已静态扫描确认 `InventoryRegionController`、`InventoryRegionState`、`IInventoryRegionView` 不再残留于 `Assets/Scripts`、Prefab 和 Scene 引用中。
-- 已检查 `InventoryUI` 当前实现，确认外部页面仍通过 `ConfigureFacade()` / `ReleaseConfiguredFacade()` 与 `InventoryUiHostBinding` 装配，不需要修改 Prefab 序列化字段。
+- 已检查 `InventoryUI` 当前实现，确认外部页面仍通过 `ConfigureFacade()` / `ReleaseConfiguredFacade()` 与 `InventoryUiBinder` 装配，不需要修改 Prefab 序列化字段。
 - 本轮按用户要求未执行完整 Play Mode；背包页面打开、物品点击、Popup 重开、出售 / 合并、背包快照刷新后恢复或关闭当前 Popup 仍需最终真实场景验收。
 
 遗留风险：
 
 - `InventoryUI` 现在承担原控制器和状态类职责，逻辑更直接，但后续如果背包交互继续膨胀，应优先拆成真实可复用子视图或纯状态测试对象，而不是恢复旧 Region 接口。
-- `InventoryPopupHostView` 仍使用 `UIManager.Instance` 作为新框架全局入口，属于当前 Popup / Tooltip 子视图打开路径；如后续要求全部入口显式注入，可单独做 UIManager 引用传递模块。
+- `InventoryOperatePopupHost` 仍使用 `UIManager.Instance` 作为新框架全局入口，属于当前 Popup / Tooltip 子视图打开路径；如后续要求全部入口显式注入，可单独做 UIManager 引用传递模块。
 - `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
 
 下一步：
@@ -2264,7 +2265,7 @@
 遗留风险：
 
 - `GameManager` 仍会为 `MapGenerator` 做场景查找兜底，这属于地图 / 玩法装配，不在本轮 UIManager 收口范围内。
-- `TooltipHoverTarget` 与 `InventoryPopupHostView` 仍使用 `UIManager.Instance` 作为新框架子视图打开 Popup / Tooltip 的运行时入口；这不是旧桥接层，但如果后续要求所有业务子视图显式注入 UIManager，需要单独改页面绑定链路。
+- `TooltipHoverTarget` 与 `InventoryOperatePopupHost` 仍使用 `UIManager.Instance` 作为新框架子视图打开 Popup / Tooltip 的运行时入口；这不是旧桥接层，但如果后续要求所有业务子视图显式注入 UIManager，需要单独改页面绑定链路。
 - `Weapon Test Scene.unity` 仍有空 `GameManager.uiManager` 字段；如果该场景需要打开业务 UI，后续要补 Orange UIManager 与 Catalog / Settings 装配。
 
 下一步：
@@ -2278,7 +2279,7 @@
 
 - `ItemQualityPreviewSceneController` 明确收口为 `Item Quality Preview` 场景专用的视觉预览工具，不作为运行时业务 UI 框架入口。
 - 新增预览场景名校验：只有当前激活场景名为 `Item Quality Preview` 时才会构建 Canvas、加载资源并实例化预览对象；误挂到其他场景时会输出警告并停止执行。
-- 保留该工具对 `InventoryItem`、`ShopItemContainer`、`WeaponOperatePopup`、`AccessoryInfoPopup` 的直接 `Resources.Load` / `Instantiate`，用途仅为品质表现视觉对照；运行时背包操作 Popup 仍由 `InventoryPopupHostView` 通过 Orange `UIManager.ShowPopupAsync()` 打开。
+- 保留该工具对 `InventoryItem`、`ShopItemContainer`、`WeaponOperatePopup`、`AccessoryInfoPopup` 的直接 `Resources.Load` / `Instantiate`，用途仅为品质表现视觉对照；运行时背包操作 Popup 仍由 `InventoryOperatePopupHost` 通过 Orange `UIManager.ShowPopupAsync()` 打开。
 
 修改文件：
 
@@ -2303,3 +2304,60 @@
 
 - 提交物品品质 UI 预览工具隔离。
 - 继续最终收口，先做一次 `Assets/Scripts/UI` 与 `Assets/Resources/Prefabs/New UI` 的剩余抽象和旧资源扫描：重点确认是否还有旧页面托管资源、旧 Catalog 引用、无用 Contract / Region 类型或未说明的全局浮层入口。
+
+### 2026-05-06 阶段 12 最终收口：收口 UI 子视图 Region 命名与目录
+
+完成内容：
+
+- 将仍有真实业务调用链的页面私有子视图从 `Region` 命名收口为普通职责命名，不再让页面内部结构看起来像 Orange 框架级抽象。
+- `GamingHudRegionHost` / `GamingInputRegionHost` 改为 `GamingHudView` / `GamingInputView`，`GamingUIPage` 同步改用 `hudView` / `inputView` 字段语义。
+- `ShopListRegionView`、`ShopSidebarRegionHost`、`ShopPropertiesRegionView`、`ShopInventoryRegionView` 改为 `ShopListView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`，`ShopUIPage` 和侧栏协作代码同步改名。
+- `SidebarRegionMotion` / `SidebarToggleRegionView` 改为 `SidebarMotion` / `SidebarToggleView`，保留旧动画系统能力但移出无效 Region 命名。
+- `InventoryListRegionView`、`InventoryPopupHostView`、`InventoryUiHostBinding` 改为 `InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder`，并移入 `Assets/Scripts/UI/Instances/Child/`。
+- `PropertiesDescriberBinding` 移入 `Assets/Scripts/UI/Pages/Shop/`，作为商店页面内部绑定对象，而不是 `UI/Regions` 下的框架候选抽象。
+- 删除空的 `Assets/Scripts/UI/Regions` 目录 `.meta`，当前业务 UI 不再保留 `Regions` 目录。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Child/InventoryListView.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryOperatePopupHost.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUiBinder.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Pages/GamingHudView.cs`
+- `Assets/Scripts/UI/Pages/GamingInputView.cs`
+- `Assets/Scripts/UI/Pages/SidebarMotion.cs`
+- `Assets/Scripts/UI/Pages/SidebarToggleView.cs`
+- `Assets/Scripts/UI/Pages/Shop/PropertiesDescriberBinding.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopInventorySidebarView.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopListView.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopPropertiesSidebarView.cs`
+- `Assets/Scripts/UI/Pages/Shop/ShopSidebarHost.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+删除范围：
+
+- `Assets/Scripts/UI/Regions.meta`
+- `Assets/Scripts/UI/Regions/Inventory.meta`
+
+验证情况：
+
+- 已按本轮强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity 脚本 / 资源 Skill 说明。
+- 已静态扫描 `Assets/Scripts/UI`、`Assets/Resources/Prefabs/New UI`、`Assets/Scenes`，确认 `RegionHost`、`RegionView`、`RegionMotion`、`ToggleRegion`、`InventoryUiHostBinding`、`InventoryListRegionView`、`InventoryPopupHostView`、`ShopListRegionView`、`ShopSidebarRegionHost`、`GamingHudRegionHost`、`GamingInputRegionHost`、`ShopPropertiesRegionView`、`ShopInventoryRegionView`、`SidebarRegionMotion`、`SidebarToggleRegionView` 不再残留于业务脚本和运行时资源。
+- 已确认重命名后的脚本类名与文件名一致，`.meta` 通过 `git mv` 保留，Prefab 上的 MonoScript GUID 不应丢失。
+- 已执行 `git diff --check`，仅出现 Git 对 LF/CRLF 转换的提示，没有空白错误。
+- 本轮按用户要求未执行完整 Unity Play Mode；商店侧栏、战斗 HUD、背包列表、背包操作 Popup 与暂停菜单内容面板仍需最终真实场景验收。
+
+遗留风险：
+
+- 这是命名和目录收口模块，行为目标是不变；仍需 Unity Editor 导入后确认没有脚本重命名导致的 Missing Script 或 Inspector 字段显示异常。
+- 文档历史日志中仍可能有旧 Region 名称作为历史上下文；当前进度快照和下一轮入口以本条记录为准。
+- `Assets/Resources/DOTweenSettings.asset` 与 `ProjectSettings/ProjectSettings.asset` 当前仍有 Unity 自动生成 / 导入痕迹，不属于本模块，提交时必须排除。
+
+下一步：
+
+- 提交 UI 子视图 Region 命名与目录收口。
+- 继续最终收口，优先扫描 `Assets/Scripts/UI/Contracts` 与业务 UI Prefab / Scene 中是否还有无效抽象、旧 UI 资源引用或未迁入 Orange Catalog 的 Page / Popup / Modal / Tooltip；不要恢复 `Assets/Scripts/UI/Regions` 目录。

@@ -20,16 +20,16 @@ public class InventoryUI : MonoBehaviour
     private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
     private string currentSelectedEntryId;
     private string currentOperateEntryId;
-    private InventoryListRegionView listRegion;
-    private InventoryPopupHostView popupHost;
+    private InventoryListView listView;
+    private InventoryOperatePopupHost popupHost;
 
     private void Awake()
     {
         ValidateConfiguration();
         requiresExternalFacadeConfiguration = ResolveRequiresExternalFacadeConfiguration();
-        listRegion = new InventoryListRegionView(name, itemPrefab, itemContainersParent);
-        popupHost = new InventoryPopupHostView(name);
-        listRegion.ItemClicked += OnItemSelected;
+        listView = new InventoryListView(name, itemPrefab, itemContainersParent);
+        popupHost = new InventoryOperatePopupHost(name);
+        listView.ItemClicked += OnItemSelected;
         popupHost.CloseRequested += OnCloseRequested;
         popupHost.SellRequested += OnSellRequested;
         popupHost.MergeRequested += OnMergeRequested;
@@ -108,13 +108,13 @@ public class InventoryUI : MonoBehaviour
         currentItems = Array.Empty<InventoryUIItemSnapshot>();
         currentSelectedEntryId = null;
         ClosePopupState();
-        listRegion.Clear();
+        listView.Clear();
         popupHost.CloseCurrent();
     }
 
     private void RenderItems(InventoryUIItemSnapshot[] items)
     {
-        listRegion.Render(items);
+        listView.Render(items);
     }
 
     private void ShowOperatePopup(InventoryItemOperateResource resource)

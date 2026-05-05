@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class InventoryUiHostBinding
+public static class InventoryUiBinder
 {
     public static void WarmUp(Component host, ref InventoryUI inventoryUI)
     {

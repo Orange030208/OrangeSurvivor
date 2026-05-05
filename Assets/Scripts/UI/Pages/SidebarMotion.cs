@@ -2,14 +2,14 @@ using Orange.UIFramework;
 using DG.Tweening;
 using UnityEngine;
 
-public sealed class SidebarRegionMotion
+public sealed class SidebarMotion
 {
     private readonly MonoBehaviour sidebarBehaviour;
     private readonly IUIRuntimeMotion runtimeMotion;
 
-    public SidebarRegionMotion(string ownerTypeName, string ownerName, string missingFieldName, MonoBehaviour sidebar)
+    public SidebarMotion(string ownerTypeName, string ownerName, string missingFieldName, MonoBehaviour sidebar)
     {
-        string resolvedOwnerTypeName = string.IsNullOrWhiteSpace(ownerTypeName) ? nameof(SidebarRegionMotion) : ownerTypeName;
+        string resolvedOwnerTypeName = string.IsNullOrWhiteSpace(ownerTypeName) ? nameof(SidebarMotion) : ownerTypeName;
         string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? resolvedOwnerTypeName : ownerName;
         string resolvedMissingFieldName = string.IsNullOrWhiteSpace(missingFieldName) ? nameof(UIMotionPlayer) : missingFieldName;
 

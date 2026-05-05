@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public sealed class GamingHudRegionHost
+public sealed class GamingHudView
 {
     private readonly TextMeshProUGUI waveText;
     private readonly TextMeshProUGUI timerText;
@@ -13,7 +13,7 @@ public sealed class GamingHudRegionHost
     private PlayerLevel playerLevel;
     private bool bound;
 
-    public GamingHudRegionHost(
+    public GamingHudView(
         string ownerName,
         TextMeshProUGUI waveText,
         TextMeshProUGUI timerText,
@@ -21,7 +21,7 @@ public sealed class GamingHudRegionHost
         CharacterStatusPanel characterStatusPanel,
         BuffBarUI buffBarUI)
     {
-        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(GamingHudRegionHost) : ownerName;
+        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(GamingHudView) : ownerName;
         this.waveText = waveText ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing wave text.");
         this.timerText = timerText ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing timer text.");
         this.currencyText = currencyText ?? throw new MissingReferenceException($"{nameof(GamingUIPage)} '{resolvedOwnerName}' is missing currency text.");

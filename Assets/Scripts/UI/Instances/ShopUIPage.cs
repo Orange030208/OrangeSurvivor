@@ -26,8 +26,8 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
 
     private ShopPageContext currentContext;
     private ShopPageController controller;
-    private ShopListRegionView shopListRegion;
-    private ShopSidebarRegionHost sidebarRegionHost;
+    private ShopListView shopListView;
+    private ShopSidebarHost sidebarHost;
 
     public event Action RerollRequested;
     public event Action ContinueRequested;
@@ -40,21 +40,21 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
     {
         base.Awake();
         ValidateConfiguration();
-        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
-        shopListRegion = new ShopListRegionView(name, shopItemPrefab, shopItemParent, rerollButton, continueButton, rerollCostText, currencyText);
-        sidebarRegionHost = new ShopSidebarRegionHost(
+        InventoryUiBinder.WarmUp(this, ref inventoryUI);
+        shopListView = new ShopListView(name, shopItemPrefab, shopItemParent, rerollButton, continueButton, rerollCostText, currencyText);
+        sidebarHost = new ShopSidebarHost(
             name,
             propertiesSidebar,
             propertiesToggleButton,
             propertiesDescriber,
             inventorySidebar,
             inventoryToggleButton);
-        shopListRegion.RerollRequested += OnRerollRequested;
-        shopListRegion.ContinueRequested += OnContinueRequested;
-        shopListRegion.ItemBuyRequested += OnItemBuyRequested;
-        shopListRegion.ItemLockToggleRequested += OnItemLockToggleRequested;
-        sidebarRegionHost.PropertiesToggleRequested += OnPropertiesRegionToggleRequested;
-        sidebarRegionHost.InventoryToggleRequested += OnInventoryRegionToggleRequested;
+        shopListView.RerollRequested += OnRerollRequested;
+        shopListView.ContinueRequested += OnContinueRequested;
+        shopListView.ItemBuyRequested += OnItemBuyRequested;
+        shopListView.ItemLockToggleRequested += OnItemLockToggleRequested;
+        sidebarHost.PropertiesToggleRequested += OnPropertiesToggleRequested;
+        sidebarHost.InventoryToggleRequested += OnInventoryToggleRequested;
         InitSidebarPanels();
     }
 
@@ -81,33 +81,33 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
             throw new ArgumentNullException(nameof(context));
         }
 
-        InventoryUiHostBinding.Bind(this, ref inventoryUI, context);
-        shopListRegion.Bind();
-        sidebarRegionHost.Bind(context.PropertiesManager);
+        InventoryUiBinder.Bind(this, ref inventoryUI, context);
+        shopListView.Bind();
+        sidebarHost.Bind(context.PropertiesManager);
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
     }
 
     public void ResetAfterClose()
     {
-        shopListRegion.Unbind();
-        sidebarRegionHost.Unbind();
-        InventoryUiHostBinding.Release(inventoryUI);
+        shopListView.Unbind();
+        sidebarHost.Unbind();
+        InventoryUiBinder.Release(inventoryUI);
         KillPanelTweens();
     }
 
     public void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
     {
-        shopListRegion.RenderShopItems(items, reason);
+        shopListView.RenderShopItems(items, reason);
     }
 
     public void UpdateRerollState(int rerollCost, bool canReroll)
     {
-        shopListRegion.UpdateRerollState(rerollCost, canReroll);
+        shopListView.UpdateRerollState(rerollCost, canReroll);
     }
 
     public void UpdateCurrencyAmount(int amount)
     {
-        shopListRegion.UpdateCurrencyAmount(amount);
+        shopListView.UpdateCurrencyAmount(amount);
     }
 
     public void ShowPurchaseSuccess(ShopPurchaseSuccess result)
@@ -122,12 +122,12 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
 
     public void SetPropertiesSidebarVisible(bool visible)
     {
-        sidebarRegionHost.SetPropertiesVisible(visible);
+        sidebarHost.SetPropertiesVisible(visible);
     }
 
     public void SetInventorySidebarVisible(bool visible)
     {
-        sidebarRegionHost.SetInventoryVisible(visible);
+        sidebarHost.SetInventoryVisible(visible);
     }
 
     private void OnRerollRequested()
@@ -140,24 +140,24 @@ public class ShopUIPage : PageBase, IInventoryUiFacadeHost
         ContinueRequested?.Invoke();
     }
 
-    private void OnPropertiesRegionToggleRequested()
+    private void OnPropertiesToggleRequested()
     {
         PropertiesToggleRequested?.Invoke();
     }
 
-    private void OnInventoryRegionToggleRequested()
+    private void OnInventoryToggleRequested()
     {
         InventoryToggleRequested?.Invoke();
     }
 
     private void InitSidebarPanels()
     {
-        sidebarRegionHost.RefreshDefaults();
+        sidebarHost.RefreshDefaults();
     }
 
     private void KillPanelTweens()
     {
-        sidebarRegionHost.Kill();
+        sidebarHost.Kill();
     }
 
     private void ValidateConfiguration()

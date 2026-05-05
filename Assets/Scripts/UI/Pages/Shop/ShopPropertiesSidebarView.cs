@@ -2,26 +2,26 @@ using System;
 using Orange.UIFramework;
 using UnityEngine;
 
-public sealed class ShopPropertiesRegionView
+public sealed class ShopPropertiesSidebarView
 {
-    private readonly SidebarToggleRegionView toggleRegion;
+    private readonly SidebarToggleView toggleView;
     private readonly PropertiesDescriberBinding describerBinding;
 
-    public ShopPropertiesRegionView(
+    public ShopPropertiesSidebarView(
         string ownerName,
         MonoBehaviour sidebar,
         UIClickTarget toggleButton,
         Describer propertiesDescriber)
     {
-        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopPropertiesRegionView) : ownerName;
-        toggleRegion = new SidebarToggleRegionView(
+        string resolvedOwnerName = string.IsNullOrWhiteSpace(ownerName) ? nameof(ShopPropertiesSidebarView) : ownerName;
+        toggleView = new SidebarToggleView(
             nameof(ShopUIPage),
             resolvedOwnerName,
             "properties sidebar",
             "properties toggle button",
             sidebar,
             toggleButton);
-        toggleRegion.ToggleRequested += OnToggleRequested;
+        toggleView.ToggleRequested += OnToggleRequested;
         describerBinding = new PropertiesDescriberBinding(nameof(ShopUIPage), resolvedOwnerName, "properties describer", propertiesDescriber);
     }
 
@@ -29,29 +29,29 @@ public sealed class ShopPropertiesRegionView
 
     public void Bind(PropertiesManager newPropertiesManager)
     {
-        toggleRegion.Bind();
+        toggleView.Bind();
         describerBinding.Bind(newPropertiesManager);
     }
 
     public void Unbind()
     {
-        toggleRegion.Unbind();
+        toggleView.Unbind();
         describerBinding.Unbind();
     }
 
     public void SetVisible(bool visible)
     {
-        toggleRegion.SetVisible(visible);
+        toggleView.SetVisible(visible);
     }
 
     public void RefreshDefaults()
     {
-        toggleRegion.RefreshDefaults();
+        toggleView.RefreshDefaults();
     }
 
     public void Kill()
     {
-        toggleRegion.Kill();
+        toggleView.Kill();
     }
 
     private void OnToggleRequested()
