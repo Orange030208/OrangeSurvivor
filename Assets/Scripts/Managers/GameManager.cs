@@ -1,5 +1,8 @@
-using AXR.Framework.UI;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,6 +21,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private GameState currentGameState = GameState.None;
     private bool isPaused;
     private bool hasMoreWaves;
+    private int stateTransitionVersion;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -50,6 +54,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnDisable()
     {
+        stateTransitionVersion++;
         GameEventBus.Unsubscribe<WaveFlowDecisionEvent>(OnWaveFlowDecision);
         GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
@@ -156,28 +161,51 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        uiManager.BeginTransition()
-            .ClosePage<GamePauseMenu>()
-            .Callback(() => SetPaused(false))
-            .Play();
+        ClosePauseMenuAndResumeAsync().Forget();
     }
 
     private void OnPauseMenuReturnToMenuClicked()
     {
-        uiManager.BeginTransition()
-            .ClosePage<GamePauseMenu>()
-            .Callback(ReturnToMenu)
-            .Play();
+        ClosePauseMenuAndReturnToMenuAsync().Forget();
     }
 
     private void TransitionToState(GameState targetState)
     {
-        IUITransitionSequence transition = uiManager.BeginTransition();
-        AppendCloseCurrentStatePage(transition);
-        transition
-            .Callback(() => ApplyStateTransition(targetState))
-            .Callback(OpenStatePage)
-            .Play();
+        int transitionVersion = ++stateTransitionVersion;
+        RunStateTransitionAsync(targetState, transitionVersion).Forget();
+    }
+
+    private async UniTask RunStateTransitionAsync(GameState targetState, int transitionVersion)
+    {
+        try
+        {
+            CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+            await CloseCurrentStatePageAsync(cancellationToken);
+            if (!IsCurrentTransition(transitionVersion))
+            {
+                return;
+            }
+
+            ApplyStateTransition(targetState);
+            if (!IsCurrentTransition(transitionVersion))
+            {
+                return;
+            }
+
+            await OpenStatePageAsync(currentGameState, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private bool IsCurrentTransition(int transitionVersion)
+    {
+        return transitionVersion == stateTransitionVersion && isActiveAndEnabled;
     }
 
     private void ApplyStateTransition(GameState targetState)
@@ -285,70 +313,125 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Publish(new StartFirstWaveRequestedEvent());
     }
 
-    private void AppendCloseCurrentStatePage(IUITransitionSequence transition)
+    private async UniTask CloseCurrentStatePageAsync(CancellationToken cancellationToken)
     {
         switch (currentGameState)
         {
             case GameState.Menu:
-                transition.ClosePage<MenuUIPage>();
+                await ClosePageAsync<MenuUIPage>(cancellationToken);
                 break;
             case GameState.CharacterSelection:
-                transition.ClosePage<CharacterSelectUIPage>();
+                await ClosePageAsync<CharacterSelectUIPage>(cancellationToken);
                 break;
             case GameState.Game:
-                transition.ClosePage<GamingUIPage>();
+                await ClosePageAsync<GamingUIPage>(cancellationToken);
                 break;
             case GameState.GameOver:
-                transition.ClosePage<GameOverUIPage>();
+                await ClosePageAsync<GameOverUIPage>(cancellationToken);
                 break;
             case GameState.StageComplete:
-                transition.ClosePage<StageCompleteUIPage>();
+                await ClosePageAsync<StageCompleteUIPage>(cancellationToken);
                 break;
             case GameState.WaveTransition:
-                transition.ClosePage<WaveTransitionUIPage>();
+                await ClosePageAsync<WaveTransitionUIPage>(cancellationToken);
                 break;
             case GameState.Shop:
-                transition.ClosePage<ShopUIPage>();
+                await ClosePageAsync<ShopUIPage>(cancellationToken);
                 break;
         }
     }
 
-    private void OpenStatePage()
+    private async UniTask OpenStatePageAsync(GameState state, CancellationToken cancellationToken)
     {
-        switch (currentGameState)
+        switch (state)
         {
             case GameState.Menu:
-                uiManager.OpenPage<MenuUIPage>();
+                await uiManager.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.CharacterSelection:
-                uiManager.OpenPage<CharacterSelectUIPage>();
+                await uiManager.OpenPageAsync<CharacterSelectUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Game:
-                uiManager.OpenPage<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player));
+                await uiManager.OpenPageAsync<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player), cancellationToken);
                 break;
             case GameState.GameOver:
-                uiManager.OpenPage<GameOverUIPage>();
+                await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.StageComplete:
-                uiManager.OpenPage<StageCompleteUIPage>();
+                await uiManager.OpenPageAsync<StageCompleteUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.WaveTransition:
-                uiManager.OpenPage<WaveTransitionUIPage>();
+                await uiManager.OpenPageAsync<WaveTransitionUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Shop:
-                uiManager.OpenPage<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player));
+                await uiManager.OpenPageAsync<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player), cancellationToken);
                 break;
         }
     }
 
     private void OpenPauseMenu()
     {
-        if (uiManager.IsPageOpen<GamePauseMenu>())
+        OpenPauseMenuAsync().Forget();
+    }
+
+    private async UniTask OpenPauseMenuAsync()
+    {
+        if (uiManager.IsOpen<GamePauseMenu>())
         {
             return;
         }
 
-        uiManager.OpenPage<GamePauseMenu>(UIPageContextFactory.CreatePauseMenuContext(player));
+        try
+        {
+            await uiManager.OpenPageAsync<GamePauseMenu>(
+                UIPageContextFactory.CreatePauseMenuContext(player),
+                this.GetCancellationTokenOnDestroy());
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTask ClosePauseMenuAndResumeAsync()
+    {
+        try
+        {
+            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            SetPaused(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTask ClosePauseMenuAndReturnToMenuAsync()
+    {
+        try
+        {
+            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            ReturnToMenu();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private UniTask<bool> ClosePageAsync<TPage>(CancellationToken cancellationToken)
+        where TPage : PageBase
+    {
+        return uiManager.ClosePageAsync(typeof(TPage), cancellationToken);
     }
 
     private void EnsureMapGenerated()
