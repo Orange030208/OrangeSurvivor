@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -12,6 +14,10 @@ namespace Orange.UIFramework
 
         public string InstanceId => handle.InstanceId;
         public bool IsOpen { get; private set; }
+        public bool InputActive { get; private set; }
+        public bool BlocksRaycasts { get; private set; }
+        public virtual bool RequiresTick => false;
+        public ViewRuntimePhase Phase { get; private set; } = ViewRuntimePhase.None;
         protected ViewHandle Handle => handle;
         protected CanvasGroup CanvasGroup => canvasGroup;
 
@@ -30,12 +36,15 @@ namespace Orange.UIFramework
             ResolveReferences();
             handle = newHandle;
             initialized = true;
+            Phase = ViewRuntimePhase.Loaded;
             OnInitialized(newHandle);
         }
 
         public void ApplyInputState(bool interactable, bool blocksRaycasts)
         {
             ResolveReferences();
+            InputActive = interactable;
+            BlocksRaycasts = blocksRaycasts;
             canvasGroup.interactable = interactable;
             canvasGroup.blocksRaycasts = blocksRaycasts;
             OnInputChanged(interactable, blocksRaycasts);
@@ -51,9 +60,73 @@ namespace Orange.UIFramework
             OnTick(deltaTime);
         }
 
-        internal void MarkOpenState(bool isOpen)
+        internal async UniTask OpenInternalAsync(OpenContext context, CancellationToken cancellationToken)
         {
-            IsOpen = isOpen;
+            if (!initialized)
+            {
+                throw new InvalidOperationException($"View '{name}' must be initialized before opening.");
+            }
+
+            ResolveReferences();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Phase = ViewRuntimePhase.Opening;
+            gameObject.SetActive(true);
+            canvasGroup.alpha = 1f;
+            ApplyInputState(false, false);
+
+            try
+            {
+                await OnOpeningAsync(context, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                IsOpen = true;
+                Phase = ViewRuntimePhase.Opened;
+                await OnOpenedAsync(cancellationToken);
+            }
+            catch
+            {
+                IsOpen = false;
+                Phase = ViewRuntimePhase.Failed;
+                throw;
+            }
+        }
+
+        internal async UniTask CloseInternalAsync(CloseReason reason, CancellationToken cancellationToken)
+        {
+            if (Phase == ViewRuntimePhase.Closing || Phase == ViewRuntimePhase.Closed || Phase == ViewRuntimePhase.Recycled)
+            {
+                return;
+            }
+
+            ResolveReferences();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Phase = ViewRuntimePhase.Closing;
+            ApplyInputState(false, false);
+
+            try
+            {
+                await OnClosingAsync(reason, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                OnClosed(reason);
+                IsOpen = false;
+                canvasGroup.alpha = 0f;
+                Phase = ViewRuntimePhase.Closed;
+                gameObject.SetActive(false);
+            }
+            catch
+            {
+                Phase = ViewRuntimePhase.Failed;
+                throw;
+            }
+        }
+
+        internal void MarkRecycled()
+        {
+            IsOpen = false;
+            Phase = ViewRuntimePhase.Recycled;
         }
 
         protected virtual void OnInitialized(ViewHandle newHandle)

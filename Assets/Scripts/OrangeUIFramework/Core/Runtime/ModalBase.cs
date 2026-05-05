@@ -36,6 +36,13 @@ namespace Orange.UIFramework
             CompleteResult(ModalResult<TResult>.Cancel(reason));
         }
 
+        protected override void OnInitialized(ViewHandle newHandle)
+        {
+            base.OnInitialized(newHandle);
+            resultSource = null;
+            resultCompleted = false;
+        }
+
         private void CompleteResult(ModalResult<TResult> result)
         {
             EnsureResultSource();

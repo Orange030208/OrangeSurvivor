@@ -311,7 +311,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 3，UIManager Root / Canvas / Layer 已完成，准备进入阶段 4。
+当前阶段：阶段 4，ViewBase / PageBase 生命周期与 UniTask Page API 已完成，准备进入阶段 5。
 
 已完成：
 
@@ -332,28 +332,36 @@
 - 已新增新框架 `UIManager` 与 `IUIManager`，保留 `UIManager` 作为具体运行时入口。
 - `UIManager` 已支持启动期调用 Settings / Catalog 校验、创建或复用 Root Canvas、应用 Overlay / Camera CanvasProfile、创建标准 Layer 根节点。
 - `UIManager` 已提供 `TryGetLayerRoot()`、`GetRuntimeDiagnostics()`、`LogRuntimeDiagnostics()`，可输出 Root、Canvas 模式、相机、Layer 数量、Layer SortingOrder 与 Raycaster 状态。
+- 已新增 `Core/Loading/IViewLoader` 与默认 `PrefabViewLoader`，当前以 Catalog Prefab 实例化为默认加载方式，不引入 Addressables。
+- `IView` / `ViewBase` 已补齐 `RequiresTick`、`Phase`、`InputActive`、`BlocksRaycasts` 运行时状态。
+- `ViewBase` 已提供内部 `OpenInternalAsync()` / `CloseInternalAsync()` 生命周期入口，业务侧继续只重写 `OnOpeningAsync()`、`OnOpenedAsync()`、`OnClosingAsync()`、`OnClosed()`、`OnTick()`。
+- `UIManager` 已实现 Page 的 `OpenPageAsync()`、`ReplacePageAsync()`、`ResetToPageAsync()`、`CloseTopPageAsync()`、`CloseAllPagesAsync()` 与同步兼容 `OpenPage()`。
+- `UIManager` 已维护 PageStack、运行时实例表、单例实例表、按类型对象池，以及只包含 `RequiresTick` View 的 Tick 列表。
+- `UIManager.GetRuntimeDiagnostics()` / `LogRuntimeDiagnostics()` 已包含当前打开 View 与对象池快照。
 
 未完成：
 
-- 尚未接入完整 View 生命周期、异步打开关闭、动画等待、Popup / Modal / Tooltip 管理。
-- `UIManager` 的 Page / Popup / Modal / Tooltip 打开关闭 API 目前只保留接口并显式抛出阶段性未实现异常，需阶段 4 和阶段 7 完成。
+- 尚未实现阶段 5 的 request version 旧请求拦截、防重复关闭等待、打开/替换并发串行化和取消清理。
+- 尚未接入动画等待、Popup / Modal / Tooltip 管理、定位裁剪、本地化与测试。
+- `UIManager` 的 Popup / Modal / Tooltip API 目前仍显式抛出阶段性未实现异常，需阶段 7 完成。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 业务迁移必须等待框架核心完成，否则会让旧问题带入新框架。
 - 当前环境未生成 Unity `.csproj`，本轮只能做文件级和命名级检查，完整编译仍需 Unity Editor 刷新后验证。
+- Stage 4 的同步兼容 `OpenPage()` 只适合已同步完成的旧式调用；默认新业务仍应使用 UniTask 异步 API。
 
 ## 7. 下一轮入口
 
 下一轮必须先做：
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
-2. 确认阶段 3 提交已存在。
-3. 从阶段 4 开始，完善 `ViewBase` 生命周期，接入 `UIManager` Page 打开/关闭 UniTask API。
+2. 确认阶段 4 提交已存在。
+3. 从阶段 5 开始，完善 request version、防重入、重复关闭等待和取消清理。
 4. 不迁移任何现有业务页面。
 5. 不修改旧 UIManager 业务调用，除非后续迁移阶段明确需要。
-6. 阶段 4 重点处理 `ViewBase` 的 `OpenInternalAsync` / `CloseInternalAsync` 或等价内部生命周期入口、`IViewLoader` 默认 Prefab 加载、PageStack、同步兼容 OpenPage 基础入口、只让需要 Tick 的 View 进入 Tick 列表。
+6. 阶段 5 重点处理连续 `ReplacePageAsync` / `ResetToPageAsync` 的串行执行，旧请求不能覆盖新请求；重复关闭应返回同一关闭任务或等待已有关闭完成；取消请求不能泄漏运行时实例、CTS 或事件。
 
 下一轮禁止：
 
@@ -515,3 +523,49 @@
 
 - 提交阶段 3。
 - 进入阶段 4，优先实现 `IViewLoader` 默认 Prefab Loader、`ViewBase` 内部异步生命周期入口、PageStack 与 `OpenPageAsync` / `ReplacePageAsync` / `ResetToPageAsync` / `CloseTopPageAsync` / `CloseAllPagesAsync`。
+
+### 2026-05-05 阶段 4 ViewBase / PageBase 生命周期与 UniTask API
+
+完成内容：
+
+- 新增 `Assets/Scripts/OrangeUIFramework/Core/Loading/`，提供 `IViewLoader` 与默认 `PrefabViewLoader`。
+- `PrefabViewLoader` 当前只负责从 `ViewDefinition.Prefab` 同步实例化并用 UniTask API 返回实例，后续 Addressables 等异步资源方案可通过替换 `IViewLoader` 接入。
+- 扩展 `IView`，加入 `RequiresTick`、`Phase`、`InputActive`、`BlocksRaycasts`，用于 UIManager Tick 过滤和运行时诊断。
+- 扩展 `ViewBase`，实现初始化、打开、关闭、回收的内部生命周期入口，并将业务扩展点保持在 `OnOpeningAsync()`、`OnOpenedAsync()`、`OnClosingAsync()`、`OnClosed()`、`OnTick()`。
+- `ModalBase<TResult>` 在每次 `Initialize()` 时重置结果源，避免池化复用后沿用上一次 Modal 结果。
+- `UIManager` 接入默认 Loader、PageStack、运行时实例表、单例实例表、对象池与按需 Tick 列表。
+- `UIManager` 实现 `OpenPageAsync()`、`ReplacePageAsync()`、`ResetToPageAsync()`、`CloseTopPageAsync()`、`CloseAllPagesAsync()` 与同步兼容 `OpenPage()`。
+- `UIManager` 的 Page 打开流程会创建 `OpenContext` 并传入 request version；正式旧请求拦截留到阶段 5。
+- `UIManager` 的关闭流程会等待 `ViewBase.CloseInternalAsync()`，然后移除运行时状态并按配置回收或释放 Prefab。
+- `GetRuntimeDiagnostics()` 和 `LogRuntimeDiagnostics()` 已输出打开 View 与对象池快照，便于后续定位 Opening / Closing 状态。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Core/Loading/IViewLoader.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Loading/PrefabViewLoader.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/IView.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ViewBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/ModalBase.cs`
+- `Assets/Scripts/OrangeUIFramework/Core/Runtime/UIManager.cs`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按本轮强制流程读取本文和 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 相关生命周期、Loader、UIManager API 章节。
+- 已读取 `unity-script` 与 `unity-async` 技能说明，确认本轮使用 UniTask 的生命周期和取消模型符合项目已接入依赖。
+- 已确认本轮未修改旧 `AXR.Framework.UI` 框架、旧 UIManager 调用和业务 UI 页面。
+- 已确认所有新增 `.cs` 均有对应 `.meta`。
+- 已执行 `git diff --check`，仅有 Windows 换行风格提示，无空白错误。
+- 已检查本地 UniTask 包 `E:\unity\Packages\UniTask` 支持 `UniTaskCompletionSource.TrySetResult()`、`TrySetException()`。
+- 当前工作树仍没有 Unity 生成的 `.csproj`，无法通过命令行执行完整 Unity C# 编译；需要 Unity Editor 刷新后检查编译结果。
+
+遗留风险：
+
+- 阶段 4 只完成基础 Page 生命周期；连续 Replace / Reset、旧请求覆盖、新旧关闭并发、关闭中重复调用等问题必须在阶段 5 收口。
+- 同步兼容 `OpenPage()` 只应作为迁移期入口，业务异步流程仍应优先使用 UniTask API。
+- 当前 `OnOpeningAsync()` / `OnClosingAsync()` 尚未接 UIMotion 动画等待，阶段 6 会通过动画适配层补齐。
+
+下一步：
+
+- 提交阶段 4。
+- 进入阶段 5，优先实现异步防重入、request version 旧请求拦截、关闭任务复用和取消清理。
