@@ -49,6 +49,7 @@ public sealed class GamingHudRegionHost
         RefreshCurrencyDisplay(context.CurrencyWallet);
 
         buffBarUI.gameObject.SetActive(true);
+        buffBarUI.SetTooltipPresenter(tooltipPresenter);
         tooltipPresenter.gameObject.SetActive(true);
 
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
@@ -69,6 +70,7 @@ public sealed class GamingHudRegionHost
         UnbindPlayerLevel();
         characterStatusPanel.Unbind();
         buffBarUI.UnbindPlayer();
+        buffBarUI.SetTooltipPresenter(null);
         tooltipPresenter.HideImmediate();
     }
 

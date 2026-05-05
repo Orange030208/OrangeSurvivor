@@ -16,8 +16,6 @@ public class UITooltipPresenter : MonoBehaviour
     private Canvas parentCanvas;
     private Camera uiCamera;
 
-    public static UITooltipPresenter ActivePresenter { get; private set; }
-
     private void Awake()
     {
         if (root == null)
@@ -59,16 +57,7 @@ public class UITooltipPresenter : MonoBehaviour
 
     private void OnEnable()
     {
-        ActivePresenter = this;
         HideImmediate();
-    }
-
-    private void OnDisable()
-    {
-        if (ActivePresenter == this)
-        {
-            ActivePresenter = null;
-        }
     }
 
     public void Present(IDescribable describable)
@@ -131,6 +120,8 @@ public class UITooltipPresenter : MonoBehaviour
     private void SetVisible(bool visible)
     {
         canvasGroup.alpha = visible ? 1f : 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     public void HideImmediate()

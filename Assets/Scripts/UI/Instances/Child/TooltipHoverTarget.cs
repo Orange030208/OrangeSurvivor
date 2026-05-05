@@ -64,13 +64,7 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Show(Vector2 screenPosition)
     {
-        UITooltipPresenter presenter = ResolveTooltipPresenter();
-        if (presenter == null)
-        {
-            return;
-        }
-
-        presenter.Present(dataSource, screenPosition);
+        ResolveTooltipPresenter(true)?.Present(dataSource, screenPosition);
     }
 
     private void ValidateConfiguration()
@@ -94,10 +88,10 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
         }
 
         isPointerDown = false;
-        ResolveTooltipPresenter()?.HideImmediate();
+        ResolveTooltipPresenter(false)?.HideImmediate();
     }
 
-    private UITooltipPresenter ResolveTooltipPresenter()
+    private UITooltipPresenter ResolveTooltipPresenter(bool throwIfMissing)
     {
         if (tooltipPresenter != null)
         {
@@ -110,12 +104,11 @@ public class TooltipHoverTarget : MonoBehaviour, IPointerDownHandler, IPointerUp
             return tooltipPresenter;
         }
 
-        tooltipPresenter = UITooltipPresenter.ActivePresenter;
-        if (tooltipPresenter != null)
+        if (throwIfMissing)
         {
-            return tooltipPresenter;
+            throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' requires an explicit {nameof(UITooltipPresenter)} reference.");
         }
 
-        return FindFirstObjectByType<UITooltipPresenter>();
+        return null;
     }
 }
