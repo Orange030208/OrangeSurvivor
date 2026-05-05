@@ -244,6 +244,7 @@ GameObject:
   - component: {fileID: 8811404232182784892}
   - component: {fileID: 7900794072119578948}
   - component: {fileID: 4235207013113677959}
+  - component: {fileID: 5739972249162842268}
   m_Layer: 5
   m_Name: UI Character Selection
   m_TagString: Untagged
@@ -307,7 +308,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4aa8d94c768438b9b9f6b743a63b82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 1
   characterInfoCard: {fileID: 7430751627697373610}
   characterListController: {fileID: 2007781208652475618}
   confirm: {fileID: 1343874346286685478}
@@ -338,6 +338,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 0.6
+--- !u!114 &5739972249162842268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 4235207013113677959}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1 &4333633928833420987
 GameObject:
   m_ObjectHideFlags: 0

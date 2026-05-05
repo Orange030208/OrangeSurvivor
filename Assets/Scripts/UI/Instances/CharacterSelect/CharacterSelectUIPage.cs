@@ -1,8 +1,10 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterSelectUIPage : UIPageBase
+public class CharacterSelectUIPage : PageBase
 {
     [SerializeField] private CharacterInfoCard characterInfoCard;
     [SerializeField] private CharacterListController characterListController;
@@ -13,7 +15,7 @@ public class CharacterSelectUIPage : UIPageBase
     private ICharacterSelectionService selectionService;
     private int selectedCharacterIndex = -1;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         selectionService = ResolveSelectionService();
         if (selectionService != null)
@@ -30,9 +32,11 @@ public class CharacterSelectUIPage : UIPageBase
         {
             ApplyCharacterSelectionSnapshot(selectionService.CreateSnapshot());
         }
+
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         if (selectionService != null)
         {
