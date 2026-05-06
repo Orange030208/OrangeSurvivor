@@ -14,7 +14,10 @@ public class FlyForestBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private FlyForestEnemySO enemyData;
-    private MovementStrategyBase currentMoveStrategy;
+    private IEnemyRuntimeMovementStrategy currentMoveStrategy;
+    private IEnemyRuntimeMovementStrategy normalMovementStrategy;
+    private IEnemyRuntimeMovementStrategy retreatMovementStrategy;
+    private IEnemyRuntimeAttackStrategy normalAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -26,12 +29,17 @@ public class FlyForestBrain : EnemyBrain
         {
             throw new MissingComponentException($"{nameof(FlyForestBrain)} requires an {nameof(EnemyAttackController)}.");
         }
+
+        if (enemyData == null)
+        {
+            throw new MissingReferenceException($"{nameof(FlyForestBrain)} requires a {nameof(FlyForestEnemySO)} definition.");
+        }
     }
 
     protected override void OnBrainStart()
     {
+        BuildRuntimeStrategies();
         RegisterStates();
-        SetMoveStrategy(enemyData.normalMovementStrategy);
         stateMachine.ChangeState(FlyForestAIState.CircleKite);
     }
 
@@ -52,7 +60,21 @@ public class FlyForestBrain : EnemyBrain
         stateMachine.RegisterState(new RetreatBurstState(this));
     }
 
-    private void SetMoveStrategy(MovementStrategyBase strategy)
+    private void BuildRuntimeStrategies()
+    {
+        normalMovementStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.normalMovement);
+        retreatMovementStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
+        IEnemyRuntimeDetectionStrategy detectionStrategy =
+            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.normalAttackConfig);
+        normalAttackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+            owner,
+            attackController,
+            propertiesManager,
+            enemyData.normalAttackConfig,
+            detectionStrategy);
+    }
+
+    private void SetMoveStrategy(IEnemyRuntimeMovementStrategy strategy)
     {
         currentMoveStrategy = strategy;
     }
@@ -99,7 +121,7 @@ public class FlyForestBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.normalMovementStrategy);
+            brain.SetMoveStrategy(brain.normalMovementStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -126,13 +148,9 @@ public class FlyForestBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceTarget();
-            if (brain.attackController.CanUse(brain.enemyData.normalAttackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.normalAttackDefinition, brain.target))
-            {
-                brain.attackController.TryUse(brain.enemyData.normalAttackDefinition, brain.target);
-            }
+            brain.normalAttackStrategy.TryExecute(brain.target);
         }
     }
 
@@ -148,7 +166,7 @@ public class FlyForestBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.retreatMovementStrategy);
+            brain.SetMoveStrategy(brain.retreatMovementStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
             brain.propertiesManager.AddModifiers(RETREAT_BURST_MODIFIER_SOURCE,brain.enemyData.fastBurstModifierData);
         }
@@ -176,13 +194,9 @@ public class FlyForestBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceMoveDirection();
-            if (brain.attackController.CanUse(brain.enemyData.normalAttackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.normalAttackDefinition, brain.target))
-            {
-                brain.attackController.TryUse(brain.enemyData.normalAttackDefinition, brain.target);
-            }
+            brain.normalAttackStrategy.TryExecute(brain.target);
         }
 
         public override void OnExit()

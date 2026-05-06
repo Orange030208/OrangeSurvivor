@@ -27,7 +27,9 @@ public class GolemBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private GolemEnemySO enemyData;
-    private MovementStrategyBase currentMoveStrategy;
+    private IEnemyRuntimeMovementStrategy chaseMoveStrategy;
+    private IEnemyRuntimeAttackStrategy attackStrategy;
+    private IEnemyRuntimeDetectionStrategy postChargeDetectionStrategy;
     private float berserkTimer;
     private Vector2 chargeDirection = Vector2.right;
     private bool chargeModifiersApplied;
@@ -53,7 +55,7 @@ public class GolemBrain : EnemyBrain
 
     protected override void OnBrainStart()
     {
-        ValidateConfig();
+        BuildRuntimeStrategies();
         RegisterStates();
         ResetBerserkTimer();
         stateMachine.ChangeState(GolemAIState.Chase);
@@ -110,27 +112,21 @@ public class GolemBrain : EnemyBrain
         stateMachine.RegisterState(new BerserkRecoveryState(this));
     }
 
-    private void ValidateConfig()
+    private void BuildRuntimeStrategies()
     {
-        if (enemyData.chaseMoveStrategy == null)
-        {
-            throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.chaseMoveStrategy)}.");
-        }
+        chaseMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.ChaseMovement);
+        IEnemyRuntimeDetectionStrategy attackDetectionStrategy =
+            EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, enemyData.AttackConfig);
+        attackStrategy = EnemyRuntimeStrategyFactory.CreateDirectDamageAttackStrategy(
+            owner,
+            attackController,
+            propertiesManager,
+            enemyData.AttackConfig,
+            attackDetectionStrategy);
 
-        if (enemyData.AttackDefinition == null)
-        {
-            throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.AttackDefinition)}.");
-        }
-
-        if (enemyData.PostChargeAttackHitShape == null)
-        {
-            throw new MissingReferenceException($"{nameof(GolemEnemySO)} on {enemyData.name} is missing {nameof(enemyData.PostChargeAttackHitShape)}.");
-        }
-    }
-
-    private void SetMoveStrategy(MovementStrategyBase strategy)
-    {
-        currentMoveStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+        EnemyAttackConfig postChargeAttackConfig = enemyData.AttackConfig;
+        postChargeAttackConfig.forwardOffset = enemyData.PostChargeAttackForwardOffset;
+        postChargeDetectionStrategy = EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, postChargeAttackConfig);
     }
 
     private void TickBerserkTimer()
@@ -293,14 +289,14 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target);
+            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(GolemAIState.Chase);
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(GolemAIState.Attack);
             }
@@ -318,7 +314,6 @@ public class GolemBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.chaseMoveStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -338,8 +333,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(GolemAIState.Attack);
             }
@@ -352,7 +346,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.chaseMoveStrategy.ExecuteMove(brain.target);
             brain.FaceTarget();
         }
     }
@@ -382,8 +376,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            if (!brain.attackController.CanUse(brain.enemyData.AttackDefinition) ||
-                !brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
+            if (!brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(GolemAIState.Chase);
                 return;
@@ -417,11 +410,7 @@ public class GolemBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
-                    brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
-                {
-                    brain.attackController.TryUse(brain.enemyData.AttackDefinition, brain.target);
-                }
+                brain.attackStrategy.TryExecute(brain.target);
             }
 
             if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
@@ -449,7 +438,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            brain.stateMachine.ChangeState(brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target)
+            brain.stateMachine.ChangeState(brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target)
                 ? GolemAIState.Idle
                 : GolemAIState.Chase);
         }
@@ -596,11 +585,22 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            brain.attackController.TryUseDirectDamageOverride(
-                brain.enemyData.AttackDefinition,
+            if (!brain.postChargeDetectionStrategy.IsTargetInRange(brain.target))
+            {
+                return;
+            }
+
+            Vector2 knockbackDirection = brain.target.Center - brain.owner.Center;
+            float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack) * brain.enemyData.AttackConfig.damageMultiplier);
+            HitService.Apply(new HitRequest(
+                brain.owner,
                 brain.target,
-                brain.enemyData.PostChargeAttackHitShape,
-                false);
+                HitSpec.EnemyHitSpec(damage),
+                brain.target.Center,
+                knockbackDirection,
+                HitSourceKind.Direct,
+                $"{brain.enemyData.AttackConfig.actionId}_PostCharge",
+                brain.owner.Center));
         }
     }
 

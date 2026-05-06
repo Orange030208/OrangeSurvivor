@@ -47,7 +47,7 @@ public struct WeaponSequenceProjectileDefinition
 {
     [Tooltip("使用哪个武器点位。映射到 WeaponDataSO 的 Spawn Points；未配置对应点位时使用武器根节点。")]
     [SerializeField] private int spawnPointIndex;
-    [Tooltip("直接引用要发射的弹射物定义资源。")]
+    [Tooltip("直接引用要发射的弹射物定义资源。定义内部持有最终要实例化的弹射物预制体。")]
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
     [Tooltip("Burst 分组 id。用于避免同一 burst 重复启动。")]
     [SerializeField] private int burstId;

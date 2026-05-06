@@ -62,7 +62,7 @@ public class EntityAnimationConfig : ScriptableObject
 
     [NonSerialized] public int DeathHash;
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         RefreshHashes();
     }
@@ -72,7 +72,7 @@ public class EntityAnimationConfig : ScriptableObject
         RefreshHashes();
     }
 
-    private void RefreshHashes()
+    protected virtual void RefreshHashes()
     {
         IdleHash = Animator.StringToHash(Idle);
         MoveHash = Animator.StringToHash(Move);

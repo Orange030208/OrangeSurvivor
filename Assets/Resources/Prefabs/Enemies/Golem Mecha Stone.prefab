@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.01
+      objectReference: {fileID: 0}
     - target: {fileID: 567385469487708262, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_Controller
       value: 
@@ -92,6 +100,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4122921574283497076}
+    - targetCorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7400674358763836291}
+    - targetCorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5680699783468211375}
   m_SourcePrefab: {fileID: 100100000, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
 --- !u!1 &2112158018104226032 stripped
 GameObject:
@@ -143,3 +157,67 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.3497037, y: 2.7355669}
   m_EdgeRadius: 0
+--- !u!114 &7400674358763836291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112158018104226032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7b55c7ecdb49a4a89fa5e6f9022861, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startWhenEnabled: 0
+  asynchronousLoad: 0
+  pauseWhenDisabled: 0
+  restartWhenComplete: 0
+  logTaskChanges: 0
+  group: 0
+  resetValuesOnRestart: 0
+  externalBehavior: {fileID: 0}
+  mBehaviorSource:
+    behaviorName: Behavior
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(330.6667,57.3333435)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(0.666687,117.333344)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(0,128.666656)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-760.195862,130.666748)"},"ID":3,"Name":"Sequence","Instant":true,"AbortTypeabortType":"LowerPriority","Children":[{"Type":"ShouldEnterBossPhase","NodeData":{"Offset":"(-100,210)"},"ID":4,"Name":"Should
+        Enter Boss Phase","Instant":true,"SharedIntcurrentPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":"CurrentPhase","IsShared":true,"Int32mValue":1},"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossPhaseTransition","NodeData":{"Offset":"(90,210)"},"ID":5,"Name":"Boss
+        Phase Transition","Instant":true,"SharedIntcurrentPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":"CurrentPhase","IsShared":true,"Int32mValue":1},"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-382.1957,126.666687)"},"ID":6,"Name":"Sequence","Instant":true,"AbortTypeabortType":"LowerPriority","Children":[{"Type":"CanUseBossShield","NodeData":{"Offset":"(-85.33331,210)"},"ID":7,"Name":"Can
+        Use Boss Shield","Instant":true,"SharedIntcurrentPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":"CurrentPhase","IsShared":true,"Int32mValue":1},"SharedIntminPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":3},"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossShieldCast","NodeData":{"Offset":"(65.333374,213.333374)"},"ID":9,"Name":"Boss
+        Shield Cast","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-53.5290222,130)"},"ID":10,"Name":"Sequence","Instant":true,"AbortTypeabortType":"LowerPriority","Children":[{"Type":"CanUseBossLaser","NodeData":{"Offset":"(-90,210)"},"ID":11,"Name":"Can
+        Use Boss Laser","Instant":true,"SharedIntcurrentPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":"CurrentPhase","IsShared":true,"Int32mValue":1},"SharedIntminPhase":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":2},"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossLaserCast","NodeData":{"Offset":"(70,210)"},"ID":13,"Name":"Boss
+        Laser Cast","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(291.137451,130)"},"ID":14,"Name":"Sequence","Instant":true,"AbortTypeabortType":"LowerPriority","Children":[{"Type":"CanUseBossMelee","NodeData":{"Offset":"(-90,210)"},"ID":15,"Name":"Can
+        Use Boss Melee","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossMeleeAttack","NodeData":{"Offset":"(90,210.000061)"},"ID":16,"Name":"Boss
+        Melee Attack","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(636.4708,130)"},"ID":17,"Name":"Sequence","Instant":true,"AbortTypeabortType":"LowerPriority","Children":[{"Type":"CanUseBossShoot","NodeData":{"Offset":"(-90,210)"},"ID":18,"Name":"Can
+        Use Boss Shoot","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossShootAttack","NodeData":{"Offset":"(90,210)"},"ID":19,"Name":"Boss
+        Shoot Attack","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]},{"Type":"BossChaseTarget","NodeData":{"Offset":"(839.0331,132.962769)"},"ID":20,"Name":"Boss
+        Chase Target","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}},{"Type":"BossIdle","NodeData":{"Offset":"(1004.36646,132.296082)"},"ID":21,"Name":"Boss
+        Idle","Instant":true,"SharedGameObjectownerObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedGameObjecttargetObject":{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":null},"SharedObjectbossDataObject":{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":null}}]}]},"Variables":[{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"Owner","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"Target","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedObject","Name":"BossData","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":"CurrentPhase","IsShared":true,"Int32mValue":1}]}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.1
+  gizmoViewMode: 2
+  showBehaviorDesignerGizmo: 1
+--- !u!114 &5680699783468211375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112158018104226032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f8d7bec78e34bc3a8ceaa970afe00cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

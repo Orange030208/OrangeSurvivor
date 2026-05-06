@@ -65,8 +65,6 @@ public class LowHealthExplosionFeature : FeatureEffectBase
             return;
         }
         
-        UnityEngine.Debug.Log("爆炸了");
-
         Collider2D[] colliders = Physics2D.OverlapCircleAll(
             Context.Transform.position,
             explosionRadius,

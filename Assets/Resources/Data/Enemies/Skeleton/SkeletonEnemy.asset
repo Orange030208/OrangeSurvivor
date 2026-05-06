@@ -17,7 +17,21 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 6c0debfdbb6fc6645979fcc6454c3413, type: 2}
   animConfig: {fileID: 11400000, guid: 17d247971b3b4614886e12c75e799d6a, type: 2}
   damagedSfxKey: 401
-  attackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
   attackCommitNormalizedTime: 0.55
   attackFinishNormalizedTime: 0.95
-  chaseMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}
+  attackConfig:
+    actionId: Skeleton_Attack
+    attackSfxKey: 3
+    cooldown: 1
+    damageMultiplier: 1
+    rangeSource: 1
+    fixedRange: 1
+    rangeMultiplier: 1
+    forwardOffset: 0
+    projectileDefinition: {fileID: 0}
+  chaseMovement:
+    pattern: 1
+    circleSpeedRatio: 0
+    idealRangeRatio: 0
+    safeDistance: 0
+    retreatStepDistance: 0

@@ -1,0 +1,35 @@
+using System;
+using UnityEngine;
+
+[CreateAssetMenu(
+    fileName = "GolemMechaStoneBossAnimationConfig",
+    menuName = ScriptableObjectMenuPaths.GOLEM_MECHA_STONE_BOSS_ANIMATION_CONFIG)]
+public sealed class GolemMechaStoneBossAnimationConfig : EntityAnimationConfig
+{
+    [Header("Golem Mecha Stone Boss States")]
+    public string Melee = "Melee";
+    public string Shoot = "Shoot";
+    public string LaserCast = "LaserCast";
+    public string ShieldCast = "ShieldCast";
+    public string Immune = "Immune";
+    public string Glow = "Glow";
+
+    [NonSerialized] public int MeleeHash;
+    [NonSerialized] public int ShootHash;
+    [NonSerialized] public int LaserCastHash;
+    [NonSerialized] public int ShieldCastHash;
+    [NonSerialized] public int ImmuneHash;
+    [NonSerialized] public int GlowHash;
+
+    protected override void RefreshHashes()
+    {
+        base.RefreshHashes();
+
+        MeleeHash = Animator.StringToHash(Melee);
+        ShootHash = Animator.StringToHash(Shoot);
+        LaserCastHash = Animator.StringToHash(LaserCast);
+        ShieldCastHash = Animator.StringToHash(ShieldCast);
+        ImmuneHash = Animator.StringToHash(Immune);
+        GlowHash = Animator.StringToHash(Glow);
+    }
+}

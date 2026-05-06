@@ -30,10 +30,24 @@ MonoBehaviour:
   - propType: 4
     modifierType: 3
     value: 500
-  attackDefinition: {fileID: 11400000, guid: f8b45f5a8c2843ed8872cbf19421cdb1, type: 2}
-  postChargeAttackHitShape: {fileID: 11400000, guid: 9f4b3596ad8b4665b6f7cc08e1c54f02, type: 2}
   postChargeAttackModifiers:
   - propType: 15
     modifierType: 3
     value: 50
-  chaseMoveStrategy: {fileID: 11400000, guid: c6ad2b87b25960040b6328d00ba09f72, type: 2}
+  attackConfig:
+    actionId: Golem_Attack
+    attackSfxKey: 3
+    cooldown: 1
+    damageMultiplier: 1
+    rangeSource: 1
+    fixedRange: 1
+    rangeMultiplier: 1
+    forwardOffset: 0
+    projectileDefinition: {fileID: 0}
+  postChargeAttackForwardOffset: 0
+  chaseMovement:
+    pattern: 1
+    circleSpeedRatio: 0
+    idealRangeRatio: 0
+    safeDistance: 0
+    retreatStepDistance: 0
