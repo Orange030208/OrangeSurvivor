@@ -22,8 +22,7 @@ public sealed class CanUseBossLaser : GolemMechaStoneBossConditionalBase
             return TaskStatus.Failure;
         }
 
-        float sqrDistance = (TargetEntity.Center - OwnerEnemy.Center).sqrMagnitude;
-        return sqrDistance <= BossData.LaserRange * BossData.LaserRange
+        return TargetEntity.IsColliderWithinRange(OwnerEnemy.Center, BossData.LaserRange)
             ? TaskStatus.Success
             : TaskStatus.Failure;
     }
