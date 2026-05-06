@@ -9,26 +9,24 @@ public class ProjectileDefinitionSO : ScriptableObject
     [Tooltip("在检视面板中显示的易读名称，供策划和调试使用")]
     [SerializeField] private string displayName;
 
-    [Header("模板")]
-    [Tooltip("选择用于解析运行时子弹预制体的共享行为模板")]
-    [SerializeField] private ProjectileTemplateKind templateKind = ProjectileTemplateKind.Common;
-    [Tooltip("可选的预制体覆盖。常规情况留空，优先使用共享模板路径")]
+    [Header("Prefab")]
+    [Tooltip("运行时要实例化的弹射物预制体。攻击链路统一通过该引用生成弹体实例。")]
     [SerializeField] private Projectile projectilePrefab;
 
     [Header("运行时")]
     [Tooltip("对发射上下文的基础伤害施加的倍率")]
     [SerializeField] private float damageMultiplier = 1f;
-    [Tooltip("对模板预制体的基础子弹速度施加的倍率")]
+    [Tooltip("对预制体基础子弹速度施加的倍率")]
     [SerializeField] private float speedMultiplier = 1f;
-    [Tooltip("对子弹过期前的模板基础生命周期施加的倍率")]
+    [Tooltip("对预制体基础生命周期施加的倍率")]
     [SerializeField] private float lifetimeMultiplier = 1f;
     [Tooltip("对生成的子弹根节点施加的统一缩放倍率")]
     [SerializeField] private float scaleMultiplier = 1f;
 
     [Header("表现效果")]
-    [Tooltip("为模板的精灵渲染器提供的可选精灵覆盖")]
+    [Tooltip("为预制体的精灵渲染器提供的可选精灵覆盖")]
     [SerializeField] private Sprite sprite;
-    [Tooltip("发射时注入到模板动画器的可选动画控制器")]
+    [Tooltip("发射时注入到预制体动画器的可选动画控制器")]
     [SerializeField] private RuntimeAnimatorController animatorController;
     [Tooltip("为子弹精灵渲染器提供的可选材质覆盖")]
     [SerializeField] private Material material;
@@ -55,9 +53,7 @@ public class ProjectileDefinitionSO : ScriptableObject
 
     public string Id => id;
     public string DisplayName => displayName;
-    public ProjectileTemplateKind TemplateKind => templateKind;
-    public Projectile PrefabOverride => projectilePrefab;
-    public Projectile ProjectilePrefab => ProjectileFactory.ResolveProjectilePrefab(this);
+    public Projectile ProjectilePrefab => projectilePrefab;
     public float DamageMultiplier => Mathf.Max(0f, damageMultiplier);
     public float SpeedMultiplier => Mathf.Max(0f, speedMultiplier);
     public float LifetimeMultiplier => Mathf.Max(0f, lifetimeMultiplier);

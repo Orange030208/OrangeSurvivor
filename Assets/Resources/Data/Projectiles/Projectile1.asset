@@ -15,7 +15,7 @@ MonoBehaviour:
   id:
   displayName:
   templateKind: 0
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 814900668632867821, guid: c6bd5914f8cc08249b86a9dee2d596e3, type: 3}
   damageMultiplier: 1
   speedMultiplier: 1
   lifetimeMultiplier: 1

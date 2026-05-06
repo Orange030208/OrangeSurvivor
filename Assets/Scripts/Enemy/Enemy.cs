@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEntityAttackDefinitionProvider
+public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 {
     private IAnimatable animComponent;
     private HealthComponent healthComponent;
@@ -30,9 +29,6 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IEnti
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
     public EntityAnimationConfig AnimationConfig => enemyData.AnimConfig;
-
-    public IReadOnlyList<EnemyAttackDefinitionSO> AttackDefinitions =>
-        enemyData != null ? enemyData.GetAttackDefinitions() : Array.Empty<EnemyAttackDefinitionSO>();
 
     private void Awake()
     {

@@ -14,6 +14,7 @@ public static class ScriptableObjectMenuPaths
     public const string FLY_FOREST = GAMEPLAY_ROOT + "Enemies/Fly Forest Enemy";
     public const string SKELETON_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Enemy";
     public const string GOLEM_ENEMY = GAMEPLAY_ROOT + "Enemies/Golem Enemy";
+    public const string GOLEM_MECHA_STONE_BOSS = GAMEPLAY_ROOT + "Enemies/Golem Mecha Stone Boss";
     public const string BASE_PROP_GROUP = GAMEPLAY_ROOT + "Player/Base Prop Group";
     public const string PLAYER_LEVEL_CONFIG = GAMEPLAY_ROOT + "Player/Level Config";
     public const string UPGRADE_CARD = GAMEPLAY_ROOT + "Upgrades/Upgrade Card";
@@ -33,6 +34,7 @@ public static class ScriptableObjectMenuPaths
     public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
+    public const string GOLEM_MECHA_STONE_BOSS_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Golem Mecha Stone Boss Animation Config";
     public const string KNOCKBACK_RECEIVER_CONFIG = ENTITY_ROOT + "Combat/Knockback Receiver Config";
     public const string ENEMY_ATTACK_DEFINITION = ENTITY_ROOT + "Combat/Enemy Attack Definition";
     public const string CIRCLE_ATTACK_HIT_SHAPE = ENTITY_ROOT + "Combat/Hit Shapes/Circle Hit Shape";

@@ -13,7 +13,6 @@ public static class ResourcesManager
     // 属性展示目录由 ResourcesManager 统一管理，资产需放在 Assets/Resources/Data/Prop Presentation Catalog.asset。
     private const string PROP_PRESENTATION_CATALOG_PATH = "Data/Prop Presentation Catalog";
     private const string STAGE_DEFINITION_DATA_PATH = "Data/Waves/Stage Definition";
-    private const string PROJECTILE_COMMON_PREFAB_PATH = "Prefabs/Projectiles/Projectile Common";
     private const string PLAYER_PREFAB_PATH = "Prefabs/Player";
     private const string DEFAULT_PLAYER_PREFAB_NAME = "Character";
 
@@ -27,7 +26,6 @@ public static class ResourcesManager
     private static StageDefinitionSO stageDefinition;
     private const string ITEM_QUALITY_ICON_EFFECT_MATERIAL_PATH = "Materials/UI/WeaponQualityIconEffect";
 
-    private static readonly Dictionary<ProjectileTemplateKind, Projectile> projectilePrefabCache = new();
     private static Material cachedItemQualityIconEffectMaterial;
 
     public static Sprite GetPropIcon(PropType propType)
@@ -167,27 +165,6 @@ public static class ResourcesManager
     {
         LoadCharacterData();
         return characters ?? Array.Empty<CharacterDataSO>();
-    }
-
-    public static Projectile GetProjectilePrefab(ProjectileTemplateKind templateKind)
-    {
-        if (projectilePrefabCache.TryGetValue(templateKind, out Projectile cachedPrefab) && cachedPrefab != null)
-        {
-            return cachedPrefab;
-        }
-
-        Projectile loadedPrefab = templateKind switch
-        {
-            ProjectileTemplateKind.Common => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
-            ProjectileTemplateKind.Piercing => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
-            ProjectileTemplateKind.Homing => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
-            ProjectileTemplateKind.Explosive => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
-            ProjectileTemplateKind.Boomerang => LoadProjectilePrefab(PROJECTILE_COMMON_PREFAB_PATH),
-            _ => throw new ArgumentOutOfRangeException(nameof(templateKind), templateKind, "Unsupported projectile template kind.")
-        };
-
-        projectilePrefabCache[templateKind] = loadedPrefab;
-        return loadedPrefab;
     }
 
     public static Player GetPlayerPrefab(string prefabName)
@@ -333,11 +310,4 @@ public static class ResourcesManager
         return cachedItemQualityIconEffectMaterial;
     }
 
-    private static Projectile LoadProjectilePrefab(string resourcePath)
-    {
-        Projectile prefab = Resources.Load<Projectile>(resourcePath);
-        return prefab != null
-            ? prefab
-            : throw new MissingReferenceException($"{nameof(ResourcesManager)} requires a {nameof(Projectile)} resource at {resourcePath}.");
-    }
 }

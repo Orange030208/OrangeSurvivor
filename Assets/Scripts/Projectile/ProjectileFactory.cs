@@ -11,12 +11,13 @@ public static class ProjectileFactory
             throw new ArgumentNullException(nameof(projectileDefinition), $"{nameof(ProjectileFactory)} requires a non-null {nameof(ProjectileDefinitionSO)}.");
         }
 
-        if (projectileDefinition.PrefabOverride != null)
+        if (projectileDefinition.ProjectilePrefab == null)
         {
-            return projectileDefinition.PrefabOverride;
+            throw new MissingReferenceException(
+                $"{nameof(ProjectileDefinitionSO)} '{projectileDefinition.name}' requires a valid {nameof(Projectile)} prefab reference.");
         }
 
-        return ResourcesManager.GetProjectilePrefab(projectileDefinition.TemplateKind);
+        return projectileDefinition.ProjectilePrefab;
     }
 
     public static Projectile CreateProjectile(

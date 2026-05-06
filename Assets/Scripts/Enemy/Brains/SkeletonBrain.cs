@@ -15,7 +15,8 @@ public class SkeletonBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private SkeletonEnemySO enemyData;
-    private MovementStrategyBase currentMoveStrategy;
+    private IEnemyRuntimeMovementStrategy chaseMoveStrategy;
+    private IEnemyRuntimeAttackStrategy attackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -37,7 +38,7 @@ public class SkeletonBrain : EnemyBrain
 
     protected override void OnBrainStart()
     {
-        ValidateConfig();
+        BuildRuntimeStrategies();
         RegisterStates();
         stateMachine.ChangeState(SkeletonAIState.Chase);
     }
@@ -59,22 +60,11 @@ public class SkeletonBrain : EnemyBrain
         stateMachine.RegisterState(new AttackState(this));
     }
 
-    private void ValidateConfig()
+    private void BuildRuntimeStrategies()
     {
-        if (enemyData.chaseMoveStrategy == null)
-        {
-            throw new MissingReferenceException($"{nameof(SkeletonEnemySO)} on {enemyData.name} is missing {nameof(enemyData.chaseMoveStrategy)}.");
-        }
-
-        if (enemyData.AttackDefinition == null)
-        {
-            throw new MissingReferenceException($"{nameof(SkeletonEnemySO)} on {enemyData.name} is missing {nameof(enemyData.AttackDefinition)}.");
-        }
-    }
-
-    private void SetMoveStrategy(MovementStrategyBase strategy)
-    {
-        currentMoveStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+        chaseMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.ChaseMovement);
+        IEnemyRuntimeDetectionStrategy detectionStrategy = EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, enemyData.AttackConfig);
+        attackStrategy = EnemyRuntimeStrategyFactory.CreateDirectDamageAttackStrategy(owner, attackController, propertiesManager, enemyData.AttackConfig, detectionStrategy);
     }
 
     private sealed class IdleState : StateBase<SkeletonAIState>
@@ -101,14 +91,14 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target);
+            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Chase);
                 return;
             }
             
-            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Attack);
             }
@@ -126,7 +116,6 @@ public class SkeletonBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.chaseMoveStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -140,8 +129,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Attack);
             }
@@ -154,7 +142,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.chaseMoveStrategy.ExecuteMove(brain.target);
             brain.FaceTarget();
         }
     }
@@ -184,8 +172,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (!brain.attackController.CanUse(brain.enemyData.AttackDefinition) ||
-                !brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
+            if (!brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Chase);
                 return;
@@ -219,11 +206,7 @@ public class SkeletonBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (brain.attackController.CanUse(brain.enemyData.AttackDefinition) &&
-                    brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
-                {
-                    brain.attackController.TryUse(brain.enemyData.AttackDefinition, brain.target);
-                }
+                brain.attackStrategy.TryExecute(brain.target);
             }
 
             if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
@@ -245,7 +228,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.IsInAttackRange(brain.enemyData.AttackDefinition, brain.target))
+            if (brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target))
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Idle);
             }

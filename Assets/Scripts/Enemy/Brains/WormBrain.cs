@@ -16,8 +16,12 @@ public class WormBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private WormEnemySO enemyData;
-    private MovementStrategyBase currentMoveStrategy;
-    private EnemyAttackDefinitionSO currentAttackDefinition;
+    private IEnemyRuntimeMovementStrategy currentMoveStrategy;
+    private IEnemyRuntimeMovementStrategy approachMoveStrategy;
+    private IEnemyRuntimeMovementStrategy retreatMoveStrategy;
+    private IEnemyRuntimeAttackStrategy currentAttackStrategy;
+    private IEnemyRuntimeAttackStrategy attackStrategy;
+    private IEnemyRuntimeAttackStrategy retreatAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -39,7 +43,7 @@ public class WormBrain : EnemyBrain
 
     protected override void OnBrainStart()
     {
-        ValidateStrategies();
+        BuildRuntimeStrategies();
         RegisterStates();
         stateMachine.ChangeState(WormAIState.Approach);
     }
@@ -62,37 +66,38 @@ public class WormBrain : EnemyBrain
         stateMachine.RegisterState(new AttackState(this));
     }
 
-    private void ValidateStrategies()
+    private void BuildRuntimeStrategies()
     {
-        if (enemyData.approachMoveStrategy == null)
-        {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.approachMoveStrategy)}.");
-        }
+        approachMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.approachMovement);
+        retreatMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
 
-        if (enemyData.retreatMoveStrategy == null)
-        {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.retreatMoveStrategy)}.");
-        }
+        IEnemyRuntimeDetectionStrategy attackDetectionStrategy =
+            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.attackConfig);
+        IEnemyRuntimeDetectionStrategy retreatAttackDetectionStrategy =
+            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.retreatAttackConfig);
 
-        if (enemyData.attackDefinition == null)
-        {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.attackDefinition)}.");
-        }
-
-        if (enemyData.retreatAttackDefinition == null)
-        {
-            throw new MissingReferenceException($"{nameof(WormEnemySO)} on {enemyData.name} is missing {nameof(enemyData.retreatAttackDefinition)}.");
-        }
+        attackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+            owner,
+            attackController,
+            propertiesManager,
+            enemyData.attackConfig,
+            attackDetectionStrategy);
+        retreatAttackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+            owner,
+            attackController,
+            propertiesManager,
+            enemyData.retreatAttackConfig,
+            retreatAttackDetectionStrategy);
     }
 
-    private void SetMoveStrategy(MovementStrategyBase strategy)
+    private void SetMoveStrategy(IEnemyRuntimeMovementStrategy strategy)
     {
         currentMoveStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
     }
 
-    private void SetAttackDefinition(EnemyAttackDefinitionSO attackDefinition)
+    private void SetAttackStrategy(IEnemyRuntimeAttackStrategy attackStrategy)
     {
-        currentAttackDefinition = attackDefinition ?? throw new ArgumentNullException(nameof(attackDefinition));
+        currentAttackStrategy = attackStrategy ?? throw new ArgumentNullException(nameof(attackStrategy));
     }
 
     private float GetDistanceToTarget()
@@ -132,14 +137,14 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target);
+            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(WormAIState.Approach);
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.attackDefinition))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
             }
@@ -157,7 +162,7 @@ public class WormBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.approachMoveStrategy);
+            brain.SetMoveStrategy(brain.approachMoveStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -178,8 +183,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
             }
@@ -192,7 +196,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceTarget();
         }
     }
@@ -208,8 +212,8 @@ public class WormBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            brain.SetMoveStrategy(brain.enemyData.retreatMoveStrategy);
-            brain.SetAttackDefinition(brain.enemyData.retreatAttackDefinition);
+            brain.SetMoveStrategy(brain.retreatMoveStrategy);
+            brain.SetAttackStrategy(brain.retreatAttackStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
 
@@ -228,8 +232,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackController.CanUse(brain.enemyData.attackDefinition) &&
-                brain.attackController.IsInAttackRange(brain.enemyData.attackDefinition, brain.target))
+            if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
                 return;
@@ -245,7 +248,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            brain.currentMoveStrategy.ExecuteMove(brain.currentMovable, brain.owner, brain.target, brain.enemyData);
+            brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceMoveDirection();
         }
     }
@@ -266,7 +269,7 @@ public class WormBrain : EnemyBrain
         {
             attackCommitted = false;
             attackFinished = false;
-            brain.SetAttackDefinition(brain.enemyData.attackDefinition);
+            brain.SetAttackStrategy(brain.attackStrategy);
             brain.FaceTarget();
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
             brain.currentMovable.StopMoving();
@@ -287,11 +290,8 @@ public class WormBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (!attackFinished &&
-                    brain.attackController.CanUse(brain.currentAttackDefinition) &&
-                    brain.attackController.IsInAttackRange(brain.currentAttackDefinition, brain.target))
+                if (!attackFinished && brain.currentAttackStrategy.TryExecute(brain.target))
                 {
-                    brain.attackController.TryUse(brain.currentAttackDefinition, brain.target);
                     attackFinished = true;
                 }
             }
@@ -304,7 +304,7 @@ public class WormBrain : EnemyBrain
             {
                 brain.stateMachine.ChangeState(WormAIState.Retreat);
             }
-            else if (!brain.attackController.IsInAttackRange(brain.currentAttackDefinition, brain.target))
+            else if (!brain.currentAttackStrategy.DetectionStrategy.IsTargetInRange(brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Approach);
             }

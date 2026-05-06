@@ -11,6 +11,7 @@ public class Projectile : Entity, IProjectile
     [SerializeField] protected float maxLifetime = 5f;
     [SerializeField] protected int maxHitCount = 1;
     [SerializeField] protected Rigidbody2D rb;
+
     /// <summary>
     /// 防止刚生成就接触一群敌人
     /// </summary>
@@ -216,6 +217,13 @@ public class Projectile : Entity, IProjectile
     private bool IsInLayerMask(int layer, LayerMask layerMask)
     {
         return (layerMask.value & (1 << layer)) != 0;
+    }
+
+    protected virtual void OnValidate()
+    {
+        moveSpeed = Mathf.Max(0f, moveSpeed);
+        maxLifetime = Mathf.Max(0f, maxLifetime);
+        maxHitCount = Mathf.Max(1, maxHitCount);
     }
 }
 
