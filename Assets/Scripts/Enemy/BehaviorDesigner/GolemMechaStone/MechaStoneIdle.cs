@@ -2,7 +2,7 @@ using BehaviorDesigner.Runtime.Tasks;
 
 [TaskDescription("Stops the boss and plays the configured idle animation.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossIdle : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneIdle : MechaStoneTaskBase
 {
     public override void OnStart()
     {

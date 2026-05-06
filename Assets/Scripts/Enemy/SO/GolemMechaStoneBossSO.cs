@@ -29,20 +29,34 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(0f)] private float laserWindupDuration = 0.8f;
     [SerializeField, Min(0f)] private float laserDirectionLockLeadTime = 0.25f;
     [SerializeField, Min(0f)] private float laserDuration = 0.75f;
+    [Tooltip("Legacy range value kept for serialized compatibility. Laser length is now resolved by hit tracing.")]
     [SerializeField, Min(0f)] private float laserRange = 9f;
     [SerializeField, Min(0.01f)] private float laserWidth = 1.2f;
+    [Tooltip("Only used to draw the beam off-screen when no hittable target is found. This is not a gameplay range limit.")]
+    [SerializeField, Min(0.1f)] private float laserNoHitVisualLength = 40f;
     [SerializeField, Min(0.01f)] private float laserDamageInterval = 0.25f;
     [SerializeField, Min(0f)] private float laserDamageMultiplier = 0.65f;
     [SerializeField] private Color laserWindupColor = new(1f, 0.75f, 0.2f, 0.45f);
     [SerializeField] private Color laserActiveColor = new(0.25f, 0.9f, 1f, 0.9f);
+    [SerializeField] private Color laserCoreColor = new(1f, 1f, 1f, 0.95f);
     [SerializeField, Min(0.01f)] private float laserWindupVisualWidth = 0.18f;
     [SerializeField, Min(0.01f)] private float laserActiveVisualWidthMultiplier = 1f;
+    [SerializeField, Range(0.05f, 1f)] private float laserCoreVisualWidthMultiplier = 0.35f;
     [SerializeField] private int laserSortingOrder = 20;
+    [Tooltip("Deprecated. The current laser uses clean LineRenderer colors instead of tiled beam textures.")]
+    [SerializeField] private Sprite laserBeamSprite;
+    [Tooltip("Deprecated. Kept only to preserve existing serialized data.")]
+    [SerializeField, Min(0.01f)] private float laserTextureWorldLength = 2f;
+    [Tooltip("Deprecated. Kept only to preserve existing serialized data.")]
+    [SerializeField] private float laserScrollSpeed = 2.5f;
     [SerializeField, Min(0f)] private float laserCooldown = 8f;
+    [SerializeField, Min(1)] private int laserMinPhase = 2;
+    [SerializeField] private GolemMechaStoneLaserVisual laserVisualPrefab;
 
     [Header("Shield")]
     [SerializeField, Min(0f)] private float shieldDuration = 3f;
     [SerializeField, Min(0f)] private float shieldCooldown = 12f;
+    [SerializeField, Min(1)] private int shieldMinPhase = 3;
     [SerializeField] private List<PropModifierData> shieldModifiers = new()
     {
         new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 40f),
@@ -81,16 +95,25 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public float LaserDuration => laserDuration;
     public float LaserRange => laserRange;
     public float LaserWidth => laserWidth;
+    public float LaserNoHitVisualLength => Mathf.Max(0.1f, laserNoHitVisualLength);
     public float LaserDamageInterval => laserDamageInterval;
     public float LaserDamageMultiplier => laserDamageMultiplier;
     public Color LaserWindupColor => laserWindupColor;
     public Color LaserActiveColor => laserActiveColor;
+    public Color LaserCoreColor => laserCoreColor;
     public float LaserWindupVisualWidth => laserWindupVisualWidth;
     public float LaserActiveVisualWidth => laserWidth * Mathf.Max(0.01f, laserActiveVisualWidthMultiplier);
+    public float LaserCoreVisualWidth => LaserActiveVisualWidth * Mathf.Clamp(laserCoreVisualWidthMultiplier, 0.05f, 1f);
     public int LaserSortingOrder => laserSortingOrder;
+    public Sprite LaserBeamSprite => laserBeamSprite;
+    public float LaserTextureWorldLength => Mathf.Max(0.01f, laserTextureWorldLength);
+    public float LaserScrollSpeed => laserScrollSpeed;
     public float LaserCooldown => laserCooldown;
+    public int LaserMinPhase => Mathf.Max(1, laserMinPhase);
+    public GolemMechaStoneLaserVisual LaserVisualPrefab => laserVisualPrefab;
     public float ShieldDuration => shieldDuration;
     public float ShieldCooldown => shieldCooldown;
+    public int ShieldMinPhase => Mathf.Max(1, shieldMinPhase);
     public IReadOnlyList<PropModifierData> ShieldModifiers => shieldModifiers;
     public AudioSfxKey MeleeAttackSfxKey => meleeAttackSfxKey;
     public float MeleeCooldown => Mathf.Max(0f, meleeCooldown);
@@ -146,13 +169,18 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         laserDuration = Mathf.Max(0f, laserDuration);
         laserRange = Mathf.Max(0f, laserRange);
         laserWidth = Mathf.Max(0.01f, laserWidth);
+        laserNoHitVisualLength = Mathf.Max(0.1f, laserNoHitVisualLength);
         laserDamageInterval = Mathf.Max(0.01f, laserDamageInterval);
         laserDamageMultiplier = Mathf.Max(0f, laserDamageMultiplier);
         laserWindupVisualWidth = Mathf.Max(0.01f, laserWindupVisualWidth);
         laserActiveVisualWidthMultiplier = Mathf.Max(0.01f, laserActiveVisualWidthMultiplier);
+        laserCoreVisualWidthMultiplier = Mathf.Clamp(laserCoreVisualWidthMultiplier, 0.05f, 1f);
+        laserTextureWorldLength = Mathf.Max(0.01f, laserTextureWorldLength);
         laserCooldown = Mathf.Max(0f, laserCooldown);
+        laserMinPhase = Mathf.Max(1, laserMinPhase);
         shieldDuration = Mathf.Max(0f, shieldDuration);
         shieldCooldown = Mathf.Max(0f, shieldCooldown);
+        shieldMinPhase = Mathf.Max(1, shieldMinPhase);
         meleeCooldown = Mathf.Max(0f, meleeCooldown);
         meleeDamageMultiplier = Mathf.Max(0f, meleeDamageMultiplier);
         meleeFixedRange = Mathf.Max(0f, meleeFixedRange);

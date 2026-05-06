@@ -1,8 +1,8 @@
 using BehaviorDesigner.Runtime.Tasks;
 
-[TaskDescription("Plays the boss melee animation and commits the configured melee attack once.")]
+[TaskDescription("Plays the Mecha Stone melee animation and commits the configured melee attack once.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
 {
     private bool attackCommitted;
     private Entity executionTarget;
@@ -17,6 +17,7 @@ public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
             return;
         }
 
+        AcquireActionLock();
         StopMoving();
         FaceTarget();
         Animatable?.PlayState(BossAnimationConfig.MeleeHash);
@@ -55,5 +56,6 @@ public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
     public override void OnEnd()
     {
         StopMoving();
+        ReleaseActionLock();
     }
 }

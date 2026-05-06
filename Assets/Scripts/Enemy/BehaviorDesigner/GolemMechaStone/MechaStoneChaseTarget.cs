@@ -2,7 +2,7 @@ using BehaviorDesigner.Runtime.Tasks;
 
 [TaskDescription("Moves the boss toward the target using the configured chase strategy.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossChaseTarget : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
 {
     public override void OnStart()
     {

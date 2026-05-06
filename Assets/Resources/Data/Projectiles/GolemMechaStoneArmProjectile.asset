@@ -11,10 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5f21ea603ecfe74f8c2bbd0188a6bbc, type: 3}
   m_Name: GolemMechaStoneArmProjectile
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   id: golem_mecha_stone_arm_projectile
   displayName: Golem Mecha Stone Arm Projectile
-  templateKind: 0
   projectilePrefab: {fileID: 814900668632867821, guid: c6bd5914f8cc08249b86a9dee2d596e3, type: 3}
   damageMultiplier: 1
   speedMultiplier: 1.15
@@ -28,7 +27,7 @@ MonoBehaviour:
   debugColor: {r: 0.35, g: 0.9, b: 1, a: 1}
   launchSfxKey: 0
   launchVfxPrefab: {fileID: 0}
-  impactVfxPrefab: {fileID: 8045101923008439785, guid: c38c59187e252e64cb479d7187288073, type: 3}
+  impactVfxPrefab: {fileID: 7504813210540313443, guid: 8559ecc9ca7105040897d0e1df3a538f, type: 3}
   useDirectionFacing: 1
   rotationOffset: 0
-  launchAnimationTrigger:
+  launchAnimationTrigger: 

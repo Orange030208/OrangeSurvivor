@@ -5,25 +5,34 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyAttackController))]
 public sealed class GolemMechaStoneBossBrain : EnemyBrain
 {
+    private const string DEFAULT_LASER_ORIGIN_NAME = "LaserOrigin";
     private const string OWNER_VARIABLE = "Owner";
     private const string TARGET_VARIABLE = "Target";
     private const string BOSS_DATA_VARIABLE = "BossData";
-    private const string CURRENT_PHASE_VARIABLE = "CurrentPhase";
 
     private BehaviorTree behaviorTree;
     private EnemyAttackController attackController;
     private GolemMechaStoneBossSO bossData;
+    [SerializeField] private Transform laserOriginTransform;
+    [SerializeField, Min(1)] private int initialPhase = 1;
     private IMoveStrategy chaseMovementStrategy;
     private IRangeDetectionStrategy meleeDetectionStrategy;
     private IRangeDetectionStrategy shootDetectionStrategy;
     private IAttackStrategy meleeAttackStrategy;
     private IAttackStrategy shootAttackStrategy;
+    private int currentPhase;
+    private int runningActionCount;
 
     public IMoveStrategy ChaseMovementStrategy => chaseMovementStrategy;
     public IRangeDetectionStrategy MeleeDetectionStrategy => meleeDetectionStrategy;
     public IRangeDetectionStrategy ShootDetectionStrategy => shootDetectionStrategy;
     public IAttackStrategy MeleeAttackStrategy => meleeAttackStrategy;
     public IAttackStrategy ShootAttackStrategy => shootAttackStrategy;
+    public Transform LaserOriginTransform => laserOriginTransform != null ? laserOriginTransform : owner != null ? owner.transform : null;
+    public int CurrentPhase => currentPhase;
+    public bool IsActionRunning => runningActionCount > 0;
+    public bool CanUseLaser => bossData != null && currentPhase >= bossData.LaserMinPhase;
+    public bool CanUseShield => bossData != null && currentPhase >= bossData.ShieldMinPhase;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -60,6 +69,9 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
                 $"{nameof(GolemMechaStoneBossBrain)} requires {nameof(GolemMechaStoneBossSO)}.{nameof(GolemMechaStoneBossSO.ShootProjectileDefinition)}.");
         }
 
+        ResolveLaserOriginTransform();
+        ResetPhase();
+
         BuildRuntimeStrategies();
         BindSharedVariables();
     }
@@ -78,6 +90,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     public override void StartBrain()
     {
         base.StartBrain();
+        ResetPhase();
         BindSharedVariables();
         behaviorTree?.EnableBehavior();
     }
@@ -86,6 +99,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     {
         behaviorTree?.DisableBehavior(false);
         currentMovable?.StopMoving();
+        ClearActionLocks();
         base.StopBrain();
     }
 
@@ -93,12 +107,54 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     {
         behaviorTree?.DisableBehavior(false);
         currentMovable?.StopMoving();
+        ClearActionLocks();
     }
 
     public override void SetTarget(Entity newTarget)
     {
         base.SetTarget(newTarget);
         behaviorTree?.SetVariableValue(TARGET_VARIABLE, newTarget != null ? newTarget.gameObject : null);
+    }
+
+    public bool ShouldEnterNextPhase()
+    {
+        return ResolveNextPhase() > currentPhase;
+    }
+
+    public int ResolveNextPhase()
+    {
+        if (bossData == null)
+        {
+            return currentPhase;
+        }
+
+        float healthRatio = ResolveHealthRatio();
+        if (currentPhase < 2 && healthRatio <= bossData.PhaseTwoHealthRatio)
+        {
+            return 2;
+        }
+
+        if (currentPhase < 3 && healthRatio <= bossData.PhaseThreeHealthRatio)
+        {
+            return 3;
+        }
+
+        return currentPhase;
+    }
+
+    public void CommitPhase(int phase)
+    {
+        currentPhase = Mathf.Max(initialPhase, phase);
+    }
+
+    public void BeginAction()
+    {
+        runningActionCount++;
+    }
+
+    public void EndAction()
+    {
+        runningActionCount = Mathf.Max(0, runningActionCount - 1);
     }
 
     private void BuildRuntimeStrategies()
@@ -121,6 +177,17 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
             bossData.ShootProjectileDefinition);
     }
 
+    private void ResolveLaserOriginTransform()
+    {
+        if (laserOriginTransform != null || owner == null)
+        {
+            return;
+        }
+
+        Transform child = owner.transform.Find(DEFAULT_LASER_ORIGIN_NAME);
+        laserOriginTransform = child != null ? child : owner.transform;
+    }
+
     private void BindSharedVariables()
     {
         if (behaviorTree == null)
@@ -131,11 +198,25 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
         behaviorTree.SetVariableValue(OWNER_VARIABLE, owner != null ? owner.gameObject : null);
         behaviorTree.SetVariableValue(TARGET_VARIABLE, target != null ? target.gameObject : null);
         behaviorTree.SetVariableValue(BOSS_DATA_VARIABLE, bossData);
+    }
 
-        object phaseValue = behaviorTree.GetVariable(CURRENT_PHASE_VARIABLE)?.GetValue();
-        if (phaseValue == null || (phaseValue is int currentPhase && currentPhase <= 0))
+    private void ResetPhase()
+    {
+        currentPhase = Mathf.Max(1, initialPhase);
+    }
+
+    private void ClearActionLocks()
+    {
+        runningActionCount = 0;
+    }
+
+    private float ResolveHealthRatio()
+    {
+        if (healthComponent == null || healthComponent.MaxHealth <= Mathf.Epsilon)
         {
-            behaviorTree.SetVariableValue(CURRENT_PHASE_VARIABLE, 1);
+            return 1f;
         }
+
+        return Mathf.Clamp01(healthComponent.CurrentHealth / healthComponent.MaxHealth);
     }
 }

@@ -34,16 +34,25 @@ MonoBehaviour:
   laserDuration: 3
   laserRange: 9
   laserWidth: 1.2
+  laserNoHitVisualLength: 40
   laserDamageInterval: 0.25
   laserDamageMultiplier: 0.65
   laserWindupColor: {r: 1, g: 0.75, b: 0.2, a: 0.45}
   laserActiveColor: {r: 0.25, g: 0.9, b: 1, a: 0.9}
+  laserCoreColor: {r: 1, g: 1, b: 1, a: 0.95}
   laserWindupVisualWidth: 0.18
   laserActiveVisualWidthMultiplier: 1
+  laserCoreVisualWidthMultiplier: 0.35
   laserSortingOrder: 20
+  laserBeamSprite: {fileID: 21300000, guid: 7a92d812eb8b75e4291a5558bfdd7d90, type: 3}
+  laserTextureWorldLength: 2
+  laserScrollSpeed: 2.5
   laserCooldown: 8
+  laserMinPhase: 2
+  laserVisualPrefab: {fileID: 1867289574541625359, guid: 43f60aa1988c0474389602ddb36903c5, type: 3}
   shieldDuration: 3
   shieldCooldown: 12
+  shieldMinPhase: 3
   shieldModifiers:
   - propType: 25
     modifierType: 0

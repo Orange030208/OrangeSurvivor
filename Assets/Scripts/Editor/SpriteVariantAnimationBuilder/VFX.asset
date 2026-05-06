@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff429e42589e2854798ae1e13ce7058e, type: 3}
+  m_Name: VFX
+  m_EditorClassIdentifier: 
+  inputSource: {fileID: 2800000, guid: 936bddcef24f7884788530b17c8b6057, type: 3}
+  inputRoot: {fileID: 102900000, guid: 7b21ecffe42e63143a153d308789685f, type: 3}
+  spriteInputRootPath: Assets/Resources/Sprites
+  animationOutputRoot: {fileID: 102900000, guid: 506ce89bd2f8b3f4a96de0102b46b48f, type: 3}
+  animationOutputRootPath: Assets/Resources/Animation
+  prefabOutputRoot: {fileID: 102900000, guid: 8b47de111e3bc1d4fa56beb5e14af887, type: 3}
+  prefabOutputRootPath: Assets/Resources/Prefabs
+  outputRoot: {fileID: 0}
+  templatePrefab: {fileID: 6853986081789573359, guid: 1c465011f31210145805bf498edd009a, type: 3}
+  spriteRendererPath: 
+  assignControllerToPrefab: 1
+  assignPreviewSpriteToPrefab: 1
+  animationFrameRate: 12
+  spriteSortMode: 1
+  includeNestedTextureFolders: 0
+  loopClipsByDefault: 1
+  nonLoopingClipNames: []
+  overwriteExistingAssets: 1
+  removeStaleAnimatorStates: 1
+  deleteStaleAnimationClips: 0
+  selectGeneratedAssets: 1

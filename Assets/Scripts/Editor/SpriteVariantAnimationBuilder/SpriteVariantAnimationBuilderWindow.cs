@@ -30,7 +30,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     private Vector2 settingsScroll;
     private Vector2 previewScroll;
     private Editor settingsEditor;
-    private string lastReport = "点击扫描，预览输入根目录下的构建分组。";
+    private string lastReport = "点击扫描，预览输入源下的构建分组。";
 
     [MenuItem("Tools/Animation/图片动画变体构建器")]
     public static void OpenFromMenu()
@@ -41,16 +41,16 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         window.Show();
     }
 
-    [MenuItem("Assets/图片动画变体构建器/构建选中文件夹", true)]
-    private static bool ValidateBuildSelectedSpriteFolder()
+    [MenuItem("Assets/图片动画变体构建器/构建选中资源", true)]
+    private static bool ValidateBuildSelectedSpriteInput()
     {
         string path = AssetDatabase.GetAssetPath(Selection.activeObject);
         string spriteRootPath = GetConfiguredSpriteRootPath();
-        return AssetDatabase.IsValidFolder(path) && IsPathUnder(path, spriteRootPath);
+        return IsSupportedBuildInput(path) && IsPathAllowedByConfiguredRoot(path, spriteRootPath);
     }
 
-    [MenuItem("Assets/图片动画变体构建器/构建选中文件夹")]
-    private static void BuildSelectedSpriteFolder()
+    [MenuItem("Assets/图片动画变体构建器/构建选中资源")]
+    private static void BuildSelectedSpriteInput()
     {
         SpriteVariantAnimationBuilderWindow window =
             GetWindow<SpriteVariantAnimationBuilderWindow>(WINDOW_TITLE);
@@ -60,7 +60,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         string selectedPath = NormalizeAssetPath(AssetDatabase.GetAssetPath(Selection.activeObject));
         foreach (BuildFolderPreview preview in window.previews)
         {
-            window.selectedByFolder[preview.FolderPath] = preview.FolderPath == selectedPath;
+            window.selectedByFolder[preview.SelectionKey] = preview.SelectionKey == selectedPath;
         }
 
         window.BuildSelected();
@@ -231,7 +231,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         if (previews.Count == 0)
         {
             EditorGUILayout.HelpBox(
-                "没有找到可构建的文件夹。请在输入根目录下按“一个子文件夹一个变体”的方式放置图片。",
+                "没有找到可构建的输入源。可将输入源设为文件夹或单张图片；文件夹模式下按“一个子文件夹一个变体”放置图片，也支持根目录下直接放单张图片。",
                 MessageType.Warning);
         }
         else
@@ -263,20 +263,20 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
             GUILayout.FlexibleSpace();
 
             int selectedCount = previews.Count(preview =>
-                selectedByFolder.TryGetValue(preview.FolderPath, out bool selected) && selected);
+                selectedByFolder.TryGetValue(preview.SelectionKey, out bool selected) && selected);
             GUILayout.Label($"分组 {previews.Count} / 已选 {selectedCount}", EditorStyles.miniLabel);
         }
     }
 
     private void DrawPreviewRow(BuildFolderPreview preview)
     {
-        bool selected = selectedByFolder.TryGetValue(preview.FolderPath, out bool current) && current;
+        bool selected = selectedByFolder.TryGetValue(preview.SelectionKey, out bool current) && current;
 
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                selectedByFolder[preview.FolderPath] =
+                selectedByFolder[preview.SelectionKey] =
                     GUILayout.Toggle(selected, GUIContent.none, GUILayout.Width(20f));
                 EditorGUILayout.LabelField(preview.VariantName, EditorStyles.boldLabel, GUILayout.MinWidth(120f));
                 GUILayout.FlexibleSpace();
@@ -285,11 +285,11 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
                 if (GUILayout.Button("定位", GUILayout.Width(58f)))
                 {
-                    PingPath(preview.FolderPath);
+                    PingPath(preview.SourcePath);
                 }
             }
 
-            DrawPathRow("来源", preview.FolderPath);
+            DrawPathRow("来源", preview.SourcePath);
             DrawPathRow("动画目录", preview.AnimationFolderPath);
             DrawPathRow("控制器", preview.ControllerPath);
             DrawPathRow("预制体", preview.PrefabPath);
@@ -402,43 +402,70 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         settings.ResolveDefaultReferences();
 
         string inputRoot = settings.InputRootPath;
-        if (!AssetDatabase.IsValidFolder(inputRoot))
+        if (!IsSupportedBuildInput(inputRoot))
         {
-            lastReport = $"输入根目录不存在：{inputRoot}";
+            lastReport = $"输入源不存在或类型不支持：{inputRoot}";
             return;
         }
 
-        string[] buildFolders = AssetDatabase.GetSubFolders(inputRoot);
-        foreach (string buildFolder in buildFolders.OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase))
+        if (AssetDatabase.IsValidFolder(inputRoot))
         {
-            BuildFolderPreview preview = CreatePreview(buildFolder);
+            List<string> buildInputs = new();
+            buildInputs.AddRange(
+                AssetDatabase.GetSubFolders(inputRoot)
+                    .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase));
+            buildInputs.AddRange(FindDirectTexturePaths(inputRoot));
+
+            foreach (string buildInput in buildInputs.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                BuildFolderPreview preview = CreatePreview(buildInput);
+                previews.Add(preview);
+
+                if (!selectedByFolder.ContainsKey(preview.SelectionKey))
+                {
+                    selectedByFolder[preview.SelectionKey] = true;
+                }
+            }
+
+            lastReport = $"在 {inputRoot} 下找到 {previews.Count} 个构建分组。";
+        }
+        else
+        {
+            BuildFolderPreview preview = CreatePreview(inputRoot);
             previews.Add(preview);
 
-            if (!selectedByFolder.ContainsKey(preview.FolderPath))
+            if (!selectedByFolder.ContainsKey(preview.SelectionKey))
             {
-                selectedByFolder[preview.FolderPath] = true;
+                selectedByFolder[preview.SelectionKey] = true;
             }
-        }
 
-        lastReport = $"在 {inputRoot} 下找到 {previews.Count} 个构建分组。";
+            lastReport = $"已将单张图片 {inputRoot} 识别为 1 个构建分组。";
+        }
         Repaint();
     }
 
-    private BuildFolderPreview CreatePreview(string folderPath)
+    private BuildFolderPreview CreatePreview(string inputPath)
     {
-        string normalizedFolder = NormalizeAssetPath(folderPath);
-        string variantName = Path.GetFileName(normalizedFolder);
+        string normalizedInputPath = NormalizeAssetPath(inputPath);
+        bool isFolder = AssetDatabase.IsValidFolder(normalizedInputPath);
+        string variantName = isFolder
+            ? Path.GetFileName(normalizedInputPath)
+            : Path.GetFileNameWithoutExtension(normalizedInputPath);
         string animationFolder = CombineAssetPath(settings.AnimationOutputRootPath, variantName);
         string prefabPath = CombineAssetPath(settings.PrefabOutputRootPath, $"{variantName}.prefab");
 
         BuildFolderPreview preview = new(
             variantName,
-            normalizedFolder,
+            normalizedInputPath,
             animationFolder,
             CombineAssetPath(animationFolder, $"{variantName}.controller"),
             prefabPath);
 
-        foreach (string texturePath in FindTexturePaths(normalizedFolder))
+        IEnumerable<string> texturePaths = isFolder
+            ? FindTexturePaths(normalizedInputPath)
+            : new[] { normalizedInputPath };
+
+        foreach (string texturePath in texturePaths)
         {
             AnimationAtlasPreview atlas = CreateAtlasPreview(texturePath, animationFolder);
             preview.Atlases.Add(atlas);
@@ -486,6 +513,15 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         return paths.OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);
     }
 
+    private IEnumerable<string> FindDirectTexturePaths(string folder)
+    {
+        return AssetDatabase.FindAssets("t:Texture2D", new[] { folder })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Select(NormalizeAssetPath)
+            .Where(path => NormalizeAssetPath(Path.GetDirectoryName(path)) == folder)
+            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);
+    }
+
     private List<Sprite> LoadSprites(string texturePath)
     {
         IEnumerable<Sprite> sprites = AssetDatabase.LoadAllAssetsAtPath(texturePath).OfType<Sprite>();
@@ -509,7 +545,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     private void BuildSelected()
     {
         List<BuildFolderPreview> selectedPreviews = previews
-            .Where(preview => selectedByFolder.TryGetValue(preview.FolderPath, out bool selected) && selected)
+            .Where(preview => selectedByFolder.TryGetValue(preview.SelectionKey, out bool selected) && selected)
             .ToList();
 
         if (selectedPreviews.Count == 0)
@@ -944,7 +980,7 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
     {
         foreach (BuildFolderPreview preview in previews)
         {
-            selectedByFolder[preview.FolderPath] = selected;
+            selectedByFolder[preview.SelectionKey] = selected;
         }
     }
 
@@ -1047,24 +1083,50 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         return normalizedPath.StartsWith(normalizedRoot + "/", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsSupportedBuildInput(string path)
+    {
+        string normalizedPath = NormalizeAssetPath(path);
+        return AssetDatabase.IsValidFolder(normalizedPath) ||
+               AssetDatabase.GetMainAssetTypeAtPath(normalizedPath) == typeof(Texture2D);
+    }
+
+    private static bool IsPathAllowedByConfiguredRoot(string path, string configuredRootPath)
+    {
+        string normalizedPath = NormalizeAssetPath(path);
+        string normalizedRoot = NormalizeAssetPath(configuredRootPath);
+
+        if (string.Equals(normalizedPath, normalizedRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (AssetDatabase.IsValidFolder(normalizedRoot))
+        {
+            return IsPathUnder(normalizedPath, normalizedRoot);
+        }
+
+        return false;
+    }
+
     private sealed class BuildFolderPreview
     {
         public BuildFolderPreview(
             string variantName,
-            string folderPath,
+            string sourcePath,
             string animationFolderPath,
             string controllerPath,
             string prefabPath)
         {
             VariantName = variantName;
-            FolderPath = folderPath;
+            SourcePath = sourcePath;
             AnimationFolderPath = animationFolderPath;
             ControllerPath = controllerPath;
             PrefabPath = prefabPath;
         }
 
         public string VariantName { get; }
-        public string FolderPath { get; }
+        public string SourcePath { get; }
+        public string SelectionKey => SourcePath;
         public string AnimationFolderPath { get; }
         public string ControllerPath { get; }
         public string PrefabPath { get; }

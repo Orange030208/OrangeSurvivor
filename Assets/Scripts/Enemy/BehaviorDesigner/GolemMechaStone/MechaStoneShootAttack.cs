@@ -1,8 +1,8 @@
 using BehaviorDesigner.Runtime.Tasks;
 
-[TaskDescription("Plays the boss shoot animation and commits the configured projectile attack once.")]
+[TaskDescription("Plays the Mecha Stone shoot animation and commits the configured projectile attack once.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneShootAttack : MechaStoneTaskBase
 {
     private bool attackCommitted;
     private Entity executionTarget;
@@ -17,6 +17,7 @@ public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
             return;
         }
 
+        AcquireActionLock();
         StopMoving();
         FaceTarget();
         Animatable?.PlayState(BossAnimationConfig.ShootHash);
@@ -55,5 +56,6 @@ public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
     public override void OnEnd()
     {
         StopMoving();
+        ReleaseActionLock();
     }
 }

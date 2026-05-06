@@ -2,11 +2,14 @@ using BehaviorDesigner.Runtime.Tasks;
 
 [TaskDescription("Returns success when the boss can use the configured melee attack.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class CanUseBossMelee : GolemMechaStoneBossConditionalBase
+public sealed class CanUseMechaStoneMelee : MechaStoneConditionBase
 {
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || !HasTarget || BossBrain?.MeleeAttackStrategy == null)
+        if (!RefreshContext() ||
+            !HasTarget ||
+            BossBrain.IsActionRunning ||
+            BossBrain.MeleeAttackStrategy == null)
         {
             return TaskStatus.Failure;
         }

@@ -1,9 +1,9 @@
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 
-[TaskDescription("Applies the boss shield modifiers while the shield animation is active.")]
+[TaskDescription("Applies the Mecha Stone shield modifiers while the shield animation is active.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossShieldCast : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneShieldCast : MechaStoneTaskBase
 {
     private const string SHIELD_MODIFIER_SOURCE = "GolemMechaStoneBoss_Shield";
 
@@ -22,6 +22,7 @@ public sealed class BossShieldCast : GolemMechaStoneBossTaskBase
             return;
         }
 
+        AcquireActionLock();
         StopMoving();
         FaceTarget();
         ApplyModifiers();
@@ -55,6 +56,7 @@ public sealed class BossShieldCast : GolemMechaStoneBossTaskBase
     {
         StopMoving();
         RemoveModifiers();
+        ReleaseActionLock();
     }
 
     private void ApplyModifiers()

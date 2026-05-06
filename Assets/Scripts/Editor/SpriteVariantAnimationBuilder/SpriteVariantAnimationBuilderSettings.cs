@@ -26,6 +26,9 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
         TexturePositionBottomLeft
     }
 
+    [SerializeField]
+    private UnityEngine.Object inputSource;
+
     [SerializeField, FormerlySerializedAs("spriteInputRoot")]
     private DefaultAsset inputRoot;
 
@@ -86,7 +89,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
     [SerializeField]
     private bool selectGeneratedAssets = true;
 
-    public string InputRootPath => ResolveFolderPath(inputRoot, spriteInputRootPath, DEFAULT_INPUT_ROOT);
+    public string InputRootPath => ResolveInputPath(inputSource, inputRoot, spriteInputRootPath, DEFAULT_INPUT_ROOT);
     public string AnimationOutputRootPath =>
         ResolveFolderPath(animationOutputRoot, ResolveLegacyOutputFallback(animationOutputRootPath), DEFAULT_ANIMATION_OUTPUT_ROOT);
     public string PrefabOutputRootPath =>
@@ -112,6 +115,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
 
     public void ResetToDefaults()
     {
+        inputSource = AssetDatabase.LoadAssetAtPath<DefaultAsset>(DEFAULT_INPUT_ROOT);
         inputRoot = AssetDatabase.LoadAssetAtPath<DefaultAsset>(DEFAULT_INPUT_ROOT);
         spriteInputRootPath = DEFAULT_INPUT_ROOT;
         animationOutputRoot = AssetDatabase.LoadAssetAtPath<DefaultAsset>(DEFAULT_ANIMATION_OUTPUT_ROOT);
@@ -136,6 +140,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
 
     public void ResolveDefaultReferences()
     {
+        inputSource = ResolveInputReference(inputSource, inputRoot, spriteInputRootPath, DEFAULT_INPUT_ROOT);
         inputRoot = ResolveFolderReference(inputRoot, spriteInputRootPath, DEFAULT_INPUT_ROOT);
         MigrateLegacyOutputRoot();
         animationOutputRoot = ResolveFolderReference(
@@ -152,6 +157,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
     {
         animationFrameRate = Mathf.Max(1f, animationFrameRate);
         nonLoopingClipNames ??= new List<string>();
+        inputSource = ResolveInputReference(inputSource, inputRoot, spriteInputRootPath, DEFAULT_INPUT_ROOT);
         MigrateLegacyOutputRoot();
     }
 
@@ -214,6 +220,42 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
         return AssetDatabase.LoadAssetAtPath<DefaultAsset>(defaultPath);
     }
 
+    private static UnityEngine.Object ResolveInputReference(
+        UnityEngine.Object currentInput,
+        DefaultAsset legacyFolder,
+        string fallbackPath,
+        string defaultPath)
+    {
+        if (currentInput != null)
+        {
+            string currentPath = AssetDatabase.GetAssetPath(currentInput);
+            if (IsSupportedInputPath(currentPath))
+            {
+                return currentInput;
+            }
+        }
+
+        if (legacyFolder != null)
+        {
+            string legacyPath = AssetDatabase.GetAssetPath(legacyFolder);
+            if (AssetDatabase.IsValidFolder(legacyPath))
+            {
+                return legacyFolder;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(fallbackPath))
+        {
+            string normalizedPath = NormalizeAssetPath(fallbackPath);
+            if (IsSupportedInputPath(normalizedPath))
+            {
+                return AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(normalizedPath);
+            }
+        }
+
+        return AssetDatabase.LoadAssetAtPath<DefaultAsset>(defaultPath);
+    }
+
     private string ResolveLegacyOutputFallback(string fallbackPath)
     {
         if (outputRoot != null)
@@ -247,6 +289,40 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
         return defaultPath;
     }
 
+    private static string ResolveInputPath(
+        UnityEngine.Object inputAsset,
+        DefaultAsset legacyFolder,
+        string fallbackPath,
+        string defaultPath)
+    {
+        if (inputAsset != null)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(inputAsset);
+            if (IsSupportedInputPath(assetPath))
+            {
+                return NormalizeAssetPath(assetPath);
+            }
+        }
+
+        return ResolveFolderPath(legacyFolder, fallbackPath, defaultPath);
+    }
+
+    private static bool IsSupportedInputPath(string assetPath)
+    {
+        if (string.IsNullOrWhiteSpace(assetPath))
+        {
+            return false;
+        }
+
+        string normalizedPath = NormalizeAssetPath(assetPath);
+        return AssetDatabase.IsValidFolder(normalizedPath) || IsTexturePath(normalizedPath);
+    }
+
+    private static bool IsTexturePath(string assetPath)
+    {
+        return AssetDatabase.GetMainAssetTypeAtPath(assetPath) == typeof(Texture2D);
+    }
+
     private static string CombineAssetPath(string folder, string child)
     {
         return $"{NormalizeAssetPath(folder)}/{child.TrimStart('/', '\\')}";
@@ -261,6 +337,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
 [CustomEditor(typeof(SpriteVariantAnimationBuilderSettings))]
 internal sealed class SpriteVariantAnimationBuilderSettingsEditor : Editor
 {
+    private SerializedProperty inputSource;
     private SerializedProperty inputRoot;
     private SerializedProperty animationOutputRoot;
     private SerializedProperty prefabOutputRoot;
@@ -280,6 +357,7 @@ internal sealed class SpriteVariantAnimationBuilderSettingsEditor : Editor
 
     private void OnEnable()
     {
+        inputSource = serializedObject.FindProperty("inputSource");
         inputRoot = serializedObject.FindProperty("inputRoot");
         animationOutputRoot = serializedObject.FindProperty("animationOutputRoot");
         prefabOutputRoot = serializedObject.FindProperty("prefabOutputRoot");
@@ -303,7 +381,9 @@ internal sealed class SpriteVariantAnimationBuilderSettingsEditor : Editor
         serializedObject.Update();
 
         DrawSectionTitle("目录");
-        EditorGUILayout.PropertyField(inputRoot, new GUIContent("输入根目录"));
+        EditorGUILayout.PropertyField(
+            inputSource,
+            new GUIContent("输入源", "支持文件夹或单张图片。文件夹模式下会扫描子文件夹，也会识别根目录下的单张图片。"));
         EditorGUILayout.PropertyField(
             animationOutputRoot,
             new GUIContent("动画输出目录", "动画片段和 Animator Controller 会直接生成到此目录下的变体文件夹中，不会再自动追加 Animation 子目录。"));

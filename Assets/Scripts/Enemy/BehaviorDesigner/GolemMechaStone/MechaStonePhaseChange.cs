@@ -1,15 +1,11 @@
-using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 
-[TaskDescription("Runs Immune then Glow, updates the boss phase, and removes transition modifiers on exit.")]
+[TaskDescription("Runs Immune then Glow, updates the Mecha Stone phase, and removes transition modifiers on exit.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossPhaseTransition : GolemMechaStoneBossTaskBase
+public sealed class MechaStonePhaseChange : MechaStoneTaskBase
 {
     private const string PHASE_TRANSITION_MODIFIER_SOURCE = "GolemMechaStoneBoss_PhaseTransition";
-
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Current boss phase. Phase starts at 1.")]
-    public SharedInt currentPhase = 1;
 
     private float startTime;
     private int targetPhase;
@@ -25,11 +21,12 @@ public sealed class BossPhaseTransition : GolemMechaStoneBossTaskBase
 
         if (!HasContext)
         {
-            targetPhase = Mathf.Max(1, currentPhase.Value);
+            targetPhase = 1;
             return;
         }
 
-        targetPhase = ResolveTargetPhase();
+        AcquireActionLock();
+        targetPhase = BossBrain.ResolveNextPhase();
         StopMoving();
         ApplyModifiers();
         Animatable?.PlayState(BossAnimationConfig.ImmuneHash);
@@ -57,8 +54,7 @@ public sealed class BossPhaseTransition : GolemMechaStoneBossTaskBase
             return TaskStatus.Running;
         }
 
-        currentPhase.Value = targetPhase;
-        Owner.SetVariableValue("CurrentPhase", targetPhase);
+        BossBrain.CommitPhase(targetPhase);
         return TaskStatus.Success;
     }
 
@@ -71,28 +67,7 @@ public sealed class BossPhaseTransition : GolemMechaStoneBossTaskBase
     {
         StopMoving();
         RemoveModifiers();
-    }
-
-    public override void OnReset()
-    {
-        base.OnReset();
-        currentPhase = 1;
-    }
-
-    private int ResolveTargetPhase()
-    {
-        float healthRatio = HealthRatio();
-        if (currentPhase.Value < 3 && healthRatio <= BossData.PhaseThreeHealthRatio)
-        {
-            return 3;
-        }
-
-        if (currentPhase.Value < 2 && healthRatio <= BossData.PhaseTwoHealthRatio)
-        {
-            return 2;
-        }
-
-        return Mathf.Max(1, currentPhase.Value);
+        ReleaseActionLock();
     }
 
     private void ApplyModifiers()

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff429e42589e2854798ae1e13ce7058e, type: 3}
-  m_Name: Enemy Sprite Variant Animation Builder Settings
+  m_Name: Enemy
   m_EditorClassIdentifier: 
   inputRoot: {fileID: 102900000, guid: 1f454624e3576014bab3c4af14319e4f, type: 3}
   spriteInputRootPath: Assets/Resources/Sprites

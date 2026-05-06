@@ -3,12 +3,15 @@ using UnityEngine;
 
 [TaskDescription("Locks a direction and applies repeated laser damage in a capsule area.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
-public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
+public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 {
     private const string LASER_HIT_SOURCE_ID = "GolemMechaStoneBoss_Laser";
     private const int LASER_HIT_BUFFER_SIZE = 16;
+    private const int LASER_TRACE_BUFFER_SIZE = 16;
+    private const float MIN_RESOLVED_LASER_LENGTH = 0.05f;
 
     private readonly Collider2D[] hitBuffer = new Collider2D[LASER_HIT_BUFFER_SIZE];
+    private readonly RaycastHit2D[] traceBuffer = new RaycastHit2D[LASER_TRACE_BUFFER_SIZE];
 
     private float startTime;
     private float nextDamageTime;
@@ -16,8 +19,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
     private bool directionLocked;
     private bool cooldownCommitted;
     private Entity executionTarget;
-    private LineRenderer laserLineRenderer;
-    private Material laserMaterial;
+    private GolemMechaStoneLaserVisual laserVisual;
 
     public override void OnStart()
     {
@@ -33,6 +35,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
             return;
         }
 
+        AcquireActionLock();
         lockedDirection = ResolveDirectionToTarget(executionTarget);
         StopMoving();
         FaceTarget();
@@ -101,6 +104,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
     {
         StopMoving();
         ClearLaserVisual();
+        ReleaseActionLock();
     }
 
     public override void OnReset()
@@ -118,8 +122,14 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
         Vector2 laserOrigin = ResolveLaserOrigin();
-        Vector2 center = laserOrigin + direction * (BossData.LaserRange * 0.5f);
-        Vector2 size = new Vector2(BossData.LaserRange, BossData.LaserWidth);
+        float laserLength = ResolveLaserLength(laserOrigin, direction);
+        if (laserLength < MIN_RESOLVED_LASER_LENGTH)
+        {
+            return;
+        }
+
+        Vector2 center = laserOrigin + direction * (laserLength * 0.5f);
+        Vector2 size = new Vector2(Mathf.Max(laserLength, BossData.LaserWidth), BossData.LaserWidth);
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         int hitCount = Physics2D.OverlapCapsuleNonAlloc(
             center,
@@ -139,11 +149,12 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
 
             float damage = Mathf.Max(0f, PropertiesManager.GetPropValue(PropType.Attack) * BossData.LaserDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - OwnerEnemy.Center;
+            Vector2 hitPoint = hitEntity.GetClosestPointTo(laserOrigin);
             HitService.Apply(new HitRequest(
                 OwnerEnemy,
                 hitEntity,
                 HitSpec.EnemyHitSpec(damage),
-                hitEntity.Center,
+                hitPoint,
                 knockbackDirection,
                 HitSourceKind.Direct,
                 LASER_HIT_SOURCE_ID,
@@ -169,7 +180,9 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
             return ResolveSafeDirection(lockedDirection);
         }
 
-        return ResolveSafeDirection(target.Center - OwnerEnemy.Center);
+        Vector2 laserOrigin = ResolveLaserOrigin();
+        Vector2 targetPoint = target.GetClosestPointTo(laserOrigin);
+        return ResolveSafeDirection(targetPoint - laserOrigin);
     }
 
     private Vector2 ResolveSafeDirection(Vector2 direction)
@@ -189,68 +202,96 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
 
     private Vector2 ResolveLaserOrigin()
     {
-        if (AttackController != null)
+        Transform laserOriginTransform = BossBrain != null ? BossBrain.LaserOriginTransform : null;
+        if (laserOriginTransform != null)
         {
-            return AttackController.FirePoint.position;
+            return laserOriginTransform.position;
         }
 
         return OwnerEnemy != null ? OwnerEnemy.Center : Vector2.zero;
     }
 
+    private float ResolveLaserLength(Vector2 origin, Vector2 direction)
+    {
+        if (AttackController == null || BossData == null)
+        {
+            return 0f;
+        }
+
+        float radius = BossData.LaserWidth * 0.5f;
+        int hitCount = Physics2D.CircleCastNonAlloc(
+            origin,
+            radius,
+            direction,
+            traceBuffer,
+            Mathf.Infinity,
+            AttackController.AttackLayer);
+
+        float nearestDistance = float.PositiveInfinity;
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = traceBuffer[i];
+            Entity hitEntity = ResolveEntity(hit.collider);
+            if (hitEntity == null || hitEntity == OwnerEnemy)
+            {
+                continue;
+            }
+
+            nearestDistance = Mathf.Min(nearestDistance, Mathf.Max(0f, hit.distance));
+        }
+
+        return float.IsPositiveInfinity(nearestDistance)
+            ? BossData.LaserNoHitVisualLength
+            : Mathf.Max(nearestDistance, MIN_RESOLVED_LASER_LENGTH);
+    }
+
     private void EnsureLaserVisual()
     {
-        if (OwnerEnemy == null || laserLineRenderer != null)
+        if (OwnerEnemy == null || laserVisual != null)
         {
             return;
         }
 
-        GameObject laserVisualObject = new("Golem Mecha Stone Laser Visual");
-        laserVisualObject.transform.SetParent(OwnerEnemy.transform, false);
-        laserLineRenderer = laserVisualObject.AddComponent<LineRenderer>();
-        laserLineRenderer.useWorldSpace = true;
-        laserLineRenderer.positionCount = 2;
-        laserLineRenderer.textureMode = LineTextureMode.Stretch;
-        laserLineRenderer.alignment = LineAlignment.View;
-        laserLineRenderer.numCapVertices = 8;
-        laserLineRenderer.numCornerVertices = 4;
-        laserLineRenderer.sortingOrder = BossData.LaserSortingOrder;
-        laserMaterial = new Material(Shader.Find("Sprites/Default"));
-        laserLineRenderer.material = laserMaterial;
+        GolemMechaStoneLaserVisual visualPrefab = BossData.LaserVisualPrefab;
+        if (visualPrefab == null)
+        {
+            Debug.LogWarning($"{nameof(MechaStoneLaserCast)} on {OwnerEnemy.name} is missing {nameof(GolemMechaStoneBossSO.LaserVisualPrefab)}.", OwnerEnemy);
+            return;
+        }
+
+        laserVisual = Object.Instantiate(visualPrefab, OwnerEnemy.transform);
+        laserVisual.Hide();
     }
 
     private void UpdateLaserVisual(bool active)
     {
-        if (laserLineRenderer == null || OwnerEnemy == null || BossData == null)
+        if (laserVisual == null || OwnerEnemy == null || BossData == null)
         {
             return;
         }
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
         Vector3 startPosition = ResolveLaserOrigin();
-        Vector3 endPosition = startPosition + (Vector3)(direction * BossData.LaserRange);
+        float laserLength = ResolveLaserLength(startPosition, direction);
+        Vector3 endPosition = startPosition + (Vector3)(direction * laserLength);
         Color color = active ? BossData.LaserActiveColor : BossData.LaserWindupColor;
-        float width = active ? BossData.LaserActiveVisualWidth : BossData.LaserWindupVisualWidth;
-
-        laserLineRenderer.startWidth = width;
-        laserLineRenderer.endWidth = width;
-        laserLineRenderer.startColor = color;
-        laserLineRenderer.endColor = color;
-        laserLineRenderer.SetPosition(0, startPosition);
-        laserLineRenderer.SetPosition(1, endPosition);
+        laserVisual.Show(
+            startPosition,
+            endPosition,
+            color,
+            active ? BossData.LaserActiveVisualWidth : BossData.LaserWindupVisualWidth,
+            BossData.LaserCoreColor,
+            BossData.LaserCoreVisualWidth,
+            active,
+            BossData.LaserSortingOrder);
     }
 
     private void ClearLaserVisual()
     {
-        if (laserLineRenderer != null)
+        if (laserVisual != null)
         {
-            Object.Destroy(laserLineRenderer.gameObject);
-            laserLineRenderer = null;
-        }
-
-        if (laserMaterial != null)
-        {
-            Object.Destroy(laserMaterial);
-            laserMaterial = null;
+            Object.Destroy(laserVisual.gameObject);
+            laserVisual = null;
         }
     }
 
