@@ -268,7 +268,6 @@ MonoBehaviour:
   characterNameText: {fileID: 0}
   mainWeaponNameText: {fileID: 0}
   summaryText: {fileID: 791280528095932853}
-  summaryManager: {fileID: 0}
 --- !u!114 &6070125617653745661
 MonoBehaviour:
   m_ObjectHideFlags: 0

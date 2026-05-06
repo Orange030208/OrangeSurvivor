@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求让页面管理真实 ViewPart：`ShopUIPage` 显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，`InventoryUI` 已压回列表渲染、操作 Popup 打开和页面注入职责，且只由真实存在背包子部件的商店库存面板会话注入；`SettingsPanelManager` 自己管理设置面板显示 / 隐藏 / 关闭等待，`WaveTransitionUIPage` 显式管理升级卡组与宝箱面板，`GamingUIPage` 直接管理 HUD / 输入并通过 `BuffBarUI.BeginSession()` 注入 Tooltip 所属 `UIManager`。本轮完成真实资源 / 场景装配补漏：移除 `GamingUIPage` / `GamePauseMenu` 中没有 Prefab 对应的 `InventoryUI` 字段、背包 payload 和 `PauseMenuContext`；角色选择页改为由 `GameManager` 显式传入 `CharacterSelectionManager` payload，删除只服务该页面的 `ICharacterSelectionService`，并同步清理 `UI Character Selection.prefab`、`UI Gaming.prefab`、`UI Pause.prefab` 的空序列化字段。下一步继续做真实 Prefab / Scene / Catalog 装配核查、旧资源清理和最终 Play Mode 前的轻量编译断点检查，不要直接宣布完成。
+当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求让页面管理真实 ViewPart：`ShopUIPage` 显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，`InventoryUI` 已压回列表渲染、操作 Popup 打开和页面注入职责，且只由真实存在背包子部件的商店库存面板会话注入；`SettingsPanelManager` 自己管理设置面板显示 / 隐藏 / 关闭等待，`WaveTransitionUIPage` 显式管理升级卡组与宝箱面板，`GamingUIPage` 直接管理 HUD / 输入并通过 `BuffBarUI.BeginSession()` 注入 Tooltip 所属 `UIManager`。最新批次完成卡片品质表现与真实 Prefab 装配补漏：`Upgrade Container`、背包格子、`Weapon Operate Popup`、`Accessory Info Popup` 均显式绑定 `CardQualityVisualController`，背包格子旧 `colorDependencyGraphics` / `tooltipHoverTarget` 序列化残留和结算页旧 `summaryManager` 字段已清理；操作 Popup 缺品质表现组件时会输出可定位告警。下一步继续做真实 Scene / Catalog / Prefab 装配核查、旧资源清理和最终 Play Mode 前的轻量编译断点检查，不要直接宣布完成。
 
 已完成：
 
@@ -456,9 +456,9 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认最新提交包含“UI 页面装配上下文收口”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
+3. 确认最新提交包含“卡片品质表现与资源装配补漏”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
 4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查真实 Prefab / Scene / Catalog 装配：`UI Shop.prefab`、`UI Pause.prefab`、`UI Menu.prefab`、`UI Wave Transition.prefab`、`UI Gaming.prefab`、`UI Character Selection.prefab`、`OrangeUIViewCatalog.asset` 是否还有 Missing Script、旧脚本 GUID、旧字段、空序列化字段或未挂载的新 ViewPart。
-5. 继续检查卡片表现与 Orange Motion 的真实资源边界，确认 `CardMotionController` / `CardQualityVisualController` 的 Prefab 引用完整，`UIMotionPlayer.refreshDefaultsOnEnable` 修复没有被具体业务组件误用覆盖，并确认 `UIMotionPlayer.PlayAsync()` 的等待链路不再被 UI 业务协程包装。
+5. 继续检查 Orange Motion 的真实资源边界，确认 `CardMotionController` 的 Prefab 引用完整，`UIMotionPlayer.refreshDefaultsOnEnable` 修复没有被具体业务组件误用覆盖，并确认 `UIMotionPlayer.PlayAsync()` 的等待链路不再被 UI 业务协程包装。
 6. 继续检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住；必要时再补一个取消事件，但不要提前扩展协议。
 7. 继续清理旧资源残留和无效接口 / 上下文，但不要提交无关的 `DOTweenSettings.asset`、`ProjectSettings.asset` 和 Tabsil/Mineral 插件删除状态，除非用户明确要求处理。
 8. 验证仍以轻量静态 / 编译断点为主，不为每个小模块跑完整 Play Mode；真实场景验收放到深度迁移批次完成后统一执行。
@@ -3026,3 +3026,44 @@
 
 - 继续做真实 Prefab / Scene / Catalog 的轻量装配检查，重点核对 `UI Character Selection.prefab`、`Game Scene.unity`、`OrangeUIViewCatalog.asset` 和卡片 / 宝箱 / 设置面板引用是否还有遗漏。
 - 若无新的结构问题，就把这批角色选择与暂停 / 战斗页收口作为一个可回退提交提交掉，再继续下一组业务迁移。
+
+### 2026-05-07 阶段 12 深度迁移：卡片品质表现与资源装配补漏
+
+完成内容：
+
+- 按强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity UI / Script 技能说明；确认本轮以真实 Prefab 装配补漏为批次边界，不做完整 Play Mode 回归。
+- `Upgrade Container.prefab` 中 `UIUpgradeContainer.qualityVisualController` 改为显式绑定同一对象上的 `CardQualityVisualController`，不再依赖运行时 `GetComponent` 兜底。
+- `Weapon Operate Popup.prefab` 与 `Accessory Info Popup.prefab` 根节点补挂并绑定 `CardQualityVisualController`，品质表现会影响 Popup 背景、物品图标和标题文本；两个 Popup 继续由 Orange `PopupBase` 生命周期和 `InventoryUI.ShowPopupAsync()` 管理。
+- `Inventory Item.prefab` 补挂并绑定 `CardQualityVisualController`，同步移除旧脚本字段残留 `colorDependencyGraphics` 与 `tooltipHoverTarget`，背包格品质表现与当前 `InventoryItem.cs` 字段保持一致。
+- `UI Stage Complete.prefab` 删除已不存在于 `StageCompleteUIPage.cs` 的旧 `summaryManager` 序列化残留；该页面仍使用 `summaryText` 汇总结算快照，分项文本空字段暂不强行绑定不存在的 UI 对象。
+- `InventoryOperatePopupBase.RenderQuality()` 在缺少 `CardQualityVisualController` 时输出可定位 warning，避免品质表现静默失效。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/Container/InventoryOperatePopupBase.cs`
+- `Assets/Resources/Prefabs/New UI/Container/Upgrade Container.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/Shop/Weapon Operate Popup.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/Shop/Accessory Info Popup.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/Shop/Inventory Item.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Stage Complete.prefab`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已执行 `git grep` 确认 `qualityVisualController: {fileID: 0}`、`cardQualityVisualController: {fileID: 0}`、`colorDependencyGraphics`、`tooltipHoverTarget`、`summaryManager:` 在 `Assets/Resources/Prefabs`、`Assets/Scripts`、`Assets/Scenes` 中无命中。
+- 已执行 Missing Script 扫描：`git grep -n "m_Script: {fileID: 0" -- Assets/Resources Assets/Scenes` 无命中。
+- 已抽查 `Weapon Operate Popup.prefab` 与 `Inventory Item.prefab` 的根节点组件列表和新增 `CardQualityVisualController` 序列化块，确认组件已加入 `m_Component` 并绑定到业务脚本字段。
+- 本轮按用户要求未执行完整 Unity Play Mode；Popup 品质颜色、背包格颜色和结算页视觉排版仍需最终真实场景验收。
+
+遗留风险：
+
+- 本轮手动编辑 Prefab YAML，虽然已做静态结构扫描，仍需 Unity 导入后确认 Inspector 序列化显示正常。
+- 操作 Popup 暂未新增 Border / Glow / Shadow 子对象，只绑定已有背景、图标、标题，品质表现强度与商店卡片 / 升级卡片不同，需后续视觉验收确认是否足够。
+- `StageCompleteUIPage` 的分项文本字段仍为空，因为当前 Prefab 只有 `summaryText` 汇总展示；如果后续需要分项 UI，应在真实 UI 布局中新增并绑定，而不是用旧 `summaryManager` 字段兜底。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`；本批提交必须排除。
+
+下一步：
+
+- 提交本批卡片品质表现与资源装配补漏。
+- 下一轮继续扩大到真实 Scene / Catalog / Prefab 装配核查，优先检查 `OrangeUIViewCatalog.asset`、`UI Shop.prefab`、`UI Wave Transition.prefab`、`Game Scene.unity` 和旧资源残留，不要回到 Facade / 包装类路线。

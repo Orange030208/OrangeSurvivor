@@ -46,6 +46,7 @@ public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPoint
 
         if (cardQualityVisualController == null)
         {
+            Debug.LogWarning($"{nameof(InventoryOperatePopupBase)} '{name}' is missing {nameof(CardQualityVisualController)}; quality '{quality}' will not be rendered.", this);
             return;
         }
 
