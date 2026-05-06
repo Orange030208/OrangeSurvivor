@@ -312,7 +312,6 @@ MonoBehaviour:
   characterList: {fileID: 2007781208652475618}
   confirm: {fileID: 1343874346286685478}
   back: {fileID: 6243707430721280992}
-  characterSelectionManager: {fileID: 0}
 --- !u!114 &4235207013113677959
 MonoBehaviour:
   m_ObjectHideFlags: 0

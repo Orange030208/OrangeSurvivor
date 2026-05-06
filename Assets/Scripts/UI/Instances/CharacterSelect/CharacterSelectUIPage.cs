@@ -2,7 +2,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CharacterSelectUIPage : PageBase
 {
@@ -10,38 +9,38 @@ public class CharacterSelectUIPage : PageBase
     [SerializeField] private CharacterListUI characterList;
     [SerializeField] private UIClickTarget confirm;
     [SerializeField] private UIClickTarget back;
-    [SerializeField] private CharacterSelectionManager characterSelectionManager;
 
-    private ICharacterSelectionService selectionService;
+    private CharacterSelectionManager characterSelectionManager;
     private int selectedCharacterIndex = -1;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        ValidateConfiguration();
+    }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        selectionService = ResolveSelectionService();
-        if (selectionService != null)
-        {
-            selectionService.SelectionChanged += OnCharacterSelectionChanged;
-        }
+        characterSelectionManager = context.GetPayload<CharacterSelectionManager>()
+            ?? throw new System.InvalidOperationException($"{nameof(CharacterSelectUIPage)} requires {nameof(CharacterSelectionManager)} payload.");
+        characterSelectionManager.SelectionChanged += OnCharacterSelectionChanged;
 
         confirm.OnClicked += OnConfirmOnClicked;
         back.OnClicked += OnBackOnClicked;
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        if (selectionService != null)
-        {
-            ApplyCharacterSelectionSnapshot(selectionService.CreateSnapshot());
-        }
+        ApplyCharacterSelectionSnapshot(characterSelectionManager.CreateSnapshot());
 
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        if (selectionService != null)
+        if (characterSelectionManager != null)
         {
-            selectionService.SelectionChanged -= OnCharacterSelectionChanged;
-            selectionService = null;
+            characterSelectionManager.SelectionChanged -= OnCharacterSelectionChanged;
+            characterSelectionManager = null;
         }
 
         confirm.OnClicked -= OnConfirmOnClicked;
@@ -78,7 +77,7 @@ public class CharacterSelectUIPage : PageBase
 
     private void OnCharacterSelected(int characterIndex)
     {
-        selectionService?.SelectCharacter(characterIndex);
+        characterSelectionManager?.SelectCharacter(characterIndex);
     }
 
     private void OnConfirmOnClicked()
@@ -104,14 +103,26 @@ public class CharacterSelectUIPage : PageBase
         confirm.Interactable = interactable;
     }
 
-    private ICharacterSelectionService ResolveSelectionService()
+    private void ValidateConfiguration()
     {
-        if (characterSelectionManager != null)
+        if (characterInfoCard == null)
         {
-            return characterSelectionManager;
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing character info card.");
         }
 
-        characterSelectionManager = CharacterSelectionManager.Instance;
-        return characterSelectionManager;
+        if (characterList == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing character list.");
+        }
+
+        if (confirm == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing confirm button.");
+        }
+
+        if (back == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing back button.");
+        }
     }
 }

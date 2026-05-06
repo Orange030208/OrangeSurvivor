@@ -3,30 +3,12 @@ using UnityEngine;
 
 public static class UIPageContextFactory
 {
-    public static GamingPageContext CreateGamingPageContext(
-        Player player,
-        InventoryOperateManager inventoryOperateManager)
+    public static GamingPageContext CreateGamingPageContext(Player player)
     {
         EnsurePlayer(player);
-        BindInventoryManager(player, inventoryOperateManager);
         return new GamingPageContext(
             player,
-            player.GetComponent<CurrencyWallet>(),
-            player.GetComponent<PropertiesManager>(),
-            inventoryOperateManager);
-    }
-
-    public static PauseMenuContext CreatePauseMenuContext(
-        Player player,
-        InventoryOperateManager inventoryOperateManager)
-    {
-        EnsurePlayer(player);
-        BindInventoryManager(player, inventoryOperateManager);
-        return new PauseMenuContext(
-            player,
-            player.GetComponent<CurrencyWallet>(),
-            player.GetComponent<PropertiesManager>(),
-            inventoryOperateManager);
+            player.GetComponent<CurrencyWallet>());
     }
 
     public static ShopPageContext CreateShopPageContext(

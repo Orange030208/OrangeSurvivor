@@ -82,7 +82,6 @@ MonoBehaviour:
   timerText: {fileID: 682055535760119137}
   currencyText: {fileID: 1500292031166583167}
   characterStatusPanel: {fileID: 6626129168850466840}
-  inventoryUI: {fileID: 0}
   menuButton: {fileID: 825468706418226040}
   moveJoystick: {fileID: 6004552391231687133}
   buffBarUI: {fileID: 7943445818030645722}

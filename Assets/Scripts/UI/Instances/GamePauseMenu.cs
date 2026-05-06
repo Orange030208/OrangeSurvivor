@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
@@ -17,10 +16,8 @@ public class GamePauseMenu : PageBase
     [SerializeField] private UIClickTarget menuButton;
 
     [Header("页面子部件")]
-    [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] private SettingsPanelManager settingsPanel;
 
-    private PauseMenuContext currentContext;
     private bool buttonEventsBound;
     private bool settingsVisible;
 
@@ -29,14 +26,10 @@ public class GamePauseMenu : PageBase
         base.Awake();
         ResolveViewParts();
         ValidateConfiguration();
-        inventoryUI?.WarmUp();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = context.GetPayload<PauseMenuContext>()
-            ?? throw new InvalidOperationException($"{nameof(GamePauseMenu)} requires {nameof(PauseMenuContext)} payload.");
-        inventoryUI?.ConfigureSession(currentContext.InventoryOperateManager, OwnerUIManager);
         BindButtonEvents();
         HideSettingsImmediate();
         return UniTask.CompletedTask;
@@ -51,8 +44,6 @@ public class GamePauseMenu : PageBase
     {
         UnbindButtonEvents();
         HideSettingsImmediate();
-        inventoryUI?.ReleaseSession();
-        currentContext = null;
     }
 
     private void BindButtonEvents()
@@ -154,11 +145,6 @@ public class GamePauseMenu : PageBase
 
     private void ResolveViewParts()
     {
-        if (inventoryUI == null)
-        {
-            inventoryUI = GetComponentInChildren<InventoryUI>(true);
-        }
-
         if (settingsPanel == null)
         {
             settingsPanel = GetComponentInChildren<SettingsPanelManager>(true);

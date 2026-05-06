@@ -14,6 +14,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
+    [SerializeField] private CharacterSelectionManager characterSelectionManager;
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
     [SerializeField] private ShopManager shopManager;
@@ -347,11 +348,13 @@ public class GameManager : MonoSingletonBase<GameManager>
                 await uiManager.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.CharacterSelection:
-                await uiManager.OpenPageAsync<CharacterSelectUIPage>(cancellationToken: cancellationToken);
+                await uiManager.OpenPageAsync<CharacterSelectUIPage>(
+                    characterSelectionManager,
+                    cancellationToken);
                 break;
             case GameState.Game:
                 await uiManager.OpenPageAsync<GamingUIPage>(
-                    UIPageContextFactory.CreateGamingPageContext(player, inventoryOperateManager),
+                    UIPageContextFactory.CreateGamingPageContext(player),
                     cancellationToken);
                 break;
             case GameState.GameOver:
@@ -388,8 +391,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         try
         {
             await uiManager.OpenPageAsync<GamePauseMenu>(
-                UIPageContextFactory.CreatePauseMenuContext(player, inventoryOperateManager),
-                this.GetCancellationTokenOnDestroy());
+                cancellationToken: this.GetCancellationTokenOnDestroy());
         }
         catch (OperationCanceledException)
         {
@@ -448,6 +450,11 @@ public class GameManager : MonoSingletonBase<GameManager>
         if (uiManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
+        }
+
+        if (characterSelectionManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(CharacterSelectionManager)} reference.");
         }
     }
 

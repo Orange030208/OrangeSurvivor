@@ -12,7 +12,6 @@ public class GamingUIPage : PageBase
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI currencyText;
     [SerializeField] private CharacterStatusPanel characterStatusPanel;
-    [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] private UIClickTarget menuButton;
     [SerializeField] private MobileJoystick moveJoystick;
     [SerializeField] private BuffBarUI buffBarUI;
@@ -28,8 +27,6 @@ public class GamingUIPage : PageBase
     {
         base.Awake();
         ValidateConfiguration();
-        ResolveViewParts();
-        inventoryUI?.WarmUp();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
@@ -38,7 +35,6 @@ public class GamingUIPage : PageBase
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
         BindInput(currentContext.Player);
-        inventoryUI?.ConfigureSession(currentContext.InventoryOperateManager, OwnerUIManager);
         BindHud(currentContext);
         menuButton.OnClicked += OnPauseClicked;
         return UniTask.CompletedTask;
@@ -49,7 +45,6 @@ public class GamingUIPage : PageBase
         UnbindInput();
         UnbindHud();
         menuButton.OnClicked -= OnPauseClicked;
-        inventoryUI?.ReleaseSession();
         currentContext = null;
     }
 
@@ -179,8 +174,6 @@ public class GamingUIPage : PageBase
 
     private void ValidateConfiguration()
     {
-        ResolveViewParts();
-
         if (waveText == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing wave text.");
@@ -214,14 +207,6 @@ public class GamingUIPage : PageBase
         if (moveJoystick == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing move joystick.");
-        }
-    }
-
-    private void ResolveViewParts()
-    {
-        if (inventoryUI == null)
-        {
-            inventoryUI = GetComponentInChildren<InventoryUI>(true);
         }
     }
 }

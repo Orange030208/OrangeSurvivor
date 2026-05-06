@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求让页面管理真实 ViewPart：`ShopUIPage` 显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，`InventoryUI` 已压回列表渲染、操作 Popup 打开和页面注入职责，`SettingsPanelManager` 自己管理设置面板显示 / 隐藏 / 关闭等待，`WaveTransitionUIPage` 显式管理升级卡组与宝箱面板，`GamingUIPage` 直接管理 HUD / 输入并通过 `BuffBarUI.BeginSession()` 注入 Tooltip 所属 `UIManager`。本轮继续把升级卡点击提交、刷新退场、卡片 Motion 等待链路从 Coroutine / IEnumerator 收口到 UniTask，并将角色选择真实子列表从 `CharacterListController` 重命名为 `CharacterListUI`，同步 Prefab 字段，不保留兼容字段或桥接类。下一步应提交本批 UniTask 与命名收口，然后继续做真实资源 / 场景装配与旧资源清理检查。
+当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求让页面管理真实 ViewPart：`ShopUIPage` 显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，`InventoryUI` 已压回列表渲染、操作 Popup 打开和页面注入职责，且只由真实存在背包子部件的商店库存面板会话注入；`SettingsPanelManager` 自己管理设置面板显示 / 隐藏 / 关闭等待，`WaveTransitionUIPage` 显式管理升级卡组与宝箱面板，`GamingUIPage` 直接管理 HUD / 输入并通过 `BuffBarUI.BeginSession()` 注入 Tooltip 所属 `UIManager`。本轮完成真实资源 / 场景装配补漏：移除 `GamingUIPage` / `GamePauseMenu` 中没有 Prefab 对应的 `InventoryUI` 字段、背包 payload 和 `PauseMenuContext`；角色选择页改为由 `GameManager` 显式传入 `CharacterSelectionManager` payload，删除只服务该页面的 `ICharacterSelectionService`，并同步清理 `UI Character Selection.prefab`、`UI Gaming.prefab`、`UI Pause.prefab` 的空序列化字段。下一步继续做真实 Prefab / Scene / Catalog 装配核查、旧资源清理和最终 Play Mode 前的轻量编译断点检查，不要直接宣布完成。
 
 已完成：
 
@@ -456,11 +456,11 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认最新提交包含“升级卡 UniTask 链路与角色列表 ViewPart 命名收口”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
-4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查真实 Prefab / Scene / Catalog 装配：`UI Shop.prefab`、`UI Pause.prefab`、`UI Menu.prefab`、`UI Wave Transition.prefab`、`UI Gaming.prefab`、`UI Character Selection.prefab`、`OrangeUIViewCatalog.asset` 是否还有 Missing Script、旧脚本 GUID、旧字段或未挂载的新 ViewPart。
-5. 检查卡片表现与 Orange Motion 的真实资源边界，确认 `CardMotionController` / `CardQualityVisualController` 的 Prefab 引用完整，`UIMotionPlayer.refreshDefaultsOnEnable` 修复没有被具体业务组件误用覆盖，并确认 `UIMotionPlayer.PlayAsync()` 的等待链路不再被 UI 业务协程包装。
-6. 检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住；必要时再补一个取消事件，但不要提前扩展协议。
-7. 继续清理旧资源残留，但不要提交无关的 `DOTweenSettings.asset`、`ProjectSettings.asset` 和 Tabsil/Mineral 插件删除状态，除非用户明确要求处理。
+3. 确认最新提交包含“UI 页面装配上下文收口”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
+4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查真实 Prefab / Scene / Catalog 装配：`UI Shop.prefab`、`UI Pause.prefab`、`UI Menu.prefab`、`UI Wave Transition.prefab`、`UI Gaming.prefab`、`UI Character Selection.prefab`、`OrangeUIViewCatalog.asset` 是否还有 Missing Script、旧脚本 GUID、旧字段、空序列化字段或未挂载的新 ViewPart。
+5. 继续检查卡片表现与 Orange Motion 的真实资源边界，确认 `CardMotionController` / `CardQualityVisualController` 的 Prefab 引用完整，`UIMotionPlayer.refreshDefaultsOnEnable` 修复没有被具体业务组件误用覆盖，并确认 `UIMotionPlayer.PlayAsync()` 的等待链路不再被 UI 业务协程包装。
+6. 继续检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住；必要时再补一个取消事件，但不要提前扩展协议。
+7. 继续清理旧资源残留和无效接口 / 上下文，但不要提交无关的 `DOTweenSettings.asset`、`ProjectSettings.asset` 和 Tabsil/Mineral 插件删除状态，除非用户明确要求处理。
 8. 验证仍以轻量静态 / 编译断点为主，不为每个小模块跑完整 Play Mode；真实场景验收放到深度迁移批次完成后统一执行。
 9. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
 10. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
@@ -2976,3 +2976,53 @@
 
 - 提交本批真实 ViewPart 收口，不要包含无关 Unity 自动文件和 Tabsil/Mineral 删除状态。
 - 下一轮继续检查真实 Prefab / Scene / Catalog 装配和旧资源清理，尤其是 Unity 导入后是否存在 Missing Script、旧脚本 GUID、未绑定的新 ViewPart 字段，以及业务 UI 打开后的真实输入和动画播放。
+
+### 2026-05-07 阶段 12 深度迁移：角色选择显式装配与暂停 / 战斗页无效入口清理
+
+完成内容：
+
+- 按强制流程重新读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity Script / Architecture / Async / Script Design 技能说明；确认本轮继续按较大业务批次收口，不做完整 Play Mode 回归。
+- 清理战斗页和暂停页中没有真实 Prefab 对应的背包入口：`GamingUIPage`、`GamePauseMenu` 删除 `InventoryUI` 字段、`WarmUp()`、`ConfigureSession()` / `ReleaseSession()` 调用，`PauseMenuContext` 以及 `UIPageContextFactory.CreatePauseMenuContext()` 一并删除。
+- `GamingPageContext` 收缩为仅携带战斗 HUD 实际使用的 `Player` / `CurrencyWallet`，`UIPageContextFactory.CreateGamingPageContext()` 改为只装配这两项；`ShopPageContext` 继续保留商店与背包会话。
+- 角色选择页改为显式 payload：`GameManager` 序列化引用 `CharacterSelectionManager`，打开 `CharacterSelectUIPage` 时通过 `OpenContext` 直接传入该管理器；`CharacterSelectUIPage` 不再使用 `CharacterSelectionManager.Instance` 兜底，也不再保留空的 Inspector Manager 字段。
+- 删除只有一个实现且只为页面转发的 `ICharacterSelectionService`，`CharacterSelectionManager` 保持具体管理器职责即可；同时清理 `UI Character Selection.prefab`、`UI Gaming.prefab`、`UI Pause.prefab` 和 `Game Scene.unity` 中对应的空序列化字段。
+- 补充 `CharacterSelectUIPage` 的字段校验，确保角色信息卡、角色列表、确认按钮、返回按钮缺失时能直接报出可定位异常，而不是在选择流程中空引用。
+
+修改文件：
+
+- `Assets/Scripts/Managers/CharacterSelectionManager.cs`
+- `Assets/Scripts/Managers/GameManager.cs`
+- `Assets/Scripts/Managers/ICharacterSelectionService.cs`
+- `Assets/Scripts/Managers/ICharacterSelectionService.cs.meta`
+- `Assets/Scripts/UI/Contexts/GamingPageContext.cs`
+- `Assets/Scripts/UI/Contexts/PauseMenuContext.cs`
+- `Assets/Scripts/UI/Contexts/PauseMenuContext.cs.meta`
+- `Assets/Scripts/UI/Contexts/UIPageContextFactory.cs`
+- `Assets/Scripts/UI/Instances/CharacterSelect/CharacterSelectUIPage.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Character Selection.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Gaming.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Pause.prefab`
+- `Assets/Scenes/Game Scene.unity`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已执行 `git grep` 确认 `ICharacterSelectionService`、`PauseMenuContext`、`CreatePauseMenuContext`、`ResolveSelectionService`、`inventoryUI: {fileID: 0}` 以及 `currentContext.InventoryOperateManager` 无业务命中。
+- 已执行 `git grep` 确认旧商店 / 背包 / HUD 包装类残留继续为空，只有 `UIManager.Instance` 框架自有属性定义保留。
+- 已对 `Game Scene.unity` 的 `GameManager` 绑定和 `UI Character Selection.prefab` / `UI Gaming.prefab` / `UI Pause.prefab` 做了静态字段核查，空序列化入口已收口。
+- 已执行 `git diff --check`，仅有换行风格提示，无空白错误。
+- 本轮按用户要求未执行完整 Unity Play Mode；角色选择管理器装配、暂停页关闭链路和战斗页输入链路仍需后续真实场景验证。
+
+遗留风险：
+
+- `CharacterSelectionManager` 现在通过场景显式引用传入 `GameManager`；如果后续主场景对象装配被打散，需要先补齐场景引用再进入角色选择流程。
+- 本轮只清掉战斗页 / 暂停页无效背包入口，没有对 `Player`、`StageCompleteSummaryManager` 等非 UI 业务系统的单例查找做额外迁移。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`；本批提交必须排除。
+
+下一步：
+
+- 继续做真实 Prefab / Scene / Catalog 的轻量装配检查，重点核对 `UI Character Selection.prefab`、`Game Scene.unity`、`OrangeUIViewCatalog.asset` 和卡片 / 宝箱 / 设置面板引用是否还有遗漏。
+- 若无新的结构问题，就把这批角色选择与暂停 / 战斗页收口作为一个可回退提交提交掉，再继续下一组业务迁移。

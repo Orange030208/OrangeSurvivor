@@ -110,7 +110,6 @@ MonoBehaviour:
   continueButton: {fileID: 2847696012931218655}
   settingsButton: {fileID: 4232152046907614145}
   menuButton: {fileID: 279844879927022756}
-  inventoryUI: {fileID: 0}
   settingsPanel: {fileID: 6459762130947061452}
 --- !u!114 &4513989171235067532
 MonoBehaviour:

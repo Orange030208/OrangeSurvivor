@@ -25652,6 +25652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiManager: {fileID: 2066110832}
   player: {fileID: 0}
+  characterSelectionManager: {fileID: 360436080}
   mapGenerator: {fileID: 595972524}
   inventoryOperateManager: {fileID: 1941351701}
   shopManager: {fileID: 59292223}
