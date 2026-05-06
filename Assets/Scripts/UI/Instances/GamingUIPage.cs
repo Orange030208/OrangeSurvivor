@@ -28,7 +28,8 @@ public class GamingUIPage : PageBase
     {
         base.Awake();
         ValidateConfiguration();
-        InventoryUiBinder.WarmUp(this, ref inventoryUI);
+        ResolveViewParts();
+        inventoryUI?.WarmUp();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
@@ -37,7 +38,7 @@ public class GamingUIPage : PageBase
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
         BindInput(currentContext.Player);
-        InventoryUiBinder.Bind(this, ref inventoryUI, currentContext.InventoryOperateManager, OwnerUIManager);
+        inventoryUI?.ConfigureSession(currentContext.InventoryOperateManager, OwnerUIManager);
         BindHud(currentContext);
         menuButton.OnClicked += OnPauseClicked;
         return UniTask.CompletedTask;
@@ -48,7 +49,7 @@ public class GamingUIPage : PageBase
         UnbindInput();
         UnbindHud();
         menuButton.OnClicked -= OnPauseClicked;
-        InventoryUiBinder.Release(inventoryUI);
+        inventoryUI?.ReleaseSession();
         currentContext = null;
     }
 
@@ -97,9 +98,6 @@ public class GamingUIPage : PageBase
         BindPlayerHud(context.Player);
         RefreshCurrencyDisplay(context.CurrencyWallet);
 
-        buffBarUI.ConfigureUIManager(OwnerUIManager);
-        buffBarUI.gameObject.SetActive(true);
-
         GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
     }
 
@@ -116,14 +114,14 @@ public class GamingUIPage : PageBase
 
         UnbindPlayerLevel();
         characterStatusPanel.Unbind();
-        buffBarUI.UnbindPlayer();
+        buffBarUI.EndSession();
     }
 
     private void BindPlayerHud(Player player)
     {
         UnbindPlayerLevel();
         characterStatusPanel.BindPlayer(player);
-        buffBarUI.BindPlayer(player);
+        buffBarUI.BeginSession(player, OwnerUIManager);
 
         playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
         if (playerLevel == null)
@@ -181,6 +179,8 @@ public class GamingUIPage : PageBase
 
     private void ValidateConfiguration()
     {
+        ResolveViewParts();
+
         if (waveText == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing wave text.");
@@ -214,6 +214,14 @@ public class GamingUIPage : PageBase
         if (moveJoystick == null)
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing move joystick.");
+        }
+    }
+
+    private void ResolveViewParts()
+    {
+        if (inventoryUI == null)
+        {
+            inventoryUI = GetComponentInChildren<InventoryUI>(true);
         }
     }
 }

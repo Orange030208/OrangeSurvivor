@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求删除商店侧栏 / 列表纯包装类，战斗 HUD / 输入编排已压回 `GamingUIPage`，升级卡刷新链路已改为页面持有 ViewPart 的事件协作。下一步继续检查背包列表 / 操作浮层 Host、设置面板真实 Prefab 挂载、卡片表现与 Orange Motion 的边界，以及最终真实场景验收。
+当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求让页面管理真实 ViewPart：`ShopUIPage` 显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，`InventoryUI` 已压回列表渲染、操作 Popup 打开和页面注入职责，`SettingsPanelManager` 自己管理设置面板显示 / 隐藏 / 关闭等待，`WaveTransitionUIPage` 显式管理升级卡组与宝箱面板，`GamingUIPage` 直接管理 HUD / 输入并通过 `BuffBarUI.BeginSession()` 注入 Tooltip 所属 `UIManager`。下一步应提交本批真实 ViewPart 收口，然后继续做真实资源 / 场景装配与旧资源清理检查。
 
 已完成：
 
@@ -406,7 +406,7 @@
 - 已完成描述 Tooltip 迁入 Orange Tooltip：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 改用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 删除旧内嵌 Tooltip PrefabInstance 和页面字段引用，Tooltip 定位、唯一实例、裁剪、诊断与池化交由 Orange TooltipStack 处理。
 - 已完成 StageComplete 结算页上下文显式化：新增 `StageCompletePageContext`，`GameManager` 通过显式引用的 `StageCompleteSummaryManager` 创建快照 payload 打开 `StageCompleteUIPage`，页面不再持有或查找 `StageCompleteSummaryManager`。
 - 已完成旧动画 / 点击组件命名空间迁移：`UIClickTarget`、`IUIRuntimeMotion`、`IUISequenceMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track 与对应编辑器脚本迁入 `Assets/Scripts/OrangeUIFramework/` 和 `Orange.UIFramework`，并同步更新 Motion 资产中的 `SerializeReference` 类型记录。
-- 已完成 UI 子视图 `Region` 命名与目录收口：`GamingHudView`、`GamingInputView`、`ShopListView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`SidebarMotion`、`SidebarToggleView`、`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 等仍作为页面私有协作对象保留，但不再放在 `Assets/Scripts/UI/Regions`，也不再使用会被误解为框架抽象的 `Region` 命名。
+- 已完成 UI 子视图 `Region` 命名与目录收口，并继续按真实职责拆分 / 压平：`GamingHudView`、`GamingInputView`、商店纯包装类、`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 均已删除；商店商品列表、属性侧栏和库存侧栏改为 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel` 三个真实 `ViewPartBase`，背包列表与操作 Popup 逻辑压回 `InventoryUI`。
 - 已删除未实现、未引用的 `IPlayerHudFacade` 死接口；随后按用户反馈继续删除 `IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext` 和两个 Manager Facade，页面 Context 直接携带 `InventoryOperateManager` / `ShopManager`。
 - 已完成 `UI/Contracts` 目录命名收口并继续删除 `UI/Facades` 空目录：有效页面 payload 位于 `Assets/Scripts/UI/Contexts`，背包快照和操作 payload 位于 `Assets/Scripts/UI/Snapshots`，不再保留容易被误解为无效抽象集合的 `Contracts` / `Facades` 目录。
 - 已完成业务子视图 UIManager 入口显式化：`ViewHandle` 携带 Owner UIManager，`ViewBase` 暴露 `OwnerUIManager` 给页面，`GamingUIPage`、`ShopUIPage`、`GamePauseMenu` 在打开时把 UIManager 注入背包和 Tooltip 子视图；业务 UI 目录不再直接读取 `UIManager.Instance`。
@@ -416,15 +416,15 @@
 - 已完成背包 Facade Host 空标记接口收口并继续删除 Facade 绕路层：删除 `IInventoryUiFacadeHost` 后，`InventoryUI` 现在只根据外部配置或本地显式 `InventoryOperateManager` 决定是否启动。
 - 已完成业务容器未消费接口收口：删除仅出现在实现声明中的 `IContainerQualityRender` 和 `IConfigurable<T>`，`UIContainerBase`、`InventoryOperatePopupBase` 继续保留具体 `RenderQuality()` / `Configure()` 方法。
 - 已完成阶段 12 表层静态扫描：旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录、页面手工 Tooltip / Popup 托管、业务 UI 中的 `UIManager.Instance` 直接读取和 Missing Script 未发现运行时代码或真实资源残留；但该结论不能覆盖业务子 UI 是否完整迁入 `ViewPartBase`，也不能覆盖 Facade 类绕路抽象是否应该保留。
-- 已开始业务 UI 深度迁移批次：设置面板、Buff、角色选择卡片 / 列表、背包物品、`InventoryUI`、属性容器、升级卡片组、卡片动效和品质表现等挂在 Prefab 上的业务 UI 组件已迁入 `ViewPartBase`；独立预览工具 `ItemQualityPreviewSceneController` 不属于运行时 UI 框架入口，暂不迁。
+- 已开始业务 UI 深度迁移批次：设置面板、Buff、角色选择卡片 / 列表、描述器 `Describer`、背包物品、`InventoryUI`、属性容器、升级卡片组、卡片动效和品质表现等挂在 Prefab 上的业务 UI 组件已迁入 `ViewPartBase`；独立预览工具 `ItemQualityPreviewSceneController` 不属于运行时 UI 框架入口，暂不迁。
 - 已完成商店侧栏 / 列表编排深度收口：删除 `ShopPageController`、`ShopListView`、`ShopItemGroupView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`ShopPageState`、`PropertiesDescriberBinding`、`SidebarMotion`、`SidebarToggleView` 及其 `.meta`，`ShopUIPage` 直接订阅 `ShopManager`、渲染列表、维护左右侧栏状态、调用侧栏 `IUIRuntimeMotion`、绑定属性描述器，并注入内嵌 `InventoryUI`。
-- 已完成战斗 HUD / 输入编排收口：删除 `GamingHudView`、`GamingInputView` 及其 `.meta`，`GamingUIPage` 直接订阅波次 / 货币事件、绑定玩家等级和角色状态、注入 `BuffBarUI` 的 UIManager，并在 `OnTick()` 直接把摇杆输入写给 `IPlayerMoveInputReceiver`。
+- 已完成战斗 HUD / 输入编排收口：删除 `GamingHudView`、`GamingInputView` 及其 `.meta`，`GamingUIPage` 直接订阅波次 / 货币事件、绑定玩家等级和角色状态，通过 `BuffBarUI.BeginSession(player, OwnerUIManager)` 建立 Buff Tooltip 会话，并在 `OnTick()` 直接把摇杆输入写给 `IPlayerMoveInputReceiver`。
 - 已完成升级卡刷新链路收口：`WaveTransitionManager` 不再 `FindFirstObjectByType<WaveTransitionUpgradeCardGroup>()`，改为发布 `UpgradeCardsRefreshOutRequestedEvent`；`WaveTransitionUIPage` 调用自身持有的 `WaveTransitionUpgradeCardGroup.PlayRefreshOutAsync()` 后发布 `UpgradeCardsRefreshOutCompletedEvent`，Manager 再重新配置升级卡。
-- 已复核设置面板与卡片 Motion 边界：`SettingsPanelManager` 保持为挂载 Prefab 的 `ViewPartBase`，由 `MenuUIPage` / `GamePauseMenu` 持有设置侧栏 Motion；`CardMotionController` / `CardQualityVisualController` 保持业务表现 ViewPart，内部调用 Orange `UIMotionPlayer`，不把卡片品质、浮动、指针倾斜等业务语义并入 Orange Motion 核心。
+- 已复核设置面板与卡片 Motion 边界：`SettingsPanelManager` 保持为挂载 Prefab 的 `ViewPartBase`，自身管理显示 / 隐藏、交互开关和关闭等待；设置面板 Motion 在自身 `Awake()` 中刷新默认起点后立即隐藏，并在 Prefab 上关闭该面板 `refreshDefaultsOnEnable`，避免隐藏态被复用采样为默认起点。`CardMotionController` / `CardQualityVisualController` 保持业务表现 ViewPart，内部调用 Orange `UIMotionPlayer`，不把卡片品质、浮动、指针倾斜等业务语义并入 Orange Motion 核心。
 
 未完成：
 
-- 业务 UI 深度迁移仍在进行：背包列表 / 操作浮层 Host、Inventory 内部状态、设置面板真实 Prefab 挂载、卡片 / 物品格动效复用、Buff Tooltip 真实输入，以及各业务页面打开后的真实装配仍需继续核查。
+- 业务 UI 深度迁移仍在进行：当前商店、背包、设置、Buff Tooltip、升级卡 / 宝箱链路已完成代码与 Prefab 层面的真实 ViewPart 收口；下一步重点转为真实资源 / 场景装配、Catalog 注册、旧资源清理、Missing Script、真实输入与动画播放的轻量核查。
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
 - `UI/Contexts` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；`UI/Facades` 已删除，后续重点不是再加桥接层，而是确认剩余业务协作对象是否有真实职责。
@@ -434,7 +434,7 @@
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
 - 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找、旧动画 / 点击命名空间已删除。后续风险集中在业务 Manager 层仍存在非 UI 框架范围的场景查找，以及最终真实 Play Mode 验收尚未执行。
-- 阶段 12 表层旧托管扫描已完成，但业务 UI 深度迁移未完成；商店和战斗 HUD 纯包装类已删除，剩余风险集中在背包内部 Host / 列表是否还应继续压平、真实 Play Mode 场景装配、Prefab 引用、输入事件和动画播放是否符合预期。
+- 阶段 12 表层旧托管扫描已完成，但真实场景验收未完成；商店和战斗 HUD 纯包装类已删除，背包内部列表 / Popup / Binder 已压回 `InventoryUI`，设置面板 / Buff Tooltip / 描述器 / 宝箱面板已纳入真实 `ViewPartBase`。剩余风险集中在 Unity 导入后的 Prefab 引用、Catalog 注册、真实 Play Mode 场景装配、输入事件和动画播放是否符合预期。
 - 当前 worktree 仍有无关 Unity 自动导入痕迹和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`。这些变更不属于 Orange UI 迁移，后续提交必须继续排除，除非用户明确要求处理。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
@@ -454,11 +454,11 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认最新提交包含“收口商店与战斗 UI 编排”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
-4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查背包内部 `InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 是否仍有只转发一层的包装，判断是否要压回 `InventoryUI` 或保留为真实职责对象。
-5. 检查设置面板真实 Prefab 挂载与 `MenuUIPage` / `GamePauseMenu` 动画关系，确认 `SettingsPanelManager` 不存在旧托管或独立 UIManager 依赖。
-6. 检查卡片表现与 Orange Motion 的边界，确认 `CardMotionController` / `CardQualityVisualController` 只承载业务表现，不重复实现 Orange Motion 核心职责，也不依赖旧命名空间。
-7. 检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住。
+3. 确认最新提交包含“真实 ViewPart 收口：商店 / 背包 / 设置 / Buff / 宝箱”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
+4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查真实 Prefab / Scene / Catalog 装配：`UI Shop.prefab`、`UI Pause.prefab`、`UI Menu.prefab`、`UI Wave Transition.prefab`、`UI Gaming.prefab`、`OrangeUIViewCatalog.asset` 是否还有 Missing Script、旧脚本 GUID、旧字段或未挂载的新 ViewPart。
+5. 检查卡片表现与 Orange Motion 的真实资源边界，确认 `CardMotionController` / `CardQualityVisualController` 的 Prefab 引用完整，`UIMotionPlayer.refreshDefaultsOnEnable` 修复没有被具体业务组件误用覆盖。
+6. 检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住。
+7. 继续清理旧资源残留，但不要提交无关的 `DOTweenSettings.asset`、`ProjectSettings.asset` 和 Tabsil/Mineral 插件删除状态，除非用户明确要求处理。
 8. 验证仍以轻量静态 / 编译断点为主，不为每个小模块跑完整 Play Mode；真实场景验收放到深度迁移批次完成后统一执行。
 9. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
 10. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
@@ -473,6 +473,55 @@
 - 禁止一次性大改旧 UI 框架和业务页面。
 
 ## 8. 详细进度日志
+
+### 2026-05-06 阶段 12 深度迁移：商店与背包真实 ViewPart 收口
+
+完成内容：
+
+- 根据用户反馈修正上一轮“删除包装类后页面过度摊平”的问题：删除纯壳不等于把所有 UI 逻辑塞进 Page，页面应直接管理有真实职责的 `ViewPartBase`。
+- 新增 `ShopItemListUI`，承接商店商品列表渲染、卡片复用、锁定 / 购买事件转发和 LayoutGroup 位移动画；`ShopUIPage` 不再直接持有商品 Prefab、商品父节点、列表复用集合和布局补间。
+- 新增 `ShopPropertiesPanel`，承接属性侧栏 Motion、展开 / 收起按钮、`PropertiesManager` 订阅和属性描述器刷新；`ShopUIPage` 不再直接维护属性侧栏显隐状态。
+- 新增 `ShopInventoryPanel`，承接库存侧栏 Motion、展开 / 收起按钮和内嵌 `InventoryUI` 会话绑定；`ShopUIPage` 只把 `InventoryOperateManager` 与 `OwnerUIManager` 交给该 ViewPart。
+- `UI Shop.prefab` 根节点显式挂载 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel`，复用旧商品列表、左右侧栏 Motion、箭头按钮、属性描述器和内嵌 `InventoryUI` 引用，避免运行时隐式补组件。
+- 压平 `InventoryUI` 内部剩余纯包装对象：删除 `InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 及其 `.meta`，列表渲染、背包物品点击、Orange Popup 打开 / 关闭、出售 / 合并事件、Popup 请求版本控制统一由 `InventoryUI` 这个真实 ViewPart 管理。
+- `GamingUIPage` 与 `GamePauseMenu` 改为直接调用 `InventoryUI.ConfigureSession()`、`ReleaseSession()` 和 `WarmUp()`，不再通过 Binder 注入。
+- 修正 `InventoryUI` 打开新 Popup 时的版本控制：替换旧 Popup 只关闭旧 handle，不递增当前打开请求版本，也不清空当前操作 entry，避免新 Popup 被替换关闭流程误判为过期。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopItemListUI.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopPropertiesPanel.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopInventoryPanel.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryListView.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryOperatePopupHost.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUiBinder.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Shop.prefab`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按强制流程读取 Git 状态、本实施计划、开发文档，并读取 Unity Architecture / Script Design / UI 技能说明。
+- 已执行残留引用扫描，确认 `InventoryUiBinder`、`InventoryListView`、`InventoryOperatePopupHost`、`IInventoryUiFacade`、`IShopUiFacade`、`ShopListView`、`ShopItemGroupView`、`ShopSidebarHost`、`ShopPageController`、`GamingHudView`、`GamingInputView` 在 `Assets/Scripts` 下无运行时代码引用。
+- 已执行 `git diff --check` 覆盖本轮脚本和 `UI Shop.prefab`，仅剩 LF/CRLF 换行提示，无空白错误。
+- 尝试执行 `dotnet build Assembly-CSharp.csproj --no-restore -v:minimal`，但 Unity 自动生成的 `Assembly-CSharp.csproj` 仍引用上一批已删除脚本路径，例如 `ShopPageController.cs`、`ShopListView.cs`、`GamingHudView.cs`、`InventoryListView.cs` 等，导致 CS2001 缺源文件错误；本轮未手改 Unity 自动生成项目文件，需由 Unity Editor 重新生成 `.csproj` 后再做编译确认。
+- 本轮按用户要求未执行完整 Unity 编译和 Play Mode；真实商店侧栏、背包 Popup、暂停 / 战斗背包挂载仍需后续打开 Unity 场景验证。
+
+遗留风险：
+
+- 新增的三个商店 ViewPart 已写入 `UI Shop.prefab`，但尚未由 Unity Editor 导入后检查 Inspector 序列化是否完全稳定。
+- `InventoryUI` 现在直接管理 Popup 请求版本和 handle，代码路径更集中，但需要真实场景验证连续点击不同背包物品、关闭 Popup、出售 / 合并刷新快照时不会误关或重复打开。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`；这些不属于本轮 Orange UI 迁移提交范围。
+
+下一步：
+
+- 不要恢复已删除的商店 / 背包 Host / View / Binder 包装类。
+- 继续检查设置面板真实 Prefab 挂载与 `MenuUIPage` / `GamePauseMenu` 动画关系。
+- 继续检查 `CardMotionController` / `CardQualityVisualController` 与 Orange Motion 的边界，以及升级卡 / 宝箱选择链路的真实运行路径。
 
 ### 2026-05-04 阶段 0 规划
 
@@ -2821,3 +2870,62 @@
 
 - 先提交本批商店 / 战斗 UI 编排收口。
 - 下一轮按 `下一轮入口` 优先检查背包内部 Host / 列表链路、设置面板真实 Prefab 挂载、卡片动效复用和升级卡 / 宝箱真实场景路径。
+
+### 2026-05-06 阶段 12 深度迁移：真实 ViewPart 批次收口
+
+完成内容：
+
+- 在前一批商店 / 战斗编排收口基础上继续修正用户反馈的“删除包装类后仍要由页面管理真实子部件”要求。
+- `ShopUIPage` 保持页面编排职责，显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel` 三个真实 `ViewPartBase`；旧商店 View / Host / Controller / Sidebar 包装类不恢复。
+- `InventoryUI` 继续承担背包列表渲染、物品点击、Orange Popup 打开 / 关闭、出售 / 合并事件、Popup 请求版本控制；`InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 已删除。
+- `SettingsPanelManager` 改为设置面板真实 ViewPart：自身管理显示 / 隐藏、CanvasGroup 交互开关、`HideAsync()` 关闭等待、音量状态和 PlayerPrefs；`MenuUIPage` / `GamePauseMenu` 只持有该子部件并调用显示状态，不再直接持有设置侧栏 Motion / CanvasGroup 裸字段。
+- 修正设置面板 Motion 复用起点风险：`SettingsPanelManager.Awake()` 中先 `RefreshDefaults()` 再采样隐藏态；`Settings Panel.prefab` 上关闭该面板自身 `UIMotionPlayer.refreshDefaultsOnEnable`，避免重新启用时把隐藏态采成默认起点。
+- `DOTweenUniTaskExtensions` 改为 public，使业务 ViewPart 可以直接等待 DOTween 完成，避免 `SettingsPanelManager.HideAsync()` 因扩展类可见性不足而编译失败。
+- `WaveTransitionUIPage` 显式管理 `WaveTransitionUpgradeCardGroup` 和新增 `WaveTransitionChestPanel`，宝箱显示 / 隐藏 / 清理由真实 ViewPart 承担，不再由页面直接控制 `AccessoryOperateContainer` 裸字段。
+- `BuffBarUI` 改为 `BeginSession(player, OwnerUIManager)` / `EndSession()` 会话接口，动态 Buff 图标通过 `TooltipHoverTarget.ConfigureOwner()` 接收所属 `UIManager`，不恢复旧 Presenter 或 `UIManager.Instance`。
+- `Describer` 基类迁入 `ViewPartBase`，角色信息、属性描述、升级卡描述等挂在 Prefab 上的描述器也纳入页面子部件体系。
+
+修改文件：
+
+- `Assets/Scripts/OrangeUIFramework/Motions/Runtime/DOTweenUniTaskExtensions.cs`
+- `Assets/Scripts/UI/Instances/CharacterSelect/Describer.cs`
+- `Assets/Scripts/UI/Instances/Child/BuffBarUI.cs`
+- `Assets/Scripts/UI/Instances/Child/InventoryUI.cs`
+- `Assets/Scripts/UI/Instances/Child/SettingsPanelManager.cs`
+- `Assets/Scripts/UI/Instances/Child/TooltipHoverTarget.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopItemListUI.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopPropertiesPanel.cs`
+- `Assets/Scripts/UI/Instances/Child/ShopInventoryPanel.cs`
+- `Assets/Scripts/UI/Instances/Child/WaveTransitionChestPanel.cs`
+- `Assets/Scripts/UI/Instances/GamePauseMenu.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/MenuUIPage.cs`
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Instances/WaveTransitionUIPage.cs`
+- `Assets/Resources/Prefabs/New UI/Pages/Setting/Settings Panel.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Menu.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Pause.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Shop.prefab`
+- `Assets/Resources/Prefabs/New UI/Pages/UI Wave Transition.prefab`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已按强制流程读取 Git 状态、本文、`ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`，并读取 Unity Script / Architecture / Async / Script Design 技能说明。
+- 已执行 `git diff --check` 覆盖本轮脚本、Prefab 和两份文档；仅出现 LF/CRLF 转换提示，无空白错误。
+- 已执行旧包装 / Facade / 全局入口残留扫描：`IInventoryUiFacade`、`IShopUiFacade`、`IInventoryFacadeContext`、`ManagerInventoryUiFacade`、`ManagerShopUiFacade`、`InventoryUiBinder`、`InventoryListView`、`InventoryOperatePopupHost`、商店旧 View / Host / Controller / Sidebar、`GamingHudView`、`GamingInputView`、`ConfigureUIManager()`、`UIManager.Instance`、`FindFirstObjectByType<UIManager>`、`ActivePresenter` 均无运行时代码或真实资源命中。
+- 已执行挂载型业务 UI 基类扫描：`Assets/Scripts/UI` 下直接继承 `MonoBehaviour` 的运行时代码只剩 `ItemQualityPreviewSceneController`，它是独立预览场景工具，不属于运行时 UI 框架入口。
+- 已执行 Missing Script 扫描：`git grep -n "m_Script: {fileID: 0" -- Assets/Resources Assets/Scenes Assets/Prefabs` 无命中。
+- 已尝试执行 `dotnet build Assembly-CSharp.csproj --no-restore -v:minimal`；构建失败原因是 Unity 生成的 `.csproj` 仍引用本轮删除的旧脚本路径，例如 `ShopPageController.cs`、`InventoryUiBinder.cs`、`InventoryListView.cs`、`GamingHudView.cs`。这属于项目文件未由 Unity 重新生成的状态，不手改 `.csproj`，需 Unity 导入 / 刷新项目文件后再确认真实编译。
+
+遗留风险：
+
+- 本轮仍未执行完整 Unity Play Mode 和真实场景手动验收；商店侧栏、背包 Popup、设置面板动画、Buff Tooltip、升级卡刷新、宝箱选择链路需要 Unity 导入后在真实场景中验证。
+- `Assembly-CSharp.csproj` 当前不能作为本轮迁移代码正确性的最终依据，必须等待 Unity 重新生成项目文件。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`；本批提交必须排除。
+
+下一步：
+
+- 提交本批真实 ViewPart 收口，不要包含无关 Unity 自动文件和 Tabsil/Mineral 删除状态。
+- 下一轮继续检查真实 Prefab / Scene / Catalog 装配和旧资源清理，尤其是 Unity 导入后是否存在 Missing Script、旧脚本 GUID、未绑定的新 ViewPart 字段，以及业务 UI 打开后的真实输入和动画播放。

@@ -9,8 +9,14 @@ public class WaveTransitionUIPage : PageBase
     [SerializeField] private WaveTransitionUpgradeCardGroup upgradeCardGroup;
 
     [Header("宝箱")]
-    [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
-    [SerializeField] private Transform chestContainerParent;
+    [SerializeField] private WaveTransitionChestPanel chestPanel;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        ResolveViewParts();
+        ValidateConfiguration();
+    }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
@@ -19,7 +25,7 @@ public class WaveTransitionUIPage : PageBase
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Subscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
-        SetChestSelectionVisible(false);
+        chestPanel.Hide();
         SetUpgradeSelectionVisible(false);
         GameEventBus.Publish(new RequestWaveTransitionStateSnapshotEvent());
         return UniTask.CompletedTask;
@@ -32,7 +38,7 @@ public class WaveTransitionUIPage : PageBase
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Unsubscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
-        accessoryOperateContainer.CleanUp();
+        chestPanel.Clear();
         upgradeCardGroup?.Clear();
     }
 
@@ -57,7 +63,7 @@ public class WaveTransitionUIPage : PageBase
 
     private void ShowSelectAccessory(AccessorySelectionStartedEvent eventData)
     {
-        accessoryOperateContainer.Configure(eventData.accessoryData);
+        chestPanel.Show(eventData.accessoryData);
     }
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
@@ -99,12 +105,7 @@ public class WaveTransitionUIPage : PageBase
 
     private void SetChestSelectionVisible(bool visible)
     {
-        chestContainerParent.gameObject.SetActive(visible);
-        accessoryOperateContainer.gameObject.SetActive(visible);
-        if (!visible)
-        {
-            accessoryOperateContainer.CleanUp();
-        }
+        chestPanel.SetVisible(visible);
     }
 
     private void SetUpgradeSelectionVisible(bool visible)
@@ -118,4 +119,29 @@ public class WaveTransitionUIPage : PageBase
         upgradeCardGroup.SetVisible(visible);
     }
 
+    private void ResolveViewParts()
+    {
+        if (upgradeCardGroup == null)
+        {
+            upgradeCardGroup = GetComponentInChildren<WaveTransitionUpgradeCardGroup>(true);
+        }
+
+        if (chestPanel == null)
+        {
+            chestPanel = GetComponentInChildren<WaveTransitionChestPanel>(true);
+        }
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (upgradeCardGroup == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveTransitionUIPage)} '{name}' is missing upgrade card group.");
+        }
+
+        if (chestPanel == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveTransitionUIPage)} '{name}' is missing chest panel.");
+        }
+    }
 }

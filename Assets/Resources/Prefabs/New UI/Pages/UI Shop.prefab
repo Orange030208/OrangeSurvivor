@@ -78,6 +78,9 @@ GameObject:
   - component: {fileID: 3919912862414021162}
   - component: {fileID: 8811404232182784892}
   - component: {fileID: 1651732239380549356}
+  - component: {fileID: 7398201450813429011}
+  - component: {fileID: 7398201450813429012}
+  - component: {fileID: 7398201450813429013}
   - component: {fileID: 3339615293881789033}
   - component: {fileID: 3866200215160491881}
   m_Layer: 5
@@ -146,19 +149,58 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20fbf61079626084c8bfcc689ca35b08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shopItemPrefab: {fileID: 6212716520622307748, guid: c47cbde30f70ad740a9bdb5d767aaf12, type: 3}
-  shopItemParent: {fileID: 8969939917851105321}
+  m_Name:
+  m_EditorClassIdentifier:
+  itemList: {fileID: 7398201450813429011}
   rerollButton: {fileID: 1667616793229232022}
   continueButton: {fileID: 4398614357056526755}
   rerollCostText: {fileID: 950086506306574783}
   currencyText: {fileID: 2607457919317532470}
-  propertiesSidebar: {fileID: 3612824470567797443}
-  propertiesToggleButton: {fileID: 5786650212898361234}
+  propertiesPanel: {fileID: 7398201450813429012}
+  inventoryPanel: {fileID: 7398201450813429013}
+--- !u!114 &7398201450813429011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b04bfb02a9b4c2094f8e0e9463baf11, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  itemPrefab: {fileID: 6212716520622307748, guid: c47cbde30f70ad740a9bdb5d767aaf12, type: 3}
+  itemParent: {fileID: 8969939917851105321}
+--- !u!114 &7398201450813429012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48132792f6a94d3b9dcf50d68edc4d10, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 3612824470567797443}
+  toggleButton: {fileID: 5786650212898361234}
   propertiesDescriber: {fileID: 3866747479743589785}
-  inventorySidebar: {fileID: 1730573582740224298}
-  inventoryToggleButton: {fileID: 6734765040095314348}
+--- !u!114 &7398201450813429013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e33c292cbd4e43d28cf3cf3fbcbf7a12, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 1730573582740224298}
+  toggleButton: {fileID: 6734765040095314348}
   inventoryUI: {fileID: 5311398793965051210}
 --- !u!114 &3339615293881789033
 MonoBehaviour:

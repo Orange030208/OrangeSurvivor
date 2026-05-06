@@ -4,7 +4,7 @@ using DG.Tweening;
 
 namespace Orange.UIFramework
 {
-    internal static class DOTweenUniTaskExtensions
+    public static class DOTweenUniTaskExtensions
     {
         public static UniTask WaitForCompletionAsync(this Tween tween, CancellationToken cancellationToken)
         {

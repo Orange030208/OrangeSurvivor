@@ -27,11 +27,24 @@ public class BuffBarUI : ViewPartBase
 
     private void OnDisable()
     {
+        EndSession();
+    }
+
+    public void BeginSession(Player targetPlayer, UIManager ownerUIManager)
+    {
+        uiManager = ownerUIManager;
+        ConfigureTooltipTargets();
+        BindPlayer(targetPlayer);
+    }
+
+    public void EndSession()
+    {
         UnbindPlayer();
+        uiManager = null;
         SetVisibleItemCount(0);
     }
 
-    public void BindPlayer(Player targetPlayer)
+    private void BindPlayer(Player targetPlayer)
     {
         UnbindPlayer();
         player = targetPlayer;
@@ -53,16 +66,7 @@ public class BuffBarUI : ViewPartBase
         RenderBuffSnapshots(buffController.BuildSnapshots());
     }
 
-    public void ConfigureUIManager(UIManager manager)
-    {
-        uiManager = manager;
-        for (int i = 0; i < spawnedItems.Count; i++)
-        {
-            ConfigureTooltipTarget(spawnedItems[i]);
-        }
-    }
-
-    public void UnbindPlayer()
+    private void UnbindPlayer()
     {
         if (buffController != null)
         {
@@ -105,6 +109,14 @@ public class BuffBarUI : ViewPartBase
         }
     }
 
+    private void ConfigureTooltipTargets()
+    {
+        for (int i = 0; i < spawnedItems.Count; i++)
+        {
+            ConfigureTooltipTarget(spawnedItems[i]);
+        }
+    }
+
     private void ConfigureTooltipTarget(BuffIconItem item)
     {
         if (item == null)
@@ -113,7 +125,7 @@ public class BuffBarUI : ViewPartBase
         }
 
         TooltipHoverTarget tooltipTarget = item.GetComponent<TooltipHoverTarget>();
-        tooltipTarget?.ConfigureUIManager(uiManager);
+        tooltipTarget?.ConfigureOwner(uiManager);
     }
 
     private void SetVisibleItemCount(int visibleCount)

@@ -33,7 +33,7 @@ public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpH
         }
     }
 
-    public void ConfigureUIManager(UIManager manager)
+    public void ConfigureOwner(UIManager manager)
     {
         uiManager = manager;
     }

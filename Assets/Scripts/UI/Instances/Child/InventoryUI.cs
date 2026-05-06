@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
 public class InventoryUI : ViewPartBase
 {
+    private const string POPUP_GROUP_ID = "inventory.operate";
+
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
     [SerializeField] private Transform itemContainersParent;
@@ -11,24 +15,22 @@ public class InventoryUI : ViewPartBase
     [Header("运行时 Manager")]
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
 
+    private readonly List<InventoryItem> spawnedItems = new();
+
     private InventoryOperateManager inventoryOperateManagerSession;
     private InventoryOperateManager configuredInventoryOperateManager;
+    private UIManager uiManager;
     private bool inventorySessionStarted;
     private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
     private string currentSelectedEntryId;
     private string currentOperateEntryId;
-    private InventoryListView listView;
-    private InventoryOperatePopupHost popupHost;
+    private int popupVersion;
+    private ViewHandle currentPopupHandle;
 
     private void Awake()
     {
         ValidateConfiguration();
-        listView = new InventoryListView(name, itemPrefab, itemContainersParent);
-        popupHost = new InventoryOperatePopupHost(name);
-        listView.ItemClicked += OnItemSelected;
-        popupHost.CloseRequested += OnCloseRequested;
-        popupHost.SellRequested += OnSellRequested;
-        popupHost.MergeRequested += OnMergeRequested;
+        itemContainersParent.Clear();
     }
 
     private void OnEnable()
@@ -38,7 +40,7 @@ public class InventoryUI : ViewPartBase
 
     private void Update()
     {
-        if (!popupHost.HasOpenPopup)
+        if (!HasOpenPopup)
         {
             return;
         }
@@ -46,7 +48,7 @@ public class InventoryUI : ViewPartBase
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-            OnCloseRequested();
+            ClosePopup();
         }
     }
 
@@ -55,9 +57,20 @@ public class InventoryUI : ViewPartBase
         StopInventorySession();
     }
 
-    public void ConfigureInventoryOperateManager(InventoryOperateManager manager)
+    public void WarmUp()
     {
-        if (configuredInventoryOperateManager == manager)
+        if (itemContainersParent != null && spawnedItems.Count == 0)
+        {
+            itemContainersParent.Clear();
+        }
+    }
+
+    public void ConfigureSession(InventoryOperateManager manager, UIManager ownerUIManager)
+    {
+        bool sameManager = configuredInventoryOperateManager == manager;
+        uiManager = ownerUIManager;
+
+        if (sameManager)
         {
             if (!inventorySessionStarted && isActiveAndEnabled && manager != null)
             {
@@ -81,12 +94,7 @@ public class InventoryUI : ViewPartBase
         }
     }
 
-    public void ConfigureUIManager(UIManager manager)
-    {
-        popupHost.ConfigureUIManager(manager);
-    }
-
-    public void ReleaseConfiguredInventoryOperateManager()
+    public void ReleaseSession()
     {
         if (inventorySessionStarted && ReferenceEquals(inventoryOperateManagerSession, configuredInventoryOperateManager))
         {
@@ -94,12 +102,13 @@ public class InventoryUI : ViewPartBase
         }
 
         configuredInventoryOperateManager = null;
+        uiManager = null;
     }
 
     private void PrepareForOpen()
     {
         ClosePopupState();
-        popupHost.CloseCurrent();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
     }
 
     private void ResetAfterClose()
@@ -107,23 +116,8 @@ public class InventoryUI : ViewPartBase
         currentItems = Array.Empty<InventoryUIItemSnapshot>();
         currentSelectedEntryId = null;
         ClosePopupState();
-        listView.Clear();
-        popupHost.CloseCurrent();
-    }
-
-    private void RenderItems(InventoryUIItemSnapshot[] items)
-    {
-        listView.Render(items);
-    }
-
-    private void ShowOperatePopup(InventoryItemOperateResource resource)
-    {
-        popupHost.Show(resource);
-    }
-
-    private void CloseOperatePopup()
-    {
-        popupHost.CloseCurrent();
+        ClearItems();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
     }
 
     private InventoryOperateManager ResolveInventoryOperateManagerSession()
@@ -209,16 +203,6 @@ public class InventoryUI : ViewPartBase
         inventoryOperateManagerSession.RequestOpenItemPanel(entryId);
     }
 
-    private void OnCloseRequested()
-    {
-        if (!HasOpenPopup)
-        {
-            return;
-        }
-
-        ClosePopup();
-    }
-
     private void OnSellRequested(string entryId)
     {
         if (!IsShowingItem(entryId) || inventoryOperateManagerSession == null)
@@ -246,7 +230,7 @@ public class InventoryUI : ViewPartBase
 
         if (shouldClosePopup)
         {
-            CloseOperatePopup();
+            CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
             return;
         }
 
@@ -282,10 +266,179 @@ public class InventoryUI : ViewPartBase
         ClosePopup();
     }
 
+    private void RenderItems(InventoryUIItemSnapshot[] items)
+    {
+        ClearItems();
+        if (items == null || items.Length == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            SpawnItem(items[i]);
+        }
+    }
+
+    private void SpawnItem(InventoryUIItemSnapshot snapshot)
+    {
+        if (snapshot.ItemData == null || string.IsNullOrEmpty(snapshot.EntryId))
+        {
+            return;
+        }
+
+        InventoryItem item = Instantiate(itemPrefab, itemContainersParent);
+        item.Configure(snapshot.EntryId, snapshot.ItemData, snapshot.ColorDependencyNumber);
+        item.Clicked += OnItemSelected;
+        spawnedItems.Add(item);
+    }
+
+    private void ClearItems()
+    {
+        for (int i = 0; i < spawnedItems.Count; i++)
+        {
+            InventoryItem item = spawnedItems[i];
+            if (item == null)
+            {
+                continue;
+            }
+
+            item.Clicked -= OnItemSelected;
+            item.Dispose();
+            Destroy(item.gameObject);
+        }
+
+        spawnedItems.Clear();
+    }
+
+    private void ShowOperatePopup(InventoryItemOperateResource resource)
+    {
+        if (resource.itemData == null)
+        {
+            return;
+        }
+
+        int version = ++popupVersion;
+        currentOperateEntryId = resource.entryId;
+        ShowOperatePopupAsync(resource, version).Forget();
+    }
+
+    private async UniTaskVoid ShowOperatePopupAsync(InventoryItemOperateResource resource, int version)
+    {
+        try
+        {
+            await CloseCurrentPopupHandleAsync(CloseReason.Replace, invalidateRequest: false, clearPopupState: false);
+            if (version != popupVersion)
+            {
+                return;
+            }
+
+            PopupOptions options = new PopupOptions(
+                closeOnOutsideClick: true,
+                groupId: POPUP_GROUP_ID,
+                replaceSameGroup: true,
+                trackInStack: true,
+                preferredAnchor: FloatingViewAnchor.Center);
+
+            UIManager manager = ResolveUIManager();
+            if (resource.itemData.ItemType == ItemType.Weapon)
+            {
+                ViewHandle<WeaponOperatePopup> handle = await manager.ShowPopupAsync<WeaponOperatePopup>(resource, options);
+                if (version != popupVersion)
+                {
+                    await handle.CloseAsync(CloseReason.Cancel);
+                    return;
+                }
+
+                currentPopupHandle = handle.AsUntyped();
+                handle.View.SellRequested += OnSellRequested;
+                handle.View.MergeRequested += OnMergeRequested;
+                ObservePopupClosedAsync(currentPopupHandle, version, resource.entryId).Forget();
+                return;
+            }
+
+            ViewHandle<AccessoryInfoPopup> accessoryHandle = await manager.ShowPopupAsync<AccessoryInfoPopup>(resource, options);
+            if (version != popupVersion)
+            {
+                await accessoryHandle.CloseAsync(CloseReason.Cancel);
+                return;
+            }
+
+            currentPopupHandle = accessoryHandle.AsUntyped();
+            ObservePopupClosedAsync(currentPopupHandle, version, resource.entryId).Forget();
+        }
+        catch (Exception exception)
+        {
+            if (version == popupVersion)
+            {
+                currentOperateEntryId = null;
+            }
+
+            Debug.LogException(exception);
+        }
+    }
+
+    private async UniTaskVoid ObservePopupClosedAsync(ViewHandle handle, int version, string entryId)
+    {
+        try
+        {
+            await handle.ClosedTask;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+        }
+
+        if (version != popupVersion || !string.Equals(currentOperateEntryId, entryId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        currentOperateEntryId = null;
+        currentPopupHandle = default;
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        ClosePopupState();
+    }
+
+    private async UniTask CloseCurrentPopupHandleAsync(
+        CloseReason reason,
+        bool invalidateRequest = true,
+        bool clearPopupState = true)
+    {
+        if (invalidateRequest)
+        {
+            popupVersion++;
+        }
+
+        if (clearPopupState)
+        {
+            currentOperateEntryId = null;
+        }
+
+        ViewHandle handle = currentPopupHandle;
+        currentPopupHandle = default;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        await handle.CloseAsync(reason);
+    }
+
+    private UIManager ResolveUIManager()
+    {
+        if (uiManager != null)
+        {
+            return uiManager;
+        }
+
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires an explicit {nameof(UIManager)} before inventory operate popups can be opened.");
+    }
+
     private void ClosePopup()
     {
         ClosePopupState();
-        CloseOperatePopup();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
     }
 
     private void OpenPopupState(string entryId)

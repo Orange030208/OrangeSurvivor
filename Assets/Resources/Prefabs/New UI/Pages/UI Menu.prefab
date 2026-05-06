@@ -212,12 +212,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10c0009bb2232d14a9fe37179bb97e36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   startButton: {fileID: 6256860417183849786}
-  characterSelectButton: {fileID: 0}
   settingsButton: {fileID: 6383841706332223335}
-  settingsSidebar: {fileID: 5718291078714731189}
+  settingsPanel: {fileID: 6472109804314408231}
 --- !u!114 &4401061136781019396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,6 +1094,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!114 &6472109804314408231 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 919001000000000003, guid: 035af1b89ed94c1d8725a03242ce8dbe, type: 3}
+  m_PrefabInstance: {fileID: 920000000000000002}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb561bd6fde0485f96afc11642e2a9f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &3352820912090193273
