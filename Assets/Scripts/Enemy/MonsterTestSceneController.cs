@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Minimal scene bootstrap for Monster Test Scene. It keeps monster testing independent
@@ -26,7 +27,8 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     [SerializeField] public bool spawnOnStart = true;
 
     [Header("Runtime")]
-    [SerializeField] public EnemyRuntimeRegistry enemyRuntimeRegistry;
+    [FormerlySerializedAs("enemyRuntimeRegistry")]
+    [SerializeField] public EnemyRegistry enemyRegistry;
     [SerializeField] public Transform enemyParent;
 
     private EnemyFactory enemyFactory;
@@ -82,15 +84,15 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 
     private void EnsureRuntimeRegistry()
     {
-        if (enemyRuntimeRegistry != null)
+        if (enemyRegistry != null)
         {
             return;
         }
 
-        enemyRuntimeRegistry = FindFirstObjectByType<EnemyRuntimeRegistry>();
-        if (enemyRuntimeRegistry == null)
+        enemyRegistry = FindFirstObjectByType<EnemyRegistry>();
+        if (enemyRegistry == null)
         {
-            enemyRuntimeRegistry = new GameObject(nameof(EnemyRuntimeRegistry)).AddComponent<EnemyRuntimeRegistry>();
+            enemyRegistry = new GameObject(nameof(EnemyRegistry)).AddComponent<EnemyRegistry>();
         }
     }
 

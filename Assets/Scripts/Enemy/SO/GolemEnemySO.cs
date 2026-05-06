@@ -21,25 +21,25 @@ public class GolemEnemySO : EnemySO
     [SerializeField] private List<PropModifierData> chargeModifiers = new();
 
     [Header("Attack")]
-    [SerializeField] private EnemyAttackConfig attackConfig = new()
+    [SerializeField] private DirectDamageAttackData attackConfig = new()
     {
-        actionId = ATTACK_ACTION_ID,
-        attackSfxKey = AudioSfxKey.Slap,
-        cooldown = 1f,
-        damageMultiplier = 1f,
-        rangeSource = AttackRangeSource.AttackRangeProp,
-        fixedRange = 1f,
-        rangeMultiplier = 1f,
-        forwardOffset = 0f,
+        timing = new AttackTimingData
+        {
+            actionId = ATTACK_ACTION_ID,
+            attackSfxKey = AudioSfxKey.Slap,
+            cooldown = 1f,
+            damageMultiplier = 1f,
+        },
+        detection = new ForwardCircleDetectionData
+        {
+            rangeSource = AttackRangeSource.AttackRangeProp,
+            fixedRange = 1f,
+            rangeMultiplier = 1f,
+            forwardOffset = 0f,
+        },
     };
     [SerializeField, Min(0f)] private float postChargeAttackForwardOffset = 0f;
     [SerializeField] private List<PropModifierData> postChargeAttackModifiers = new();
-
-    [Header("Movement")]
-    [SerializeField] private EnemyMovementConfig chaseMovement = new()
-    {
-        pattern = EnemyMovementPattern.DirectChase,
-    };
 
     public float AttackCommitNormalizedTime => attackCommitNormalizedTime;
     public float AttackFinishNormalizedTime => Mathf.Max(attackCommitNormalizedTime, attackFinishNormalizedTime);
@@ -51,10 +51,9 @@ public class GolemEnemySO : EnemySO
     public float ChargeDamageRadius => chargeDamageRadius;
     public float ChargeDamageMultiplier => chargeDamageMultiplier;
     public IReadOnlyList<PropModifierData> ChargeModifiers => chargeModifiers;
-    public EnemyAttackConfig AttackConfig => attackConfig;
+    public DirectDamageAttackData AttackConfig => attackConfig;
     public float PostChargeAttackForwardOffset => Mathf.Max(0f, postChargeAttackForwardOffset);
     public IReadOnlyList<PropModifierData> PostChargeAttackModifiers => postChargeAttackModifiers;
-    public EnemyMovementConfig ChaseMovement => chaseMovement;
 
     private void OnValidate()
     {
@@ -66,16 +65,12 @@ public class GolemEnemySO : EnemySO
         postChargeStunDuration = Mathf.Max(0f, postChargeStunDuration);
         chargeDamageRadius = Mathf.Max(0f, chargeDamageRadius);
         chargeDamageMultiplier = Mathf.Max(0f, chargeDamageMultiplier);
-        attackConfig.actionId = string.IsNullOrWhiteSpace(attackConfig.actionId) ? ATTACK_ACTION_ID : attackConfig.actionId;
-        attackConfig.cooldown = Mathf.Max(0f, attackConfig.cooldown);
-        attackConfig.damageMultiplier = Mathf.Max(0f, attackConfig.damageMultiplier);
-        attackConfig.fixedRange = Mathf.Max(0f, attackConfig.fixedRange);
-        attackConfig.rangeMultiplier = Mathf.Max(0f, attackConfig.rangeMultiplier);
-        attackConfig.forwardOffset = Mathf.Max(0f, attackConfig.forwardOffset);
+        attackConfig.timing.actionId = string.IsNullOrWhiteSpace(attackConfig.timing.actionId) ? ATTACK_ACTION_ID : attackConfig.timing.actionId;
+        attackConfig.timing.cooldown = Mathf.Max(0f, attackConfig.timing.cooldown);
+        attackConfig.timing.damageMultiplier = Mathf.Max(0f, attackConfig.timing.damageMultiplier);
+        attackConfig.detection.fixedRange = Mathf.Max(0f, attackConfig.detection.fixedRange);
+        attackConfig.detection.rangeMultiplier = Mathf.Max(0f, attackConfig.detection.rangeMultiplier);
+        attackConfig.detection.forwardOffset = Mathf.Max(0f, attackConfig.detection.forwardOffset);
         postChargeAttackForwardOffset = Mathf.Max(0f, postChargeAttackForwardOffset);
-        chaseMovement.circleSpeedRatio = Mathf.Max(0f, chaseMovement.circleSpeedRatio);
-        chaseMovement.idealRangeRatio = Mathf.Max(0f, chaseMovement.idealRangeRatio);
-        chaseMovement.safeDistance = Mathf.Max(0f, chaseMovement.safeDistance);
-        chaseMovement.retreatStepDistance = Mathf.Max(0f, chaseMovement.retreatStepDistance);
     }
 }

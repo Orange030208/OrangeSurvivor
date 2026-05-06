@@ -14,10 +14,10 @@ public class FlyForestBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private FlyForestEnemySO enemyData;
-    private IEnemyRuntimeMovementStrategy currentMoveStrategy;
-    private IEnemyRuntimeMovementStrategy normalMovementStrategy;
-    private IEnemyRuntimeMovementStrategy retreatMovementStrategy;
-    private IEnemyRuntimeAttackStrategy normalAttackStrategy;
+    private IMoveStrategy currentMoveStrategy;
+    private IMoveStrategy normalMovementStrategy;
+    private IMoveStrategy retreatMovementStrategy;
+    private IAttackStrategy normalAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -62,19 +62,22 @@ public class FlyForestBrain : EnemyBrain
 
     private void BuildRuntimeStrategies()
     {
-        normalMovementStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.normalMovement);
-        retreatMovementStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
-        IEnemyRuntimeDetectionStrategy detectionStrategy =
-            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.normalAttackConfig);
-        normalAttackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+        normalMovementStrategy = new CircleKiteMoveStrategy(owner, currentMovable, propertiesManager, enemyData.normalMovement);
+        retreatMovementStrategy = new RetreatMoveStrategy(owner, currentMovable, enemyData.retreatMovement);
+        IRangeDetectionStrategy detectionStrategy = new DistanceRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            enemyData.normalAttackConfig.detection);
+        normalAttackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.normalAttackConfig,
-            detectionStrategy);
+            enemyData.normalAttackConfig.timing,
+            detectionStrategy,
+            enemyData.normalAttackConfig.projectileDefinition);
     }
 
-    private void SetMoveStrategy(IEnemyRuntimeMovementStrategy strategy)
+    private void SetMoveStrategy(IMoveStrategy strategy)
     {
         currentMoveStrategy = strategy;
     }

@@ -40,9 +40,9 @@ public class WaveManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(WaveManager)} requires at least one valid wave in {stageDefinition.name}.");
         }
 
-        if (FindFirstObjectByType<EnemyRuntimeRegistry>() == null)
+        if (FindFirstObjectByType<EnemyRegistry>() == null)
         {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRuntimeRegistry)} in the scene.");
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRegistry)} in the scene.");
         }
 
         enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);

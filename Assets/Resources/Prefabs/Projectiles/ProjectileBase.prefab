@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 6674337155533416891}
   - component: {fileID: 1390684286374318368}
   - component: {fileID: 814900668632867821}
+  - component: {fileID: 7002364698567343284}
   m_Layer: 0
-  m_Name: Projectile
+  m_Name: ProjectileBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,6 +117,19 @@ MonoBehaviour:
   maxLifetime: 5
   maxHitCount: 1
   rb: {fileID: 1390684286374318368}
+--- !u!114 &7002364698567343284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237431696250686596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 8159730140199281861}
 --- !u!1 &6368522929002085402
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,7 +140,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6430262168889228617}
   - component: {fileID: 8159730140199281861}
-  - component: {fileID: 2818777893948203160}
   - component: {fileID: 782814354403941752}
   m_Layer: 0
   m_Name: Projectile Render
@@ -202,19 +215,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2818777893948203160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6368522929002085402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 8159730140199281861}
 --- !u!95 &782814354403941752
 Animator:
   serializedVersion: 5
@@ -225,7 +225,7 @@ Animator:
   m_GameObject: {fileID: 6368522929002085402}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b28d1e172d294da7a42e168fb0505441, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

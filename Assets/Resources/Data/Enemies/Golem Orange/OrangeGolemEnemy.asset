@@ -34,19 +34,14 @@ MonoBehaviour:
     modifierType: 3
     value: 2
   attackConfig:
-    actionId: Golem_Attack
-    attackSfxKey: 3
-    cooldown: 1
-    damageMultiplier: 1
-    rangeSource: 1
-    fixedRange: 1
-    rangeMultiplier: 1
-    forwardOffset: 0
-    projectileDefinition: {fileID: 0}
+    timing:
+      actionId: Golem_Attack
+      attackSfxKey: 3
+      cooldown: 1
+      damageMultiplier: 1
+    detection:
+      rangeSource: 1
+      fixedRange: 1
+      rangeMultiplier: 1
+      forwardOffset: 0
   postChargeAttackForwardOffset: 0
-  chaseMovement:
-    pattern: 1
-    circleSpeedRatio: 0
-    idealRangeRatio: 0
-    safeDistance: 0
-    retreatStepDistance: 0

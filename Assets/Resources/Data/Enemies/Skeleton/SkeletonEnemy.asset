@@ -20,18 +20,13 @@ MonoBehaviour:
   attackCommitNormalizedTime: 0.55
   attackFinishNormalizedTime: 0.95
   attackConfig:
-    actionId: Skeleton_Attack
-    attackSfxKey: 3
-    cooldown: 1
-    damageMultiplier: 1
-    rangeSource: 1
-    fixedRange: 1
-    rangeMultiplier: 1
-    forwardOffset: 0
-    projectileDefinition: {fileID: 0}
-  chaseMovement:
-    pattern: 1
-    circleSpeedRatio: 0
-    idealRangeRatio: 0
-    safeDistance: 0
-    retreatStepDistance: 0
+    timing:
+      actionId: Skeleton_Attack
+      attackSfxKey: 3
+      cooldown: 1
+      damageMultiplier: 1
+    detection:
+      rangeSource: 1
+      fixedRange: 1
+      rangeMultiplier: 1
+      forwardOffset: 0

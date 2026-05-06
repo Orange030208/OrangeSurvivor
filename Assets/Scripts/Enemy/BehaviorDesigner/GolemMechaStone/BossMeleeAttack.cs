@@ -5,11 +5,13 @@ using BehaviorDesigner.Runtime.Tasks;
 public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
 {
     private bool attackCommitted;
+    private Entity executionTarget;
 
     public override void OnStart()
     {
         base.OnStart();
         attackCommitted = false;
+        executionTarget = TargetEntity;
         if (!HasContext)
         {
             return;
@@ -22,13 +24,13 @@ public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
 
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || !HasTarget || BossBrain?.MeleeAttackStrategy == null)
+        if (!RefreshContext() || BossBrain?.MeleeAttackStrategy == null || executionTarget == null)
         {
             return TaskStatus.Failure;
         }
 
         StopMoving();
-        FaceTarget();
+        FacingController?.FaceTarget(executionTarget);
 
         if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.MeleeHash))
         {
@@ -39,7 +41,7 @@ public sealed class BossMeleeAttack : GolemMechaStoneBossTaskBase
         if (!attackCommitted && normalizedTime >= BossData.MeleeCommitNormalizedTime)
         {
             attackCommitted = true;
-            BossBrain.MeleeAttackStrategy.TryExecute(TargetEntity);
+            BossBrain.MeleeAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
         return normalizedTime >= BossData.MeleeFinishNormalizedTime ? TaskStatus.Success : TaskStatus.Running;

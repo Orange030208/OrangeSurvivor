@@ -15,8 +15,8 @@ public class SkeletonBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private SkeletonEnemySO enemyData;
-    private IEnemyRuntimeMovementStrategy chaseMoveStrategy;
-    private IEnemyRuntimeAttackStrategy attackStrategy;
+    private IMoveStrategy chaseMoveStrategy;
+    private IAttackStrategy attackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -62,9 +62,17 @@ public class SkeletonBrain : EnemyBrain
 
     private void BuildRuntimeStrategies()
     {
-        chaseMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.ChaseMovement);
-        IEnemyRuntimeDetectionStrategy detectionStrategy = EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, enemyData.AttackConfig);
-        attackStrategy = EnemyRuntimeStrategyFactory.CreateDirectDamageAttackStrategy(owner, attackController, propertiesManager, enemyData.AttackConfig, detectionStrategy);
+        chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
+        IRangeDetectionStrategy detectionStrategy = new ForwardCircleRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            enemyData.AttackConfig.detection);
+        attackStrategy = new DirectDamageAttackStrategy(
+            owner,
+            attackController,
+            propertiesManager,
+            enemyData.AttackConfig.timing,
+            detectionStrategy);
     }
 
     private sealed class IdleState : StateBase<SkeletonAIState>

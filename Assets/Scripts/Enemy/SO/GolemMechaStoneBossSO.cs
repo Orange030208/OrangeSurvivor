@@ -1,12 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public enum GolemMechaStoneBossChaseMovementType
-{
-    DirectChase = 0,
-}
-
 [CreateAssetMenu(fileName = "GolemMechaStoneBoss", menuName = ScriptableObjectMenuPaths.GOLEM_MECHA_STONE_BOSS, order = 4)]
 public sealed class GolemMechaStoneBossSO : EnemySO
 {
@@ -72,9 +66,6 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(0f)] private float shootRangeMultiplier = 1f;
     [SerializeField] private ProjectileDefinitionSO shootProjectileDefinition;
 
-    [Header("Movement")]
-    [SerializeField] private GolemMechaStoneBossChaseMovementType chaseMovementType = GolemMechaStoneBossChaseMovementType.DirectChase;
-
     public GolemMechaStoneBossAnimationConfig BossAnimConfig => AnimConfig as GolemMechaStoneBossAnimationConfig;
     public float PhaseTwoHealthRatio => phaseTwoHealthRatio;
     public float PhaseThreeHealthRatio => phaseThreeHealthRatio;
@@ -115,7 +106,33 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public float ShootFixedRange => Mathf.Max(0f, shootFixedRange);
     public float ShootRangeMultiplier => Mathf.Max(0f, shootRangeMultiplier);
     public ProjectileDefinitionSO ShootProjectileDefinition => shootProjectileDefinition;
-    public GolemMechaStoneBossChaseMovementType ChaseMovementType => chaseMovementType;
+    public AttackTimingData MeleeTimingData => new()
+    {
+        actionId = MELEE_ACTION_ID,
+        attackSfxKey = meleeAttackSfxKey,
+        cooldown = MeleeCooldown,
+        damageMultiplier = MeleeDamageMultiplier,
+    };
+    public ForwardCircleDetectionData MeleeDetectionData => new()
+    {
+        rangeSource = meleeRangeSource,
+        fixedRange = MeleeFixedRange,
+        rangeMultiplier = MeleeRangeMultiplier,
+        forwardOffset = MeleeForwardOffset,
+    };
+    public AttackTimingData ShootTimingData => new()
+    {
+        actionId = SHOOT_ACTION_ID,
+        attackSfxKey = shootAttackSfxKey,
+        cooldown = ShootCooldown,
+        damageMultiplier = ShootDamageMultiplier,
+    };
+    public RangeDetectionData ShootDetectionData => new()
+    {
+        rangeSource = shootRangeSource,
+        fixedRange = ShootFixedRange,
+        rangeMultiplier = ShootRangeMultiplier,
+    };
 
     private void OnValidate()
     {

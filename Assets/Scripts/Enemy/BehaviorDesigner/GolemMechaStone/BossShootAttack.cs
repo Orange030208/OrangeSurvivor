@@ -5,11 +5,13 @@ using BehaviorDesigner.Runtime.Tasks;
 public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
 {
     private bool attackCommitted;
+    private Entity executionTarget;
 
     public override void OnStart()
     {
         base.OnStart();
         attackCommitted = false;
+        executionTarget = TargetEntity;
         if (!HasContext)
         {
             return;
@@ -22,13 +24,13 @@ public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
 
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || !HasTarget || BossBrain?.ShootAttackStrategy == null)
+        if (!RefreshContext() || BossBrain?.ShootAttackStrategy == null || executionTarget == null)
         {
             return TaskStatus.Failure;
         }
 
         StopMoving();
-        FaceTarget();
+        FacingController?.FaceTarget(executionTarget);
 
         if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.ShootHash))
         {
@@ -39,7 +41,7 @@ public sealed class BossShootAttack : GolemMechaStoneBossTaskBase
         if (!attackCommitted && normalizedTime >= BossData.ShootCommitNormalizedTime)
         {
             attackCommitted = true;
-            BossBrain.ShootAttackStrategy.TryExecute(TargetEntity);
+            BossBrain.ShootAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
         return normalizedTime >= BossData.ShootFinishNormalizedTime ? TaskStatus.Success : TaskStatus.Running;

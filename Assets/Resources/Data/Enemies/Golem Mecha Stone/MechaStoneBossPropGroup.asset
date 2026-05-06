@@ -18,7 +18,7 @@ MonoBehaviour:
   - propType: 1
     value: 0.35
   - propType: 5
-    value: 1800
+    value: 10000
   - propType: 6
     value: 10
   - propType: 4

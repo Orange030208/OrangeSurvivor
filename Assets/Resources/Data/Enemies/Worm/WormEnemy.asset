@@ -22,34 +22,27 @@ MonoBehaviour:
   attackCommitNormalizedTime: 0.583
   attackFinishNormalizedTime: 0.95
   attackConfig:
-    actionId: Worm_Attack
-    attackSfxKey: 300
-    cooldown: 1
-    damageMultiplier: 1
-    rangeSource: 2
-    fixedRange: 7
-    rangeMultiplier: 1
-    forwardOffset: 0
+    timing:
+      actionId: Worm_Attack
+      attackSfxKey: 300
+      cooldown: 1
+      damageMultiplier: 1
+    detection:
+      rangeSource: 2
+      fixedRange: 7
+      rangeMultiplier: 1
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
   retreatAttackConfig:
-    actionId: Worm_RetreatAttack
-    attackSfxKey: 300
-    cooldown: 1
-    damageMultiplier: 1
-    rangeSource: 2
-    fixedRange: 7
-    rangeMultiplier: 1
-    forwardOffset: 0
+    timing:
+      actionId: Worm_RetreatAttack
+      attackSfxKey: 300
+      cooldown: 1
+      damageMultiplier: 1
+    detection:
+      rangeSource: 2
+      fixedRange: 7
+      rangeMultiplier: 1
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
-  approachMovement:
-    pattern: 1
-    circleSpeedRatio: 0
-    idealRangeRatio: 0
-    safeDistance: 0
-    retreatStepDistance: 0
   retreatMovement:
-    pattern: 3
-    circleSpeedRatio: 0
-    idealRangeRatio: 0
     safeDistance: 7
     retreatStepDistance: 3

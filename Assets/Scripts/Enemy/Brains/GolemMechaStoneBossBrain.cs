@@ -13,17 +13,17 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private BehaviorTree behaviorTree;
     private EnemyAttackController attackController;
     private GolemMechaStoneBossSO bossData;
-    private IGolemMechaStoneBossMovementStrategy chaseMovementStrategy;
-    private IGolemMechaStoneBossDetectionStrategy meleeDetectionStrategy;
-    private IGolemMechaStoneBossDetectionStrategy shootDetectionStrategy;
-    private IGolemMechaStoneBossAttackStrategy meleeAttackStrategy;
-    private IGolemMechaStoneBossAttackStrategy shootAttackStrategy;
+    private IMoveStrategy chaseMovementStrategy;
+    private IRangeDetectionStrategy meleeDetectionStrategy;
+    private IRangeDetectionStrategy shootDetectionStrategy;
+    private IAttackStrategy meleeAttackStrategy;
+    private IAttackStrategy shootAttackStrategy;
 
-    public IGolemMechaStoneBossMovementStrategy ChaseMovementStrategy => chaseMovementStrategy;
-    public IGolemMechaStoneBossDetectionStrategy MeleeDetectionStrategy => meleeDetectionStrategy;
-    public IGolemMechaStoneBossDetectionStrategy ShootDetectionStrategy => shootDetectionStrategy;
-    public IGolemMechaStoneBossAttackStrategy MeleeAttackStrategy => meleeAttackStrategy;
-    public IGolemMechaStoneBossAttackStrategy ShootAttackStrategy => shootAttackStrategy;
+    public IMoveStrategy ChaseMovementStrategy => chaseMovementStrategy;
+    public IRangeDetectionStrategy MeleeDetectionStrategy => meleeDetectionStrategy;
+    public IRangeDetectionStrategy ShootDetectionStrategy => shootDetectionStrategy;
+    public IAttackStrategy MeleeAttackStrategy => meleeAttackStrategy;
+    public IAttackStrategy ShootAttackStrategy => shootAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -103,21 +103,22 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
 
     private void BuildRuntimeStrategies()
     {
-        chaseMovementStrategy = GolemMechaStoneBossStrategyFactory.CreateChaseStrategy(this.owner, currentMovable, bossData);
-        meleeDetectionStrategy = GolemMechaStoneBossStrategyFactory.CreateMeleeDetectionStrategy(this.owner, propertiesManager, bossData);
-        shootDetectionStrategy = GolemMechaStoneBossStrategyFactory.CreateShootDetectionStrategy(this.owner, propertiesManager, bossData);
-        meleeAttackStrategy = GolemMechaStoneBossStrategyFactory.CreateMeleeAttackStrategy(
+        chaseMovementStrategy = new DirectChaseMoveStrategy(currentMovable);
+        meleeDetectionStrategy = new ForwardCircleRangeDetectionStrategy(this.owner, propertiesManager, bossData.MeleeDetectionData);
+        shootDetectionStrategy = new DistanceRangeDetectionStrategy(this.owner, propertiesManager, bossData.ShootDetectionData);
+        meleeAttackStrategy = new MechaStoneDirectDamageAttackStrategy(
             this.owner,
             attackController,
             propertiesManager,
-            bossData,
+            bossData.MeleeTimingData,
             meleeDetectionStrategy);
-        shootAttackStrategy = GolemMechaStoneBossStrategyFactory.CreateShootAttackStrategy(
+        shootAttackStrategy = new MechaStoneProjectileAttackStrategy(
             this.owner,
             attackController,
             propertiesManager,
-            bossData,
-            shootDetectionStrategy);
+            bossData.ShootTimingData,
+            shootDetectionStrategy,
+            bossData.ShootProjectileDefinition);
     }
 
     private void BindSharedVariables()

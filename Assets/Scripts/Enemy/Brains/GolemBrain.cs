@@ -27,9 +27,9 @@ public class GolemBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private GolemEnemySO enemyData;
-    private IEnemyRuntimeMovementStrategy chaseMoveStrategy;
-    private IEnemyRuntimeAttackStrategy attackStrategy;
-    private IEnemyRuntimeDetectionStrategy postChargeDetectionStrategy;
+    private IMoveStrategy chaseMoveStrategy;
+    private IAttackStrategy attackStrategy;
+    private IRangeDetectionStrategy postChargeDetectionStrategy;
     private float berserkTimer;
     private Vector2 chargeDirection = Vector2.right;
     private bool chargeModifiersApplied;
@@ -114,19 +114,21 @@ public class GolemBrain : EnemyBrain
 
     private void BuildRuntimeStrategies()
     {
-        chaseMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.ChaseMovement);
-        IEnemyRuntimeDetectionStrategy attackDetectionStrategy =
-            EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, enemyData.AttackConfig);
-        attackStrategy = EnemyRuntimeStrategyFactory.CreateDirectDamageAttackStrategy(
+        chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
+        IRangeDetectionStrategy attackDetectionStrategy = new ForwardCircleRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            enemyData.AttackConfig.detection);
+        attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.AttackConfig,
+            enemyData.AttackConfig.timing,
             attackDetectionStrategy);
 
-        EnemyAttackConfig postChargeAttackConfig = enemyData.AttackConfig;
-        postChargeAttackConfig.forwardOffset = enemyData.PostChargeAttackForwardOffset;
-        postChargeDetectionStrategy = EnemyRuntimeStrategyFactory.CreateForwardCircleDetectionStrategy(owner, propertiesManager, postChargeAttackConfig);
+        ForwardCircleDetectionData postChargeDetectionData = enemyData.AttackConfig.detection;
+        postChargeDetectionData.forwardOffset = enemyData.PostChargeAttackForwardOffset;
+        postChargeDetectionStrategy = new ForwardCircleRangeDetectionStrategy(owner, propertiesManager, postChargeDetectionData);
     }
 
     private void TickBerserkTimer()
@@ -591,7 +593,7 @@ public class GolemBrain : EnemyBrain
             }
 
             Vector2 knockbackDirection = brain.target.Center - brain.owner.Center;
-            float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack) * brain.enemyData.AttackConfig.damageMultiplier);
+            float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack) * brain.enemyData.AttackConfig.timing.damageMultiplier);
             HitService.Apply(new HitRequest(
                 brain.owner,
                 brain.target,
@@ -599,7 +601,7 @@ public class GolemBrain : EnemyBrain
                 brain.target.Center,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                $"{brain.enemyData.AttackConfig.actionId}_PostCharge",
+                $"{brain.enemyData.AttackConfig.timing.actionId}_PostCharge",
                 brain.owner.Center));
         }
     }

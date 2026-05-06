@@ -16,12 +16,12 @@ public class WormBrain : EnemyBrain
 
     private EnemyAttackController attackController;
     private WormEnemySO enemyData;
-    private IEnemyRuntimeMovementStrategy currentMoveStrategy;
-    private IEnemyRuntimeMovementStrategy approachMoveStrategy;
-    private IEnemyRuntimeMovementStrategy retreatMoveStrategy;
-    private IEnemyRuntimeAttackStrategy currentAttackStrategy;
-    private IEnemyRuntimeAttackStrategy attackStrategy;
-    private IEnemyRuntimeAttackStrategy retreatAttackStrategy;
+    private IMoveStrategy currentMoveStrategy;
+    private IMoveStrategy approachMoveStrategy;
+    private IMoveStrategy retreatMoveStrategy;
+    private IAttackStrategy currentAttackStrategy;
+    private IAttackStrategy attackStrategy;
+    private IAttackStrategy retreatAttackStrategy;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -68,34 +68,40 @@ public class WormBrain : EnemyBrain
 
     private void BuildRuntimeStrategies()
     {
-        approachMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.approachMovement);
-        retreatMoveStrategy = EnemyRuntimeStrategyFactory.CreateMovementStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
+        approachMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
+        retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, enemyData.retreatMovement);
 
-        IEnemyRuntimeDetectionStrategy attackDetectionStrategy =
-            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.attackConfig);
-        IEnemyRuntimeDetectionStrategy retreatAttackDetectionStrategy =
-            EnemyRuntimeStrategyFactory.CreateDistanceDetectionStrategy(owner, propertiesManager, enemyData.retreatAttackConfig);
+        IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            enemyData.attackConfig.detection);
+        IRangeDetectionStrategy retreatAttackDetectionStrategy = new DistanceRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            enemyData.retreatAttackConfig.detection);
 
-        attackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+        attackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.attackConfig,
-            attackDetectionStrategy);
-        retreatAttackStrategy = EnemyRuntimeStrategyFactory.CreateProjectileAttackStrategy(
+            enemyData.attackConfig.timing,
+            attackDetectionStrategy,
+            enemyData.attackConfig.projectileDefinition);
+        retreatAttackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.retreatAttackConfig,
-            retreatAttackDetectionStrategy);
+            enemyData.retreatAttackConfig.timing,
+            retreatAttackDetectionStrategy,
+            enemyData.retreatAttackConfig.projectileDefinition);
     }
 
-    private void SetMoveStrategy(IEnemyRuntimeMovementStrategy strategy)
+    private void SetMoveStrategy(IMoveStrategy strategy)
     {
         currentMoveStrategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
     }
 
-    private void SetAttackStrategy(IEnemyRuntimeAttackStrategy attackStrategy)
+    private void SetAttackStrategy(IAttackStrategy attackStrategy)
     {
         currentAttackStrategy = attackStrategy ?? throw new ArgumentNullException(nameof(attackStrategy));
     }

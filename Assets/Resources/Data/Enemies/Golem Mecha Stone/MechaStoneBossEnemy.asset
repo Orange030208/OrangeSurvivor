@@ -62,4 +62,3 @@ MonoBehaviour:
   shootFixedRange: 7
   shootRangeMultiplier: 1
   shootProjectileDefinition: {fileID: 11400000, guid: a91e53d9c34a4cb3b4e4838897351a4f, type: 2}
-  chaseMovementType: 0

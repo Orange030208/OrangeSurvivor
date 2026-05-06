@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 425943045}
   - component: {fileID: 425943046}
   m_Layer: 0
-  m_Name: EnemyRuntimeRegistry
+  m_Name: EnemyRegistry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -357,7 +357,7 @@ MonoBehaviour:
   spawnCount: 1
   spawnRadius: 3
   spawnOnStart: 1
-  enemyRuntimeRegistry: {fileID: 425943046}
+  enemyRegistry: {fileID: 425943046}
   enemyParent: {fileID: 1867161220}
 --- !u!1 &1867161219
 GameObject:

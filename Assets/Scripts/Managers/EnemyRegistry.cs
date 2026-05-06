@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyRuntimeRegistry : MonoBehaviour
+public class EnemyRegistry : MonoBehaviour
 {
     private readonly Dictionary<int, Enemy> aliveEnemies = new();
     private readonly HashSet<int> aliveBossIds = new();
@@ -11,21 +11,21 @@ public class EnemyRuntimeRegistry : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRuntimeRegistered);
-        GameEventBus.Subscribe<EnemyUnregisteredEvent>(OnEnemyRuntimeUnregistered);
+        GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
+        GameEventBus.Subscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
         GameEventBus.Subscribe<DefeatAllTrackedEnemiesRequestedEvent>(OnDefeatAllTrackedEnemiesRequested);
         GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRuntimeRegistered);
-        GameEventBus.Unsubscribe<EnemyUnregisteredEvent>(OnEnemyRuntimeUnregistered);
+        GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
+        GameEventBus.Unsubscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
         GameEventBus.Unsubscribe<DefeatAllTrackedEnemiesRequestedEvent>(OnDefeatAllTrackedEnemiesRequested);
         GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
     }
 
-    private void OnEnemyRuntimeRegistered(EnemyRegisteredEvent eventData)
+    private void OnEnemyRegistered(EnemyRegisteredEvent eventData)
     {
         if (eventData.Enemy == null)
         {
@@ -40,7 +40,7 @@ public class EnemyRuntimeRegistry : MonoBehaviour
         }
     }
 
-    private void OnEnemyRuntimeUnregistered(EnemyUnregisteredEvent eventData)
+    private void OnEnemyUnregistered(EnemyUnregisteredEvent eventData)
     {
         if (eventData.Enemy == null)
         {

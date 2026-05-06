@@ -15,6 +15,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
     private Vector2 lockedDirection;
     private bool directionLocked;
     private bool cooldownCommitted;
+    private Entity executionTarget;
     private LineRenderer laserLineRenderer;
     private Material laserMaterial;
 
@@ -25,13 +26,14 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
         nextDamageTime = float.PositiveInfinity;
         directionLocked = false;
         cooldownCommitted = false;
+        executionTarget = TargetEntity;
         if (!HasContext)
         {
             lockedDirection = Vector2.right;
             return;
         }
 
-        lockedDirection = ResolveDirectionToTarget();
+        lockedDirection = ResolveDirectionToTarget(executionTarget);
         StopMoving();
         FaceTarget();
         Animatable?.PlayState(BossAnimationConfig.LaserCastHash);
@@ -41,7 +43,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
 
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || !HasTarget)
+        if (!RefreshContext())
         {
             return TaskStatus.Failure;
         }
@@ -52,8 +54,8 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
 
         if (!directionLocked && elapsedTime < lockTime)
         {
-            lockedDirection = ResolveDirectionToTarget();
-            FaceTarget();
+            lockedDirection = ResolveDirectionToTarget(executionTarget);
+            FacingController?.FaceTarget(executionTarget);
         }
         else if (!directionLocked)
         {
@@ -115,7 +117,8 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
         }
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
-        Vector2 center = OwnerEnemy.Center + direction * (BossData.LaserRange * 0.5f);
+        Vector2 laserOrigin = ResolveLaserOrigin();
+        Vector2 center = laserOrigin + direction * (BossData.LaserRange * 0.5f);
         Vector2 size = new Vector2(BossData.LaserRange, BossData.LaserWidth);
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         int hitCount = Physics2D.OverlapCapsuleNonAlloc(
@@ -144,7 +147,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
                 knockbackDirection,
                 HitSourceKind.Direct,
                 LASER_HIT_SOURCE_ID,
-                OwnerEnemy.Center));
+                laserOrigin));
         }
     }
 
@@ -159,14 +162,14 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
         cooldownCommitted = true;
     }
 
-    private Vector2 ResolveDirectionToTarget()
+    private Vector2 ResolveDirectionToTarget(Entity target)
     {
-        if (OwnerEnemy == null || TargetEntity == null)
+        if (OwnerEnemy == null || target == null)
         {
             return ResolveSafeDirection(lockedDirection);
         }
 
-        return ResolveSafeDirection(TargetEntity.Center - OwnerEnemy.Center);
+        return ResolveSafeDirection(target.Center - OwnerEnemy.Center);
     }
 
     private Vector2 ResolveSafeDirection(Vector2 direction)
@@ -182,6 +185,16 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
         }
 
         return Vector2.right;
+    }
+
+    private Vector2 ResolveLaserOrigin()
+    {
+        if (AttackController != null)
+        {
+            return AttackController.FirePoint.position;
+        }
+
+        return OwnerEnemy != null ? OwnerEnemy.Center : Vector2.zero;
     }
 
     private void EnsureLaserVisual()
@@ -213,7 +226,7 @@ public sealed class BossLaserCast : GolemMechaStoneBossTaskBase
         }
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
-        Vector3 startPosition = OwnerEnemy.Center;
+        Vector3 startPosition = ResolveLaserOrigin();
         Vector3 endPosition = startPosition + (Vector3)(direction * BossData.LaserRange);
         Color color = active ? BossData.LaserActiveColor : BossData.LaserWindupColor;
         float width = active ? BossData.LaserActiveVisualWidth : BossData.LaserWindupVisualWidth;

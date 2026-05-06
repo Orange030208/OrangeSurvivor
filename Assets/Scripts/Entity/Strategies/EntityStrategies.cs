@@ -1,124 +1,48 @@
 using System;
 using UnityEngine;
 
-public interface IEnemyRuntimeMovementStrategy
+public interface IMoveStrategy
 {
     void ExecuteMove(Entity target);
 }
 
-public interface IEnemyRuntimeDetectionStrategy
+public interface IRangeDetectionStrategy
 {
     float ResolveRange();
     bool IsTargetInRange(Entity target);
 }
 
-public interface IEnemyRuntimeAttackStrategy
+public interface IAttackStrategy
 {
     string ActionId { get; }
-    IEnemyRuntimeDetectionStrategy DetectionStrategy { get; }
+    IRangeDetectionStrategy DetectionStrategy { get; }
     bool CanUse(Entity target);
     bool TryExecute(Entity target);
+    bool TryExecuteCommitted(Entity target);
     void ResetCooldown();
 }
 
-public static class EnemyRuntimeStrategyFactory
-{
-    public static IEnemyRuntimeMovementStrategy CreateMovementStrategy(
-        Enemy owner,
-        IMovable movable,
-        PropertiesManager propertiesManager,
-        in EnemyMovementConfig config)
-    {
-        if (owner == null)
-        {
-            throw new ArgumentNullException(nameof(owner));
-        }
-
-        if (movable == null)
-        {
-            throw new ArgumentNullException(nameof(movable));
-        }
-
-        if (propertiesManager == null)
-        {
-            throw new ArgumentNullException(nameof(propertiesManager));
-        }
-
-        return config.pattern switch
-        {
-            EnemyMovementPattern.None => new NoopEnemyRuntimeMovementStrategy(movable),
-            EnemyMovementPattern.DirectChase => new DirectChaseEnemyRuntimeMovementStrategy(movable),
-            EnemyMovementPattern.CircleKite => new CircleKiteEnemyRuntimeMovementStrategy(owner, movable, propertiesManager, config),
-            EnemyMovementPattern.Retreat => new RetreatEnemyRuntimeMovementStrategy(owner, movable, config),
-            _ => throw new ArgumentOutOfRangeException(nameof(config.pattern), config.pattern, "Unsupported enemy movement pattern."),
-        };
-    }
-
-    public static IEnemyRuntimeDetectionStrategy CreateDistanceDetectionStrategy(
-        Enemy owner,
-        PropertiesManager propertiesManager,
-        in EnemyAttackConfig config)
-    {
-        return new DistanceEnemyRuntimeDetectionStrategy(owner, propertiesManager, config);
-    }
-
-    public static IEnemyRuntimeDetectionStrategy CreateForwardCircleDetectionStrategy(
-        Enemy owner,
-        PropertiesManager propertiesManager,
-        in EnemyAttackConfig config)
-    {
-        return new ForwardCircleEnemyRuntimeDetectionStrategy(owner, propertiesManager, config);
-    }
-
-    public static IEnemyRuntimeAttackStrategy CreateDirectDamageAttackStrategy(
-        Enemy owner,
-        EnemyAttackController attackController,
-        PropertiesManager propertiesManager,
-        in EnemyAttackConfig config,
-        IEnemyRuntimeDetectionStrategy detectionStrategy)
-    {
-        return new DirectDamageEnemyRuntimeAttackStrategy(
-            owner,
-            attackController,
-            propertiesManager,
-            config,
-            detectionStrategy);
-    }
-
-    public static IEnemyRuntimeAttackStrategy CreateProjectileAttackStrategy(
-        Enemy owner,
-        EnemyAttackController attackController,
-        PropertiesManager propertiesManager,
-        in EnemyAttackConfig config,
-        IEnemyRuntimeDetectionStrategy detectionStrategy)
-    {
-        return new ProjectileEnemyRuntimeAttackStrategy(
-            owner,
-            attackController,
-            propertiesManager,
-            config,
-            detectionStrategy);
-    }
-}
-
-public abstract class EnemyRuntimeDetectionStrategyBase : IEnemyRuntimeDetectionStrategy
+public abstract class RangeDetectionStrategyBase : IRangeDetectionStrategy
 {
     protected readonly Enemy owner;
     protected readonly PropertiesManager propertiesManager;
+
     private readonly AttackRangeSource rangeSource;
     private readonly float fixedRange;
     private readonly float rangeMultiplier;
 
-    protected EnemyRuntimeDetectionStrategyBase(
+    protected RangeDetectionStrategyBase(
         Enemy owner,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config)
+        AttackRangeSource rangeSource,
+        float fixedRange,
+        float rangeMultiplier)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
-        rangeSource = config.rangeSource;
-        fixedRange = Mathf.Max(0f, config.fixedRange);
-        rangeMultiplier = Mathf.Max(0f, config.rangeMultiplier);
+        this.rangeSource = rangeSource;
+        this.fixedRange = Mathf.Max(0f, fixedRange);
+        this.rangeMultiplier = Mathf.Max(0f, rangeMultiplier);
     }
 
     public float ResolveRange()
@@ -164,13 +88,23 @@ public abstract class EnemyRuntimeDetectionStrategyBase : IEnemyRuntimeDetection
     }
 }
 
-public sealed class DistanceEnemyRuntimeDetectionStrategy : EnemyRuntimeDetectionStrategyBase
+public sealed class DistanceRangeDetectionStrategy : RangeDetectionStrategyBase
 {
-    public DistanceEnemyRuntimeDetectionStrategy(
+    public DistanceRangeDetectionStrategy(
         Enemy owner,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config)
-        : base(owner, propertiesManager, config)
+        RangeDetectionData data)
+        : base(owner, propertiesManager, data.rangeSource, data.fixedRange, data.rangeMultiplier)
+    {
+    }
+
+    public DistanceRangeDetectionStrategy(
+        Enemy owner,
+        PropertiesManager propertiesManager,
+        AttackRangeSource rangeSource,
+        float fixedRange,
+        float rangeMultiplier)
+        : base(owner, propertiesManager, rangeSource, fixedRange, rangeMultiplier)
     {
     }
 
@@ -181,22 +115,33 @@ public sealed class DistanceEnemyRuntimeDetectionStrategy : EnemyRuntimeDetectio
             return false;
         }
 
-        float range = ResolveRange();
-        return target.IsColliderWithinRange(owner.Center, range);
+        return target.IsColliderWithinRange(owner.Center, ResolveRange());
     }
 }
 
-public sealed class ForwardCircleEnemyRuntimeDetectionStrategy : EnemyRuntimeDetectionStrategyBase
+public sealed class ForwardCircleRangeDetectionStrategy : RangeDetectionStrategyBase
 {
     private readonly float forwardOffset;
 
-    public ForwardCircleEnemyRuntimeDetectionStrategy(
+    public ForwardCircleRangeDetectionStrategy(
         Enemy owner,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config)
-        : base(owner, propertiesManager, config)
+        ForwardCircleDetectionData data)
+        : base(owner, propertiesManager, data.rangeSource, data.fixedRange, data.rangeMultiplier)
     {
-        forwardOffset = Mathf.Max(0f, config.forwardOffset);
+        forwardOffset = Mathf.Max(0f, data.forwardOffset);
+    }
+
+    public ForwardCircleRangeDetectionStrategy(
+        Enemy owner,
+        PropertiesManager propertiesManager,
+        AttackRangeSource rangeSource,
+        float fixedRange,
+        float rangeMultiplier,
+        float forwardOffset)
+        : base(owner, propertiesManager, rangeSource, fixedRange, rangeMultiplier)
+    {
+        this.forwardOffset = Mathf.Max(0f, forwardOffset);
     }
 
     public override bool IsTargetInRange(Entity target)
@@ -211,32 +156,37 @@ public sealed class ForwardCircleEnemyRuntimeDetectionStrategy : EnemyRuntimeDet
     }
 }
 
-public abstract class EnemyRuntimeAttackStrategyBase : IEnemyRuntimeAttackStrategy
+public abstract class AttackStrategyBase : IAttackStrategy
 {
     protected readonly Enemy owner;
     protected readonly EnemyAttackController attackController;
     protected readonly PropertiesManager propertiesManager;
-    protected readonly EnemyAttackConfig config;
+    protected readonly float damageMultiplier;
+    protected readonly AudioSfxKey attackSfxKey;
 
-    protected EnemyRuntimeAttackStrategyBase(
+    private readonly float cooldown;
+
+    protected AttackStrategyBase(
         Enemy owner,
         EnemyAttackController attackController,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config,
-        IEnemyRuntimeDetectionStrategy detectionStrategy)
+        AttackTimingData timingData,
+        IRangeDetectionStrategy detectionStrategy)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.attackController = attackController ?? throw new ArgumentNullException(nameof(attackController));
         this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
-        this.config = config;
         DetectionStrategy = detectionStrategy ?? throw new ArgumentNullException(nameof(detectionStrategy));
-        ActionId = string.IsNullOrWhiteSpace(config.actionId)
-            ? throw new ArgumentException("Action id cannot be null or whitespace.", nameof(config))
-            : config.actionId;
+        ActionId = string.IsNullOrWhiteSpace(timingData.actionId)
+            ? throw new ArgumentException("Action id cannot be null or whitespace.", nameof(timingData))
+            : timingData.actionId;
+        cooldown = Mathf.Max(0f, timingData.cooldown);
+        damageMultiplier = Mathf.Max(0f, timingData.damageMultiplier);
+        attackSfxKey = timingData.attackSfxKey;
     }
 
     public string ActionId { get; }
-    public IEnemyRuntimeDetectionStrategy DetectionStrategy { get; }
+    public IRangeDetectionStrategy DetectionStrategy { get; }
 
     public bool CanUse(Entity target)
     {
@@ -247,14 +197,22 @@ public abstract class EnemyRuntimeAttackStrategyBase : IEnemyRuntimeAttackStrate
 
     public bool TryExecute(Entity target)
     {
-        if (!CanUse(target) || !ExecuteCore(target))
+        if (!CanUse(target))
         {
             return false;
         }
 
-        AudioSfxBridge.RequestPlay(config.attackSfxKey);
-        attackController.CommitRuntimeCooldown(ActionId, Mathf.Max(0f, config.cooldown));
-        return true;
+        return TryExecuteAfterEntry(target);
+    }
+
+    public bool TryExecuteCommitted(Entity target)
+    {
+        if (target == null || !attackController.CanUseRuntimeAction(ActionId))
+        {
+            return false;
+        }
+
+        return TryExecuteAfterEntry(target);
     }
 
     public void ResetCooldown()
@@ -264,21 +222,33 @@ public abstract class EnemyRuntimeAttackStrategyBase : IEnemyRuntimeAttackStrate
 
     protected float ResolveDamage()
     {
-        return Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Attack) * Mathf.Max(0f, config.damageMultiplier));
+        return Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Attack) * damageMultiplier);
     }
 
     protected abstract bool ExecuteCore(Entity target);
+
+    private bool TryExecuteAfterEntry(Entity target)
+    {
+        if (!ExecuteCore(target))
+        {
+            return false;
+        }
+
+        AudioSfxBridge.RequestPlay(attackSfxKey);
+        attackController.CommitRuntimeCooldown(ActionId, cooldown);
+        return true;
+    }
 }
 
-public sealed class DirectDamageEnemyRuntimeAttackStrategy : EnemyRuntimeAttackStrategyBase
+public sealed class DirectDamageAttackStrategy : AttackStrategyBase
 {
-    public DirectDamageEnemyRuntimeAttackStrategy(
+    public DirectDamageAttackStrategy(
         Enemy owner,
         EnemyAttackController attackController,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config,
-        IEnemyRuntimeDetectionStrategy detectionStrategy)
-        : base(owner, attackController, propertiesManager, config, detectionStrategy)
+        AttackTimingData timingData,
+        IRangeDetectionStrategy detectionStrategy)
+        : base(owner, attackController, propertiesManager, timingData, detectionStrategy)
     {
     }
 
@@ -299,23 +269,27 @@ public sealed class DirectDamageEnemyRuntimeAttackStrategy : EnemyRuntimeAttackS
     }
 }
 
-public sealed class ProjectileEnemyRuntimeAttackStrategy : EnemyRuntimeAttackStrategyBase
+public sealed class ProjectileAttackStrategy : AttackStrategyBase
 {
-    public ProjectileEnemyRuntimeAttackStrategy(
+    private readonly ProjectileDefinitionSO projectileDefinition;
+
+    public ProjectileAttackStrategy(
         Enemy owner,
         EnemyAttackController attackController,
         PropertiesManager propertiesManager,
-        in EnemyAttackConfig config,
-        IEnemyRuntimeDetectionStrategy detectionStrategy)
-        : base(owner, attackController, propertiesManager, config, detectionStrategy)
+        AttackTimingData timingData,
+        IRangeDetectionStrategy detectionStrategy,
+        ProjectileDefinitionSO projectileDefinition)
+        : base(owner, attackController, propertiesManager, timingData, detectionStrategy)
     {
+        this.projectileDefinition = projectileDefinition;
     }
 
     protected override bool ExecuteCore(Entity target)
     {
-        if (config.projectileDefinition == null)
+        if (projectileDefinition == null)
         {
-            Debug.LogWarning($"{nameof(ProjectileEnemyRuntimeAttackStrategy)} on {owner.name} is missing projectile definition.", owner);
+            Debug.LogWarning($"{nameof(ProjectileAttackStrategy)} on {owner.name} is missing projectile definition.", owner);
             return false;
         }
 
@@ -333,7 +307,7 @@ public sealed class ProjectileEnemyRuntimeAttackStrategy : EnemyRuntimeAttackStr
         }
 
         Projectile projectile = ProjectileFactory.CreateProjectile(
-            config.projectileDefinition,
+            projectileDefinition,
             firePointPosition,
             Quaternion.identity);
 
@@ -344,31 +318,99 @@ public sealed class ProjectileEnemyRuntimeAttackStrategy : EnemyRuntimeAttackStr
             direction.normalized,
             HitSpec.EnemyHitSpec(ResolveDamage()),
             attackController.AttackLayer,
-            config.projectileDefinition));
+            projectileDefinition));
         return true;
     }
 }
 
-public sealed class NoopEnemyRuntimeMovementStrategy : IEnemyRuntimeMovementStrategy
+public sealed class MechaStoneDirectDamageAttackStrategy : AttackStrategyBase
 {
-    private readonly IMovable movable;
-
-    public NoopEnemyRuntimeMovementStrategy(IMovable movable)
+    public MechaStoneDirectDamageAttackStrategy(
+        Enemy owner,
+        EnemyAttackController attackController,
+        PropertiesManager propertiesManager,
+        AttackTimingData timingData,
+        IRangeDetectionStrategy detectionStrategy)
+        : base(owner, attackController, propertiesManager, timingData, detectionStrategy)
     {
-        this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
     }
 
-    public void ExecuteMove(Entity target)
+    protected override bool ExecuteCore(Entity target)
     {
-        movable.StopMoving();
+        Vector2 knockbackDirection = target.Center - owner.Center;
+        Vector2 hitPoint = target.GetClosestPointTo(owner.Center);
+        HitService.Apply(new HitRequest(
+            owner,
+            target,
+            HitSpec.EnemyHitSpec(ResolveDamage()),
+            hitPoint,
+            knockbackDirection,
+            HitSourceKind.Direct,
+            ActionId,
+            owner.Center));
+        return true;
     }
 }
 
-public sealed class DirectChaseEnemyRuntimeMovementStrategy : IEnemyRuntimeMovementStrategy
+public sealed class MechaStoneProjectileAttackStrategy : AttackStrategyBase
+{
+    private readonly ProjectileDefinitionSO projectileDefinition;
+
+    public MechaStoneProjectileAttackStrategy(
+        Enemy owner,
+        EnemyAttackController attackController,
+        PropertiesManager propertiesManager,
+        AttackTimingData timingData,
+        IRangeDetectionStrategy detectionStrategy,
+        ProjectileDefinitionSO projectileDefinition)
+        : base(owner, attackController, propertiesManager, timingData, detectionStrategy)
+    {
+        this.projectileDefinition = projectileDefinition;
+    }
+
+    protected override bool ExecuteCore(Entity target)
+    {
+        if (projectileDefinition == null)
+        {
+            Debug.LogWarning($"{nameof(MechaStoneProjectileAttackStrategy)} on {owner.name} is missing projectile definition.", owner);
+            return false;
+        }
+
+        Vector3 firePointPosition = attackController.FirePoint.position;
+        Vector2 targetPoint = target.GetClosestPointTo(firePointPosition);
+        Vector2 direction = targetPoint - (Vector2)firePointPosition;
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+        {
+            direction = target.Center - owner.Center;
+        }
+
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+        {
+            return false;
+        }
+
+        Projectile projectile = ProjectileFactory.CreateProjectile(
+            projectileDefinition,
+            firePointPosition,
+            Quaternion.identity);
+
+        attackController.LaunchProjectile(projectile, new ProjectileLaunchContext(
+            attackController,
+            owner,
+            firePointPosition,
+            direction.normalized,
+            HitSpec.EnemyHitSpec(ResolveDamage()),
+            attackController.AttackLayer,
+            projectileDefinition));
+        return true;
+    }
+}
+
+public sealed class DirectChaseMoveStrategy : IMoveStrategy
 {
     private readonly IMovable movable;
 
-    public DirectChaseEnemyRuntimeMovementStrategy(IMovable movable)
+    public DirectChaseMoveStrategy(IMovable movable)
     {
         this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
     }
@@ -385,7 +427,7 @@ public sealed class DirectChaseEnemyRuntimeMovementStrategy : IEnemyRuntimeMovem
     }
 }
 
-public sealed class CircleKiteEnemyRuntimeMovementStrategy : IEnemyRuntimeMovementStrategy
+public sealed class CircleKiteMoveStrategy : IMoveStrategy
 {
     private readonly Enemy owner;
     private readonly IMovable movable;
@@ -393,17 +435,17 @@ public sealed class CircleKiteEnemyRuntimeMovementStrategy : IEnemyRuntimeMoveme
     private readonly float circleSpeedRatio;
     private readonly float idealRangeRatio;
 
-    public CircleKiteEnemyRuntimeMovementStrategy(
+    public CircleKiteMoveStrategy(
         Enemy owner,
         IMovable movable,
         PropertiesManager propertiesManager,
-        in EnemyMovementConfig config)
+        CircleKiteMoveData data)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
         this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
-        circleSpeedRatio = Mathf.Max(0f, config.circleSpeedRatio);
-        idealRangeRatio = Mathf.Max(0f, config.idealRangeRatio);
+        circleSpeedRatio = Mathf.Max(0f, data.circleSpeedRatio);
+        idealRangeRatio = Mathf.Max(0f, data.idealRangeRatio);
     }
 
     public void ExecuteMove(Entity target)
@@ -431,22 +473,22 @@ public sealed class CircleKiteEnemyRuntimeMovementStrategy : IEnemyRuntimeMoveme
     }
 }
 
-public sealed class RetreatEnemyRuntimeMovementStrategy : IEnemyRuntimeMovementStrategy
+public sealed class RetreatMoveStrategy : IMoveStrategy
 {
     private readonly Enemy owner;
     private readonly IMovable movable;
     private readonly float safeDistance;
     private readonly float retreatStepDistance;
 
-    public RetreatEnemyRuntimeMovementStrategy(
+    public RetreatMoveStrategy(
         Enemy owner,
         IMovable movable,
-        in EnemyMovementConfig config)
+        RetreatMoveData data)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
-        safeDistance = Mathf.Max(0f, config.safeDistance);
-        retreatStepDistance = Mathf.Max(0f, config.retreatStepDistance);
+        safeDistance = Mathf.Max(0f, data.safeDistance);
+        retreatStepDistance = Mathf.Max(0f, data.retreatStepDistance);
     }
 
     public void ExecuteMove(Entity target)
