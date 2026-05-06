@@ -230,7 +230,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     {
         if (target != null)
         {
-            return (target.Center - (Vector2)transform.position).normalized;
+            Vector2 originPosition = transform.position;
+            return (ResolveTargetAimPoint(target, originPosition) - originPosition).normalized;
         }
 
         if (owner != null && owner.MoveComponent.MoveDirection.sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
@@ -239,6 +240,22 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         }
 
         return lastAimDirection;
+    }
+
+    private Vector2 ResolveTargetAimPoint(Entity target, Vector2 originPosition)
+    {
+        if (target == null)
+        {
+            return originPosition;
+        }
+
+        Vector2 closestPoint = target.GetClosestPointTo(originPosition);
+        if ((closestPoint - originPosition).sqrMagnitude > MIN_AIM_DIRECTION_SQR_MAGNITUDE)
+        {
+            return closestPoint;
+        }
+
+        return target.Center;
     }
 
     protected bool HasReachedAttackAimDirection(Vector2 desiredAimDirection)
@@ -340,7 +357,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected virtual void BeginAttack(Entity target)
     {
         IsAttacking = true;
-        pendingTargetPosition = target.Center;
+        Vector2 originPosition = transform.position;
+        pendingTargetPosition = ResolveTargetAimPoint(target, originPosition);
         LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
         activeBurstId = -1;
         activeHitWindows.Clear();
@@ -349,7 +367,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         hitBoxDebugSamples.Clear();
 
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
-        Vector2 targetLocalOffset = transform.InverseTransformPoint(target.Center);
+        Vector2 targetLocalOffset = transform.InverseTransformPoint(pendingTargetPosition);
         sequenceBridge.Play(attackSequence, targetLocalOffset, sequenceDuration);
     }
 

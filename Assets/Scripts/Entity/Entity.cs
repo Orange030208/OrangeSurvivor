@@ -157,6 +157,41 @@ public static class EntityExtensions
         return Vector2.Distance(a.Center, b.Center);
     }
 
+    public static Vector2 GetClosestPointTo(this Entity target, Vector2 point)
+    {
+        if (target == null)
+        {
+            return point;
+        }
+
+        Collider2D targetCollider = target.EntityCollider;
+        return targetCollider != null
+            ? targetCollider.ClosestPoint(point)
+            : target.Center;
+    }
+
+    public static float DistanceToCollider(this Entity target, Vector2 point)
+    {
+        if (target == null)
+        {
+            return float.PositiveInfinity;
+        }
+
+        return Vector2.Distance(point, target.GetClosestPointTo(point));
+    }
+
+    public static bool IsColliderWithinRange(this Entity target, Vector2 point, float range)
+    {
+        if (target == null)
+        {
+            return false;
+        }
+
+        float clampedRange = Mathf.Max(0f, range);
+        Vector2 closestPoint = target.GetClosestPointTo(point);
+        return (closestPoint - point).sqrMagnitude <= clampedRange * clampedRange;
+    }
+
     public static Entity FindClosestTargetInRange(this Entity self, float searchRange, LayerMask targetLayerMask)
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(self.transform.position, searchRange, targetLayerMask);
@@ -171,8 +206,8 @@ public static class EntityExtensions
                 continue;
             }
 
-            float distanceToTarget = Vector2.Distance(selfCenter, entityChecked.Center);
-            if (distanceToTarget < minDistance)
+            float distanceToTarget = entityChecked.DistanceToCollider(selfCenter);
+            if (distanceToTarget <= minDistance)
             {
                 closestTarget = entityChecked;
                 minDistance = distanceToTarget;

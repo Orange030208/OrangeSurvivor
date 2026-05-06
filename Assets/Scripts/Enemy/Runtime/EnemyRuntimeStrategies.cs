@@ -182,7 +182,7 @@ public sealed class DistanceEnemyRuntimeDetectionStrategy : EnemyRuntimeDetectio
         }
 
         float range = ResolveRange();
-        return (target.Center - owner.Center).sqrMagnitude <= range * range;
+        return target.IsColliderWithinRange(owner.Center, range);
     }
 }
 
@@ -207,7 +207,7 @@ public sealed class ForwardCircleEnemyRuntimeDetectionStrategy : EnemyRuntimeDet
         }
 
         Vector2 origin = owner.Center + ResolveDirectionTo(target) * forwardOffset;
-        return Vector2.Distance(origin, target.Center) <= ResolveRange();
+        return target.IsColliderWithinRange(origin, ResolveRange());
     }
 }
 
@@ -285,11 +285,12 @@ public sealed class DirectDamageEnemyRuntimeAttackStrategy : EnemyRuntimeAttackS
     protected override bool ExecuteCore(Entity target)
     {
         Vector2 knockbackDirection = target.Center - owner.Center;
+        Vector2 hitPoint = target.GetClosestPointTo(owner.Center);
         HitService.Apply(new HitRequest(
             owner,
             target,
             HitSpec.EnemyHitSpec(ResolveDamage()),
-            target.Center,
+            hitPoint,
             knockbackDirection,
             HitSourceKind.Direct,
             ActionId,
@@ -318,13 +319,19 @@ public sealed class ProjectileEnemyRuntimeAttackStrategy : EnemyRuntimeAttackStr
             return false;
         }
 
-        Vector2 direction = target.Center - owner.Center;
+        Vector3 firePointPosition = attackController.FirePoint.position;
+        Vector2 targetPoint = target.GetClosestPointTo(firePointPosition);
+        Vector2 direction = targetPoint - (Vector2)firePointPosition;
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+        {
+            direction = target.Center - owner.Center;
+        }
+
         if (direction.sqrMagnitude <= Mathf.Epsilon)
         {
             return false;
         }
 
-        Vector3 firePointPosition = attackController.FirePoint.position;
         Projectile projectile = ProjectileFactory.CreateProjectile(
             config.projectileDefinition,
             firePointPosition,
