@@ -1,4 +1,5 @@
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using DG.Tweening;
 using UnityEngine;
@@ -205,12 +206,12 @@ public class CardMotionController : ViewPartBase
         PlayClip(profile.ReleaseClipId);
     }
 
-    public IEnumerator PlaySelectAndWait()
+    public async UniTask PlaySelectAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
         if (!HasProfile())
         {
-            yield break;
+            return;
         }
 
         isSubmitting = true;
@@ -219,18 +220,18 @@ public class CardMotionController : ViewPartBase
 
         if (motionPlayer == null || string.IsNullOrWhiteSpace(profile.SelectClipId))
         {
-            yield break;
+            return;
         }
 
-        yield return motionPlayer.PlayAndWait(profile.SelectClipId);
+        await motionPlayer.PlayAsync(profile.SelectClipId, cancellationToken);
     }
 
-    public IEnumerator PlayRefreshOutAndWait()
+    public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
         if (!HasProfile())
         {
-            yield break;
+            return;
         }
 
         isRevealPlaying = false;
@@ -239,10 +240,10 @@ public class CardMotionController : ViewPartBase
 
         if (motionPlayer == null)
         {
-            yield break;
+            return;
         }
 
-        yield return motionPlayer.PlayAndWait(UIMotionClipIds.HIDE);
+        await motionPlayer.PlayAsync(UIMotionClipIds.HIDE, cancellationToken);
     }
 
     public void CancelAndReset()

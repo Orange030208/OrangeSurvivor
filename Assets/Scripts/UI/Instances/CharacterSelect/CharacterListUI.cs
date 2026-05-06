@@ -3,7 +3,7 @@ using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterListController : ViewPartBase
+public class CharacterListUI : ViewPartBase
 {
     [SerializeField] private CharacterButton itemPrefab;
     [SerializeField] private Transform contentRoot;
@@ -161,12 +161,12 @@ public class CharacterListController : ViewPartBase
 
         if (itemPrefab == null)
         {
-            throw new MissingReferenceException($"{nameof(CharacterListController)} '{name}' is missing item prefab.");
+            throw new MissingReferenceException($"{nameof(CharacterListUI)} '{name}' is missing item prefab.");
         }
 
         if (contentRoot == null)
         {
-            throw new MissingReferenceException($"{nameof(CharacterListController)} '{name}' is missing content root.");
+            throw new MissingReferenceException($"{nameof(CharacterListUI)} '{name}' is missing content root.");
         }
     }
 }

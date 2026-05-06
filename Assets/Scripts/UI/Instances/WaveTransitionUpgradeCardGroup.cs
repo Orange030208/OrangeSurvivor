@@ -1,4 +1,5 @@
-using System.Collections;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
@@ -85,15 +86,15 @@ public class WaveTransitionUpgradeCardGroup : ViewPartBase
         }
     }
 
-    public IEnumerator PlayRefreshOutAndWait()
+    public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         isSelectionLocked = true;
         if (upgradeContainers == null)
         {
-            yield break;
+            return;
         }
 
-        int runningCount = 0;
+        List<UniTask> runningTasks = new();
         for (int i = 0; i < upgradeContainers.Length; i++)
         {
             UIUpgradeContainer container = upgradeContainers[i];
@@ -102,19 +103,18 @@ public class WaveTransitionUpgradeCardGroup : ViewPartBase
                 continue;
             }
 
-            runningCount++;
-            StartCoroutine(PlayContainerRefreshOut(container, i * REFRESH_OUT_STAGGER_SECONDS, () => runningCount--));
+            runningTasks.Add(PlayContainerRefreshOutAsync(
+                container,
+                i * REFRESH_OUT_STAGGER_SECONDS,
+                cancellationToken));
         }
 
-        while (runningCount > 0)
+        if (runningTasks.Count == 0)
         {
-            yield return null;
+            return;
         }
-    }
 
-    public UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
-    {
-        return PlayRefreshOutAndWait().ToUniTask(cancellationToken: cancellationToken);
+        await UniTask.WhenAll(runningTasks);
     }
 
     private bool TryBeginSelection(int selectedIndex)
@@ -162,19 +162,22 @@ public class WaveTransitionUpgradeCardGroup : ViewPartBase
         }
     }
 
-    private static IEnumerator PlayContainerRefreshOut(
+    private static async UniTask PlayContainerRefreshOutAsync(
         UIUpgradeContainer container,
         float startDelay,
-        System.Action onComplete)
+        CancellationToken cancellationToken)
     {
         container.SetInteractionLocked(true);
         if (startDelay > 0f)
         {
-            yield return new WaitForSecondsRealtime(startDelay);
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(startDelay),
+                DelayType.UnscaledDeltaTime,
+                PlayerLoopTiming.Update,
+                cancellationToken);
         }
 
-        yield return container.PlayRefreshOutAndWait();
-        onComplete?.Invoke();
+        await container.PlayRefreshOutAsync(cancellationToken);
     }
 
     private void EnsureRoot()

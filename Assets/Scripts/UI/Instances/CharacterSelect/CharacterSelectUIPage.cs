@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CharacterSelectUIPage : PageBase
 {
     [SerializeField] private CharacterInfoCard characterInfoCard;
-    [SerializeField] private CharacterListController characterListController;
+    [SerializeField] private CharacterListUI characterList;
     [SerializeField] private UIClickTarget confirm;
     [SerializeField] private UIClickTarget back;
     [SerializeField] private CharacterSelectionManager characterSelectionManager;
@@ -49,14 +49,14 @@ public class CharacterSelectUIPage : PageBase
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        characterListController.Clear();
+        characterList.Clear();
         selectedCharacterIndex = -1;
     }
 
     private void ApplyCharacterSelectionSnapshot(CharacterSelectionSnapshot snapshot)
     {
         selectedCharacterIndex = snapshot.SelectedIndex;
-        characterListController.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
+        characterList.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
         SetConfirmButtonInteractable(selectedCharacterIndex >= 0);
 
         if (selectedCharacterIndex < 0 || snapshot.Characters == null || selectedCharacterIndex >= snapshot.Characters.Length)
@@ -71,7 +71,7 @@ public class CharacterSelectUIPage : PageBase
     private void OnCharacterSelectionChanged(CharacterSelectionChangedArgs args)
     {
         selectedCharacterIndex = args.CharacterIndex;
-        characterListController.SetSelectedIndex(selectedCharacterIndex);
+        characterList.SetSelectedIndex(selectedCharacterIndex);
         characterInfoCard.DisplayInfo(args.CharacterData);
         SetConfirmButtonInteractable(true);
     }

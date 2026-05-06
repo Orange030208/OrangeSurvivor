@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterInfoCard: {fileID: 7430751627697373610}
-  characterListController: {fileID: 2007781208652475618}
+  characterList: {fileID: 2007781208652475618}
   confirm: {fileID: 1343874346286685478}
   back: {fileID: 6243707430721280992}
   characterSelectionManager: {fileID: 0}

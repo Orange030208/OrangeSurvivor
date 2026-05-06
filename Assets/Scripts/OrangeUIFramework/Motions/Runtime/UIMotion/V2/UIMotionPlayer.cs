@@ -2,8 +2,9 @@
 namespace Orange.UIFramework
 {
     using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
@@ -72,13 +73,10 @@ public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenc
         return tween;
     }
 
-    public IEnumerator PlayAndWait(string clipId, float delay = 0f)
+    public UniTask PlayAsync(string clipId, CancellationToken cancellationToken, float delay = 0f)
     {
         Tween tween = Play(clipId, delay);
-        if (tween != null && tween.IsActive())
-        {
-            yield return tween.WaitForCompletion();
-        }
+        return tween.WaitForCompletionAsync(cancellationToken);
     }
 
     public void SetImmediate(string clipId, bool atEnd = true)

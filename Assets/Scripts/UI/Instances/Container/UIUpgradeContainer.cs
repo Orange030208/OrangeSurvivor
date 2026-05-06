@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,7 +18,7 @@ public class UIUpgradeContainer :
     [SerializeField] private bool playRevealSfx = true;
 
     private CanvasGroup cardCanvasGroup;
-    private Coroutine submitRoutine;
+    private CancellationTokenSource submitCancellation;
     private Func<int, bool> submitGate;
     private int containerIndex = -1;
     private bool isSubmitting;
@@ -157,12 +158,9 @@ public class UIUpgradeContainer :
             return;
         }
 
-        if (submitRoutine != null)
-        {
-            StopCoroutine(submitRoutine);
-        }
-
-        submitRoutine = StartCoroutine(SubmitAfterClickMotion(eventData));
+        StopSubmitRoutine();
+        submitCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        SubmitAfterClickMotionAsync(eventData, submitCancellation).Forget();
     }
 
     public override void Dispose()
@@ -171,15 +169,15 @@ public class UIUpgradeContainer :
         base.Dispose();
     }
 
-    public IEnumerator PlayRefreshOutAndWait()
+    public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         CardMotionController motionController = GetCardMotionController();
         if (motionController == null)
         {
-            yield break;
+            return;
         }
 
-        yield return motionController.PlayRefreshOutAndWait();
+        await motionController.PlayRefreshOutAsync(cancellationToken);
     }
 
     private void OnDisable()
@@ -193,24 +191,43 @@ public class UIUpgradeContainer :
         GetCardMotionController()?.ConfigureForReuse();
     }
 
-    private IEnumerator SubmitAfterClickMotion(PointerEventData eventData)
+    private async UniTaskVoid SubmitAfterClickMotionAsync(PointerEventData eventData, CancellationTokenSource cancellationSource)
     {
+        CancellationToken cancellationToken = cancellationSource.Token;
+        bool shouldRaiseClicked = false;
         isSubmitting = true;
         isPointerPressed = false;
         SetRaycastBlocking(false);
 
-        CardMotionController motionController = GetCardMotionController();
-        if (motionController != null)
+        try
         {
-            yield return motionController.PlaySelectAndWait();
-            motionController.ResetToRest();
+            CardMotionController motionController = GetCardMotionController();
+            if (motionController != null)
+            {
+                await motionController.PlaySelectAsync(cancellationToken);
+                motionController.ResetToRest();
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            shouldRaiseClicked = isActiveAndEnabled;
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
+            isSubmitting = false;
+
+            if (ReferenceEquals(submitCancellation, cancellationSource))
+            {
+                submitCancellation = null;
+            }
+
+            cancellationSource.Dispose();
         }
 
-        SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
-        isSubmitting = false;
-        submitRoutine = null;
-
-        if (isActiveAndEnabled)
+        if (shouldRaiseClicked)
         {
             RaiseClicked(eventData);
         }
@@ -218,10 +235,11 @@ public class UIUpgradeContainer :
 
     private void StopSubmitRoutine()
     {
-        if (submitRoutine != null)
+        if (submitCancellation != null)
         {
-            StopCoroutine(submitRoutine);
-            submitRoutine = null;
+            CancellationTokenSource cancellationSource = submitCancellation;
+            submitCancellation = null;
+            cancellationSource.Cancel();
         }
 
         SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);

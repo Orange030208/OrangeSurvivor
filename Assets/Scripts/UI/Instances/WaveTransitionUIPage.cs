@@ -11,6 +11,8 @@ public class WaveTransitionUIPage : PageBase
     [Header("宝箱")]
     [SerializeField] private WaveTransitionChestPanel chestPanel;
 
+    private CancellationTokenSource lifetimeCancellation;
+
     protected override void Awake()
     {
         base.Awake();
@@ -20,6 +22,7 @@ public class WaveTransitionUIPage : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
+        ResetLifetimeCancellation();
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Subscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
@@ -33,6 +36,7 @@ public class WaveTransitionUIPage : PageBase
 
     protected override void OnClosed(CloseReason reason)
     {
+        CancelLifetimeOperations();
         GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
         GameEventBus.Unsubscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
@@ -92,15 +96,45 @@ public class WaveTransitionUIPage : PageBase
                 return;
             }
 
-            await upgradeCardGroup.PlayRefreshOutAsync(this.GetCancellationTokenOnDestroy());
+            CancellationToken cancellationToken = ResolveLifetimeCancellationToken();
+            await upgradeCardGroup.PlayRefreshOutAsync(cancellationToken);
         }
         catch (System.OperationCanceledException)
         {
         }
         finally
         {
+            // 即使页面关闭导致动画取消，也要通知 Manager 清理 pending，避免刷新链路卡住。
             GameEventBus.Publish<UpgradeCardsRefreshOutCompletedEvent>();
         }
+    }
+
+    private CancellationToken ResolveLifetimeCancellationToken()
+    {
+        if (lifetimeCancellation == null)
+        {
+            ResetLifetimeCancellation();
+        }
+
+        return lifetimeCancellation.Token;
+    }
+
+    private void ResetLifetimeCancellation()
+    {
+        CancelLifetimeOperations();
+        lifetimeCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+    }
+
+    private void CancelLifetimeOperations()
+    {
+        if (lifetimeCancellation == null)
+        {
+            return;
+        }
+
+        lifetimeCancellation.Cancel();
+        lifetimeCancellation.Dispose();
+        lifetimeCancellation = null;
     }
 
     private void SetChestSelectionVisible(bool visible)
