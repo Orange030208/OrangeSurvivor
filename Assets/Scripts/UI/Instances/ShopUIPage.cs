@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopUIPage : PageBase
 {
+    private const float LAYOUT_MOVE_DURATION = 0.18f;
+
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private Transform shopItemParent;
     [SerializeField] private UIClickTarget rerollButton;
@@ -24,140 +29,156 @@ public class ShopUIPage : PageBase
     [SerializeField] private UIClickTarget inventoryToggleButton;
     [SerializeField] private InventoryUI inventoryUI;
 
-    private ShopPageContext currentContext;
-    private ShopPageController controller;
-    private ShopListView shopListView;
-    private ShopSidebarHost sidebarHost;
+    private readonly List<ShopItemContainer> renderedItems = new();
+    private readonly List<ShopItemIdentity> renderedItemIdentities = new();
+    private readonly Dictionary<ShopItemContainer, Tween> layoutMoveTweens = new();
 
-    public event Action RerollRequested;
-    public event Action ContinueRequested;
-    public event Action PropertiesToggleRequested;
-    public event Action InventoryToggleRequested;
-    public event Action<int> ItemBuyRequested;
-    public event Action<int> ItemLockToggleRequested;
+    private ShopManager shopManager;
+    private CurrencyWallet currencyWallet;
+    private PropertiesManager propertiesManager;
+    private IUIRuntimeMotion propertiesRuntimeMotion;
+    private IUIRuntimeMotion inventoryRuntimeMotion;
+    private bool isPropertiesSidebarVisible;
+    private bool isInventorySidebarVisible;
+    private bool buttonEventsBound;
+    private bool managerEventsBound;
 
     protected override void Awake()
     {
         base.Awake();
         ValidateConfiguration();
         InventoryUiBinder.WarmUp(this, ref inventoryUI);
-        shopListView = new ShopListView(name, shopItemPrefab, shopItemParent, rerollButton, continueButton, rerollCostText, currencyText);
-        sidebarHost = new ShopSidebarHost(
-            name,
-            propertiesSidebar,
-            propertiesToggleButton,
-            propertiesDescriber,
-            inventorySidebar,
-            inventoryToggleButton);
-        shopListView.RerollRequested += OnRerollRequested;
-        shopListView.ContinueRequested += OnContinueRequested;
-        shopListView.ItemBuyRequested += OnItemBuyRequested;
-        shopListView.ItemLockToggleRequested += OnItemLockToggleRequested;
-        sidebarHost.PropertiesToggleRequested += OnPropertiesToggleRequested;
-        sidebarHost.InventoryToggleRequested += OnInventoryToggleRequested;
+        propertiesRuntimeMotion = ResolveRuntimeMotion(propertiesSidebar, "properties sidebar");
+        inventoryRuntimeMotion = ResolveRuntimeMotion(inventorySidebar, "inventory sidebar");
+        shopItemParent.Clear();
         InitSidebarPanels();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = context.GetPayload<ShopPageContext>()
+        ShopPageContext shopPageContext = context.GetPayload<ShopPageContext>()
             ?? throw new InvalidOperationException($"{nameof(ShopUIPage)} requires {nameof(ShopPageContext)} payload.");
-        controller = new ShopPageController(this, currentContext);
-        controller.Enter();
+        EnterShopSession(shopPageContext);
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        controller?.Exit();
-        controller = null;
-        currentContext = null;
+        ExitShopSession();
     }
 
-    public void PrepareForOpen(ShopPageContext context)
+    private void EnterShopSession(ShopPageContext context)
     {
         if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
 
+        shopManager = context.ShopManager;
+        currencyWallet = context.CurrencyWallet;
         InventoryUiBinder.Bind(this, ref inventoryUI, context.InventoryOperateManager, OwnerUIManager);
-        shopListView.Bind();
-        sidebarHost.Bind(context.PropertiesManager);
+        BindButtonEvents();
+        BindManagerEvents();
+        BindPropertiesManager(context.PropertiesManager);
+
+        isPropertiesSidebarVisible = false;
+        isInventorySidebarVisible = false;
+        SetPropertiesSidebarVisible(isPropertiesSidebarVisible);
+        SetInventorySidebarVisible(isInventorySidebarVisible);
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
+        shopManager.RequestSnapshot();
     }
 
-    public void ResetAfterClose()
+    private void ExitShopSession()
     {
-        shopListView.Unbind();
-        sidebarHost.Unbind();
+        UnbindButtonEvents();
+        UnbindManagerEvents();
+        BindPropertiesManager(null);
+        ClearShopItems();
         InventoryUiBinder.Release(inventoryUI);
         KillPanelTweens();
+        propertiesRuntimeMotion.SetImmediate(UIMotionClipIds.HIDE);
+        inventoryRuntimeMotion.SetImmediate(UIMotionClipIds.HIDE);
+        isPropertiesSidebarVisible = false;
+        isInventorySidebarVisible = false;
+        shopManager = null;
+        currencyWallet = null;
+        propertiesManager = null;
     }
 
-    public void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
+    private void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
     {
-        shopListView.RenderShopItems(items, reason);
+        RenderShopItemList(items, reason);
     }
 
-    public void UpdateRerollState(int rerollCost, bool canReroll)
+    private void UpdateRerollState(int rerollCost, bool canReroll)
     {
-        shopListView.UpdateRerollState(rerollCost, canReroll);
+        rerollCostText.text = rerollCost.ToString();
+        rerollButton.Interactable = canReroll;
     }
 
-    public void UpdateCurrencyAmount(int amount)
+    private void UpdateCurrencyAmount(int amount)
     {
-        shopListView.UpdateCurrencyAmount(amount);
+        currencyText.text = amount.ToString();
     }
 
-    public void ShowPurchaseSuccess(ShopPurchaseSuccess result)
+    private void ShowPurchaseSuccess(ShopPurchaseSuccess result)
     {
         Debug.Log($"Purchase successful: {result.ItemData.ItemType}");
     }
 
-    public void ShowPurchaseFailure(string message)
+    private void ShowPurchaseFailure(string message)
     {
         Debug.LogWarning($"Purchase failed: {message}");
     }
 
-    public void SetPropertiesSidebarVisible(bool visible)
+    private void SetPropertiesSidebarVisible(bool visible)
     {
-        sidebarHost.SetPropertiesVisible(visible);
+        propertiesRuntimeMotion?.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
     }
 
-    public void SetInventorySidebarVisible(bool visible)
+    private void SetInventorySidebarVisible(bool visible)
     {
-        sidebarHost.SetInventoryVisible(visible);
+        inventoryRuntimeMotion?.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
     }
 
     private void OnRerollRequested()
     {
-        RerollRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        shopManager?.RequestReroll();
     }
 
     private void OnContinueRequested()
     {
-        ContinueRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
     private void OnPropertiesToggleRequested()
     {
-        PropertiesToggleRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        isPropertiesSidebarVisible = !isPropertiesSidebarVisible;
+        SetPropertiesSidebarVisible(isPropertiesSidebarVisible);
     }
 
     private void OnInventoryToggleRequested()
     {
-        InventoryToggleRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        isInventorySidebarVisible = !isInventorySidebarVisible;
+        SetInventorySidebarVisible(isInventorySidebarVisible);
     }
 
     private void InitSidebarPanels()
     {
-        sidebarHost.RefreshDefaults();
+        propertiesRuntimeMotion.RefreshDefaults();
+        inventoryRuntimeMotion.RefreshDefaults();
     }
 
     private void KillPanelTweens()
     {
-        sidebarHost.Kill();
+        propertiesRuntimeMotion.Kill();
+        inventoryRuntimeMotion.Kill();
+        KillAllLayoutMoveTweens();
     }
 
     private void ValidateConfiguration()
@@ -220,11 +241,444 @@ public class ShopUIPage : PageBase
 
     private void OnItemBuyRequested(int itemIndex)
     {
-        ItemBuyRequested?.Invoke(itemIndex);
+        shopManager?.RequestBuyItem(itemIndex);
     }
 
     private void OnItemLockToggleRequested(int itemIndex)
     {
-        ItemLockToggleRequested?.Invoke(itemIndex);
+        shopManager?.RequestToggleLock(itemIndex);
+    }
+
+    private void BindButtonEvents()
+    {
+        if (buttonEventsBound)
+        {
+            return;
+        }
+
+        rerollButton.OnClicked += OnRerollRequested;
+        continueButton.OnClicked += OnContinueRequested;
+        propertiesToggleButton.OnClicked += OnPropertiesToggleRequested;
+        inventoryToggleButton.OnClicked += OnInventoryToggleRequested;
+        buttonEventsBound = true;
+    }
+
+    private void UnbindButtonEvents()
+    {
+        if (!buttonEventsBound)
+        {
+            return;
+        }
+
+        rerollButton.OnClicked -= OnRerollRequested;
+        continueButton.OnClicked -= OnContinueRequested;
+        propertiesToggleButton.OnClicked -= OnPropertiesToggleRequested;
+        inventoryToggleButton.OnClicked -= OnInventoryToggleRequested;
+        buttonEventsBound = false;
+    }
+
+    private void BindManagerEvents()
+    {
+        if (managerEventsBound)
+        {
+            return;
+        }
+
+        if (shopManager != null)
+        {
+            shopManager.ItemsChanged += OnSnapshotChanged;
+            shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
+            shopManager.PurchaseFailed += OnPurchaseFailed;
+        }
+
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        managerEventsBound = true;
+    }
+
+    private void UnbindManagerEvents()
+    {
+        if (!managerEventsBound)
+        {
+            return;
+        }
+
+        if (shopManager != null)
+        {
+            shopManager.ItemsChanged -= OnSnapshotChanged;
+            shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
+            shopManager.PurchaseFailed -= OnPurchaseFailed;
+        }
+
+        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        managerEventsBound = false;
+    }
+
+    private void BindPropertiesManager(PropertiesManager manager)
+    {
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged -= OnPropertiesChanged;
+        }
+
+        propertiesManager = manager;
+        if (propertiesManager != null)
+        {
+            propertiesManager.OnAllPropertiesChanged += OnPropertiesChanged;
+        }
+
+        RefreshPropertiesDisplay();
+    }
+
+    private void OnSnapshotChanged(ShopSnapshot snapshot)
+    {
+        UpdateRerollState(snapshot.RerollCost, snapshot.CanReroll);
+        RenderShopItems(snapshot.Items, snapshot.Reason);
+    }
+
+    private void OnPurchaseSucceeded(ShopPurchaseSuccess result)
+    {
+        ShowPurchaseSuccess(result);
+    }
+
+    private void OnPurchaseFailed(ShopPurchaseFailure failure)
+    {
+        ShowPurchaseFailure(failure.Message);
+    }
+
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    {
+        if (currencyWallet != null && eventData.Wallet != currencyWallet)
+        {
+            return;
+        }
+
+        UpdateCurrencyAmount(eventData.CurrentAmount);
+    }
+
+    private void OnPropertiesChanged()
+    {
+        RefreshPropertiesDisplay();
+    }
+
+    private void RefreshPropertiesDisplay()
+    {
+        propertiesDescriber.Display(propertiesManager);
+    }
+
+    private void RenderShopItemList(ShopItemData[] items, ShopSnapshotReason reason)
+    {
+        if (items == null || items.Length == 0)
+        {
+            ClearShopItems();
+            return;
+        }
+
+        List<ShopItemContainer> previousItems = new(renderedItems);
+        List<ShopItemIdentity> previousIdentities = new(renderedItemIdentities);
+        Dictionary<ShopItemContainer, Vector2> previousPositions = CaptureAnchoredPositions(previousItems);
+        bool[] previousItemConsumed = new bool[previousItems.Count];
+        List<LayoutMoveRequest> layoutMoveRequests = new();
+
+        renderedItems.Clear();
+        renderedItemIdentities.Clear();
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            RenderShopItem(
+                items[i],
+                i,
+                reason,
+                previousItems,
+                previousIdentities,
+                previousPositions,
+                previousItemConsumed,
+                layoutMoveRequests);
+        }
+
+        DestroyUnusedPreviousItems(previousItems, previousItemConsumed);
+        PlayLayoutMoveAnimations(layoutMoveRequests);
+    }
+
+    private void ClearShopItems()
+    {
+        KillAllLayoutMoveTweens();
+        for (int i = 0; i < renderedItems.Count; i++)
+        {
+            DestroyShopItem(renderedItems[i]);
+        }
+
+        renderedItems.Clear();
+        renderedItemIdentities.Clear();
+    }
+
+    private void RenderShopItem(
+        ShopItemData itemData,
+        int itemIndex,
+        ShopSnapshotReason reason,
+        List<ShopItemContainer> previousItems,
+        List<ShopItemIdentity> previousIdentities,
+        Dictionary<ShopItemContainer, Vector2> previousPositions,
+        bool[] previousItemConsumed,
+        List<LayoutMoveRequest> layoutMoveRequests)
+    {
+        if (itemData.ItemData == null)
+        {
+            Debug.LogWarning($"{nameof(ShopUIPage)} on '{name}' skipped rendering a shop item without {nameof(ItemDataSO)}.", this);
+            return;
+        }
+
+        ShopItemIdentity nextIdentity = ShopItemIdentity.From(itemData);
+        int reusableItemIndex = FindReusableItemIndex(nextIdentity, previousItems, previousIdentities, previousItemConsumed);
+        bool reusedExistingItem = reusableItemIndex >= 0;
+        bool playReveal = ShouldPlayReveal(itemData, reason, reusedExistingItem);
+        ShopItemContainer container = reusedExistingItem
+            ? previousItems[reusableItemIndex]
+            : CreateShopItem();
+
+        if (reusedExistingItem)
+        {
+            previousItemConsumed[reusableItemIndex] = true;
+        }
+
+        container.transform.SetSiblingIndex(itemIndex);
+        bool refreshMotion = !reusedExistingItem || playReveal;
+        container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex), playReveal, refreshMotion);
+        if (!playReveal
+            && reusedExistingItem
+            && previousPositions.TryGetValue(container, out Vector2 previousAnchoredPosition))
+        {
+            layoutMoveRequests.Add(new LayoutMoveRequest(container, previousAnchoredPosition));
+        }
+
+        renderedItems.Add(container);
+        renderedItemIdentities.Add(nextIdentity);
+    }
+
+    private ShopItemContainer CreateShopItem()
+    {
+        ShopItemContainer container = Instantiate(shopItemPrefab, shopItemParent);
+        BindShopItemCallbacks(container);
+        return container;
+    }
+
+    private void DestroyUnusedPreviousItems(List<ShopItemContainer> previousItems, bool[] previousItemConsumed)
+    {
+        for (int i = 0; i < previousItems.Count; i++)
+        {
+            if (i < previousItemConsumed.Length && previousItemConsumed[i])
+            {
+                continue;
+            }
+
+            DestroyShopItem(previousItems[i]);
+        }
+    }
+
+    private void DestroyShopItem(ShopItemContainer item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        KillLayoutMoveTween(item, complete: false);
+        UnbindShopItemCallbacks(item);
+        item.CleanUp();
+        Destroy(item.gameObject);
+    }
+
+    private Dictionary<ShopItemContainer, Vector2> CaptureAnchoredPositions(List<ShopItemContainer> items)
+    {
+        Dictionary<ShopItemContainer, Vector2> positions = new();
+        for (int i = 0; i < items.Count; i++)
+        {
+            ShopItemContainer item = items[i];
+            RectTransform rectTransform = GetRectTransform(item);
+            if (item == null || rectTransform == null)
+            {
+                continue;
+            }
+
+            positions[item] = rectTransform.anchoredPosition;
+        }
+
+        return positions;
+    }
+
+    private void PlayLayoutMoveAnimations(List<LayoutMoveRequest> layoutMoveRequests)
+    {
+        if (layoutMoveRequests.Count == 0)
+        {
+            return;
+        }
+
+        RectTransform parentRectTransform = shopItemParent as RectTransform;
+        if (parentRectTransform == null)
+        {
+            return;
+        }
+
+        // LayoutGroup 仍然负责最终排布；这里先强制算出目标位置，再把复用卡片从旧位置补间过去。
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parentRectTransform);
+        Canvas.ForceUpdateCanvases();
+
+        for (int i = 0; i < layoutMoveRequests.Count; i++)
+        {
+            PlayLayoutMoveAnimation(layoutMoveRequests[i]);
+        }
+    }
+
+    private void PlayLayoutMoveAnimation(LayoutMoveRequest request)
+    {
+        RectTransform rectTransform = GetRectTransform(request.Container);
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        Vector2 targetAnchoredPosition = rectTransform.anchoredPosition;
+        if ((targetAnchoredPosition - request.PreviousAnchoredPosition).sqrMagnitude < 0.01f)
+        {
+            return;
+        }
+
+        KillLayoutMoveTween(request.Container, complete: false);
+        rectTransform.anchoredPosition = request.PreviousAnchoredPosition;
+        Tween tween = rectTransform
+            .DOAnchorPos(targetAnchoredPosition, LAYOUT_MOVE_DURATION)
+            .SetEase(Ease.OutCubic)
+            .SetUpdate(true)
+            .OnKill(() => layoutMoveTweens.Remove(request.Container));
+
+        layoutMoveTweens[request.Container] = tween;
+    }
+
+    private void KillAllLayoutMoveTweens()
+    {
+        List<ShopItemContainer> items = new(layoutMoveTweens.Keys);
+        for (int i = 0; i < items.Count; i++)
+        {
+            KillLayoutMoveTween(items[i], complete: false);
+        }
+
+        layoutMoveTweens.Clear();
+    }
+
+    private void KillLayoutMoveTween(ShopItemContainer item, bool complete)
+    {
+        if (item == null || !layoutMoveTweens.TryGetValue(item, out Tween tween))
+        {
+            return;
+        }
+
+        tween?.Kill(complete);
+        layoutMoveTweens.Remove(item);
+    }
+
+    private int FindReusableItemIndex(
+        ShopItemIdentity identity,
+        List<ShopItemContainer> previousItems,
+        List<ShopItemIdentity> previousIdentities,
+        bool[] previousItemConsumed)
+    {
+        int count = Mathf.Min(previousItems.Count, previousIdentities.Count);
+        for (int i = 0; i < count; i++)
+        {
+            if (previousItemConsumed[i] || previousItems[i] == null)
+            {
+                continue;
+            }
+
+            if (previousIdentities[i].Equals(identity))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private void BindShopItemCallbacks(ShopItemContainer container)
+    {
+        container.BuyRequested += OnItemBuyRequested;
+        container.LockToggleRequested += OnItemLockToggleRequested;
+    }
+
+    private void UnbindShopItemCallbacks(ShopItemContainer container)
+    {
+        container.BuyRequested -= OnItemBuyRequested;
+        container.LockToggleRequested -= OnItemLockToggleRequested;
+    }
+
+    private IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source, string fieldName)
+    {
+        if (source is IUIRuntimeMotion directMotion)
+        {
+            return directMotion;
+        }
+
+        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] is IUIRuntimeMotion motion)
+            {
+                return motion;
+            }
+        }
+
+        throw new MissingComponentException($"{nameof(ShopUIPage)} '{name}' expects {fieldName} to implement {nameof(IUIRuntimeMotion)}.");
+    }
+
+    private static RectTransform GetRectTransform(ShopItemContainer item)
+    {
+        return item != null ? item.transform as RectTransform : null;
+    }
+
+    private static bool ShouldPlayReveal(
+        ShopItemData itemData,
+        ShopSnapshotReason reason,
+        bool reusedExistingItem)
+    {
+        if (reason == ShopSnapshotReason.Reroll || reason == ShopSnapshotReason.WaveRefresh)
+        {
+            return !itemData.Lock;
+        }
+
+        return !reusedExistingItem;
+    }
+
+    private readonly struct ShopItemIdentity : IEquatable<ShopItemIdentity>
+    {
+        private readonly ItemDataSO itemData;
+        private readonly int level;
+
+        private ShopItemIdentity(ItemDataSO itemData, int level)
+        {
+            this.itemData = itemData;
+            this.level = level;
+        }
+
+        public static ShopItemIdentity From(ShopItemData itemData)
+        {
+            return new ShopItemIdentity(itemData.ItemData, itemData.Level);
+        }
+
+        public bool Equals(ShopItemIdentity other)
+        {
+            return itemData == other.itemData && level == other.level;
+        }
+    }
+
+    private readonly struct LayoutMoveRequest
+    {
+        public readonly ShopItemContainer Container;
+        public readonly Vector2 PreviousAnchoredPosition;
+
+        public LayoutMoveRequest(ShopItemContainer container, Vector2 previousAnchoredPosition)
+        {
+            Container = container;
+            PreviousAnchoredPosition = previousAnchoredPosition;
+        }
     }
 }

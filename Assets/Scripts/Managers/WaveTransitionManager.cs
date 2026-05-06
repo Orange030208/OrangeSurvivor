@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 public enum TransitionPhase
@@ -26,7 +25,7 @@ public class WaveTransitionManager : MonoBehaviour
     private UpgradeCardSO[] upgradeCardOptions = Array.Empty<UpgradeCardSO>();
     private UpgradeCardOptionSnapshot[] upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
     private AccessoryDataSO currentAccessoryData;
-    private Coroutine refreshUpgradeCardsRoutine;
+    private bool refreshUpgradeCardsPending;
     private int collectChestCount;
     private int latestCompletedWave = 1;
     private PlayerLevel playerLevel;
@@ -53,6 +52,7 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Subscribe<RequestWaveTransitionStateSnapshotEvent>(PublishSnapshot);
         GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Subscribe<UpgradeCardsRefreshOutCompletedEvent>(OnUpgradeCardsRefreshOutCompleted);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
@@ -66,16 +66,12 @@ public class WaveTransitionManager : MonoBehaviour
         GameEventBus.Unsubscribe<RequestWaveTransitionStateSnapshotEvent>(PublishSnapshot);
         GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
         GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Unsubscribe<UpgradeCardsRefreshOutCompletedEvent>(OnUpgradeCardsRefreshOutCompleted);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
 
-        if (refreshUpgradeCardsRoutine != null)
-        {
-            StopCoroutine(refreshUpgradeCardsRoutine);
-            refreshUpgradeCardsRoutine = null;
-        }
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -89,6 +85,7 @@ public class WaveTransitionManager : MonoBehaviour
         if (eventData.OldState == GameState.WaveTransition)
         {
             currentAccessoryData = null;
+            refreshUpgradeCardsPending = false;
             CurrentPhase = TransitionPhase.None;
         }
     }
@@ -115,6 +112,7 @@ public class WaveTransitionManager : MonoBehaviour
     private void StartTransitionFlow()
     {
         currentAccessoryData = null;
+        refreshUpgradeCardsPending = false;
         upgradeCardOptions = Array.Empty<UpgradeCardSO>();
         upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
         CurrentPhase = TransitionPhase.None;
@@ -197,24 +195,8 @@ public class WaveTransitionManager : MonoBehaviour
             return;
         }
 
-        if (refreshUpgradeCardsRoutine != null)
-        {
-            return;
-        }
-
-        refreshUpgradeCardsRoutine = StartCoroutine(RefreshUpgradeCardsWithMotion());
-    }
-
-    private IEnumerator RefreshUpgradeCardsWithMotion()
-    {
-        WaveTransitionUpgradeCardGroup cardGroup = FindFirstObjectByType<WaveTransitionUpgradeCardGroup>();
-        if (cardGroup != null)
-        {
-            yield return cardGroup.PlayRefreshOutAndWait();
-        }
-
-        ConfigureUpgradeCards();
-        refreshUpgradeCardsRoutine = null;
+        refreshUpgradeCardsPending = true;
+        GameEventBus.Publish<UpgradeCardsRefreshOutRequestedEvent>();
     }
 
     private void ConfigureUpgradeCards()
@@ -245,6 +227,17 @@ public class WaveTransitionManager : MonoBehaviour
         }
 
         GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeOptionSnapshots));
+    }
+
+    private void OnUpgradeCardsRefreshOutCompleted()
+    {
+        if (!refreshUpgradeCardsPending)
+        {
+            return;
+        }
+
+        refreshUpgradeCardsPending = false;
+        ConfigureUpgradeCards();
     }
 
     private UpgradeCardPoolSO ResolveUpgradeCardPool()

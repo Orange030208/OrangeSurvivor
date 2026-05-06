@@ -312,7 +312,7 @@
 
 ## 6. 当前进度快照
 
-当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但上一轮“静态收口完成”的结论只代表旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前继续按用户要求收口设置面板、卡片、Buff、商店、背包等业务 UI：挂在 Prefab 上的业务 UI 组件应迁入 `ViewPartBase`，无实际解耦价值的 `IInventoryUiFacade` / `IShopUiFacade` / Manager Facade 等绕路接口应删除，页面上下文应直接携带业务 Manager 或数据 payload。
+当前阶段：阶段 12 业务 UI 深度迁移继续推进。阶段 12 既定业务页面与补漏页面 `BookUIPage` 已完成直接基类迁移，旧 `AXR.Framework.UI` 页面托管、旧 `UIManager`、旧 `UIPageBase`、旧 Navigation、旧 `UIPrefabCatalog` / `UIFrameworkSettings` 资源和新 `UIManager` 迁移期非泛型 Type API 已清理；但“静态收口完成”只能证明旧托管关键字和 Missing Script 等表层扫描，不代表业务 UI 已完整迁入 Orange 子视图体系。当前已继续按用户要求删除商店侧栏 / 列表纯包装类，战斗 HUD / 输入编排已压回 `GamingUIPage`，升级卡刷新链路已改为页面持有 ViewPart 的事件协作。下一步继续检查背包列表 / 操作浮层 Host、设置面板真实 Prefab 挂载、卡片表现与 Orange Motion 的边界，以及最终真实场景验收。
 
 已完成：
 
@@ -417,20 +417,24 @@
 - 已完成业务容器未消费接口收口：删除仅出现在实现声明中的 `IContainerQualityRender` 和 `IConfigurable<T>`，`UIContainerBase`、`InventoryOperatePopupBase` 继续保留具体 `RenderQuality()` / `Configure()` 方法。
 - 已完成阶段 12 表层静态扫描：旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录、页面手工 Tooltip / Popup 托管、业务 UI 中的 `UIManager.Instance` 直接读取和 Missing Script 未发现运行时代码或真实资源残留；但该结论不能覆盖业务子 UI 是否完整迁入 `ViewPartBase`，也不能覆盖 Facade 类绕路抽象是否应该保留。
 - 已开始业务 UI 深度迁移批次：设置面板、Buff、角色选择卡片 / 列表、背包物品、`InventoryUI`、属性容器、升级卡片组、卡片动效和品质表现等挂在 Prefab 上的业务 UI 组件已迁入 `ViewPartBase`；独立预览工具 `ItemQualityPreviewSceneController` 不属于运行时 UI 框架入口，暂不迁。
+- 已完成商店侧栏 / 列表编排深度收口：删除 `ShopPageController`、`ShopListView`、`ShopItemGroupView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`ShopPageState`、`PropertiesDescriberBinding`、`SidebarMotion`、`SidebarToggleView` 及其 `.meta`，`ShopUIPage` 直接订阅 `ShopManager`、渲染列表、维护左右侧栏状态、调用侧栏 `IUIRuntimeMotion`、绑定属性描述器，并注入内嵌 `InventoryUI`。
+- 已完成战斗 HUD / 输入编排收口：删除 `GamingHudView`、`GamingInputView` 及其 `.meta`，`GamingUIPage` 直接订阅波次 / 货币事件、绑定玩家等级和角色状态、注入 `BuffBarUI` 的 UIManager，并在 `OnTick()` 直接把摇杆输入写给 `IPlayerMoveInputReceiver`。
+- 已完成升级卡刷新链路收口：`WaveTransitionManager` 不再 `FindFirstObjectByType<WaveTransitionUpgradeCardGroup>()`，改为发布 `UpgradeCardsRefreshOutRequestedEvent`；`WaveTransitionUIPage` 调用自身持有的 `WaveTransitionUpgradeCardGroup.PlayRefreshOutAsync()` 后发布 `UpgradeCardsRefreshOutCompletedEvent`，Manager 再重新配置升级卡。
+- 已复核设置面板与卡片 Motion 边界：`SettingsPanelManager` 保持为挂载 Prefab 的 `ViewPartBase`，由 `MenuUIPage` / `GamePauseMenu` 持有设置侧栏 Motion；`CardMotionController` / `CardQualityVisualController` 保持业务表现 ViewPart，内部调用 Orange `UIMotionPlayer`，不把卡片品质、浮动、指针倾斜等业务语义并入 Orange Motion 核心。
 
 未完成：
 
-- 业务 UI 深度迁移仍在进行：设置面板、卡片 / 物品格、Buff、商店列表 / 侧栏、背包列表 / 操作浮层等需要继续检查是否都处于 Orange Page / Popup / Tooltip / ViewPart 体系内。
+- 业务 UI 深度迁移仍在进行：背包列表 / 操作浮层 Host、Inventory 内部状态、设置面板真实 Prefab 挂载、卡片 / 物品格动效复用、Buff Tooltip 真实输入，以及各业务页面打开后的真实装配仍需继续核查。
 - 业务迁移前真实场景手动验证清单仍未执行；当前是按用户明确要求跳过门禁后先推进业务迁移，Overlay / Camera 真机运行、真实 Prefab、CanvasScaler、输入模块、DOTween 实际播放和 Inspector 诊断按钮仍需 PlayMode 或手动验证。
 - 尚未实现独立 PlayMode 测试场景；是否补最小 PlayMode 场景可在下一轮根据清单执行成本决定，但不能替代真实场景手动验证。
-- `UI/Contexts` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；但 `UI/Facades` 中 Inventory / Shop 相关接口和 Manager Facade 已被重新判定为绕路抽象，应在当前深度迁移批次删除。
+- `UI/Contexts` 与 `UI/Snapshots` 当前仍有业务调用链，继续收口时只能按引用链逐项核查；`UI/Facades` 已删除，后续重点不是再加桥接层，而是确认剩余业务协作对象是否有真实职责。
 
 当前风险：
 
 - 后续实现周期长，必须依赖本文持续记录，否则上下文压缩后容易误迁移旧 UI 或重建无关抽象。
 - 框架核心已具备迁移闭环，但真实场景手动验证门禁尚未执行；用户已明确要求先开始迁移，因此当前迁移依赖 EditMode 测试和保守桥接降低风险，后续仍需尽快补真实场景验证。
 - 当前旧页面托管桥接、商店页面内部局部接口、上下文工厂延迟解析 Facade、Tooltip 静态 Presenter / 全局查找、页面内 Tooltip Presenter 注入链路、StageComplete 页面级 Manager 查找、旧动画 / 点击命名空间已删除。后续风险集中在业务 Manager 层仍存在非 UI 框架范围的场景查找，以及最终真实 Play Mode 验收尚未执行。
-- 阶段 12 表层旧托管扫描已完成，但业务 UI 深度迁移未完成；剩余风险仍包括子视图未迁入 `ViewPartBase`、无用接口 / 类残留、真实 Play Mode 场景装配、Prefab 引用、输入事件和动画播放是否符合预期。
+- 阶段 12 表层旧托管扫描已完成，但业务 UI 深度迁移未完成；商店和战斗 HUD 纯包装类已删除，剩余风险集中在背包内部 Host / 列表是否还应继续压平、真实 Play Mode 场景装配、Prefab 引用、输入事件和动画播放是否符合预期。
 - 当前 worktree 仍有无关 Unity 自动导入痕迹和第三方插件删除状态：`Assets/Resources/DOTweenSettings.asset`、`ProjectSettings/ProjectSettings.asset`、`Assets/Tabsil/Mineral/Scripts/Editor/*.cs` 及其 `.meta`。这些变更不属于 Orange UI 迁移，后续提交必须继续排除，除非用户明确要求处理。
 - 用户最新要求是不在每个模块迁移时花过多时间做完整测试验证；后续单模块只做最小必要验证，重点保证 Catalog 可解析、Unity 编译 / 关键 EditMode 不破坏。完整真实 Play Mode 验收放到全部业务页面迁移和旧资源清理完成后执行，目标是打开游戏即可测试。
 - UnitySkills 当前连接的是主工作区 `E:\AXR_Projects\unity\Survivors`，不是本 worktree；验证本 worktree 必须显式使用 `-projectPath C:\Users\AXR\.codex\worktrees\f02c\Survivors` 的 Unity batchmode 或确认 Editor 已打开该 worktree。
@@ -450,14 +454,15 @@
 
 1. 读取本文 `当前进度快照` 和 `详细进度日志`。
 2. 读取 `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md` 的 `22. 迁移计划`、`23. 测试计划` 和迁移期记录。
-3. 确认最新提交包含“收口业务 Facade 与 ViewPart”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
-4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查挂在 Prefab 上但尚未进入 `PageBase` / `PopupBase` / `TooltipBase` / `ViewPartBase` 的运行时业务 UI 组件；独立预览工具可以例外记录。
-5. 继续检查页面内部纯 C# 协作类是否仍有无用抽象或误导命名，例如只转发事件、只包一层 Manager、只服务单一调用点的类；能直接合并到页面或明确作为编排类保留的，要在文档里说明。
-6. 下一批重点方向：商店侧栏 / 列表编排、战斗 HUD / 输入编排、升级卡和宝箱选择链路、设置面板的页面挂载与动画关系、卡片表现组件与 Orange Motion 的边界。
-7. 验证仍以轻量静态 / 编译断点为主，不为每个小模块跑完整 Play Mode；真实场景验收放到深度迁移批次完成后统一执行。
-8. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
-9. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
-10. 提交频率按用户新要求降低：一批相关业务 UI 深度迁移完成后再统一更新文档并提交；不要为单个接口或单个小类频繁提交。
+3. 确认最新提交包含“收口商店与战斗 UI 编排”批次，并检查工作树是否只剩无关 Unity 自动导入痕迹或用户另行处理的第三方插件删除状态。
+4. 继续深度迁移业务 UI，不要直接宣布完成。优先检查背包内部 `InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 是否仍有只转发一层的包装，判断是否要压回 `InventoryUI` 或保留为真实职责对象。
+5. 检查设置面板真实 Prefab 挂载与 `MenuUIPage` / `GamePauseMenu` 动画关系，确认 `SettingsPanelManager` 不存在旧托管或独立 UIManager 依赖。
+6. 检查卡片表现与 Orange Motion 的边界，确认 `CardMotionController` / `CardQualityVisualController` 只承载业务表现，不重复实现 Orange Motion 核心职责，也不依赖旧命名空间。
+7. 检查升级卡和宝箱选择链路的真实运行路径，尤其是 `UpgradeCardsRefreshOutRequestedEvent` / `CompletedEvent` 在页面关闭、取消和重新进入时不会让 Manager pending 状态卡住。
+8. 验证仍以轻量静态 / 编译断点为主，不为每个小模块跑完整 Play Mode；真实场景验收放到深度迁移批次完成后统一执行。
+9. 验证必须使用当前 worktree：`C:\Users\AXR\.codex\worktrees\f02c\Survivors`。UnitySkills 当前连接主工作区时不能直接用于认定 worktree 结果。
+10. 使用 Unity batchmode 验证 worktree 时不要传 `-quit`。
+11. 提交频率按用户新要求降低：一批相关业务 UI 深度迁移完成后再统一更新文档并提交；不要为单个接口或单个小类频繁提交。
 
 下一轮禁止：
 
@@ -2768,3 +2773,51 @@
 
 - 继续本批轻量编译断点检查并修复问题。
 - 若无明显编译断点，更新文档后按用户新要求做较大批次提交，不再为每个小接口单独提交。
+
+### 2026-05-06 阶段 12 深度迁移：收口商店与战斗 UI 编排
+
+完成内容：
+
+- 按用户最新反馈继续深度迁移，不再把 `ShopInventorySidebarView`、`ShopItemGroupView`、`ShopListView`、`ShopPageController`、`ShopPropertiesSidebarView`、`ShopPageState`、`ShopSidebarHost` 等纯包装类作为保留结构。
+- `ShopUIPage` 直接承接商店会话：订阅 / 解绑 `ShopManager.ItemsChanged`、`PurchaseSucceeded`、`PurchaseFailed` 和 `CurrencyChangedEvent`，直接处理刷新、继续、购买、锁定、左右侧栏切换、属性描述器刷新、商店卡片列表复用和布局移动动画。
+- 删除商店页面纯包装脚本与 `.meta`：`ShopPageController`、`ShopListView`、`ShopItemGroupView`、`ShopPageState`、`ShopInventorySidebarView`、`ShopPropertiesSidebarView`、`ShopSidebarHost`、`PropertiesDescriberBinding`、`SidebarMotion`、`SidebarToggleView` 以及空的 `Assets/Scripts/UI/Pages/Shop` 目录。
+- `GamingUIPage` 直接承接战斗 HUD 与输入编排：订阅波次 / 货币事件、绑定玩家等级快照、刷新 `CharacterStatusPanel`、注入并绑定 `BuffBarUI`，并在 `OnTick()` 直接把 `MobileJoystick` 输入写入 `IPlayerMoveInputReceiver`。
+- 删除战斗 HUD / 输入纯包装脚本与 `.meta`：`GamingHudView`、`GamingInputView`。
+- 升级卡刷新链路从 Manager 查 UI 改为事件协作：新增 `UpgradeCardsRefreshOutRequestedEvent` / `UpgradeCardsRefreshOutCompletedEvent`；`WaveTransitionManager` 不再 `FindFirstObjectByType<WaveTransitionUpgradeCardGroup>()`，而是请求页面播放刷新退场动画；`WaveTransitionUIPage` 调用自身持有的 `WaveTransitionUpgradeCardGroup.PlayRefreshOutAsync()` 完成后通知 Manager 重新配置升级卡。
+- 复核设置面板挂载和卡片表现边界：`SettingsPanelManager` 保持 `ViewPartBase`，由菜单 / 暂停页显式控制设置侧栏 Motion；`CardMotionController` / `CardQualityVisualController` 保持业务表现层，调用 Orange `UIMotionPlayer`，不并入 Orange Motion 核心。
+
+修改文件：
+
+- `Assets/Scripts/UI/Instances/ShopUIPage.cs`
+- `Assets/Scripts/UI/Instances/GamingUIPage.cs`
+- `Assets/Scripts/UI/Instances/WaveTransitionUIPage.cs`
+- `Assets/Scripts/UI/Instances/WaveTransitionUpgradeCardGroup.cs`
+- `Assets/Scripts/Managers/WaveTransitionManager.cs`
+- `Assets/Scripts/Event/Implementations/UpgradeEvents.cs`
+- `Assets/Scripts/UI/Pages/GamingHudView.cs`
+- `Assets/Scripts/UI/Pages/GamingInputView.cs`
+- `Assets/Scripts/UI/Pages/Shop/**`
+- `Assets/Scripts/UI/Pages/SidebarMotion.cs`
+- `Assets/Scripts/UI/Pages/SidebarToggleView.cs`
+- `ORANGE_UI_FRAMEWORK_DEVELOPMENT.md`
+- `ORANGE_UI_FRAMEWORK_IMPLEMENTATION_PLAN.md`
+
+验证情况：
+
+- 已读取本计划、开发文档、Unity Project Scout / Script / Architecture / Script Design 技能说明，并按用户要求采用较大迁移批次而非单类频繁提交。
+- 已用 `git grep` 检查 `ShopPageController`、`ShopListView`、`ShopItemGroupView`、`ShopPageState`、`ShopInventorySidebarView`、`ShopPropertiesSidebarView`、`ShopSidebarHost`、`PropertiesDescriberBinding`、`SidebarToggleView`、`SidebarMotion`、`GamingHudView`、`GamingInputView`、`FindFirstObjectByType<WaveTransitionUpgradeCardGroup>`；剩余命中只包括 Orange Motion 资产 / 类型中的 `UISidebarMotionTrack`，不是本轮删除的页面包装类。
+- 已确认 `IUIRuntimeMotion` 提供 `Play()`、`SetImmediate()`、`RefreshDefaults()`、`Kill()`，满足 `ShopUIPage` 直接控制侧栏 Motion 的调用。
+- 已执行 `git diff --check` 覆盖本轮脚本和两份文档，只有 LF/CRLF 转换提示，无空白错误。
+- 本轮按用户要求未执行完整 Unity 编译和 Play Mode；升级卡事件链、商店侧栏动画、战斗 HUD 输入和设置面板仍需后续真实场景验证。
+
+遗留风险：
+
+- `WaveTransitionUIPage.PlayUpgradeCardsRefreshOutAsync()` 关闭页面时会在 `finally` 发布完成事件，Manager 当前通过 `refreshUpgradeCardsPending` 避免非请求状态误处理；仍需真实场景验证快速关闭 / 重新进入波次过渡时不会重复发牌或丢失刷新。
+- `InventoryListView`、`InventoryOperatePopupHost`、`InventoryUiBinder` 仍是背包内部纯 C# 协作对象，下一轮需要判断它们是有真实职责还是继续压回 `InventoryUI`。
+- 本轮删除了多个脚本文件，真实 Prefab Missing Script 尚未通过 Unity 导入后验证；需要在后续轻量编译或真实场景验收中确认。
+- 当前 worktree 仍有无关 Unity 自动文件和第三方插件删除状态，本批提交必须排除。
+
+下一步：
+
+- 先提交本批商店 / 战斗 UI 编排收口。
+- 下一轮按 `下一轮入口` 优先检查背包内部 Host / 列表链路、设置面板真实 Prefab 挂载、卡片动效复用和升级卡 / 宝箱真实场景路径。

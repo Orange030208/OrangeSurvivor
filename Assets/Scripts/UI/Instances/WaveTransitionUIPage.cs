@@ -15,6 +15,7 @@ public class WaveTransitionUIPage : PageBase
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+        GameEventBus.Subscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Subscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
@@ -27,6 +28,7 @@ public class WaveTransitionUIPage : PageBase
     protected override void OnClosed(CloseReason reason)
     {
         GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+        GameEventBus.Unsubscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Unsubscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
@@ -67,6 +69,32 @@ public class WaveTransitionUIPage : PageBase
         }
 
         upgradeCardGroup.Configure(eventData.Options);
+    }
+
+    private void OnUpgradeCardsRefreshOutRequested()
+    {
+        PlayUpgradeCardsRefreshOutAsync().Forget();
+    }
+
+    private async UniTaskVoid PlayUpgradeCardsRefreshOutAsync()
+    {
+        try
+        {
+            if (upgradeCardGroup == null)
+            {
+                Debug.LogError($"{nameof(WaveTransitionUIPage)} missing {nameof(upgradeCardGroup)}.", this);
+                return;
+            }
+
+            await upgradeCardGroup.PlayRefreshOutAsync(this.GetCancellationTokenOnDestroy());
+        }
+        catch (System.OperationCanceledException)
+        {
+        }
+        finally
+        {
+            GameEventBus.Publish<UpgradeCardsRefreshOutCompletedEvent>();
+        }
     }
 
     private void SetChestSelectionVisible(bool visible)

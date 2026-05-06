@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
@@ -108,6 +110,11 @@ public class WaveTransitionUpgradeCardGroup : ViewPartBase
         {
             yield return null;
         }
+    }
+
+    public UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
+    {
+        return PlayRefreshOutAndWait().ToUniTask(cancellationToken: cancellationToken);
     }
 
     private bool TryBeginSelection(int selectedIndex)

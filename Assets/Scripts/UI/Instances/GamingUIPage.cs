@@ -18,8 +18,9 @@ public class GamingUIPage : PageBase
     [SerializeField] private BuffBarUI buffBarUI;
 
     private GamingPageContext currentContext;
-    private GamingHudView hudView;
-    private GamingInputView inputView;
+    private IPlayerMoveInputReceiver moveInputReceiver;
+    private PlayerLevel playerLevel;
+    private bool hudEventsBound;
 
     public override bool RequiresTick => true;
 
@@ -28,9 +29,6 @@ public class GamingUIPage : PageBase
         base.Awake();
         ValidateConfiguration();
         InventoryUiBinder.WarmUp(this, ref inventoryUI);
-        hudView = new GamingHudView(name, waveText, timerText, currencyText, characterStatusPanel, buffBarUI);
-        inputView = new GamingInputView(this, moveJoystick);
-        inputView.WarmUp();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
@@ -38,19 +36,17 @@ public class GamingUIPage : PageBase
         currentContext = context.GetPayload<GamingPageContext>()
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
-        inputView.WarmUp();
-        inputView.Bind(currentContext.Player);
+        BindInput(currentContext.Player);
         InventoryUiBinder.Bind(this, ref inventoryUI, currentContext.InventoryOperateManager, OwnerUIManager);
-        hudView.ConfigureUIManager(OwnerUIManager);
-        hudView.Bind(currentContext);
+        BindHud(currentContext);
         menuButton.OnClicked += OnPauseClicked;
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        inputView.Unbind();
-        hudView.Unbind();
+        UnbindInput();
+        UnbindHud();
         menuButton.OnClicked -= OnPauseClicked;
         InventoryUiBinder.Release(inventoryUI);
         currentContext = null;
@@ -58,13 +54,129 @@ public class GamingUIPage : PageBase
 
     protected override void OnTick(float deltaTime)
     {
-        inputView.PublishCurrentInput();
+        moveInputReceiver?.SetMoveInput(ReadMoveDirection());
     }
 
     private void OnPauseClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         GameEventBus.Publish(new PauseGameRequestedEvent());
+    }
+
+    private void BindInput(Player player)
+    {
+        moveInputReceiver = player != null ? player.GetComponent<IPlayerMoveInputReceiver>() : null;
+        moveInputReceiver?.SetMoveInput(Vector2.zero);
+    }
+
+    private void UnbindInput()
+    {
+        moveInputReceiver?.SetMoveInput(Vector2.zero);
+        moveInputReceiver = null;
+    }
+
+    private Vector2 ReadMoveDirection()
+    {
+        return moveJoystick != null ? moveJoystick.GetMoveDirection() : Vector2.zero;
+    }
+
+    private void BindHud(GamingPageContext context)
+    {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
+        UnbindHud();
+        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
+        GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        hudEventsBound = true;
+
+        BindPlayerHud(context.Player);
+        RefreshCurrencyDisplay(context.CurrencyWallet);
+
+        buffBarUI.ConfigureUIManager(OwnerUIManager);
+        buffBarUI.gameObject.SetActive(true);
+
+        GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
+    }
+
+    private void UnbindHud()
+    {
+        if (hudEventsBound)
+        {
+            GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+            GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
+            GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
+            GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+            hudEventsBound = false;
+        }
+
+        UnbindPlayerLevel();
+        characterStatusPanel.Unbind();
+        buffBarUI.UnbindPlayer();
+    }
+
+    private void BindPlayerHud(Player player)
+    {
+        UnbindPlayerLevel();
+        characterStatusPanel.BindPlayer(player);
+        buffBarUI.BindPlayer(player);
+
+        playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
+        if (playerLevel == null)
+        {
+            return;
+        }
+
+        playerLevel.SnapshotChanged += OnPlayerLevelSnapshotChanged;
+        OnPlayerLevelSnapshotChanged(playerLevel.CreateSnapshot());
+    }
+
+    private void UnbindPlayerLevel()
+    {
+        if (playerLevel == null)
+        {
+            return;
+        }
+
+        playerLevel.SnapshotChanged -= OnPlayerLevelSnapshotChanged;
+        playerLevel = null;
+    }
+
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    {
+        RefreshCurrencyDisplay(eventData.Wallet);
+    }
+
+    private void RefreshCurrencyDisplay(CurrencyWallet wallet)
+    {
+        currencyText.text = wallet != null ? wallet.CurrentAmount.ToString() : "0";
+    }
+
+    private void OnPlayerLevelSnapshotChanged(PlayerLevelSnapshot snapshot)
+    {
+        characterStatusPanel.SetLevel(snapshot.CurrentLevel);
+        characterStatusPanel.SetXp(snapshot.CurrentXP, snapshot.RequiredXP);
+        characterStatusPanel.SetUpgradePoint(snapshot.UnspentUpgradePoints);
+    }
+
+    private void OnWaveStarted(WaveStartedEvent eventData)
+    {
+        waveText.text = $"波次 {eventData.CurrentWave}/{eventData.TotalWaves}";
+    }
+
+    private void OnAllWavesCompleted()
+    {
+        waveText.text = "所有波次已完成!";
+        timerText.text = string.Empty;
+    }
+
+    private void OnWaveProgress(WaveProgressEvent eventData)
+    {
+        timerText.text = $"{Mathf.RoundToInt(eventData.RemainingTime)}s / {Mathf.RoundToInt(eventData.TotalTime)}s";
     }
 
     private void ValidateConfiguration()
