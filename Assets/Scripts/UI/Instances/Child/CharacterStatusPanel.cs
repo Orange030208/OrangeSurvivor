@@ -1,8 +1,9 @@
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterStatusPanel : MonoBehaviour
+public class CharacterStatusPanel : ViewPartBase
 {
     [SerializeField] private Image characterIconImage;
     [SerializeField] private TextMeshProUGUI characterNameText;

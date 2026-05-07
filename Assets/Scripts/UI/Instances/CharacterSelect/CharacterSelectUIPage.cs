@@ -1,43 +1,46 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class CharacterSelectUIPage : UIPageBase
+public class CharacterSelectUIPage : PageBase
 {
     [SerializeField] private CharacterInfoCard characterInfoCard;
-    [SerializeField] private CharacterListController characterListController;
+    [SerializeField] private CharacterListUI characterList;
     [SerializeField] private UIClickTarget confirm;
     [SerializeField] private UIClickTarget back;
-    [SerializeField] private CharacterSelectionManager characterSelectionManager;
 
-    private ICharacterSelectionService selectionService;
+    private CharacterSelectionManager characterSelectionManager;
     private int selectedCharacterIndex = -1;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override void Awake()
     {
-        selectionService = ResolveSelectionService();
-        if (selectionService != null)
-        {
-            selectionService.SelectionChanged += OnCharacterSelectionChanged;
-        }
+        base.Awake();
+        ValidateConfiguration();
+    }
+
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
+    {
+        characterSelectionManager = context.GetPayload<CharacterSelectionManager>()
+            ?? throw new System.InvalidOperationException($"{nameof(CharacterSelectUIPage)} requires {nameof(CharacterSelectionManager)} payload.");
+        characterSelectionManager.SelectionChanged += OnCharacterSelectionChanged;
 
         confirm.OnClicked += OnConfirmOnClicked;
         back.OnClicked += OnBackOnClicked;
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        if (selectionService != null)
-        {
-            ApplyCharacterSelectionSnapshot(selectionService.CreateSnapshot());
-        }
+        ApplyCharacterSelectionSnapshot(characterSelectionManager.CreateSnapshot());
+
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
-        if (selectionService != null)
+        if (characterSelectionManager != null)
         {
-            selectionService.SelectionChanged -= OnCharacterSelectionChanged;
-            selectionService = null;
+            characterSelectionManager.SelectionChanged -= OnCharacterSelectionChanged;
+            characterSelectionManager = null;
         }
 
         confirm.OnClicked -= OnConfirmOnClicked;
@@ -45,14 +48,14 @@ public class CharacterSelectUIPage : UIPageBase
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        characterListController.Clear();
+        characterList.Clear();
         selectedCharacterIndex = -1;
     }
 
     private void ApplyCharacterSelectionSnapshot(CharacterSelectionSnapshot snapshot)
     {
         selectedCharacterIndex = snapshot.SelectedIndex;
-        characterListController.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
+        characterList.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
         SetConfirmButtonInteractable(selectedCharacterIndex >= 0);
 
         if (selectedCharacterIndex < 0 || snapshot.Characters == null || selectedCharacterIndex >= snapshot.Characters.Length)
@@ -67,14 +70,14 @@ public class CharacterSelectUIPage : UIPageBase
     private void OnCharacterSelectionChanged(CharacterSelectionChangedArgs args)
     {
         selectedCharacterIndex = args.CharacterIndex;
-        characterListController.SetSelectedIndex(selectedCharacterIndex);
+        characterList.SetSelectedIndex(selectedCharacterIndex);
         characterInfoCard.DisplayInfo(args.CharacterData);
         SetConfirmButtonInteractable(true);
     }
 
     private void OnCharacterSelected(int characterIndex)
     {
-        selectionService?.SelectCharacter(characterIndex);
+        characterSelectionManager?.SelectCharacter(characterIndex);
     }
 
     private void OnConfirmOnClicked()
@@ -100,14 +103,26 @@ public class CharacterSelectUIPage : UIPageBase
         confirm.Interactable = interactable;
     }
 
-    private ICharacterSelectionService ResolveSelectionService()
+    private void ValidateConfiguration()
     {
-        if (characterSelectionManager != null)
+        if (characterInfoCard == null)
         {
-            return characterSelectionManager;
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing character info card.");
         }
 
-        characterSelectionManager = CharacterSelectionManager.Instance;
-        return characterSelectionManager;
+        if (characterList == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing character list.");
+        }
+
+        if (confirm == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing confirm button.");
+        }
+
+        if (back == null)
+        {
+            throw new MissingReferenceException($"{nameof(CharacterSelectUIPage)} '{name}' is missing back button.");
+        }
     }
 }

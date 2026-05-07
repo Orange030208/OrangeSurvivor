@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>, ICharacterSelectionService
+public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>
 {
     private CharacterDataSO[] characters = Array.Empty<CharacterDataSO>();
     private int selectedIndex = -1;

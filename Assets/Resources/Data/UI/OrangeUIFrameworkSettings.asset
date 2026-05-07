@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3123b8fd90f4221b3683a138155d45b, type: 3}
+  m_Name: OrangeUIFrameworkSettings
+  m_EditorClassIdentifier:
+  instanceIdPrefix: UIInst_
+  useUnscaledTime: 1
+  rootName: UIRoot
+  dontDestroyOnLoad: 1
+  canvasProfile: {fileID: 11400000, guid: 8b57b40a06c64c55a95b313df946f1e1, type: 2}
+  enablePooling: 1
+  maxCachedInstancesPerView: 3
+  layers:
+  - layer: 0
+    rootName: BackgroundLayer
+    sortingOrder: -300
+    blocksRaycasts: 1
+  - layer: 1
+    rootName: HudLayer
+    sortingOrder: -100
+    blocksRaycasts: 1
+  - layer: 2
+    rootName: PageLayer
+    sortingOrder: 0
+    blocksRaycasts: 1
+  - layer: 3
+    rootName: PopupLayer
+    sortingOrder: 200
+    blocksRaycasts: 1
+  - layer: 4
+    rootName: ModalMaskLayer
+    sortingOrder: 300
+    blocksRaycasts: 1
+  - layer: 5
+    rootName: ModalLayer
+    sortingOrder: 320
+    blocksRaycasts: 1
+  - layer: 6
+    rootName: TooltipLayer
+    sortingOrder: 500
+    blocksRaycasts: 0
+  - layer: 7
+    rootName: SystemLayer
+    sortingOrder: 700
+    blocksRaycasts: 1
+  - layer: 8
+    rootName: DebugLayer
+    sortingOrder: 900
+    blocksRaycasts: 1

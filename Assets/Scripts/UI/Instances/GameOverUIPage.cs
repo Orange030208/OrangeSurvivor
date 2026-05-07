@@ -1,18 +1,21 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class GameOverUIPage : UIPageBase
+public class GameOverUIPage : PageBase
 {
     [SerializeField] private UIClickTarget restartButton;
     [SerializeField] private UIClickTarget menuButton;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         restartButton.OnClicked += OnRestartClicked;
         menuButton.OnClicked += OnMenuClicked;
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         restartButton.OnClicked -= OnRestartClicked;
         menuButton.OnClicked -= OnMenuClicked;

@@ -78,7 +78,11 @@ GameObject:
   - component: {fileID: 3919912862414021162}
   - component: {fileID: 8811404232182784892}
   - component: {fileID: 1651732239380549356}
+  - component: {fileID: 7398201450813429011}
+  - component: {fileID: 7398201450813429012}
+  - component: {fileID: 7398201450813429013}
   - component: {fileID: 3339615293881789033}
+  - component: {fileID: 3866200215160491881}
   m_Layer: 5
   m_Name: UI Shop
   m_TagString: Untagged
@@ -145,20 +149,58 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20fbf61079626084c8bfcc689ca35b08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoPlaySequenceDirector: 1
-  shopItemPrefab: {fileID: 6212716520622307748, guid: c47cbde30f70ad740a9bdb5d767aaf12, type: 3}
-  shopItemParent: {fileID: 8969939917851105321}
+  m_Name:
+  m_EditorClassIdentifier:
+  itemList: {fileID: 7398201450813429011}
   rerollButton: {fileID: 1667616793229232022}
   continueButton: {fileID: 4398614357056526755}
   rerollCostText: {fileID: 950086506306574783}
   currencyText: {fileID: 2607457919317532470}
-  propertiesSidebar: {fileID: 3612824470567797443}
-  propertiesToggleButton: {fileID: 5786650212898361234}
+  propertiesPanel: {fileID: 7398201450813429012}
+  inventoryPanel: {fileID: 7398201450813429013}
+--- !u!114 &7398201450813429011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b04bfb02a9b4c2094f8e0e9463baf11, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  itemPrefab: {fileID: 6212716520622307748, guid: c47cbde30f70ad740a9bdb5d767aaf12, type: 3}
+  itemParent: {fileID: 8969939917851105321}
+--- !u!114 &7398201450813429012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48132792f6a94d3b9dcf50d68edc4d10, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 3612824470567797443}
+  toggleButton: {fileID: 5786650212898361234}
   propertiesDescriber: {fileID: 3866747479743589785}
-  inventorySidebar: {fileID: 1730573582740224298}
-  inventoryToggleButton: {fileID: 6734765040095314348}
+--- !u!114 &7398201450813429013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e33c292cbd4e43d28cf3cf3fbcbf7a12, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 1730573582740224298}
+  toggleButton: {fileID: 6734765040095314348}
   inventoryUI: {fileID: 5311398793965051210}
 --- !u!114 &3339615293881789033
 MonoBehaviour:
@@ -185,6 +227,22 @@ MonoBehaviour:
   reverseExitOrder: 1
   useUnscaledTime: 1
   timeScale: 0.8
+--- !u!114 &3866200215160491881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816208830851736021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  motionSource: {fileID: 3339615293881789033}
+  autoResolveInChildren: 1
+  hideImmediatelyBeforeEnter: 1
+  showImmediatelyWhenSkipped: 1
 --- !u!1 &5912765927435080413
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,11 +1490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 1368362119241423224, guid: 6a8748e2299b15c4896d2a062c22c0d5, type: 3}
-  weaponPopupPrefab: {fileID: 4367177154767920270, guid: 32c53ab2a330ed146b8d9e720613f13b, type: 3}
-  accessoryPopupPrefab: {fileID: -5466076070143302565, guid: b5e65ee1abc9e75448634e25fd97b368, type: 3}
   itemContainersParent: {fileID: 7032089879319786788}
-  inventoryOperateManager: {fileID: 0}
-  closeInventoryItemOperatePanelButtons: []
 --- !u!114 &1730573582740224298
 MonoBehaviour:
   m_ObjectHideFlags: 0

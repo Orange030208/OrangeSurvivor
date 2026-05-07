@@ -1,171 +1,257 @@
-using AXR.Framework.UI;
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
+public class ShopUIPage : PageBase
 {
-    [SerializeField] private ShopItemContainer shopItemPrefab;
-    [SerializeField] private Transform shopItemParent;
+    [Header("商品")]
+    [SerializeField] private ShopItemListUI itemList;
+
+    [Header("操作")]
     [SerializeField] private UIClickTarget rerollButton;
     [SerializeField] private UIClickTarget continueButton;
     [SerializeField] private TextMeshProUGUI rerollCostText;
     [SerializeField] private TextMeshProUGUI currencyText;
 
-    [Header("属性面板(左)")]
-    [SerializeField] private MonoBehaviour propertiesSidebar;
-    [SerializeField] private UIClickTarget propertiesToggleButton;
-    [SerializeField] private Describer propertiesDescriber;
+    [Header("页面子面板")]
+    [SerializeField] private ShopPropertiesPanel propertiesPanel;
+    [SerializeField] private ShopInventoryPanel inventoryPanel;
 
-    [Header("背包面板(右)")]
-    [SerializeField] private MonoBehaviour inventorySidebar;
-    [SerializeField] private UIClickTarget inventoryToggleButton;
-    [SerializeField] private InventoryUI inventoryUI;
-
-    private ShopPageContext currentContext;
-    private IPageController controller;
-    private ShopListRegionView shopListRegion;
-    private ShopSidebarRegionHost sidebarRegionHost;
-
-    public event Action RerollRequested;
-    public event Action ContinueRequested;
-    public event Action PropertiesToggleRequested;
-    public event Action InventoryToggleRequested;
-    public event Action<int> ItemBuyRequested;
-    public event Action<int> ItemLockToggleRequested;
+    private ShopManager shopManager;
+    private CurrencyWallet currencyWallet;
+    private bool buttonEventsBound;
+    private bool managerEventsBound;
 
     protected override void Awake()
     {
         base.Awake();
+        ResolveViewParts();
         ValidateConfiguration();
-        InventoryUiHostBinding.WarmUp(this, ref inventoryUI);
-        shopListRegion = new ShopListRegionView(name, shopItemPrefab, shopItemParent, rerollButton, continueButton, rerollCostText, currencyText);
-        sidebarRegionHost = new ShopSidebarRegionHost(
-            name,
-            propertiesSidebar,
-            propertiesToggleButton,
-            propertiesDescriber,
-            inventorySidebar,
-            inventoryToggleButton);
-        shopListRegion.RerollRequested += OnRerollRequested;
-        shopListRegion.ContinueRequested += OnContinueRequested;
-        shopListRegion.ItemBuyRequested += OnItemBuyRequested;
-        shopListRegion.ItemLockToggleRequested += OnItemLockToggleRequested;
-        sidebarRegionHost.PropertiesToggleRequested += OnPropertiesRegionToggleRequested;
-        sidebarRegionHost.InventoryToggleRequested += OnInventoryRegionToggleRequested;
-        InitSidebarPanels();
     }
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        currentContext = PageContextBinding.Resolve<ShopPageContext>(context, () => UIPageContextFactory.CreateShopPageContext());
-        controller = new ShopPageController(this, currentContext);
-        controller.Enter();
+        ShopPageContext shopPageContext = context.GetPayload<ShopPageContext>()
+            ?? throw new InvalidOperationException($"{nameof(ShopUIPage)} requires {nameof(ShopPageContext)} payload.");
+
+        EnterShopSession(shopPageContext);
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
-        controller?.Exit();
-        controller = null;
-        PageContextBinding.Release(ref currentContext);
+        ExitShopSession();
     }
 
-    public void PrepareForOpen(ShopPageContext context)
+    private void EnterShopSession(ShopPageContext context)
     {
         if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
 
-        InventoryUiHostBinding.Bind(this, ref inventoryUI, context);
-        shopListRegion.Bind();
-        sidebarRegionHost.Bind(context.PropertiesManager);
+        shopManager = context.ShopManager;
+        currencyWallet = context.CurrencyWallet;
+
+        BindButtonEvents();
+        BindManagerEvents();
+        BindItemListEvents();
+
+        propertiesPanel.BeginSession(context.PropertiesManager);
+        inventoryPanel.BeginSession(context.InventoryOperateManager, OwnerUIManager);
+
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
+        shopManager.RequestSnapshot();
     }
 
-    public void ResetAfterClose()
+    private void ExitShopSession()
     {
-        shopListRegion.Unbind();
-        sidebarRegionHost.Unbind();
-        InventoryUiHostBinding.Release(inventoryUI);
-        KillPanelTweens();
+        UnbindButtonEvents();
+        UnbindManagerEvents();
+        UnbindItemListEvents();
+
+        itemList.Clear();
+        propertiesPanel.EndSession();
+        inventoryPanel.EndSession();
+
+        shopManager = null;
+        currencyWallet = null;
     }
 
-    public void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
+    private void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
     {
-        shopListRegion.RenderShopItems(items, reason);
+        itemList.Render(items, reason);
     }
 
-    public void UpdateRerollState(int rerollCost, bool canReroll)
+    private void UpdateRerollState(int rerollCost, bool canReroll)
     {
-        shopListRegion.UpdateRerollState(rerollCost, canReroll);
+        rerollCostText.text = rerollCost.ToString();
+        rerollButton.Interactable = canReroll;
     }
 
-    public void UpdateCurrencyAmount(int amount)
+    private void UpdateCurrencyAmount(int amount)
     {
-        shopListRegion.UpdateCurrencyAmount(amount);
+        currencyText.text = amount.ToString();
     }
 
-    public void ShowPurchaseSuccess(ShopPurchaseSuccess result)
+    private void ShowPurchaseSuccess(ShopPurchaseSuccess result)
     {
         Debug.Log($"Purchase successful: {result.ItemData.ItemType}");
     }
 
-    public void ShowPurchaseFailure(string message)
+    private void ShowPurchaseFailure(string message)
     {
         Debug.LogWarning($"Purchase failed: {message}");
     }
 
-    public void SetPropertiesSidebarVisible(bool visible)
-    {
-        sidebarRegionHost.SetPropertiesVisible(visible);
-    }
-
-    public void SetInventorySidebarVisible(bool visible)
-    {
-        sidebarRegionHost.SetInventoryVisible(visible);
-    }
-
     private void OnRerollRequested()
     {
-        RerollRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        shopManager?.RequestReroll();
     }
 
     private void OnContinueRequested()
     {
-        ContinueRequested?.Invoke();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
-    private void OnPropertiesRegionToggleRequested()
+    private void OnItemBuyRequested(int itemIndex)
     {
-        PropertiesToggleRequested?.Invoke();
+        shopManager?.RequestBuyItem(itemIndex);
     }
 
-    private void OnInventoryRegionToggleRequested()
+    private void OnItemLockToggleRequested(int itemIndex)
     {
-        InventoryToggleRequested?.Invoke();
+        shopManager?.RequestToggleLock(itemIndex);
     }
 
-    private void InitSidebarPanels()
+    private void BindButtonEvents()
     {
-        sidebarRegionHost.RefreshDefaults();
+        if (buttonEventsBound)
+        {
+            return;
+        }
+
+        rerollButton.OnClicked += OnRerollRequested;
+        continueButton.OnClicked += OnContinueRequested;
+        buttonEventsBound = true;
     }
 
-    private void KillPanelTweens()
+    private void UnbindButtonEvents()
     {
-        sidebarRegionHost.Kill();
+        if (!buttonEventsBound)
+        {
+            return;
+        }
+
+        rerollButton.OnClicked -= OnRerollRequested;
+        continueButton.OnClicked -= OnContinueRequested;
+        buttonEventsBound = false;
+    }
+
+    private void BindManagerEvents()
+    {
+        if (managerEventsBound)
+        {
+            return;
+        }
+
+        if (shopManager != null)
+        {
+            shopManager.ItemsChanged += OnSnapshotChanged;
+            shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
+            shopManager.PurchaseFailed += OnPurchaseFailed;
+        }
+
+        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        managerEventsBound = true;
+    }
+
+    private void UnbindManagerEvents()
+    {
+        if (!managerEventsBound)
+        {
+            return;
+        }
+
+        if (shopManager != null)
+        {
+            shopManager.ItemsChanged -= OnSnapshotChanged;
+            shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
+            shopManager.PurchaseFailed -= OnPurchaseFailed;
+        }
+
+        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
+        managerEventsBound = false;
+    }
+
+    private void BindItemListEvents()
+    {
+        itemList.BuyRequested -= OnItemBuyRequested;
+        itemList.LockToggleRequested -= OnItemLockToggleRequested;
+        itemList.BuyRequested += OnItemBuyRequested;
+        itemList.LockToggleRequested += OnItemLockToggleRequested;
+    }
+
+    private void UnbindItemListEvents()
+    {
+        itemList.BuyRequested -= OnItemBuyRequested;
+        itemList.LockToggleRequested -= OnItemLockToggleRequested;
+    }
+
+    private void OnSnapshotChanged(ShopSnapshot snapshot)
+    {
+        UpdateRerollState(snapshot.RerollCost, snapshot.CanReroll);
+        RenderShopItems(snapshot.Items, snapshot.Reason);
+    }
+
+    private void OnPurchaseSucceeded(ShopPurchaseSuccess result)
+    {
+        ShowPurchaseSuccess(result);
+    }
+
+    private void OnPurchaseFailed(ShopPurchaseFailure failure)
+    {
+        ShowPurchaseFailure(failure.Message);
+    }
+
+    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    {
+        if (currencyWallet != null && eventData.Wallet != currencyWallet)
+        {
+            return;
+        }
+
+        UpdateCurrencyAmount(eventData.CurrentAmount);
+    }
+
+    private void ResolveViewParts()
+    {
+        if (itemList == null)
+        {
+            itemList = GetComponentInChildren<ShopItemListUI>(true);
+        }
+
+        if (propertiesPanel == null)
+        {
+            propertiesPanel = GetComponentInChildren<ShopPropertiesPanel>(true);
+        }
+
+        if (inventoryPanel == null)
+        {
+            inventoryPanel = GetComponentInChildren<ShopInventoryPanel>(true);
+        }
     }
 
     private void ValidateConfiguration()
     {
-        if (shopItemPrefab == null)
+        if (itemList == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing shop item prefab.");
-        }
-
-        if (shopItemParent == null)
-        {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing shop item parent.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing item list.");
         }
 
         if (rerollButton == null)
@@ -188,39 +274,14 @@ public class ShopUIPage : UIPageBase, IShopPageView, IInventoryUiFacadeHost
             throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing currency text.");
         }
 
-        if (propertiesSidebar == null)
+        if (propertiesPanel == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties sidebar.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties panel.");
         }
 
-        if (propertiesToggleButton == null)
+        if (inventoryPanel == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties toggle button.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory panel.");
         }
-
-        if (propertiesDescriber == null)
-        {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties describer.");
-        }
-
-        if (inventorySidebar == null)
-        {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory sidebar.");
-        }
-
-        if (inventoryToggleButton == null)
-        {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory toggle button.");
-        }
-    }
-
-    private void OnItemBuyRequested(int itemIndex)
-    {
-        ItemBuyRequested?.Invoke(itemIndex);
-    }
-
-    private void OnItemLockToggleRequested(int itemIndex)
-    {
-        ItemLockToggleRequested?.Invoke(itemIndex);
     }
 }

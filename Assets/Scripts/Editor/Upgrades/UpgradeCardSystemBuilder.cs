@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using AXR.Framework.UI;
+using Orange.UIFramework;
 
 public static class UpgradeCardSystemBuilder
 {
@@ -16,13 +16,14 @@ public static class UpgradeCardSystemBuilder
     private const string TEST_SCENE_PATH = "Assets/Scenes/Upgrade Card Test Scene.unity";
     private const string PLAYER_PREFAB_PATH = "Assets/Resources/Prefabs/Player/Character.prefab";
     private const string TEST_CHARACTER_DATA_PATH = "Assets/Resources/Data/Characters/Character1.asset";
-    private const string UI_FRAMEWORK_SETTINGS_PATH = "Assets/Resources/Data/UI/UIFrameworkSettings.asset";
-    private const string UI_PREFAB_CATALOG_PATH = "Assets/Resources/Data/UI/UIPrefabCatalog.asset";
+    private const string UI_FRAMEWORK_SETTINGS_PATH = "Assets/Resources/Data/UI/OrangeUIFrameworkSettings.asset";
+    private const string UI_VIEW_CATALOG_PATH = "Assets/Resources/Data/UI/OrangeUIViewCatalog.asset";
     private const string AUDIO_SFX_CATALOG_PATH = "Assets/Resources/Data/Audios/Audio Sfx Catalog.asset";
     private const string WOOD_BLOCK_SFX_PATH = "Assets/Resources/Audios/VFX/WoodBlock1.wav";
     private const string SWIPE_SFX_PATH = "Assets/Resources/Audios/VFX/Swipe.wav";
     private const string SLAP_SFX_PATH = "Assets/Resources/Audios/VFX/Slap.wav";
     private const string NEW_UI_PAGE_FOLDER = "Assets/Resources/Prefabs/New UI/Pages";
+    private const string NEW_UI_CONTAINER_FOLDER = "Assets/Resources/Prefabs/New UI/Container";
 
     [MenuItem("Survivors/Upgrades/Rebuild Upgrade Card System")]
     public static void RebuildUpgradeCardSystem()
@@ -32,7 +33,7 @@ public static class UpgradeCardSystemBuilder
         UpgradeCardPoolSO pool = BuildPool(cards);
         BuildRarityPresentationCatalog();
         ConfigureAudioSfxCatalog();
-        ConfigureUIPrefabCatalog();
+        ConfigureViewCatalog();
         BuildTestScene(pool);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -475,27 +476,52 @@ public static class UpgradeCardSystemBuilder
         return pool;
     }
 
-    private static void ConfigureUIPrefabCatalog()
+    private static void ConfigureViewCatalog()
     {
-        UIPrefabCatalog catalog = AssetDatabase.LoadAssetAtPath<UIPrefabCatalog>(UI_PREFAB_CATALOG_PATH);
+        ViewCatalog catalog = AssetDatabase.LoadAssetAtPath<ViewCatalog>(UI_VIEW_CATALOG_PATH);
         if (catalog == null)
         {
-            Debug.LogWarning($"[UpgradeCardSystemBuilder] Missing UIPrefabCatalog at {UI_PREFAB_CATALOG_PATH}.");
+            Debug.LogWarning($"[UpgradeCardSystemBuilder] Missing ViewCatalog at {UI_VIEW_CATALOG_PATH}.");
             return;
         }
 
-        var entries = new List<UIPrefabEntry>
+        var views = new List<ViewDefinition>
         {
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Menu.prefab", UILayerType.Default),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Character Selection.prefab", UILayerType.Default),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Gaming.prefab", UILayerType.SceneOverlay),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Wave Transition.prefab", UILayerType.Default),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Shop.prefab", UILayerType.Default),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Pause.prefab", UILayerType.Popup),
-            CreateUIPrefabEntry($"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", UILayerType.Default)
+            CreateViewDefinition("page.menu", $"{NEW_UI_PAGE_FOLDER}/UI Menu.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.characterSelect", $"{NEW_UI_PAGE_FOLDER}/UI Character Selection.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.gaming", $"{NEW_UI_PAGE_FOLDER}/UI Gaming.prefab", ViewLayer.Hud),
+            CreateViewDefinition("page.shop", $"{NEW_UI_PAGE_FOLDER}/UI Shop.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.pause", $"{NEW_UI_PAGE_FOLDER}/UI Pause.prefab", ViewLayer.Popup),
+            CreateViewDefinition("page.gameOver", $"{NEW_UI_PAGE_FOLDER}/UI Game Over.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.stageComplete", $"{NEW_UI_PAGE_FOLDER}/UI Stage Complete.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.waveTransition", $"{NEW_UI_PAGE_FOLDER}/UI Wave Transition.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.goldBook", $"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", ViewLayer.Page),
+            CreateViewDefinition(
+                "popup.inventory.weaponOperate",
+                $"{NEW_UI_PAGE_FOLDER}/Shop/Weapon Operate Popup.prefab",
+                ViewLayer.Popup,
+                ViewKind.Popup,
+                singleton: false,
+                trackInBackStack: true,
+                maxCachedInstancesOverride: 1),
+            CreateViewDefinition(
+                "popup.inventory.accessoryInfo",
+                $"{NEW_UI_PAGE_FOLDER}/Shop/Accessory Info Popup.prefab",
+                ViewLayer.Popup,
+                ViewKind.Popup,
+                singleton: false,
+                trackInBackStack: true,
+                maxCachedInstancesOverride: 1),
+            CreateViewDefinition(
+                "tooltip.describable",
+                $"{NEW_UI_CONTAINER_FOLDER}/Tooltip.prefab",
+                ViewLayer.Tooltip,
+                ViewKind.Tooltip,
+                trackInBackStack: false,
+                maxCachedInstancesOverride: 1)
         };
 
-        SetPrivateField(catalog, "entries", entries);
+        SetPrivateField(catalog, "views", views);
         EditorUtility.SetDirty(catalog);
     }
 
@@ -557,7 +583,18 @@ public static class UpgradeCardSystemBuilder
         entry.OnValidate();
     }
 
-    private static UIPrefabEntry CreateUIPrefabEntry(string prefabPath, UILayerType layerType)
+    private static ViewDefinition CreateViewDefinition(
+        string id,
+        string prefabPath,
+        ViewLayer layer,
+        ViewKind kind = ViewKind.Page,
+        bool singleton = true,
+        bool cacheOnClose = true,
+        bool trackInBackStack = true,
+        bool closeOnBackgroundClick = false,
+        int warmupCount = 0,
+        int maxCachedInstancesOverride = -1,
+        bool allowDuplicateViewType = false)
     {
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (prefab == null)
@@ -565,16 +602,19 @@ public static class UpgradeCardSystemBuilder
             Debug.LogError($"[UpgradeCardSystemBuilder] Missing UI prefab at {prefabPath}.");
         }
 
-        return new UIPrefabEntry
-        {
-            layerType = layerType,
-            prefab = prefab,
-            singleton = true,
-            cacheOnClose = true,
-            trackInBackStack = true,
-            warmupCount = 0,
-            maxCachedInstancesOverride = 0
-        };
+        ViewDefinition definition = new ViewDefinition();
+        SetPrivateField(definition, "id", id);
+        SetPrivateField(definition, "kind", kind);
+        SetPrivateField(definition, "layer", layer);
+        SetPrivateField(definition, "prefab", prefab);
+        SetPrivateField(definition, "singleton", singleton);
+        SetPrivateField(definition, "cacheOnClose", cacheOnClose);
+        SetPrivateField(definition, "trackInBackStack", trackInBackStack);
+        SetPrivateField(definition, "closeOnBackgroundClick", closeOnBackgroundClick);
+        SetPrivateField(definition, "warmupCount", warmupCount);
+        SetPrivateField(definition, "maxCachedInstancesOverride", maxCachedInstancesOverride);
+        SetPrivateField(definition, "allowDuplicateViewType", allowDuplicateViewType);
+        return definition;
     }
 
     private static void BuildTestScene(UpgradeCardPoolSO pool)
@@ -595,7 +635,7 @@ public static class UpgradeCardSystemBuilder
         GameObject uiManagerObject = new GameObject("UI Manager");
         UIManager uiManager = uiManagerObject.AddComponent<UIManager>();
         SetPrivateField(uiManager, "settings", AssetDatabase.LoadAssetAtPath<UIFrameworkSettings>(UI_FRAMEWORK_SETTINGS_PATH));
-        SetPrivateField(uiManager, "catalog", AssetDatabase.LoadAssetAtPath<UIPrefabCatalog>(UI_PREFAB_CATALOG_PATH));
+        SetPrivateField(uiManager, "catalog", AssetDatabase.LoadAssetAtPath<ViewCatalog>(UI_VIEW_CATALOG_PATH));
 
         GameObject systems = new GameObject("Upgrade Card Test Systems");
         systems.AddComponent<WaveTransitionManager>();

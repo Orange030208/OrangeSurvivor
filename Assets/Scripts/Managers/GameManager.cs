@@ -1,5 +1,8 @@
-using AXR.Framework.UI;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,7 +14,11 @@ public class GameManager : MonoSingletonBase<GameManager>
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
+    [SerializeField] private CharacterSelectionManager characterSelectionManager;
     [SerializeField] private MapGenerator mapGenerator;
+    [SerializeField] private InventoryOperateManager inventoryOperateManager;
+    [SerializeField] private ShopManager shopManager;
+    [SerializeField] private StageCompleteSummaryManager stageCompleteSummaryManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
@@ -19,17 +26,13 @@ public class GameManager : MonoSingletonBase<GameManager>
     private bool isPaused;
     private bool hasMoreWaves;
     private int pendingChestSelectionCount;
+    private int stateTransitionVersion;
 
     public GameState CurrentGameState => currentGameState;
 
     private void OnEnable()
     {
-        uiManager = FindFirstObjectByType<UIManager>();
-        mapGenerator = FindFirstObjectByType<MapGenerator>();
-        if (uiManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an active {nameof(UIManager)} in the scene.");
-        }
+        ResolveSceneReferences();
 
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
@@ -52,6 +55,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnDisable()
     {
+        stateTransitionVersion++;
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
@@ -169,28 +173,51 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        uiManager.BeginTransition()
-            .ClosePage<GamePauseMenu>()
-            .Callback(() => SetPaused(false))
-            .Play();
+        ClosePauseMenuAndResumeAsync().Forget();
     }
 
     private void OnPauseMenuReturnToMenuClicked()
     {
-        uiManager.BeginTransition()
-            .ClosePage<GamePauseMenu>()
-            .Callback(ReturnToMenu)
-            .Play();
+        ClosePauseMenuAndReturnToMenuAsync().Forget();
     }
 
     private void TransitionToState(GameState targetState)
     {
-        IUITransitionSequence transition = uiManager.BeginTransition();
-        AppendCloseCurrentStatePage(transition);
-        transition
-            .Callback(() => ApplyStateTransition(targetState))
-            .Callback(OpenStatePage)
-            .Play();
+        int transitionVersion = ++stateTransitionVersion;
+        RunStateTransitionAsync(targetState, transitionVersion).Forget();
+    }
+
+    private async UniTask RunStateTransitionAsync(GameState targetState, int transitionVersion)
+    {
+        try
+        {
+            CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+            await CloseCurrentStatePageAsync(cancellationToken);
+            if (!IsCurrentTransition(transitionVersion))
+            {
+                return;
+            }
+
+            ApplyStateTransition(targetState);
+            if (!IsCurrentTransition(transitionVersion))
+            {
+                return;
+            }
+
+            await OpenStatePageAsync(currentGameState, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private bool IsCurrentTransition(int transitionVersion)
+    {
+        return transitionVersion == stateTransitionVersion && isActiveAndEnabled;
     }
 
     private void ApplyStateTransition(GameState targetState)
@@ -343,70 +370,198 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     public int PendingChestSelectionCount => pendingChestSelectionCount;
 
-    private void AppendCloseCurrentStatePage(IUITransitionSequence transition)
+    private async UniTask CloseCurrentStatePageAsync(CancellationToken cancellationToken)
     {
         switch (currentGameState)
         {
             case GameState.Menu:
-                transition.ClosePage<MenuUIPage>();
+                await ClosePageAsync<MenuUIPage>(cancellationToken);
                 break;
             case GameState.CharacterSelection:
-                transition.ClosePage<CharacterSelectUIPage>();
+                await ClosePageAsync<CharacterSelectUIPage>(cancellationToken);
                 break;
             case GameState.Game:
-                transition.ClosePage<GamingUIPage>();
+                await ClosePageAsync<GamingUIPage>(cancellationToken);
                 break;
             case GameState.GameOver:
-                transition.ClosePage<GameOverUIPage>();
+                await ClosePageAsync<GameOverUIPage>(cancellationToken);
                 break;
             case GameState.StageComplete:
-                transition.ClosePage<StageCompleteUIPage>();
+                await ClosePageAsync<StageCompleteUIPage>(cancellationToken);
                 break;
             case GameState.WaveTransition:
-                transition.ClosePage<WaveTransitionUIPage>();
+                await ClosePageAsync<WaveTransitionUIPage>(cancellationToken);
                 break;
             case GameState.Shop:
-                transition.ClosePage<ShopUIPage>();
+                await ClosePageAsync<ShopUIPage>(cancellationToken);
                 break;
         }
     }
 
-    private void OpenStatePage()
+    private async UniTask OpenStatePageAsync(GameState state, CancellationToken cancellationToken)
     {
-        switch (currentGameState)
+        switch (state)
         {
             case GameState.Menu:
-                uiManager.OpenPage<MenuUIPage>();
+                await uiManager.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.CharacterSelection:
-                uiManager.OpenPage<CharacterSelectUIPage>();
+                await uiManager.OpenPageAsync<CharacterSelectUIPage>(
+                    characterSelectionManager,
+                    cancellationToken);
                 break;
             case GameState.Game:
-                uiManager.OpenPage<GamingUIPage>(UIPageContextFactory.CreateGamingPageContext(player));
+                await uiManager.OpenPageAsync<GamingUIPage>(
+                    CreateGamingPageContext(),
+                    cancellationToken);
                 break;
             case GameState.GameOver:
-                uiManager.OpenPage<GameOverUIPage>();
+                await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.StageComplete:
-                uiManager.OpenPage<StageCompleteUIPage>();
+                await uiManager.OpenPageAsync<StageCompleteUIPage>(
+                    CreateStageCompletePageContext(),
+                    cancellationToken);
                 break;
             case GameState.WaveTransition:
-                uiManager.OpenPage<WaveTransitionUIPage>();
+                await uiManager.OpenPageAsync<WaveTransitionUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Shop:
-                uiManager.OpenPage<ShopUIPage>(UIPageContextFactory.CreateShopPageContext(player));
+                await uiManager.OpenPageAsync<ShopUIPage>(
+                    CreateShopPageContext(),
+                    cancellationToken);
                 break;
         }
+    }
+
+    private GamingPageContext CreateGamingPageContext()
+    {
+        EnsurePlayerReference();
+        return new GamingPageContext(
+            player,
+            player.GetComponent<CurrencyWallet>());
+    }
+
+    private StageCompletePageContext CreateStageCompletePageContext()
+    {
+        if (stageCompleteSummaryManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(StageCompleteSummaryManager)} reference.");
+        }
+
+        return new StageCompletePageContext(stageCompleteSummaryManager.CreateSnapshot());
+    }
+
+    private ShopPageContext CreateShopPageContext()
+    {
+        EnsurePlayerReference();
+        if (shopManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(ShopManager)} reference.");
+        }
+
+        if (inventoryOperateManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(InventoryOperateManager)} reference.");
+        }
+
+        inventoryOperateManager.Bind(player);
+        return new ShopPageContext(
+            player,
+            player.GetComponent<CurrencyWallet>(),
+            player.GetComponent<PropertiesManager>(),
+            shopManager,
+            inventoryOperateManager);
     }
 
     private void OpenPauseMenu()
     {
-        if (uiManager.IsPageOpen<GamePauseMenu>())
+        OpenPauseMenuAsync().Forget();
+    }
+
+    private async UniTask OpenPauseMenuAsync()
+    {
+        if (uiManager.IsOpen<GamePauseMenu>())
         {
             return;
         }
 
-        uiManager.OpenPage<GamePauseMenu>(UIPageContextFactory.CreatePauseMenuContext(player));
+        try
+        {
+            await uiManager.OpenPageAsync<GamePauseMenu>(
+                cancellationToken: this.GetCancellationTokenOnDestroy());
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTask ClosePauseMenuAndResumeAsync()
+    {
+        try
+        {
+            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            SetPaused(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTask ClosePauseMenuAndReturnToMenuAsync()
+    {
+        try
+        {
+            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            ReturnToMenu();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private UniTask<bool> ClosePageAsync<TPage>(CancellationToken cancellationToken)
+        where TPage : PageBase
+    {
+        return uiManager.ClosePageAsync<TPage>(cancellationToken);
+    }
+
+    private void ResolveSceneReferences()
+    {
+        if (mapGenerator == null)
+        {
+            mapGenerator = FindFirstObjectByType<MapGenerator>();
+        }
+
+        if (uiManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
+        }
+
+        if (characterSelectionManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(CharacterSelectionManager)} reference.");
+        }
+    }
+
+    private void EnsurePlayerReference()
+    {
+        if (player == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
+        }
     }
 
     private void EnsureMapGenerated()

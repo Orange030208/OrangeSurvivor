@@ -1,33 +1,48 @@
-using AXR.Framework.UI;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class WaveTransitionUIPage : UIPageBase
+public class WaveTransitionUIPage : PageBase
 {
     [Header("升级卡片")]
     [SerializeField] private WaveTransitionUpgradeCardGroup upgradeCardGroup;
 
     [Header("宝箱")]
-    [SerializeField] private AccessoryOperateContainer accessoryOperateContainer;
-    [SerializeField] private Transform chestContainerParent;
+    [SerializeField] private WaveTransitionChestPanel chestPanel;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    private CancellationTokenSource lifetimeCancellation;
+
+    protected override void Awake()
     {
+        base.Awake();
+        ResolveViewParts();
+        ValidateConfiguration();
+    }
+
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
+    {
+        ResetLifetimeCancellation();
         GameEventBus.Subscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+        GameEventBus.Subscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Subscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Subscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
-        SetChestSelectionVisible(false);
+        chestPanel.Hide();
         SetUpgradeSelectionVisible(false);
         GameEventBus.Publish(new RequestWaveTransitionStateSnapshotEvent());
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
+        CancelLifetimeOperations();
         GameEventBus.Unsubscribe<UpgradeOptionsChangedEvent>(OnUpgradeOptionsChanged);
+        GameEventBus.Unsubscribe<UpgradeCardsRefreshOutRequestedEvent>(OnUpgradeCardsRefreshOutRequested);
         GameEventBus.Unsubscribe<AccessorySelectionStartedEvent>(ShowSelectAccessory);
         GameEventBus.Unsubscribe<WaveTransitionPhaseChangedEvent>(OnWaveTransitionPhaseChanged);
 
-        accessoryOperateContainer.CleanUp();
+        chestPanel.Clear();
         upgradeCardGroup?.Clear();
     }
 
@@ -52,7 +67,7 @@ public class WaveTransitionUIPage : UIPageBase
 
     private void ShowSelectAccessory(AccessorySelectionStartedEvent eventData)
     {
-        accessoryOperateContainer.Configure(eventData.accessoryData);
+        chestPanel.Show(eventData.accessoryData);
     }
 
     private void OnUpgradeOptionsChanged(UpgradeOptionsChangedEvent eventData)
@@ -66,14 +81,65 @@ public class WaveTransitionUIPage : UIPageBase
         upgradeCardGroup.Configure(eventData.Options);
     }
 
+    private void OnUpgradeCardsRefreshOutRequested()
+    {
+        PlayUpgradeCardsRefreshOutAsync().Forget();
+    }
+
+    private async UniTaskVoid PlayUpgradeCardsRefreshOutAsync()
+    {
+        try
+        {
+            if (upgradeCardGroup == null)
+            {
+                Debug.LogError($"{nameof(WaveTransitionUIPage)} missing {nameof(upgradeCardGroup)}.", this);
+                return;
+            }
+
+            CancellationToken cancellationToken = ResolveLifetimeCancellationToken();
+            await upgradeCardGroup.PlayRefreshOutAsync(cancellationToken);
+        }
+        catch (System.OperationCanceledException)
+        {
+        }
+        finally
+        {
+            // 即使页面关闭导致动画取消，也要通知 Manager 清理 pending，避免刷新链路卡住。
+            GameEventBus.Publish<UpgradeCardsRefreshOutCompletedEvent>();
+        }
+    }
+
+    private CancellationToken ResolveLifetimeCancellationToken()
+    {
+        if (lifetimeCancellation == null)
+        {
+            ResetLifetimeCancellation();
+        }
+
+        return lifetimeCancellation.Token;
+    }
+
+    private void ResetLifetimeCancellation()
+    {
+        CancelLifetimeOperations();
+        lifetimeCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+    }
+
+    private void CancelLifetimeOperations()
+    {
+        if (lifetimeCancellation == null)
+        {
+            return;
+        }
+
+        lifetimeCancellation.Cancel();
+        lifetimeCancellation.Dispose();
+        lifetimeCancellation = null;
+    }
+
     private void SetChestSelectionVisible(bool visible)
     {
-        chestContainerParent.gameObject.SetActive(visible);
-        accessoryOperateContainer.gameObject.SetActive(visible);
-        if (!visible)
-        {
-            accessoryOperateContainer.CleanUp();
-        }
+        chestPanel.SetVisible(visible);
     }
 
     private void SetUpgradeSelectionVisible(bool visible)
@@ -87,4 +153,29 @@ public class WaveTransitionUIPage : UIPageBase
         upgradeCardGroup.SetVisible(visible);
     }
 
+    private void ResolveViewParts()
+    {
+        if (upgradeCardGroup == null)
+        {
+            upgradeCardGroup = GetComponentInChildren<WaveTransitionUpgradeCardGroup>(true);
+        }
+
+        if (chestPanel == null)
+        {
+            chestPanel = GetComponentInChildren<WaveTransitionChestPanel>(true);
+        }
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (upgradeCardGroup == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveTransitionUIPage)} '{name}' is missing upgrade card group.");
+        }
+
+        if (chestPanel == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveTransitionUIPage)} '{name}' is missing chest panel.");
+        }
+    }
 }

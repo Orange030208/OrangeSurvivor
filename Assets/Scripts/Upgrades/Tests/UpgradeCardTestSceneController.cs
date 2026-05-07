@@ -1,4 +1,5 @@
-using AXR.Framework.UI;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
 public class UpgradeCardTestSceneController : MonoBehaviour
@@ -15,9 +16,9 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     private System.Collections.IEnumerator Start()
     {
+        ValidateConfiguration();
         EnsurePlayer();
         yield return null;
-        EnsureManagers();
         PublishPlayerReady();
         GrantUpgradePoints();
         OpenUpgradePage();
@@ -46,11 +47,11 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         field.SetValue(targetPlayer, testCharacterData);
     }
 
-    private void EnsureManagers()
+    private void ValidateConfiguration()
     {
         if (uiManager == null)
         {
-            uiManager = FindFirstObjectByType<UIManager>();
+            throw new MissingReferenceException($"{nameof(UpgradeCardTestSceneController)} requires an explicit {nameof(UIManager)} reference.");
         }
     }
 
@@ -81,6 +82,27 @@ public class UpgradeCardTestSceneController : MonoBehaviour
             0f,
             true));
         GameEventBus.Publish(new GameStateChangedEvent(GameState.Game, GameState.WaveTransition));
-        uiManager.ResetToPage<WaveTransitionUIPage>();
+        ResetToUpgradePageAsync().Forget();
+    }
+
+    private async UniTask ResetToUpgradePageAsync()
+    {
+        if (uiManager == null)
+        {
+            Debug.LogError($"{nameof(UpgradeCardTestSceneController)} requires a {nameof(UIManager)} before opening the upgrade page.", this);
+            return;
+        }
+
+        try
+        {
+            await uiManager.ResetToPageAsync<WaveTransitionUIPage>(cancellationToken: this.GetCancellationTokenOnDestroy());
+        }
+        catch (System.OperationCanceledException)
+        {
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
     }
 }

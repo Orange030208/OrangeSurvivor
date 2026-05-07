@@ -20,6 +20,14 @@ public struct UpgradeContainerClickedEvent : IGameEvent
     }
 }
 
+public struct UpgradeCardsRefreshOutRequestedEvent : IGameEvent
+{
+}
+
+public struct UpgradeCardsRefreshOutCompletedEvent : IGameEvent
+{
+}
+
 public struct UpgradeSelectionCompletedEvent : IGameEvent
 {
 }

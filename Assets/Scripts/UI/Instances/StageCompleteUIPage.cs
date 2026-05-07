@@ -1,8 +1,11 @@
-using AXR.Framework.UI;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 
-public class StageCompleteUIPage : UIPageBase
+public class StageCompleteUIPage : PageBase
 {
     [SerializeField] private UIClickTarget restartButton;
     [SerializeField] private UIClickTarget menuButton;
@@ -12,30 +15,22 @@ public class StageCompleteUIPage : UIPageBase
     [SerializeField] private TextMeshProUGUI goldEarnedText;
     [SerializeField] private TextMeshProUGUI characterNameText;
     [SerializeField] private TextMeshProUGUI mainWeaponNameText;
-    [SerializeField] private StageCompleteSummaryManager summaryManager;
+    [SerializeField] private TextMeshProUGUI summaryText;
 
-    protected override void OnPageOpened(UIPageOpenContext context)
+    protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         restartButton.OnClicked += OnRestartClicked;
         menuButton.OnClicked += OnMenuClicked;
-        RenderSnapshot();
+        StageCompletePageContext pageContext = context.GetPayload<StageCompletePageContext>()
+            ?? throw new InvalidOperationException($"{nameof(StageCompleteUIPage)} requires {nameof(StageCompletePageContext)} payload.");
+        ApplySnapshot(pageContext.Snapshot);
+        return UniTask.CompletedTask;
     }
 
-    protected override void OnPageClosed()
+    protected override void OnClosed(CloseReason reason)
     {
         restartButton.OnClicked -= OnRestartClicked;
         menuButton.OnClicked -= OnMenuClicked;
-    }
-
-    private void RenderSnapshot()
-    {
-        StageCompleteSummaryManager manager = ResolveSummaryManager();
-        if (manager == null)
-        {
-            return;
-        }
-
-        ApplySnapshot(manager.CreateSnapshot());
     }
 
     private void ApplySnapshot(StageCompleteSnapshot snapshot)
@@ -69,6 +64,17 @@ public class StageCompleteUIPage : UIPageBase
         {
             mainWeaponNameText.text = string.IsNullOrWhiteSpace(snapshot.MainWeaponName) ? "-" : snapshot.MainWeaponName;
         }
+
+        if (summaryText != null)
+        {
+            summaryText.text =
+                $"\u5b8c\u6210\u6ce2\u6570: {snapshot.CompletedWaves}\n" +
+                $"\u751f\u5b58\u65f6\u95f4: {FormatDuration(snapshot.SurvivalTime)}\n" +
+                $"\u51fb\u6740\u6570: {snapshot.KillCount}\n" +
+                $"\u83b7\u5f97\u91d1\u5e01: {snapshot.GoldEarned}\n" +
+                $"\u89d2\u8272: {(string.IsNullOrWhiteSpace(snapshot.CharacterName) ? "-" : snapshot.CharacterName)}\n" +
+                $"\u4e3b\u6b66\u5668: {(string.IsNullOrWhiteSpace(snapshot.MainWeaponName) ? "-" : snapshot.MainWeaponName)}";
+        }
     }
 
     private static string FormatDuration(float durationSeconds)
@@ -91,14 +97,4 @@ public class StageCompleteUIPage : UIPageBase
         GameEventBus.Publish<StageCompleteReturnToMenuClickedEvent>();
     }
 
-    private StageCompleteSummaryManager ResolveSummaryManager()
-    {
-        if (summaryManager != null)
-        {
-            return summaryManager;
-        }
-
-        summaryManager = FindFirstObjectByType<StageCompleteSummaryManager>();
-        return summaryManager;
-    }
 }

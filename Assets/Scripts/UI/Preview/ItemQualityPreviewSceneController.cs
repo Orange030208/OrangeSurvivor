@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 {
+    private const string PREVIEW_SCENE_NAME = "Item Quality Preview";
     private const string WEAPON_DATA_LIST_PATH = "Data/Weapon Data List";
     private const string ACCESSORY_DATA_LIST_PATH = "Data/Accessory Data List";
     private const string INVENTORY_ITEM_PREFAB_PATH = "Prefabs/New UI/Pages/Shop/Inventory Item";
@@ -36,6 +38,12 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
     private void Start()
     {
+        if (!EnsurePreviewScene())
+        {
+            enabled = false;
+            return;
+        }
+
         RebuildPreview();
     }
 
@@ -47,12 +55,31 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
     [ContextMenu("Rebuild Preview")]
     public void RebuildPreview()
     {
+        if (!EnsurePreviewScene())
+        {
+            return;
+        }
+
         EnsureCanvas();
         EnsureEventSystem();
         DisposeSpawnedObjects();
         ClearGeneratedChildren();
         BuildLayout();
         PopulatePreview();
+    }
+
+    private bool EnsurePreviewScene()
+    {
+        string activeSceneName = SceneManager.GetActiveScene().name;
+        if (string.Equals(activeSceneName, PREVIEW_SCENE_NAME, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        Debug.LogWarning(
+            $"{nameof(ItemQualityPreviewSceneController)} is a preview-only scene tool and only runs in '{PREVIEW_SCENE_NAME}'. Runtime UI must be opened through {nameof(Orange.UIFramework.UIManager)}.",
+            this);
+        return false;
     }
 
     private void EnsureCanvas()

@@ -294,7 +294,9 @@ GameObject:
   - component: {fileID: 3955513483040631225}
   - component: {fileID: 3600694285946655353}
   - component: {fileID: 7889412740765118647}
+  - component: {fileID: 6800000000000000002}
   - component: {fileID: -5466076070143302565}
+  - component: {fileID: 909030303030303004}
   m_Layer: 0
   m_Name: Accessory Info Popup
   m_TagString: Untagged
@@ -370,9 +372,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08e0a993b1b728548909c4d0b5ae4fba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name: ""
+  m_EditorClassIdentifier: ""
   interactable: 1
+--- !u!225 &6800000000000000002
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139556483707835314}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &-5466076070143302565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -388,12 +402,28 @@ MonoBehaviour:
   iconImage: {fileID: 3269868408543614187}
   nameText: {fileID: 6274204659472272891}
   bottom: {fileID: 1314857178707274722}
-  colorDependencyGraphics: []
-  secondaryColorDependencyGraphics: []
-  glowGraphics: []
-  premiumEffectObjects: []
-  pulseEffectObjects: []
-  applyQualityToNameText: 1
+  cardQualityVisualController: {fileID: 909030303030303004}
+--- !u!114 &909030303030303004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139556483707835314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8907ea60dc1de7443b4efb78d4ad1299, type: 3}
+  m_Name: ""
+  m_EditorClassIdentifier: ""
+  autoResolveReferences: 1
+  backgroundImage: {fileID: 3600694285946655353}
+  borderImage: {fileID: 0}
+  iconImage: {fileID: 3269868408543614187}
+  glowImage: {fileID: 0}
+  shadowImage: {fileID: 0}
+  titleText: {fileID: 6274204659472272891}
+  backgroundColorStrength: 0.58
+  iconTintStrength: 0.22
 --- !u!1 &7478104143777634616
 GameObject:
   m_ObjectHideFlags: 0

@@ -302,7 +302,7 @@ MonoBehaviour:
   targets:
     bindings: []
   currentConfigOption: 
-  refreshDefaultsOnEnable: 1
+  refreshDefaultsOnEnable: 0
   stopAllChannelsOnDestroy: 1
 --- !u!1 &8287619885024907495
 GameObject:

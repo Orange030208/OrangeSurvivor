@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class BuffBarUI : MonoBehaviour
+public class BuffBarUI : ViewPartBase
 {
     [SerializeField] private BuffIconItem buffIconItemPrefab;
     [SerializeField] private Transform itemParent;
@@ -9,6 +10,7 @@ public class BuffBarUI : MonoBehaviour
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
     private BuffController buffController;
+    private UIManager uiManager;
 
     private void Awake()
     {
@@ -25,11 +27,24 @@ public class BuffBarUI : MonoBehaviour
 
     private void OnDisable()
     {
+        EndSession();
+    }
+
+    public void BeginSession(Player targetPlayer, UIManager ownerUIManager)
+    {
+        uiManager = ownerUIManager;
+        ConfigureTooltipTargets();
+        BindPlayer(targetPlayer);
+    }
+
+    public void EndSession()
+    {
         UnbindPlayer();
+        uiManager = null;
         SetVisibleItemCount(0);
     }
 
-    public void BindPlayer(Player targetPlayer)
+    private void BindPlayer(Player targetPlayer)
     {
         UnbindPlayer();
         player = targetPlayer;
@@ -51,7 +66,7 @@ public class BuffBarUI : MonoBehaviour
         RenderBuffSnapshots(buffController.BuildSnapshots());
     }
 
-    public void UnbindPlayer()
+    private void UnbindPlayer()
     {
         if (buffController != null)
         {
@@ -89,8 +104,28 @@ public class BuffBarUI : MonoBehaviour
         {
             BuffIconItem item = Instantiate(buffIconItemPrefab, itemParent);
             item.gameObject.SetActive(false);
+            ConfigureTooltipTarget(item);
             spawnedItems.Add(item);
         }
+    }
+
+    private void ConfigureTooltipTargets()
+    {
+        for (int i = 0; i < spawnedItems.Count; i++)
+        {
+            ConfigureTooltipTarget(spawnedItems[i]);
+        }
+    }
+
+    private void ConfigureTooltipTarget(BuffIconItem item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        TooltipHoverTarget tooltipTarget = item.GetComponent<TooltipHoverTarget>();
+        tooltipTarget?.ConfigureOwner(uiManager);
     }
 
     private void SetVisibleItemCount(int visibleCount)
