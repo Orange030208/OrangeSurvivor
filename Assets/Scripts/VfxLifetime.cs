@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -12,13 +13,15 @@ public sealed class VfxLifetime : MonoBehaviour
     public enum Mode
     {
         FixedTime = 0,
-        Manual = 1
+        Manual = 1,
+        AnimationFinished = 2
     }
 
     private const float MinimumLifetime = 0.05f;
 
     [SerializeField] private Mode mode = Mode.FixedTime;
     [SerializeField] private float fixedLifetime = 1f;
+    [SerializeField] private Animator animator;
 
     private bool isScheduled;
 
@@ -33,6 +36,17 @@ public sealed class VfxLifetime : MonoBehaviour
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
+    }
+
+    private void Update()
+    {
+        if (mode == Mode.AnimationFinished && !isScheduled)
+        {
+            if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99)
+            {
+                Release();
+            }
+        }
     }
 
     public void Activate(float overrideLifetime = -1f)
@@ -77,6 +91,6 @@ public sealed class VfxLifetime : MonoBehaviour
         }
 
         isScheduled = true;
-        Object.Destroy(gameObject, Mathf.Max(0f, delay));
+        Destroy(gameObject, Mathf.Max(0f, delay));
     }
 }

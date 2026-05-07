@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 7260256428280927147}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.18, y: 2.315, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -255,6 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laserOriginTransform: {fileID: 4177498832536213887}
+  initialPhase: 1
 --- !u!4 &6149504909463076417 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
