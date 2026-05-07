@@ -1296,14 +1296,15 @@ Camera 模式：
 
 | Id | Kind | Layer | Prefab | Singleton | Cache |
 | --- | --- | --- | --- | --- | --- |
-| `page.shop` | Page | Page | `ShopPage.prefab` | true | true |
-| `popup.itemOperate` | Popup | Popup | `ItemOperatePopup.prefab` | false | true |
+| `page.shop` | Page | Page | `UI Shop.prefab` | true | true |
+| `popup.inventory.weaponOperate` | Popup | Popup | `Weapon Operate Popup.prefab` | false | true |
+| `popup.inventory.accessoryInfo` | Popup | Popup | `Accessory Info Popup.prefab` | false | true |
 | `modal.confirm` | Modal | Modal | `ConfirmDialog.prefab` | false | true |
-| `tooltip.item` | Tooltip | Tooltip | `ItemTooltip.prefab` | true | true |
+| `tooltip.describable` | Tooltip | Tooltip | `Tooltip.prefab` | true | true |
 
 ### 20.3 Page Prefab 挂载
 
-`ShopPage.prefab`：
+`UI Shop.prefab`：
 
 ```text
 ShopPage
@@ -1403,16 +1404,24 @@ public sealed class ShopEntryPoint : MonoBehaviour
 
     public async UniTask OpenShopAsync(CancellationToken cancellationToken)
     {
-        ShopPageContext payload = UIPageContextFactory.CreateShopPageContext(
+        if (player == null || shopManager == null || inventoryOperateManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(ShopEntryPoint)} requires explicit shop dependencies.");
+        }
+
+        inventoryOperateManager.Bind(player);
+        ShopPageContext payload = new ShopPageContext(
             player,
+            player.GetComponent<CurrencyWallet>(),
+            player.GetComponent<PropertiesManager>(),
             shopManager,
             inventoryOperateManager);
-        await uiManager.ReplacePageAsync<ShopPage>(payload, cancellationToken);
+        await uiManager.ReplacePageAsync<ShopUIPage>(payload, cancellationToken);
     }
 }
 ```
 
-### 21.2 ShopPage
+### 21.2 ShopUIPage
 
 ```csharp
 using System;
@@ -1421,31 +1430,28 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
-public sealed class ShopPage : PageBase
+public sealed class ShopUIPage : PageBase
 {
-    [SerializeField] private ShopItemContainer itemPrefab;
-    [SerializeField] private Transform itemParent;
+    [SerializeField] private ShopItemListUI itemList;
+    [SerializeField] private ShopPropertiesPanel propertiesPanel;
+    [SerializeField] private ShopInventoryPanel inventoryPanel;
     [SerializeField] private UIClickTarget rerollButton;
     [SerializeField] private UIClickTarget continueButton;
-    [SerializeField] private MonoBehaviour propertiesSidebar;
-    [SerializeField] private MonoBehaviour inventorySidebar;
-    [SerializeField] private InventoryUI inventoryView;
 
     private ShopPageContext payload;
-    private bool bound;
 
     protected override async UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
         payload = context.GetPayload<ShopPageContext>();
         if (payload == null)
         {
-            throw new ArgumentException($"{nameof(ShopPage)} requires {nameof(ShopPageContext)}.");
+            throw new ArgumentException($"{nameof(ShopUIPage)} requires {nameof(ShopPageContext)}.");
         }
 
         payload.ShopManager.ItemsChanged += RenderSnapshot;
         rerollButton.OnClicked += OnRerollRequested;
         continueButton.OnClicked += OnContinueRequested;
-        inventoryView.ConfigureInventoryOperateManager(payload.InventoryOperateManager);
+        inventoryPanel.BeginSession(payload.InventoryOperateManager, OwnerUIManager);
         payload.ShopManager.RequestSnapshot();
         await base.OnOpeningAsync(context, cancellationToken);
     }
@@ -1455,15 +1461,14 @@ public sealed class ShopPage : PageBase
         payload.ShopManager.ItemsChanged -= RenderSnapshot;
         rerollButton.OnClicked -= OnRerollRequested;
         continueButton.OnClicked -= OnContinueRequested;
-        inventoryView.ReleaseConfiguredInventoryOperateManager();
+        inventoryPanel.EndSession();
         payload = null;
         return base.OnClosingAsync(reason, cancellationToken);
     }
 
     private void RenderSnapshot(ShopSnapshot snapshot)
     {
-        // 列表复用、锁定状态、购买按钮和卡片动效都在 Page 内直接编排。
-        RenderItems(snapshot.Items);
+        itemList.Render(snapshot.Items, snapshot.Reason);
     }
 
     private void OnBuyRequested(int index)
@@ -1495,13 +1500,12 @@ public sealed class InventoryPanel : ViewPartBase
 
     public void Bind(InventoryOperateManager manager, UIManager uiManager)
     {
-        inventoryUI.ConfigureUIManager(uiManager);
-        inventoryUI.ConfigureInventoryOperateManager(manager);
+        inventoryUI.ConfigureSession(manager, uiManager);
     }
 
     public override void Unbind()
     {
-        inventoryUI.ReleaseConfiguredInventoryOperateManager();
+        inventoryUI.ReleaseSession();
     }
 }
 ```
@@ -1812,7 +1816,7 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 迁移期旧页面基类和旧 UIManager 只允许作为临时脚手架出现，不是最终交付形态。当前已完成脚手架清理：业务页面直接基于 `Orange.UIFramework` 下的 `UIManager`、`PageBase`、`PopupBase`、`ModalBase`、`TooltipBase` 和 `ViewPartBase`，旧 `AXR.Framework.UI` 页面托管、旧 Catalog、旧 Navigation、临时非泛型 Type API 和旧资源已删除。
 - 当前阶段 12 的既定业务页面已全部接入 `OrangeUIViewCatalog`。最终收口已完成旧页面托管清理：`GameManager` 业务入口直接引用新 `Orange.UIFramework.UIManager`，页面切换改为 UniTask 顺序等待，不再依赖旧 `AXR.Framework.UI.UIManager.BeginTransition()`；`MenuUIPage`、`CharacterSelectUIPage`、`GamingUIPage`、`ShopUIPage`、`GamePauseMenu`、`GameOverUIPage`、`StageCompleteUIPage`、`WaveTransitionUIPage` 与阶段清单外 `BookUIPage` 已直接继承新 `PageBase`；升级卡测试场景生成模块和测试场景已改为挂载新 `Orange.UIFramework.UIManager`。`GameManager` 与 `UpgradeCardTestSceneController` 已删除 `FindFirstObjectByType<UIManager>()` 兜底，UIManager 必须由场景显式绑定。
 - 商店页面内部不再保留只服务单一页面的 `IPageController`、`IShopPageView`、`ISidebarRegion`、`SidebarRegionGroup`、`SidebarMotionGroup`、`ShopPageController`、`ShopListView`、`ShopItemGroupView`、`ShopSidebarHost`、`ShopPropertiesSidebarView`、`ShopInventorySidebarView`、`ShopPageState`、`SidebarMotion`、`SidebarToggleView` 和 `PropertiesDescriberBinding`。`ShopUIPage` 作为页面编排层直接订阅 `ShopManager`，并显式管理 `ShopItemListUI`、`ShopPropertiesPanel`、`ShopInventoryPanel` 三个真实 `ViewPartBase`；商品列表复用 / 位移动画、属性侧栏 Motion / 属性刷新、库存侧栏 Motion / 背包绑定分别下沉到对应 ViewPart。
-- 背包页面内部不再保留只服务 `InventoryUI` 的 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState`、`InventoryListView`、`InventoryOperatePopupHost` 和 `InventoryUiBinder`。`InventoryUI` 已迁为 `ViewPartBase`，直接绑定显式传入或本地序列化的 `InventoryOperateManager`，维护当前选中 / 操作项状态，直接渲染背包列表并通过 Orange `UIManager.ShowPopupAsync()` 打开背包物品操作 Popup；背包列表和操作浮层仍是页面私有子 UI，不进入全局 Page Stack。
+- 背包页面内部不再保留只服务 `InventoryUI` 的 `IInventoryRegionView`、`InventoryRegionController`、`InventoryRegionState`、`InventoryListView`、`InventoryOperatePopupHost` 和 `InventoryUiBinder`。`InventoryUI` 已迁为 `ViewPartBase`，只接受外部页面通过 `ConfigureSession()` 注入的 `InventoryOperateManager` 与所属 `UIManager`，不再保留本地序列化 Manager 兜底；它维护当前选中 / 操作项状态，直接渲染背包列表并通过 Orange `UIManager.ShowPopupAsync()` 打开背包物品操作 Popup；背包列表和操作浮层仍是页面私有子 UI，不进入全局 Page Stack。
 - 页面私有子视图已从 `Region` 命名和 `Assets/Scripts/UI/Regions` 目录中收口出来，并继续删除只转发一层的商店 / 战斗 / 背包包装类。当前 `GamingUIPage` 直接编排 HUD 文本、角色状态、Buff、摇杆输入和暂停按钮；`ShopUIPage` 管理真实商店 ViewPart；`InventoryUI` 只由真实存在背包子部件的商店库存面板持有和会话注入；`BuffBarUI` 通过 `BeginSession()` / `EndSession()` 接收 Player 与所属 `UIManager`，动态 Buff Tooltip 不再依赖全局入口。
 - 页面上下文装配已从 UI 层延迟解析改为业务入口显式装配：`GameManager` 在主场景序列化引用 `CharacterSelectionManager`、`InventoryOperateManager`、`ShopManager` 与 `StageCompleteSummaryManager`；角色选择页直接接收 `CharacterSelectionManager` payload，`GamingPageContext` 只携带战斗 HUD 实际使用的 Player / Wallet，`ShopPageContext` 负责商店与背包会话，`StageCompletePageContext` 负责结算快照，暂停页不再需要 payload。页面本身只接受 `OpenContext` payload，缺失时直接抛出可定位异常，不再自行 `FindFirstObjectByType` 或 Singleton 兜底，也不再保留 `ResolvingInventoryUiFacade` / `ResolvingShopUiFacade` 这类延迟解析桥接层。
 - 战斗 HUD 的 Buff Tooltip 已从静态 `UITooltipPresenter.ActivePresenter` / 全局查找、页面内 Presenter 注入链路迁入 Orange Tooltip 管理：`UITooltipPresenter` 重命名为 `DescribableTooltip` 并继承 `TooltipBase`，`TooltipHoverTarget` 直接调用 `UIManager.ShowTooltipAsync<DescribableTooltip>()` / `UpdateTooltipPosition()` / `HideTooltip()`，独立 `Tooltip.prefab` 已注册到 `OrangeUIViewCatalog`，`UI Gaming.prefab` 不再内嵌旧 Tooltip 实例；Tooltip 的唯一实例、指针跟随、边缘裁剪、Raycast 不阻挡、诊断和池化由框架处理。
@@ -1825,6 +1829,8 @@ rerollCostLocalizedText.SetArgs(new Dictionary<string, object>
 - 升级卡刷新链路已从 `WaveTransitionManager.FindFirstObjectByType<WaveTransitionUpgradeCardGroup>()` 改为事件协作：Manager 发布 `UpgradeCardsRefreshOutRequestedEvent`，`WaveTransitionUIPage` 调用自身持有的 `WaveTransitionUpgradeCardGroup.PlayRefreshOutAsync()` 后发布 `UpgradeCardsRefreshOutCompletedEvent`，Manager 再重新发牌。业务 Manager 不再查找 UI ViewPart；升级卡点击提交、卡片选择动效和刷新退场等待已从 Coroutine / IEnumerator 收口为 UniTask，`WaveTransitionUIPage` 使用页面生命周期 CTS 防止池化关闭后动画任务继续跨页面持有状态。
 - 设置面板当前由 `MenuUIPage` / `GamePauseMenu` 显式持有 `SettingsPanelManager`，显示 / 隐藏、交互开关、关闭等待和音量 PlayerPrefs 均由该 `ViewPartBase` 自身管理。设置面板 Motion 在 `Awake()` 中先刷新默认起点再采样隐藏态，Prefab 上关闭该面板自身的 `refreshDefaultsOnEnable`，避免复用后把隐藏态误采为默认起点；卡片表现边界保持为业务侧 `CardMotionController` / `CardQualityVisualController` 调用 Orange `UIMotionPlayer`，不把卡片品质、浮动、指针倾斜等业务表现语义塞进 Orange Motion 核心。
 - 最新资源补漏已补齐卡片品质表现的真实绑定：`Upgrade Container`、`Inventory Item`、`Weapon Operate Popup`、`Accessory Info Popup` 均显式挂载并绑定 `CardQualityVisualController`；`Inventory Item.prefab` 的旧 `colorDependencyGraphics` 与 `tooltipHoverTarget` 序列化残留已清理，`UI Stage Complete.prefab` 的旧 `summaryManager` 残留也已移除，品质表现不再依赖静默 `GetComponent` 兜底。
+- 最终静态收口已删除 `UIPageContextFactory` 和旧 `Assets/Scripts/UI/Pages.meta` 空目录残留；`GameManager` 直接在业务入口创建 `GamingPageContext`、`ShopPageContext`、`StageCompletePageContext`，并在缺少显式场景引用时抛出可定位异常。`UpgradeCardSystemBuilder.ConfigureViewCatalog()` 已补齐 `popup.inventory.weaponOperate`、`popup.inventory.accessoryInfo` 和 `tooltip.describable`，不会在重建升级卡系统时把 `OrangeUIViewCatalog.asset` 回写成只包含 Page 的不完整配置。
+- `OrangeUIViewCatalog` 的 EditMode 断点已覆盖所有业务 Page、背包操作 Popup 与描述 Tooltip 的注册、Kind、Layer、单例和池化配置；旧 UI 托管关键字、Facade / Region / Contract 包装、旧空字段和 Missing Script 静态扫描均无运行时代码或真实资源命中。剩余工作应转为真实场景手动验证，而不是继续补兼容层或桥接抽象。
 - 旧 `AXR.Framework.UI` 命名空间已清空：`UIClickTarget`、`IUIRuntimeMotion`、`UISequenceDirector`、`UIMotionPlayer`、Motion Track、对应编辑器脚本和 Motion 资产类型记录已迁入 `Orange.UIFramework`；脚本类名保持不变，避免影响业务开发体验。
 - `UIMotionDefinitionEditor` 与 `UIMotionPlayerEditor` 已显式继承 `UnityEditor.Editor`，避免 `Orange.UIFramework.Editor` 子命名空间与 Unity 编辑器基类名发生解析冲突。
 - 2026-05-06 原静态扫描只证明旧 `AXR.Framework.UI`、旧 `UIPageBase`、旧 Catalog / Navigation / Type API、旧 `Region` / `Contract` 目录、页面手工 Tooltip / Popup 托管、业务 UI 直接读取 `UIManager.Instance` 和 Missing Script 等表层残留未命中；它不能等同于业务 UI 深度迁移完成。后续已继续收口 Facade 绕路和业务 `ViewPartBase` 迁移。

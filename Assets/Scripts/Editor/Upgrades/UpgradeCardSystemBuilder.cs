@@ -23,6 +23,7 @@ public static class UpgradeCardSystemBuilder
     private const string SWIPE_SFX_PATH = "Assets/Resources/Audios/VFX/Swipe.wav";
     private const string SLAP_SFX_PATH = "Assets/Resources/Audios/VFX/Slap.wav";
     private const string NEW_UI_PAGE_FOLDER = "Assets/Resources/Prefabs/New UI/Pages";
+    private const string NEW_UI_CONTAINER_FOLDER = "Assets/Resources/Prefabs/New UI/Container";
 
     [MenuItem("Survivors/Upgrades/Rebuild Upgrade Card System")]
     public static void RebuildUpgradeCardSystem()
@@ -494,7 +495,30 @@ public static class UpgradeCardSystemBuilder
             CreateViewDefinition("page.gameOver", $"{NEW_UI_PAGE_FOLDER}/UI Game Over.prefab", ViewLayer.Page),
             CreateViewDefinition("page.stageComplete", $"{NEW_UI_PAGE_FOLDER}/UI Stage Complete.prefab", ViewLayer.Page),
             CreateViewDefinition("page.waveTransition", $"{NEW_UI_PAGE_FOLDER}/UI Wave Transition.prefab", ViewLayer.Page),
-            CreateViewDefinition("page.goldBook", $"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", ViewLayer.Page)
+            CreateViewDefinition("page.goldBook", $"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", ViewLayer.Page),
+            CreateViewDefinition(
+                "popup.inventory.weaponOperate",
+                $"{NEW_UI_PAGE_FOLDER}/Shop/Weapon Operate Popup.prefab",
+                ViewLayer.Popup,
+                ViewKind.Popup,
+                singleton: false,
+                trackInBackStack: true,
+                maxCachedInstancesOverride: 1),
+            CreateViewDefinition(
+                "popup.inventory.accessoryInfo",
+                $"{NEW_UI_PAGE_FOLDER}/Shop/Accessory Info Popup.prefab",
+                ViewLayer.Popup,
+                ViewKind.Popup,
+                singleton: false,
+                trackInBackStack: true,
+                maxCachedInstancesOverride: 1),
+            CreateViewDefinition(
+                "tooltip.describable",
+                $"{NEW_UI_CONTAINER_FOLDER}/Tooltip.prefab",
+                ViewLayer.Tooltip,
+                ViewKind.Tooltip,
+                trackInBackStack: false,
+                maxCachedInstancesOverride: 1)
         };
 
         SetPrivateField(catalog, "views", views);
@@ -559,7 +583,18 @@ public static class UpgradeCardSystemBuilder
         entry.OnValidate();
     }
 
-    private static ViewDefinition CreateViewDefinition(string id, string prefabPath, ViewLayer layer)
+    private static ViewDefinition CreateViewDefinition(
+        string id,
+        string prefabPath,
+        ViewLayer layer,
+        ViewKind kind = ViewKind.Page,
+        bool singleton = true,
+        bool cacheOnClose = true,
+        bool trackInBackStack = true,
+        bool closeOnBackgroundClick = false,
+        int warmupCount = 0,
+        int maxCachedInstancesOverride = -1,
+        bool allowDuplicateViewType = false)
     {
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (prefab == null)
@@ -569,16 +604,16 @@ public static class UpgradeCardSystemBuilder
 
         ViewDefinition definition = new ViewDefinition();
         SetPrivateField(definition, "id", id);
-        SetPrivateField(definition, "kind", ViewKind.Page);
+        SetPrivateField(definition, "kind", kind);
         SetPrivateField(definition, "layer", layer);
         SetPrivateField(definition, "prefab", prefab);
-        SetPrivateField(definition, "singleton", true);
-        SetPrivateField(definition, "cacheOnClose", true);
-        SetPrivateField(definition, "trackInBackStack", true);
-        SetPrivateField(definition, "closeOnBackgroundClick", false);
-        SetPrivateField(definition, "warmupCount", 0);
-        SetPrivateField(definition, "maxCachedInstancesOverride", -1);
-        SetPrivateField(definition, "allowDuplicateViewType", false);
+        SetPrivateField(definition, "singleton", singleton);
+        SetPrivateField(definition, "cacheOnClose", cacheOnClose);
+        SetPrivateField(definition, "trackInBackStack", trackInBackStack);
+        SetPrivateField(definition, "closeOnBackgroundClick", closeOnBackgroundClick);
+        SetPrivateField(definition, "warmupCount", warmupCount);
+        SetPrivateField(definition, "maxCachedInstancesOverride", maxCachedInstancesOverride);
+        SetPrivateField(definition, "allowDuplicateViewType", allowDuplicateViewType);
         return definition;
     }
 

@@ -108,6 +108,27 @@ namespace Orange.UIFramework.Tests
             Assert.That(catalog.TryFindByType<BookUIPage>(out ViewDefinition goldBookDefinition), Is.True);
             Assert.That(goldBookDefinition.Id, Is.EqualTo("page.goldBook"));
             Assert.That(goldBookDefinition.Layer, Is.EqualTo(ViewLayer.Page));
+            Assert.That(catalog.TryFindByType<WeaponOperatePopup>(out ViewDefinition weaponPopupDefinition), Is.True);
+            Assert.That(weaponPopupDefinition.Id, Is.EqualTo("popup.inventory.weaponOperate"));
+            Assert.That(weaponPopupDefinition.Kind, Is.EqualTo(ViewKind.Popup));
+            Assert.That(weaponPopupDefinition.Layer, Is.EqualTo(ViewLayer.Popup));
+            Assert.That(weaponPopupDefinition.Singleton, Is.False);
+            Assert.That(weaponPopupDefinition.TrackInBackStack, Is.True);
+            Assert.That(weaponPopupDefinition.MaxCachedInstancesOverride, Is.EqualTo(1));
+            Assert.That(catalog.TryFindByType<AccessoryInfoPopup>(out ViewDefinition accessoryPopupDefinition), Is.True);
+            Assert.That(accessoryPopupDefinition.Id, Is.EqualTo("popup.inventory.accessoryInfo"));
+            Assert.That(accessoryPopupDefinition.Kind, Is.EqualTo(ViewKind.Popup));
+            Assert.That(accessoryPopupDefinition.Layer, Is.EqualTo(ViewLayer.Popup));
+            Assert.That(accessoryPopupDefinition.Singleton, Is.False);
+            Assert.That(accessoryPopupDefinition.TrackInBackStack, Is.True);
+            Assert.That(accessoryPopupDefinition.MaxCachedInstancesOverride, Is.EqualTo(1));
+            Assert.That(catalog.TryFindByType<DescribableTooltip>(out ViewDefinition tooltipDefinition), Is.True);
+            Assert.That(tooltipDefinition.Id, Is.EqualTo("tooltip.describable"));
+            Assert.That(tooltipDefinition.Kind, Is.EqualTo(ViewKind.Tooltip));
+            Assert.That(tooltipDefinition.Layer, Is.EqualTo(ViewLayer.Tooltip));
+            Assert.That(tooltipDefinition.Singleton, Is.True);
+            Assert.That(tooltipDefinition.TrackInBackStack, Is.False);
+            Assert.That(tooltipDefinition.MaxCachedInstancesOverride, Is.EqualTo(1));
         }
 
         private ViewCatalog CreateCatalog(params ViewDefinition[] definitions)

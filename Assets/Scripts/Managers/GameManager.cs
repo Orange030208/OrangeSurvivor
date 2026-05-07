@@ -354,7 +354,7 @@ public class GameManager : MonoSingletonBase<GameManager>
                 break;
             case GameState.Game:
                 await uiManager.OpenPageAsync<GamingUIPage>(
-                    UIPageContextFactory.CreateGamingPageContext(player),
+                    CreateGamingPageContext(),
                     cancellationToken);
                 break;
             case GameState.GameOver:
@@ -362,7 +362,7 @@ public class GameManager : MonoSingletonBase<GameManager>
                 break;
             case GameState.StageComplete:
                 await uiManager.OpenPageAsync<StageCompleteUIPage>(
-                    UIPageContextFactory.CreateStageCompletePageContext(stageCompleteSummaryManager),
+                    CreateStageCompletePageContext(),
                     cancellationToken);
                 break;
             case GameState.WaveTransition:
@@ -370,10 +370,50 @@ public class GameManager : MonoSingletonBase<GameManager>
                 break;
             case GameState.Shop:
                 await uiManager.OpenPageAsync<ShopUIPage>(
-                    UIPageContextFactory.CreateShopPageContext(player, shopManager, inventoryOperateManager),
+                    CreateShopPageContext(),
                     cancellationToken);
                 break;
         }
+    }
+
+    private GamingPageContext CreateGamingPageContext()
+    {
+        EnsurePlayerReference();
+        return new GamingPageContext(
+            player,
+            player.GetComponent<CurrencyWallet>());
+    }
+
+    private StageCompletePageContext CreateStageCompletePageContext()
+    {
+        if (stageCompleteSummaryManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(StageCompleteSummaryManager)} reference.");
+        }
+
+        return new StageCompletePageContext(stageCompleteSummaryManager.CreateSnapshot());
+    }
+
+    private ShopPageContext CreateShopPageContext()
+    {
+        EnsurePlayerReference();
+        if (shopManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(ShopManager)} reference.");
+        }
+
+        if (inventoryOperateManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(InventoryOperateManager)} reference.");
+        }
+
+        inventoryOperateManager.Bind(player);
+        return new ShopPageContext(
+            player,
+            player.GetComponent<CurrencyWallet>(),
+            player.GetComponent<PropertiesManager>(),
+            shopManager,
+            inventoryOperateManager);
     }
 
     private void OpenPauseMenu()
@@ -455,6 +495,14 @@ public class GameManager : MonoSingletonBase<GameManager>
         if (characterSelectionManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(CharacterSelectionManager)} reference.");
+        }
+    }
+
+    private void EnsurePlayerReference()
+    {
+        if (player == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
         }
     }
 

@@ -1491,7 +1491,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 1368362119241423224, guid: 6a8748e2299b15c4896d2a062c22c0d5, type: 3}
   itemContainersParent: {fileID: 7032089879319786788}
-  inventoryOperateManager: {fileID: 0}
 --- !u!114 &1730573582740224298
 MonoBehaviour:
   m_ObjectHideFlags: 0

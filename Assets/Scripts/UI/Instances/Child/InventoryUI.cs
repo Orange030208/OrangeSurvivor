@@ -12,9 +12,6 @@ public class InventoryUI : ViewPartBase
     [SerializeField] private InventoryItem itemPrefab;
     [SerializeField] private Transform itemContainersParent;
 
-    [Header("运行时 Manager")]
-    [SerializeField] private InventoryOperateManager inventoryOperateManager;
-
     private readonly List<InventoryItem> spawnedItems = new();
 
     private InventoryOperateManager inventoryOperateManagerSession;
@@ -127,13 +124,7 @@ public class InventoryUI : ViewPartBase
             return configuredInventoryOperateManager;
         }
 
-        InventoryOperateManager resolvedManager = ResolveInventoryOperateManager();
-        if (resolvedManager != null)
-        {
-            return resolvedManager;
-        }
-
-        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires either an externally configured or locally serialized {nameof(InventoryOperateManager)} reference.");
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires an externally configured {nameof(InventoryOperateManager)} session.");
     }
 
     private void StartInventorySession()
@@ -143,7 +134,7 @@ public class InventoryUI : ViewPartBase
             return;
         }
 
-        if (configuredInventoryOperateManager == null && ResolveInventoryOperateManager() == null)
+        if (configuredInventoryOperateManager == null)
         {
             return;
         }
@@ -172,11 +163,6 @@ public class InventoryUI : ViewPartBase
         ResetAfterClose();
         inventorySessionStarted = false;
         inventoryOperateManagerSession = null;
-    }
-
-    private InventoryOperateManager ResolveInventoryOperateManager()
-    {
-        return inventoryOperateManager;
     }
 
     private void ValidateConfiguration()
