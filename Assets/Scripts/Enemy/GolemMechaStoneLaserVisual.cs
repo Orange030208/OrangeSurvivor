@@ -10,12 +10,7 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
     public void Show(
         Vector3 startPosition,
         Vector3 endPosition,
-        Color glowColor,
-        float glowWidth,
-        Color coreColor,
-        float coreWidth,
-        bool showCore,
-        int sortingOrder)
+        bool showCore)
     {
         ResolveReferences();
         if (!IsConfigured)
@@ -24,11 +19,11 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
             return;
         }
 
-        ConfigureLine(glowLine, startPosition, endPosition, glowColor, glowWidth, sortingOrder);
+        ConfigureLine(glowLine, startPosition, endPosition);
         coreLine.enabled = showCore;
         if (showCore)
         {
-            ConfigureLine(coreLine, startPosition, endPosition, coreColor, coreWidth, sortingOrder + 1);
+            ConfigureLine(coreLine, startPosition, endPosition);
         }
     }
 
@@ -49,23 +44,11 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
     private static void ConfigureLine(
         LineRenderer lineRenderer,
         Vector3 startPosition,
-        Vector3 endPosition,
-        Color color,
-        float width,
-        int sortingOrder)
+        Vector3 endPosition)
     {
         lineRenderer.enabled = true;
         lineRenderer.useWorldSpace = true;
         lineRenderer.positionCount = 2;
-        lineRenderer.textureMode = LineTextureMode.Stretch;
-        lineRenderer.alignment = LineAlignment.View;
-        lineRenderer.numCapVertices = 8;
-        lineRenderer.numCornerVertices = 4;
-        lineRenderer.sortingOrder = sortingOrder;
-        lineRenderer.startColor = color;
-        lineRenderer.endColor = color;
-        lineRenderer.startWidth = width;
-        lineRenderer.endWidth = width;
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     }
@@ -73,8 +56,6 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
     private void OnValidate()
     {
         ResolveReferences();
-        PrepareLine(glowLine);
-        PrepareLine(coreLine);
     }
 
     private void Awake()
@@ -103,18 +84,4 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
         return null;
     }
 
-    private static void PrepareLine(LineRenderer lineRenderer)
-    {
-        if (lineRenderer == null)
-        {
-            return;
-        }
-
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.positionCount = 2;
-        lineRenderer.textureMode = LineTextureMode.Stretch;
-        lineRenderer.alignment = LineAlignment.View;
-        lineRenderer.numCapVertices = 8;
-        lineRenderer.numCornerVertices = 4;
-    }
 }

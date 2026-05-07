@@ -7,16 +7,14 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 {
     private const string LASER_HIT_SOURCE_ID = "GolemMechaStoneBoss_Laser";
     private const int LASER_HIT_BUFFER_SIZE = 16;
-    private const int LASER_TRACE_BUFFER_SIZE = 16;
     private const float MIN_RESOLVED_LASER_LENGTH = 0.05f;
 
     private readonly Collider2D[] hitBuffer = new Collider2D[LASER_HIT_BUFFER_SIZE];
-    private readonly RaycastHit2D[] traceBuffer = new RaycastHit2D[LASER_TRACE_BUFFER_SIZE];
 
     private float startTime;
     private float nextDamageTime;
     private Vector2 lockedDirection;
-    private bool directionLocked;
+    private bool laserFired;
     private bool cooldownCommitted;
     private Entity executionTarget;
     private GolemMechaStoneLaserVisual laserVisual;
@@ -26,7 +24,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         base.OnStart();
         startTime = Time.time;
         nextDamageTime = float.PositiveInfinity;
-        directionLocked = false;
+        laserFired = false;
         cooldownCommitted = false;
         executionTarget = TargetEntity;
         if (!HasContext)
@@ -41,7 +39,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         FaceTarget();
         Animatable?.PlayState(BossAnimationConfig.LaserCastHash);
         EnsureLaserVisual();
-        UpdateLaserVisual(false);
+        laserVisual?.Hide();
     }
 
     public override TaskStatus OnUpdate()
@@ -52,41 +50,37 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         }
 
         StopMoving();
-        float elapsedTime = Time.time - startTime;
-        float lockTime = Mathf.Max(0f, BossData.LaserWindupDuration - BossData.LaserDirectionLockLeadTime);
+        if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.LaserCastHash))
+        {
+            return TaskStatus.Failure;
+        }
 
-        if (!directionLocked && elapsedTime < lockTime)
+        float normalizedTime = Animatable.GetCurrentStateNormalizedTime();
+        if (!laserFired && normalizedTime < BossData.LaserFireStartNormalizedTime)
         {
             lockedDirection = ResolveDirectionToTarget(executionTarget);
             FacingController?.FaceTarget(executionTarget);
-        }
-        else if (!directionLocked)
-        {
-            directionLocked = true;
-            lockedDirection = ResolveSafeDirection(lockedDirection);
-            FacingController?.FaceDirection(lockedDirection);
-        }
-
-        if (elapsedTime < BossData.LaserWindupDuration)
-        {
-            UpdateLaserVisual(false);
             return TaskStatus.Running;
         }
 
-        UpdateLaserVisual(true);
-        if (float.IsPositiveInfinity(nextDamageTime))
+        if (!laserFired)
         {
+            lockedDirection = ResolveSafeDirection(lockedDirection);
+            FacingController?.FaceDirection(lockedDirection);
+            laserFired = true;
+            startTime = Time.time;
             nextDamageTime = Time.time;
         }
 
+        UpdateActiveDirection();
+        UpdateLaserVisual();
         if (Time.time >= nextDamageTime)
         {
             DealLaserDamage();
             nextDamageTime = Time.time + BossData.LaserDamageInterval;
         }
 
-        float finishTime = BossData.LaserWindupDuration + BossData.LaserDuration;
-        if (elapsedTime < finishTime)
+        if (Time.time - startTime < BossData.LaserDuration)
         {
             return TaskStatus.Running;
         }
@@ -122,7 +116,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
         Vector2 laserOrigin = ResolveLaserOrigin();
-        float laserLength = ResolveLaserLength(laserOrigin, direction);
+        float laserLength = BossData.LaserLength;
         if (laserLength < MIN_RESOLVED_LASER_LENGTH)
         {
             return;
@@ -211,38 +205,34 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         return OwnerEnemy != null ? OwnerEnemy.Center : Vector2.zero;
     }
 
-    private float ResolveLaserLength(Vector2 origin, Vector2 direction)
+    private void UpdateActiveDirection()
     {
-        if (AttackController == null || BossData == null)
+        float turnSpeed = BossData.LaserTurnSpeedDegrees;
+        if (turnSpeed <= 0f)
         {
-            return 0f;
+            return;
         }
 
-        float radius = BossData.LaserWidth * 0.5f;
-        int hitCount = Physics2D.CircleCastNonAlloc(
-            origin,
-            radius,
-            direction,
-            traceBuffer,
-            Mathf.Infinity,
-            AttackController.AttackLayer);
+        Vector2 targetDirection = ResolveDirectionToTarget(executionTarget);
+        lockedDirection = RotateDirectionTowards(
+            ResolveSafeDirection(lockedDirection),
+            targetDirection,
+            turnSpeed * Time.deltaTime);
+        FacingController?.FaceDirection(lockedDirection);
+    }
 
-        float nearestDistance = float.PositiveInfinity;
-        for (int i = 0; i < hitCount; i++)
+    private static Vector2 RotateDirectionTowards(Vector2 currentDirection, Vector2 targetDirection, float maxDegreesDelta)
+    {
+        if (targetDirection.sqrMagnitude <= Mathf.Epsilon)
         {
-            RaycastHit2D hit = traceBuffer[i];
-            Entity hitEntity = ResolveEntity(hit.collider);
-            if (hitEntity == null || hitEntity == OwnerEnemy)
-            {
-                continue;
-            }
-
-            nearestDistance = Mathf.Min(nearestDistance, Mathf.Max(0f, hit.distance));
+            return currentDirection;
         }
 
-        return float.IsPositiveInfinity(nearestDistance)
-            ? BossData.LaserNoHitVisualLength
-            : Mathf.Max(nearestDistance, MIN_RESOLVED_LASER_LENGTH);
+        float currentAngle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+        float resultAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, Mathf.Max(0f, maxDegreesDelta));
+        float radians = resultAngle * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized;
     }
 
     private void EnsureLaserVisual()
@@ -263,7 +253,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         laserVisual.Hide();
     }
 
-    private void UpdateLaserVisual(bool active)
+    private void UpdateLaserVisual()
     {
         if (laserVisual == null || OwnerEnemy == null || BossData == null)
         {
@@ -272,18 +262,12 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
         Vector3 startPosition = ResolveLaserOrigin();
-        float laserLength = ResolveLaserLength(startPosition, direction);
+        float laserLength = BossData.LaserLength;
         Vector3 endPosition = startPosition + (Vector3)(direction * laserLength);
-        Color color = active ? BossData.LaserActiveColor : BossData.LaserWindupColor;
         laserVisual.Show(
             startPosition,
             endPosition,
-            color,
-            active ? BossData.LaserActiveVisualWidth : BossData.LaserWindupVisualWidth,
-            BossData.LaserCoreColor,
-            BossData.LaserCoreVisualWidth,
-            active,
-            BossData.LaserSortingOrder);
+            true);
     }
 
     private void ClearLaserVisual()

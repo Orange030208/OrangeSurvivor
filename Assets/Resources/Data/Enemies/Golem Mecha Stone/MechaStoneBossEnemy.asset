@@ -29,28 +29,18 @@ MonoBehaviour:
   meleeFinishNormalizedTime: 0.95
   shootCommitNormalizedTime: 0.48
   shootFinishNormalizedTime: 0.9
-  laserWindupDuration: 1
-  laserDirectionLockLeadTime: 0.25
-  laserDuration: 3
+  laserFireStartNormalizedTime: 1
+  laserDuration: 4
   laserRange: 9
   laserWidth: 1.2
-  laserNoHitVisualLength: 40
+  laserLength: 40
   laserDamageInterval: 0.25
   laserDamageMultiplier: 0.65
-  laserWindupColor: {r: 1, g: 0.75, b: 0.2, a: 0.45}
-  laserActiveColor: {r: 0.25, g: 0.9, b: 1, a: 0.9}
-  laserCoreColor: {r: 1, g: 1, b: 1, a: 0.95}
-  laserWindupVisualWidth: 0.18
-  laserActiveVisualWidthMultiplier: 1
-  laserCoreVisualWidthMultiplier: 0.35
-  laserSortingOrder: 20
-  laserBeamSprite: {fileID: 21300000, guid: 7a92d812eb8b75e4291a5558bfdd7d90, type: 3}
-  laserTextureWorldLength: 2
-  laserScrollSpeed: 2.5
-  laserCooldown: 8
+  laserTurnSpeedDegrees: 12
+  laserCooldown: 10
   laserMinPhase: 2
   laserVisualPrefab: {fileID: 1867289574541625359, guid: 43f60aa1988c0474389602ddb36903c5, type: 3}
-  shieldDuration: 3
+  shieldDuration: 10
   shieldCooldown: 12
   shieldMinPhase: 3
   shieldModifiers:
@@ -60,10 +50,10 @@ MonoBehaviour:
   meleeAttackSfxKey: 3
   meleeCooldown: 1.35
   meleeDamageMultiplier: 1.15
-  meleeRangeSource: 1
-  meleeFixedRange: 1
+  meleeRangeSource: 0
+  meleeFixedRange: 1.2
   meleeRangeMultiplier: 1
-  meleeForwardOffset: 0.75
+  meleeForwardOffset: 0.45
   shootAttackSfxKey: 300
   shootCooldown: 2
   shootDamageMultiplier: 0.8

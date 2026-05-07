@@ -5,9 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
 public class Projectile : Entity, IProjectile
 {
+    private const string DEFAULT_OBSTACLE_LAYER_NAME = "Wall";
+
     [Header("Base")]
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected LayerMask targetsLayerMask;
+    [Tooltip("弹射物碰到这些阻挡层时会播放命中特效并销毁。未配置时默认使用项目中的 Wall 层。")]
+    [SerializeField] protected LayerMask obstacleLayerMask;
     [SerializeField] protected float maxLifetime = 5f;
     [SerializeField] protected int maxHitCount = 1;
     [SerializeField] protected Rigidbody2D rb;
@@ -26,6 +30,7 @@ public class Projectile : Entity, IProjectile
     private Quaternion baseRotation;
     private SpriteRenderer cachedSpriteRenderer;
     private Animator cachedAnimator;
+    private bool isDespawning;
     private readonly HashSet<HealthComponent> hitTargets = new();
 
     protected virtual void Awake()
@@ -45,6 +50,7 @@ public class Projectile : Entity, IProjectile
         lifetimeTimer = 0f;
         currentHitCount = 0;
         currentMaxHitCount = Mathf.Max(1, maxHitCount);
+        isDespawning = false;
         hitTargets.Clear();
     }
 
@@ -53,7 +59,7 @@ public class Projectile : Entity, IProjectile
         lifetimeTimer += Time.deltaTime;
         if (lifetimeTimer >= currentMaxLifetime)
         {
-            Destroy(gameObject);
+            DestroyProjectile();
         }
     }
 
@@ -76,6 +82,11 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
+        if (TryHandleObstacleImpact(collider, ResolveImpactPosition(collider)))
+        {
+            return;
+        }
+
         if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount >= currentMaxHitCount)
         {
             return;
@@ -95,8 +106,18 @@ public class Projectile : Entity, IProjectile
         ApplyImpact(healthComponent);
         if (currentHitCount >= currentMaxHitCount)
         {
-            Destroy(gameObject);
+            DestroyProjectile();
         }
+    }
+
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision == null || collision.collider == null)
+        {
+            return;
+        }
+
+        TryHandleObstacleImpact(collision.collider, ResolveImpactPosition(collision));
     }
 
     protected virtual void ApplyImpact(HealthComponent healthComponent)
@@ -212,6 +233,60 @@ public class Projectile : Entity, IProjectile
         }
 
         RuntimeVfx.Spawn(projectileDefinition.ImpactVfxPrefab, impactPosition, transform.rotation);
+    }
+
+    private bool TryHandleObstacleImpact(Collider2D collider, Vector3 impactPosition)
+    {
+        if (isDespawning || collider == null || !IsInLayerMask(collider.gameObject.layer, ResolveObstacleLayerMask()))
+        {
+            return false;
+        }
+
+        SpawnImpactEffect(impactPosition, launchContext.ProjectileDefinition);
+        DestroyProjectile();
+        return true;
+    }
+
+    private Vector3 ResolveImpactPosition(Collider2D collider)
+    {
+        if (collider == null)
+        {
+            return transform.position;
+        }
+
+        Vector2 closestPoint = collider.ClosestPoint(transform.position);
+        return closestPoint;
+    }
+
+    private Vector3 ResolveImpactPosition(Collision2D collision)
+    {
+        if (collision != null && collision.contactCount > 0)
+        {
+            return collision.GetContact(0).point;
+        }
+
+        return transform.position;
+    }
+
+    private LayerMask ResolveObstacleLayerMask()
+    {
+        if (obstacleLayerMask.value != 0)
+        {
+            return obstacleLayerMask;
+        }
+
+        return LayerMask.GetMask(DEFAULT_OBSTACLE_LAYER_NAME);
+    }
+
+    private void DestroyProjectile()
+    {
+        if (isDespawning)
+        {
+            return;
+        }
+
+        isDespawning = true;
+        Destroy(gameObject);
     }
 
     private bool IsInLayerMask(int layer, LayerMask layerMask)
