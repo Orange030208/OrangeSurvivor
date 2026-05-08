@@ -13,6 +13,7 @@ public static class ScriptableObjectMenuPaths
     public const string WORM_ENEMY = GAMEPLAY_ROOT + "Enemies/Worm Enemy";
     public const string FLY_FOREST = GAMEPLAY_ROOT + "Enemies/Fly Forest Enemy";
     public const string SKELETON_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Enemy";
+    public const string SKELETON_METEORHAMMER_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Meteorhammer Enemy";
     public const string GOLEM_ENEMY = GAMEPLAY_ROOT + "Enemies/Golem Enemy";
     public const string GOLEM_MECHA_STONE_BOSS = GAMEPLAY_ROOT + "Enemies/Golem Mecha Stone Boss";
     public const string BASE_PROP_GROUP = GAMEPLAY_ROOT + "Player/Base Prop Group";

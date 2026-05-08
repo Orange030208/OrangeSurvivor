@@ -23,18 +23,19 @@ public class SkeletonEnemySO : EnemySO
 
     public float AttackCommitNormalizedTime => AttackAction.CommitNormalizedTime;
     public float AttackSpeedBenefitRatio => Mathf.Max(0.01f, attackSpeedBenefitRatio);
+    protected virtual string DefaultAttackActionId => ATTACK_ACTION_ID;
+    protected virtual string DefaultAttackAnimationStateName => AnimConfig != null ? AnimConfig.Attack : "Attack";
 
-    private void OnValidate()
+    protected virtual void OnValidate()
     {
         attackCommitNormalizedTime = Mathf.Clamp01(attackCommitNormalizedTime);
         attackSpeedBenefitRatio = Mathf.Max(0.01f, attackSpeedBenefitRatio);
         EnsureActionDefaults();
     }
 
-    private void EnsureActionDefaults()
+    protected void EnsureActionDefaults()
     {
         attackAction ??= new EnemyActionDefinition();
-        string attackStateName = AnimConfig != null ? AnimConfig.Attack : "Attack";
-        attackAction.ConfigureDefaults(ATTACK_ACTION_ID, attackStateName, attackCommitNormalizedTime);
+        attackAction.ConfigureDefaults(DefaultAttackActionId, DefaultAttackAnimationStateName, attackCommitNormalizedTime);
     }
 }
