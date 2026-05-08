@@ -17,34 +17,29 @@ public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
             return;
         }
 
-        AcquireActionLock();
         StopMoving();
         FaceTarget();
-        Animatable?.PlayState(BossAnimationConfig.MeleeHash);
+        BeginBossAction(BossData.MeleeAction);
     }
 
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || BossBrain?.MeleeAttackStrategy == null || executionTarget == null)
+        if (!RefreshContext() || BossBrain?.MeleeAttackStrategy == null)
         {
             return TaskStatus.Failure;
         }
 
         StopMoving();
 
-        if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.MeleeHash))
-        {
-            return TaskStatus.Running;
-        }
-
-        float normalizedTime = Animatable.GetCurrentStateNormalizedTime();
-        if (!attackCommitted && normalizedTime >= BossData.MeleeCommitNormalizedTime)
+        TickBossAction(UnityEngine.Time.deltaTime);
+        if (!attackCommitted && ActionRunner.ShouldCommit)
         {
             attackCommitted = true;
+            ActionRunner.MarkCommitted();
             BossBrain.MeleeAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
-        return normalizedTime >= 1f ? TaskStatus.Success : TaskStatus.Running;
+        return ActionRunner.IsComplete ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnFixedUpdate()

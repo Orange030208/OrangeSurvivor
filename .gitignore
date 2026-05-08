@@ -51,6 +51,12 @@ ExportedObj/
 *.mdb
 *.pdb
 
+# Required Unity plugin binaries
+!Assets/DOTween/DOTween.dll
+!Assets/DOTween/Editor/DOTweenEditor.dll
+!Assets/Behavior Designer/Runtime/BehaviorDesigner.Runtime.dll
+!Assets/Behavior Designer/Editor/BehaviorDesigner.Editor.dll
+
 # Unity3D generated folder meta files
 bin/
 obj/

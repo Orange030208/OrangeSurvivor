@@ -19,8 +19,13 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     };
 
     [Header("Attack Timing")]
-    [SerializeField, Range(0f, 1f)] private float meleeCommitNormalizedTime = 0.55f;
-    [SerializeField, Range(0f, 1f)] private float shootCommitNormalizedTime = 0.48f;
+    [SerializeField] private EnemyActionDefinition meleeAction = new();
+    [SerializeField] private EnemyActionDefinition shootAction = new();
+    [SerializeField] private EnemyActionDefinition laserAction = new();
+    [SerializeField] private EnemyActionDefinition shieldAction = new();
+    [SerializeField] private EnemyActionDefinition phaseChangeAction = new();
+    [SerializeField, HideInInspector, Range(0f, 1f)] private float meleeCommitNormalizedTime = 0.55f;
+    [SerializeField, HideInInspector, Range(0f, 1f)] private float shootCommitNormalizedTime = 0.48f;
 
     [Header("Laser")]
     [Tooltip("激光预瞄锁定目标方向的动画归一化时间；到达该时间后，开火前不再继续追踪玩家位置。")]
@@ -64,8 +69,53 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public float PhaseTwoHealthRatio => phaseTwoHealthRatio;
     public float PhaseThreeHealthRatio => phaseThreeHealthRatio;
     public IReadOnlyList<PropModifierData> PhaseTransitionModifiers => phaseTransitionModifiers;
-    public float MeleeCommitNormalizedTime => meleeCommitNormalizedTime;
-    public float ShootCommitNormalizedTime => shootCommitNormalizedTime;
+    public EnemyActionDefinition MeleeAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return meleeAction;
+        }
+    }
+
+    public EnemyActionDefinition ShootAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return shootAction;
+        }
+    }
+
+    public EnemyActionDefinition LaserAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return laserAction;
+        }
+    }
+
+    public EnemyActionDefinition ShieldAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return shieldAction;
+        }
+    }
+
+    public EnemyActionDefinition PhaseChangeAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return phaseChangeAction;
+        }
+    }
+
+    public float MeleeCommitNormalizedTime => MeleeAction.CommitNormalizedTime;
+    public float ShootCommitNormalizedTime => ShootAction.CommitNormalizedTime;
     public float LaserAimLockNormalizedTime => Mathf.Clamp01(laserAimLockNormalizedTime);
     public float LaserFireStartNormalizedTime => laserFireStartNormalizedTime;
     public float LaserDuration => laserDuration;
@@ -109,5 +159,43 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         meleeRangeMultiplier = Mathf.Max(0f, meleeRangeMultiplier);
         shootAttackSpeedBenefitRatio = Mathf.Max(0.01f, shootAttackSpeedBenefitRatio);
         shootRangeMultiplier = Mathf.Max(0f, shootRangeMultiplier);
+        EnsureActionDefaults();
+    }
+
+    private void EnsureActionDefaults()
+    {
+        meleeAction ??= new EnemyActionDefinition();
+        shootAction ??= new EnemyActionDefinition();
+        laserAction ??= new EnemyActionDefinition();
+        shieldAction ??= new EnemyActionDefinition();
+        phaseChangeAction ??= new EnemyActionDefinition();
+
+        GolemMechaStoneBossAnimationConfig animConfig = BossAnimConfig;
+        meleeAction.ConfigureDefaults(
+            MELEE_ACTION_ID,
+            animConfig != null ? animConfig.Melee : "Melee",
+            meleeCommitNormalizedTime);
+        shootAction.ConfigureDefaults(
+            SHOOT_ACTION_ID,
+            animConfig != null ? animConfig.Shoot : "Shoot",
+            shootCommitNormalizedTime);
+        laserAction.ConfigureDefaults(
+            LASER_ACTION_ID,
+            animConfig != null ? animConfig.LaserCast : "LaserCast",
+            laserFireStartNormalizedTime,
+            EnemyActionCompletionMode.Manual);
+        shieldAction.ConfigureDefaults(
+            SHIELD_ACTION_ID,
+            animConfig != null ? animConfig.ShieldCast : "ShieldCast",
+            0f,
+            EnemyActionCompletionMode.Duration,
+            false,
+            shieldDuration);
+        phaseChangeAction.ConfigureDefaults(
+            "GolemMechaStoneBoss_PhaseChange",
+            animConfig != null ? animConfig.Immune : "Immune",
+            0f,
+            EnemyActionCompletionMode.AnimationNormalizedTime,
+            false);
     }
 }

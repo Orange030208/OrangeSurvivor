@@ -157,10 +157,9 @@ public class SkeletonBrain : EnemyBrain
         }
     }
 
-    private sealed class AttackState : StateBase<SkeletonAIState>
+    private sealed class AttackState : EnemyActionStateBase<SkeletonAIState>
     {
         private readonly SkeletonBrain brain;
-        private bool attackCommitted;
 
         public AttackState(SkeletonBrain brain) : base(SkeletonAIState.Attack)
         {
@@ -169,50 +168,28 @@ public class SkeletonBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackCommitted = false;
             brain.currentMovable.StopMoving();
 
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(SkeletonAIState.Idle);
+                brain.stateMachine.RequestState(SkeletonAIState.Idle, StateChangeMode.Force);
                 return;
             }
 
             if (!brain.attackStrategy.CanUse(brain.target))
             {
-                brain.stateMachine.ChangeState(SkeletonAIState.Chase);
+                brain.stateMachine.RequestState(SkeletonAIState.Chase, StateChangeMode.Force);
                 return;
             }
 
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
+            BeginAction(brain.enemyData.AttackAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
-            if (brain.target == null)
-            {
-                brain.stateMachine.ChangeState(SkeletonAIState.Idle);
-                return;
-            }
-
-            if (!brain.currentAnimatable.IsCurrentState(brain.enemyData.AnimConfig.AttackHash))
-            {
-                return;
-            }
-
-            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
-            if (!attackCommitted && normalizedTime >= brain.enemyData.AttackCommitNormalizedTime)
-            {
-                attackCommitted = true;
-
-                brain.attackStrategy.TryExecuteCommitted(brain.target);
-            }
-
-            if (normalizedTime >= 1f)
-            {
-                ChangeToNextState();
-            }
+            brain.FaceTarget();
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
@@ -220,21 +197,26 @@ public class SkeletonBrain : EnemyBrain
             brain.currentMovable.StopMoving();
         }
 
-        private void ChangeToNextState()
+        protected override void OnActionCommit()
+        {
+            brain.attackStrategy.TryExecuteCommitted(brain.target);
+        }
+
+        protected override void OnActionComplete()
         {
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(SkeletonAIState.Idle);
+                brain.stateMachine.RequestState(SkeletonAIState.Idle);
                 return;
             }
 
             if (brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target))
             {
-                brain.stateMachine.ChangeState(SkeletonAIState.Idle);
+                brain.stateMachine.RequestState(SkeletonAIState.Idle);
             }
             else
             {
-                brain.stateMachine.ChangeState(SkeletonAIState.Chase);
+                brain.stateMachine.RequestState(SkeletonAIState.Chase);
             }
         }
     }

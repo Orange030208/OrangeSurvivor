@@ -220,11 +220,9 @@ public class FlyForestBrain : EnemyBrain
         }
     }
 
-    private sealed class AttackState : StateBase<FlyForestAIState>
+    private sealed class AttackState : EnemyActionStateBase<FlyForestAIState>
     {
         private readonly FlyForestBrain brain;
-        private bool attackCommitted;
-        private int attackStateHash;
 
         public AttackState(FlyForestBrain brain) : base(FlyForestAIState.Attack)
         {
@@ -233,51 +231,39 @@ public class FlyForestBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackCommitted = false;
-            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
             brain.currentMovable.StopMoving();
 
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(FlyForestAIState.Idle);
+                brain.stateMachine.RequestState(FlyForestAIState.Idle, StateChangeMode.Force);
                 return;
             }
 
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(attackStateHash);
+            BeginAction(brain.enemyData.NormalAttackAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
-            if (brain.target == null)
-            {
-                brain.stateMachine.ChangeState(FlyForestAIState.Idle);
-                return;
-            }
-
-            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
-            {
-                return;
-            }
-
-            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
-            if (!attackCommitted && normalizedTime >= brain.enemyData.NormalAttackCommitNormalizedTime)
-            {
-                attackCommitted = true;
-                brain.normalAttackStrategy.TryExecuteCommitted(brain.target);
-            }
-
-            if (normalizedTime >= 1f)
-            {
-                brain.stateMachine.ChangeState(brain.IsLowHealth()
-                    ? FlyForestAIState.RetreatBurst
-                    : FlyForestAIState.CircleKite);
-            }
+            brain.FaceTarget();
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
         {
             brain.currentMovable.StopMoving();
+        }
+
+        protected override void OnActionCommit()
+        {
+            brain.normalAttackStrategy.TryExecuteCommitted(brain.target);
+        }
+
+        protected override void OnActionComplete()
+        {
+            brain.stateMachine.RequestState(brain.IsLowHealth()
+                ? FlyForestAIState.RetreatBurst
+                : FlyForestAIState.CircleKite);
         }
     }
 }

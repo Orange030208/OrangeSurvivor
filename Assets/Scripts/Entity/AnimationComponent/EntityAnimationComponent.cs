@@ -87,8 +87,13 @@ public class EntityAnimationComponent : EntityComponentBase, IAnimatable, IEntit
 
     public void PlayState(int stateHash)
     {
+        PlayState(stateHash, 0f);
+    }
+
+    public void PlayState(int stateHash, float normalizedTime, int layerIndex = 0)
+    {
         if (anim == null) return;
-        anim.Play(stateHash);
+        anim.Play(stateHash, layerIndex, normalizedTime);
     }
 
     public void SetPlaybackSpeed(float speed)
@@ -115,6 +120,18 @@ public class EntityAnimationComponent : EntityComponentBase, IAnimatable, IEntit
 
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(layerIndex);
         return stateInfo.shortNameHash == stateHash;
+    }
+
+    public AnimationStateProgress GetStateProgress(int stateHash, int layerIndex = 0)
+    {
+        if (anim == null)
+        {
+            return new AnimationStateProgress(false, 0f);
+        }
+
+        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(layerIndex);
+        bool isPlaying = stateInfo.shortNameHash == stateHash;
+        return new AnimationStateProgress(isPlaying, isPlaying ? stateInfo.normalizedTime : 0f);
     }
 
     public void FaceDefault()

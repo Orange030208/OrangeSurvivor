@@ -268,11 +268,10 @@ public class WormBrain : EnemyBrain
         }
     }
 
-    private sealed class AttackState : StateBase<WormAIState>
+    private sealed class AttackState : EnemyActionStateBase<WormAIState>
     {
         private readonly WormBrain brain;
 
-        private bool attackCommitted = false;
         private bool attackFinished = false;
 
         public AttackState(WormBrain brain) : base(WormAIState.Attack)
@@ -282,54 +281,65 @@ public class WormBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackCommitted = false;
             attackFinished = false;
             if (brain.currentAttackStrategy == null)
             {
                 brain.SetAttackStrategy(brain.attackStrategy);
             }
+
+            if (brain.target == null)
+            {
+                brain.stateMachine.RequestState(WormAIState.Idle, StateChangeMode.Force);
+                return;
+            }
+
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
             brain.currentMovable.StopMoving();
+            BeginAction(ResolveAction(), brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
             brain.FaceTarget();
+            TickAction(Time.deltaTime);
+        }
 
+        protected override void OnActionCommit()
+        {
+            if (!attackFinished && brain.currentAttackStrategy.TryExecuteCommitted(brain.target))
+            {
+                attackFinished = true;
+            }
+        }
+
+        protected override void OnActionComplete()
+        {
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(WormAIState.Idle);
+                brain.stateMachine.RequestState(WormAIState.Idle);
                 return;
             }
-            
-            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
-            if (!attackCommitted && normalizedTime >= brain.enemyData.attackCommitNormalizedTime)
-            {
-                attackCommitted = true;
-
-                if (!attackFinished && brain.currentAttackStrategy.TryExecuteCommitted(brain.target))
-                {
-                    attackFinished = true;
-                }
-            }
-
-            if (normalizedTime < 1f) return;
-            
 
             float distanceToTarget = brain.GetDistanceToTarget();
             if (distanceToTarget < brain.enemyData.retreatTriggerDistance)
             {
-                brain.stateMachine.ChangeState(WormAIState.Retreat);
+                brain.stateMachine.RequestState(WormAIState.Retreat);
             }
             else if (!brain.currentAttackStrategy.DetectionStrategy.IsTargetInRange(brain.target))
             {
-                brain.stateMachine.ChangeState(WormAIState.Approach);
+                brain.stateMachine.RequestState(WormAIState.Approach);
             }
             else
             {
-                brain.stateMachine.ChangeState(WormAIState.Idle);
+                brain.stateMachine.RequestState(WormAIState.Idle);
             }
+        }
+
+        private EnemyActionDefinition ResolveAction()
+        {
+            return brain.currentAttackStrategy == brain.retreatAttackStrategy
+                ? brain.enemyData.RetreatAttackAction
+                : brain.enemyData.AttackAction;
         }
     }
 }

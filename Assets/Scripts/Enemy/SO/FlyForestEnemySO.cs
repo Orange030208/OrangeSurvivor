@@ -13,7 +13,8 @@ public class FlyForestEnemySO : EnemySO
     public List<PropModifierData> fastBurstModifierData = new List<PropModifierData>();
 
     [Header("Attack")]
-    [SerializeField, Range(0f, 1f)] private float normalAttackCommitNormalizedTime = 0.578f;
+    [SerializeField] private EnemyActionDefinition normalAttackAction = new();
+    [SerializeField, HideInInspector, Range(0f, 1f)] private float normalAttackCommitNormalizedTime = 0.578f;
     [Min(0.01f)] public float normalAttackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO normalAttackProjectileDefinition;
 
@@ -38,7 +39,24 @@ public class FlyForestEnemySO : EnemySO
         normalMovement.idealRangeRatio = Mathf.Max(0f, normalMovement.idealRangeRatio);
         retreatMovement.safeDistance = Mathf.Max(0f, retreatMovement.safeDistance);
         retreatMovement.retreatStepDistance = Mathf.Max(0f, retreatMovement.retreatStepDistance);
+        EnsureActionDefaults();
     }
 
-    public float NormalAttackCommitNormalizedTime => normalAttackCommitNormalizedTime;
+    public EnemyActionDefinition NormalAttackAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return normalAttackAction;
+        }
+    }
+
+    public float NormalAttackCommitNormalizedTime => NormalAttackAction.CommitNormalizedTime;
+
+    private void EnsureActionDefaults()
+    {
+        normalAttackAction ??= new EnemyActionDefinition();
+        string attackStateName = AnimConfig != null ? AnimConfig.Attack : "Attack";
+        normalAttackAction.ConfigureDefaults(NORMAL_ATTACK_ACTION_ID, attackStateName, normalAttackCommitNormalizedTime);
+    }
 }

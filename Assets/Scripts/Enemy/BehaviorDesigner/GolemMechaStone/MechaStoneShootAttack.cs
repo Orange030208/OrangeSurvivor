@@ -17,15 +17,14 @@ public sealed class MechaStoneShootAttack : MechaStoneTaskBase
             return;
         }
 
-        AcquireActionLock();
         StopMoving();
         FaceTarget();
-        Animatable?.PlayState(BossAnimationConfig.ShootHash);
+        BeginBossAction(BossData.ShootAction);
     }
 
     public override TaskStatus OnUpdate()
     {
-        if (!RefreshContext() || BossBrain?.ShootAttackStrategy == null || executionTarget == null)
+        if (!RefreshContext() || BossBrain?.ShootAttackStrategy == null)
         {
             return TaskStatus.Failure;
         }
@@ -33,19 +32,15 @@ public sealed class MechaStoneShootAttack : MechaStoneTaskBase
         StopMoving();
         FacingController?.FaceTarget(executionTarget);
 
-        if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.ShootHash))
-        {
-            return TaskStatus.Running;
-        }
-
-        float normalizedTime = Animatable.GetCurrentStateNormalizedTime();
-        if (!attackCommitted && normalizedTime >= BossData.ShootCommitNormalizedTime)
+        TickBossAction(UnityEngine.Time.deltaTime);
+        if (!attackCommitted && ActionRunner.ShouldCommit)
         {
             attackCommitted = true;
+            ActionRunner.MarkCommitted();
             BossBrain.ShootAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
-        return normalizedTime >= 1f ? TaskStatus.Success : TaskStatus.Running;
+        return ActionRunner.IsComplete ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnFixedUpdate()

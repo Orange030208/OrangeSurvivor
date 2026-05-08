@@ -21,11 +21,10 @@ public sealed class MechaStonePhaseChange : MechaStoneTaskBase
             return;
         }
 
-        AcquireActionLock();
         targetPhase = BossBrain.ResolveNextPhase();
         StopMoving();
         ApplyModifiers();
-        Animatable?.PlayState(BossAnimationConfig.ImmuneHash);
+        BeginBossAction(BossData.PhaseChangeAction);
     }
 
     public override TaskStatus OnUpdate()
@@ -38,17 +37,8 @@ public sealed class MechaStonePhaseChange : MechaStoneTaskBase
         StopMoving();
         FaceTarget();
 
-        if (Animatable == null)
-        {
-            return TaskStatus.Failure;
-        }
-
-        if (!Animatable.IsCurrentState(BossAnimationConfig.ImmuneHash))
-        {
-            return TaskStatus.Running;
-        }
-
-        if (Animatable.GetCurrentStateNormalizedTime() < 1f)
+        TickBossAction(Time.deltaTime);
+        if (!ActionRunner.IsComplete)
         {
             return TaskStatus.Running;
         }

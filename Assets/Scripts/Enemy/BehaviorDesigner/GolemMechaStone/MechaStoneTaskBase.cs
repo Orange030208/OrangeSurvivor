@@ -26,6 +26,7 @@ public abstract class MechaStoneTaskBase : Action
 
     protected bool HasContext => OwnerEnemy != null && BossBrain != null && BossData != null && BossAnimationConfig != null;
     protected bool HasTarget => TargetEntity != null;
+    protected EnemyActionRunner ActionRunner { get; } = new();
 
     private bool actionLocked;
 
@@ -58,6 +59,20 @@ public abstract class MechaStoneTaskBase : Action
         actionLocked = true;
     }
 
+    protected void BeginBossAction(EnemyActionDefinition actionDefinition)
+    {
+        AcquireActionLock();
+        if (actionDefinition != null && Animatable != null)
+        {
+            ActionRunner.Begin(actionDefinition, Animatable);
+        }
+    }
+
+    protected void TickBossAction(float deltaTime)
+    {
+        ActionRunner.Tick(deltaTime);
+    }
+
     protected void ReleaseActionLock()
     {
         if (!actionLocked)
@@ -67,6 +82,7 @@ public abstract class MechaStoneTaskBase : Action
 
         BossBrain?.EndAction();
         actionLocked = false;
+        ActionRunner.Cancel();
     }
 
     protected bool RefreshContext()

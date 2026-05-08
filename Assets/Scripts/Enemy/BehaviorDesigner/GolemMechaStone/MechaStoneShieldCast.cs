@@ -7,14 +7,12 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
 {
     private const string SHIELD_MODIFIER_SOURCE = "GolemMechaStoneBoss_Shield";
 
-    private float startTime;
     private bool modifiersApplied;
     private bool cooldownCommitted;
 
     public override void OnStart()
     {
         base.OnStart();
-        startTime = Time.time;
         modifiersApplied = false;
         cooldownCommitted = false;
         if (!HasContext)
@@ -22,11 +20,10 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
             return;
         }
 
-        AcquireActionLock();
         StopMoving();
         FaceTarget();
         ApplyModifiers();
-        Animatable?.PlayState(BossAnimationConfig.ShieldCastHash);
+        BeginBossAction(BossData.ShieldAction);
     }
 
     public override TaskStatus OnUpdate()
@@ -38,7 +35,8 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
 
         StopMoving();
         FaceTarget();
-        if (Time.time < startTime + BossData.ShieldDuration)
+        TickBossAction(Time.deltaTime);
+        if (!ActionRunner.IsComplete)
         {
             return TaskStatus.Running;
         }

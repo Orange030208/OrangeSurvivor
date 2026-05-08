@@ -367,12 +367,9 @@ public class GolemBrain : EnemyBrain
         }
     }
 
-    private sealed class AttackState : StateBase<GolemAIState>
+    private sealed class AttackState : EnemyActionStateBase<GolemAIState>
     {
         private readonly GolemBrain brain;
-        private bool attackStarted;
-        private bool attackCommitted;
-        private int attackStateHash;
 
         public AttackState(GolemBrain brain) : base(GolemAIState.Attack)
         {
@@ -381,58 +378,28 @@ public class GolemBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackStarted = false;
-            attackCommitted = false;
-            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
             brain.currentMovable.StopMoving();
 
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(GolemAIState.Idle);
+                brain.stateMachine.RequestState(GolemAIState.Idle, StateChangeMode.Force);
                 return;
             }
 
             if (!brain.attackStrategy.CanUse(brain.target))
             {
-                brain.stateMachine.ChangeState(GolemAIState.Chase);
+                brain.stateMachine.RequestState(GolemAIState.Chase, StateChangeMode.Force);
                 return;
             }
 
-            attackStarted = true;
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(attackStateHash);
+            BeginAction(brain.enemyData.AttackAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
-            if (!attackStarted)
-            {
-                return;
-            }
-
-            if (brain.target == null)
-            {
-                brain.stateMachine.ChangeState(GolemAIState.Idle);
-                return;
-            }
-
-            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
-            {
-                return;
-            }
-
-            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
-            if (!attackCommitted && normalizedTime >= brain.enemyData.AttackCommitNormalizedTime)
-            {
-                attackCommitted = true;
-
-                brain.attackStrategy.TryExecuteCommitted(brain.target);
-            }
-
-            if (normalizedTime >= 1f)
-            {
-                ChangeToNextState();
-            }
+            brain.FaceTarget();
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
@@ -440,21 +407,26 @@ public class GolemBrain : EnemyBrain
             brain.currentMovable.StopMoving();
         }
 
-        private void ChangeToNextState()
+        protected override void OnActionCommit()
+        {
+            brain.attackStrategy.TryExecuteCommitted(brain.target);
+        }
+
+        protected override void OnActionComplete()
         {
             if (brain.target == null)
             {
-                brain.stateMachine.ChangeState(GolemAIState.Idle);
+                brain.stateMachine.RequestState(GolemAIState.Idle);
                 return;
             }
 
             if (brain.ShouldEnterBerserk())
             {
-                brain.stateMachine.ChangeState(GolemAIState.BerserkWindup);
+                brain.stateMachine.RequestState(GolemAIState.BerserkWindup);
                 return;
             }
 
-            brain.stateMachine.ChangeState(brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target)
+            brain.stateMachine.RequestState(brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target)
                 ? GolemAIState.Idle
                 : GolemAIState.Chase);
         }
@@ -495,10 +467,9 @@ public class GolemBrain : EnemyBrain
         }
     }
 
-    private sealed class BerserkChargeState : StateBase<GolemAIState>
+    private sealed class BerserkChargeState : EnemyActionStateBase<GolemAIState>
     {
         private readonly GolemBrain brain;
-        private float elapsedTime;
 
         public BerserkChargeState(GolemBrain brain) : base(GolemAIState.BerserkCharge)
         {
@@ -507,23 +478,18 @@ public class GolemBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            elapsedTime = 0f;
             brain.chargeHitTargets.Clear();
             brain.CaptureChargeDirection();
             brain.ApplyChargeModifiers();
             brain.currentAnimatable.SetPlaybackSpeed(brain.enemyData.ChargeAnimationSpeedMultiplier);
-            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
+            BeginAction(brain.enemyData.ChargeAction, brain.currentAnimatable);
             brain.facingController?.FaceDirection(brain.chargeDirection);
             brain.DealChargeDamage();
         }
 
         public override void OnUpdate()
         {
-            elapsedTime += Time.deltaTime;
-            if (elapsedTime >= brain.enemyData.ChargeDuration)
-            {
-                brain.stateMachine.ChangeState(GolemAIState.PostChargeAttack);
-            }
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
@@ -535,17 +501,21 @@ public class GolemBrain : EnemyBrain
 
         public override void OnExit()
         {
+            base.OnExit();
             brain.currentMovable.StopMoving();
             brain.currentAnimatable.ResetPlaybackSpeed();
             brain.RemoveChargeModifiers();
         }
+
+        protected override void OnActionComplete()
+        {
+            brain.stateMachine.RequestState(GolemAIState.PostChargeAttack);
+        }
     }
 
-    private sealed class PostChargeAttackState : StateBase<GolemAIState>
+    private sealed class PostChargeAttackState : EnemyActionStateBase<GolemAIState>
     {
         private readonly GolemBrain brain;
-        private bool attackCommitted;
-        private int attackStateHash;
 
         public PostChargeAttackState(GolemBrain brain) : base(GolemAIState.PostChargeAttack)
         {
@@ -554,34 +524,16 @@ public class GolemBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackCommitted = false;
-            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
             brain.currentMovable.StopMoving();
             brain.ApplyPostChargeAttackModifiers();
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(attackStateHash);
+            BeginAction(brain.enemyData.PostChargeAttackAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
             brain.FaceTarget();
-
-            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
-            {
-                return;
-            }
-
-            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
-            if (!attackCommitted && normalizedTime >= brain.enemyData.AttackCommitNormalizedTime)
-            {
-                attackCommitted = true;
-                TryCommitPostChargeAttack();
-            }
-
-            if (normalizedTime >= 1f)
-            {
-                brain.stateMachine.ChangeState(GolemAIState.BerserkRecovery);
-            }
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
@@ -591,7 +543,18 @@ public class GolemBrain : EnemyBrain
 
         public override void OnExit()
         {
+            base.OnExit();
             brain.RemovePostChargeAttackModifiers();
+        }
+
+        protected override void OnActionCommit()
+        {
+            TryCommitPostChargeAttack();
+        }
+
+        protected override void OnActionComplete()
+        {
+            brain.stateMachine.RequestState(GolemAIState.BerserkRecovery);
         }
 
         private void TryCommitPostChargeAttack()
@@ -639,10 +602,9 @@ public class GolemBrain : EnemyBrain
         }
     }
 
-    private sealed class BerserkRecoveryState : StateBase<GolemAIState>
+    private sealed class BerserkRecoveryState : EnemyActionStateBase<GolemAIState>
     {
         private readonly GolemBrain brain;
-        private float elapsedTime;
 
         public BerserkRecoveryState(GolemBrain brain) : base(GolemAIState.BerserkRecovery)
         {
@@ -651,29 +613,26 @@ public class GolemBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            elapsedTime = 0f;
             brain.ResetBerserkTimer();
             brain.currentMovable.StopMoving();
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.IdleHash);
+            BeginAction(brain.enemyData.RecoveryAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
             brain.FaceTarget();
-            elapsedTime += Time.deltaTime;
-
-            if (elapsedTime < brain.enemyData.PostChargeStunDuration)
-            {
-                return;
-            }
-
-            brain.stateMachine.ChangeState(brain.target == null ? GolemAIState.Idle : GolemAIState.Chase);
+            TickAction(Time.deltaTime);
         }
 
         public override void OnFixedUpdate()
         {
             brain.currentMovable.StopMoving();
+        }
+
+        protected override void OnActionComplete()
+        {
+            brain.stateMachine.RequestState(brain.target == null ? GolemAIState.Idle : GolemAIState.Chase);
         }
     }
 }

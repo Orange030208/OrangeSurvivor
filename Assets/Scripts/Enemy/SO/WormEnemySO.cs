@@ -11,7 +11,9 @@ public class WormEnemySO : EnemySO
     [Min(0f)] public float retreatCompleteDistance = 7f;
     
     [Header("攻击时机")]
-    [Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
+    [SerializeField] private EnemyActionDefinition attackAction = new();
+    [SerializeField] private EnemyActionDefinition retreatAttackAction = new();
+    [HideInInspector, Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
 
     [Header("Attacks")]
     [Min(0.01f)] public float attackSpeedBenefitRatio = 1f;
@@ -34,11 +36,39 @@ public class WormEnemySO : EnemySO
         retreatAttackSpeedBenefitRatio = Mathf.Max(0.01f, retreatAttackSpeedBenefitRatio);
         retreatMovement.safeDistance = Mathf.Max(retreatTriggerDistance, retreatMovement.safeDistance);
         ValidateRetreatMoveData(ref retreatMovement);
+        EnsureActionDefaults();
+    }
+
+    public EnemyActionDefinition AttackAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return attackAction;
+        }
+    }
+
+    public EnemyActionDefinition RetreatAttackAction
+    {
+        get
+        {
+            EnsureActionDefaults();
+            return retreatAttackAction;
+        }
     }
 
     private static void ValidateRetreatMoveData(ref RetreatMoveData config)
     {
         config.safeDistance = Mathf.Max(0f, config.safeDistance);
         config.retreatStepDistance = Mathf.Max(0f, config.retreatStepDistance);
+    }
+
+    private void EnsureActionDefaults()
+    {
+        attackAction ??= new EnemyActionDefinition();
+        retreatAttackAction ??= new EnemyActionDefinition();
+        string attackStateName = AnimConfig != null ? AnimConfig.Attack : "Attack";
+        attackAction.ConfigureDefaults(ATTACK_ACTION_ID, attackStateName, attackCommitNormalizedTime);
+        retreatAttackAction.ConfigureDefaults(RETREAT_ATTACK_ACTION_ID, attackStateName, attackCommitNormalizedTime);
     }
 }

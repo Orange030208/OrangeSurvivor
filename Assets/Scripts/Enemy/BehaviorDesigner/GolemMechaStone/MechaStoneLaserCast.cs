@@ -35,11 +35,10 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
             return;
         }
 
-        AcquireActionLock();
         lockedDirection = ResolveDirectionToTarget(executionTarget);
         StopMoving();
         FaceTarget();
-        Animatable?.PlayState(BossAnimationConfig.LaserCastHash);
+        BeginBossAction(BossData.LaserAction);
         EnsureLaserVisual();
         laserVisual?.PlayStart();
     }
@@ -52,12 +51,18 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         }
 
         StopMoving();
-        if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.LaserCastHash))
+        if (Animatable == null)
         {
             return TaskStatus.Failure;
         }
 
-        float normalizedTime = Animatable.GetCurrentStateNormalizedTime();
+        TickBossAction(Time.deltaTime);
+        if (!ActionRunner.Progress.IsPlaying)
+        {
+            return TaskStatus.Running;
+        }
+
+        float normalizedTime = ActionRunner.Progress.NormalizedTime;
         if (!laserFired && normalizedTime < BossData.LaserFireStartNormalizedTime)
         {
             UpdatePreFireDirection(normalizedTime);
@@ -96,6 +101,8 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         }
 
         CommitCooldown();
+        ActionRunner.MarkCommitted();
+        ActionRunner.MarkComplete();
         return TaskStatus.Success;
     }
 
