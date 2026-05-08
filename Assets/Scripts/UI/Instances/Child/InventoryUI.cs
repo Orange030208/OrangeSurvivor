@@ -1,56 +1,43 @@
-using AXR.Framework.UI;
+using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
-public class InventoryUI : MonoBehaviour, IInventoryRegionView
+public class InventoryUI : ViewPartBase
 {
+    private const string POPUP_GROUP_ID = "inventory.operate";
+
     [Header("容器与预制体")]
     [SerializeField] private InventoryItem itemPrefab;
-    [SerializeField] private WeaponOperatePopup weaponPopupPrefab;
-    [SerializeField] private AccessoryInfoPopup accessoryPopupPrefab;
     [SerializeField] private Transform itemContainersParent;
 
-    [Header("Facade")]
-    [SerializeField] private InventoryOperateManager inventoryOperateManager;
+    private readonly List<InventoryItem> spawnedItems = new();
 
-    [Header("关闭")]
-    [SerializeField] private UIClickTarget[] closeInventoryItemOperatePanelButtons;
-
-    private Transform popupLayerRoot;
-    private IInventoryUiFacade inventoryFacade;
-    private IInventoryUiFacade configuredFacade;
-    private bool disposeConfiguredFacade;
-    private bool ownsInventoryFacade;
-    private bool requiresExternalFacadeConfiguration;
-    private InventoryRegionController controller;
-    private InventoryListRegionView listRegion;
-    private InventoryPopupHostView popupHost;
-
-    public event System.Action<string> ItemSelected;
-    public event System.Action CloseRequested;
-    public event System.Action<string> SellRequested;
-    public event System.Action<string> MergeRequested;
+    private InventoryOperateManager inventoryOperateManagerSession;
+    private InventoryOperateManager configuredInventoryOperateManager;
+    private UIManager uiManager;
+    private bool inventorySessionStarted;
+    private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
+    private string currentSelectedEntryId;
+    private string currentOperateEntryId;
+    private int popupVersion;
+    private ViewHandle currentPopupHandle;
 
     private void Awake()
     {
         ValidateConfiguration();
-        requiresExternalFacadeConfiguration = ResolveRequiresExternalFacadeConfiguration();
-        popupLayerRoot = ResolvePopupLayerRoot();
-        listRegion = new InventoryListRegionView(name, itemPrefab, itemContainersParent);
-        popupHost = new InventoryPopupHostView(name, weaponPopupPrefab, accessoryPopupPrefab, popupLayerRoot, closeInventoryItemOperatePanelButtons);
-        listRegion.ItemClicked += OnItemSelected;
-        popupHost.CloseRequested += OnCloseRequested;
-        popupHost.SellRequested += OnSellRequested;
-        popupHost.MergeRequested += OnMergeRequested;
+        itemContainersParent.Clear();
     }
 
     private void OnEnable()
     {
-        StartController();
+        StartInventorySession();
     }
 
     private void Update()
     {
-        if (!popupHost.HasOpenPopup)
+        if (!HasOpenPopup)
         {
             return;
         }
@@ -58,163 +45,124 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
-            CloseRequested?.Invoke();
+            ClosePopup();
         }
     }
 
     private void OnDisable()
     {
-        StopController();
+        StopInventorySession();
     }
 
-    public void ConfigureFacade(IInventoryUiFacade facade, bool takeOwnership = false)
+    public void WarmUp()
     {
-        if (configuredFacade == facade && disposeConfiguredFacade == takeOwnership)
+        if (itemContainersParent != null && spawnedItems.Count == 0)
         {
-            if (controller == null && isActiveAndEnabled && facade != null)
+            itemContainersParent.Clear();
+        }
+    }
+
+    public void ConfigureSession(InventoryOperateManager manager, UIManager ownerUIManager)
+    {
+        bool sameManager = configuredInventoryOperateManager == manager;
+        uiManager = ownerUIManager;
+
+        if (sameManager)
+        {
+            if (!inventorySessionStarted && isActiveAndEnabled && manager != null)
             {
-                StartController();
+                StartInventorySession();
             }
 
             return;
         }
 
-        bool shouldRebind = controller != null && isActiveAndEnabled;
+        bool shouldRebind = inventorySessionStarted && isActiveAndEnabled;
         if (shouldRebind)
         {
-            StopController();
+            StopInventorySession();
         }
 
-        configuredFacade = facade;
-        disposeConfiguredFacade = takeOwnership;
+        configuredInventoryOperateManager = manager;
 
-        if (isActiveAndEnabled && facade != null)
+        if (isActiveAndEnabled && manager != null)
         {
-            StartController();
+            StartInventorySession();
         }
     }
 
-    public void ReleaseConfiguredFacade()
+    public void ReleaseSession()
     {
-        if (controller != null && ReferenceEquals(inventoryFacade, configuredFacade))
+        if (inventorySessionStarted && ReferenceEquals(inventoryOperateManagerSession, configuredInventoryOperateManager))
         {
-            StopController();
+            StopInventorySession();
         }
 
-        configuredFacade = null;
-        disposeConfiguredFacade = false;
+        configuredInventoryOperateManager = null;
+        uiManager = null;
     }
 
-    public void PrepareForOpen()
+    private void PrepareForOpen()
     {
-        popupHost.BindCloseHandlers();
-        popupHost.CloseCurrent();
+        ClosePopupState();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
     }
 
-    public void ResetAfterClose()
+    private void ResetAfterClose()
     {
-        listRegion.Clear();
-        popupHost.UnbindCloseHandlers();
-        popupHost.CloseCurrent();
+        currentItems = Array.Empty<InventoryUIItemSnapshot>();
+        currentSelectedEntryId = null;
+        ClosePopupState();
+        ClearItems();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
     }
 
-    public void RenderItems(InventoryUIItemSnapshot[] items)
+    private InventoryOperateManager ResolveInventoryOperateManagerSession()
     {
-        listRegion.Render(items);
-    }
-
-    public void ShowOperatePopup(InventoryItemOperateResource resource)
-    {
-        popupHost.Show(resource);
-    }
-
-    public void CloseOperatePopup()
-    {
-        popupHost.CloseCurrent();
-    }
-
-    private Transform ResolvePopupLayerRoot()
-    {
-        if (UIManager.Instance != null && UIManager.Instance.TryGetLayerRoot(UILayerType.Popup, out Transform layerRoot))
+        if (configuredInventoryOperateManager != null)
         {
-            return layerRoot;
+            return configuredInventoryOperateManager;
         }
 
-        return transform;
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires an externally configured {nameof(InventoryOperateManager)} session.");
     }
 
-    private IInventoryUiFacade ResolveInventoryFacade(out bool ownsFacade)
+    private void StartInventorySession()
     {
-        if (configuredFacade != null)
-        {
-            ownsFacade = disposeConfiguredFacade;
-            return configuredFacade;
-        }
-
-        InventoryOperateManager resolvedManager = ResolveInventoryOperateManager();
-        if (resolvedManager != null)
-        {
-            ownsFacade = true;
-            return new ManagerInventoryUiFacade(resolvedManager);
-        }
-
-        ownsFacade = true;
-        return new ResolvingInventoryUiFacade();
-    }
-
-    private void StartController()
-    {
-        if (controller != null)
+        if (inventorySessionStarted)
         {
             return;
         }
 
-        if (requiresExternalFacadeConfiguration && configuredFacade == null)
+        if (configuredInventoryOperateManager == null)
         {
             return;
         }
 
-        inventoryFacade = ResolveInventoryFacade(out ownsInventoryFacade);
-        controller = new InventoryRegionController(this, inventoryFacade);
-        controller.Enter();
+        inventoryOperateManagerSession = ResolveInventoryOperateManagerSession();
+        inventoryOperateManagerSession.SnapshotChanged += OnSnapshotChanged;
+        inventoryOperateManagerSession.OperatePanelOpened += OnOperatePanelOpened;
+        inventoryOperateManagerSession.OperatePanelShouldClose += OnOperatePanelShouldClose;
+
+        PrepareForOpen();
+        inventoryOperateManagerSession.RequestSnapshot();
+        inventorySessionStarted = true;
     }
 
-    private void StopController()
+    private void StopInventorySession()
     {
-        controller?.Exit();
-        controller = null;
-
-        if (inventoryFacade != null && ownsInventoryFacade)
+        if (!inventorySessionStarted)
         {
-            inventoryFacade.Dispose();
+            return;
         }
 
-        inventoryFacade = null;
-        ownsInventoryFacade = false;
-    }
+        inventoryOperateManagerSession.SnapshotChanged -= OnSnapshotChanged;
+        inventoryOperateManagerSession.OperatePanelOpened -= OnOperatePanelOpened;
+        inventoryOperateManagerSession.OperatePanelShouldClose -= OnOperatePanelShouldClose;
 
-    private bool ResolveRequiresExternalFacadeConfiguration()
-    {
-        MonoBehaviour[] parentBehaviours = GetComponentsInParent<MonoBehaviour>(true);
-        for (int i = 0; i < parentBehaviours.Length; i++)
-        {
-            if (parentBehaviours[i] is IInventoryUiFacadeHost)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private InventoryOperateManager ResolveInventoryOperateManager()
-    {
-        if (inventoryOperateManager != null)
-        {
-            return inventoryOperateManager;
-        }
-
-        return FindFirstObjectByType<InventoryOperateManager>();
+        ResetAfterClose();
+        inventorySessionStarted = false;
+        inventoryOperateManagerSession = null;
     }
 
     private void ValidateConfiguration()
@@ -224,44 +172,329 @@ public class InventoryUI : MonoBehaviour, IInventoryRegionView
             throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(InventoryItem)} prefab.");
         }
 
-        if (weaponPopupPrefab == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(WeaponOperatePopup)} prefab.");
-        }
-
-        if (accessoryPopupPrefab == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing {nameof(AccessoryInfoPopup)} prefab.");
-        }
-
         if (itemContainersParent == null)
         {
             throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing item containers parent.");
-        }
-
-        if (closeInventoryItemOperatePanelButtons == null)
-        {
-            throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' is missing close panel buttons.");
         }
     }
 
     private void OnItemSelected(string entryId)
     {
-        ItemSelected?.Invoke(entryId);
-    }
+        if (string.IsNullOrEmpty(entryId) || inventoryOperateManagerSession == null)
+        {
+            return;
+        }
 
-    private void OnCloseRequested()
-    {
-        CloseRequested?.Invoke();
+        currentSelectedEntryId = entryId;
+        inventoryOperateManagerSession.RequestOpenItemPanel(entryId);
     }
 
     private void OnSellRequested(string entryId)
     {
-        SellRequested?.Invoke(entryId);
+        if (!IsShowingItem(entryId) || inventoryOperateManagerSession == null)
+        {
+            return;
+        }
+
+        inventoryOperateManagerSession.RequestSellItem(entryId);
     }
 
     private void OnMergeRequested(string entryId)
     {
-        MergeRequested?.Invoke(entryId);
+        if (!IsShowingItem(entryId) || inventoryOperateManagerSession == null)
+        {
+            return;
+        }
+
+        inventoryOperateManagerSession.RequestMergeItem(entryId);
+    }
+
+    private void OnSnapshotChanged(InventoryUIItemSnapshot[] items)
+    {
+        SyncSnapshot(items, out bool shouldClosePopup, out string popupEntryIdToRestore);
+        RenderItems(items);
+
+        if (shouldClosePopup)
+        {
+            CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(popupEntryIdToRestore))
+        {
+            inventoryOperateManagerSession.RequestOpenItemPanel(popupEntryIdToRestore);
+        }
+    }
+
+    private void OnOperatePanelOpened(InventoryItemOperateResource resource)
+    {
+        if (resource.itemData == null || string.IsNullOrEmpty(resource.entryId))
+        {
+            return;
+        }
+
+        if (!HasItem(resource.entryId))
+        {
+            return;
+        }
+
+        OpenPopupState(resource.entryId);
+        ShowOperatePopup(resource);
+    }
+
+    private void OnOperatePanelShouldClose(string entryId)
+    {
+        if (!IsShowingItem(entryId))
+        {
+            return;
+        }
+
+        ClosePopup();
+    }
+
+    private void RenderItems(InventoryUIItemSnapshot[] items)
+    {
+        ClearItems();
+        if (items == null || items.Length == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            SpawnItem(items[i]);
+        }
+    }
+
+    private void SpawnItem(InventoryUIItemSnapshot snapshot)
+    {
+        if (snapshot.ItemData == null || string.IsNullOrEmpty(snapshot.EntryId))
+        {
+            return;
+        }
+
+        InventoryItem item = Instantiate(itemPrefab, itemContainersParent);
+        item.Configure(snapshot.EntryId, snapshot.ItemData, snapshot.ColorDependencyNumber);
+        item.Clicked += OnItemSelected;
+        spawnedItems.Add(item);
+    }
+
+    private void ClearItems()
+    {
+        for (int i = 0; i < spawnedItems.Count; i++)
+        {
+            InventoryItem item = spawnedItems[i];
+            if (item == null)
+            {
+                continue;
+            }
+
+            item.Clicked -= OnItemSelected;
+            item.Dispose();
+            Destroy(item.gameObject);
+        }
+
+        spawnedItems.Clear();
+    }
+
+    private void ShowOperatePopup(InventoryItemOperateResource resource)
+    {
+        if (resource.itemData == null)
+        {
+            return;
+        }
+
+        int version = ++popupVersion;
+        currentOperateEntryId = resource.entryId;
+        ShowOperatePopupAsync(resource, version).Forget();
+    }
+
+    private async UniTaskVoid ShowOperatePopupAsync(InventoryItemOperateResource resource, int version)
+    {
+        try
+        {
+            await CloseCurrentPopupHandleAsync(CloseReason.Replace, invalidateRequest: false, clearPopupState: false);
+            if (version != popupVersion)
+            {
+                return;
+            }
+
+            PopupOptions options = new PopupOptions(
+                closeOnOutsideClick: true,
+                groupId: POPUP_GROUP_ID,
+                replaceSameGroup: true,
+                trackInStack: true,
+                preferredAnchor: FloatingViewAnchor.Center);
+
+            UIManager manager = ResolveUIManager();
+            if (resource.itemData.ItemType == ItemType.Weapon)
+            {
+                ViewHandle<WeaponOperatePopup> handle = await manager.ShowPopupAsync<WeaponOperatePopup>(resource, options);
+                if (version != popupVersion)
+                {
+                    await handle.CloseAsync(CloseReason.Cancel);
+                    return;
+                }
+
+                currentPopupHandle = handle.AsUntyped();
+                handle.View.SellRequested += OnSellRequested;
+                handle.View.MergeRequested += OnMergeRequested;
+                ObservePopupClosedAsync(currentPopupHandle, version, resource.entryId).Forget();
+                return;
+            }
+
+            ViewHandle<AccessoryInfoPopup> accessoryHandle = await manager.ShowPopupAsync<AccessoryInfoPopup>(resource, options);
+            if (version != popupVersion)
+            {
+                await accessoryHandle.CloseAsync(CloseReason.Cancel);
+                return;
+            }
+
+            currentPopupHandle = accessoryHandle.AsUntyped();
+            ObservePopupClosedAsync(currentPopupHandle, version, resource.entryId).Forget();
+        }
+        catch (Exception exception)
+        {
+            if (version == popupVersion)
+            {
+                currentOperateEntryId = null;
+            }
+
+            Debug.LogException(exception);
+        }
+    }
+
+    private async UniTaskVoid ObservePopupClosedAsync(ViewHandle handle, int version, string entryId)
+    {
+        try
+        {
+            await handle.ClosedTask;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+        }
+
+        if (version != popupVersion || !string.Equals(currentOperateEntryId, entryId, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        currentOperateEntryId = null;
+        currentPopupHandle = default;
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        ClosePopupState();
+    }
+
+    private async UniTask CloseCurrentPopupHandleAsync(
+        CloseReason reason,
+        bool invalidateRequest = true,
+        bool clearPopupState = true)
+    {
+        if (invalidateRequest)
+        {
+            popupVersion++;
+        }
+
+        if (clearPopupState)
+        {
+            currentOperateEntryId = null;
+        }
+
+        ViewHandle handle = currentPopupHandle;
+        currentPopupHandle = default;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        await handle.CloseAsync(reason);
+    }
+
+    private UIManager ResolveUIManager()
+    {
+        if (uiManager != null)
+        {
+            return uiManager;
+        }
+
+        throw new MissingReferenceException($"{nameof(InventoryUI)} '{name}' requires an explicit {nameof(UIManager)} before inventory operate popups can be opened.");
+    }
+
+    private void ClosePopup()
+    {
+        ClosePopupState();
+        CloseCurrentPopupHandleAsync(CloseReason.Normal).Forget();
+    }
+
+    private void OpenPopupState(string entryId)
+    {
+        currentSelectedEntryId = entryId;
+        currentOperateEntryId = entryId;
+    }
+
+    private void ClosePopupState()
+    {
+        currentSelectedEntryId = null;
+        currentOperateEntryId = null;
+    }
+
+    private bool HasOpenPopup => !string.IsNullOrEmpty(currentOperateEntryId);
+
+    private bool IsShowingItem(string entryId)
+    {
+        return currentOperateEntryId == entryId;
+    }
+
+    private bool HasItem(string entryId)
+    {
+        return ContainsEntry(currentItems, entryId);
+    }
+
+    private void SyncSnapshot(
+        InventoryUIItemSnapshot[] items,
+        out bool shouldClosePopup,
+        out string popupEntryIdToRestore)
+    {
+        bool hadOpenPopup = HasOpenPopup;
+        string previousPopupEntryId = currentOperateEntryId;
+
+        currentItems = items ?? Array.Empty<InventoryUIItemSnapshot>();
+
+        if (!ContainsEntry(currentItems, currentSelectedEntryId))
+        {
+            currentSelectedEntryId = null;
+        }
+
+        bool popupStillExists = ContainsEntry(currentItems, previousPopupEntryId);
+        if (!popupStillExists)
+        {
+            currentOperateEntryId = null;
+            shouldClosePopup = hadOpenPopup;
+            popupEntryIdToRestore = null;
+            return;
+        }
+
+        currentOperateEntryId = previousPopupEntryId;
+        shouldClosePopup = false;
+        popupEntryIdToRestore = previousPopupEntryId;
+    }
+
+    private static bool ContainsEntry(InventoryUIItemSnapshot[] items, string entryId)
+    {
+        if (items == null || items.Length == 0 || string.IsNullOrEmpty(entryId))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].EntryId == entryId)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

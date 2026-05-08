@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d79c9f3236e488a8f4f91f09e64606e, type: 3}
+  m_Name: OrangeUIViewCatalog
+  m_EditorClassIdentifier:
+  views:
+  - id: page.menu
+    kind: 0
+    layer: 2
+    prefab: {fileID: 5453402992543493149, guid: 89a6afc08e4358d49a6203418c889fc3, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.characterSelect
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: 02f7f2fe1141a9b4cb409ce8b556f135, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.gaming
+    kind: 0
+    layer: 1
+    prefab: {fileID: 830820297401448628, guid: 75c86628c871ecb47b8145cd95a3dd60, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.shop
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: 20c94ac16a11dc54b9e607c6eff07912, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.pause
+    kind: 0
+    layer: 3
+    prefab: {fileID: 3816208830851736021, guid: a3b9b07b8f661b249b31e24e92419cff, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.gameOver
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: e6ab8e1c786b9d4409cedc1cc5d99d58, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.stageComplete
+    kind: 0
+    layer: 2
+    prefab: {fileID: 3816208830851736021, guid: dcd920d2d54f4d2aae7103d64ce365a6, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.waveTransition
+    kind: 0
+    layer: 2
+    prefab: {fileID: 5453402992543493149, guid: 7a7ebd4679f38d64d85b9322f65b5589, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: page.goldBook
+    kind: 0
+    layer: 2
+    prefab: {fileID: 7343879705630972211, guid: 151de15897bd1e04ead2c9dda7a1ee16, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: popup.inventory.weaponOperate
+    kind: 1
+    layer: 3
+    prefab: {fileID: 4367177154767920270, guid: 32c53ab2a330ed146b8d9e720613f13b, type: 3}
+    singleton: 0
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: popup.inventory.accessoryInfo
+    kind: 1
+    layer: 3
+    prefab: {fileID: -5466076070143302565, guid: b5e65ee1abc9e75448634e25fd97b368, type: 3}
+    singleton: 0
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: tooltip.describable
+    kind: 3
+    layer: 6
+    prefab: {fileID: 9208315558322375508, guid: 09491bf92046d214186f496c0220146c, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0

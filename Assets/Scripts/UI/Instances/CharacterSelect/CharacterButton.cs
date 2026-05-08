@@ -1,10 +1,10 @@
-using AXR.Framework.UI;
+using Orange.UIFramework;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(UIClickTarget))]
-public class CharacterButton : MonoBehaviour
+public class CharacterButton : ViewPartBase
 {
     [SerializeField] private Image characterIconImage;
     [SerializeField] private UIClickTarget clickTarget;

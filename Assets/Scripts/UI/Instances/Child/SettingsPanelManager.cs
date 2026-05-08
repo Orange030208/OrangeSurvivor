@@ -1,17 +1,24 @@
-using AXR.Framework.UI;
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
+public class SettingsPanelManager : ViewPartBase, IPointerClickHandler
 {
     private const string MASTER_VOLUME_KEY = "Settings.MasterVolume";
     private const string SFX_VOLUME_KEY = "Settings.SfxVolume";
     private const string MUSIC_VOLUME_KEY = "Settings.MusicVolume";
     private const string USE_MASTER_VOLUME_KEY = "Settings.UseMasterVolume";
     private const int DEFAULT_SELECTED_STEP = 10;
+
+    [Header("显示")]
+    [SerializeField] private MonoBehaviour motionSource;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("音量")]
     [SerializeField] private VolumeStepControl masterVolume;
@@ -33,10 +40,13 @@ public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
 
     private SettingsPanelState savedState;
     private SettingsPanelState editingState;
+    private IUIRuntimeMotion motion;
+    private bool visible = true;
     private bool clickTargetsBound;
 
     private void Awake()
     {
+        ResolvePresentationReferences();
         ValidateConfiguration();
         BindClickTargets();
         masterVolume.Initialize(OnMasterVolumeChanged);
@@ -45,23 +55,74 @@ public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
         LoadSavedState();
         ApplyEditingStateToView();
         ApplyAudioSettings(editingState);
+        motion?.RefreshDefaults();
+        SetHiddenImmediate();
     }
 
     private void OnDestroy()
     {
         UnbindClickTargets();
+        motion?.Kill();
     }
 
     private void OnEnable()
     {
+        ResolvePresentationReferences();
         LoadSavedState();
         ApplyEditingStateToView();
         ApplyAudioSettings(editingState);
     }
 
+    private void OnDisable()
+    {
+        motion?.Kill();
+    }
+
+    public bool IsVisible => visible;
+
     public void OnPointerClick(PointerEventData eventData)
     {
         HandleVolumePointer(eventData);
+    }
+
+    public Tween SetVisible(bool value)
+    {
+        ResolvePresentationReferences();
+        if (visible == value)
+        {
+            SetInteractionEnabled(value);
+            return null;
+        }
+
+        visible = value;
+        SetInteractionEnabled(value);
+        return motion?.Play(value ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+    }
+
+    public void SetVisibleImmediate(bool value)
+    {
+        ResolvePresentationReferences();
+        visible = value;
+        motion?.SetImmediate(value ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        SetInteractionEnabled(value);
+    }
+
+    public void SetHiddenImmediate()
+    {
+        SetVisibleImmediate(false);
+    }
+
+    public override async UniTask HideAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!visible)
+        {
+            SetInteractionEnabled(false);
+            return;
+        }
+
+        Tween tween = SetVisible(false);
+        await tween.WaitForCompletionAsync(cancellationToken);
     }
 
     public void Save()
@@ -208,6 +269,17 @@ public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
         AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
     }
 
+    private void SetInteractionEnabled(bool enabled)
+    {
+        if (canvasGroup == null)
+        {
+            return;
+        }
+
+        canvasGroup.interactable = enabled;
+        canvasGroup.blocksRaycasts = enabled;
+    }
+
     private void ApplyPreviewIfNeeded()
     {
         if (!applyPreviewImmediately)
@@ -257,6 +329,21 @@ public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
 
     private void ValidateConfiguration()
     {
+        if (motionSource == null)
+        {
+            throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing motion source.");
+        }
+
+        if (motion == null)
+        {
+            throw new MissingComponentException($"{nameof(SettingsPanelManager)} '{name}' motion source must implement {nameof(IUIRuntimeMotion)}.");
+        }
+
+        if (canvasGroup == null)
+        {
+            throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing canvas group.");
+        }
+
         masterVolume.Validate($"{nameof(SettingsPanelManager)} '{name}' master volume");
         sfxVolume.Validate($"{nameof(SettingsPanelManager)} '{name}' sfx volume");
         musicVolume.Validate($"{nameof(SettingsPanelManager)} '{name}' music volume");
@@ -300,6 +387,64 @@ public class SettingsPanelManager : MonoBehaviour, IPointerClickHandler
         {
             throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing reset button.");
         }
+    }
+
+    private void ResolvePresentationReferences()
+    {
+        if (canvasGroup == null)
+        {
+            TryGetComponent(out canvasGroup);
+        }
+
+        if (motionSource != null)
+        {
+            motion = ResolveRuntimeMotion(motionSource);
+            return;
+        }
+
+        MonoBehaviour[] behaviours = GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            MonoBehaviour behaviour = behaviours[i];
+            if (behaviour == null || ReferenceEquals(behaviour, this))
+            {
+                continue;
+            }
+
+            IUIRuntimeMotion resolvedMotion = ResolveRuntimeMotion(behaviour);
+            if (resolvedMotion == null)
+            {
+                continue;
+            }
+
+            motionSource = behaviour;
+            motion = resolvedMotion;
+            return;
+        }
+    }
+
+    private IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source)
+    {
+        if (source == null)
+        {
+            return null;
+        }
+
+        if (source is IUIRuntimeMotion directMotion)
+        {
+            return directMotion;
+        }
+
+        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] is IUIRuntimeMotion siblingMotion)
+            {
+                return siblingMotion;
+            }
+        }
+
+        return null;
     }
 
     [Serializable]

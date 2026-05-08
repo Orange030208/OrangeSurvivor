@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterInfoCard : MonoBehaviour
+public class CharacterInfoCard : ViewPartBase
 {
     [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
     [SerializeField] private Image characterIconImage;

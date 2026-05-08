@@ -740,7 +740,7 @@ MonoBehaviour:
   bottom: {fileID: 964150818085217147}
   cardQualityVisualController: {fileID: 2110993686870779454}
   cardMotionController: {fileID: 3343985659854495284}
-  qualityVisualController: {fileID: 0}
+  qualityVisualController: {fileID: 2110993686870779454}
   playRevealSfx: 1
 --- !u!114 &3343985659854495284
 MonoBehaviour:

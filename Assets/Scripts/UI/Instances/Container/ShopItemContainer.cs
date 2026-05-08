@@ -1,4 +1,4 @@
-using AXR.Framework.UI;
+using Orange.UIFramework;
 using System;
 using TMPro;
 using UnityEngine;
