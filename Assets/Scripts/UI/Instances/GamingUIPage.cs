@@ -92,8 +92,7 @@ public class GamingUIPage : PageBase
 
         BindPlayerHud(context.Player);
         RefreshCurrencyDisplay(context.CurrencyWallet);
-
-        GameEventBus.Publish<RequestWaveHudSnapshotEvent>();
+        ApplyWaveHud(context.WaveHudViewData);
     }
 
     private void UnbindHud()
@@ -170,6 +169,19 @@ public class GamingUIPage : PageBase
     private void OnWaveProgress(WaveProgressEvent eventData)
     {
         timerText.text = $"{Mathf.RoundToInt(eventData.RemainingTime)}s / {Mathf.RoundToInt(eventData.TotalTime)}s";
+    }
+
+    private void ApplyWaveHud(WaveHudViewData waveHudViewData)
+    {
+        if (waveHudViewData.HasStarted)
+        {
+            waveText.text = $"波次 {waveHudViewData.CurrentWave}/{waveHudViewData.TotalWaves}";
+            timerText.text = $"{Mathf.RoundToInt(waveHudViewData.RemainingTime)}s / {Mathf.RoundToInt(waveHudViewData.TotalTime)}s";
+            return;
+        }
+
+        waveText.text = "准备开始";
+        timerText.text = string.Empty;
     }
 
     private void ValidateConfiguration()

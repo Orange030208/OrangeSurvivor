@@ -18,7 +18,7 @@ public class InventoryUI : ViewPartBase
     private InventoryOperateManager configuredInventoryOperateManager;
     private UIManager uiManager;
     private bool inventorySessionStarted;
-    private InventoryUIItemSnapshot[] currentItems = Array.Empty<InventoryUIItemSnapshot>();
+    private InventoryItemViewData[] currentItems = Array.Empty<InventoryItemViewData>();
     private string currentSelectedEntryId;
     private string currentOperateEntryId;
     private int popupVersion;
@@ -110,7 +110,7 @@ public class InventoryUI : ViewPartBase
 
     private void ResetAfterClose()
     {
-        currentItems = Array.Empty<InventoryUIItemSnapshot>();
+        currentItems = Array.Empty<InventoryItemViewData>();
         currentSelectedEntryId = null;
         ClosePopupState();
         ClearItems();
@@ -140,12 +140,12 @@ public class InventoryUI : ViewPartBase
         }
 
         inventoryOperateManagerSession = ResolveInventoryOperateManagerSession();
-        inventoryOperateManagerSession.SnapshotChanged += OnSnapshotChanged;
+        inventoryOperateManagerSession.ItemsChanged += OnItemsChanged;
         inventoryOperateManagerSession.OperatePanelOpened += OnOperatePanelOpened;
         inventoryOperateManagerSession.OperatePanelShouldClose += OnOperatePanelShouldClose;
 
         PrepareForOpen();
-        inventoryOperateManagerSession.RequestSnapshot();
+        inventoryOperateManagerSession.RefreshItems();
         inventorySessionStarted = true;
     }
 
@@ -156,7 +156,7 @@ public class InventoryUI : ViewPartBase
             return;
         }
 
-        inventoryOperateManagerSession.SnapshotChanged -= OnSnapshotChanged;
+        inventoryOperateManagerSession.ItemsChanged -= OnItemsChanged;
         inventoryOperateManagerSession.OperatePanelOpened -= OnOperatePanelOpened;
         inventoryOperateManagerSession.OperatePanelShouldClose -= OnOperatePanelShouldClose;
 
@@ -209,9 +209,9 @@ public class InventoryUI : ViewPartBase
         inventoryOperateManagerSession.RequestMergeItem(entryId);
     }
 
-    private void OnSnapshotChanged(InventoryUIItemSnapshot[] items)
+    private void OnItemsChanged(InventoryItemViewData[] items)
     {
-        SyncSnapshot(items, out bool shouldClosePopup, out string popupEntryIdToRestore);
+        SyncItems(items, out bool shouldClosePopup, out string popupEntryIdToRestore);
         RenderItems(items);
 
         if (shouldClosePopup)
@@ -252,7 +252,7 @@ public class InventoryUI : ViewPartBase
         ClosePopup();
     }
 
-    private void RenderItems(InventoryUIItemSnapshot[] items)
+    private void RenderItems(InventoryItemViewData[] items)
     {
         ClearItems();
         if (items == null || items.Length == 0)
@@ -266,15 +266,15 @@ public class InventoryUI : ViewPartBase
         }
     }
 
-    private void SpawnItem(InventoryUIItemSnapshot snapshot)
+    private void SpawnItem(InventoryItemViewData itemViewData)
     {
-        if (snapshot.ItemData == null || string.IsNullOrEmpty(snapshot.EntryId))
+        if (itemViewData.ItemData == null || string.IsNullOrEmpty(itemViewData.EntryId))
         {
             return;
         }
 
         InventoryItem item = Instantiate(itemPrefab, itemContainersParent);
-        item.Configure(snapshot.EntryId, snapshot.ItemData, snapshot.ColorDependencyNumber);
+        item.Configure(itemViewData.EntryId, itemViewData.ItemData, itemViewData.ColorDependencyNumber);
         item.Clicked += OnItemSelected;
         spawnedItems.Add(item);
     }
@@ -451,15 +451,15 @@ public class InventoryUI : ViewPartBase
         return ContainsEntry(currentItems, entryId);
     }
 
-    private void SyncSnapshot(
-        InventoryUIItemSnapshot[] items,
+    private void SyncItems(
+        InventoryItemViewData[] items,
         out bool shouldClosePopup,
         out string popupEntryIdToRestore)
     {
         bool hadOpenPopup = HasOpenPopup;
         string previousPopupEntryId = currentOperateEntryId;
 
-        currentItems = items ?? Array.Empty<InventoryUIItemSnapshot>();
+        currentItems = items ?? Array.Empty<InventoryItemViewData>();
 
         if (!ContainsEntry(currentItems, currentSelectedEntryId))
         {
@@ -480,7 +480,7 @@ public class InventoryUI : ViewPartBase
         popupEntryIdToRestore = previousPopupEntryId;
     }
 
-    private static bool ContainsEntry(InventoryUIItemSnapshot[] items, string entryId)
+    private static bool ContainsEntry(InventoryItemViewData[] items, string entryId)
     {
         if (items == null || items.Length == 0 || string.IsNullOrEmpty(entryId))
         {

@@ -45,13 +45,13 @@ public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionMan
         return true;
     }
 
-    public CharacterSelectionSnapshot CreateSnapshot()
+    public CharacterSelectionViewData CreateViewData()
     {
         if (characters == null || characters.Length == 0)
         {
             RefreshCharacters();
         }
 
-        return new CharacterSelectionSnapshot(characters, selectedIndex);
+        return new CharacterSelectionViewData(characters, selectedIndex);
     }
 }

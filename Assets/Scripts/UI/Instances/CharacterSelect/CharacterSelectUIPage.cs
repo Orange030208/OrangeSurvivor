@@ -30,7 +30,7 @@ public class CharacterSelectUIPage : PageBase
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
-        ApplyCharacterSelectionSnapshot(characterSelectionManager.CreateSnapshot());
+        ApplyCharacterSelectionViewData(characterSelectionManager.CreateViewData());
 
         return UniTask.CompletedTask;
     }
@@ -52,19 +52,19 @@ public class CharacterSelectUIPage : PageBase
         selectedCharacterIndex = -1;
     }
 
-    private void ApplyCharacterSelectionSnapshot(CharacterSelectionSnapshot snapshot)
+    private void ApplyCharacterSelectionViewData(CharacterSelectionViewData viewData)
     {
-        selectedCharacterIndex = snapshot.SelectedIndex;
-        characterList.Render(snapshot.Characters, selectedCharacterIndex, OnCharacterSelected);
+        selectedCharacterIndex = viewData.SelectedIndex;
+        characterList.Render(viewData.Characters, selectedCharacterIndex, OnCharacterSelected);
         SetConfirmButtonInteractable(selectedCharacterIndex >= 0);
 
-        if (selectedCharacterIndex < 0 || snapshot.Characters == null || selectedCharacterIndex >= snapshot.Characters.Length)
+        if (selectedCharacterIndex < 0 || viewData.Characters == null || selectedCharacterIndex >= viewData.Characters.Length)
         {
             characterInfoCard.ClearInfo();
             return;
         }
 
-        characterInfoCard.DisplayInfo(snapshot.Characters[selectedCharacterIndex]);
+        characterInfoCard.DisplayInfo(viewData.Characters[selectedCharacterIndex]);
     }
 
     private void OnCharacterSelectionChanged(CharacterSelectionChangedArgs args)

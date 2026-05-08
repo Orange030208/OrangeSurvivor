@@ -14,34 +14,34 @@ public class BuffIconItem : ViewPartBase, IDescribable
     [SerializeField] private Color neutralColor = new(0.8f, 0.8f, 0.8f, 1f);
     [SerializeField] private Color negativeColor = new(0.85f, 0.35f, 0.35f, 1f);
 
-    private ActiveBuffSnapshot snapshot;
+    private ActiveBuffViewData viewData;
 
-    public void Configure(ActiveBuffSnapshot snapshot)
+    public void Configure(ActiveBuffViewData viewData)
     {
-        this.snapshot = snapshot;
+        this.viewData = viewData;
 
         if (iconImage != null)
         {
-            iconImage.sprite = snapshot.Icon;
-            iconImage.enabled = snapshot.Icon != null;
+            iconImage.sprite = viewData.Icon;
+            iconImage.enabled = viewData.Icon != null;
         }
 
         if (borderImage != null)
         {
-            borderImage.color = ResolveBorderColor(snapshot.Polarity);
+            borderImage.color = ResolveBorderColor(viewData.Polarity);
         }
 
         if (stackText != null)
         {
-            bool showStack = snapshot.StackCount > 1;
+            bool showStack = viewData.StackCount > 1;
             stackText.gameObject.SetActive(showStack);
-            stackText.text = snapshot.StackCount.ToString();
+            stackText.text = viewData.StackCount.ToString();
         }
 
         if (durationText != null)
         {
-            durationText.gameObject.SetActive(snapshot.HasDuration);
-            durationText.text = snapshot.HasDuration ? snapshot.RemainingDurationSeconds.ToString("0.0") : string.Empty;
+            durationText.gameObject.SetActive(viewData.HasDuration);
+            durationText.text = viewData.HasDuration ? viewData.RemainingDurationSeconds.ToString("0.0") : string.Empty;
         }
     }
 
@@ -55,14 +55,14 @@ public class BuffIconItem : ViewPartBase, IDescribable
         };
     }
 
-    public string Title => snapshot.Describable.Title;
+    public string Title => viewData.Describable.Title;
 
-    public Sprite Icon => snapshot.Describable.Icon;
+    public Sprite Icon => viewData.Describable.Icon;
 
-    public string Description => snapshot.Describable.Description;
+    public string Description => viewData.Describable.Description;
 
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
-        return snapshot.Describable.GetExtraInfos();
+        return viewData.Describable.GetExtraInfos();
     }
 }

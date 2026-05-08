@@ -62,40 +62,40 @@ public class BuffBarUI : ViewPartBase
             return;
         }
 
-        buffController.OnActiveBuffSnapshotChanged += RenderBuffSnapshots;
-        RenderBuffSnapshots(buffController.BuildSnapshots());
+        buffController.OnActiveBuffViewDataChanged += RenderBuffViewData;
+        RenderBuffViewData(buffController.BuildActiveBuffViewData());
     }
 
     private void UnbindPlayer()
     {
         if (buffController != null)
         {
-            buffController.OnActiveBuffSnapshotChanged -= RenderBuffSnapshots;
+            buffController.OnActiveBuffViewDataChanged -= RenderBuffViewData;
             buffController = null;
         }
 
         player = null;
     }
 
-    private void RenderBuffSnapshots(ActiveBuffSnapshot[] snapshots)
+    private void RenderBuffViewData(ActiveBuffViewData[] viewData)
     {
         if (player == null)
         {
             return;
         }
 
-        int snapshotCount = snapshots != null ? snapshots.Length : 0;
-        EnsureItemPoolSize(snapshotCount);
+        int viewDataCount = viewData != null ? viewData.Length : 0;
+        EnsureItemPoolSize(viewDataCount);
 
-        for (int i = 0; i < snapshotCount; i++)
+        for (int i = 0; i < viewDataCount; i++)
         {
             BuffIconItem item = spawnedItems[i];
             item.gameObject.SetActive(true);
-            item.Configure(snapshots[i]);
+            item.Configure(viewData[i]);
             item.transform.SetSiblingIndex(i);
         }
 
-        SetVisibleItemCount(snapshotCount);
+        SetVisibleItemCount(viewDataCount);
     }
 
     private void EnsureItemPoolSize(int requiredCount)

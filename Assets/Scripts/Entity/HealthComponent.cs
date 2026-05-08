@@ -65,8 +65,6 @@ public class HealthComponent : EntityComponentBase
 
     private void SubscribeEvents()
     {
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
-
         if (propertiesManager == null)
         {
             return;
@@ -78,8 +76,6 @@ public class HealthComponent : EntityComponentBase
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
-
         if (propertiesManager == null)
         {
             return;
@@ -134,6 +130,7 @@ public class HealthComponent : EntityComponentBase
         lastDamageSource = appliedResult.Source;
         OnDamaged?.Invoke(appliedResult);
         GameEventBus.Publish(new EntityDamagedEvent(owner, appliedResult));
+        ApplyLifeStealToSource(appliedResult);
 
         PublishHealthChanged();
 
@@ -234,34 +231,6 @@ public class HealthComponent : EntityComponentBase
         Destroy(gameObject);
     }
 
-    private void OnEntityDamaged(EntityDamagedEvent damageEvent)
-    {
-        if (damageEvent.Entity == owner)
-        {
-            return;
-        }
-
-        if (damageEvent.HitResult.Source != owner)
-        {
-            return;
-        }
-
-        if (health >= maxHealth || lifeStealRatio <= 0f)
-        {
-            return;
-        }
-
-        float lifeStealValue = damageEvent.HitResult.FinalDamage * lifeStealRatio * LIFE_STEAL_HEAL_RATE_PER_RATIO;
-        float healthToAdd = Math.Min(lifeStealValue, maxHealth - health);
-        if (healthToAdd <= 0f)
-        {
-            return;
-        }
-
-        health += healthToAdd;
-        PublishHealthChanged();
-    }
-
     private void OnPropertyChanged(PropType propType, float newValue)
     {
         switch (propType)
@@ -315,5 +284,31 @@ public class HealthComponent : EntityComponentBase
     public void PublishHealthChanged()
     {
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+    }
+
+    private static void ApplyLifeStealToSource(HitResult appliedResult)
+    {
+        if (appliedResult.Source == null || appliedResult.Source == appliedResult.Target)
+        {
+            return;
+        }
+
+        if (!appliedResult.Source.TryGetComponent(out HealthComponent sourceHealth))
+        {
+            return;
+        }
+
+        sourceHealth.ApplyLifeSteal(appliedResult.FinalDamage);
+    }
+
+    private void ApplyLifeSteal(float dealtDamage)
+    {
+        if (health >= maxHealth || lifeStealRatio <= 0f || dealtDamage <= 0f)
+        {
+            return;
+        }
+
+        float lifeStealValue = dealtDamage * lifeStealRatio * LIFE_STEAL_HEAL_RATE_PER_RATIO;
+        Heal(Math.Min(lifeStealValue, maxHealth - health));
     }
 }

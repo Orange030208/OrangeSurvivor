@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using UnityEngine;
+#endif
 
 /// <summary>
 /// 全局事件总线（主线程场景）。
@@ -13,6 +16,11 @@ using System.Collections.Generic;
 /// </summary>
 public static class GameEventBus
 {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    public static bool EnableDebugLog { get; set; }
+    public static bool WarnWhenNoListeners { get; set; }
+#endif
+
     // 全局监听（广播）
     private static readonly Dictionary<Type, Action> NoArgListeners = new Dictionary<Type, Action>();
     private static readonly Dictionary<Type, Delegate> PayloadListeners = new Dictionary<Type, Delegate>();
@@ -206,15 +214,17 @@ public static class GameEventBus
     public static void Publish<TEvent>() where TEvent : struct, IGameEvent
     {
         Type eventType = typeof(TEvent);
+        int listenerCount = GetGlobalListenerCount(eventType);
+        TracePublish(eventType, listenerCount, null);
 
         if (NoArgListeners.TryGetValue(eventType, out Action noArg))
         {
-            noArg.Invoke();
+            InvokeListeners(noArg, eventType);
         }
 
         if (PayloadListeners.TryGetValue(eventType, out Delegate payload))
         {
-            ((Action<TEvent>)payload).Invoke(default);
+            InvokeListeners((Action<TEvent>)payload, default, eventType);
         }
     }
 
@@ -224,15 +234,17 @@ public static class GameEventBus
     public static void Publish<TEvent>(TEvent eventData) where TEvent : struct, IGameEvent
     {
         Type eventType = typeof(TEvent);
+        int listenerCount = GetGlobalListenerCount(eventType);
+        TracePublish(eventType, listenerCount, null);
 
         if (PayloadListeners.TryGetValue(eventType, out Delegate payload))
         {
-            ((Action<TEvent>)payload).Invoke(eventData);
+            InvokeListeners((Action<TEvent>)payload, eventData, eventType);
         }
 
         if (NoArgListeners.TryGetValue(eventType, out Action noArg))
         {
-            noArg.Invoke();
+            InvokeListeners(noArg, eventType);
         }
     }
 
@@ -245,17 +257,19 @@ public static class GameEventBus
         if (boxedKey == null) return;
 
         Type eventType = typeof(TEvent);
+        int listenerCount = GetScopedListenerCount(eventType, boxedKey);
+        TracePublish(eventType, listenerCount, boxedKey);
 
         if (NoArgScopedListeners.TryGetValue(eventType, out Dictionary<object, Action> noArgKeyMap)
             && noArgKeyMap.TryGetValue(boxedKey, out Action noArg))
         {
-            noArg.Invoke();
+            InvokeListeners(noArg, eventType);
         }
 
         if (PayloadScopedListeners.TryGetValue(eventType, out Dictionary<object, Delegate> payloadKeyMap)
             && payloadKeyMap.TryGetValue(boxedKey, out Delegate payload))
         {
-            ((Action<TEvent>)payload).Invoke(default);
+            InvokeListeners((Action<TEvent>)payload, default, eventType);
         }
     }
 
@@ -268,17 +282,19 @@ public static class GameEventBus
         if (boxedKey == null) return;
 
         Type eventType = typeof(TEvent);
+        int listenerCount = GetScopedListenerCount(eventType, boxedKey);
+        TracePublish(eventType, listenerCount, boxedKey);
 
         if (PayloadScopedListeners.TryGetValue(eventType, out Dictionary<object, Delegate> payloadKeyMap)
             && payloadKeyMap.TryGetValue(boxedKey, out Delegate payload))
         {
-            ((Action<TEvent>)payload).Invoke(eventData);
+            InvokeListeners((Action<TEvent>)payload, eventData, eventType);
         }
 
         if (NoArgScopedListeners.TryGetValue(eventType, out Dictionary<object, Action> noArgKeyMap)
             && noArgKeyMap.TryGetValue(boxedKey, out Action noArg))
         {
-            noArg.Invoke();
+            InvokeListeners(noArg, eventType);
         }
     }
 
@@ -290,5 +306,107 @@ public static class GameEventBus
         PayloadListeners.Clear();
         NoArgScopedListeners.Clear();
         PayloadScopedListeners.Clear();
+    }
+
+    public static int GetListenerCount<TEvent>() where TEvent : struct, IGameEvent
+    {
+        return GetGlobalListenerCount(typeof(TEvent));
+    }
+
+    public static int GetListenerCount<TEvent, TKey>(TKey key) where TEvent : struct, IGameEvent
+    {
+        object boxedKey = key;
+        return boxedKey != null ? GetScopedListenerCount(typeof(TEvent), boxedKey) : 0;
+    }
+
+    private static int GetGlobalListenerCount(Type eventType)
+    {
+        int count = 0;
+        if (NoArgListeners.TryGetValue(eventType, out Action noArg))
+        {
+            count += noArg.GetInvocationList().Length;
+        }
+
+        if (PayloadListeners.TryGetValue(eventType, out Delegate payload))
+        {
+            count += payload.GetInvocationList().Length;
+        }
+
+        return count;
+    }
+
+    private static int GetScopedListenerCount(Type eventType, object key)
+    {
+        int count = 0;
+        if (NoArgScopedListeners.TryGetValue(eventType, out Dictionary<object, Action> noArgKeyMap)
+            && noArgKeyMap.TryGetValue(key, out Action noArg))
+        {
+            count += noArg.GetInvocationList().Length;
+        }
+
+        if (PayloadScopedListeners.TryGetValue(eventType, out Dictionary<object, Delegate> payloadKeyMap)
+            && payloadKeyMap.TryGetValue(key, out Delegate payload))
+        {
+            count += payload.GetInvocationList().Length;
+        }
+
+        return count;
+    }
+
+    private static void InvokeListeners(Action listeners, Type eventType)
+    {
+        Delegate[] invocationList = listeners.GetInvocationList();
+        for (int i = 0; i < invocationList.Length; i++)
+        {
+            try
+            {
+                ((Action)invocationList[i]).Invoke();
+            }
+            catch (Exception exception)
+            {
+                LogListenerException(eventType, exception);
+            }
+        }
+    }
+
+    private static void InvokeListeners<TEvent>(Action<TEvent> listeners, TEvent eventData, Type eventType)
+        where TEvent : struct, IGameEvent
+    {
+        Delegate[] invocationList = listeners.GetInvocationList();
+        for (int i = 0; i < invocationList.Length; i++)
+        {
+            try
+            {
+                ((Action<TEvent>)invocationList[i]).Invoke(eventData);
+            }
+            catch (Exception exception)
+            {
+                LogListenerException(eventType, exception);
+            }
+        }
+    }
+
+    private static void LogListenerException(Type eventType, Exception exception)
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        Debug.LogError($"[GameEventBus] Listener threw while handling {eventType.Name}: {exception}");
+#endif
+    }
+
+    private static void TracePublish(Type eventType, int listenerCount, object key)
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (EnableDebugLog)
+        {
+            string scopeText = key != null ? $" key={key}" : string.Empty;
+            Debug.Log($"[GameEventBus] Publish {eventType.Name}{scopeText}, listeners={listenerCount}");
+        }
+
+        if (WarnWhenNoListeners && listenerCount == 0)
+        {
+            string scopeText = key != null ? $" key={key}" : string.Empty;
+            Debug.LogWarning($"[GameEventBus] Publish {eventType.Name}{scopeText} has no listeners.");
+        }
+#endif
     }
 }

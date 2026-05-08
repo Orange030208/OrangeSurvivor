@@ -52,7 +52,7 @@ public class ShopManager : MonoBehaviour
     private int rerollCount;
     private int currentCurrency;
 
-    public event Action<ShopSnapshot> ItemsChanged;
+    public event Action<ShopViewState> ViewStateChanged;
     public event Action<ShopPurchaseSuccess> PurchaseSucceeded;
     public event Action<ShopPurchaseFailure> PurchaseFailed;
 
@@ -87,7 +87,7 @@ public class ShopManager : MonoBehaviour
     private void Start()
     {
         GenerateShopItems();
-        PublishShopItems(ShopSnapshotReason.Initial);
+        PublishViewState(ShopRefreshReason.Initial);
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -108,9 +108,9 @@ public class ShopManager : MonoBehaviour
         RefreshShopForWaveEntry();
     }
 
-    public void RequestSnapshot()
+    public void RefreshViewState()
     {
-        PublishShopItems(ShopSnapshotReason.StateUpdate);
+        PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     private void OnCurrencyChanged(CurrencyChangedEvent eventData)
@@ -121,7 +121,7 @@ public class ShopManager : MonoBehaviour
         }
 
         currentCurrency = eventData.CurrentAmount;
-        PublishShopItems(ShopSnapshotReason.StateUpdate);
+        PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     public void RequestBuyItem(int itemIndex)
@@ -179,7 +179,7 @@ public class ShopManager : MonoBehaviour
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
-        PublishShopItems(ShopSnapshotReason.Purchase);
+        PublishViewState(ShopRefreshReason.Purchase);
     }
 
     private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
@@ -216,7 +216,7 @@ public class ShopManager : MonoBehaviour
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
         RemoveItemFromShop(itemIndex);
-        PublishShopItems(ShopSnapshotReason.Purchase);
+        PublishViewState(ShopRefreshReason.Purchase);
     }
 
     private void RemoveItemFromShop(int index)
@@ -247,7 +247,7 @@ public class ShopManager : MonoBehaviour
         {
             RerollShopItems();
             AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
-            PublishShopItems(ShopSnapshotReason.Reroll);
+            PublishViewState(ShopRefreshReason.Reroll);
             return;
         }
 
@@ -260,7 +260,7 @@ public class ShopManager : MonoBehaviour
         currencyWallet?.ChangeAmount(-rerollCost);
         RerollShopItems();
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
-        PublishShopItems(ShopSnapshotReason.Reroll);
+        PublishViewState(ShopRefreshReason.Reroll);
     }
 
     private void OnVideoAdRerollRequested()
@@ -268,7 +268,7 @@ public class ShopManager : MonoBehaviour
         Debug.Log("Video ad reroll requested - implement ad integration here.");
         RerollShopItems();
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
-        PublishShopItems(ShopSnapshotReason.Reroll);
+        PublishViewState(ShopRefreshReason.Reroll);
     }
 
     private void RefreshShopForWaveEntry()
@@ -276,12 +276,12 @@ public class ShopManager : MonoBehaviour
         if (currentItems == null || currentItems.Length == 0)
         {
             GenerateShopItems();
-            PublishShopItems(ShopSnapshotReason.WaveRefresh);
+            PublishViewState(ShopRefreshReason.WaveRefresh);
             return;
         }
 
         RefreshKeepingLockedItems();
-        PublishShopItems(ShopSnapshotReason.WaveRefresh);
+        PublishViewState(ShopRefreshReason.WaveRefresh);
     }
 
     private void RefreshKeepingLockedItems()
@@ -437,7 +437,7 @@ public class ShopManager : MonoBehaviour
         };
     }
 
-    private void PublishShopItems(ShopSnapshotReason reason = ShopSnapshotReason.StateUpdate)
+    private void PublishViewState(ShopRefreshReason reason = ShopRefreshReason.StateUpdate)
     {
         if (currentItems == null)
         {
@@ -446,7 +446,7 @@ public class ShopManager : MonoBehaviour
 
         ApplyShopPriceMultiplier();
         bool canReroll = currentCurrency >= rerollCost || freeShopRerolls > 0;
-        ItemsChanged?.Invoke(new ShopSnapshot(currentItems, rerollCost, canReroll, reason));
+        ViewStateChanged?.Invoke(new ShopViewState(currentItems, rerollCost, canReroll, reason));
     }
 
     private void ApplyShopPriceMultiplier()
@@ -467,7 +467,7 @@ public class ShopManager : MonoBehaviour
 
         currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
         print($"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}");
-        PublishShopItems(ShopSnapshotReason.StateUpdate);
+        PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     private void TryBindWallet()
@@ -512,7 +512,7 @@ public class ShopManager : MonoBehaviour
         }
 
         freeShopRerolls += count;
-        PublishShopItems(ShopSnapshotReason.StateUpdate);
+        PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     private bool TryConsumeFreeShopReroll()
@@ -582,7 +582,7 @@ public class ShopManager : MonoBehaviour
     {
         if (propType == PropType.ShopPriceDiscount)
         {
-            PublishShopItems(ShopSnapshotReason.StateUpdate);
+            PublishViewState(ShopRefreshReason.StateUpdate);
         }
     }
 

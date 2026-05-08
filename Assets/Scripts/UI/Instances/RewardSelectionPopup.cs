@@ -51,7 +51,7 @@ public class RewardSelectionPopup : PopupBase
             descriptionText.gameObject.SetActive(!string.IsNullOrWhiteSpace(model.Description));
         }
 
-        cardGroup.Configure(model.RequestId, model.Options);
+        cardGroup.Configure(model.Options, model.OptionSelected);
         cardGroup.SetVisible(true);
     }
 

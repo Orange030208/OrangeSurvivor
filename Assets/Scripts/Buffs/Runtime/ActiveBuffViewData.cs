@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public readonly struct ActiveBuffSnapshot
+public readonly struct ActiveBuffViewData
 {
     public readonly string BuffId;
     public readonly string DisplayName;
@@ -14,7 +14,7 @@ public readonly struct ActiveBuffSnapshot
     public readonly float TotalDurationSeconds;
     public readonly IDescribable Describable;
 
-    public ActiveBuffSnapshot(
+    public ActiveBuffViewData(
         string buffId,
         string displayName,
         Sprite icon,

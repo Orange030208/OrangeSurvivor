@@ -59,7 +59,7 @@ public class RewardSelectionCardContainer :
                 PlaySelectSfx(presentationProfile);
             }
 
-            GameEventBus.Publish(new RewardSelectionCardSelectedEvent(resource.RequestId, resource.Index, option.OptionId));
+            resource.OptionSelected?.Invoke(resource.Index, option.OptionId);
         };
     }
 

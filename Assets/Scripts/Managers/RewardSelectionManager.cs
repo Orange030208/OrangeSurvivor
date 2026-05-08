@@ -29,8 +29,8 @@ public class RewardSelectionManager : MonoBehaviour
     private CancellationTokenSource flowCancellation;
     private PlayerLevel playerLevel;
     private int currentWaveNumber = 1;
-    private string currentRequestId = string.Empty;
     private RewardSelectionReason currentReason = RewardSelectionReason.None;
+    private UniTaskCompletionSource<RewardSelectionResult> currentSelectionCompletionSource;
     private bool isProcessing;
     private bool pauseApplied;
     private bool upgradeRequestQueuedOrProcessing;
@@ -132,7 +132,6 @@ public class RewardSelectionManager : MonoBehaviour
         {
             isProcessing = false;
             currentReason = RewardSelectionReason.None;
-            currentRequestId = string.Empty;
             currentOptions = Array.Empty<RewardSelectionOption>();
             upgradeRequestQueuedOrProcessing = ContainsUpgradeRequest();
             DisposeFlowCancellation();
@@ -165,10 +164,11 @@ public class RewardSelectionManager : MonoBehaviour
             return;
         }
 
+        UniTask<RewardSelectionResult> selectionTask = WaitForCurrentSelectionAsync(cancellationToken);
         RewardSelectionPopupModel model = CreateChestPopupModel(accessories, out RewardSelectionOption[] options);
         await ShowOrRefreshPopupAsync(model, options, cancellationToken);
-        RewardSelectionCardSelectedEvent selectedEvent = await WaitForCurrentSelectionAsync(cancellationToken);
-        if (!TryResolveSelectedOption(selectedEvent, out RewardSelectionOption selectedOption))
+        RewardSelectionResult selectionResult = await selectionTask;
+        if (!TryResolveSelectedOption(selectionResult, out RewardSelectionOption selectedOption))
         {
             return;
         }
@@ -193,10 +193,11 @@ public class RewardSelectionManager : MonoBehaviour
                 return;
             }
 
+            UniTask<RewardSelectionResult> selectionTask = WaitForCurrentSelectionAsync(cancellationToken);
             RewardSelectionPopupModel model = CreateUpgradePopupModel(rolledCards, out RewardSelectionOption[] options);
             await ShowOrRefreshPopupAsync(model, options, cancellationToken);
-            RewardSelectionCardSelectedEvent selectedEvent = await WaitForCurrentSelectionAsync(cancellationToken);
-            if (!TryResolveSelectedOption(selectedEvent, out RewardSelectionOption selectedOption))
+            RewardSelectionResult selectionResult = await selectionTask;
+            if (!TryResolveSelectedOption(selectionResult, out RewardSelectionOption selectedOption))
             {
                 continue;
             }
@@ -220,7 +221,6 @@ public class RewardSelectionManager : MonoBehaviour
         RewardSelectionOption[] options,
         CancellationToken cancellationToken)
     {
-        currentRequestId = model.RequestId;
         currentOptions = options ?? Array.Empty<RewardSelectionOption>();
 
         if (currentPopupHandle.IsValid && currentPopupHandle.View != null)
@@ -241,21 +241,10 @@ public class RewardSelectionManager : MonoBehaviour
             cancellationToken);
     }
 
-    private async UniTask<RewardSelectionCardSelectedEvent> WaitForCurrentSelectionAsync(CancellationToken cancellationToken)
+    private async UniTask<RewardSelectionResult> WaitForCurrentSelectionAsync(CancellationToken cancellationToken)
     {
-        UniTaskCompletionSource<RewardSelectionCardSelectedEvent> completionSource = new();
-
-        void OnSelected(RewardSelectionCardSelectedEvent eventData)
-        {
-            if (!IsCurrentSelectionEvent(eventData))
-            {
-                return;
-            }
-
-            completionSource.TrySetResult(eventData);
-        }
-
-        GameEventBus.Subscribe<RewardSelectionCardSelectedEvent>(OnSelected);
+        UniTaskCompletionSource<RewardSelectionResult> completionSource = new();
+        currentSelectionCompletionSource = completionSource;
         CancellationTokenRegistration cancellationRegistration =
             cancellationToken.Register(() => completionSource.TrySetCanceled());
         try
@@ -265,26 +254,34 @@ public class RewardSelectionManager : MonoBehaviour
         finally
         {
             cancellationRegistration.Dispose();
-            GameEventBus.Unsubscribe<RewardSelectionCardSelectedEvent>(OnSelected);
+            if (ReferenceEquals(currentSelectionCompletionSource, completionSource))
+            {
+                currentSelectionCompletionSource = null;
+            }
         }
     }
 
-    private bool IsCurrentSelectionEvent(RewardSelectionCardSelectedEvent eventData)
+    private void OnCurrentOptionSelected(int optionIndex, string optionId)
     {
-        return string.Equals(eventData.RequestId, currentRequestId, StringComparison.Ordinal)
-               && TryResolveSelectedOption(eventData, out _);
+        RewardSelectionResult result = new RewardSelectionResult(optionIndex, optionId);
+        if (!TryResolveSelectedOption(result, out _))
+        {
+            return;
+        }
+
+        currentSelectionCompletionSource?.TrySetResult(result);
     }
 
-    private bool TryResolveSelectedOption(RewardSelectionCardSelectedEvent eventData, out RewardSelectionOption selectedOption)
+    private bool TryResolveSelectedOption(RewardSelectionResult result, out RewardSelectionOption selectedOption)
     {
         selectedOption = default;
-        if (eventData.OptionIndex < 0 || eventData.OptionIndex >= currentOptions.Length)
+        if (result.OptionIndex < 0 || result.OptionIndex >= currentOptions.Length)
         {
             return false;
         }
 
-        RewardSelectionOption candidate = currentOptions[eventData.OptionIndex];
-        if (!string.Equals(candidate.OptionId, eventData.OptionId, StringComparison.Ordinal))
+        RewardSelectionOption candidate = currentOptions[result.OptionIndex];
+        if (!string.Equals(candidate.OptionId, result.OptionId, StringComparison.Ordinal))
         {
             return false;
         }
@@ -297,7 +294,6 @@ public class RewardSelectionManager : MonoBehaviour
         AccessoryDataSO[] accessories,
         out RewardSelectionOption[] options)
     {
-        string requestId = Guid.NewGuid().ToString("N");
         int count = Mathf.Min(OPTION_COUNT, accessories.Length);
         RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
         options = new RewardSelectionOption[count];
@@ -317,14 +313,13 @@ public class RewardSelectionManager : MonoBehaviour
             options[i] = RewardSelectionOption.ForAccessory(optionId, accessory);
         }
 
-        return new RewardSelectionPopupModel(requestId, "选择宝箱奖励", "选择 1 个饰品立即装备。", cardModels);
+        return new RewardSelectionPopupModel("选择宝箱奖励", "选择 1 个饰品立即装备。", cardModels, OnCurrentOptionSelected);
     }
 
     private RewardSelectionPopupModel CreateUpgradePopupModel(
         IReadOnlyList<UpgradeCardSO> cards,
         out RewardSelectionOption[] options)
     {
-        string requestId = Guid.NewGuid().ToString("N");
         int count = Mathf.Min(OPTION_COUNT, cards.Count);
         RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
         options = new RewardSelectionOption[count];
@@ -332,19 +327,19 @@ public class RewardSelectionManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             UpgradeCardSO card = cards[i];
-            UpgradeCardOptionSnapshot snapshot = card.ToSnapshot(upgradeRunState);
+            UpgradeCardOptionViewData viewData = card.CreateOptionViewData(upgradeRunState);
             cardModels[i] = new RewardSelectionCardViewModel(
-                snapshot.CardId,
-                snapshot.Title,
-                snapshot.Icon,
-                snapshot.Description,
-                CardQualityResolver.FromUpgradeCardRarity(snapshot.Rarity),
-                BuildUpgradeTagLabels(snapshot.Tags),
+                viewData.CardId,
+                viewData.Title,
+                viewData.Icon,
+                viewData.Description,
+                CardQualityResolver.FromUpgradeCardRarity(viewData.Rarity),
+                BuildUpgradeTagLabels(viewData.Tags),
                 card != null);
-            options[i] = RewardSelectionOption.ForUpgradeCard(snapshot.CardId, card);
+            options[i] = RewardSelectionOption.ForUpgradeCard(viewData.CardId, card);
         }
 
-        return new RewardSelectionPopupModel(requestId, "选择升级奖励", "选择 1 张升级卡。", cardModels);
+        return new RewardSelectionPopupModel("选择升级奖励", "选择 1 张升级卡。", cardModels, OnCurrentOptionSelected);
     }
 
     private List<UpgradeCardSO> RollUpgradeCards()
@@ -386,9 +381,10 @@ public class RewardSelectionManager : MonoBehaviour
             return;
         }
 
+        TryBindSceneReferences();
         pauseApplied = true;
-        GameEventBus.Publish(new GameplaySimulationPauseRequestedEvent(PAUSE_SOURCE_ID));
-        GameEventBus.Publish(new StopCurrentWaveRequestedEvent());
+        gameManager?.RequestSimulationPause(PAUSE_SOURCE_ID);
+        gameManager?.StopCurrentWave();
     }
 
     private void ReleaseRewardPause(bool resumeWave)
@@ -398,11 +394,12 @@ public class RewardSelectionManager : MonoBehaviour
             return;
         }
 
+        TryBindSceneReferences();
         pauseApplied = false;
-        GameEventBus.Publish(new GameplaySimulationResumeRequestedEvent(PAUSE_SOURCE_ID));
+        gameManager?.ReleaseSimulationPause(PAUSE_SOURCE_ID);
         if (resumeWave)
         {
-            GameEventBus.Publish(new ResumeCurrentWaveRequestedEvent());
+            gameManager?.ResumeCurrentWave();
         }
     }
 
@@ -420,7 +417,6 @@ public class RewardSelectionManager : MonoBehaviour
     {
         pendingRequests.Clear();
         currentReason = RewardSelectionReason.None;
-        currentRequestId = string.Empty;
         currentOptions = Array.Empty<RewardSelectionOption>();
         isProcessing = false;
         upgradeRequestQueuedOrProcessing = false;

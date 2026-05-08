@@ -16,7 +16,7 @@ public class BuffController : EntityComponentBase
     private readonly List<string> emptyBuffIds = new();
     public override Entity Owner => owner;
 
-    public event Action<ActiveBuffSnapshot[]> OnActiveBuffSnapshotChanged;
+    public event Action<ActiveBuffViewData[]> OnActiveBuffViewDataChanged;
 
     public override void Initialize(Entity owner)
     {
@@ -47,7 +47,7 @@ public class BuffController : EntityComponentBase
         changed |= RemoveEmptyEntries();
         if (changed)
         {
-            PublishSnapshot();
+            PublishViewData();
         }
     }
 
@@ -79,7 +79,7 @@ public class BuffController : EntityComponentBase
         }
 
         NotifyStackStateChanged(buffData, previousStackCount, stacks.Count);
-        PublishSnapshot();
+        PublishViewData();
         return true;
     }
 
@@ -109,7 +109,7 @@ public class BuffController : EntityComponentBase
         bool changed = RemoveAllStacks(buffId, stacks);
         if (changed)
         {
-            PublishSnapshot();
+            PublishViewData();
         }
 
         return changed;
@@ -123,7 +123,7 @@ public class BuffController : EntityComponentBase
         }
 
         RemoveStackAt(buffId, stacks, stacks.Count - 1, false);
-        PublishSnapshot();
+        PublishViewData();
         return true;
     }
 
@@ -136,9 +136,9 @@ public class BuffController : EntityComponentBase
         }
     }
 
-    public ActiveBuffSnapshot[] BuildSnapshots()
+    public ActiveBuffViewData[] BuildActiveBuffViewData()
     {
-        ActiveBuffSnapshot[] snapshots = new ActiveBuffSnapshot[buffStacksById.Count];
+        ActiveBuffViewData[] viewData = new ActiveBuffViewData[buffStacksById.Count];
         int index = 0;
 
         foreach (KeyValuePair<string, List<BuffRuntimeHandle>> pair in buffStacksById)
@@ -149,16 +149,16 @@ public class BuffController : EntityComponentBase
                 continue;
             }
 
-            snapshots[index++] = BuildSnapshot(stacks[0].BuffData, stacks);
+            viewData[index++] = BuildMergedViewData(stacks[0].BuffData, stacks);
         }
 
-        if (index == snapshots.Length)
+        if (index == viewData.Length)
         {
-            return snapshots;
+            return viewData;
         }
 
-        ActiveBuffSnapshot[] trimmed = new ActiveBuffSnapshot[index];
-        Array.Copy(snapshots, trimmed, index);
+        ActiveBuffViewData[] trimmed = new ActiveBuffViewData[index];
+        Array.Copy(viewData, trimmed, index);
         return trimmed;
     }
 
@@ -386,7 +386,7 @@ public class BuffController : EntityComponentBase
             remainingStackCount));
     }
 
-    private static ActiveBuffSnapshot BuildSnapshot(BuffDataSO buffData, List<BuffRuntimeHandle> stacks)
+    private static ActiveBuffViewData BuildMergedViewData(BuffDataSO buffData, List<BuffRuntimeHandle> stacks)
     {
         float remainingDurationSeconds = 0f;
         float totalDurationSeconds = 0f;
@@ -408,7 +408,7 @@ public class BuffController : EntityComponentBase
             }
         }
 
-        return BuffRuntimeHandle.CreateMergedSnapshot(buffData, stacks.Count,
+        return BuffRuntimeHandle.CreateMergedViewData(buffData, stacks.Count,
             buffData != null ? buffData.MaxStackCount : 0, hasDuration ? remainingDurationSeconds : 0f,
             hasDuration ? totalDurationSeconds : 0f);
     }
@@ -456,9 +456,9 @@ public class BuffController : EntityComponentBase
         }
     }
 
-    private void PublishSnapshot()
+    private void PublishViewData()
     {
-        ActiveBuffSnapshot[] snapshots = BuildSnapshots();
-        OnActiveBuffSnapshotChanged?.Invoke(snapshots);
+        ActiveBuffViewData[] viewData = BuildActiveBuffViewData();
+        OnActiveBuffViewDataChanged?.Invoke(viewData);
     }
 }

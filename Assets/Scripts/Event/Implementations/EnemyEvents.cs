@@ -23,7 +23,3 @@ public struct EnemyUnregisteredEvent : IGameEvent
         Role = role;
     }
 }
-
-public struct DefeatAllTrackedEnemiesRequestedEvent : IGameEvent
-{
-}

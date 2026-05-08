@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public readonly struct UpgradeCardOptionSnapshot
+public readonly struct UpgradeCardOptionViewData
 {
     public readonly string CardId;
     public readonly string Title;
@@ -12,7 +12,7 @@ public readonly struct UpgradeCardOptionSnapshot
     public readonly int MaxPickCount;
     public readonly bool HasPickLimit;
 
-    public UpgradeCardOptionSnapshot(
+    public UpgradeCardOptionViewData(
         string cardId,
         string title,
         Sprite icon,

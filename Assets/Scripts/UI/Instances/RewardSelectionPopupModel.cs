@@ -4,21 +4,21 @@ using UnityEngine;
 public sealed class RewardSelectionPopupModel
 {
     public RewardSelectionPopupModel(
-        string requestId,
         string title,
         string description,
-        RewardSelectionCardViewModel[] options)
+        RewardSelectionCardViewModel[] options,
+        Action<int, string> optionSelected = null)
     {
-        RequestId = string.IsNullOrWhiteSpace(requestId) ? Guid.NewGuid().ToString("N") : requestId;
         Title = title ?? string.Empty;
         Description = description ?? string.Empty;
         Options = options ?? Array.Empty<RewardSelectionCardViewModel>();
+        OptionSelected = optionSelected;
     }
 
-    public string RequestId { get; }
     public string Title { get; }
     public string Description { get; }
     public RewardSelectionCardViewModel[] Options { get; }
+    public Action<int, string> OptionSelected { get; }
 }
 
 public readonly struct RewardSelectionCardViewModel
@@ -52,14 +52,17 @@ public readonly struct RewardSelectionCardViewModel
 
 public readonly struct RewardSelectionCardBinding
 {
-    public RewardSelectionCardBinding(string requestId, RewardSelectionCardViewModel card, int index)
+    public RewardSelectionCardBinding(
+        RewardSelectionCardViewModel card,
+        int index,
+        Action<int, string> optionSelected)
     {
-        RequestId = requestId ?? string.Empty;
         Card = card;
         Index = index;
+        OptionSelected = optionSelected;
     }
 
-    public string RequestId { get; }
     public RewardSelectionCardViewModel Card { get; }
     public int Index { get; }
+    public Action<int, string> OptionSelected { get; }
 }

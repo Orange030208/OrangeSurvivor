@@ -124,10 +124,10 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         maxPickCount = Mathf.Max(UNLIMITED_PICK_COUNT, runtimeMaxPickCount);
     }
 
-    public UpgradeCardOptionSnapshot ToSnapshot(UpgradeRunState runState)
+    public UpgradeCardOptionViewData CreateOptionViewData(UpgradeRunState runState)
     {
         int pickCount = runState != null ? runState.GetPickCount(CardId) : 0;
-        return new UpgradeCardOptionSnapshot(
+        return new UpgradeCardOptionViewData(
             CardId,
             Title,
             ResolveDisplayIcon(),

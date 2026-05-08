@@ -96,10 +96,10 @@ public class StageCompleteSummaryManager : MonoBehaviour
         goldEarned += eventData.ChangeAmount;
     }
 
-    public StageCompleteSnapshot CreateSnapshot()
+    public StageCompleteResult CreateResult()
     {
         CaptureLoadoutSummary();
-        return new StageCompleteSnapshot(
+        return new StageCompleteResult(
             completedWaves,
             survivalTime,
             killCount,

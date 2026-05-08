@@ -1,4 +1,4 @@
-public readonly struct StageCompleteSnapshot
+public readonly struct StageCompleteResult
 {
     public int CompletedWaves { get; }
     public float SurvivalTime { get; }
@@ -7,7 +7,7 @@ public readonly struct StageCompleteSnapshot
     public string CharacterName { get; }
     public string MainWeaponName { get; }
 
-    public StageCompleteSnapshot(int completedWaves, float survivalTime, int killCount, int goldEarned, string characterName, string mainWeaponName)
+    public StageCompleteResult(int completedWaves, float survivalTime, int killCount, int goldEarned, string characterName, string mainWeaponName)
     {
         CompletedWaves = completedWaves;
         SurvivalTime = survivalTime;

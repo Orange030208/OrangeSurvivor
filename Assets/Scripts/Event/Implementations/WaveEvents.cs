@@ -83,58 +83,6 @@ public struct WaveRuntimeChangedEvent : IGameEvent
     }
 }
 
-public struct RequestWaveHudSnapshotEvent : IGameEvent
-{
-}
-
-public struct RequestWaveRuntimeSnapshotEvent : IGameEvent
-{
-}
-
-public struct StartFirstWaveRequestedEvent : IGameEvent
-{
-}
-
-public struct StartNextWaveRequestedEvent : IGameEvent
-{
-}
-
-public struct StopCurrentWaveRequestedEvent : IGameEvent
-{
-}
-
-public struct ResumeCurrentWaveRequestedEvent : IGameEvent
-{
-}
-
-public struct ResetWavesRequestedEvent : IGameEvent
-{
-}
-
-public struct DefeatAllEnemiesRequestedEvent : IGameEvent
-{
-}
-
 public struct ChestCollectedEvent : IGameEvent
 {
-}
-
-public struct GameplaySimulationPauseRequestedEvent : IGameEvent
-{
-    public string SourceId;
-
-    public GameplaySimulationPauseRequestedEvent(string sourceId)
-    {
-        SourceId = sourceId ?? string.Empty;
-    }
-}
-
-public struct GameplaySimulationResumeRequestedEvent : IGameEvent
-{
-    public string SourceId;
-
-    public GameplaySimulationResumeRequestedEvent(string sourceId)
-    {
-        SourceId = sourceId ?? string.Empty;
-    }
 }

@@ -20,7 +20,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         BindSubmitGates();
     }
 
-    public void Configure(string requestId, RewardSelectionCardViewModel[] options)
+    public void Configure(RewardSelectionCardViewModel[] options, Action<int, string> optionSelected)
     {
         isSelectionLocked = false;
         BindSubmitGates();
@@ -46,7 +46,7 @@ public class RewardSelectionCardGroup : ViewPartBase
                 continue;
             }
 
-            container.Configure(new RewardSelectionCardBinding(requestId, options[i], i));
+            container.Configure(new RewardSelectionCardBinding(options[i], i, optionSelected));
         }
     }
 

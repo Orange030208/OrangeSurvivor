@@ -64,7 +64,7 @@ public class ShopUIPage : PageBase
         inventoryPanel.BeginSession(context.InventoryOperateManager, OwnerUIManager);
 
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
-        shopManager.RequestSnapshot();
+        shopManager.RefreshViewState();
     }
 
     private void ExitShopSession()
@@ -81,7 +81,7 @@ public class ShopUIPage : PageBase
         currencyWallet = null;
     }
 
-    private void RenderShopItems(ShopItemData[] items, ShopSnapshotReason reason)
+    private void RenderShopItems(ShopItemData[] items, ShopRefreshReason reason)
     {
         itemList.Render(items, reason);
     }
@@ -162,7 +162,7 @@ public class ShopUIPage : PageBase
 
         if (shopManager != null)
         {
-            shopManager.ItemsChanged += OnSnapshotChanged;
+            shopManager.ViewStateChanged += OnViewStateChanged;
             shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
             shopManager.PurchaseFailed += OnPurchaseFailed;
         }
@@ -180,7 +180,7 @@ public class ShopUIPage : PageBase
 
         if (shopManager != null)
         {
-            shopManager.ItemsChanged -= OnSnapshotChanged;
+            shopManager.ViewStateChanged -= OnViewStateChanged;
             shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
             shopManager.PurchaseFailed -= OnPurchaseFailed;
         }
@@ -203,10 +203,10 @@ public class ShopUIPage : PageBase
         itemList.LockToggleRequested -= OnItemLockToggleRequested;
     }
 
-    private void OnSnapshotChanged(ShopSnapshot snapshot)
+    private void OnViewStateChanged(ShopViewState viewState)
     {
-        UpdateRerollState(snapshot.RerollCost, snapshot.CanReroll);
-        RenderShopItems(snapshot.Items, snapshot.Reason);
+        UpdateRerollState(viewState.RerollCost, viewState.CanReroll);
+        RenderShopItems(viewState.Items, viewState.Reason);
     }
 
     private void OnPurchaseSucceeded(ShopPurchaseSuccess result)

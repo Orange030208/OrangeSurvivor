@@ -17,6 +17,8 @@ public class GameManager : MonoSingletonBase<GameManager>
     [SerializeField] private Player player;
     [SerializeField] private CharacterSelectionManager characterSelectionManager;
     [SerializeField] private MapGenerator mapGenerator;
+    [SerializeField] private WaveManager waveManager;
+    [SerializeField] private EnemyRegistry enemyRegistry;
     [SerializeField] private InventoryOperateManager inventoryOperateManager;
     [SerializeField] private ShopManager shopManager;
     [SerializeField] private StageCompleteSummaryManager stageCompleteSummaryManager;
@@ -49,9 +51,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Subscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Subscribe<GameplaySimulationPauseRequestedEvent>(OnGameplaySimulationPauseRequested);
-        GameEventBus.Subscribe<GameplaySimulationResumeRequestedEvent>(OnGameplaySimulationResumeRequested);
-        GameEventBus.Publish(new RequestWaveRuntimeSnapshotEvent());
+        hasMoreWaves = waveManager != null && waveManager.HasMoreWaves;
     }
 
     private void OnDisable()
@@ -71,8 +71,6 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Unsubscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Unsubscribe<GameplaySimulationPauseRequestedEvent>(OnGameplaySimulationPauseRequested);
-        GameEventBus.Unsubscribe<GameplaySimulationResumeRequestedEvent>(OnGameplaySimulationResumeRequested);
     }
 
     private void Start()
@@ -264,18 +262,22 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         if (oldState == GameState.Game && newState != GameState.Game)
         {
-            GameEventBus.Publish(new StopCurrentWaveRequestedEvent());
+            StopCurrentWave();
         }
 
         if (newState == GameState.Shop)
         {
-            GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+            DefeatAllTrackedEnemies();
         }
 
         if (newState == GameState.Menu || newState == GameState.GameOver || newState == GameState.StageComplete)
         {
-            GameEventBus.Publish(new ResetWavesRequestedEvent());
-            GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+            ResetWaves();
+            DefeatAllTrackedEnemies();
+            if (enemyRegistry != null)
+            {
+                enemyRegistry.ClearTracking();
+            }
             pauseSources.Clear();
         }
     }
@@ -334,16 +336,16 @@ public class GameManager : MonoSingletonBase<GameManager>
 
         if (oldState == GameState.Shop)
         {
-            GameEventBus.Publish(new StartNextWaveRequestedEvent());
+            StartNextWave();
             return;
         }
 
-        GameEventBus.Publish(new StartFirstWaveRequestedEvent());
+        StartFirstWave();
     }
 
     private void StartWaveEndFlow(WaveCompletedEvent completedEvent)
     {
-        GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
+        DefeatAllTrackedEnemies();
 
         if (!completedEvent.HasNextWave)
         {
@@ -418,7 +420,8 @@ public class GameManager : MonoSingletonBase<GameManager>
         EnsurePlayerReference();
         return new GamingPageContext(
             player,
-            player.GetComponent<CurrencyWallet>());
+            player.GetComponent<CurrencyWallet>(),
+            waveManager != null ? waveManager.CreateHudViewData() : default);
     }
 
     private StageCompletePageContext CreateStageCompletePageContext()
@@ -428,7 +431,7 @@ public class GameManager : MonoSingletonBase<GameManager>
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(StageCompleteSummaryManager)} reference.");
         }
 
-        return new StageCompletePageContext(stageCompleteSummaryManager.CreateSnapshot());
+        return new StageCompletePageContext(stageCompleteSummaryManager.CreateResult());
     }
 
     private ShopPageContext CreateShopPageContext()
@@ -524,6 +527,16 @@ public class GameManager : MonoSingletonBase<GameManager>
             mapGenerator = FindFirstObjectByType<MapGenerator>();
         }
 
+        if (waveManager == null)
+        {
+            waveManager = FindFirstObjectByType<WaveManager>();
+        }
+
+        if (enemyRegistry == null)
+        {
+            enemyRegistry = FindFirstObjectByType<EnemyRegistry>();
+        }
+
         if (uiManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
@@ -532,6 +545,16 @@ public class GameManager : MonoSingletonBase<GameManager>
         if (characterSelectionManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(CharacterSelectionManager)} reference.");
+        }
+
+        if (waveManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(WaveManager)} reference.");
+        }
+
+        if (enemyRegistry == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(EnemyRegistry)} reference.");
         }
     }
 
@@ -595,30 +618,60 @@ public class GameManager : MonoSingletonBase<GameManager>
         Time.timeScale = shouldRunSimulation ? 1f : 0f;
     }
 
-    private void OnGameplaySimulationPauseRequested(GameplaySimulationPauseRequestedEvent eventData)
+    public void RequestSimulationPause(string sourceId)
     {
-        if (string.IsNullOrWhiteSpace(eventData.SourceId))
+        if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (pauseSources.Add(eventData.SourceId))
+        if (pauseSources.Add(sourceId))
         {
             ApplySimulationState();
         }
     }
 
-    private void OnGameplaySimulationResumeRequested(GameplaySimulationResumeRequestedEvent eventData)
+    public void ReleaseSimulationPause(string sourceId)
     {
-        if (string.IsNullOrWhiteSpace(eventData.SourceId))
+        if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (pauseSources.Remove(eventData.SourceId))
+        if (pauseSources.Remove(sourceId))
         {
             ApplySimulationState();
         }
+    }
+
+    public void StartFirstWave()
+    {
+        waveManager?.StartFirstWave();
+    }
+
+    public void StartNextWave()
+    {
+        waveManager?.StartNextWave();
+    }
+
+    public void StopCurrentWave()
+    {
+        waveManager?.StopCurrentWave();
+    }
+
+    public void ResumeCurrentWave()
+    {
+        waveManager?.ResumeCurrentWave();
+    }
+
+    public void ResetWaves()
+    {
+        waveManager?.ResetWaves();
+    }
+
+    public void DefeatAllTrackedEnemies()
+    {
+        enemyRegistry?.DefeatAllTrackedEnemies();
     }
 
     private void ManageGameOver()

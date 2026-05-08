@@ -11,14 +11,14 @@ public class InventoryOperateManager : MonoBehaviour
     private readonly List<InventoryRuntimeItem> runtimeItems = new();
     private bool subscribed;
 
-    public event System.Action<InventoryUIItemSnapshot[]> SnapshotChanged;
+    public event System.Action<InventoryItemViewData[]> ItemsChanged;
     public event System.Action<InventoryItemOperateResource> OperatePanelOpened;
     public event System.Action<string> OperatePanelShouldClose;
 
     private void OnEnable()
     {
         Subscribe();
-        PublishInventorySnapshot();
+        PublishInventoryItems();
     }
 
     private void OnDisable()
@@ -46,7 +46,7 @@ public class InventoryOperateManager : MonoBehaviour
                           && currencyWallet == targetCurrencyWallet;
         if (sameTarget)
         {
-            PublishInventorySnapshot();
+            PublishInventoryItems();
             return;
         }
 
@@ -55,7 +55,7 @@ public class InventoryOperateManager : MonoBehaviour
         accessoryManager = targetAccessoryManager;
         currencyWallet = targetCurrencyWallet;
         Subscribe();
-        PublishInventorySnapshot();
+        PublishInventoryItems();
     }
 
     private void Subscribe()
@@ -67,7 +67,7 @@ public class InventoryOperateManager : MonoBehaviour
 
         if (weaponsHolder != null)
         {
-            weaponsHolder.OnWeaponsChanged += PublishInventorySnapshot;
+            weaponsHolder.OnWeaponsChanged += PublishInventoryItems;
         }
 
         if (accessoryManager != null)
@@ -88,7 +88,7 @@ public class InventoryOperateManager : MonoBehaviour
 
         if (weaponsHolder != null)
         {
-            weaponsHolder.OnWeaponsChanged -= PublishInventorySnapshot;
+            weaponsHolder.OnWeaponsChanged -= PublishInventoryItems;
         }
 
         if (accessoryManager != null)
@@ -102,12 +102,12 @@ public class InventoryOperateManager : MonoBehaviour
 
     private void OnAccessoryChanged(AccessoryDataSO _)
     {
-        PublishInventorySnapshot();
+        PublishInventoryItems();
     }
 
-    public void RequestSnapshot()
+    public void RefreshItems()
     {
-        PublishInventorySnapshot();
+        PublishInventoryItems();
     }
 
     public void RequestOpenItemPanel(string entryId)
@@ -191,7 +191,7 @@ public class InventoryOperateManager : MonoBehaviour
         NotifyOperatePanelShouldClose(selectedItem.EntryId);
     }
 
-    private void PublishInventorySnapshot()
+    private void PublishInventoryItems()
     {
         runtimeItems.Clear();
 
@@ -221,16 +221,16 @@ public class InventoryOperateManager : MonoBehaviour
             }
         }
 
-        InventoryUIItemSnapshot[] snapshots = new InventoryUIItemSnapshot[runtimeItems.Count];
+        InventoryItemViewData[] viewData = new InventoryItemViewData[runtimeItems.Count];
         for (int i = 0; i < runtimeItems.Count; i++)
         {
-            snapshots[i] = new InventoryUIItemSnapshot(
+            viewData[i] = new InventoryItemViewData(
                 runtimeItems[i].EntryId,
                 runtimeItems[i].ItemData,
                 runtimeItems[i].ColorDependencyNumber);
         }
 
-        SnapshotChanged?.Invoke(snapshots);
+        ItemsChanged?.Invoke(viewData);
     }
 
     private bool TryFindMergeTarget(string selectedEntryId, InventoryRuntimeItem selectedItem, out InventoryRuntimeItem targetItem)

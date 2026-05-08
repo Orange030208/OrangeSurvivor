@@ -19,13 +19,13 @@ public class BuffControllerEditor : Editor
         EditorGUILayout.Space(10f);
         EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
 
-        ActiveBuffSnapshot[] snapshots = buffController.BuildSnapshots();
-        EditorGUILayout.LabelField("Active Buff Count", snapshots.Length.ToString());
-        for (int i = 0; i < snapshots.Length; i++)
+        ActiveBuffViewData[] viewData = buffController.BuildActiveBuffViewData();
+        EditorGUILayout.LabelField("Active Buff Count", viewData.Length.ToString());
+        for (int i = 0; i < viewData.Length; i++)
         {
-            ActiveBuffSnapshot snapshot = snapshots[i];
-            string durationText = snapshot.HasDuration ? $"{snapshot.RemainingDurationSeconds:0.0}s" : "常驻";
-            EditorGUILayout.LabelField($"- {snapshot.DisplayName}", $"{snapshot.StackCount}/{snapshot.MaxStackCount} 层 · {durationText}");
+            ActiveBuffViewData itemViewData = viewData[i];
+            string durationText = itemViewData.HasDuration ? $"{itemViewData.RemainingDurationSeconds:0.0}s" : "常驻";
+            EditorGUILayout.LabelField($"- {itemViewData.DisplayName}", $"{itemViewData.StackCount}/{itemViewData.MaxStackCount} 层 · {durationText}");
         }
 
         EditorGUILayout.Space(6f);

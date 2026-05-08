@@ -23,7 +23,7 @@ public class StageCompleteUIPage : PageBase
         menuButton.OnClicked += OnMenuClicked;
         StageCompletePageContext pageContext = context.GetPayload<StageCompletePageContext>()
             ?? throw new InvalidOperationException($"{nameof(StageCompleteUIPage)} requires {nameof(StageCompletePageContext)} payload.");
-        ApplySnapshot(pageContext.Snapshot);
+        ApplyResult(pageContext.Result);
         return UniTask.CompletedTask;
     }
 
@@ -33,47 +33,47 @@ public class StageCompleteUIPage : PageBase
         menuButton.OnClicked -= OnMenuClicked;
     }
 
-    private void ApplySnapshot(StageCompleteSnapshot snapshot)
+    private void ApplyResult(StageCompleteResult result)
     {
         if (completedWavesText != null)
         {
-            completedWavesText.text = snapshot.CompletedWaves.ToString();
+            completedWavesText.text = result.CompletedWaves.ToString();
         }
 
         if (survivalTimeText != null)
         {
-            survivalTimeText.text = FormatDuration(snapshot.SurvivalTime);
+            survivalTimeText.text = FormatDuration(result.SurvivalTime);
         }
 
         if (killCountText != null)
         {
-            killCountText.text = snapshot.KillCount.ToString();
+            killCountText.text = result.KillCount.ToString();
         }
 
         if (goldEarnedText != null)
         {
-            goldEarnedText.text = snapshot.GoldEarned.ToString();
+            goldEarnedText.text = result.GoldEarned.ToString();
         }
 
         if (characterNameText != null)
         {
-            characterNameText.text = string.IsNullOrWhiteSpace(snapshot.CharacterName) ? "-" : snapshot.CharacterName;
+            characterNameText.text = string.IsNullOrWhiteSpace(result.CharacterName) ? "-" : result.CharacterName;
         }
 
         if (mainWeaponNameText != null)
         {
-            mainWeaponNameText.text = string.IsNullOrWhiteSpace(snapshot.MainWeaponName) ? "-" : snapshot.MainWeaponName;
+            mainWeaponNameText.text = string.IsNullOrWhiteSpace(result.MainWeaponName) ? "-" : result.MainWeaponName;
         }
 
         if (summaryText != null)
         {
             summaryText.text =
-                $"\u5b8c\u6210\u6ce2\u6570: {snapshot.CompletedWaves}\n" +
-                $"\u751f\u5b58\u65f6\u95f4: {FormatDuration(snapshot.SurvivalTime)}\n" +
-                $"\u51fb\u6740\u6570: {snapshot.KillCount}\n" +
-                $"\u83b7\u5f97\u91d1\u5e01: {snapshot.GoldEarned}\n" +
-                $"\u89d2\u8272: {(string.IsNullOrWhiteSpace(snapshot.CharacterName) ? "-" : snapshot.CharacterName)}\n" +
-                $"\u4e3b\u6b66\u5668: {(string.IsNullOrWhiteSpace(snapshot.MainWeaponName) ? "-" : snapshot.MainWeaponName)}";
+                $"\u5b8c\u6210\u6ce2\u6570: {result.CompletedWaves}\n" +
+                $"\u751f\u5b58\u65f6\u95f4: {FormatDuration(result.SurvivalTime)}\n" +
+                $"\u51fb\u6740\u6570: {result.KillCount}\n" +
+                $"\u83b7\u5f97\u91d1\u5e01: {result.GoldEarned}\n" +
+                $"\u89d2\u8272: {(string.IsNullOrWhiteSpace(result.CharacterName) ? "-" : result.CharacterName)}\n" +
+                $"\u4e3b\u6b66\u5668: {(string.IsNullOrWhiteSpace(result.MainWeaponName) ? "-" : result.MainWeaponName)}";
         }
     }
 

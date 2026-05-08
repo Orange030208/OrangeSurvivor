@@ -1,9 +1,9 @@
 public sealed class StageCompletePageContext
 {
-    public StageCompletePageContext(StageCompleteSnapshot snapshot)
+    public StageCompletePageContext(StageCompleteResult result)
     {
-        Snapshot = snapshot;
+        Result = result;
     }
 
-    public StageCompleteSnapshot Snapshot { get; }
+    public StageCompleteResult Result { get; }
 }

@@ -79,7 +79,8 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     [ContextMenu("Clear Test Enemies")]
     public void ClearTestEnemies()
     {
-        GameEventBus.Publish<DefeatAllTrackedEnemiesRequestedEvent>();
+        EnsureRuntimeRegistry();
+        enemyRegistry.DefeatAllTrackedEnemies();
     }
 
     private void EnsureRuntimeRegistry()

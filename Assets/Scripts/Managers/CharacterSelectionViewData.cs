@@ -1,9 +1,9 @@
-public readonly struct CharacterSelectionSnapshot
+public readonly struct CharacterSelectionViewData
 {
     public CharacterDataSO[] Characters { get; }
     public int SelectedIndex { get; }
 
-    public CharacterSelectionSnapshot(CharacterDataSO[] characters, int selectedIndex)
+    public CharacterSelectionViewData(CharacterDataSO[] characters, int selectedIndex)
     {
         Characters = characters;
         SelectedIndex = selectedIndex;

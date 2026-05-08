@@ -13,16 +13,12 @@ public class EnemyRegistry : MonoBehaviour
     {
         GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
         GameEventBus.Subscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
-        GameEventBus.Subscribe<DefeatAllTrackedEnemiesRequestedEvent>(OnDefeatAllTrackedEnemiesRequested);
-        GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
         GameEventBus.Unsubscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
-        GameEventBus.Unsubscribe<DefeatAllTrackedEnemiesRequestedEvent>(OnDefeatAllTrackedEnemiesRequested);
-        GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
     }
 
     private void OnEnemyRegistered(EnemyRegisteredEvent eventData)
@@ -52,7 +48,7 @@ public class EnemyRegistry : MonoBehaviour
         aliveBossIds.Remove(enemyId);
     }
 
-    private void OnDefeatAllTrackedEnemiesRequested()
+    public void DefeatAllTrackedEnemies()
     {
         CancelPendingEnemySpawns();
 
@@ -69,6 +65,12 @@ public class EnemyRegistry : MonoBehaviour
         }
     }
 
+    public void ClearTracking()
+    {
+        aliveEnemies.Clear();
+        aliveBossIds.Clear();
+    }
+
     private static void CancelPendingEnemySpawns()
     {
         SpawnIndicator[] indicators = FindObjectsByType<SpawnIndicator>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
@@ -83,9 +85,4 @@ public class EnemyRegistry : MonoBehaviour
         }
     }
 
-    private void OnResetWavesRequested()
-    {
-        aliveEnemies.Clear();
-        aliveBossIds.Clear();
-    }
 }

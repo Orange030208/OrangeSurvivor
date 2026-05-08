@@ -16,17 +16,3 @@ public struct UpgradeRewardAvailableEvent : IGameEvent
         UnspentUpgradePoints = unspentUpgradePoints;
     }
 }
-
-public struct RewardSelectionCardSelectedEvent : IGameEvent
-{
-    public string RequestId;
-    public int OptionIndex;
-    public string OptionId;
-
-    public RewardSelectionCardSelectedEvent(string requestId, int optionIndex, string optionId)
-    {
-        RequestId = requestId ?? string.Empty;
-        OptionIndex = optionIndex;
-        OptionId = optionId ?? string.Empty;
-    }
-}

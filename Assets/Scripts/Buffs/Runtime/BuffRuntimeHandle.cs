@@ -47,22 +47,15 @@ public sealed class BuffRuntimeHandle
         return true;
     }
 
-    public static ActiveBuffSnapshot CreateMergedSnapshot(BuffDataSO buffData, int stackCount, int maxStackCount, float remainingDurationSeconds, float totalDurationSeconds)
+    public static ActiveBuffViewData CreateMergedViewData(BuffDataSO buffData, int stackCount, int maxStackCount, float remainingDurationSeconds, float totalDurationSeconds)
     {
         if (buffData == null)
         {
-            return new ActiveBuffSnapshot(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, IDescribable.Default);
+            return new ActiveBuffViewData(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, IDescribable.Default);
         }
 
         bool hasDuration = totalDurationSeconds > 0f;
-        BuffDescriptionContext descriptionContext = new(
-            stackCount,
-            maxStackCount,
-            hasDuration,
-            remainingDurationSeconds,
-            totalDurationSeconds);
-
-        return new ActiveBuffSnapshot(
+        return new ActiveBuffViewData(
             buffData.BuffId,
             buffData.DisplayName,
             buffData.Icon,

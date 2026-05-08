@@ -37,7 +37,7 @@ public class ShopItemListUI : ViewPartBase
         LockToggleRequested = null;
     }
 
-    public void Render(ShopItemData[] items, ShopSnapshotReason reason)
+    public void Render(ShopItemData[] items, ShopRefreshReason reason)
     {
         if (items == null || items.Length == 0)
         {
@@ -86,7 +86,7 @@ public class ShopItemListUI : ViewPartBase
     private void RenderItem(
         ShopItemData itemData,
         int itemIndex,
-        ShopSnapshotReason reason,
+        ShopRefreshReason reason,
         List<ShopItemContainer> previousItems,
         List<ShopItemIdentity> previousIdentities,
         Dictionary<ShopItemContainer, Vector2> previousPositions,
@@ -312,10 +312,10 @@ public class ShopItemListUI : ViewPartBase
 
     private static bool ShouldPlayReveal(
         ShopItemData itemData,
-        ShopSnapshotReason reason,
+        ShopRefreshReason reason,
         bool reusedExistingItem)
     {
-        if (reason == ShopSnapshotReason.Reroll || reason == ShopSnapshotReason.WaveRefresh)
+        if (reason == ShopRefreshReason.Reroll || reason == ShopRefreshReason.WaveRefresh)
         {
             return !itemData.Lock;
         }
