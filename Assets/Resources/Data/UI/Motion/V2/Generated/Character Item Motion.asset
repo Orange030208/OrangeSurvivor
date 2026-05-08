@@ -56,7 +56,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030824
-      type: {class: UISidebarMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -73,7 +73,7 @@ MonoBehaviour:
         enterOvershootEase: 9
         enterSettleEase: 9
     - rid: 451547002770030828
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -84,7 +84,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.06, y: 1.06, z: 1.06}
     - rid: 451547002770030829
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -95,7 +95,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030830
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 451547002770030831
-      type: {class: UIAlphaMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 451547002770030832
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -128,7 +128,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.12, y: 1.12, z: 1.12}
     - rid: 451547002770030833
-      type: {class: UIScaleMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -139,7 +139,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.06, y: 1.06, z: 1.06}
     - rid: 451547002770030825
-      type: {class: UISidebarMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0

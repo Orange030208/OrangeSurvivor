@@ -32,7 +32,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030888
-      type: {class: UISidebarMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
         enterOvershootEase: 9
         enterSettleEase: 9
     - rid: 451547002770030889
-      type: {class: UISidebarMotionTrack, ns: , asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
         targetKey: Self
         startDelay: 0
