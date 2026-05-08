@@ -13,6 +13,9 @@ public class SkeletonBrain : EnemyBrain
 
     private readonly StateMachine<SkeletonAIState> stateMachine = new();
 
+    [Header("Attack Points")]
+    [SerializeField] private Transform meleePointTransform;
+
     private EnemyAttackController attackController;
     private SkeletonEnemySO enemyData;
     private IMoveStrategy chaseMoveStrategy;
@@ -63,16 +66,15 @@ public class SkeletonBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        IRangeDetectionStrategy detectionStrategy = new ForwardCircleRangeDetectionStrategy(
-            owner,
-            propertiesManager,
-            enemyData.AttackConfig.detection);
+        IRangeDetectionStrategy detectionStrategy = new DistanceRangeDetectionStrategy(owner, propertiesManager);
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.AttackConfig.timing,
-            detectionStrategy);
+            SkeletonEnemySO.ATTACK_ACTION_ID,
+            enemyData.AttackSpeedBenefitRatio,
+            detectionStrategy,
+            meleePointTransform);
     }
 
     private sealed class IdleState : StateBase<SkeletonAIState>
@@ -158,9 +160,7 @@ public class SkeletonBrain : EnemyBrain
     private sealed class AttackState : StateBase<SkeletonAIState>
     {
         private readonly SkeletonBrain brain;
-        private bool attackStarted;
         private bool attackCommitted;
-        private int attackStateHash;
 
         public AttackState(SkeletonBrain brain) : base(SkeletonAIState.Attack)
         {
@@ -169,9 +169,7 @@ public class SkeletonBrain : EnemyBrain
 
         public override void OnEnter()
         {
-            attackStarted = false;
             attackCommitted = false;
-            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
             brain.currentMovable.StopMoving();
 
             if (brain.target == null)
@@ -186,25 +184,19 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            attackStarted = true;
             brain.FaceTarget();
-            brain.currentAnimatable.PlayState(attackStateHash);
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
         }
 
         public override void OnUpdate()
         {
-            if (!attackStarted)
-            {
-                return;
-            }
-
             if (brain.target == null)
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Idle);
                 return;
             }
 
-            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
+            if (!brain.currentAnimatable.IsCurrentState(brain.enemyData.AnimConfig.AttackHash))
             {
                 return;
             }
@@ -214,10 +206,10 @@ public class SkeletonBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                brain.attackStrategy.TryExecute(brain.target);
+                brain.attackStrategy.TryExecuteCommitted(brain.target);
             }
 
-            if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
+            if (normalizedTime >= 1f)
             {
                 ChangeToNextState();
             }

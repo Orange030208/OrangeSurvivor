@@ -13,22 +13,9 @@ public class FlyForestEnemySO : EnemySO
     public List<PropModifierData> fastBurstModifierData = new List<PropModifierData>();
 
     [Header("Attack")]
-    public ProjectileAttackData normalAttackConfig = new()
-    {
-        timing = new AttackTimingData
-        {
-            actionId = NORMAL_ATTACK_ACTION_ID,
-            attackSfxKey = AudioSfxKey.GunshotLight,
-            cooldown = 1f,
-            damageMultiplier = 1f,
-        },
-        detection = new RangeDetectionData
-        {
-            rangeSource = AttackRangeSource.DetectionRangeProp,
-            fixedRange = 7f,
-            rangeMultiplier = 1f,
-        },
-    };
+    [SerializeField, Range(0f, 1f)] private float normalAttackCommitNormalizedTime = 0.578f;
+    [Min(0.01f)] public float normalAttackSpeedBenefitRatio = 1f;
+    public ProjectileDefinitionSO normalAttackProjectileDefinition;
 
     [Header("Movement")]
     public CircleKiteMoveData normalMovement = new()
@@ -45,14 +32,13 @@ public class FlyForestEnemySO : EnemySO
     private void OnValidate()
     {
         lowHpPercent = Mathf.Clamp(lowHpPercent, 0f, 100f);
-        normalAttackConfig.timing.actionId = string.IsNullOrWhiteSpace(normalAttackConfig.timing.actionId) ? NORMAL_ATTACK_ACTION_ID : normalAttackConfig.timing.actionId;
-        normalAttackConfig.timing.cooldown = Mathf.Max(0f, normalAttackConfig.timing.cooldown);
-        normalAttackConfig.timing.damageMultiplier = Mathf.Max(0f, normalAttackConfig.timing.damageMultiplier);
-        normalAttackConfig.detection.fixedRange = Mathf.Max(0f, normalAttackConfig.detection.fixedRange);
-        normalAttackConfig.detection.rangeMultiplier = Mathf.Max(0f, normalAttackConfig.detection.rangeMultiplier);
+        normalAttackCommitNormalizedTime = Mathf.Clamp01(normalAttackCommitNormalizedTime);
+        normalAttackSpeedBenefitRatio = Mathf.Max(0.01f, normalAttackSpeedBenefitRatio);
         normalMovement.circleSpeedRatio = Mathf.Max(0f, normalMovement.circleSpeedRatio);
         normalMovement.idealRangeRatio = Mathf.Max(0f, normalMovement.idealRangeRatio);
         retreatMovement.safeDistance = Mathf.Max(0f, retreatMovement.safeDistance);
         retreatMovement.retreatStepDistance = Mathf.Max(0f, retreatMovement.retreatStepDistance);
     }
+
+    public float NormalAttackCommitNormalizedTime => normalAttackCommitNormalizedTime;
 }

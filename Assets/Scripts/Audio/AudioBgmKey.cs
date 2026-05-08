@@ -11,6 +11,6 @@ public enum AudioBgmKey
     Gameplay = 3,
     GameOver = 4,
     StageComplete = 5,
-    WaveTransition = 6,
+    RewardSelection = 6,
     Shop = 7,
 }

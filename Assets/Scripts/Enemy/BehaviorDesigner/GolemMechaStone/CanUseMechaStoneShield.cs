@@ -11,7 +11,7 @@ public sealed class CanUseMechaStoneShield : MechaStoneConditionBase
             AttackController == null ||
             BossBrain.IsActionRunning ||
             !BossBrain.CanUseShield ||
-            !AttackController.CanUseRuntimeAction(GolemMechaStoneBossSO.SHIELD_ACTION_ID))
+            !AttackController.CanUseSkill(GolemMechaStoneBossSO.SHIELD_ACTION_ID))
         {
             return TaskStatus.Failure;
         }

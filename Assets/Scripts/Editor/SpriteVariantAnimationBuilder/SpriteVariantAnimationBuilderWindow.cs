@@ -58,9 +58,17 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         window.Scan();
 
         string selectedPath = NormalizeAssetPath(AssetDatabase.GetAssetPath(Selection.activeObject));
+        List<BuildFolderPreview> matchedPreviews = window.FindPreviewsBySelectionPath(selectedPath);
+        if (matchedPreviews.Count == 0)
+        {
+            window.lastReport = $"没有找到与选中资源对应的构建分组：{selectedPath}";
+            window.Show();
+            return;
+        }
+
         foreach (BuildFolderPreview preview in window.previews)
         {
-            window.selectedByFolder[preview.SelectionKey] = preview.SelectionKey == selectedPath;
+            window.selectedByFolder[preview.SelectionKey] = matchedPreviews.Contains(preview);
         }
 
         window.BuildSelected();
@@ -1006,6 +1014,38 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
         Selection.objects = objects.ToArray();
     }
 
+    private List<BuildFolderPreview> FindPreviewsBySelectionPath(string selectedPath)
+    {
+        string normalizedSelectionPath = NormalizeAssetPath(selectedPath);
+        if (string.IsNullOrWhiteSpace(normalizedSelectionPath))
+        {
+            return new List<BuildFolderPreview>();
+        }
+
+        if (string.Equals(normalizedSelectionPath, settings.InputRootPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return new List<BuildFolderPreview>(previews);
+        }
+
+        foreach (BuildFolderPreview preview in previews)
+        {
+            if (string.Equals(preview.SourcePath, normalizedSelectionPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return new List<BuildFolderPreview> { preview };
+            }
+
+            if (AssetDatabase.IsValidFolder(preview.SourcePath))
+            {
+                if (IsPathUnder(normalizedSelectionPath, preview.SourcePath))
+                {
+                    return new List<BuildFolderPreview> { preview };
+                }
+            }
+        }
+
+        return new List<BuildFolderPreview>();
+    }
+
     private static void PingPath(string assetPath)
     {
         UnityEngine.Object asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath);
@@ -1102,7 +1142,10 @@ public sealed class SpriteVariantAnimationBuilderWindow : EditorWindow
 
         if (AssetDatabase.IsValidFolder(normalizedRoot))
         {
-            return IsPathUnder(normalizedPath, normalizedRoot);
+            return IsPathUnder(normalizedPath, normalizedRoot) ||
+                   string.Equals(Path.GetDirectoryName(normalizedPath)?.Replace('\\', '/'),
+                       normalizedRoot,
+                       StringComparison.OrdinalIgnoreCase);
         }
 
         return false;

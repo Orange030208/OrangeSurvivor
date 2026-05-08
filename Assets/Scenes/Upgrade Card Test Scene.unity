@@ -306,6 +306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1363638960}
+  - component: {fileID: 1363638961}
   - component: {fileID: 1363638959}
   - component: {fileID: 1363638958}
   - component: {fileID: 1363638957}
@@ -328,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33176a8ee08b75c49a7041b790468b78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 450740442}
+  gameManager: {fileID: 1363638961}
   playerPrefab: {fileID: 5359458450767791847, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
   testCharacterData: {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
   playerSpawnPosition: {x: 0, y: 0, z: 0}
@@ -382,6 +383,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1363638961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363638956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a3725aa447f4b05967362c38519e395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiManager: {fileID: 450740442}
+  player: {fileID: 0}
+  mapGenerator: {fileID: 0}
+  initialGameState: 3
+  playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1553790860
 GameObject:
   m_ObjectHideFlags: 0

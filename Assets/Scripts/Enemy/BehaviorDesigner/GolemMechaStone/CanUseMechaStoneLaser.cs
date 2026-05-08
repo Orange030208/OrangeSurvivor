@@ -9,10 +9,11 @@ public sealed class CanUseMechaStoneLaser : MechaStoneConditionBase
         if (!RefreshContext() ||
             !HasTarget ||
             AttackController == null ||
-            BossData.LaserWidth <= 0f ||
             BossBrain.IsActionRunning ||
             !BossBrain.CanUseLaser ||
-            !AttackController.CanUseRuntimeAction(GolemMechaStoneBossSO.LASER_ACTION_ID))
+            BossBrain.LaserDetectionStrategy == null ||
+            !BossBrain.LaserDetectionStrategy.IsTargetInRange(TargetEntity) ||
+            !AttackController.CanUseSkill(GolemMechaStoneBossSO.LASER_ACTION_ID))
         {
             return TaskStatus.Failure;
         }

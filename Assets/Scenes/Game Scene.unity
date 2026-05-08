@@ -25979,7 +25979,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 000000009740343d49fd5b77
+  m_ApplyToSortingLayers: 000000009740343d49fd5b7759d261f4d119c22f
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -26065,7 +26065,6 @@ GameObject:
   m_Component:
   - component: {fileID: 885074029}
   - component: {fileID: 885074031}
-  - component: {fileID: 885074030}
   m_Layer: 0
   m_Name: AudioRoot
   m_TagString: Untagged
@@ -26088,19 +26087,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 214015682}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &885074030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 885074028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9997836523977c7438612f478f308361, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runtimeSettings: {fileID: 11400000, guid: 738bb7b2e49572f4fb8fd2386bc778ef, type: 2}
 --- !u!114 &885074031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26113,8 +26099,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646ce4f9b4c26e6479e9d924390ced94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSfxCatalog: {fileID: 11400000, guid: 17540f462dd474642a87cb6a0ce70d6d, type: 2}
   runtimeSettings: {fileID: 11400000, guid: 738bb7b2e49572f4fb8fd2386bc778ef, type: 2}
+  busSettings: {fileID: 11400000, guid: 2788427712a99074dbad755d59ceac67, type: 2}
   masterVolume: 1
   musicVolume: 0.113
   sfxVolume: 1
@@ -28583,7 +28569,7 @@ GameObject:
   - component: {fileID: 1539746161}
   - component: {fileID: 1539746162}
   m_Layer: 0
-  m_Name: WaveTransitionManager
+  m_Name: RewardSelectionManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

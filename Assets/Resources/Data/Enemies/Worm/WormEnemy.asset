@@ -20,29 +20,10 @@ MonoBehaviour:
   retreatTriggerDistance: 4
   retreatCompleteDistance: 6
   attackCommitNormalizedTime: 0.583
-  attackFinishNormalizedTime: 0.95
-  attackConfig:
-    timing:
-      actionId: Worm_Attack
-      attackSfxKey: 300
-      cooldown: 1
-      damageMultiplier: 1
-    detection:
-      rangeSource: 2
-      fixedRange: 7
-      rangeMultiplier: 1
-    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
-  retreatAttackConfig:
-    timing:
-      actionId: Worm_RetreatAttack
-      attackSfxKey: 300
-      cooldown: 1
-      damageMultiplier: 1
-    detection:
-      rangeSource: 2
-      fixedRange: 7
-      rangeMultiplier: 1
-    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  attackSpeedBenefitRatio: 0.5
+  attackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  retreatAttackSpeedBenefitRatio: 0.5
+  retreatAttackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
   retreatMovement:
     safeDistance: 7
     retreatStepDistance: 3

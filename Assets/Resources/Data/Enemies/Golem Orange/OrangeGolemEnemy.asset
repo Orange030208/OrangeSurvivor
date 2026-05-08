@@ -17,12 +17,7 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 11d83d5cbe808c64f803388bedcde52c, type: 2}
   animConfig: {fileID: 11400000, guid: 84ce5795e7038434ebf1c35467a1f24a, type: 2}
   damagedSfxKey: 400
-  postChargeAttackModifiers:
-  - propType: 15
-    modifierType: 3
-    value: 50
   attackCommitNormalizedTime: 0.55
-  attackFinishNormalizedTime: 0.95
   berserkInterval: 7
   preChargeStunDuration: 1.1
   chargeDuration: 0.8
@@ -33,15 +28,10 @@ MonoBehaviour:
   - propType: 4
     modifierType: 3
     value: 2
-  attackConfig:
-    timing:
-      actionId: Golem_Attack
-      attackSfxKey: 3
-      cooldown: 1
-      damageMultiplier: 1
-    detection:
-      rangeSource: 1
-      fixedRange: 1
-      rangeMultiplier: 1
-      forwardOffset: 0
+  attackSpeedBenefitRatio: 2
+  attackForwardOffset: 0
   postChargeAttackForwardOffset: 0
+  postChargeAttackModifiers:
+  - propType: 15
+    modifierType: 3
+    value: 50

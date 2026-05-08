@@ -57,6 +57,7 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Subscribe<StartFirstWaveRequestedEvent>(OnStartFirstWaveRequested);
         GameEventBus.Subscribe<StartNextWaveRequestedEvent>(OnStartNextWaveRequested);
         GameEventBus.Subscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
+        GameEventBus.Subscribe<ResumeCurrentWaveRequestedEvent>(OnResumeCurrentWaveRequested);
         GameEventBus.Subscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Subscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
@@ -72,6 +73,7 @@ public class WaveManager : MonoBehaviour
         GameEventBus.Unsubscribe<StartFirstWaveRequestedEvent>(OnStartFirstWaveRequested);
         GameEventBus.Unsubscribe<StartNextWaveRequestedEvent>(OnStartNextWaveRequested);
         GameEventBus.Unsubscribe<StopCurrentWaveRequestedEvent>(OnStopCurrentWaveRequested);
+        GameEventBus.Unsubscribe<ResumeCurrentWaveRequestedEvent>(OnResumeCurrentWaveRequested);
         GameEventBus.Unsubscribe<ResetWavesRequestedEvent>(OnResetWavesRequested);
         GameEventBus.Unsubscribe<DefeatAllEnemiesRequestedEvent>(OnDefeatAllEnemiesRequested);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
@@ -131,6 +133,17 @@ public class WaveManager : MonoBehaviour
     private void OnStopCurrentWaveRequested()
     {
         runtimeState.IsRunning = false;
+        PublishWaveRuntimeSnapshot();
+    }
+
+    private void OnResumeCurrentWaveRequested()
+    {
+        if (!HasStarted || runtimeState.CompletionTriggered)
+        {
+            return;
+        }
+
+        runtimeState.IsRunning = true;
         PublishWaveRuntimeSnapshot();
     }
 

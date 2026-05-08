@@ -114,6 +114,9 @@ MonoBehaviour:
   targetsLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   maxLifetime: 5
   maxHitCount: 1
   rb: {fileID: 1390684286374318368}
@@ -201,8 +204,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 801249745
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 500840789, guid: 18ac1a8da81b11e40b93afc1e7de2f3f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

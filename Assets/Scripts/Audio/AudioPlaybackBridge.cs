@@ -8,20 +8,46 @@ using UnityEngine;
 /// </summary>
 public static class AudioPlaybackBridge
 {
-    // 扩展说明：业务层与状态层统一通过这里发出 BGM 播放意图，后续可替换为直接服务调用而不修改调用方。
-    public static void RequestPlay(AudioBgmKey bgmKey, bool restartIfPlaying = false)
+    public static void RequestPlayMusic(AudioBgmKey bgmKey, bool restartIfPlaying = false)
     {
         if (bgmKey == AudioBgmKey.None)
         {
             return;
         }
 
-        GameEventBus.Publish(new AudioBgmPlayRequestedEvent(bgmKey, restartIfPlaying));
+        GameEventBus.Publish(new AudioMusicPlayRequestedEvent(bgmKey, restartIfPlaying));
+    }
+
+    public static void RequestStopMusic()
+    {
+        GameEventBus.Publish(new AudioMusicStopRequestedEvent());
+    }
+
+    // 扩展说明：业务层与状态层统一通过这里发出 BGM 播放意图，后续可替换为直接服务调用而不修改调用方。
+    public static void RequestPlay(AudioBgmKey bgmKey, bool restartIfPlaying = false)
+    {
+        RequestPlayMusic(bgmKey, restartIfPlaying);
     }
 
     // 扩展说明：如需增加淡出、分组停止或按具体键停止，可继续扩展独立请求事件。
     public static void RequestStop(AudioBusType busType)
     {
+        if (busType == AudioBusType.Music)
+        {
+            RequestStopMusic();
+            return;
+        }
+
         GameEventBus.Publish(new AudioStopRequestedEvent(busType));
+    }
+
+    public static void RequestStopSfxGroup(string groupId)
+    {
+        GameEventBus.Publish(new AudioSfxGroupStopRequestedEvent(groupId));
+    }
+
+    public static void RequestSetSfxGroupVolume(string groupId, float volume)
+    {
+        GameEventBus.Publish(new AudioSfxGroupVolumeChangedEvent(groupId, volume));
     }
 }

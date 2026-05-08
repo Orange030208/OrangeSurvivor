@@ -18,7 +18,7 @@ public static class UpgradeCardSystemBuilder
     private const string TEST_CHARACTER_DATA_PATH = "Assets/Resources/Data/Characters/Character1.asset";
     private const string UI_FRAMEWORK_SETTINGS_PATH = "Assets/Resources/Data/UI/OrangeUIFrameworkSettings.asset";
     private const string UI_VIEW_CATALOG_PATH = "Assets/Resources/Data/UI/OrangeUIViewCatalog.asset";
-    private const string AUDIO_SFX_CATALOG_PATH = "Assets/Resources/Data/Audios/Audio Sfx Catalog.asset";
+    private const string AUDIO_BUS_SETTINGS_PATH = "Assets/Resources/Data/Audios/Audio Bus Settings.asset";
     private const string WOOD_BLOCK_SFX_PATH = "Assets/Resources/Audios/VFX/WoodBlock1.wav";
     private const string SWIPE_SFX_PATH = "Assets/Resources/Audios/VFX/Swipe.wav";
     private const string SLAP_SFX_PATH = "Assets/Resources/Audios/VFX/Slap.wav";
@@ -32,7 +32,7 @@ public static class UpgradeCardSystemBuilder
         UpgradeCardSO[] cards = BuildCards();
         UpgradeCardPoolSO pool = BuildPool(cards);
         BuildRarityPresentationCatalog();
-        ConfigureAudioSfxCatalog();
+        ConfigureAudioBusSettings();
         ConfigureViewCatalog();
         BuildTestScene(pool);
         AssetDatabase.SaveAssets();
@@ -494,7 +494,7 @@ public static class UpgradeCardSystemBuilder
             CreateViewDefinition("page.pause", $"{NEW_UI_PAGE_FOLDER}/UI Pause.prefab", ViewLayer.Popup),
             CreateViewDefinition("page.gameOver", $"{NEW_UI_PAGE_FOLDER}/UI Game Over.prefab", ViewLayer.Page),
             CreateViewDefinition("page.stageComplete", $"{NEW_UI_PAGE_FOLDER}/UI Stage Complete.prefab", ViewLayer.Page),
-            CreateViewDefinition("page.waveTransition", $"{NEW_UI_PAGE_FOLDER}/UI Wave Transition.prefab", ViewLayer.Page),
+            CreateViewDefinition("page.rewardSelection", $"{NEW_UI_PAGE_FOLDER}/UI Reward Selection.prefab", ViewLayer.Page),
             CreateViewDefinition("page.goldBook", $"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", ViewLayer.Page),
             CreateViewDefinition(
                 "popup.inventory.weaponOperate",
@@ -525,19 +525,27 @@ public static class UpgradeCardSystemBuilder
         EditorUtility.SetDirty(catalog);
     }
 
-    private static void ConfigureAudioSfxCatalog()
+    private static void ConfigureAudioBusSettings()
     {
-        AudioSfxCatalogSO catalog = AssetDatabase.LoadAssetAtPath<AudioSfxCatalogSO>(AUDIO_SFX_CATALOG_PATH);
-        if (catalog == null)
+        AudioBusSettingsSO settings = AssetDatabase.LoadAssetAtPath<AudioBusSettingsSO>(AUDIO_BUS_SETTINGS_PATH);
+        if (settings == null)
         {
-            Debug.LogWarning($"[UpgradeCardSystemBuilder] Missing AudioSfxCatalog at {AUDIO_SFX_CATALOG_PATH}.");
-            return;
+            settings = ScriptableObject.CreateInstance<AudioBusSettingsSO>();
+            AssetDatabase.CreateAsset(settings, AUDIO_BUS_SETTINGS_PATH);
         }
 
         AudioClip woodBlock = AssetDatabase.LoadAssetAtPath<AudioClip>(WOOD_BLOCK_SFX_PATH);
         AudioClip swipe = AssetDatabase.LoadAssetAtPath<AudioClip>(SWIPE_SFX_PATH);
         AudioClip slap = AssetDatabase.LoadAssetAtPath<AudioClip>(SLAP_SFX_PATH);
-        AudioSfxEntry[] existingEntries = GetPrivateField<AudioSfxEntry[]>(catalog, "entries") ?? Array.Empty<AudioSfxEntry>();
+        AudioSfxGroupSettings[] groups = GetPrivateField<AudioSfxGroupSettings[]>(settings, "sfxGroups") ?? Array.Empty<AudioSfxGroupSettings>();
+        List<AudioSfxGroupSettings> groupList = new(groups);
+        AudioSfxGroupSettings uiGroup = FindOrCreateSfxGroup(groupList, AudioConstants.UI_SFX_GROUP_ID);
+        if (uiGroup == null)
+        {
+            return;
+        }
+
+        AudioSfxEntry[] existingEntries = GetPrivateField<AudioSfxEntry[]>(uiGroup, "sfxEntries") ?? Array.Empty<AudioSfxEntry>();
         List<AudioSfxEntry> entries = new(existingEntries);
 
         UpsertSfxEntry(entries, AudioSfxKey.UpgradeCardCommonReveal, woodBlock, 0.95f);
@@ -548,8 +556,30 @@ public static class UpgradeCardSystemBuilder
         UpsertSfxEntry(entries, AudioSfxKey.UpgradeCardEpicSelected, slap, 1.04f);
         UpsertSfxEntry(entries, AudioSfxKey.UpgradeCardLegendarySelected, slap, 0.88f);
 
-        SetPrivateField(catalog, "entries", entries.ToArray());
-        EditorUtility.SetDirty(catalog);
+        SetPrivateField(uiGroup, "sfxEntries", entries.ToArray());
+        SetPrivateField(settings, "sfxGroups", groupList.ToArray());
+        EditorUtility.SetDirty(settings);
+    }
+
+    private static AudioSfxGroupSettings FindOrCreateSfxGroup(List<AudioSfxGroupSettings> groups, string groupId)
+    {
+        if (groups == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < groups.Count; i++)
+        {
+            AudioSfxGroupSettings group = groups[i];
+            if (group != null && group.GroupId == groupId)
+            {
+                return group;
+            }
+        }
+
+        AudioSfxGroupSettings newGroup = new AudioSfxGroupSettings(groupId, 1f, 12, 10, 80, false);
+        groups.Add(newGroup);
+        return newGroup;
     }
 
     private static void UpsertSfxEntry(List<AudioSfxEntry> entries, AudioSfxKey key, AudioClip clip, float pitch)
@@ -580,6 +610,7 @@ public static class UpgradeCardSystemBuilder
         SetPrivateField(entry, "busType", AudioBusType.Sfx);
         SetPrivateField(entry, "playbackMode", AudioPlaybackMode.OneShot);
         SetPrivateField(entry, "pitch", pitch);
+        SetPrivateField(entry, "groupId", AudioConstants.UI_SFX_GROUP_ID);
         entry.OnValidate();
     }
 
@@ -638,17 +669,14 @@ public static class UpgradeCardSystemBuilder
         SetPrivateField(uiManager, "catalog", AssetDatabase.LoadAssetAtPath<ViewCatalog>(UI_VIEW_CATALOG_PATH));
 
         GameObject systems = new GameObject("Upgrade Card Test Systems");
-        systems.AddComponent<WaveTransitionManager>();
+        systems.AddComponent<RewardSelectionManager>();
         systems.AddComponent<ShopManager>();
         UpgradeCardTestSceneController controller = systems.AddComponent<UpgradeCardTestSceneController>();
-        SetPrivateField(controller, "uiManager", uiManager);
         SetPrivateField(controller, "playerPrefab", AssetDatabase.LoadAssetAtPath<Player>(PLAYER_PREFAB_PATH));
         SetPrivateField(controller, "testCharacterData", AssetDatabase.LoadAssetAtPath<CharacterDataSO>(TEST_CHARACTER_DATA_PATH));
         SetPrivateField(controller, "initialUpgradePoints", 3);
         SetPrivateField(controller, "testWaveNumber", 3);
         SetPrivateField(controller, "initialGold", 80);
-        SetPrivateField(controller, "runSelfTestOnStart", true);
-        SetPrivateField(controller, "selfTestTimeoutSeconds", 3f);
 
         EditorSceneManager.SaveScene(scene, TEST_SCENE_PATH);
         EditorSceneManager.OpenScene(TEST_SCENE_PATH);

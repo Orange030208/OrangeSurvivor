@@ -12,41 +12,12 @@ public class WormEnemySO : EnemySO
     
     [Header("攻击时机")]
     [Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
-    [Range(0f, 1f)] public float attackFinishNormalizedTime = 0.95f;
 
     [Header("Attacks")]
-    public ProjectileAttackData attackConfig = new()
-    {
-        timing = new AttackTimingData
-        {
-            actionId = ATTACK_ACTION_ID,
-            attackSfxKey = AudioSfxKey.GunshotLight,
-            cooldown = 1f,
-            damageMultiplier = 1f,
-        },
-        detection = new RangeDetectionData
-        {
-            rangeSource = AttackRangeSource.DetectionRangeProp,
-            fixedRange = 7f,
-            rangeMultiplier = 1f,
-        },
-    };
-    public ProjectileAttackData retreatAttackConfig = new()
-    {
-        timing = new AttackTimingData
-        {
-            actionId = RETREAT_ATTACK_ACTION_ID,
-            attackSfxKey = AudioSfxKey.GunshotLight,
-            cooldown = 1f,
-            damageMultiplier = 1f,
-        },
-        detection = new RangeDetectionData
-        {
-            rangeSource = AttackRangeSource.DetectionRangeProp,
-            fixedRange = 7f,
-            rangeMultiplier = 1f,
-        },
-    };
+    [Min(0.01f)] public float attackSpeedBenefitRatio = 1f;
+    public ProjectileDefinitionSO attackProjectileDefinition;
+    [Min(0.01f)] public float retreatAttackSpeedBenefitRatio = 1f;
+    public ProjectileDefinitionSO retreatAttackProjectileDefinition;
 
     [Header("Movement")]
     public RetreatMoveData retreatMovement = new()
@@ -59,20 +30,10 @@ public class WormEnemySO : EnemySO
     {
         retreatTriggerDistance = Mathf.Max(0f, retreatTriggerDistance);
         retreatCompleteDistance = Mathf.Max(retreatTriggerDistance, retreatCompleteDistance);
-        attackConfig.timing.actionId = string.IsNullOrWhiteSpace(attackConfig.timing.actionId) ? ATTACK_ACTION_ID : attackConfig.timing.actionId;
-        retreatAttackConfig.timing.actionId = string.IsNullOrWhiteSpace(retreatAttackConfig.timing.actionId) ? RETREAT_ATTACK_ACTION_ID : retreatAttackConfig.timing.actionId;
-        ValidateAttackConfig(ref attackConfig);
-        ValidateAttackConfig(ref retreatAttackConfig);
+        attackSpeedBenefitRatio = Mathf.Max(0.01f, attackSpeedBenefitRatio);
+        retreatAttackSpeedBenefitRatio = Mathf.Max(0.01f, retreatAttackSpeedBenefitRatio);
         retreatMovement.safeDistance = Mathf.Max(retreatTriggerDistance, retreatMovement.safeDistance);
         ValidateRetreatMoveData(ref retreatMovement);
-    }
-
-    private static void ValidateAttackConfig(ref ProjectileAttackData config)
-    {
-        config.timing.cooldown = Mathf.Max(0f, config.timing.cooldown);
-        config.timing.damageMultiplier = Mathf.Max(0f, config.timing.damageMultiplier);
-        config.detection.fixedRange = Mathf.Max(0f, config.detection.fixedRange);
-        config.detection.rangeMultiplier = Mathf.Max(0f, config.detection.rangeMultiplier);
     }
 
     private static void ValidateRetreatMoveData(ref RetreatMoveData config)

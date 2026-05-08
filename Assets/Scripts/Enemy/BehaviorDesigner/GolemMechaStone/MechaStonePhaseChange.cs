@@ -1,23 +1,19 @@
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 
-[TaskDescription("Runs Immune then Glow, updates the Mecha Stone phase, and removes transition modifiers on exit.")]
+[TaskDescription("Plays Immune until the animation finishes, updates the Mecha Stone phase, and removes transition modifiers on exit.")]
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
 public sealed class MechaStonePhaseChange : MechaStoneTaskBase
 {
     private const string PHASE_TRANSITION_MODIFIER_SOURCE = "GolemMechaStoneBoss_PhaseTransition";
 
-    private float startTime;
     private int targetPhase;
     private bool modifiersApplied;
-    private bool glowStarted;
 
     public override void OnStart()
     {
         base.OnStart();
-        startTime = Time.time;
         modifiersApplied = false;
-        glowStarted = false;
 
         if (!HasContext)
         {
@@ -42,14 +38,17 @@ public sealed class MechaStonePhaseChange : MechaStoneTaskBase
         StopMoving();
         FaceTarget();
 
-        float elapsedTime = Time.time - startTime;
-        if (!glowStarted && elapsedTime >= BossData.ImmuneDuration)
+        if (Animatable == null)
         {
-            glowStarted = true;
-            Animatable?.PlayState(BossAnimationConfig.GlowHash);
+            return TaskStatus.Failure;
         }
 
-        if (elapsedTime < BossData.ImmuneDuration + BossData.GlowDuration)
+        if (!Animatable.IsCurrentState(BossAnimationConfig.ImmuneHash))
+        {
+            return TaskStatus.Running;
+        }
+
+        if (Animatable.GetCurrentStateNormalizedTime() < 1f)
         {
             return TaskStatus.Running;
         }

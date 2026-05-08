@@ -77,7 +77,7 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
             return;
         }
 
-        AttackController.CommitRuntimeCooldown(GolemMechaStoneBossSO.SHIELD_ACTION_ID, BossData.ShieldCooldown);
+        AttackController.CommitSkillCooldown(GolemMechaStoneBossSO.SHIELD_ACTION_ID, BossData.ShieldCooldown);
         cooldownCommitted = true;
     }
 

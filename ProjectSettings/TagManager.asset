@@ -44,6 +44,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Projectile
+    uniqueID: 801249745
+    locked: 0
+  - name: VFX
+    uniqueID: 4100051545
+    locked: 0
   - name: Top
     uniqueID: 2002517321
     locked: 0

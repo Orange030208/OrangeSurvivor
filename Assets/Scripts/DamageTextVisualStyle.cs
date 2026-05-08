@@ -148,6 +148,31 @@ public sealed class DamageTextVisualStyle
         };
     }
 
+    public static DamageTextVisualStyle CreateDefaultPlayerDamaged()
+    {
+        return new DamageTextVisualStyle
+        {
+            fontStyle = FontStyles.Bold,
+            textColor = new Color(1f, 0.24f, 0.22f, 1f),
+            gradientTopColor = new Color(1f, 0.58f, 0.5f, 1f),
+            gradientBottomColor = new Color(0.76f, 0.04f, 0.03f, 1f),
+            fontSize = 4.8f,
+            lifetime = 0.9f,
+            floatDistance = 0.9f,
+            horizontalDrift = 0.2f,
+            startScale = 0.72f,
+            peakScale = 1.28f,
+            endScale = 1f,
+            popDuration = 0.14f,
+            settleDuration = 0.13f,
+            fadeDelay = 0.36f,
+            shakeStrength = 0.1f,
+            shakeDuration = 0.16f,
+            shakeVibrato = 14,
+            shakeRandomness = 80f
+        };
+    }
+
     public static DamageTextVisualStyle CreateLegacyNormal(float lifetime, Color color, float startScale, bool useFade)
     {
         DamageTextVisualStyle style = CreateDefaultNormal();

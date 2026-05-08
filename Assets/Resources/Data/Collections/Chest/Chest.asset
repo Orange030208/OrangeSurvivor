@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0d4313c562e4b9794bd56ea4a5ef99e, type: 3}
   m_Name: Chest
   m_EditorClassIdentifier: 
-  prefab: {fileID: 5263141732655844581, guid: faa8fbb426ab7b246a991233b700188a, type: 3}
-  AnimationConfig: {fileID: 11400000, guid: f66f2dade06fded46a9676dcd25d617d, type: 2}
+  prefab: {fileID: 5500386582381488803, guid: 445ab31b6b1a31a4abd864f55c61a8c9, type: 3}
+  AnimationConfig: {fileID: 11400000, guid: 927826cfa50da3d4995650f067e7bd48, type: 2}
   collectSfxKey: 201

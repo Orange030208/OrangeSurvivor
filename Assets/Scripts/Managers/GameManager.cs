@@ -25,17 +25,20 @@ public class GameManager : MonoSingletonBase<GameManager>
     private GameState currentGameState = GameState.None;
     private bool isPaused;
     private bool hasMoreWaves;
-    private int pendingChestSelectionCount;
+    private RewardSelectionReason currentRewardSelectionReason = RewardSelectionReason.None;
+    private bool shouldResumeCurrentWaveOnGameEntry;
     private int stateTransitionVersion;
 
     public GameState CurrentGameState => currentGameState;
+    public RewardSelectionReason CurrentRewardSelectionReason => currentRewardSelectionReason;
 
     private void OnEnable()
     {
         ResolveSceneReferences();
 
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Subscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
+        GameEventBus.Subscribe<RewardSelectionCompletedEvent>(OnRewardSelectionCompleted);
+        GameEventBus.Subscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Subscribe<MenuStartClickedEvent>(OnMenuStartClicked);
@@ -57,7 +60,8 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         stateTransitionVersion++;
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Unsubscribe<UpgradeSelectionCompletedEvent>(OnUpgradeSelectionCompleted);
+        GameEventBus.Unsubscribe<RewardSelectionCompletedEvent>(OnRewardSelectionCompleted);
+        GameEventBus.Unsubscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Unsubscribe<MenuStartClickedEvent>(OnMenuStartClicked);
@@ -98,7 +102,25 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnChestCollected()
     {
-        pendingChestSelectionCount++;
+        StartRewardSelection(RewardSelectionReason.Chest);
+    }
+
+    private void OnUpgradeRewardAvailable(UpgradeRewardAvailableEvent eventData)
+    {
+        StartRewardSelection(RewardSelectionReason.Upgrade);
+    }
+
+    private void StartRewardSelection(RewardSelectionReason reason)
+    {
+        if (reason == RewardSelectionReason.None
+            || currentGameState != GameState.Game
+            || currentRewardSelectionReason != RewardSelectionReason.None)
+        {
+            return;
+        }
+
+        currentRewardSelectionReason = reason;
+        TransitionToState(GameState.RewardSelection);
     }
 
     private void OnWaveCompleted(WaveCompletedEvent eventData)
@@ -111,14 +133,16 @@ public class GameManager : MonoSingletonBase<GameManager>
         StartWaveEndFlow(eventData);
     }
 
-    private void OnUpgradeSelectionCompleted()
+    private void OnRewardSelectionCompleted()
     {
-        if (currentGameState != GameState.WaveTransition)
+        if (currentGameState != GameState.RewardSelection)
         {
             return;
         }
 
-        TransitionToState(GameState.Shop);
+        currentRewardSelectionReason = RewardSelectionReason.None;
+        shouldResumeCurrentWaveOnGameEntry = true;
+        TransitionToState(GameState.Game);
     }
 
     private void OnCharacterSelectionCompleted()
@@ -232,6 +256,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         currentGameState = targetState;
         ApplySimulationState();
         EnterState(oldState, currentGameState);
+        ApplyStateMusic(currentGameState);
         GameEventBus.Publish(new GameStateChangedEvent(oldState, currentGameState));
     }
 
@@ -269,7 +294,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private bool ShouldBlockGameplayRequest(GameState targetState)
     {
         return targetState == GameState.Game
-               && (currentGameState == GameState.Shop || currentGameState == GameState.WaveTransition)
+               && currentGameState == GameState.Shop
                && !hasMoreWaves;
     }
 
@@ -280,7 +305,7 @@ public class GameManager : MonoSingletonBase<GameManager>
             GameEventBus.Publish(new StopCurrentWaveRequestedEvent());
         }
 
-        if (newState == GameState.Shop || newState == GameState.WaveTransition)
+        if (newState == GameState.Shop)
         {
             GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
         }
@@ -289,7 +314,8 @@ public class GameManager : MonoSingletonBase<GameManager>
         {
             GameEventBus.Publish(new ResetWavesRequestedEvent());
             GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
-            pendingChestSelectionCount = 0;
+            currentRewardSelectionReason = RewardSelectionReason.None;
+            shouldResumeCurrentWaveOnGameEntry = false;
         }
     }
 
@@ -312,12 +338,54 @@ public class GameManager : MonoSingletonBase<GameManager>
         }
     }
 
+    private void ApplyStateMusic(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.Menu:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Menu);
+                break;
+            case GameState.CharacterSelection:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.CharacterSelection);
+                break;
+            case GameState.Game:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Gameplay);
+                break;
+            case GameState.GameOver:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.GameOver);
+                break;
+            case GameState.StageComplete:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.StageComplete);
+                break;
+            case GameState.RewardSelection:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.RewardSelection);
+                break;
+            case GameState.Shop:
+                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Shop);
+                break;
+            default:
+                AudioPlaybackBridge.RequestStopMusic();
+                break;
+        }
+    }
+
     private void EnterGameState(GameState oldState)
     {
         EnsureMapGenerated();
         EnsurePlayerSpawned();
 
-        if (oldState == GameState.Shop || oldState == GameState.WaveTransition)
+        if (oldState == GameState.RewardSelection)
+        {
+            if (shouldResumeCurrentWaveOnGameEntry)
+            {
+                shouldResumeCurrentWaveOnGameEntry = false;
+                GameEventBus.Publish(new ResumeCurrentWaveRequestedEvent());
+            }
+
+            return;
+        }
+
+        if (oldState == GameState.Shop)
         {
             GameEventBus.Publish(new StartNextWaveRequestedEvent());
             return;
@@ -337,38 +405,8 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        if (ShouldEnterWaveTransition())
-        {
-            TransitionToState(GameState.WaveTransition);
-            return;
-        }
-
         TransitionToState(GameState.Shop);
     }
-
-    private bool ShouldEnterWaveTransition()
-    {
-        if (pendingChestSelectionCount > 0)
-        {
-            return true;
-        }
-
-        PlayerLevel playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
-        return playerLevel != null && playerLevel.IsLevelUpInCurrentWave;
-    }
-
-    public int ConsumePendingChestSelection()
-    {
-        if (pendingChestSelectionCount <= 0)
-        {
-            return 0;
-        }
-
-        pendingChestSelectionCount--;
-        return pendingChestSelectionCount;
-    }
-
-    public int PendingChestSelectionCount => pendingChestSelectionCount;
 
     private async UniTask CloseCurrentStatePageAsync(CancellationToken cancellationToken)
     {
@@ -389,8 +427,8 @@ public class GameManager : MonoSingletonBase<GameManager>
             case GameState.StageComplete:
                 await ClosePageAsync<StageCompleteUIPage>(cancellationToken);
                 break;
-            case GameState.WaveTransition:
-                await ClosePageAsync<WaveTransitionUIPage>(cancellationToken);
+            case GameState.RewardSelection:
+                await ClosePageAsync<RewardSelectionUIPage>(cancellationToken);
                 break;
             case GameState.Shop:
                 await ClosePageAsync<ShopUIPage>(cancellationToken);
@@ -423,8 +461,8 @@ public class GameManager : MonoSingletonBase<GameManager>
                     CreateStageCompletePageContext(),
                     cancellationToken);
                 break;
-            case GameState.WaveTransition:
-                await uiManager.OpenPageAsync<WaveTransitionUIPage>(cancellationToken: cancellationToken);
+            case GameState.RewardSelection:
+                await uiManager.OpenPageAsync<RewardSelectionUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Shop:
                 await uiManager.OpenPageAsync<ShopUIPage>(
@@ -641,6 +679,6 @@ public enum GameState
     Game,
     GameOver,
     StageComplete,
-    WaveTransition,
+    RewardSelection,
     Shop
 }

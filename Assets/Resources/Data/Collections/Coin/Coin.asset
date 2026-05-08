@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0d4313c562e4b9794bd56ea4a5ef99e, type: 3}
   m_Name: Coin
   m_EditorClassIdentifier: 
-  prefab: {fileID: -7630175410232958358, guid: 738b1782fb179a84ead2b226f6070a75, type: 3}
+  prefab: {fileID: -6102650942027127529, guid: 1d3dd5f7c8f016d43830049f6b08e601, type: 3}
   AnimationConfig: {fileID: 11400000, guid: f66f2dade06fded46a9676dcd25d617d, type: 2}
   collectSfxKey: 200

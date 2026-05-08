@@ -14,6 +14,10 @@ public class WormBrain : EnemyBrain
 
     private readonly StateMachine<WormAIState> stateMachine = new();
 
+    [Header("Attack Points")]
+    [SerializeField] private Transform attackPointTransform;
+    [SerializeField] private Transform retreatAttackPointTransform;
+
     private EnemyAttackController attackController;
     private WormEnemySO enemyData;
     private IMoveStrategy currentMoveStrategy;
@@ -73,27 +77,30 @@ public class WormBrain : EnemyBrain
 
         IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(
             owner,
-            propertiesManager,
-            enemyData.attackConfig.detection);
+            propertiesManager);
         IRangeDetectionStrategy retreatAttackDetectionStrategy = new DistanceRangeDetectionStrategy(
             owner,
-            propertiesManager,
-            enemyData.retreatAttackConfig.detection);
+            propertiesManager);
 
         attackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.attackConfig.timing,
+            WormEnemySO.ATTACK_ACTION_ID,
+            enemyData.attackSpeedBenefitRatio,
             attackDetectionStrategy,
-            enemyData.attackConfig.projectileDefinition);
+            attackPointTransform,
+            enemyData.attackProjectileDefinition);
         retreatAttackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.retreatAttackConfig.timing,
+            WormEnemySO.RETREAT_ATTACK_ACTION_ID,
+            enemyData.retreatAttackSpeedBenefitRatio,
             retreatAttackDetectionStrategy,
-            enemyData.retreatAttackConfig.projectileDefinition);
+            retreatAttackPointTransform,
+            enemyData.retreatAttackProjectileDefinition);
+        currentAttackStrategy = attackStrategy;
     }
 
     private void SetMoveStrategy(IMoveStrategy strategy)
@@ -122,6 +129,7 @@ public class WormBrain : EnemyBrain
 
         public override void OnEnter()
         {
+            brain.SetAttackStrategy(brain.attackStrategy);
             brain.currentMovable.StopMoving();
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.IdleHash);
         }
@@ -168,6 +176,7 @@ public class WormBrain : EnemyBrain
 
         public override void OnEnter()
         {
+            brain.SetAttackStrategy(brain.attackStrategy);
             brain.SetMoveStrategy(brain.approachMoveStrategy);
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.MoveHash);
         }
@@ -238,7 +247,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            if (brain.attackStrategy.CanUse(brain.target))
+            if (brain.currentAttackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(WormAIState.Attack);
                 return;
@@ -275,7 +284,10 @@ public class WormBrain : EnemyBrain
         {
             attackCommitted = false;
             attackFinished = false;
-            brain.SetAttackStrategy(brain.attackStrategy);
+            if (brain.currentAttackStrategy == null)
+            {
+                brain.SetAttackStrategy(brain.attackStrategy);
+            }
             brain.FaceTarget();
             brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.AttackHash);
             brain.currentMovable.StopMoving();
@@ -296,13 +308,13 @@ public class WormBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                if (!attackFinished && brain.currentAttackStrategy.TryExecute(brain.target))
+                if (!attackFinished && brain.currentAttackStrategy.TryExecuteCommitted(brain.target))
                 {
                     attackFinished = true;
                 }
             }
 
-            if (normalizedTime < brain.enemyData.attackFinishNormalizedTime) return;
+            if (normalizedTime < 1f) return;
             
 
             float distanceToTarget = brain.GetDistanceToTarget();

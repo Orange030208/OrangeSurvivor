@@ -7,10 +7,14 @@ public class FlyForestBrain : EnemyBrain
     {
         Idle,
         CircleKite,
-        RetreatBurst
+        RetreatBurst,
+        Attack
     }
 
     private readonly StateMachine<FlyForestAIState> stateMachine = new();
+
+    [Header("Attack Points")]
+    [SerializeField] private Transform shootPointTransform;
 
     private EnemyAttackController attackController;
     private FlyForestEnemySO enemyData;
@@ -58,6 +62,7 @@ public class FlyForestBrain : EnemyBrain
         stateMachine.RegisterState(new IdleState(this));
         stateMachine.RegisterState(new CircleKiteState(this));
         stateMachine.RegisterState(new RetreatBurstState(this));
+        stateMachine.RegisterState(new AttackState(this));
     }
 
     private void BuildRuntimeStrategies()
@@ -66,15 +71,16 @@ public class FlyForestBrain : EnemyBrain
         retreatMovementStrategy = new RetreatMoveStrategy(owner, currentMovable, enemyData.retreatMovement);
         IRangeDetectionStrategy detectionStrategy = new DistanceRangeDetectionStrategy(
             owner,
-            propertiesManager,
-            enemyData.normalAttackConfig.detection);
+            propertiesManager);
         normalAttackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.normalAttackConfig.timing,
+            FlyForestEnemySO.NORMAL_ATTACK_ACTION_ID,
+            enemyData.normalAttackSpeedBenefitRatio,
             detectionStrategy,
-            enemyData.normalAttackConfig.projectileDefinition);
+            shootPointTransform,
+            enemyData.normalAttackProjectileDefinition);
     }
 
     private void SetMoveStrategy(IMoveStrategy strategy)
@@ -153,7 +159,10 @@ public class FlyForestBrain : EnemyBrain
 
             brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceTarget();
-            brain.normalAttackStrategy.TryExecute(brain.target);
+            if (brain.normalAttackStrategy.CanUse(brain.target))
+            {
+                brain.stateMachine.ChangeState(FlyForestAIState.Attack);
+            }
         }
     }
 
@@ -199,12 +208,76 @@ public class FlyForestBrain : EnemyBrain
 
             brain.currentMoveStrategy.ExecuteMove(brain.target);
             brain.FaceMoveDirection();
-            brain.normalAttackStrategy.TryExecute(brain.target);
+            if (brain.normalAttackStrategy.CanUse(brain.target))
+            {
+                brain.stateMachine.ChangeState(FlyForestAIState.Attack);
+            }
         }
 
         public override void OnExit()
         {
             brain.propertiesManager.RemoveModifiers(RETREAT_BURST_MODIFIER_SOURCE);
+        }
+    }
+
+    private sealed class AttackState : StateBase<FlyForestAIState>
+    {
+        private readonly FlyForestBrain brain;
+        private bool attackCommitted;
+        private int attackStateHash;
+
+        public AttackState(FlyForestBrain brain) : base(FlyForestAIState.Attack)
+        {
+            this.brain = brain;
+        }
+
+        public override void OnEnter()
+        {
+            attackCommitted = false;
+            attackStateHash = brain.enemyData.AnimConfig.AttackHash;
+            brain.currentMovable.StopMoving();
+
+            if (brain.target == null)
+            {
+                brain.stateMachine.ChangeState(FlyForestAIState.Idle);
+                return;
+            }
+
+            brain.FaceTarget();
+            brain.currentAnimatable.PlayState(attackStateHash);
+        }
+
+        public override void OnUpdate()
+        {
+            if (brain.target == null)
+            {
+                brain.stateMachine.ChangeState(FlyForestAIState.Idle);
+                return;
+            }
+
+            if (!brain.currentAnimatable.IsCurrentState(attackStateHash))
+            {
+                return;
+            }
+
+            float normalizedTime = brain.currentAnimatable.GetCurrentStateNormalizedTime();
+            if (!attackCommitted && normalizedTime >= brain.enemyData.NormalAttackCommitNormalizedTime)
+            {
+                attackCommitted = true;
+                brain.normalAttackStrategy.TryExecuteCommitted(brain.target);
+            }
+
+            if (normalizedTime >= 1f)
+            {
+                brain.stateMachine.ChangeState(brain.IsLowHealth()
+                    ? FlyForestAIState.RetreatBurst
+                    : FlyForestAIState.CircleKite);
+            }
+        }
+
+        public override void OnFixedUpdate()
+        {
+            brain.currentMovable.StopMoving();
         }
     }
 }

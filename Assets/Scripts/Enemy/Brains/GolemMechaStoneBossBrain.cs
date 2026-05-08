@@ -13,9 +13,13 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private BehaviorTree behaviorTree;
     private EnemyAttackController attackController;
     private GolemMechaStoneBossSO bossData;
+    [Header("Attack Points")]
+    [SerializeField] private Transform meleePointTransform;
+    [SerializeField] private Transform shootPointTransform;
     [SerializeField] private Transform laserOriginTransform;
     [SerializeField, Min(1)] private int initialPhase = 1;
     private IMoveStrategy chaseMovementStrategy;
+    private IRangeDetectionStrategy laserDetectionStrategy;
     private IRangeDetectionStrategy meleeDetectionStrategy;
     private IRangeDetectionStrategy shootDetectionStrategy;
     private IAttackStrategy meleeAttackStrategy;
@@ -24,6 +28,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private int runningActionCount;
 
     public IMoveStrategy ChaseMovementStrategy => chaseMovementStrategy;
+    public IRangeDetectionStrategy LaserDetectionStrategy => laserDetectionStrategy;
     public IRangeDetectionStrategy MeleeDetectionStrategy => meleeDetectionStrategy;
     public IRangeDetectionStrategy ShootDetectionStrategy => shootDetectionStrategy;
     public IAttackStrategy MeleeAttackStrategy => meleeAttackStrategy;
@@ -69,10 +74,9 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
                 $"{nameof(GolemMechaStoneBossBrain)} requires {nameof(GolemMechaStoneBossSO)}.{nameof(GolemMechaStoneBossSO.ShootProjectileDefinition)}.");
         }
 
-        ResolveLaserOriginTransform();
         ResetPhase();
 
-        BuildRuntimeStrategies();
+        BuildStrategies();
         BindSharedVariables();
     }
 
@@ -157,35 +161,40 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
         runningActionCount = Mathf.Max(0, runningActionCount - 1);
     }
 
-    private void BuildRuntimeStrategies()
+    private void BuildStrategies()
     {
         chaseMovementStrategy = new DirectChaseMoveStrategy(currentMovable);
-        meleeDetectionStrategy = new ForwardCircleRangeDetectionStrategy(this.owner, propertiesManager, bossData.MeleeDetectionData);
-        shootDetectionStrategy = new DistanceRangeDetectionStrategy(this.owner, propertiesManager, bossData.ShootDetectionData);
-        meleeAttackStrategy = new MechaStoneDirectDamageAttackStrategy(
+        laserDetectionStrategy = new DistanceRangeDetectionStrategy(
+            this.owner,
+            propertiesManager,
+            bossData.LaserRangeMultiplier);
+        meleeDetectionStrategy = new DistanceRangeDetectionStrategy(
+            this.owner,
+            propertiesManager,
+            bossData.MeleeRangeMultiplier);
+        shootDetectionStrategy = new DistanceRangeDetectionStrategy(
+            this.owner,
+            propertiesManager,
+            bossData.ShootRangeMultiplier);
+        meleeAttackStrategy = new DirectDamageAttackStrategy(
             this.owner,
             attackController,
             propertiesManager,
-            bossData.MeleeTimingData,
-            meleeDetectionStrategy);
-        shootAttackStrategy = new MechaStoneProjectileAttackStrategy(
+            GolemMechaStoneBossSO.MELEE_ACTION_ID,
+            bossData.MeleeAttackSpeedBenefitRatio,
+            meleeDetectionStrategy,
+            meleePointTransform,
+            bossData.MeleeRangeMultiplier,
+            bossData.MeleeHitVfxPrefab);
+        shootAttackStrategy = new ProjectileAttackStrategy(
             this.owner,
             attackController,
             propertiesManager,
-            bossData.ShootTimingData,
+            GolemMechaStoneBossSO.SHOOT_ACTION_ID,
+            bossData.ShootAttackSpeedBenefitRatio,
             shootDetectionStrategy,
+            shootPointTransform,
             bossData.ShootProjectileDefinition);
-    }
-
-    private void ResolveLaserOriginTransform()
-    {
-        if (laserOriginTransform != null || owner == null)
-        {
-            return;
-        }
-
-        Transform child = owner.transform.Find(DEFAULT_LASER_ORIGIN_NAME);
-        laserOriginTransform = child != null ? child : owner.transform;
     }
 
     private void BindSharedVariables()

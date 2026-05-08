@@ -18,7 +18,6 @@ MonoBehaviour:
   animConfig: {fileID: 11400000, guid: 41efa156e817d3c488cb81700223a388, type: 2}
   damagedSfxKey: 400
   attackCommitNormalizedTime: 0.55
-  attackFinishNormalizedTime: 0.95
   berserkInterval: 8
   preChargeStunDuration: 1.2
   chargeDuration: 1.5
@@ -30,19 +29,10 @@ MonoBehaviour:
   - propType: 4
     modifierType: 3
     value: 500
+  attackSpeedBenefitRatio: 2.2222223
+  attackForwardOffset: 0
+  postChargeAttackForwardOffset: 0
   postChargeAttackModifiers:
   - propType: 15
     modifierType: 3
     value: 50
-  attackConfig:
-    timing:
-      actionId: Golem_Attack
-      attackSfxKey: 3
-      cooldown: 1
-      damageMultiplier: 1
-    detection:
-      rangeSource: 1
-      fixedRange: 1
-      rangeMultiplier: 1
-      forwardOffset: 0
-  postChargeAttackForwardOffset: 0

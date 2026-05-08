@@ -2,60 +2,104 @@ using UnityEngine;
 
 public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
 {
-    [SerializeField] private LineRenderer glowLine;
     [SerializeField] private LineRenderer coreLine;
+    [SerializeField] private Animator startVFXAnimator;
+    [SerializeField, Range(0f, 1f)] private float coreLineStartNormalizedTime = 0.75f;
 
-    public bool IsConfigured => glowLine != null && coreLine != null;
+    private bool coreLineRequested;
+    private Vector3 pendingStartPosition;
+    private Vector3 pendingEndPosition;
 
-    public void Show(
-        Vector3 startPosition,
-        Vector3 endPosition,
-        bool showCore)
+    public bool IsCoreLineVisible => coreLine == null || coreLine.enabled;
+
+    public void PlayStart()
     {
         ResolveReferences();
-        if (!IsConfigured)
+        coreLineRequested = false;
+        SetCoreLineEnabled(false);
+
+        if (startVFXAnimator == null)
         {
-            Debug.LogWarning($"{nameof(GolemMechaStoneLaserVisual)} on {name} is missing LineRenderer references.", this);
             return;
         }
 
-        ConfigureLine(glowLine, startPosition, endPosition);
-        coreLine.enabled = showCore;
-        if (showCore)
-        {
-            ConfigureLine(coreLine, startPosition, endPosition);
-        }
+        startVFXAnimator.enabled = true;
+        startVFXAnimator.Play(0, 0, 0f);
     }
 
-    public void Hide()
-    {
-        ResolveReferences();
-        if (glowLine != null)
-        {
-            glowLine.enabled = false;
-        }
-
-        if (coreLine != null)
-        {
-            coreLine.enabled = false;
-        }
-    }
-
-    private static void ConfigureLine(
-        LineRenderer lineRenderer,
+    public void ShowCore(
         Vector3 startPosition,
         Vector3 endPosition)
     {
-        lineRenderer.enabled = true;
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.positionCount = 2;
-        lineRenderer.SetPosition(0, startPosition);
-        lineRenderer.SetPosition(1, endPosition);
-    }
+        ResolveReferences();
+        coreLineRequested = true;
+        pendingStartPosition = startPosition;
+        pendingEndPosition = endPosition;
+        ConfigureLine(startPosition, endPosition);
 
-    private void OnValidate()
+        if (CanShowCoreLine())
+        {
+            SetCoreLineEnabled(true);
+        }
+    }
+    
+    public void Hide()
     {
         ResolveReferences();
+        coreLineRequested = false;
+        SetCoreLineEnabled(false);
+        if (startVFXAnimator != null)
+        {
+            startVFXAnimator.enabled = false;
+        }
+    }
+
+    private void Update()
+    {
+        if (!coreLineRequested)
+        {
+            return;
+        }
+
+        ConfigureLine(pendingStartPosition, pendingEndPosition);
+        if (CanShowCoreLine())
+        {
+            SetCoreLineEnabled(true);
+        }
+    }
+
+    private void ConfigureLine(
+        Vector3 startPosition,
+        Vector3 endPosition)
+    {
+        if (coreLine == null)
+        {
+            return;
+        }
+
+        coreLine.useWorldSpace = false;
+        coreLine.positionCount = 2;
+        coreLine.SetPosition(0, startPosition);
+        coreLine.SetPosition(1, endPosition);
+    }
+
+    private bool CanShowCoreLine()
+    {
+        if (startVFXAnimator == null || !startVFXAnimator.enabled)
+        {
+            return true;
+        }
+
+        AnimatorStateInfo stateInfo = startVFXAnimator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.normalizedTime >= coreLineStartNormalizedTime;
+    }
+
+    private void SetCoreLineEnabled(bool enabled)
+    {
+        if (coreLine != null)
+        {
+            coreLine.enabled = enabled;
+        }
     }
 
     private void Awake()
@@ -64,24 +108,29 @@ public sealed class GolemMechaStoneLaserVisual : MonoBehaviour
         Hide();
     }
 
-    private void ResolveReferences()
+    private void OnValidate()
     {
-        glowLine ??= ResolveChildLine("Glow", "GolemMechaStoneLaserGlow");
-        coreLine ??= ResolveChildLine("Core", "GolemMechaStoneLaserCore");
+        ResolveReferences();
     }
 
-    private LineRenderer ResolveChildLine(params string[] names)
+    private void ResolveReferences()
     {
-        for (int i = 0; i < names.Length; i++)
+        if (coreLine == null)
         {
-            Transform child = transform.Find(names[i]);
-            if (child != null && child.TryGetComponent(out LineRenderer lineRenderer))
+            Transform coreTransform = transform.Find("Core");
+            if (coreTransform != null)
             {
-                return lineRenderer;
+                coreTransform.TryGetComponent(out coreLine);
             }
         }
 
-        return null;
+        if (startVFXAnimator == null)
+        {
+            Transform startTransform = transform.Find("Start");
+            if (startTransform != null)
+            {
+                startTransform.TryGetComponent(out startVFXAnimator);
+            }
+        }
     }
-
 }

@@ -9,7 +9,8 @@ public sealed class CanUseMechaStoneShoot : MechaStoneConditionBase
         if (!RefreshContext() ||
             !HasTarget ||
             BossBrain.IsActionRunning ||
-            BossBrain.ShootAttackStrategy == null)
+            BossBrain.ShootAttackStrategy == null ||
+            IsTargetInMeleeRange())
         {
             return TaskStatus.Failure;
         }
@@ -17,5 +18,11 @@ public sealed class CanUseMechaStoneShoot : MechaStoneConditionBase
         return BossBrain.ShootAttackStrategy.CanUse(TargetEntity)
             ? TaskStatus.Success
             : TaskStatus.Failure;
+    }
+
+    private bool IsTargetInMeleeRange()
+    {
+        return BossBrain.MeleeDetectionStrategy != null &&
+               BossBrain.MeleeDetectionStrategy.IsTargetInRange(TargetEntity);
     }
 }

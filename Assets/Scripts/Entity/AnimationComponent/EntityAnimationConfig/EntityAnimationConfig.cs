@@ -24,6 +24,7 @@ public class EntityAnimationConfig : ScriptableObject
 
     [Header("Collection Animation States")]
     public string Float = "Float";
+    public string Open = "Open";
     
     public string Attack = "Attack";
     public string Attack1 = "Attack1";
@@ -45,6 +46,7 @@ public class EntityAnimationConfig : ScriptableObject
     [NonSerialized] public int IdleHash;
     [NonSerialized] public int MoveHash;
     [NonSerialized] public int FloatHash;
+    [NonSerialized] public int OpenHash;
     [NonSerialized] public int AttackHash;
     [NonSerialized] public int Attack1Hash;
     [NonSerialized] public int Attack2Hash;
@@ -77,6 +79,7 @@ public class EntityAnimationConfig : ScriptableObject
         IdleHash = Animator.StringToHash(Idle);
         MoveHash = Animator.StringToHash(Move);
         FloatHash = Animator.StringToHash(Float);
+        OpenHash = Animator.StringToHash(Open);
         AttackHash = Animator.StringToHash(Attack);
         Attack1Hash = Animator.StringToHash(Attack1);
         Attack2Hash = Animator.StringToHash(Attack2);

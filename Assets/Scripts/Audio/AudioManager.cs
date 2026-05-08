@@ -1,11 +1,13 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// 音频总管理器：
-/// - 统一管理 BGM / SFX 播放；
+/// - 统一管理 Music / SFX 播放；
 /// - 直接根据强类型枚举解析配置；
-/// - 提供总音量、BGM 音量、SFX 音量控制；
-/// - 自动创建运行所需的总线播放器；
+/// - 提供总音量、Music 音量、SFX 根音量与 SFX 分组音量控制；
+/// - 自动创建运行所需的 Music 总线与 SFX 分组池；
 /// - 作为跨场景持久对象存在。
 /// </summary>
 [DisallowMultipleComponent]
@@ -13,15 +15,15 @@ public class AudioManager : MonoBehaviour
 {
     private const string AUDIO_ROOT_OBJECT_NAME = "AudioManager";
     private const string MUSIC_BUS_OBJECT_NAME = "MusicBus";
-    private const string SFX_BUS_OBJECT_NAME = "SfxBus";
+    private const string SFX_BUS_ROOT_OBJECT_NAME = "SfxBuses";
 
     private static AudioManager instance;
 
     [Header("Config")]
-    [Tooltip("音效配置总表。所有 SFX 播放请求都会先在这里按枚举查询具体配置。")]
-    [SerializeField] private AudioSfxCatalogSO audioSfxCatalog;
     [Tooltip("音频运行时设置。提供状态驱动的 BGM 配置与淡变时长。")]
     [SerializeField] private AudioRuntimeSettingsSO runtimeSettings;
+    [Tooltip("音频总线设置。SFX 分组与各组下的 SFX 条目都在这里配置。")]
+    [SerializeField] private AudioBusSettingsSO busSettings;
 
     [Header("Volumes")]
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float masterVolume = AudioConstants.DEFAULT_VOLUME;
@@ -29,7 +31,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float sfxVolume = AudioConstants.DEFAULT_VOLUME;
 
     private AudioBusPlayer musicBusPlayer;
-    private AudioBusPlayer sfxBusPlayer;
+    private Transform sfxBusRoot;
+    private readonly Dictionary<string, AudioSfxGroupBusPlayer> sfxGroupPlayers = new(StringComparer.Ordinal);
+    private readonly HashSet<string> warnedMissingGroups = new(StringComparer.Ordinal);
 
     public static AudioManager Instance => instance;
     public float MasterVolume => masterVolume;
@@ -56,15 +60,23 @@ public class AudioManager : MonoBehaviour
     private void OnEnable()
     {
         GameEventBus.Subscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
+        GameEventBus.Subscribe<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
+        GameEventBus.Subscribe<AudioMusicStopRequestedEvent>(OnAudioMusicStopRequested);
         GameEventBus.Subscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
         GameEventBus.Subscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
+        GameEventBus.Subscribe<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
+        GameEventBus.Subscribe<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
     }
 
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
+        GameEventBus.Unsubscribe<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
+        GameEventBus.Unsubscribe<AudioMusicStopRequestedEvent>(OnAudioMusicStopRequested);
         GameEventBus.Unsubscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
         GameEventBus.Unsubscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
+        GameEventBus.Unsubscribe<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
+        GameEventBus.Unsubscribe<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
     }
 
     private void OnValidate()
@@ -81,18 +93,23 @@ public class AudioManager : MonoBehaviour
         ApplyVolumeSettings();
     }
 
-    public static AudioManager EnsureInstance(AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
+    public static AudioManager EnsureInstance(AudioRuntimeSettingsSO settings)
+    {
+        return EnsureInstance(settings, null);
+    }
+
+    public static AudioManager EnsureInstance(AudioRuntimeSettingsSO settings, AudioBusSettingsSO busSettings)
     {
         if (instance != null)
         {
-            instance.AssignMissingReferences(sfxCatalog, settings);
+            instance.AssignMissingReferences(settings, busSettings);
             return instance;
         }
 
         GameObject rootObject = new(AUDIO_ROOT_OBJECT_NAME);
         AudioManager manager = rootObject.AddComponent<AudioManager>();
-        manager.audioSfxCatalog = sfxCatalog;
         manager.runtimeSettings = settings;
+        manager.busSettings = busSettings;
         return manager;
     }
 
@@ -101,6 +118,11 @@ public class AudioManager : MonoBehaviour
     /// Music + Loop 会走淡入淡出，其余请求立即执行。
     /// </summary>
     public void PlayBgm(AudioBgmKey bgmKey, bool restartIfPlaying)
+    {
+        PlayMusic(bgmKey, restartIfPlaying);
+    }
+
+    public void PlayMusic(AudioBgmKey bgmKey, bool restartIfPlaying)
     {
         if (!enabled || bgmKey == AudioBgmKey.None)
         {
@@ -127,18 +149,24 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void PlaySfx(AudioSfxKey sfxKey)
     {
+        PlaySfx(sfxKey, AudioSfxPlayContext.None);
+    }
+
+    public void PlaySfx(AudioSfxKey sfxKey, AudioSfxPlayContext context)
+    {
         if (!enabled || sfxKey == AudioSfxKey.None)
         {
             return;
         }
 
-        if (!audioSfxCatalog.TryGetCue(sfxKey, out AudioCueData cueData))
+        if (busSettings == null || !busSettings.TryGetSfxCue(sfxKey, out AudioCueData cueData))
         {
             Debug.LogWarning($"Audio sfx key '{sfxKey}' was not found.", this);
             return;
         }
 
-        sfxBusPlayer.Play(cueData, false);
+        AudioSfxGroupBusPlayer groupPlayer = ResolveSfxGroupPlayer(cueData.GroupId);
+        groupPlayer.Play(cueData, context);
     }
 
     /// <summary>
@@ -155,11 +183,49 @@ public class AudioManager : MonoBehaviour
         AudioBusPlayer busPlayer = ResolveBusPlayer(busType);
         if (busType == AudioBusType.Music)
         {
-            busPlayer.StopPlaybackWithFade(runtimeSettings.MusicFadeDuration);
+            StopMusic();
             return;
         }
 
-        busPlayer.StopPlayback();
+        StopAllSfx();
+    }
+
+    public void StopMusic()
+    {
+        if (!enabled)
+        {
+            return;
+        }
+
+        musicBusPlayer.StopPlaybackWithFade(runtimeSettings.MusicFadeDuration);
+    }
+
+    public void StopSfxGroup(string groupId)
+    {
+        if (!enabled)
+        {
+            return;
+        }
+
+        AudioSfxGroupBusPlayer groupPlayer = ResolveSfxGroupPlayer(groupId);
+        groupPlayer.StopAll();
+    }
+
+    public void StopAllSfx()
+    {
+        foreach (AudioSfxGroupBusPlayer groupPlayer in sfxGroupPlayers.Values)
+        {
+            if (groupPlayer != null)
+            {
+                groupPlayer.StopAll();
+            }
+        }
+    }
+
+    public void SetSfxGroupVolume(string groupId, float volume)
+    {
+        AudioSfxGroupBusPlayer groupPlayer = ResolveSfxGroupPlayer(groupId);
+        groupPlayer.SetGroupVolume(volume);
     }
 
     public bool IsPlayingMusicCue(AudioBgmKey bgmKey)
@@ -169,14 +235,14 @@ public class AudioManager : MonoBehaviour
 
     private void ValidateConfiguration()
     {
-        if (audioSfxCatalog == null)
-        {
-            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioSfxCatalogSO)}.");
-        }
-
         if (runtimeSettings == null)
         {
             throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioRuntimeSettingsSO)}.");
+        }
+
+        if (busSettings == null)
+        {
+            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioBusSettingsSO)}.");
         }
     }
 
@@ -200,7 +266,17 @@ public class AudioManager : MonoBehaviour
 
     private void OnAudioBgmPlayRequested(AudioBgmPlayRequestedEvent eventData)
     {
-        PlayBgm(eventData.BgmKey, eventData.RestartIfPlaying);
+        PlayMusic(eventData.BgmKey, eventData.RestartIfPlaying);
+    }
+
+    private void OnAudioMusicPlayRequested(AudioMusicPlayRequestedEvent eventData)
+    {
+        PlayMusic(eventData.BgmKey, eventData.RestartIfPlaying);
+    }
+
+    private void OnAudioMusicStopRequested(AudioMusicStopRequestedEvent eventData)
+    {
+        StopMusic();
     }
 
     private void OnAudioStopRequested(AudioStopRequestedEvent eventData)
@@ -210,26 +286,58 @@ public class AudioManager : MonoBehaviour
 
     private void OnAudioSfxPlayRequested(AudioSfxPlayRequestedEvent eventData)
     {
-        PlaySfx(eventData.SfxKey);
+        AudioSfxPlayContext context = eventData.HasPosition
+            ? new AudioSfxPlayContext(eventData.Position)
+            : AudioSfxPlayContext.None;
+        PlaySfx(eventData.SfxKey, context);
+    }
+
+    private void OnAudioSfxGroupStopRequested(AudioSfxGroupStopRequestedEvent eventData)
+    {
+        StopSfxGroup(eventData.GroupId);
+    }
+
+    private void OnAudioSfxGroupVolumeChanged(AudioSfxGroupVolumeChangedEvent eventData)
+    {
+        SetSfxGroupVolume(eventData.GroupId, eventData.Volume);
     }
 
     private void ApplyVolumeSettings()
     {
         EnsureBusPlayers();
-        musicBusPlayer.SetBusVolume(masterVolume * musicVolume);
-        sfxBusPlayer.SetBusVolume(masterVolume * sfxVolume);
+        musicBusPlayer.SetBusVolume(masterVolume * musicVolume * GetBusMusicVolume());
+
+        float rootSfxVolume = masterVolume * sfxVolume * GetBusSfxVolume();
+        foreach (AudioSfxGroupBusPlayer groupPlayer in sfxGroupPlayers.Values)
+        {
+            if (groupPlayer != null)
+            {
+                groupPlayer.SetRootVolume(rootSfxVolume);
+            }
+        }
     }
 
     private AudioBusPlayer ResolveBusPlayer(AudioBusType busType)
     {
         EnsureBusPlayers();
-        return busType == AudioBusType.Music ? musicBusPlayer : sfxBusPlayer;
+        return musicBusPlayer;
     }
 
     private void EnsureBusPlayers()
     {
         musicBusPlayer ??= GetOrCreateBusPlayer(MUSIC_BUS_OBJECT_NAME);
-        sfxBusPlayer ??= GetOrCreateBusPlayer(SFX_BUS_OBJECT_NAME);
+        if (sfxBusRoot == null)
+        {
+            Transform root = transform.Find(SFX_BUS_ROOT_OBJECT_NAME);
+            if (root == null)
+            {
+                GameObject rootObject = new(SFX_BUS_ROOT_OBJECT_NAME);
+                rootObject.transform.SetParent(transform, false);
+                root = rootObject.transform;
+            }
+
+            sfxBusRoot = root;
+        }
     }
 
     private AudioBusPlayer GetOrCreateBusPlayer(string objectName)
@@ -251,16 +359,78 @@ public class AudioManager : MonoBehaviour
         return busPlayer;
     }
 
-    private void AssignMissingReferences(AudioSfxCatalogSO sfxCatalog, AudioRuntimeSettingsSO settings)
+    private AudioSfxGroupBusPlayer ResolveSfxGroupPlayer(string requestedGroupId)
     {
-        if (audioSfxCatalog == null)
+        EnsureBusPlayers();
+
+        string groupId = AudioBusSettingsSO.NormalizeGroupId(requestedGroupId);
+        AudioSfxGroupSettings groupSettings = ResolveSfxGroupSettings(groupId);
+        groupId = groupSettings.GroupId;
+
+        if (sfxGroupPlayers.TryGetValue(groupId, out AudioSfxGroupBusPlayer existing) && existing != null)
         {
-            audioSfxCatalog = sfxCatalog;
+            return existing;
         }
 
+        Transform groupTransform = sfxBusRoot.Find(groupId);
+        if (groupTransform == null)
+        {
+            GameObject groupObject = new(groupId);
+            groupObject.transform.SetParent(sfxBusRoot, false);
+            groupTransform = groupObject.transform;
+        }
+
+        AudioSfxGroupBusPlayer groupPlayer = groupTransform.GetComponent<AudioSfxGroupBusPlayer>();
+        if (groupPlayer == null)
+        {
+            groupPlayer = groupTransform.gameObject.AddComponent<AudioSfxGroupBusPlayer>();
+        }
+
+        groupPlayer.Configure(groupSettings, masterVolume * sfxVolume * GetBusSfxVolume(), ResolveAudibleDistance());
+        sfxGroupPlayers[groupId] = groupPlayer;
+        return groupPlayer;
+    }
+
+    private AudioSfxGroupSettings ResolveSfxGroupSettings(string groupId)
+    {
+        if (busSettings.TryGetSfxGroup(groupId, out AudioSfxGroupSettings settings))
+        {
+            return settings;
+        }
+
+        if (warnedMissingGroups.Add(groupId))
+        {
+            Debug.LogWarning($"Audio sfx group '{groupId}' was not found. Falling back to '{busSettings.DefaultSfxGroupId}'.", this);
+        }
+
+        return busSettings.GetDefaultSfxGroup();
+    }
+
+    private float GetBusMusicVolume()
+    {
+        return busSettings.MusicVolume;
+    }
+
+    private float GetBusSfxVolume()
+    {
+        return busSettings.SfxVolume;
+    }
+
+    private float ResolveAudibleDistance()
+    {
+        return busSettings.AudibleDistance;
+    }
+
+    private void AssignMissingReferences(AudioRuntimeSettingsSO settings, AudioBusSettingsSO busSettings)
+    {
         if (runtimeSettings == null)
         {
             runtimeSettings = settings;
+        }
+
+        if (this.busSettings == null)
+        {
+            this.busSettings = busSettings;
         }
     }
 }

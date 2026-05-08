@@ -7,8 +7,9 @@ public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
     public override void OnStart()
     {
         base.OnStart();
-        if (!HasContext)
+        if (!HasContext || IsTargetInMeleeRange())
         {
+            StopMoving();
             return;
         }
 
@@ -24,6 +25,12 @@ public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
         }
 
         FaceTarget();
+        if (IsTargetInMeleeRange())
+        {
+            StopMoving();
+            return TaskStatus.Failure;
+        }
+
         return TaskStatus.Running;
     }
 
@@ -34,6 +41,12 @@ public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
             return;
         }
 
+        if (IsTargetInMeleeRange())
+        {
+            StopMoving();
+            return;
+        }
+
         BossBrain.ChaseMovementStrategy.ExecuteMove(TargetEntity);
         FaceTarget();
     }
@@ -41,5 +54,12 @@ public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
     public override void OnEnd()
     {
         StopMoving();
+    }
+
+    private bool IsTargetInMeleeRange()
+    {
+        return BossBrain?.MeleeDetectionStrategy != null &&
+               HasTarget &&
+               BossBrain.MeleeDetectionStrategy.IsTargetInRange(TargetEntity);
     }
 }

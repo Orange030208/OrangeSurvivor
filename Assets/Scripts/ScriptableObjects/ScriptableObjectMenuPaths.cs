@@ -45,7 +45,7 @@ public static class ScriptableObjectMenuPaths
     public const string RETREAT_STRATEGY = ENTITY_ROOT + "Movement Strategies/Retreat Strategy";
 
     public const string AUDIO_RUNTIME_SETTINGS = SYSTEMS_ROOT + "Audio/Runtime Settings";
-    public const string AUDIO_SFX_CATALOG = SYSTEMS_ROOT + "Audio/Sfx Catalog";
+    public const string AUDIO_BUS_SETTINGS = SYSTEMS_ROOT + "Audio/Bus Settings";
     public const string UI_FRAMEWORK_SETTINGS = SYSTEMS_ROOT + "UI/Framework Settings";
     public const string UI_PREFAB_CATALOG = SYSTEMS_ROOT + "UI/Prefab Catalog";
     public const string UI_MOTION_DEFINITION = SYSTEMS_ROOT + "UI/Motion Definition";

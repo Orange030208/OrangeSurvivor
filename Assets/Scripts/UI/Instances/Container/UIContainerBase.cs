@@ -10,15 +10,10 @@ using UnityEngine.UI;
 public abstract class UIContainerBase<T, K> : ViewPartBase, IDisposable, IPointerClickHandler
     where K : MonoBehaviour
 {
-    [Header("--")]
-    [FormerlySerializedAs("IconImage")]
     [SerializeField] protected Image iconImage;
 
-    [FormerlySerializedAs("accessoryNameText")]
     [SerializeField] protected TextMeshProUGUI nameText;
 
-    [FormerlySerializedAs("priceText")]
-    [FormerlySerializedAs("recyclePriceText")]
     [SerializeField] protected K bottom;
 
     [Header("卡片品质表现")]

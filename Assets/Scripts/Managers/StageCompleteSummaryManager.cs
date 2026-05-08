@@ -56,7 +56,7 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-        if (eventData.NewState == GameState.Game && eventData.OldState != GameState.Shop && eventData.OldState != GameState.WaveTransition)
+        if (eventData.NewState == GameState.Game && eventData.OldState != GameState.Shop && eventData.OldState != GameState.RewardSelection)
         {
             ResetSummary();
             CaptureLoadoutSummary();

@@ -15,6 +15,7 @@ public static class DamageTextRuntime
     private static bool isSubscribed;
     private static readonly DamageTextVisualStyle DefaultNormalStyle = DamageTextVisualStyle.CreateDefaultNormal();
     private static readonly DamageTextVisualStyle DefaultCriticalStyle = DamageTextVisualStyle.CreateDefaultCritical();
+    private static readonly DamageTextVisualStyle DefaultPlayerDamagedStyle = DamageTextVisualStyle.CreateDefaultPlayerDamaged();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reset()
@@ -55,10 +56,15 @@ public static class DamageTextRuntime
         HitResult hitResult = damageEvent.HitResult;
         Vector3 spawnPosition = ResolveSpawnPosition(hitResult.HitPoint, config);
         DamageTextViewData viewData = new(hitResult.FinalDamage, hitResult.IsCritical, spawnPosition);
-        Show(viewData, config);
+        Show(viewData, damageEvent.Entity, config);
     }
 
     private static void Show(DamageTextViewData viewData, DamageTextVisualConfigSO config)
+    {
+        Show(viewData, null, config);
+    }
+
+    private static void Show(DamageTextViewData viewData, Entity damagedEntity, DamageTextVisualConfigSO config)
     {
         DamageTextFlow damageText = CreateInstance(viewData.WorldPosition);
         if (damageText == null)
@@ -66,14 +72,14 @@ public static class DamageTextRuntime
             return;
         }
 
-        DamageTextVisualStyle style = ResolveStyle(viewData.IsCritical, config);
+        DamageTextVisualStyle style = ResolveStyle(viewData.IsCritical, damagedEntity, config);
         damageText.Play(viewData, style);
     }
 
     private static bool ShouldSkip(EntityDamagedEvent damageEvent, DamageTextVisualConfigSO config)
     {
         bool showEnemyDamageOnly = config != null ? config.ShowEnemyDamageOnly : DEFAULT_SHOW_ENEMY_DAMAGE_ONLY;
-        if (showEnemyDamageOnly && damageEvent.Entity is not Enemy)
+        if (showEnemyDamageOnly && damageEvent.Entity is not Enemy && damageEvent.Entity is not Player)
         {
             return true;
         }
@@ -147,8 +153,13 @@ public static class DamageTextRuntime
         return cachedConfig;
     }
 
-    private static DamageTextVisualStyle ResolveStyle(bool isCritical, DamageTextVisualConfigSO config)
+    private static DamageTextVisualStyle ResolveStyle(bool isCritical, Entity damagedEntity, DamageTextVisualConfigSO config)
     {
+        if (damagedEntity is Player)
+        {
+            return config != null ? config.GetPlayerDamagedStyle() : DefaultPlayerDamagedStyle;
+        }
+
         if (config != null)
         {
             return config.GetStyle(isCritical);

@@ -16,16 +16,12 @@ public class PlayerLevel : EntityComponentBase
     private int requiredXP;
     private int currentXP;
     private int currentLevel = MIN_LEVEL;
-    private int levelOnWaveStart = MIN_LEVEL;
     private int unspentUpgradePoints;
     private float pendingExperienceGain;
 
     public override Entity Owner => owner;
     public event Action<PlayerLevelSnapshot> SnapshotChanged;
 
-    public bool IsLevelUpInCurrentWave => LevelsGainedInCurrentWave > 0;
-    public int LevelUpValue => LevelsGainedInCurrentWave;
-    public int LevelsGainedInCurrentWave => Mathf.Max(0, currentLevel - levelOnWaveStart);
     public int CurrentLevel => currentLevel;
     public int CurrentXP => currentXP;
     public int RequiredXP => requiredXP;
@@ -46,12 +42,10 @@ public class PlayerLevel : EntityComponentBase
 
     public override void OnEnableComponent()
     {
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
     }
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
     }
 
     public void AddXP(int xpToAdd)
@@ -88,7 +82,6 @@ public class PlayerLevel : EntityComponentBase
     {
         currentLevel = GetConfiguredStartLevel();
         currentXP = Mathf.Max(MIN_EXPERIENCE, GetConfiguredStartExperience());
-        levelOnWaveStart = currentLevel;
         unspentUpgradePoints = MIN_EXPERIENCE;
         pendingExperienceGain = 0f;
         requiredXP = CalculateRequiredXP(currentLevel);
@@ -114,8 +107,14 @@ public class PlayerLevel : EntityComponentBase
     private void LevelUp()
     {
         currentLevel++;
-        unspentUpgradePoints += GetUpgradePointsPerLevel();
+        int upgradePoints = GetUpgradePointsPerLevel();
+        unspentUpgradePoints += upgradePoints;
         requiredXP = CalculateRequiredXP(currentLevel);
+
+        if (upgradePoints > 0)
+        {
+            GameEventBus.Publish(new UpgradeRewardAvailableEvent(unspentUpgradePoints));
+        }
     }
 
     private int CalculateRequiredXP(int level)
@@ -163,11 +162,6 @@ public class PlayerLevel : EntityComponentBase
     private int GetUpgradePointsPerLevel()
     {
         return levelConfig != null ? levelConfig.UpgradePointsPerLevel : 1;
-    }
-
-    private void OnWaveStarted(WaveStartedEvent _)
-    {
-        levelOnWaveStart = currentLevel;
     }
 
     private void NotifySnapshotChanged()

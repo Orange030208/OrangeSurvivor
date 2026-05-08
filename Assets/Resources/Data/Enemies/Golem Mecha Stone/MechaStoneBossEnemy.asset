@@ -19,45 +19,34 @@ MonoBehaviour:
   damagedSfxKey: 400
   phaseTwoHealthRatio: 0.7
   phaseThreeHealthRatio: 0.35
-  immuneDuration: 1
-  glowDuration: 0.8
   phaseTransitionModifiers:
   - propType: 25
     modifierType: 0
     value: 100
-  meleeCommitNormalizedTime: 0.55
-  meleeFinishNormalizedTime: 0.95
+  meleeCommitNormalizedTime: 0.75
   shootCommitNormalizedTime: 0.48
-  shootFinishNormalizedTime: 0.9
+  laserAimLockNormalizedTime: 0.85
   laserFireStartNormalizedTime: 1
   laserDuration: 4
-  laserRange: 9
   laserWidth: 1.2
   laserLength: 40
   laserDamageInterval: 0.25
   laserDamageMultiplier: 0.65
-  laserTurnSpeedDegrees: 12
+  laserTurnSpeedDegrees: 15
   laserCooldown: 10
   laserMinPhase: 2
+  laserRangeMultiplier: 10
   laserVisualPrefab: {fileID: 1867289574541625359, guid: 43f60aa1988c0474389602ddb36903c5, type: 3}
-  shieldDuration: 10
+  shieldDuration: 3
   shieldCooldown: 12
   shieldMinPhase: 3
   shieldModifiers:
   - propType: 25
     modifierType: 0
     value: 40
-  meleeAttackSfxKey: 3
-  meleeCooldown: 1.35
-  meleeDamageMultiplier: 1.15
-  meleeRangeSource: 0
-  meleeFixedRange: 1.2
-  meleeRangeMultiplier: 1
-  meleeForwardOffset: 0.45
-  shootAttackSfxKey: 300
-  shootCooldown: 2
-  shootDamageMultiplier: 0.8
-  shootRangeSource: 2
-  shootFixedRange: 7
-  shootRangeMultiplier: 1
+  meleeAttackSpeedBenefitRatio: 2
+  meleeRangeMultiplier: 1.2
+  meleeHitVfxPrefab: {fileID: 3966012196220114742, guid: 60306f76a0f51274cbba1a0462040760, type: 3}
+  shootAttackSpeedBenefitRatio: 1
+  shootRangeMultiplier: 8
   shootProjectileDefinition: {fileID: 11400000, guid: a91e53d9c34a4cb3b4e4838897351a4f, type: 2}

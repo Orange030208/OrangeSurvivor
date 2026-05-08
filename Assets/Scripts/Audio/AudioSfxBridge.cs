@@ -1,7 +1,7 @@
 /// <summary>
 /// 语义音效播放桥接入口：
 /// - UI 与业务层只通过 AudioSfxKey 表达播放意图；
-/// - 具体映射由 AudioSfxCatalogSO 与 AudioSfxController 负责。
+/// - 具体映射由 AudioBusSettingsSO 中的 SFX 分组负责。
 /// </summary>
 public static class AudioSfxBridge
 {
@@ -14,5 +14,15 @@ public static class AudioSfxBridge
         }
 
         GameEventBus.Publish(new AudioSfxPlayRequestedEvent(sfxKey));
+    }
+
+    public static void RequestPlay(AudioSfxKey sfxKey, UnityEngine.Vector2 position)
+    {
+        if (sfxKey == AudioSfxKey.None)
+        {
+            return;
+        }
+
+        GameEventBus.Publish(new AudioSfxPlayRequestedEvent(sfxKey, position));
     }
 }

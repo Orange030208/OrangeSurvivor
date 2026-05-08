@@ -6,7 +6,7 @@ public class DamageTextVisualConfigSO : ScriptableObject
     public static readonly Vector2 DEFAULT_SPAWN_OFFSET = new(0f, 1.5f);
 
     [Header("Visibility")]
-    [Tooltip("开启后只显示敌人受到的伤害，保持战斗 HUD 聚焦。")]
+    [Tooltip("开启后只显示敌人和玩家受到的伤害，保持战斗 HUD 聚焦。")]
     [SerializeField] private bool showEnemyDamageOnly = true;
     [Tooltip("开启后会忽略 0 或更低的伤害数字。")]
     [SerializeField] private bool hideZeroDamage = true;
@@ -18,6 +18,7 @@ public class DamageTextVisualConfigSO : ScriptableObject
     [Header("Styles")]
     [SerializeField] private DamageTextVisualStyle normalStyle = DamageTextVisualStyle.CreateDefaultNormal();
     [SerializeField] private DamageTextVisualStyle criticalStyle = DamageTextVisualStyle.CreateDefaultCritical();
+    [SerializeField] private DamageTextVisualStyle playerDamagedStyle = DamageTextVisualStyle.CreateDefaultPlayerDamaged();
 
     public bool ShowEnemyDamageOnly => showEnemyDamageOnly;
     public bool HideZeroDamage => hideZeroDamage;
@@ -34,6 +35,11 @@ public class DamageTextVisualConfigSO : ScriptableObject
         return normalStyle ?? DamageTextVisualStyle.CreateDefaultNormal();
     }
 
+    public DamageTextVisualStyle GetPlayerDamagedStyle()
+    {
+        return playerDamagedStyle ?? DamageTextVisualStyle.CreateDefaultPlayerDamaged();
+    }
+
     private void OnValidate()
     {
         spawnSpreadX = Mathf.Max(0f, spawnSpreadX);
@@ -48,7 +54,13 @@ public class DamageTextVisualConfigSO : ScriptableObject
             criticalStyle = DamageTextVisualStyle.CreateDefaultCritical();
         }
 
+        if (playerDamagedStyle == null)
+        {
+            playerDamagedStyle = DamageTextVisualStyle.CreateDefaultPlayerDamaged();
+        }
+
         normalStyle.OnValidate();
         criticalStyle.OnValidate();
+        playerDamagedStyle.OnValidate();
     }
 }

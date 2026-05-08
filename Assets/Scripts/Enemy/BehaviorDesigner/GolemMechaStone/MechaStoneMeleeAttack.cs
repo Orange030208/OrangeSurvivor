@@ -31,7 +31,6 @@ public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
         }
 
         StopMoving();
-        FacingController?.FaceTarget(executionTarget);
 
         if (Animatable == null || !Animatable.IsCurrentState(BossAnimationConfig.MeleeHash))
         {
@@ -45,7 +44,7 @@ public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
             BossBrain.MeleeAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
-        return normalizedTime >= BossData.MeleeFinishNormalizedTime ? TaskStatus.Success : TaskStatus.Running;
+        return normalizedTime >= 1f ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnFixedUpdate()

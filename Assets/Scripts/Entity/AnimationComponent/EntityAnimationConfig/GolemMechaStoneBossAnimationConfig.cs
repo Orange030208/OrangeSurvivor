@@ -12,14 +12,12 @@ public sealed class GolemMechaStoneBossAnimationConfig : EntityAnimationConfig
     public string LaserCast = "LaserCast";
     public string ShieldCast = "ShieldCast";
     public string Immune = "Immune";
-    public string Glow = "Glow";
 
     [NonSerialized] public int MeleeHash;
     [NonSerialized] public int ShootHash;
     [NonSerialized] public int LaserCastHash;
     [NonSerialized] public int ShieldCastHash;
     [NonSerialized] public int ImmuneHash;
-    [NonSerialized] public int GlowHash;
 
     protected override void RefreshHashes()
     {
@@ -30,6 +28,5 @@ public sealed class GolemMechaStoneBossAnimationConfig : EntityAnimationConfig
         LaserCastHash = Animator.StringToHash(LaserCast);
         ShieldCastHash = Animator.StringToHash(ShieldCast);
         ImmuneHash = Animator.StringToHash(Immune);
-        GlowHash = Animator.StringToHash(Glow);
     }
 }

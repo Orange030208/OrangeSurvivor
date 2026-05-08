@@ -14,6 +14,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
     private float startTime;
     private float nextDamageTime;
     private Vector2 lockedDirection;
+    private bool aimLocked;
     private bool laserFired;
     private bool cooldownCommitted;
     private Entity executionTarget;
@@ -24,6 +25,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         base.OnStart();
         startTime = Time.time;
         nextDamageTime = float.PositiveInfinity;
+        aimLocked = false;
         laserFired = false;
         cooldownCommitted = false;
         executionTarget = TargetEntity;
@@ -39,7 +41,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         FaceTarget();
         Animatable?.PlayState(BossAnimationConfig.LaserCastHash);
         EnsureLaserVisual();
-        laserVisual?.Hide();
+        laserVisual?.PlayStart();
     }
 
     public override TaskStatus OnUpdate()
@@ -58,8 +60,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         float normalizedTime = Animatable.GetCurrentStateNormalizedTime();
         if (!laserFired && normalizedTime < BossData.LaserFireStartNormalizedTime)
         {
-            lockedDirection = ResolveDirectionToTarget(executionTarget);
-            FacingController?.FaceTarget(executionTarget);
+            UpdatePreFireDirection(normalizedTime);
             return TaskStatus.Running;
         }
 
@@ -68,12 +69,21 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
             lockedDirection = ResolveSafeDirection(lockedDirection);
             FacingController?.FaceDirection(lockedDirection);
             laserFired = true;
-            startTime = Time.time;
-            nextDamageTime = Time.time;
         }
 
         UpdateActiveDirection();
         UpdateLaserVisual();
+        if (laserVisual != null && !laserVisual.IsCoreLineVisible)
+        {
+            return TaskStatus.Running;
+        }
+
+        if (float.IsPositiveInfinity(nextDamageTime))
+        {
+            startTime = Time.time;
+            nextDamageTime = Time.time;
+        }
+
         if (Time.time >= nextDamageTime)
         {
             DealLaserDamage();
@@ -163,7 +173,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
             return;
         }
 
-        AttackController.CommitRuntimeCooldown(GolemMechaStoneBossSO.LASER_ACTION_ID, BossData.LaserCooldown);
+        AttackController.CommitSkillCooldown(GolemMechaStoneBossSO.LASER_ACTION_ID, BossData.LaserCooldown);
         cooldownCommitted = true;
     }
 
@@ -221,6 +231,20 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         FacingController?.FaceDirection(lockedDirection);
     }
 
+    private void UpdatePreFireDirection(float normalizedTime)
+    {
+        if (!aimLocked && normalizedTime < BossData.LaserAimLockNormalizedTime)
+        {
+            lockedDirection = ResolveDirectionToTarget(executionTarget);
+            FacingController?.FaceTarget(executionTarget);
+            return;
+        }
+
+        aimLocked = true;
+        lockedDirection = ResolveSafeDirection(lockedDirection);
+        FacingController?.FaceDirection(lockedDirection);
+    }
+
     private static Vector2 RotateDirectionTowards(Vector2 currentDirection, Vector2 targetDirection, float maxDegreesDelta)
     {
         if (targetDirection.sqrMagnitude <= Mathf.Epsilon)
@@ -249,7 +273,12 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
             return;
         }
 
-        laserVisual = Object.Instantiate(visualPrefab, OwnerEnemy.transform);
+        Transform laserParent = BossBrain != null ? BossBrain.LaserOriginTransform : OwnerEnemy.transform;
+        laserVisual = Object.Instantiate(visualPrefab, laserParent);
+        Transform visualTransform = laserVisual.transform;
+        visualTransform.localPosition = Vector3.zero;
+        visualTransform.localRotation = Quaternion.identity;
+        visualTransform.localScale = Vector3.one;
         laserVisual.Hide();
     }
 
@@ -261,13 +290,23 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         }
 
         Vector2 direction = ResolveSafeDirection(lockedDirection);
-        Vector3 startPosition = ResolveLaserOrigin();
-        float laserLength = BossData.LaserLength;
-        Vector3 endPosition = startPosition + (Vector3)(direction * laserLength);
-        laserVisual.Show(
-            startPosition,
-            endPosition,
-            true);
+        Vector3 localStartPosition = Vector3.zero;
+        Vector3 localEndPosition = ResolveLocalLaserEndPosition(direction, BossData.LaserLength);
+        laserVisual.ShowCore(
+            localStartPosition,
+            localEndPosition);
+    }
+
+    private Vector3 ResolveLocalLaserEndPosition(Vector2 worldDirection, float laserLength)
+    {
+        Transform laserOriginTransform = BossBrain != null ? BossBrain.LaserOriginTransform : null;
+        Vector3 worldOffset = (Vector3)(worldDirection * laserLength);
+        if (laserOriginTransform == null)
+        {
+            return worldOffset;
+        }
+
+        return laserOriginTransform.InverseTransformVector(worldOffset);
     }
 
     private void ClearLaserVisual()

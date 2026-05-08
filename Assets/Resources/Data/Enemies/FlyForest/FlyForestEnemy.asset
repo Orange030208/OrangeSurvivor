@@ -22,17 +22,8 @@ MonoBehaviour:
   - propType: 1
     modifierType: 3
     value: 2
-  normalAttackConfig:
-    timing:
-      actionId: FlyForest_NormalAttack
-      attackSfxKey: 300
-      cooldown: 1
-      damageMultiplier: 1
-    detection:
-      rangeSource: 2
-      fixedRange: 7
-      rangeMultiplier: 1
-    projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  normalAttackSpeedBenefitRatio: 1
+  normalAttackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
   normalMovement:
     circleSpeedRatio: 0.5
     idealRangeRatio: 0.95

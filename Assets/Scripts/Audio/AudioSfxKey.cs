@@ -1,7 +1,7 @@
 /// <summary>
 /// 语义化音效键：
 /// - UI 与业务层只表达“发生了什么音效语义”；
-/// - 具体映射到哪个 cueId 由 AudioSfxCatalogSO 决定。
+/// - 具体映射到哪个分组与音频资源由 AudioBusSettingsSO 决定。
 /// </summary>
 public enum AudioSfxKey
 {

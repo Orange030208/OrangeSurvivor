@@ -45,7 +45,7 @@ public sealed class MechaStoneShootAttack : MechaStoneTaskBase
             BossBrain.ShootAttackStrategy.TryExecuteCommitted(executionTarget);
         }
 
-        return normalizedTime >= BossData.ShootFinishNormalizedTime ? TaskStatus.Success : TaskStatus.Running;
+        return normalizedTime >= 1f ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnFixedUpdate()

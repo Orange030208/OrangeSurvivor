@@ -1,10 +1,13 @@
-using Cysharp.Threading.Tasks;
-using Orange.UIFramework;
+using System.Collections;
+using System.Reflection;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)]
 public class UpgradeCardTestSceneController : MonoBehaviour
 {
-    [SerializeField] private UIManager uiManager;
+    private const int GAME_STATE_WAIT_FRAME_LIMIT = 30;
+
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private Player playerPrefab;
     [SerializeField] private CharacterDataSO testCharacterData;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
@@ -14,21 +17,38 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     private Player player;
 
-    private System.Collections.IEnumerator Start()
+    private void Awake()
     {
-        ValidateConfiguration();
+        EnsureManagers();
         EnsurePlayer();
+        ConfigureGameManagerForUpgradeTest();
+    }
+
+    private IEnumerator Start()
+    {
         yield return null;
+        yield return WaitForGameState(GameState.Game);
+
+        if (!CanRequestUpgradeReward())
+        {
+            yield break;
+        }
+
         PublishPlayerReady();
+        PublishWaveContext();
         GrantUpgradePoints();
-        OpenUpgradePage();
     }
 
     [NaughtyAttributes.Button]
     public void RestartUpgradeTest()
     {
+        if (!CanRequestUpgradeReward())
+        {
+            return;
+        }
+
+        PublishWaveContext();
         GrantUpgradePoints();
-        OpenUpgradePage();
     }
 
     private void EnsurePlayer()
@@ -41,18 +61,30 @@ public class UpgradeCardTestSceneController : MonoBehaviour
     private void ConfigurePlayerForUpgradeTest(Player targetPlayer)
     {
         System.Type type = typeof(Player);
-        System.Reflection.FieldInfo field = type.GetField(
+        FieldInfo field = type.GetField(
             "characterData",
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            BindingFlags.Instance | BindingFlags.NonPublic);
         field.SetValue(targetPlayer, testCharacterData);
     }
 
-    private void ValidateConfiguration()
+    private void EnsureManagers()
     {
-        if (uiManager == null)
+        if (gameManager == null)
         {
-            throw new MissingReferenceException($"{nameof(UpgradeCardTestSceneController)} requires an explicit {nameof(UIManager)} reference.");
+            gameManager = FindFirstObjectByType<GameManager>();
         }
+    }
+
+    private void ConfigureGameManagerForUpgradeTest()
+    {
+        if (gameManager == null)
+        {
+            Debug.LogError("[UpgradeCardTestSceneController] Upgrade reward test requires a GameManager in the scene.", this);
+            return;
+        }
+
+        SetPrivateField(gameManager, "player", player);
+        SetPrivateField(gameManager, "initialGameState", GameState.Game);
     }
 
     private void PublishPlayerReady()
@@ -74,35 +106,53 @@ public class UpgradeCardTestSceneController : MonoBehaviour
         }
     }
 
-    private void OpenUpgradePage()
+    private void PublishWaveContext()
     {
-        GameEventBus.Publish(new WaveCompletedEvent(
-            Mathf.Max(1, testWaveNumber),
-            testWaveNumber + 1,
-            0f,
-            true));
-        GameEventBus.Publish(new GameStateChangedEvent(GameState.Game, GameState.WaveTransition));
-        ResetToUpgradePageAsync().Forget();
+        int currentWave = Mathf.Max(1, testWaveNumber);
+        GameEventBus.Publish(new WaveStartedEvent(currentWave, currentWave));
+        GameEventBus.Publish(new WaveRuntimeChangedEvent(currentWave, currentWave, true, true, true));
     }
 
-    private async UniTask ResetToUpgradePageAsync()
+    private IEnumerator WaitForGameState(GameState targetState)
     {
-        if (uiManager == null)
+        int waitedFrames = 0;
+        while (gameManager != null
+               && gameManager.CurrentGameState != targetState
+               && waitedFrames < GAME_STATE_WAIT_FRAME_LIMIT)
         {
-            Debug.LogError($"{nameof(UpgradeCardTestSceneController)} requires a {nameof(UIManager)} before opening the upgrade page.", this);
+            waitedFrames++;
+            yield return null;
+        }
+    }
+
+    private bool CanRequestUpgradeReward()
+    {
+        if (gameManager == null)
+        {
+            Debug.LogError("[UpgradeCardTestSceneController] Cannot request upgrade reward without GameManager.", this);
+            return false;
+        }
+
+        if (gameManager.CurrentGameState != GameState.Game)
+        {
+            Debug.LogWarning(
+                $"[UpgradeCardTestSceneController] Upgrade reward requests must go through GameManager while state is Game. Current state: {gameManager.CurrentGameState}.",
+                this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void SetPrivateField(object target, string fieldName, object value)
+    {
+        FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+        if (field == null)
+        {
+            Debug.LogError($"[UpgradeCardTestSceneController] Missing private field '{fieldName}' on {target.GetType().Name}.");
             return;
         }
 
-        try
-        {
-            await uiManager.ResetToPageAsync<WaveTransitionUIPage>(cancellationToken: this.GetCancellationTokenOnDestroy());
-        }
-        catch (System.OperationCanceledException)
-        {
-        }
-        catch (System.Exception exception)
-        {
-            Debug.LogException(exception, this);
-        }
+        field.SetValue(target, value);
     }
 }

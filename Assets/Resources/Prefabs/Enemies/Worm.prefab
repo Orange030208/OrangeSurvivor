@@ -10,11 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.403
+      value: 0.924
       objectReference: {fileID: 0}
     - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.583
+      value: 0.574
       objectReference: {fileID: 0}
     - target: {fileID: 567385469487708262, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_Controller
@@ -92,6 +92,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4494431996826935265}
   m_SourcePrefab: {fileID: 100100000, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+--- !u!4 &829411429869390629 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+  m_PrefabInstance: {fileID: 596334585364850857}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1829810951434041841 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
@@ -154,3 +159,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccff787e75381844ab42253280140e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackPointTransform: {fileID: 829411429869390629}
+  retreatAttackPointTransform: {fileID: 829411429869390629}

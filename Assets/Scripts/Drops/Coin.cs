@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-public class Coin : Collection
+public class Coin : AbsorbableCollection
 {
     private const int BASE_EXPERIENCE_VALUE = 1;
 

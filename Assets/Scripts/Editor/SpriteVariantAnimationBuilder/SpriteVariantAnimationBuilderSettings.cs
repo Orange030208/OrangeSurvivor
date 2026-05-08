@@ -188,7 +188,8 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
                 continue;
             }
 
-            if (string.Equals(configuredName.Trim(), normalizedClipName, StringComparison.OrdinalIgnoreCase))
+            string normalizedConfiguredName = configuredName.Trim();
+            if (normalizedClipName.IndexOf(normalizedConfiguredName, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
             }

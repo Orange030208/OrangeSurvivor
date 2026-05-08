@@ -25,15 +25,18 @@ public class GolemBrain : EnemyBrain
     private readonly HashSet<Entity> chargeHitTargets = new();
     private readonly Collider2D[] chargeHitBuffer = new Collider2D[CHARGE_HIT_BUFFER_SIZE];
 
+    [Header("Attack Points")]
+    [SerializeField] private Transform meleePointTransform;
+
     private EnemyAttackController attackController;
     private GolemEnemySO enemyData;
     private IMoveStrategy chaseMoveStrategy;
     private IAttackStrategy attackStrategy;
-    private IRangeDetectionStrategy postChargeDetectionStrategy;
     private float berserkTimer;
     private Vector2 chargeDirection = Vector2.right;
     private bool chargeModifiersApplied;
     private bool postChargeAttackModifiersApplied;
+    private bool hasWarnedMissingMeleePoint;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -115,20 +118,15 @@ public class GolemBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        IRangeDetectionStrategy attackDetectionStrategy = new ForwardCircleRangeDetectionStrategy(
-            owner,
-            propertiesManager,
-            enemyData.AttackConfig.detection);
+        IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(owner, propertiesManager);
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
             propertiesManager,
-            enemyData.AttackConfig.timing,
-            attackDetectionStrategy);
-
-        ForwardCircleDetectionData postChargeDetectionData = enemyData.AttackConfig.detection;
-        postChargeDetectionData.forwardOffset = enemyData.PostChargeAttackForwardOffset;
-        postChargeDetectionStrategy = new ForwardCircleRangeDetectionStrategy(owner, propertiesManager, postChargeDetectionData);
+            GolemEnemySO.ATTACK_ACTION_ID,
+            enemyData.AttackSpeedBenefitRatio,
+            attackDetectionStrategy,
+            meleePointTransform);
     }
 
     private void TickBerserkTimer()
@@ -217,6 +215,22 @@ public class GolemBrain : EnemyBrain
         }
 
         chargeDirection = direction.normalized;
+    }
+
+    private Vector2 ResolveMeleeAttackCenter()
+    {
+        if (meleePointTransform != null)
+        {
+            return meleePointTransform.position;
+        }
+
+        if (!hasWarnedMissingMeleePoint)
+        {
+            hasWarnedMissingMeleePoint = true;
+            Debug.LogWarning($"{nameof(GolemBrain)} on {owner.name} is missing melee point. Falling back to owner center.", owner);
+        }
+
+        return owner.Center;
     }
 
     private void DealChargeDamage()
@@ -412,10 +426,10 @@ public class GolemBrain : EnemyBrain
             {
                 attackCommitted = true;
 
-                brain.attackStrategy.TryExecute(brain.target);
+                brain.attackStrategy.TryExecuteCommitted(brain.target);
             }
 
-            if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
+            if (normalizedTime >= 1f)
             {
                 ChangeToNextState();
             }
@@ -564,7 +578,7 @@ public class GolemBrain : EnemyBrain
                 TryCommitPostChargeAttack();
             }
 
-            if (normalizedTime >= brain.enemyData.AttackFinishNormalizedTime)
+            if (normalizedTime >= 1f)
             {
                 brain.stateMachine.ChangeState(GolemAIState.BerserkRecovery);
             }
@@ -582,27 +596,46 @@ public class GolemBrain : EnemyBrain
 
         private void TryCommitPostChargeAttack()
         {
-            if (brain.target == null)
+            Vector2 attackCenter = brain.ResolveMeleeAttackCenter();
+            float attackRadius = brain.propertiesManager.GetPropValue(PropType.AttackRange);
+            int hitCount = Physics2D.OverlapCircleNonAlloc(
+                attackCenter,
+                attackRadius,
+                brain.chargeHitBuffer,
+                brain.attackController.AttackLayer);
+
+            for (int i = 0; i < hitCount; i++)
             {
-                return;
+                Entity hitEntity = ResolveEntity(brain.chargeHitBuffer[i]);
+                if (hitEntity == null || hitEntity == brain.owner)
+                {
+                    continue;
+                }
+
+                Vector2 hitPoint = hitEntity.GetClosestPointTo(attackCenter);
+                Vector2 knockbackDirection = hitEntity.Center - brain.owner.Center;
+                float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack));
+                HitService.Apply(new HitRequest(
+                    brain.owner,
+                    hitEntity,
+                    HitSpec.EnemyHitSpec(damage),
+                    hitPoint,
+                    knockbackDirection,
+                    HitSourceKind.Direct,
+                    GolemEnemySO.POST_CHARGE_ATTACK_ACTION_ID,
+                    brain.owner.Center));
+            }
+        }
+
+        private static Entity ResolveEntity(Collider2D hitCollider)
+        {
+            if (hitCollider == null)
+            {
+                return null;
             }
 
-            if (!brain.postChargeDetectionStrategy.IsTargetInRange(brain.target))
-            {
-                return;
-            }
-
-            Vector2 knockbackDirection = brain.target.Center - brain.owner.Center;
-            float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack) * brain.enemyData.AttackConfig.timing.damageMultiplier);
-            HitService.Apply(new HitRequest(
-                brain.owner,
-                brain.target,
-                HitSpec.EnemyHitSpec(damage),
-                brain.target.Center,
-                knockbackDirection,
-                HitSourceKind.Direct,
-                $"{brain.enemyData.AttackConfig.timing.actionId}_PostCharge",
-                brain.owner.Center));
+            Entity entity = hitCollider.GetComponent<Entity>();
+            return entity != null ? entity : hitCollider.GetComponentInParent<Entity>();
         }
     }
 

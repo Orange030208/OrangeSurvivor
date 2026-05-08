@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff429e42589e2854798ae1e13ce7058e, type: 3}
   m_Name: VFX
   m_EditorClassIdentifier: 
-  inputSource: {fileID: 2800000, guid: 936bddcef24f7884788530b17c8b6057, type: 3}
+  inputSource: {fileID: 2800000, guid: 7c444e26d5c37e3468ce183187293e55, type: 3}
   inputRoot: {fileID: 102900000, guid: 7b21ecffe42e63143a153d308789685f, type: 3}
   spriteInputRootPath: Assets/Resources/Sprites
-  animationOutputRoot: {fileID: 102900000, guid: 506ce89bd2f8b3f4a96de0102b46b48f, type: 3}
+  animationOutputRoot: {fileID: 102900000, guid: 4b7ee2d30b18f1a4bb99ac241e0a3c9a, type: 3}
   animationOutputRootPath: Assets/Resources/Animation
   prefabOutputRoot: {fileID: 102900000, guid: 8b47de111e3bc1d4fa56beb5e14af887, type: 3}
   prefabOutputRootPath: Assets/Resources/Prefabs
@@ -28,7 +28,8 @@ MonoBehaviour:
   spriteSortMode: 1
   includeNestedTextureFolders: 0
   loopClipsByDefault: 1
-  nonLoopingClipNames: []
+  nonLoopingClipNames:
+  - VFX
   overwriteExistingAssets: 1
   removeStaleAnimatorStates: 1
   deleteStaleAnimationClips: 0
