@@ -5,12 +5,12 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
-public class RewardSelectionUpgradeCardGroup : ViewPartBase
+public class RewardSelectionCardGroup : ViewPartBase
 {
     private const float REFRESH_OUT_STAGGER_SECONDS = 0.04f;
 
     [SerializeField] private Transform root;
-    [SerializeField] private UIUpgradeContainer[] upgradeContainers;
+    [SerializeField] private RewardSelectionCardContainer[] cardContainers;
 
     private bool isSelectionLocked;
 
@@ -20,18 +20,18 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
         BindSubmitGates();
     }
 
-    public void Configure(UpgradeCardOptionSnapshot[] options)
+    public void Configure(string requestId, RewardSelectionCardViewModel[] options)
     {
         isSelectionLocked = false;
         BindSubmitGates();
-        if (upgradeContainers == null)
+        if (cardContainers == null)
         {
             return;
         }
 
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        for (int i = 0; i < cardContainers.Length; i++)
         {
-            UIUpgradeContainer container = upgradeContainers[i];
+            RewardSelectionCardContainer container = cardContainers[i];
             if (container == null)
             {
                 continue;
@@ -46,7 +46,7 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
                 continue;
             }
 
-            container.Configure(new InfoAddIndex<UpgradeCardOptionSnapshot>(options[i], i));
+            container.Configure(new RewardSelectionCardBinding(requestId, options[i], i));
         }
     }
 
@@ -67,14 +67,14 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
     public void Clear()
     {
         isSelectionLocked = false;
-        if (upgradeContainers == null)
+        if (cardContainers == null)
         {
             return;
         }
 
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        for (int i = 0; i < cardContainers.Length; i++)
         {
-            UIUpgradeContainer container = upgradeContainers[i];
+            RewardSelectionCardContainer container = cardContainers[i];
             if (container == null)
             {
                 continue;
@@ -89,15 +89,15 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
     public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         isSelectionLocked = true;
-        if (upgradeContainers == null)
+        if (cardContainers == null)
         {
             return;
         }
 
         List<UniTask> runningTasks = new();
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        for (int i = 0; i < cardContainers.Length; i++)
         {
-            UIUpgradeContainer container = upgradeContainers[i];
+            RewardSelectionCardContainer container = cardContainers[i];
             if (container == null || !container.gameObject.activeInHierarchy)
             {
                 continue;
@@ -125,14 +125,14 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
         }
 
         isSelectionLocked = true;
-        if (upgradeContainers == null)
+        if (cardContainers == null)
         {
             return true;
         }
 
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        for (int i = 0; i < cardContainers.Length; i++)
         {
-            UIUpgradeContainer container = upgradeContainers[i];
+            RewardSelectionCardContainer container = cardContainers[i];
             if (container == null)
             {
                 continue;
@@ -146,24 +146,24 @@ public class RewardSelectionUpgradeCardGroup : ViewPartBase
 
     private void BindSubmitGates()
     {
-        if (upgradeContainers == null)
+        if (cardContainers == null)
         {
             return;
         }
 
-        for (int i = 0; i < upgradeContainers.Length; i++)
+        for (int i = 0; i < cardContainers.Length; i++)
         {
-            if (upgradeContainers[i] == null)
+            if (cardContainers[i] == null)
             {
                 continue;
             }
 
-            upgradeContainers[i].BindSubmitGate(TryBeginSelection);
+            cardContainers[i].BindSubmitGate(TryBeginSelection);
         }
     }
 
     private static async UniTask PlayContainerRefreshOutAsync(
-        UIUpgradeContainer container,
+        RewardSelectionCardContainer container,
         float startDelay,
         CancellationToken cancellationToken)
     {

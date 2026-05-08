@@ -7,41 +7,6 @@ public enum RewardSelectionReason
     Upgrade
 }
 
-public enum RewardSelectionPhase
-{
-    None,
-    ChestSelection,
-    UpgradeSelection
-}
-
-public struct UpgradeOptionsChangedEvent : IGameEvent
-{
-    public UpgradeCardOptionSnapshot[] Options;
-
-    public UpgradeOptionsChangedEvent(UpgradeCardOptionSnapshot[] options)
-    {
-        Options = options;
-    }
-}
-
-public struct UpgradeContainerClickedEvent : IGameEvent
-{
-    public int ContainerIndex;
-
-    public UpgradeContainerClickedEvent(int containerIndex)
-    {
-        ContainerIndex = containerIndex;
-    }
-}
-
-public struct UpgradeCardsRefreshOutRequestedEvent : IGameEvent
-{
-}
-
-public struct UpgradeCardsRefreshOutCompletedEvent : IGameEvent
-{
-}
-
 public struct UpgradeRewardAvailableEvent : IGameEvent
 {
     public int UnspentUpgradePoints;
@@ -52,6 +17,16 @@ public struct UpgradeRewardAvailableEvent : IGameEvent
     }
 }
 
-public struct RewardSelectionCompletedEvent : IGameEvent
+public struct RewardSelectionCardSelectedEvent : IGameEvent
 {
+    public string RequestId;
+    public int OptionIndex;
+    public string OptionId;
+
+    public RewardSelectionCardSelectedEvent(string requestId, int optionIndex, string optionId)
+    {
+        RequestId = requestId ?? string.Empty;
+        OptionIndex = optionIndex;
+        OptionId = optionId ?? string.Empty;
+    }
 }

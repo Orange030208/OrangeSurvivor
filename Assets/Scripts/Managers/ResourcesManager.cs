@@ -284,6 +284,46 @@ public static class ResourcesManager
         return Accessories[UnityEngine.Random.Range(0, Accessories.Length)];
     }
 
+    public static AccessoryDataSO[] GetRandomAccessories(int count)
+    {
+        LoadAccessoryData();
+        if (count <= 0 || Accessories == null || Accessories.Length == 0)
+        {
+            return Array.Empty<AccessoryDataSO>();
+        }
+
+        List<AccessoryDataSO> validAccessories = new List<AccessoryDataSO>();
+        for (int i = 0; i < Accessories.Length; i++)
+        {
+            if (Accessories[i] != null)
+            {
+                validAccessories.Add(Accessories[i]);
+            }
+        }
+
+        if (validAccessories.Count == 0)
+        {
+            return Array.Empty<AccessoryDataSO>();
+        }
+
+        List<AccessoryDataSO> result = new List<AccessoryDataSO>(count);
+        List<AccessoryDataSO> uniquePool = new List<AccessoryDataSO>(validAccessories);
+        while (result.Count < count)
+        {
+            if (uniquePool.Count > 0)
+            {
+                int index = UnityEngine.Random.Range(0, uniquePool.Count);
+                result.Add(uniquePool[index]);
+                uniquePool.RemoveAt(index);
+                continue;
+            }
+
+            result.Add(validAccessories[UnityEngine.Random.Range(0, validAccessories.Count)]);
+        }
+
+        return result.ToArray();
+    }
+
     public static AccessoryDataSO GetRandomAccessoryByRarity(int rarity)
     {
         LoadAccessoryData();

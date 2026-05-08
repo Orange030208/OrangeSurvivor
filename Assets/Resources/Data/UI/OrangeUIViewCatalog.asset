@@ -90,13 +90,13 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: page.rewardSelection
-    kind: 0
-    layer: 2
+  - id: popup.rewardSelection
+    kind: 1
+    layer: 3
     prefab: {fileID: 5453402992543493149, guid: 7a7ebd4679f38d64d85b9322f65b5589, type: 3}
     singleton: 1
     cacheOnClose: 1
-    trackInBackStack: 1
+    trackInBackStack: 0
     closeOnBackgroundClick: 0
     warmupCount: 0
     maxCachedInstancesOverride: -1

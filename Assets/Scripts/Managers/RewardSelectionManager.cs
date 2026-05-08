@@ -1,87 +1,444 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
 
 /// <summary>
-/// 即时奖励选择管理器：负责宝箱饰品与升级卡片奖励的展示、应用和完成通知。
+/// 即时奖励选择流程控制器：负责奖励请求排队、暂停/恢复游戏模拟、驱动三选一 Popup，并在选择后应用玩法结果。
 /// </summary>
 public class RewardSelectionManager : MonoBehaviour
 {
+    private const string PAUSE_SOURCE_ID = "rewardSelection";
+    private const string POPUP_GROUP_ID = "rewardSelection";
+    private const int OPTION_COUNT = 3;
+
+    [SerializeField] private UIManager uiManager;
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
-    [SerializeField] private CurrencyWallet currencyWallet;
     [SerializeField] private UpgradeCardPoolSO upgradeCardPool;
 
+    private readonly Queue<RewardSelectionRequest> pendingRequests = new();
     private readonly UpgradeRunState upgradeRunState = new();
     private readonly UpgradeCardRollService upgradeCardRollService = new();
     private readonly UpgradeCardApplyService upgradeCardApplyService = new();
-    private UpgradeCardSO[] upgradeCardOptions = Array.Empty<UpgradeCardSO>();
-    private UpgradeCardOptionSnapshot[] upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
-    private AccessoryDataSO currentAccessoryData;
-    private CancellationTokenSource refreshUpgradeCardsCancellation;
-    private int currentWaveNumber = 1;
+    private RewardSelectionOption[] currentOptions = Array.Empty<RewardSelectionOption>();
+    private ViewHandle<RewardSelectionPopup> currentPopupHandle;
+    private GameManager gameManager;
+    private CancellationTokenSource flowCancellation;
     private PlayerLevel playerLevel;
+    private int currentWaveNumber = 1;
+    private string currentRequestId = string.Empty;
     private RewardSelectionReason currentReason = RewardSelectionReason.None;
-    private RewardSelectionPhase currentPhase = RewardSelectionPhase.None;
-
-    private RewardSelectionPhase CurrentPhase
-    {
-        get => currentPhase;
-        set
-        {
-            if (currentPhase == value)
-            {
-                return;
-            }
-
-            RewardSelectionPhase oldPhase = currentPhase;
-            currentPhase = value;
-            GameEventBus.Publish(new RewardSelectionPhaseChangedEvent(oldPhase, currentPhase));
-        }
-    }
+    private bool isProcessing;
+    private bool pauseApplied;
+    private bool upgradeRequestQueuedOrProcessing;
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<RequestRewardSelectionStateSnapshotEvent>(PublishSnapshot);
-        GameEventBus.Subscribe<AccessoryOperateEvent>(OnAccessoryOperated);
-        GameEventBus.Subscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Subscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
+        TryBindSceneReferences();
         TryBindPlayerReferences();
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<RequestRewardSelectionStateSnapshotEvent>(PublishSnapshot);
-        GameEventBus.Unsubscribe<AccessoryOperateEvent>(OnAccessoryOperated);
-        GameEventBus.Unsubscribe<UpgradeContainerClickedEvent>(OnUpgradeContainerClicked);
+        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Unsubscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
-        CancelRefreshUpgradeCards();
+        ResetRewardFlow(resumeWave: false);
+    }
+
+    private void OnChestCollected()
+    {
+        EnqueueRequest(RewardSelectionReason.Chest);
+    }
+
+    private void OnUpgradeRewardAvailable(UpgradeRewardAvailableEvent eventData)
+    {
+        if (eventData.UnspentUpgradePoints <= 0 || upgradeRequestQueuedOrProcessing)
+        {
+            return;
+        }
+
+        upgradeRequestQueuedOrProcessing = true;
+        EnqueueRequest(RewardSelectionReason.Upgrade);
+    }
+
+    private void EnqueueRequest(RewardSelectionReason reason)
+    {
+        if (reason == RewardSelectionReason.None || !IsGameStateActive())
+        {
+            return;
+        }
+
+        pendingRequests.Enqueue(new RewardSelectionRequest(reason));
+        if (!isProcessing)
+        {
+            ProcessQueueAsync().Forget();
+        }
+    }
+
+    private async UniTaskVoid ProcessQueueAsync()
+    {
+        if (isProcessing)
+        {
+            return;
+        }
+
+        isProcessing = true;
+        flowCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        CancellationToken cancellationToken = flowCancellation.Token;
+        ApplyRewardPause();
+
+        try
+        {
+            while (pendingRequests.Count > 0 && IsGameStateActive())
+            {
+                RewardSelectionRequest request = pendingRequests.Dequeue();
+                currentReason = request.Reason;
+
+                switch (request.Reason)
+                {
+                    case RewardSelectionReason.Chest:
+                        await ProcessChestRequestAsync(cancellationToken);
+                        break;
+                    case RewardSelectionReason.Upgrade:
+                        await ProcessUpgradeRequestAsync(cancellationToken);
+                        upgradeRequestQueuedOrProcessing = false;
+                        break;
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+        finally
+        {
+            isProcessing = false;
+            currentReason = RewardSelectionReason.None;
+            currentRequestId = string.Empty;
+            currentOptions = Array.Empty<RewardSelectionOption>();
+            upgradeRequestQueuedOrProcessing = ContainsUpgradeRequest();
+            DisposeFlowCancellation();
+
+            if (IsGameStateActive())
+            {
+                await CloseCurrentPopupAsync(CloseReason.Normal);
+                ReleaseRewardPause(resumeWave: true);
+            }
+            else
+            {
+                await CloseCurrentPopupAsync(CloseReason.Cancel);
+                ReleaseRewardPause(resumeWave: false);
+            }
+
+            if (pendingRequests.Count > 0 && IsGameStateActive())
+            {
+                ProcessQueueAsync().Forget();
+            }
+        }
+    }
+
+    private async UniTask ProcessChestRequestAsync(CancellationToken cancellationToken)
+    {
+        TryBindPlayerReferences();
+        AccessoryDataSO[] accessories = ResourcesManager.GetRandomAccessories(OPTION_COUNT);
+        if (accessories.Length == 0)
+        {
+            Debug.LogWarning("[RewardSelectionManager] No accessories could be rolled for chest reward.", this);
+            return;
+        }
+
+        RewardSelectionPopupModel model = CreateChestPopupModel(accessories, out RewardSelectionOption[] options);
+        await ShowOrRefreshPopupAsync(model, options, cancellationToken);
+        RewardSelectionCardSelectedEvent selectedEvent = await WaitForCurrentSelectionAsync(cancellationToken);
+        if (!TryResolveSelectedOption(selectedEvent, out RewardSelectionOption selectedOption))
+        {
+            return;
+        }
+
+        if (selectedOption.AccessoryData != null)
+        {
+            accessoryManager?.EquipAccessory(selectedOption.AccessoryData);
+        }
+
+        await CloseCurrentPopupAsync(CloseReason.Normal);
+    }
+
+    private async UniTask ProcessUpgradeRequestAsync(CancellationToken cancellationToken)
+    {
+        TryBindPlayerReferences();
+        while (playerLevel != null && playerLevel.UnspentUpgradePoints > 0 && IsGameStateActive())
+        {
+            List<UpgradeCardSO> rolledCards = RollUpgradeCards();
+            if (rolledCards.Count == 0)
+            {
+                Debug.LogWarning("[RewardSelectionManager] No upgrade cards could be rolled for upgrade reward.", this);
+                return;
+            }
+
+            RewardSelectionPopupModel model = CreateUpgradePopupModel(rolledCards, out RewardSelectionOption[] options);
+            await ShowOrRefreshPopupAsync(model, options, cancellationToken);
+            RewardSelectionCardSelectedEvent selectedEvent = await WaitForCurrentSelectionAsync(cancellationToken);
+            if (!TryResolveSelectedOption(selectedEvent, out RewardSelectionOption selectedOption))
+            {
+                continue;
+            }
+
+            UpgradeCardSO selectedCard = selectedOption.UpgradeCard;
+            if (!upgradeCardApplyService.Apply(selectedCard, player))
+            {
+                Debug.LogWarning($"[RewardSelectionManager] Failed to apply upgrade card {selectedCard?.name}.", this);
+                continue;
+            }
+
+            upgradeRunState.RecordPick(selectedCard);
+            playerLevel.ConsumeUpgradePoint();
+        }
+
+        await CloseCurrentPopupAsync(CloseReason.Normal);
+    }
+
+    private async UniTask ShowOrRefreshPopupAsync(
+        RewardSelectionPopupModel model,
+        RewardSelectionOption[] options,
+        CancellationToken cancellationToken)
+    {
+        currentRequestId = model.RequestId;
+        currentOptions = options ?? Array.Empty<RewardSelectionOption>();
+
+        if (currentPopupHandle.IsValid && currentPopupHandle.View != null)
+        {
+            await currentPopupHandle.View.RefreshAsync(model, cancellationToken);
+            return;
+        }
+
+        PopupOptions popupOptions = new PopupOptions(
+            closeOnOutsideClick: false,
+            groupId: POPUP_GROUP_ID,
+            replaceSameGroup: true,
+            trackInStack: false,
+            preferredAnchor: FloatingViewAnchor.Center);
+        currentPopupHandle = await ResolveUIManager().ShowPopupAsync<RewardSelectionPopup>(
+            model,
+            popupOptions,
+            cancellationToken);
+    }
+
+    private async UniTask<RewardSelectionCardSelectedEvent> WaitForCurrentSelectionAsync(CancellationToken cancellationToken)
+    {
+        UniTaskCompletionSource<RewardSelectionCardSelectedEvent> completionSource = new();
+
+        void OnSelected(RewardSelectionCardSelectedEvent eventData)
+        {
+            if (!IsCurrentSelectionEvent(eventData))
+            {
+                return;
+            }
+
+            completionSource.TrySetResult(eventData);
+        }
+
+        GameEventBus.Subscribe<RewardSelectionCardSelectedEvent>(OnSelected);
+        CancellationTokenRegistration cancellationRegistration =
+            cancellationToken.Register(() => completionSource.TrySetCanceled());
+        try
+        {
+            return await completionSource.Task;
+        }
+        finally
+        {
+            cancellationRegistration.Dispose();
+            GameEventBus.Unsubscribe<RewardSelectionCardSelectedEvent>(OnSelected);
+        }
+    }
+
+    private bool IsCurrentSelectionEvent(RewardSelectionCardSelectedEvent eventData)
+    {
+        return string.Equals(eventData.RequestId, currentRequestId, StringComparison.Ordinal)
+               && TryResolveSelectedOption(eventData, out _);
+    }
+
+    private bool TryResolveSelectedOption(RewardSelectionCardSelectedEvent eventData, out RewardSelectionOption selectedOption)
+    {
+        selectedOption = default;
+        if (eventData.OptionIndex < 0 || eventData.OptionIndex >= currentOptions.Length)
+        {
+            return false;
+        }
+
+        RewardSelectionOption candidate = currentOptions[eventData.OptionIndex];
+        if (!string.Equals(candidate.OptionId, eventData.OptionId, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        selectedOption = candidate;
+        return true;
+    }
+
+    private RewardSelectionPopupModel CreateChestPopupModel(
+        AccessoryDataSO[] accessories,
+        out RewardSelectionOption[] options)
+    {
+        string requestId = Guid.NewGuid().ToString("N");
+        int count = Mathf.Min(OPTION_COUNT, accessories.Length);
+        RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
+        options = new RewardSelectionOption[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            AccessoryDataSO accessory = accessories[i];
+            string optionId = accessory != null ? accessory.AccessoryId : string.Empty;
+            cardModels[i] = new RewardSelectionCardViewModel(
+                optionId,
+                accessory != null ? accessory.ItemName : string.Empty,
+                accessory != null ? accessory.ItemIcon : null,
+                accessory != null ? accessory.Description : string.Empty,
+                accessory != null ? CardQualityResolver.FromAccessoryRarity(accessory.RarityGrade) : CardQuality.Common,
+                new[] { "饰品" },
+                accessory != null);
+            options[i] = RewardSelectionOption.ForAccessory(optionId, accessory);
+        }
+
+        return new RewardSelectionPopupModel(requestId, "选择宝箱奖励", "选择 1 个饰品立即装备。", cardModels);
+    }
+
+    private RewardSelectionPopupModel CreateUpgradePopupModel(
+        IReadOnlyList<UpgradeCardSO> cards,
+        out RewardSelectionOption[] options)
+    {
+        string requestId = Guid.NewGuid().ToString("N");
+        int count = Mathf.Min(OPTION_COUNT, cards.Count);
+        RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
+        options = new RewardSelectionOption[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            UpgradeCardSO card = cards[i];
+            UpgradeCardOptionSnapshot snapshot = card.ToSnapshot(upgradeRunState);
+            cardModels[i] = new RewardSelectionCardViewModel(
+                snapshot.CardId,
+                snapshot.Title,
+                snapshot.Icon,
+                snapshot.Description,
+                CardQualityResolver.FromUpgradeCardRarity(snapshot.Rarity),
+                BuildUpgradeTagLabels(snapshot.Tags),
+                card != null);
+            options[i] = RewardSelectionOption.ForUpgradeCard(snapshot.CardId, card);
+        }
+
+        return new RewardSelectionPopupModel(requestId, "选择升级奖励", "选择 1 张升级卡。", cardModels);
+    }
+
+    private List<UpgradeCardSO> RollUpgradeCards()
+    {
+        UpgradeCardPoolSO pool = ResolveUpgradeCardPool();
+        UpgradeCardOfferContext offerContext = new(
+            upgradeRunState,
+            currentWaveNumber,
+            player != null ? player.GetComponent<WeaponsHolder>() : null);
+        return upgradeCardRollService.RollOptions(pool, offerContext);
+    }
+
+    private UpgradeCardPoolSO ResolveUpgradeCardPool()
+    {
+        if (upgradeCardPool == null)
+        {
+            upgradeCardPool = ResourcesManager.GetUpgradeCardPool();
+        }
+
+        return upgradeCardPool;
+    }
+
+    private async UniTask CloseCurrentPopupAsync(CloseReason closeReason)
+    {
+        ViewHandle<RewardSelectionPopup> handle = currentPopupHandle;
+        currentPopupHandle = default;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        await handle.CloseAsync(closeReason);
+    }
+
+    private void ApplyRewardPause()
+    {
+        if (pauseApplied)
+        {
+            return;
+        }
+
+        pauseApplied = true;
+        GameEventBus.Publish(new GameplaySimulationPauseRequestedEvent(PAUSE_SOURCE_ID));
+        GameEventBus.Publish(new StopCurrentWaveRequestedEvent());
+    }
+
+    private void ReleaseRewardPause(bool resumeWave)
+    {
+        if (!pauseApplied)
+        {
+            return;
+        }
+
+        pauseApplied = false;
+        GameEventBus.Publish(new GameplaySimulationResumeRequestedEvent(PAUSE_SOURCE_ID));
+        if (resumeWave)
+        {
+            GameEventBus.Publish(new ResumeCurrentWaveRequestedEvent());
+        }
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
     {
-        if (eventData.NewState == GameState.RewardSelection)
+        if (eventData.NewState == GameState.Game)
         {
-            StartTransitionFlow();
             return;
         }
 
-        if (eventData.OldState == GameState.RewardSelection)
+        ResetRewardFlow(resumeWave: false);
+    }
+
+    private void ResetRewardFlow(bool resumeWave)
+    {
+        pendingRequests.Clear();
+        currentReason = RewardSelectionReason.None;
+        currentRequestId = string.Empty;
+        currentOptions = Array.Empty<RewardSelectionOption>();
+        isProcessing = false;
+        upgradeRequestQueuedOrProcessing = false;
+        DisposeFlowCancellation();
+        CloseCurrentPopupAsync(CloseReason.Cancel).Forget();
+        ReleaseRewardPause(resumeWave);
+    }
+
+    private void DisposeFlowCancellation()
+    {
+        if (flowCancellation == null)
         {
-            currentAccessoryData = null;
-            currentReason = RewardSelectionReason.None;
-            CurrentPhase = RewardSelectionPhase.None;
-            CancelRefreshUpgradeCards();
+            return;
         }
+
+        flowCancellation.Cancel();
+        flowCancellation.Dispose();
+        flowCancellation = null;
     }
 
     private void OnWaveStarted(WaveStartedEvent eventData)
@@ -100,236 +457,20 @@ public class RewardSelectionManager : MonoBehaviour
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         player = eventData.Player;
-        accessoryManager = player.GetComponent<AccessoryManager>();
-        playerLevel = player.GetComponent<PlayerLevel>();
-        currencyWallet = player.GetComponent<CurrencyWallet>();
+        accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
+        playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
     }
 
-    private void StartTransitionFlow()
+    private void TryBindSceneReferences()
     {
-        currentAccessoryData = null;
-        CancelRefreshUpgradeCards();
-        upgradeCardOptions = Array.Empty<UpgradeCardSO>();
-        upgradeOptionSnapshots = Array.Empty<UpgradeCardOptionSnapshot>();
-        CurrentPhase = RewardSelectionPhase.None;
-        TryBindPlayerReferences();
-        currentReason = ResolveCurrentReason();
-        TryEnterNextPhase();
-    }
-
-    private void TryEnterNextPhase()
-    {
-        switch (currentReason)
+        if (uiManager == null)
         {
-            case RewardSelectionReason.Chest:
-                EnterChestSelection();
-                break;
-            case RewardSelectionReason.Upgrade:
-                EnterUpgradeSelection();
-                break;
-            default:
-                CompleteRewardSelection();
-                break;
-        }
-    }
-
-    private void EnterChestSelection()
-    {
-        CurrentPhase = RewardSelectionPhase.ChestSelection;
-        currentAccessoryData = ResourcesManager.GetRandomAccessory();
-        GameEventBus.Publish(new AccessorySelectionStartedEvent(currentAccessoryData));
-    }
-
-    private void OnAccessoryOperated(AccessoryOperateEvent eventData)
-    {
-        if (CurrentPhase != RewardSelectionPhase.ChestSelection)
-        {
-            return;
+            uiManager = FindFirstObjectByType<UIManager>();
         }
 
-        if (currentAccessoryData == null || eventData.accessoryData != currentAccessoryData)
+        if (gameManager == null)
         {
-            return;
-        }
-
-        if (eventData.selected)
-        {
-            accessoryManager?.EquipAccessory(eventData.accessoryData);
-            print($"选择了{eventData.accessoryData.ItemName}");
-        }
-        else
-        {
-            currencyWallet?.ChangeAmount(eventData.accessoryData.RecyclePrice);
-            print($"回收了{eventData.accessoryData.ItemName},回收价格:{eventData.accessoryData.RecyclePrice}");
-        }
-
-        currentAccessoryData = null;
-        CompleteRewardSelection();
-    }
-
-    private void EnterUpgradeSelection()
-    {
-        currentAccessoryData = null;
-
-        if (playerLevel == null || playerLevel.UnspentUpgradePoints <= 0)
-        {
-            CompleteRewardSelection();
-            return;
-        }
-
-        CurrentPhase = RewardSelectionPhase.UpgradeSelection;
-        ConfigureUpgradeCards();
-    }
-
-    [NaughtyAttributes.Button("刷新升级卡片")]
-    private void RefreshUpgradeCards()
-    {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("[RewardSelectionManager] Refresh upgrade cards can only run in Play Mode.", this);
-            return;
-        }
-
-        if (CurrentPhase != RewardSelectionPhase.UpgradeSelection)
-        {
-            Debug.LogWarning("[RewardSelectionManager] Upgrade cards can only be refreshed during UpgradeSelection phase.", this);
-            return;
-        }
-
-        if (refreshUpgradeCardsCancellation != null)
-        {
-            return;
-        }
-
-        RefreshUpgradeCardsWithMotionAsync().Forget();
-    }
-
-    private async UniTaskVoid RefreshUpgradeCardsWithMotionAsync()
-    {
-        refreshUpgradeCardsCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-        try
-        {
-            RewardSelectionUpgradeCardGroup cardGroup = FindFirstObjectByType<RewardSelectionUpgradeCardGroup>();
-            if (cardGroup != null)
-            {
-                await cardGroup.PlayRefreshOutAsync(refreshUpgradeCardsCancellation.Token);
-            }
-
-            ConfigureUpgradeCards();
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        finally
-        {
-            CancelRefreshUpgradeCards();
-        }
-    }
-
-    private void ConfigureUpgradeCards()
-    {
-        if (CurrentPhase != RewardSelectionPhase.UpgradeSelection)
-        {
-            return;
-        }
-
-        UpgradeCardPoolSO pool = ResolveUpgradeCardPool();
-        UpgradeCardOfferContext offerContext = new(
-            upgradeRunState,
-            currentWaveNumber,
-            player != null ? player.GetComponent<WeaponsHolder>() : null);
-        var rolledOptions = upgradeCardRollService.RollOptions(pool, offerContext);
-        if (rolledOptions.Count == 0)
-        {
-            Debug.LogWarning("[RewardSelectionManager] No upgrade cards could be rolled. Completing reward selection.");
-            CompleteRewardSelection();
-            return;
-        }
-
-        upgradeCardOptions = rolledOptions.ToArray();
-        upgradeOptionSnapshots = new UpgradeCardOptionSnapshot[upgradeCardOptions.Length];
-        for (int i = 0; i < upgradeCardOptions.Length; i++)
-        {
-            upgradeOptionSnapshots[i] = upgradeCardOptions[i].ToSnapshot(upgradeRunState);
-        }
-
-        GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeOptionSnapshots));
-    }
-
-    private UpgradeCardPoolSO ResolveUpgradeCardPool()
-    {
-        if (upgradeCardPool == null)
-        {
-            upgradeCardPool = ResourcesManager.GetUpgradeCardPool();
-        }
-
-        return upgradeCardPool;
-    }
-
-    private void CompleteRewardSelection()
-    {
-        currentReason = RewardSelectionReason.None;
-        CurrentPhase = RewardSelectionPhase.None;
-        GameEventBus.Publish<RewardSelectionCompletedEvent>();
-    }
-
-    private void ContinueOrCompleteUpgradeSelection()
-    {
-        if (CurrentPhase != RewardSelectionPhase.UpgradeSelection)
-        {
-            return;
-        }
-
-        int remainingUpgradePoints = playerLevel.ConsumeUpgradePoint();
-        if (remainingUpgradePoints > 0)
-        {
-            ConfigureUpgradeCards();
-            return;
-        }
-
-        CompleteRewardSelection();
-    }
-
-    private void OnUpgradeContainerClicked(UpgradeContainerClickedEvent eventData)
-    {
-        if (CurrentPhase != RewardSelectionPhase.UpgradeSelection)
-        {
-            return;
-        }
-
-        if (eventData.ContainerIndex < 0 || eventData.ContainerIndex >= upgradeCardOptions.Length)
-        {
-            Debug.LogWarning($"[RewardSelectionManager] Invalid upgrade card index {eventData.ContainerIndex}.");
-            return;
-        }
-
-        UpgradeCardSO selectedCard = upgradeCardOptions[eventData.ContainerIndex];
-        if (!upgradeCardApplyService.Apply(selectedCard, player))
-        {
-            Debug.LogWarning($"[RewardSelectionManager] Failed to apply upgrade card {selectedCard?.name}.");
-            return;
-        }
-
-        upgradeRunState.RecordPick(selectedCard);
-        ContinueOrCompleteUpgradeSelection();
-    }
-
-    private void PublishSnapshot()
-    {
-        GameEventBus.Publish(new RewardSelectionPhaseChangedEvent(RewardSelectionPhase.None, CurrentPhase));
-
-        switch (CurrentPhase)
-        {
-            case RewardSelectionPhase.ChestSelection:
-                if (currentAccessoryData != null)
-                {
-                    GameEventBus.Publish(new AccessorySelectionStartedEvent(currentAccessoryData));
-                }
-
-                break;
-            case RewardSelectionPhase.UpgradeSelection:
-                GameEventBus.Publish(new UpgradeOptionsChangedEvent(upgradeOptionSnapshots));
-                break;
+            gameManager = FindFirstObjectByType<GameManager>();
         }
     }
 
@@ -344,7 +485,6 @@ public class RewardSelectionManager : MonoBehaviour
         {
             accessoryManager = null;
             playerLevel = null;
-            currencyWallet = null;
             return;
         }
 
@@ -357,31 +497,90 @@ public class RewardSelectionManager : MonoBehaviour
         {
             playerLevel = player.GetComponent<PlayerLevel>();
         }
-
-        if (currencyWallet == null)
-        {
-            currencyWallet = player.GetComponent<CurrencyWallet>();
-        }
-
     }
 
-    private void CancelRefreshUpgradeCards()
+    private UIManager ResolveUIManager()
     {
-        if (refreshUpgradeCardsCancellation == null)
+        TryBindSceneReferences();
+        if (uiManager == null)
         {
-            return;
+            throw new MissingReferenceException($"{nameof(RewardSelectionManager)} requires an active {nameof(UIManager)}.");
         }
 
-        refreshUpgradeCardsCancellation.Cancel();
-        refreshUpgradeCardsCancellation.Dispose();
-        refreshUpgradeCardsCancellation = null;
+        return uiManager;
     }
 
-    private static RewardSelectionReason ResolveCurrentReason()
+    private bool IsGameStateActive()
     {
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
-        return gameManager != null
-            ? gameManager.CurrentRewardSelectionReason
-            : RewardSelectionReason.None;
+        TryBindSceneReferences();
+        return gameManager != null && gameManager.CurrentGameState == GameState.Game;
+    }
+
+    private bool ContainsUpgradeRequest()
+    {
+        if (currentReason == RewardSelectionReason.Upgrade)
+        {
+            return true;
+        }
+
+        foreach (RewardSelectionRequest request in pendingRequests)
+        {
+            if (request.Reason == RewardSelectionReason.Upgrade)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string[] BuildUpgradeTagLabels(UpgradeCardTag[] tags)
+    {
+        if (tags == null || tags.Length == 0)
+        {
+            return Array.Empty<string>();
+        }
+
+        string[] labels = new string[tags.Length];
+        for (int i = 0; i < tags.Length; i++)
+        {
+            labels[i] = ItemDescriptionUtility.FormatUpgradeCardTag(tags[i]);
+        }
+
+        return labels;
+    }
+
+    private readonly struct RewardSelectionRequest
+    {
+        public RewardSelectionRequest(RewardSelectionReason reason)
+        {
+            Reason = reason;
+        }
+
+        public RewardSelectionReason Reason { get; }
+    }
+
+    private readonly struct RewardSelectionOption
+    {
+        private RewardSelectionOption(string optionId, UpgradeCardSO upgradeCard, AccessoryDataSO accessoryData)
+        {
+            OptionId = optionId ?? string.Empty;
+            UpgradeCard = upgradeCard;
+            AccessoryData = accessoryData;
+        }
+
+        public string OptionId { get; }
+        public UpgradeCardSO UpgradeCard { get; }
+        public AccessoryDataSO AccessoryData { get; }
+
+        public static RewardSelectionOption ForUpgradeCard(string optionId, UpgradeCardSO upgradeCard)
+        {
+            return new RewardSelectionOption(optionId, upgradeCard, null);
+        }
+
+        public static RewardSelectionOption ForAccessory(string optionId, AccessoryDataSO accessoryData)
+        {
+            return new RewardSelectionOption(optionId, null, accessoryData);
+        }
     }
 }

@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UIUpgradeContainer :
-    UIContainerBase<InfoAddIndex<UpgradeCardOptionSnapshot>,Describer>,
+public class RewardSelectionCardContainer :
+    UIContainerBase<RewardSelectionCardBinding,Describer>,
     IPointerEnterHandler,
     IPointerExitHandler,
     IPointerDownHandler,
@@ -26,16 +27,14 @@ public class UIUpgradeContainer :
     private bool isPointerPressed;
     private bool wasRaycastBlockingBeforeSubmit = true;
 
-    public override void Configure(InfoAddIndex<UpgradeCardOptionSnapshot> resource)
+    public override void Configure(RewardSelectionCardBinding resource)
     {
-        containerIndex = resource.index;
-        UpgradeCardOptionSnapshot option = resource.info;
+        containerIndex = resource.Index;
+        RewardSelectionCardViewModel option = resource.Card;
         iconImage.sprite = option.Icon;
         nameText.text = option.Title;
-        bottom.Display(new UpgradeCardDisplayInfo(option, BuildDescription(option)));
-        bool hasPresentationProfile = TryResolveQualityPresentationProfile(
-            option.Rarity,
-            out CardQualityPresentationProfile presentationProfile);
+        bottom.Display(new RewardSelectionCardDisplayInfo(option, BuildDescription(option)));
+        bool hasPresentationProfile = TryResolveQualityPresentationProfile(option.Quality, out CardQualityPresentationProfile presentationProfile);
         if (hasPresentationProfile)
         {
             ApplyQualityVisual(presentationProfile);
@@ -50,12 +49,17 @@ public class UIUpgradeContainer :
         CleanClickEvent();
         OnClicked += _ =>
         {
+            if (!option.Interactable)
+            {
+                return;
+            }
+
             if (hasPresentationProfile)
             {
                 PlaySelectSfx(presentationProfile);
             }
 
-            GameEventBus.Publish<UpgradeContainerClickedEvent>(new UpgradeContainerClickedEvent(resource.index));
+            GameEventBus.Publish(new RewardSelectionCardSelectedEvent(resource.RequestId, resource.Index, option.OptionId));
         };
     }
 
@@ -72,7 +76,6 @@ public class UIUpgradeContainer :
             return;
         }
 
-        // 整组锁定时立刻收回未选中卡片的按压/悬停残留，避免视觉状态卡住。
         if (isPointerPressed)
         {
             isPointerPressed = false;
@@ -187,7 +190,6 @@ public class UIUpgradeContainer :
 
     private void ConfigureCardMotionForReuse()
     {
-        // 升级卡片可能被对象池复用，交给专用动效控制器统一处理默认快照与残留状态。
         GetCardMotionController()?.ConfigureForReuse();
     }
 
@@ -299,22 +301,19 @@ public class UIUpgradeContainer :
         return motionController == null || motionController.CanReceiveInteraction;
     }
 
-    private static bool TryResolveQualityPresentationProfile(
-        UpgradeCardRarity rarity,
-        out CardQualityPresentationProfile profile)
+    private static bool TryResolveQualityPresentationProfile(CardQuality quality, out CardQualityPresentationProfile profile)
     {
         CardQualityPresentationCatalogSO catalog = ResourcesManager.GetCardQualityPresentationCatalog();
         if (catalog == null)
         {
             profile = default;
-            Debug.LogError($"{nameof(UIUpgradeContainer)} could not load Card Quality Presentation Catalog.");
+            Debug.LogError($"{nameof(RewardSelectionCardContainer)} could not load Card Quality Presentation Catalog.");
             return false;
         }
 
-        CardQuality quality = CardQualityResolver.FromUpgradeCardRarity(rarity);
         if (!catalog.TryGetProfile(quality, out profile))
         {
-            Debug.LogError($"{nameof(UIUpgradeContainer)} could not find card quality presentation profile '{quality}'.");
+            Debug.LogError($"{nameof(RewardSelectionCardContainer)} could not find card quality presentation profile '{quality}'.");
             return false;
         }
 
@@ -341,32 +340,27 @@ public class UIUpgradeContainer :
         AudioSfxBridge.RequestPlay(profile.SelectSfxKey);
     }
 
-    private static string BuildDescription(UpgradeCardOptionSnapshot option)
+    private static string BuildDescription(RewardSelectionCardViewModel option)
     {
         string description = option.Description;
-        string rarityText = GetRarityText(option.Rarity);
-        string pickText = option.HasPickLimit && option.MaxPickCount > 1
-            ? $"\n已选择 {option.PickCount}/{option.MaxPickCount}"
-            : string.Empty;
         string tagText = BuildTagText(option.Tags);
-        return $"{rarityText}{tagText}\n{description}{pickText}";
+        return $"{GetQualityText(option.Quality)}{tagText}\n{description}";
     }
 
-    private sealed class UpgradeCardDisplayInfo : IDescribable
+    private sealed class RewardSelectionCardDisplayInfo : IDescribable
     {
-        private readonly UpgradeCardOptionSnapshot option;
-
-        public UpgradeCardDisplayInfo(UpgradeCardOptionSnapshot option, string description)
+        public RewardSelectionCardDisplayInfo(RewardSelectionCardViewModel option, string description)
         {
-            this.option = option;
+            Title = option.Title;
+            Icon = option.Icon;
             Description = description;
         }
 
-        public string Title => option.Title;
-        public Sprite Icon => option.Icon;
+        public string Title { get; }
+        public Sprite Icon { get; }
         public string Description { get; }
 
-        public System.Collections.Generic.IEnumerable<DescriptorInfo> GetExtraInfos()
+        public IEnumerable<DescriptorInfo> GetExtraInfos()
         {
             if (string.IsNullOrWhiteSpace(Description))
             {
@@ -377,12 +371,18 @@ public class UIUpgradeContainer :
         }
     }
 
-    private static string GetRarityText(UpgradeCardRarity rarity)
+    private static string GetQualityText(CardQuality quality)
     {
-        return ItemDescriptionUtility.FormatRarity(rarity);
+        return quality switch
+        {
+            CardQuality.Rare => "稀有",
+            CardQuality.Epic => "史诗",
+            CardQuality.Legendary => "传说",
+            _ => "普通"
+        };
     }
 
-    private static string BuildTagText(UpgradeCardTag[] tags)
+    private static string BuildTagText(string[] tags)
     {
         if (tags == null || tags.Length == 0)
         {
@@ -398,21 +398,9 @@ public class UIUpgradeContainer :
                 result += "/";
             }
 
-            result += ItemDescriptionUtility.FormatUpgradeCardTag(tags[i]);
+            result += tags[i];
         }
 
         return result;
-    }
-}
-
-public struct InfoAddIndex<T>
-{
-    public T info;
-    public int index;
-
-    public InfoAddIndex(T info, int index)
-    {
-        this.info = info;
-        this.index = index;
     }
 }

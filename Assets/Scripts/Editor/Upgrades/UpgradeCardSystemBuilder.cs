@@ -494,7 +494,12 @@ public static class UpgradeCardSystemBuilder
             CreateViewDefinition("page.pause", $"{NEW_UI_PAGE_FOLDER}/UI Pause.prefab", ViewLayer.Popup),
             CreateViewDefinition("page.gameOver", $"{NEW_UI_PAGE_FOLDER}/UI Game Over.prefab", ViewLayer.Page),
             CreateViewDefinition("page.stageComplete", $"{NEW_UI_PAGE_FOLDER}/UI Stage Complete.prefab", ViewLayer.Page),
-            CreateViewDefinition("page.rewardSelection", $"{NEW_UI_PAGE_FOLDER}/UI Reward Selection.prefab", ViewLayer.Page),
+            CreateViewDefinition(
+                "popup.rewardSelection",
+                $"{NEW_UI_PAGE_FOLDER}/UI Reward Selection.prefab",
+                ViewLayer.Popup,
+                ViewKind.Popup,
+                trackInBackStack: false),
             CreateViewDefinition("page.goldBook", $"{NEW_UI_PAGE_FOLDER}/UI Gold Book.prefab", ViewLayer.Page),
             CreateViewDefinition(
                 "popup.inventory.weaponOperate",

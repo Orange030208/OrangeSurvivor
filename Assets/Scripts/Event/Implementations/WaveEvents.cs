@@ -83,25 +83,6 @@ public struct WaveRuntimeChangedEvent : IGameEvent
     }
 }
 
-/// <summary>
-/// 由于业务的加载顺序可能快于 UI，因此事件可能没有订阅上就触发了，所以重发一份快照帮助 UI 更新状态。
-/// </summary>
-public struct RequestRewardSelectionStateSnapshotEvent : IGameEvent
-{
-}
-
-public struct RewardSelectionPhaseChangedEvent : IGameEvent
-{
-    public RewardSelectionPhase oldPhase;
-    public RewardSelectionPhase newPhase;
-
-    public RewardSelectionPhaseChangedEvent(RewardSelectionPhase oldPhase, RewardSelectionPhase newPhase)
-    {
-        this.oldPhase = oldPhase;
-        this.newPhase = newPhase;
-    }
-}
-
 public struct RequestWaveHudSnapshotEvent : IGameEvent
 {
 }
@@ -136,4 +117,24 @@ public struct DefeatAllEnemiesRequestedEvent : IGameEvent
 
 public struct ChestCollectedEvent : IGameEvent
 {
+}
+
+public struct GameplaySimulationPauseRequestedEvent : IGameEvent
+{
+    public string SourceId;
+
+    public GameplaySimulationPauseRequestedEvent(string sourceId)
+    {
+        SourceId = sourceId ?? string.Empty;
+    }
+}
+
+public struct GameplaySimulationResumeRequestedEvent : IGameEvent
+{
+    public string SourceId;
+
+    public GameplaySimulationResumeRequestedEvent(string sourceId)
+    {
+        SourceId = sourceId ?? string.Empty;
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -25,20 +26,16 @@ public class GameManager : MonoSingletonBase<GameManager>
     private GameState currentGameState = GameState.None;
     private bool isPaused;
     private bool hasMoreWaves;
-    private RewardSelectionReason currentRewardSelectionReason = RewardSelectionReason.None;
-    private bool shouldResumeCurrentWaveOnGameEntry;
+    private readonly HashSet<string> pauseSources = new();
     private int stateTransitionVersion;
 
     public GameState CurrentGameState => currentGameState;
-    public RewardSelectionReason CurrentRewardSelectionReason => currentRewardSelectionReason;
 
     private void OnEnable()
     {
         ResolveSceneReferences();
 
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Subscribe<RewardSelectionCompletedEvent>(OnRewardSelectionCompleted);
-        GameEventBus.Subscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Subscribe<MenuStartClickedEvent>(OnMenuStartClicked);
@@ -52,7 +49,8 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Subscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Subscribe<GameplaySimulationPauseRequestedEvent>(OnGameplaySimulationPauseRequested);
+        GameEventBus.Subscribe<GameplaySimulationResumeRequestedEvent>(OnGameplaySimulationResumeRequested);
         GameEventBus.Publish(new RequestWaveRuntimeSnapshotEvent());
     }
 
@@ -60,8 +58,6 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         stateTransitionVersion++;
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Unsubscribe<RewardSelectionCompletedEvent>(OnRewardSelectionCompleted);
-        GameEventBus.Unsubscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
         GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Unsubscribe<MenuStartClickedEvent>(OnMenuStartClicked);
@@ -75,7 +71,8 @@ public class GameManager : MonoSingletonBase<GameManager>
         GameEventBus.Unsubscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
         GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
+        GameEventBus.Unsubscribe<GameplaySimulationPauseRequestedEvent>(OnGameplaySimulationPauseRequested);
+        GameEventBus.Unsubscribe<GameplaySimulationResumeRequestedEvent>(OnGameplaySimulationResumeRequested);
     }
 
     private void Start()
@@ -100,29 +97,6 @@ public class GameManager : MonoSingletonBase<GameManager>
         TransitionToState(GameState.GameOver);
     }
 
-    private void OnChestCollected()
-    {
-        StartRewardSelection(RewardSelectionReason.Chest);
-    }
-
-    private void OnUpgradeRewardAvailable(UpgradeRewardAvailableEvent eventData)
-    {
-        StartRewardSelection(RewardSelectionReason.Upgrade);
-    }
-
-    private void StartRewardSelection(RewardSelectionReason reason)
-    {
-        if (reason == RewardSelectionReason.None
-            || currentGameState != GameState.Game
-            || currentRewardSelectionReason != RewardSelectionReason.None)
-        {
-            return;
-        }
-
-        currentRewardSelectionReason = reason;
-        TransitionToState(GameState.RewardSelection);
-    }
-
     private void OnWaveCompleted(WaveCompletedEvent eventData)
     {
         if (currentGameState != GameState.Game)
@@ -131,18 +105,6 @@ public class GameManager : MonoSingletonBase<GameManager>
         }
 
         StartWaveEndFlow(eventData);
-    }
-
-    private void OnRewardSelectionCompleted()
-    {
-        if (currentGameState != GameState.RewardSelection)
-        {
-            return;
-        }
-
-        currentRewardSelectionReason = RewardSelectionReason.None;
-        shouldResumeCurrentWaveOnGameEntry = true;
-        TransitionToState(GameState.Game);
     }
 
     private void OnCharacterSelectionCompleted()
@@ -314,8 +276,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         {
             GameEventBus.Publish(new ResetWavesRequestedEvent());
             GameEventBus.Publish(new DefeatAllEnemiesRequestedEvent());
-            currentRewardSelectionReason = RewardSelectionReason.None;
-            shouldResumeCurrentWaveOnGameEntry = false;
+            pauseSources.Clear();
         }
     }
 
@@ -357,9 +318,6 @@ public class GameManager : MonoSingletonBase<GameManager>
             case GameState.StageComplete:
                 AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.StageComplete);
                 break;
-            case GameState.RewardSelection:
-                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.RewardSelection);
-                break;
             case GameState.Shop:
                 AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Shop);
                 break;
@@ -373,17 +331,6 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         EnsureMapGenerated();
         EnsurePlayerSpawned();
-
-        if (oldState == GameState.RewardSelection)
-        {
-            if (shouldResumeCurrentWaveOnGameEntry)
-            {
-                shouldResumeCurrentWaveOnGameEntry = false;
-                GameEventBus.Publish(new ResumeCurrentWaveRequestedEvent());
-            }
-
-            return;
-        }
 
         if (oldState == GameState.Shop)
         {
@@ -427,9 +374,6 @@ public class GameManager : MonoSingletonBase<GameManager>
             case GameState.StageComplete:
                 await ClosePageAsync<StageCompleteUIPage>(cancellationToken);
                 break;
-            case GameState.RewardSelection:
-                await ClosePageAsync<RewardSelectionUIPage>(cancellationToken);
-                break;
             case GameState.Shop:
                 await ClosePageAsync<ShopUIPage>(cancellationToken);
                 break;
@@ -460,9 +404,6 @@ public class GameManager : MonoSingletonBase<GameManager>
                 await uiManager.OpenPageAsync<StageCompleteUIPage>(
                     CreateStageCompletePageContext(),
                     cancellationToken);
-                break;
-            case GameState.RewardSelection:
-                await uiManager.OpenPageAsync<RewardSelectionUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Shop:
                 await uiManager.OpenPageAsync<ShopUIPage>(
@@ -648,8 +589,36 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void ApplySimulationState()
     {
-        bool shouldRunSimulation = currentGameState == GameState.Game && !isPaused;
+        bool shouldRunSimulation = currentGameState == GameState.Game
+                                   && !isPaused
+                                   && pauseSources.Count == 0;
         Time.timeScale = shouldRunSimulation ? 1f : 0f;
+    }
+
+    private void OnGameplaySimulationPauseRequested(GameplaySimulationPauseRequestedEvent eventData)
+    {
+        if (string.IsNullOrWhiteSpace(eventData.SourceId))
+        {
+            return;
+        }
+
+        if (pauseSources.Add(eventData.SourceId))
+        {
+            ApplySimulationState();
+        }
+    }
+
+    private void OnGameplaySimulationResumeRequested(GameplaySimulationResumeRequestedEvent eventData)
+    {
+        if (string.IsNullOrWhiteSpace(eventData.SourceId))
+        {
+            return;
+        }
+
+        if (pauseSources.Remove(eventData.SourceId))
+        {
+            ApplySimulationState();
+        }
     }
 
     private void ManageGameOver()
@@ -679,6 +648,5 @@ public enum GameState
     Game,
     GameOver,
     StageComplete,
-    RewardSelection,
     Shop
 }
