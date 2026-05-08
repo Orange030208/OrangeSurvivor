@@ -1,0 +1,373 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
+  m_Name: Melee Heavy Horizontal Slash Attack Sequence
+  m_EditorClassIdentifier: 
+  duration: 1
+  restoreDefaultPoseOnComplete: 1
+  referenceTargetOffset: {x: 0, y: 1}
+  retargetScaleWeight: {x: 0, y: 1}
+  motionKeyframes:
+  - normalizedTime: 0
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.04
+    localPositionX: -0.35
+    localPositionY: 0.02
+    localEulerAngles: {x: 0, y: 0, z: 22}
+    ease: 1
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.08
+    localPositionX: -0.72
+    localPositionY: 0.04
+    localEulerAngles: {x: 0, y: 0, z: 52}
+    ease: 4
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.12
+    localPositionX: -1.02
+    localPositionY: 0.07
+    localEulerAngles: {x: 0, y: 0, z: 72}
+    ease: 5
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.16
+    localPositionX: -1.18
+    localPositionY: 0.1
+    localEulerAngles: {x: 0, y: 0, z: 82}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.2
+    localPositionX: -1.18
+    localPositionY: 0.1
+    localEulerAngles: {x: 0, y: 0, z: 82}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.24
+    localPositionX: -1.18
+    localPositionY: 0.1
+    localEulerAngles: {x: 0, y: 0, z: 82}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.28
+    localPositionX: -1.18
+    localPositionY: 0.1
+    localEulerAngles: {x: 0, y: 0, z: 82}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.3
+    localPositionX: -1.15
+    localPositionY: 0.18
+    localEulerAngles: {x: 0, y: 0, z: 80}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.32
+    localPositionX: -1.1
+    localPositionY: 0.31
+    localEulerAngles: {x: 0, y: 0, z: 76}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.34
+    localPositionX: -1
+    localPositionY: 0.46
+    localEulerAngles: {x: 0, y: 0, z: 69}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.36
+    localPositionX: -0.86
+    localPositionY: 0.62
+    localEulerAngles: {x: 0, y: 0, z: 58}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.38
+    localPositionX: -0.68
+    localPositionY: 0.77
+    localEulerAngles: {x: 0, y: 0, z: 46}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.4
+    localPositionX: -0.46
+    localPositionY: 0.89
+    localEulerAngles: {x: 0, y: 0, z: 31}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.42
+    localPositionX: -0.22
+    localPositionY: 0.95
+    localEulerAngles: {x: 0, y: 0, z: 15}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.44
+    localPositionX: 0
+    localPositionY: 0.96
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.46
+    localPositionX: 0.22
+    localPositionY: 0.95
+    localEulerAngles: {x: 0, y: 0, z: -15}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.48
+    localPositionX: 0.46
+    localPositionY: 0.89
+    localEulerAngles: {x: 0, y: 0, z: -31}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.5
+    localPositionX: 0.68
+    localPositionY: 0.77
+    localEulerAngles: {x: 0, y: 0, z: -46}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.52
+    localPositionX: 0.86
+    localPositionY: 0.62
+    localEulerAngles: {x: 0, y: 0, z: -58}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.54
+    localPositionX: 1
+    localPositionY: 0.46
+    localEulerAngles: {x: 0, y: 0, z: -69}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.56
+    localPositionX: 1.1
+    localPositionY: 0.31
+    localEulerAngles: {x: 0, y: 0, z: -76}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.58
+    localPositionX: 1.15
+    localPositionY: 0.18
+    localEulerAngles: {x: 0, y: 0, z: -80}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.62
+    localPositionX: 1.04
+    localPositionY: 0.1
+    localEulerAngles: {x: 0, y: 0, z: -70}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.66
+    localPositionX: 0.82
+    localPositionY: 0.06
+    localEulerAngles: {x: 0, y: 0, z: -54}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.7
+    localPositionX: 0.58
+    localPositionY: 0.04
+    localEulerAngles: {x: 0, y: 0, z: -38}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.74
+    localPositionX: 0.36
+    localPositionY: 0.02
+    localEulerAngles: {x: 0, y: 0, z: -22}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.78
+    localPositionX: 0.18
+    localPositionY: 0.01
+    localEulerAngles: {x: 0, y: 0, z: -10}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.82
+    localPositionX: 0.06
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: -3}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.88
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 1
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  eventKeyframes:
+  - normalizedTime: 0.3
+    eventType: 0
+    eventKey: 0
+  - normalizedTime: 0.58
+    eventType: 1
+    eventKey: 0
+  - normalizedTime: 0.3
+    eventType: 3
+    eventKey: 0
+  - normalizedTime: 0.3
+    eventType: 4
+    eventKey: 0

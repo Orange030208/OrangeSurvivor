@@ -13,10 +13,14 @@ public class AttackSequenceDefinitionSO : ScriptableObject
     [SerializeField] private float duration = 0.25f;
     [Tooltip("Whether the animated transform returns to its cached default pose when playback completes.")]
     [SerializeField] private bool restoreDefaultPoseOnComplete = true;
+    [Tooltip("How the runtime target offset is resolved when this sequence starts.")]
+    [SerializeField] private WeaponSequenceTargetOffsetMode targetOffsetMode = WeaponSequenceTargetOffsetMode.ActualTarget;
     [Tooltip("The target local offset this animation was authored against. When the real target offset equals this value, motion samples play unchanged.")]
     [SerializeField] private Vector2 referenceTargetOffset = new(0f, 1f);
     [Tooltip("Per-axis retarget scale weight. 0 keeps the authored sample, 1 fully scales that axis toward the current target offset.")]
     [SerializeField] private Vector2 retargetScaleWeight = new(0f, 1f);
+    [Tooltip("Per-axis multiplier used when a motion sample moves opposite to the reference target direction. 0 keeps backward windup authored, 1 keeps the regular retarget weight.")]
+    [SerializeField] private Vector2 oppositeDirectionRetargetWeight = new(1f, 0f);
 
     [Header("Motion")]
     [Tooltip("Sampled local position and rotation frames for the attack motion.")]
@@ -41,8 +45,10 @@ public class AttackSequenceDefinitionSO : ScriptableObject
 
     public float Duration => Mathf.Max(0.01f, duration);
     public bool RestoreDefaultPoseOnComplete => restoreDefaultPoseOnComplete;
+    public WeaponSequenceTargetOffsetMode TargetOffsetMode => targetOffsetMode;
     public Vector2 ReferenceTargetOffset => referenceTargetOffset;
     public Vector2 RetargetScaleWeight => new(Mathf.Clamp01(retargetScaleWeight.x), Mathf.Clamp01(retargetScaleWeight.y));
+    public Vector2 OppositeDirectionRetargetWeight => new(Mathf.Clamp01(oppositeDirectionRetargetWeight.x), Mathf.Clamp01(oppositeDirectionRetargetWeight.y));
     public IReadOnlyList<WeaponMotionKeyframe> MotionKeyframes => motionKeyframes;
     public IReadOnlyList<WeaponSequenceEventKeyframe> EventKeyframes => eventKeyframes;
 
@@ -66,9 +72,26 @@ public class AttackSequenceDefinitionSO : ScriptableObject
 
     public void ConfigureRetargeting(Vector2 referenceOffset, Vector2 scaleWeight)
     {
+        ConfigureRetargeting(referenceOffset, scaleWeight, oppositeDirectionRetargetWeight);
+    }
+
+    public void ConfigureRetargeting(Vector2 referenceOffset, Vector2 scaleWeight, Vector2 oppositeDirectionWeight)
+    {
         referenceTargetOffset = referenceOffset;
         retargetScaleWeight = new Vector2(Mathf.Clamp01(scaleWeight.x), Mathf.Clamp01(scaleWeight.y));
+        oppositeDirectionRetargetWeight = new Vector2(Mathf.Clamp01(oppositeDirectionWeight.x), Mathf.Clamp01(oppositeDirectionWeight.y));
     }
+
+    public void ConfigureTargetOffsetMode(WeaponSequenceTargetOffsetMode mode)
+    {
+        targetOffsetMode = mode;
+    }
+}
+
+public enum WeaponSequenceTargetOffsetMode
+{
+    ActualTarget,
+    MaxRangeAlongAimDirection
 }
 
 public enum WeaponMotionEase

@@ -116,7 +116,6 @@ public class SkeletonBrain : EnemyBrain
                 hitPoint,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                enemyData.AttackAction.ActionId,
                 owner.Center));
         }
 

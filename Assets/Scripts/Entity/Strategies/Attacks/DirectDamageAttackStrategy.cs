@@ -63,7 +63,6 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
                 hitPoint,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                ActionId,
                 owner.Center));
         }
     }

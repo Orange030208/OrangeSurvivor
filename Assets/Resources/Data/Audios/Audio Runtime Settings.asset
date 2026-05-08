@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d23d9c622e00a00418bf9f16b2b7d27e, type: 3}
   m_Name: Audio Runtime Settings
   m_EditorClassIdentifier: 
-  musicFadeDuration: 0.25
+  musicFadeDuration: 1
   bgmCues:
   - bgmKey: 1
     clip: {fileID: 8300000, guid: bdf538c2013dac848aa6bc6bce644f34, type: 3}
@@ -20,5 +20,9 @@ MonoBehaviour:
     pitch: 1
   - bgmKey: 2
     clip: {fileID: 8300000, guid: bdf538c2013dac848aa6bc6bce644f34, type: 3}
+    playbackMode: 1
+    pitch: 1
+  - bgmKey: 3
+    clip: {fileID: 8300000, guid: 64bac0fe31356bb4c929407f8d8a10c8, type: 3}
     playbackMode: 1
     pitch: 1

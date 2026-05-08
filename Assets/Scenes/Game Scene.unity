@@ -25654,6 +25654,8 @@ MonoBehaviour:
   player: {fileID: 0}
   characterSelectionManager: {fileID: 360436080}
   mapGenerator: {fileID: 595972524}
+  waveManager: {fileID: 0}
+  enemyRegistry: {fileID: 0}
   inventoryOperateManager: {fileID: 1941351701}
   shopManager: {fileID: 59292223}
   stageCompleteSummaryManager: {fileID: 1566269878}
@@ -25902,8 +25904,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a0b8eae16bec44e9b1a37e870324ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 30
-  mapHeight: 30
+  mapWidth: 40
+  mapHeight: 25
   cellSize: 1
   targetGrid: {fileID: 595972525}
   groundTilemap: {fileID: 326447968}
@@ -28602,9 +28604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa34045666274caeb661917b2a511151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiManager: {fileID: 0}
   accessoryManager: {fileID: 0}
   player: {fileID: 0}
-  currencyWallet: {fileID: 0}
   upgradeCardPool: {fileID: 0}
 --- !u!1 &1566269876
 GameObject:

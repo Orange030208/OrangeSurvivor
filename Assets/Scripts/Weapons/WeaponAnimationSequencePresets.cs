@@ -22,7 +22,8 @@ public static class WeaponAnimationSequencePresets
         AttackSequenceDefinitionSO sequence =
             AttackSequenceDefinitionSO.CreateRuntimeSequence($"Runtime {data.Name}", data.Duration);
         sequence.Overwrite(data.Duration, true, data.MotionKeyframes, data.EventKeyframes);
-        sequence.ConfigureRetargeting(data.ReferenceTargetOffset, data.RetargetScaleWeight);
+        sequence.ConfigureTargetOffsetMode(data.TargetOffsetMode);
+        sequence.ConfigureRetargeting(data.ReferenceTargetOffset, data.RetargetScaleWeight, data.OppositeDirectionRetargetWeight);
         return sequence;
     }
 
@@ -35,7 +36,8 @@ public static class WeaponAnimationSequencePresets
 
         WeaponAnimationSequencePresetData data = GetData(id);
         target.Overwrite(data.Duration, true, data.MotionKeyframes, data.EventKeyframes);
-        target.ConfigureRetargeting(data.ReferenceTargetOffset, data.RetargetScaleWeight);
+        target.ConfigureTargetOffsetMode(data.TargetOffsetMode);
+        target.ConfigureRetargeting(data.ReferenceTargetOffset, data.RetargetScaleWeight, data.OppositeDirectionRetargetWeight);
     }
 
     private static WeaponAnimationSequencePresetData GetData(WeaponAnimationSequencePresetId id)
@@ -72,7 +74,8 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.60f) / 0.40f);
             return K(t, Mathf.Lerp(1.42f, 0f, recover), Mathf.Lerp(0.34f, 0f, recover), Mathf.Lerp(-48f, 0f, recover), EaseFor(t, 0.24f, 0.60f));
         },
-        new() { O(0.28f), C(0.58f), S(0.41f), V(0.43f) });
+        new() { O(0.28f), C(0.58f), S(0.41f), V(0.43f) },
+        WeaponSequenceTargetOffsetMode.ActualTarget);
 
     private static WeaponAnimationSequencePresetData BuildMeleeHeavyHorizontalSlash() => Build(
         "Weapon Sequence - Melee Heavy Horizontal Slash",
@@ -101,7 +104,8 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.76f) / 0.24f);
             return K(t, Mathf.Lerp(2.25f, 0f, recover), Mathf.Lerp(0.48f, 0f, recover), Mathf.Lerp(-82f, 0f, recover), EaseFor(t, 0.47f, 0.76f));
         },
-        new() { O(0.49f), C(0.82f), S(0.61f), V(0.65f) });
+        new() { O(0.49f), C(0.82f), S(0.61f), V(0.65f) },
+        WeaponSequenceTargetOffsetMode.ActualTarget);
 
     private static WeaponAnimationSequencePresetData BuildMeleeDirectThrust() => Build(
         "Weapon Sequence - Melee Direct Thrust",
@@ -130,7 +134,8 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.62f) / 0.38f);
             return K(t, Mathf.Lerp(0.05f, 0f, recover), Mathf.Lerp(1.82f, 0f, recover), Mathf.Lerp(-4f, 0f, recover), EaseFor(t, 0.22f, 0.50f));
         },
-        new() { O(0.30f), C(0.60f), S(0.42f), V(0.45f) });
+        new() { O(0.30f), C(0.60f), S(0.42f), V(0.45f) },
+        WeaponSequenceTargetOffsetMode.MaxRangeAlongAimDirection);
 
     private static WeaponAnimationSequencePresetData BuildMeleeChargedThrust() => Build(
         "Weapon Sequence - Melee Charged Thrust",
@@ -165,7 +170,8 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.78f) / 0.22f);
             return K(t, Mathf.Lerp(0.08f, 0f, recover), Mathf.Lerp(2.37f, 0f, recover), Mathf.Lerp(-8f, 0f, recover), EaseFor(t, 0.48f, 0.68f));
         },
-        new() { O(0.52f), C(0.78f), S(0.62f), V(0.66f) });
+        new() { O(0.52f), C(0.78f), S(0.62f), V(0.66f) },
+        WeaponSequenceTargetOffsetMode.MaxRangeAlongAimDirection);
 
     private static WeaponAnimationSequencePresetData BuildRangedGunfireShot() => Build(
         "Weapon Sequence - Gunfire Shot",
@@ -194,7 +200,8 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.55f) / 0.45f);
             return K(t, Mathf.Lerp(0.04f, 0f, recover), Mathf.Lerp(0.08f, 0f, recover), Mathf.Lerp(7f, 0f, recover), EaseFor(t, 0.24f, 0.38f));
         },
-        new() { P(0.32f, 0), S(0.32f), V(0.33f) });
+        new() { P(0.32f, 0), S(0.32f), V(0.33f) },
+        WeaponSequenceTargetOffsetMode.ActualTarget);
 
     private static WeaponAnimationSequencePresetData BuildRangedStaffSpellcast() => Build(
         "Weapon Sequence - Staff Spellcast",
@@ -223,10 +230,13 @@ public static class WeaponAnimationSequencePresets
             float recover = Smooth((t - 0.72f) / 0.28f);
             return K(t, Mathf.Lerp(0.04f, 0f, recover), Mathf.Lerp(1.08f, 0f, recover), 0f, EaseFor(t, 0.58f, 0.72f));
         },
-        new() { P(0.62f, 0), S(0.60f), V(0.63f) });
+        new() { P(0.62f, 0), S(0.60f), V(0.63f) },
+        WeaponSequenceTargetOffsetMode.ActualTarget);
 
     private static WeaponAnimationSequencePresetData Build(string name, float duration, int frameCount,
-        Func<float, WeaponMotionKeyframe> sampler, List<WeaponSequenceEventKeyframe> events)
+        Func<float, WeaponMotionKeyframe> sampler,
+        List<WeaponSequenceEventKeyframe> events,
+        WeaponSequenceTargetOffsetMode targetOffsetMode)
     {
         List<WeaponMotionKeyframe> motions = new(frameCount);
         for (int i = 0; i < frameCount; i++)
@@ -237,7 +247,15 @@ public static class WeaponAnimationSequencePresets
 
         motions[0] = K(0f, 0f, 0f, 0f, (int)WeaponMotionEase.Linear);
         motions[^1] = K(1f, 0f, 0f, 0f, (int)WeaponMotionEase.InOutSine);
-        return new WeaponAnimationSequencePresetData(name, duration, motions, events, new Vector2(0f, 1f), new Vector2(0f, 1f));
+        return new WeaponAnimationSequencePresetData(
+            name,
+            duration,
+            motions,
+            events,
+            targetOffsetMode,
+            new Vector2(0f, 1f),
+            new Vector2(0f, 1f),
+            new Vector2(1f, 0f));
     }
 
     private static WeaponMotionKeyframe K(float time, float x, float y, float z, int ease)
@@ -297,20 +315,27 @@ public readonly struct WeaponAnimationSequencePresetData
     public float Duration { get; }
     public IReadOnlyList<WeaponMotionKeyframe> MotionKeyframes { get; }
     public IReadOnlyList<WeaponSequenceEventKeyframe> EventKeyframes { get; }
+    public WeaponSequenceTargetOffsetMode TargetOffsetMode { get; }
     public Vector2 ReferenceTargetOffset { get; }
     public Vector2 RetargetScaleWeight { get; }
+    public Vector2 OppositeDirectionRetargetWeight { get; }
     public int MotionFrameCount => MotionKeyframes?.Count ?? 0;
     public int EventCount => EventKeyframes?.Count ?? 0;
 
     public WeaponAnimationSequencePresetData(string name, float duration,
         IReadOnlyList<WeaponMotionKeyframe> motionKeyframes, IReadOnlyList<WeaponSequenceEventKeyframe> eventKeyframes,
-        Vector2 referenceTargetOffset, Vector2 retargetScaleWeight)
+        WeaponSequenceTargetOffsetMode targetOffsetMode,
+        Vector2 referenceTargetOffset,
+        Vector2 retargetScaleWeight,
+        Vector2 oppositeDirectionRetargetWeight)
     {
         Name = name;
         Duration = duration;
         MotionKeyframes = motionKeyframes;
         EventKeyframes = eventKeyframes;
+        TargetOffsetMode = targetOffsetMode;
         ReferenceTargetOffset = referenceTargetOffset;
         RetargetScaleWeight = retargetScaleWeight;
+        OppositeDirectionRetargetWeight = oppositeDirectionRetargetWeight;
     }
 }

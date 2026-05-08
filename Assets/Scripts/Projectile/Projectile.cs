@@ -141,8 +141,8 @@ public class Projectile : Entity, IProjectile
             healthComponent.transform.position,
             launchContext.Direction,
             HitSourceKind.Projectile,
-            GetType().Name,
-            sourcePosition: launchContext.SpawnPosition);
+            sourcePosition: launchContext.SpawnPosition,
+            sourceWeapon: launchContext.SourceWeapon);
 
         HitService.Apply(request);
         SpawnImpactEffect(transform.position, launchContext.ProjectileDefinition);

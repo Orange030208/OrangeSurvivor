@@ -358,8 +358,9 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     {
         IsAttacking = true;
         Vector2 originPosition = transform.position;
-        pendingTargetPosition = ResolveTargetAimPoint(target, originPosition);
-        LockAttackDirection(ResolveAttackDirection(pendingTargetPosition));
+        Vector2 actualTargetPosition = ResolveTargetAimPoint(target, originPosition);
+        LockAttackDirection(ResolveAttackDirection(actualTargetPosition));
+        pendingTargetPosition = ResolveSequenceTargetPosition(originPosition, actualTargetPosition);
         activeBurstId = -1;
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
@@ -369,6 +370,22 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
         Vector2 targetLocalOffset = transform.InverseTransformPoint(pendingTargetPosition);
         sequenceBridge.Play(attackSequence, targetLocalOffset, sequenceDuration);
+    }
+
+    private Vector2 ResolveSequenceTargetPosition(Vector2 originPosition, Vector2 actualTargetPosition)
+    {
+        if (attackSequence == null)
+        {
+            return actualTargetPosition;
+        }
+
+        switch (attackSequence.TargetOffsetMode)
+        {
+            case WeaponSequenceTargetOffsetMode.MaxRangeAlongAimDirection:
+                return originPosition + GetLockedAttackDirection() * Range;
+            default:
+                return actualTargetPosition;
+        }
     }
 
     protected virtual void TickTargeting(float deltaTime)
@@ -1138,8 +1155,8 @@ internal sealed class HitBoxAttackExecutor
                 healthComponent.transform.position,
                 knockbackDirection,
                 HitSourceKind.Weapon,
-                weapon.GetType().Name,
-                sourcePosition: sourcePosition);
+                sourcePosition: sourcePosition,
+                sourceWeapon: weapon);
             HitResult hitResult = weapon.ApplyHit(request);
             if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
             {

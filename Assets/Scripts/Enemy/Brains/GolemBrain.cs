@@ -7,7 +7,6 @@ public class GolemBrain : EnemyBrain
 {
     private const string CHARGE_MODIFIER_SOURCE = "GolemBrain_Charge";
     private const string POST_CHARGE_ATTACK_MODIFIER_SOURCE = "GolemBrain_PostChargeAttack";
-    private const string CHARGE_HIT_SOURCE_ID = "GolemBrain_ChargeHit";
     private const int CHARGE_HIT_BUFFER_SIZE = 32;
 
     public enum GolemAIState
@@ -270,7 +269,6 @@ public class GolemBrain : EnemyBrain
                 hitEntity.Center,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                CHARGE_HIT_SOURCE_ID,
                 sourcePosition: owner.Center));
         }
     }
@@ -585,7 +583,6 @@ public class GolemBrain : EnemyBrain
                     hitPoint,
                     knockbackDirection,
                     HitSourceKind.Direct,
-                    GolemEnemySO.POST_CHARGE_ATTACK_ACTION_ID,
                     brain.owner.Center));
             }
         }

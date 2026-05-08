@@ -15,7 +15,6 @@ MonoBehaviour:
   instanceIdPrefix: UIInst_
   useUnscaledTime: 1
   rootName: UIRoot
-  dontDestroyOnLoad: 1
   canvasProfile: {fileID: 11400000, guid: 8b57b40a06c64c55a95b313df946f1e1, type: 2}
   enablePooling: 1
   maxCachedInstancesPerView: 3

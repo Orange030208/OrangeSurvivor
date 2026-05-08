@@ -410,8 +410,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
         EditorGUILayout.Space(4f);
         EditorGUILayout.LabelField("Retarget", EditorStyles.boldLabel);
+        DrawSequenceProperty("targetOffsetMode", "Target Offset Mode");
         DrawSequenceProperty("referenceTargetOffset", "Reference Target Offset");
         DrawSequenceProperty("retargetScaleWeight", "Scale Weight");
+        DrawSequenceProperty("oppositeDirectionRetargetWeight", "Opposite Direction Weight");
         EditorGUILayout.EndVertical();
     }
 
@@ -1767,31 +1769,52 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     {
         Vector2 reference = sequence.ReferenceTargetOffset;
         Vector2 weight = sequence.RetargetScaleWeight;
+        Vector2 oppositeDirectionWeight = sequence.OppositeDirectionRetargetWeight;
         return new Vector2(
-            localPosition.x * ResolveRetargetScale(reference.x, previewTargetOffset.x, weight.x),
-            localPosition.y * ResolveRetargetScale(reference.y, previewTargetOffset.y, weight.y));
+            localPosition.x * ResolveRetargetScale(localPosition.x, reference.x, previewTargetOffset.x, weight.x, oppositeDirectionWeight.x),
+            localPosition.y * ResolveRetargetScale(localPosition.y, reference.y, previewTargetOffset.y, weight.y, oppositeDirectionWeight.y));
     }
 
     private Vector2 InverseRetargetPosition(Vector2 previewPosition)
     {
         Vector2 reference = sequence.ReferenceTargetOffset;
         Vector2 weight = sequence.RetargetScaleWeight;
-        float xScale = ResolveRetargetScale(reference.x, previewTargetOffset.x, weight.x);
-        float yScale = ResolveRetargetScale(reference.y, previewTargetOffset.y, weight.y);
+        Vector2 oppositeDirectionWeight = sequence.OppositeDirectionRetargetWeight;
+        float xScale = ResolveRetargetScale(previewPosition.x, reference.x, previewTargetOffset.x, weight.x, oppositeDirectionWeight.x);
+        float yScale = ResolveRetargetScale(previewPosition.y, reference.y, previewTargetOffset.y, weight.y, oppositeDirectionWeight.y);
         return new Vector2(
             Mathf.Abs(xScale) > 0.0001f ? previewPosition.x / xScale : previewPosition.x,
             Mathf.Abs(yScale) > 0.0001f ? previewPosition.y / yScale : previewPosition.y);
     }
 
-    private static float ResolveRetargetScale(float referenceValue, float targetValue, float weight)
+    private static float ResolveRetargetScale(float localValue, float referenceValue, float targetValue, float weight, float oppositeDirectionWeight)
     {
-        float clampedWeight = Mathf.Clamp01(weight);
+        float clampedWeight = ResolveEffectiveRetargetWeight(localValue, referenceValue, weight, oppositeDirectionWeight);
         if (clampedWeight <= 0f || Mathf.Abs(referenceValue) < 0.0001f)
         {
             return 1f;
         }
 
         return Mathf.Lerp(1f, targetValue / referenceValue, clampedWeight);
+    }
+
+    private static float ResolveEffectiveRetargetWeight(float localValue, float referenceValue, float weight, float oppositeDirectionWeight)
+    {
+        float clampedWeight = Mathf.Clamp01(weight);
+        if (clampedWeight <= 0f ||
+            Mathf.Approximately(localValue, 0f) ||
+            Mathf.Abs(referenceValue) < 0.0001f)
+        {
+            return clampedWeight;
+        }
+
+        bool movesOppositeReference = Mathf.Sign(localValue) != Mathf.Sign(referenceValue);
+        if (!movesOppositeReference)
+        {
+            return clampedWeight;
+        }
+
+        return clampedWeight * Mathf.Clamp01(oppositeDirectionWeight);
     }
 
     private void DrawDiagnostics()

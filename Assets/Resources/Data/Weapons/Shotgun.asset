@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: Shotgun
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   itemName: Shotgun
   itemIcon: {fileID: 21300000, guid: 3450be1940341e847a28915b5de06590, type: 3}
   itemPrice: 39
@@ -19,11 +19,14 @@ MonoBehaviour:
   itemDescription: Wide cone shotgun. Short range, high knockback, strong against
     packs.
   tags: 01000000020000000300000006000000
-  attackSequence: {fileID: 11400000, guid: a19785078fdd8224dbd91313bb788043, type: 2}
-  visualForwardAngle: 45
+  attackSequence: {fileID: 11400000, guid: c9a81a0e747841f9bf8c5ac52038f009, type: 2}
+  visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.9
-  spawnPoints: []
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: -0.18785661, y: 0.5649998}
+    localRotationOffset: 0
   sequenceProjectileList:
   - spawnPointIndex: 0
     projectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}

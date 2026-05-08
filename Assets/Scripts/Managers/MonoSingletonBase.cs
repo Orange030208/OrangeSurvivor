@@ -19,11 +19,20 @@ public class MonoSingletonBase<T>:MonoBehaviour where T:MonoBehaviour
 
     private void Awake()
     {
-        if (_instance != null)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        
-        DontDestroyOnLoad(gameObject);
+
+        _instance = this as T;
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 [TaskCategory("Survivors/Enemy/Golem Mecha Stone")]
 public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 {
-    private const string LASER_HIT_SOURCE_ID = "GolemMechaStoneBoss_Laser";
     private const int LASER_HIT_BUFFER_SIZE = 16;
     private const float MIN_RESOLVED_LASER_LENGTH = 0.05f;
 
@@ -168,7 +167,6 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
                 hitPoint,
                 knockbackDirection,
                 HitSourceKind.Direct,
-                LASER_HIT_SOURCE_ID,
                 laserOrigin));
         }
     }

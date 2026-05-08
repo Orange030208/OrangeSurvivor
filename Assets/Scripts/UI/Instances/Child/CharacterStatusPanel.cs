@@ -46,7 +46,7 @@ public class CharacterStatusPanel : ViewPartBase
         SetHealth(playerHealthComponent.CurrentHealth, playerHealthComponent.MaxHealth);
     }
 
-    public void Unbind()
+    public override void Unbind()
     {
         UnbindPlayerHealth();
         RefreshCharacterIdentity(null);

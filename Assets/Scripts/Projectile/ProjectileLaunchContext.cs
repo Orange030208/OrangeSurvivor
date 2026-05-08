@@ -15,6 +15,7 @@ public readonly struct ProjectileLaunchContext
 {
     public IProjectileLauncher Launcher { get; }
     public Entity Source { get; }
+    public Weapon SourceWeapon { get; }
     public Vector2 SpawnPosition { get; }
     public Vector2 Direction { get; }
     public HitSpec HitSpec { get; }
@@ -44,10 +45,12 @@ public readonly struct ProjectileLaunchContext
         int spawnPointIndex = 0,
         int burstId = 0,
         ProjectileFiringMode firingMode = ProjectileFiringMode.Default,
-        ProjectilePatternConfig patternConfig = default)
+        ProjectilePatternConfig patternConfig = default,
+        Weapon sourceWeapon = null)
     {
         Launcher = launcher;
         Source = source;
+        SourceWeapon = sourceWeapon != null ? sourceWeapon : launcher as Weapon;
         SpawnPosition = spawnPosition;
         Direction = direction.normalized;
         HitSpec = hitSpec;

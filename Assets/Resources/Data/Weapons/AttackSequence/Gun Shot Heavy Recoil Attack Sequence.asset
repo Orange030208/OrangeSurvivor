@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
+  m_Name: Gun Shot Heavy Recoil Attack Sequence
+  m_EditorClassIdentifier: 
+  duration: 1
+  restoreDefaultPoseOnComplete: 1
+  referenceTargetOffset: {x: 0, y: 1}
+  retargetScaleWeight: {x: 0, y: 0}
+  motionKeyframes:
+  - normalizedTime: 0
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.06
+    localPositionX: 0
+    localPositionY: -0.16
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.14
+    localPositionX: 0
+    localPositionY: -0.32
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 8
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.24
+    localPositionX: 0
+    localPositionY: -0.22
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.38
+    localPositionX: 0
+    localPositionY: -0.11
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 2
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 0.58
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  - normalizedTime: 1
+    localPositionX: 0
+    localPositionY: 0
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    ease: 0
+    customCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  eventKeyframes:
+  - normalizedTime: 0
+    eventType: 2
+    eventKey: 0
+  - normalizedTime: 0
+    eventType: 3
+    eventKey: 0
+  - normalizedTime: 0
+    eventType: 4
+    eventKey: 0

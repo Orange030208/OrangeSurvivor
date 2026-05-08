@@ -23,16 +23,66 @@ MonoBehaviour:
   - propType: 25
     modifierType: 0
     value: 100
+  meleeAction:
+    actionId: GolemMechaStoneBoss_Melee
+    animationStateName: Melee
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.75
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  shootAction:
+    actionId: GolemMechaStoneBoss_Shoot
+    animationStateName: Shoot
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.48
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  laserAction:
+    actionId: GolemMechaStoneBoss_Laser
+    animationStateName: LaserCast
+    completionMode: 2
+    hasCommitPoint: 1
+    commitNormalizedTime: 1
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  shieldAction:
+    actionId: GolemMechaStoneBoss_Shield
+    animationStateName: ShieldCast
+    completionMode: 1
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 3
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  phaseChangeAction:
+    actionId: GolemMechaStoneBoss_PhaseChange
+    animationStateName: Immune
+    completionMode: 0
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
   meleeCommitNormalizedTime: 0.75
   shootCommitNormalizedTime: 0.48
-  laserAimLockNormalizedTime: 0.85
+  laserAimLockNormalizedTime: 0.8
   laserFireStartNormalizedTime: 1
   laserDuration: 4
   laserWidth: 1.2
   laserLength: 40
   laserDamageInterval: 0.25
-  laserDamageMultiplier: 0.65
-  laserTurnSpeedDegrees: 15
+  laserDamageMultiplier: 0.5
+  laserTurnSpeedDegrees: 18
   laserCooldown: 10
   laserMinPhase: 2
   laserRangeMultiplier: 10

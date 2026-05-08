@@ -334,8 +334,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponPositions: []
-  weaponSlotRadius: 1.5
-  weaponSlotsRoot: {fileID: 0}
+  weaponSlotRadius: 1.2
+  weaponSlotsRoot: {fileID: 3187044280391910348}
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 64

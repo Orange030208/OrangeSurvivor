@@ -10,7 +10,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
 
     [Header("基础属性")] [SerializeField] private BasePropGroupSO basePropsAsset;
 
-    [Header("角色额外属性")] [Tooltip("配置角色提供的属性修饰。倍率统一使用 0~1 表示 0%~100%。")] [SerializeField]
+    [Header("角色额外属性")] [Tooltip("按照属性语义填写。百分比属性与所有乘区统一使用百分比点：1 表示 1%，10 表示 10%。点数属性仍按属性单位填写。")] [SerializeField]
     private List<PropModifierData> extraProps = new();
 
     [Header("角色特殊能力")] [SerializeReference]

@@ -180,22 +180,32 @@ public sealed class WeaponMotionSequencePlayer
         Vector2 localPosition = new(keyframe.localPositionX, keyframe.localPositionY);
         if (hasRetargetTarget && currentSequence != null)
         {
-            localPosition = RetargetLocalPosition(localPosition, currentSequence.ReferenceTargetOffset, currentTargetLocalOffset, currentSequence.RetargetScaleWeight);
+            localPosition = RetargetLocalPosition(
+                localPosition,
+                currentSequence.ReferenceTargetOffset,
+                currentTargetLocalOffset,
+                currentSequence.RetargetScaleWeight,
+                currentSequence.OppositeDirectionRetargetWeight);
         }
 
         return new Vector3(localPosition.x, localPosition.y, 0f);
     }
 
-    private static Vector2 RetargetLocalPosition(Vector2 localPosition, Vector2 referenceTargetOffset, Vector2 targetLocalOffset, Vector2 scaleWeight)
+    private static Vector2 RetargetLocalPosition(
+        Vector2 localPosition,
+        Vector2 referenceTargetOffset,
+        Vector2 targetLocalOffset,
+        Vector2 scaleWeight,
+        Vector2 oppositeDirectionWeight)
     {
         return new Vector2(
-            RetargetAxis(localPosition.x, referenceTargetOffset.x, targetLocalOffset.x, scaleWeight.x),
-            RetargetAxis(localPosition.y, referenceTargetOffset.y, targetLocalOffset.y, scaleWeight.y));
+            RetargetAxis(localPosition.x, referenceTargetOffset.x, targetLocalOffset.x, scaleWeight.x, oppositeDirectionWeight.x),
+            RetargetAxis(localPosition.y, referenceTargetOffset.y, targetLocalOffset.y, scaleWeight.y, oppositeDirectionWeight.y));
     }
 
-    private static float RetargetAxis(float localValue, float referenceValue, float targetValue, float weight)
+    private static float RetargetAxis(float localValue, float referenceValue, float targetValue, float weight, float oppositeDirectionWeight)
     {
-        float clampedWeight = Mathf.Clamp01(weight);
+        float clampedWeight = ResolveEffectiveRetargetWeight(localValue, referenceValue, weight, oppositeDirectionWeight);
         if (clampedWeight <= 0f || Mathf.Approximately(localValue, 0f) || Mathf.Abs(referenceValue) < 0.0001f)
         {
             return localValue;
@@ -203,6 +213,25 @@ public sealed class WeaponMotionSequencePlayer
 
         float scale = Mathf.Lerp(1f, targetValue / referenceValue, clampedWeight);
         return localValue * scale;
+    }
+
+    private static float ResolveEffectiveRetargetWeight(float localValue, float referenceValue, float weight, float oppositeDirectionWeight)
+    {
+        float clampedWeight = Mathf.Clamp01(weight);
+        if (clampedWeight <= 0f ||
+            Mathf.Approximately(localValue, 0f) ||
+            Mathf.Abs(referenceValue) < 0.0001f)
+        {
+            return clampedWeight;
+        }
+
+        bool movesOppositeReference = Mathf.Sign(localValue) != Mathf.Sign(referenceValue);
+        if (!movesOppositeReference)
+        {
+            return clampedWeight;
+        }
+
+        return clampedWeight * Mathf.Clamp01(oppositeDirectionWeight);
     }
 
     private float EvaluateEase(float t, WeaponMotionEase ease, AnimationCurve customCurve)

@@ -12,7 +12,6 @@ namespace Orange.UIFramework
 
         [Header("Root")]
         [SerializeField] private string rootName = "UIRoot";
-        [SerializeField] private bool dontDestroyOnLoad = true;
         [SerializeField] private CanvasProfile canvasProfile;
 
         [Header("Pooling")]
@@ -26,7 +25,6 @@ namespace Orange.UIFramework
         public string InstanceIdPrefix => instanceIdPrefix;
         public bool UseUnscaledTime => useUnscaledTime;
         public string RootName => string.IsNullOrWhiteSpace(rootName) ? "UIRoot" : rootName;
-        public bool DontDestroyOnLoad => dontDestroyOnLoad;
         public CanvasProfile CanvasProfile => canvasProfile;
         public bool EnablePooling => enablePooling;
         public int MaxCachedInstancesPerView => maxCachedInstancesPerView;

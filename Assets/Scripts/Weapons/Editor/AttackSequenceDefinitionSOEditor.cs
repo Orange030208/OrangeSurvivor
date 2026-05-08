@@ -36,10 +36,12 @@ public class AttackSequenceDefinitionSOEditor : Editor
 
         EditorGUILayout.Space(4f);
         EditorGUILayout.LabelField("Retarget", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("targetOffsetMode"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("referenceTargetOffset"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("retargetScaleWeight"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("oppositeDirectionRetargetWeight"));
         EditorGUILayout.HelpBox(
-            "When the current target local offset equals Reference Target Offset, the sampled animation plays unchanged. X/Y Scale Weight controls how strongly each axis scales toward the current target offset.",
+            "When the current target local offset equals Reference Target Offset, the sampled animation plays unchanged. X/Y Scale Weight controls how strongly each axis scales toward the current target offset. Opposite Direction Retarget Weight limits scaling for samples that move away from the reference target direction, useful for keeping backward windup distance stable.",
             MessageType.Info);
     }
 

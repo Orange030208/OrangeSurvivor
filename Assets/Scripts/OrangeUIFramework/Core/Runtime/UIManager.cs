@@ -1538,11 +1538,6 @@ namespace Orange.UIFramework
             ApplyCanvasProfile(rootCanvas, rootCanvasScaler, canvasProfile);
             rootCanvas.gameObject.name = settings.RootName;
 
-            if (settings.DontDestroyOnLoad && rootCanvas.transform.parent == null)
-            {
-                DontDestroyOnLoad(rootCanvas.gameObject);
-            }
-
             layersRoot = EnsureChildRect(rootCanvas.transform, "Layers");
         }
 

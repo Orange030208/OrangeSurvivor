@@ -16,7 +16,7 @@ public readonly struct HitRequest
     public bool HasKnockbackDirection { get; }
     public Vector2 KnockbackDirection { get; }
     public HitSourceKind SourceKind { get; }
-    public string SourceId { get; }
+    public Weapon SourceWeapon { get; }
 
     public HitRequest(
         Entity source,
@@ -24,8 +24,8 @@ public readonly struct HitRequest
         HitSpec spec,
         Vector2 hitPoint,
         HitSourceKind sourceKind,
-        string sourceId,
-        Vector2 sourcePosition)
+        Vector2 sourcePosition,
+        Weapon sourceWeapon = null)
         : this(
             source,
             target,
@@ -35,7 +35,7 @@ public readonly struct HitRequest
             Vector2.zero,
             sourcePosition,
             sourceKind,
-            sourceId)
+            sourceWeapon)
     {
     }
 
@@ -46,8 +46,8 @@ public readonly struct HitRequest
         Vector2 hitPoint,
         Vector2 knockbackDirection,
         HitSourceKind sourceKind,
-        string sourceId,
-        Vector2 sourcePosition)
+        Vector2 sourcePosition,
+        Weapon sourceWeapon = null)
         : this(
             source,
             target,
@@ -57,7 +57,7 @@ public readonly struct HitRequest
             knockbackDirection,
             sourcePosition,
             sourceKind,
-            sourceId)
+            sourceWeapon)
     {
     }
 
@@ -70,7 +70,7 @@ public readonly struct HitRequest
         Vector2 knockbackDirection,
         Vector2 sourcePosition,
         HitSourceKind sourceKind,
-        string sourceId)
+        Weapon sourceWeapon)
     {
         Source = source;
         Target = target;
@@ -81,6 +81,6 @@ public readonly struct HitRequest
             knockbackDirection.sqrMagnitude > MIN_KNOCKBACK_DIRECTION_SQR_MAGNITUDE;
         KnockbackDirection = HasKnockbackDirection ? knockbackDirection.normalized : Vector2.zero;
         SourceKind = sourceKind;
-        SourceId = sourceId;
+        SourceWeapon = sourceWeapon;
     }
 }

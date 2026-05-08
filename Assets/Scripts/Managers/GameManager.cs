@@ -30,6 +30,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private bool hasMoreWaves;
     private readonly HashSet<string> pauseSources = new();
     private int stateTransitionVersion;
+    private bool isSceneReloading;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -222,22 +223,22 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnGameOverRestartClicked()
     {
-        RestartGame();
+        RestartGameAsync().Forget();
     }
 
     private void OnGameOverReturnToMenuClicked()
     {
-        ReturnToMenu();
+        ReturnToMenuAsync().Forget();
     }
 
     private void OnStageCompleteRestartClicked()
     {
-        RestartGame();
+        RestartGameAsync().Forget();
     }
 
     private void OnStageCompleteReturnToMenuClicked()
     {
-        ReturnToMenu();
+        ReturnToMenuAsync().Forget();
     }
 
     private void OnPauseGameRequested()
@@ -503,7 +504,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         try
         {
             await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
-            ReturnToMenu();
+            await ReturnToMenuAsync();
         }
         catch (OperationCanceledException)
         {
@@ -676,20 +677,57 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void ManageGameOver()
     {
-        DOVirtual.DelayedCall(2f, RestartGame).SetUpdate(true);
+        DOVirtual.DelayedCall(2f, () => RestartGameAsync().Forget()).SetUpdate(true);
     }
 
-    private void RestartGame()
+    private async UniTask RestartGameAsync()
     {
-        SetPaused(false);
-        SceneManager.LoadScene(0);
+        await ReloadCurrentSceneAsync();
     }
 
-    private void ReturnToMenu()
+    private async UniTask ReturnToMenuAsync()
     {
-        SetPaused(false);
-        TransitionToState(GameState.Menu);
-        SceneManager.LoadScene(0);
+        await ReloadCurrentSceneAsync();
+    }
+
+    private async UniTask ReloadCurrentSceneAsync()
+    {
+        if (isSceneReloading)
+        {
+            return;
+        }
+
+        isSceneReloading = true;
+        try
+        {
+            int reloadVersion = ++stateTransitionVersion;
+
+            try
+            {
+                await CloseCurrentStatePageAsync(this.GetCancellationTokenOnDestroy());
+                if (!IsCurrentTransition(reloadVersion))
+                {
+                    return;
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+
+            pauseSources.Clear();
+            isPaused = false;
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        finally
+        {
+            isSceneReloading = false;
+        }
     }
 }
 
