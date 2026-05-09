@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public static class PropPresentationCatalogIconBinder
 {
-    private const string CATALOG_PATH = "Assets/Resources/Data/Prop Presentation Catalog.asset";
+    private const string CATALOG_PATH = "Assets/ScriptableObjects/Content/Prop Presentation Catalog.asset";
     private const string ICON_FOLDER = "Assets/Resources/Sprites/Icons";
 
     [MenuItem("Survivors/Presentation/Bind Prop Presentation Icons")]

@@ -2,16 +2,11 @@ using UnityEngine;
 
 public static class DamageTextRuntime
 {
-    private const string DAMAGE_TEXT_PREFAB_RESOURCE_PATH = "Prefabs/Effects/Damage Text";
-    private const string DAMAGE_TEXT_CONFIG_RESOURCE_PATH = "Configs/Damage Text Visual Config";
     private const bool DEFAULT_SHOW_ENEMY_DAMAGE_ONLY = true;
     private const bool DEFAULT_HIDE_ZERO_DAMAGE = true;
     private const float DEFAULT_SPAWN_SPREAD_X = 0.18f;
 
-    private static GameObject cachedPrefabObject;
     private static DamageTextFlow cachedPrefabFlow;
-    private static DamageTextVisualConfigSO cachedConfig;
-    private static bool hasResolvedConfig;
     private static bool isSubscribed;
     private static readonly DamageTextVisualStyle DefaultNormalStyle = DamageTextVisualStyle.CreateDefaultNormal();
     private static readonly DamageTextVisualStyle DefaultCriticalStyle = DamageTextVisualStyle.CreateDefaultCritical();
@@ -25,10 +20,7 @@ public static class DamageTextRuntime
             GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
         }
 
-        cachedPrefabObject = null;
         cachedPrefabFlow = null;
-        cachedConfig = null;
-        hasResolvedConfig = false;
         isSubscribed = false;
     }
 
@@ -114,8 +106,7 @@ public static class DamageTextRuntime
             return null;
         }
 
-        GameObject instance = Object.Instantiate(cachedPrefabObject, position, Quaternion.identity);
-        return instance.GetComponent<DamageTextFlow>();
+        return Object.Instantiate(prefab, position, Quaternion.identity);
     }
 
     private static DamageTextFlow ResolvePrefab()
@@ -125,17 +116,13 @@ public static class DamageTextRuntime
             return cachedPrefabFlow;
         }
 
-        cachedPrefabObject = Resources.Load<GameObject>(DAMAGE_TEXT_PREFAB_RESOURCE_PATH);
-        if (cachedPrefabObject == null)
-        {
-            Debug.LogWarning($"{nameof(DamageTextRuntime)} 未在 Resources/{DAMAGE_TEXT_PREFAB_RESOURCE_PATH} 找到伤害飘字 prefab。");
-            return null;
-        }
-
-        cachedPrefabFlow = cachedPrefabObject.GetComponent<DamageTextFlow>();
+        cachedPrefabFlow = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.DamageTextPrefab
+            : null;
         if (cachedPrefabFlow == null)
         {
-            Debug.LogWarning($"{nameof(DamageTextRuntime)} 的 prefab 缺少 {nameof(DamageTextFlow)} 组件。");
+            Debug.LogWarning($"{nameof(DamageTextRuntime)} 未在 {nameof(GameContentCatalogSO)} 中找到伤害飘字 prefab。");
+            return null;
         }
 
         return cachedPrefabFlow;
@@ -143,14 +130,9 @@ public static class DamageTextRuntime
 
     private static DamageTextVisualConfigSO ResolveConfig()
     {
-        if (hasResolvedConfig)
-        {
-            return cachedConfig;
-        }
-
-        cachedConfig = Resources.Load<DamageTextVisualConfigSO>(DAMAGE_TEXT_CONFIG_RESOURCE_PATH);
-        hasResolvedConfig = true;
-        return cachedConfig;
+        return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.DamageTextVisualConfig
+            : null;
     }
 
     private static DamageTextVisualStyle ResolveStyle(bool isCritical, Entity damagedEntity, DamageTextVisualConfigSO config)

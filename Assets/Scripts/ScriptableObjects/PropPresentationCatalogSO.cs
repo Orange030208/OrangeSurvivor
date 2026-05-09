@@ -156,6 +156,11 @@ public struct PropPresentationEntry
             PropType.WaveGoldRewardBonus => "波次金币奖励",
             PropType.DamageReduction => "伤害减免",
             PropType.HealingPower => "治疗效果",
+            PropType.Damage => "伤害提升",
+            PropType.MeleeAttack => "近战攻击",
+            PropType.RangedAttack => "远程攻击",
+            PropType.MagicAttack => "魔法攻击",
+            PropType.SummonAttack => "召唤攻击",
             _ => propType.ToString()
         };
     }

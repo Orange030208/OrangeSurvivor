@@ -13,8 +13,6 @@ public struct WaveSegment
     public WaveSpawnIdentity SpawnIdentity => spawnIdentity;
     public string TrackId => spawnIdentity.TrackId;
     public WaveSpawnTriggerMode TriggerMode => spawnIdentity.TriggerMode;
-    public WaveEnemySpawnOption[] EnemyPool => spawnIdentity.EnemyPool;
-    public EnemySO EnemyDefinition => spawnIdentity.EnemyDefinition;
     public float SpawnFrequency => spawnIdentity.SpawnFrequency;
     public int SpawnCountPerBatch => spawnIdentity.SpawnCountPerBatch;
     public int MaxSpawnBatches => spawnIdentity.MaxSpawnBatches;

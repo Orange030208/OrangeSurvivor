@@ -13,6 +13,7 @@ public sealed class HitContext
     public Vector2 KnockbackDirection { get; set; }
     public float DodgeChance { get; set; }
     public float DamageReduction { get; set; }
+    public float ArmorPenetrationPercent { get; set; }
     public bool IsCritical { get; set; }
     public bool IsDodged { get; set; }
     public bool IsBlocked { get; set; }
@@ -29,6 +30,7 @@ public sealed class HitContext
         KnockbackDirection = request.KnockbackDirection;
         DodgeChance = 0f;
         DamageReduction = 0f;
+        ArmorPenetrationPercent = 0f;
         IsCritical = false;
         IsDodged = false;
         IsBlocked = false;

@@ -303,7 +303,9 @@ public class RewardSelectionCardContainer :
 
     private static bool TryResolveQualityPresentationProfile(CardQuality quality, out CardQualityPresentationProfile profile)
     {
-        CardQualityPresentationCatalogSO catalog = ResourcesManager.GetCardQualityPresentationCatalog();
+        CardQualityPresentationCatalogSO catalog = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.CardQualityPresentationCatalog
+            : null;
         if (catalog == null)
         {
             profile = default;

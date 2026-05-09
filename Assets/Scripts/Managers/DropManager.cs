@@ -1,13 +1,11 @@
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class DropManager : MonoBehaviour
 {
-    private const float BASE_CHEST_DROP_CHANCE = 0.1f;
-    private const float CHEST_DROP_CHANCE_PER_LUCK = 0.00005f;
+    [SerializeField] private ContentPoolSO dropPool;
 
-    [SerializeField] private CollectionSO coinSO;
-    [SerializeField] private CollectionSO chestSO;
+    private readonly ContentPoolRollService contentPoolRollService = new();
+    private readonly ContentPoolRuntimeState dropRuntimeState = new();
 
     private void OnEnable()
     {
@@ -28,7 +26,12 @@ public class DropManager : MonoBehaviour
 
         CollectionSO dropSO = RollDrop(deadEvent.Source);
 
-        if (dropSO == null || dropSO.prefab == null)
+        if (dropSO == null)
+        {
+            return;
+        }
+
+        if (dropSO.prefab == null)
         {
             Debug.LogError($"[DropManager] {dropSO?.name} has no prefab assigned.", this);
             return;
@@ -40,18 +43,51 @@ public class DropManager : MonoBehaviour
 
     private CollectionSO RollDrop(Entity source)
     {
-        float chestDropChance = ResolveChestDropChance(source);
-        return Random.value < chestDropChance ? chestSO : coinSO;
-    }
-
-    private float ResolveChestDropChance(Entity source)
-    {
-        float luck = 0f;
-        if (source != null && source.TryGetComponent(out PropertiesManager propertiesManager))
+        ContentFactSource factSource = CreateDropFactSource(source);
+        ContentPoolSO configuredPool = ResolveConfiguredDropPool();
+        if (configuredPool == null)
         {
-            luck = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Luck));
+            Debug.LogError($"[DropManager] Missing drop content pool in scene or {nameof(GameContentCatalogSO)}.", this);
+            return null;
         }
 
-        return Mathf.Clamp01(BASE_CHEST_DROP_CHANCE + luck * CHEST_DROP_CHANCE_PER_LUCK);
+        ContentRollResult configuredResult = contentPoolRollService.Roll(
+            configuredPool,
+            factSource,
+            dropRuntimeState,
+            1,
+            entry => entry.Content is CollectionSO);
+        return configuredResult.HasAny ? configuredResult.Items[0].Content as CollectionSO : null;
+    }
+
+    private ContentPoolSO ResolveConfiguredDropPool()
+    {
+        if (dropPool != null)
+        {
+            return dropPool;
+        }
+
+        if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider) && provider.DropPool != null)
+        {
+            return provider.DropPool;
+        }
+
+        return null;
+    }
+
+    private static ContentFactSource CreateDropFactSource(Entity source)
+    {
+        if (source is Player player)
+        {
+            return ContentFactSource.ForPlayer(player);
+        }
+
+        ContentFactSource factSource = new();
+        if (source != null && source.TryGetComponent(out PropertiesManager propertiesManager))
+        {
+            factSource.PropertiesManager = propertiesManager;
+        }
+
+        return factSource;
     }
 }

@@ -10,12 +10,6 @@ using UnityEngine.UI;
 public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 {
     private const string PREVIEW_SCENE_NAME = "Item Quality Preview";
-    private const string WEAPON_DATA_LIST_PATH = "Data/Weapon Data List";
-    private const string ACCESSORY_DATA_LIST_PATH = "Data/Accessory Data List";
-    private const string INVENTORY_ITEM_PREFAB_PATH = "Prefabs/New UI/Pages/Shop/Inventory Item";
-    private const string SHOP_ITEM_PREFAB_PATH = "Prefabs/New UI/Pages/Shop/Shop Item";
-    private const string WEAPON_POPUP_PREFAB_PATH = "Prefabs/New UI/Pages/Shop/Weapon Operate Popup";
-    private const string ACCESSORY_POPUP_PREFAB_PATH = "Prefabs/New UI/Pages/Shop/Accessory Info Popup";
 
     [Header("Canvas")]
     [SerializeField] private Vector2 referenceResolution = new(1920f, 1080f);
@@ -27,6 +21,12 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
     [SerializeField] private Vector2 inventoryPreviewSize = new(118f, 146f);
     [SerializeField] private Vector2 shopPreviewSize = new(280f, 248f);
     [SerializeField] private Vector2 popupPreviewSize = new(520f, 296f);
+
+    [Header("Preview Content")]
+    [SerializeField] private InventoryItem inventoryItemPrefab;
+    [SerializeField] private ShopItemContainer shopItemPrefab;
+    [SerializeField] private WeaponOperatePopup weaponOperatePopupPrefab;
+    [SerializeField] private AccessoryInfoPopup accessoryInfoPopupPrefab;
 
     private readonly List<IDisposable> spawnedDisposables = new();
     private readonly List<GameObject> spawnedObjects = new();
@@ -152,21 +152,19 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
     private void PopulatePreview()
     {
-        WeaponDataListSO weaponDataList = Resources.Load<WeaponDataListSO>(WEAPON_DATA_LIST_PATH);
-        AccessoryDataListSO accessoryDataList = Resources.Load<AccessoryDataListSO>(ACCESSORY_DATA_LIST_PATH);
-
-        WeaponDataSO sampleWeapon = GetFirstWeaponWithIcon(weaponDataList);
-        AccessoryDataSO[] sampleAccessories = GetAccessorySamples(accessoryDataList);
+        IGameContentProvider provider = GameContentRuntime.Provider;
+        WeaponDataSO sampleWeapon = GetFirstWeaponWithIcon(provider.Weapons);
+        AccessoryDataSO[] sampleAccessories = GetAccessorySamples(provider.Accessories);
 
         if (sampleWeapon == null)
         {
-            CreateWarning("No weapon data with icon was found. Check Resources/Data/Weapon Data List.");
+            CreateWarning($"No weapon data with icon was found. Check {nameof(GameContentCatalogSO)}.");
             return;
         }
 
         if (!HasAccessorySamples(sampleAccessories))
         {
-            CreateWarning("No accessory data with icon was found. Check Resources/Data/Accessory Data List.");
+            CreateWarning($"No accessory data with icon was found. Check {nameof(GameContentCatalogSO)}.");
             return;
         }
 
@@ -270,7 +268,7 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
         RectTransform section = CreateSection("Popup Preview");
         RectTransform row = CreateRow(section, 24f);
 
-        WeaponOperatePopup weaponPopupPrefab = Resources.Load<WeaponOperatePopup>(WEAPON_POPUP_PREFAB_PATH);
+        WeaponOperatePopup weaponPopupPrefab = weaponOperatePopupPrefab;
         if (weaponPopupPrefab != null)
         {
             RectTransform cell = CreatePreviewCell(row, "Weapon Popup Lv.6", popupPreviewSize);
@@ -289,7 +287,7 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
         if (sampleAccessory != null)
         {
-            AccessoryInfoPopup accessoryPopupPrefab = Resources.Load<AccessoryInfoPopup>(ACCESSORY_POPUP_PREFAB_PATH);
+            AccessoryInfoPopup accessoryPopupPrefab = accessoryInfoPopupPrefab;
             if (accessoryPopupPrefab != null)
             {
                 RectTransform cell = CreatePreviewCell(row, $"Accessory Popup R{sampleAccessory.Rarity}", popupPreviewSize);
@@ -310,10 +308,10 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
     private InventoryItem LoadAndSpawnInventoryItem(ItemDataSO itemData, int qualityValue, RectTransform row, string label, Vector2 size)
     {
-        InventoryItem prefab = Resources.Load<InventoryItem>(INVENTORY_ITEM_PREFAB_PATH);
+        InventoryItem prefab = inventoryItemPrefab;
         if (prefab == null)
         {
-            CreateWarning($"Missing inventory prefab at Resources/{INVENTORY_ITEM_PREFAB_PATH}");
+            CreateWarning($"Missing {nameof(inventoryItemPrefab)} on {nameof(ItemQualityPreviewSceneController)}.");
             return null;
         }
 
@@ -328,10 +326,10 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
     private ShopItemContainer LoadAndSpawnShopItem(ShopItemData shopItemData, RectTransform row, string label, Vector2 size)
     {
-        ShopItemContainer prefab = Resources.Load<ShopItemContainer>(SHOP_ITEM_PREFAB_PATH);
+        ShopItemContainer prefab = shopItemPrefab;
         if (prefab == null)
         {
-            CreateWarning($"Missing shop item prefab at Resources/{SHOP_ITEM_PREFAB_PATH}");
+            CreateWarning($"Missing {nameof(shopItemPrefab)} on {nameof(ItemQualityPreviewSceneController)}.");
             return null;
         }
 
@@ -494,16 +492,16 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
         layoutElement.minHeight = size.y;
     }
 
-    private WeaponDataSO GetFirstWeaponWithIcon(WeaponDataListSO weaponDataList)
+    private WeaponDataSO GetFirstWeaponWithIcon(IReadOnlyList<WeaponDataSO> weapons)
     {
-        if (weaponDataList == null || weaponDataList.Weapons == null)
+        if (weapons == null)
         {
             return null;
         }
 
-        for (int i = 0; i < weaponDataList.Weapons.Length; i++)
+        for (int i = 0; i < weapons.Count; i++)
         {
-            WeaponDataSO weapon = weaponDataList.Weapons[i];
+            WeaponDataSO weapon = weapons[i];
             if (weapon != null && weapon.ItemIcon != null)
             {
                 return weapon;
@@ -513,17 +511,17 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
         return null;
     }
 
-    private AccessoryDataSO[] GetAccessorySamples(AccessoryDataListSO accessoryDataList)
+    private AccessoryDataSO[] GetAccessorySamples(IReadOnlyList<AccessoryDataSO> accessories)
     {
         AccessoryDataSO[] samples = new AccessoryDataSO[4];
-        if (accessoryDataList == null || accessoryDataList.Accessories == null)
+        if (accessories == null)
         {
             return samples;
         }
 
-        for (int i = 0; i < accessoryDataList.Accessories.Length; i++)
+        for (int i = 0; i < accessories.Count; i++)
         {
-            AccessoryDataSO accessory = accessoryDataList.Accessories[i];
+            AccessoryDataSO accessory = accessories[i];
             if (accessory == null || accessory.ItemIcon == null)
             {
                 continue;

@@ -86,7 +86,9 @@ public class CardQualityVisualController : ViewPartBase
 
     public bool Apply(CardQuality quality)
     {
-        CardQualityPresentationCatalogSO catalog = ResourcesManager.GetCardQualityPresentationCatalog();
+        CardQualityPresentationCatalogSO catalog = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.CardQualityPresentationCatalog
+            : null;
         if (catalog == null || !catalog.TryGetProfile(quality, out CardQualityPresentationProfile profile))
         {
             return false;

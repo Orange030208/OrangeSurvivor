@@ -31,6 +31,6 @@ public readonly struct UpgradeCardOptionViewData
         Tags = tags ?? System.Array.Empty<UpgradeCardTag>();
         PickCount = Mathf.Max(0, pickCount);
         HasPickLimit = hasPickLimit;
-        MaxPickCount = hasPickLimit ? Mathf.Max(1, maxPickCount) : UpgradeCardSO.UNLIMITED_PICK_COUNT;
+        MaxPickCount = hasPickLimit ? Mathf.Max(1, maxPickCount) : 0;
     }
 }

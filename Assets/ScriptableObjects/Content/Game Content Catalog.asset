@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53063c7241ad4a0ba38eda9361e560bd, type: 3}
+  m_Name: Game Content Catalog
+  m_EditorClassIdentifier: 
+  weaponDataList: {fileID: 11400000, guid: 0bda4080a3c62b641bf417ee6ca2543c, type: 2}
+  accessoryDataList: {fileID: 11400000, guid: 6400ac5497a581e4c85acfb9a8c1f6b4, type: 2}
+  characters:
+  - {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
+  - {fileID: 11400000, guid: 5c39112dc0ec47ab97a88fd54e7cc044, type: 2}
+  - {fileID: 11400000, guid: 27b8ad3d487a4537b1dc6fc4579c55da, type: 2}
+  - {fileID: 11400000, guid: a44ee41531c74a118d4f589b00861c37, type: 2}
+  - {fileID: 11400000, guid: 485f1b46985b4de797c4ed7a9cb846cc, type: 2}
+  - {fileID: 11400000, guid: 274dbf8f382948528677a4b0ad5a1929, type: 2}
+  - {fileID: 11400000, guid: a9f7674d0baa4ce5a74b987fc129052d, type: 2}
+  - {fileID: 11400000, guid: a97e60e921fb4046a387cdb277d74f76, type: 2}
+  - {fileID: 11400000, guid: a01dc4142ed94b139a3a24ca012cbb57, type: 2}
+  - {fileID: 11400000, guid: caf8c092ffa84758abd61c03ecebd4a5, type: 2}
+  - {fileID: 11400000, guid: 3b0f6b6eac555f5488aab965c25e198f, type: 2}
+  - {fileID: 11400000, guid: 779feb7f8e664875ac8106fe82665d12, type: 2}
+  - {fileID: 11400000, guid: d0775b4e05db4d8aa9934a7b11c3a409, type: 2}
+  - {fileID: 11400000, guid: 861864ed7a9d49b0a70337c384fb154c, type: 2}
+  - {fileID: 11400000, guid: 1c1a5b8f0eae4f50a9da4dd4bc39eab7, type: 2}
+  - {fileID: 11400000, guid: 2741b479c1244e678d5cf51d21481e07, type: 2}
+  - {fileID: 11400000, guid: da6c3a5aee3c4dd1b2e27b82dedd7913, type: 2}
+  - {fileID: 11400000, guid: b9cd45e5335f439da776bace7ac9fe4a, type: 2}
+  - {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
+  playerLevelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
+  upgradeCardPool: {fileID: 11400000, guid: 91899d46f59ffe341b884ff6f41757bb, type: 2}
+  defaultStageDefinition: {fileID: 11400000, guid: 1ba2fe3cee27d8a4fb1987665006d3f2, type: 2}
+  chestRewardPool: {fileID: 11400000, guid: eba180f75ac11db439bb7dfc290fbb34, type: 2}
+  shopPool: {fileID: 11400000, guid: d668d01e06fbf9a4983a2fb63c99ba6b, type: 2}
+  dropPool: {fileID: 11400000, guid: 86ea0096fa653e64ab92a4527d6d936f, type: 2}
+  waveSpawnPool: {fileID: 11400000, guid: 17f7da17ae80da941974cf66dddbdc73, type: 2}
+  weaponRewardPool: {fileID: 11400000, guid: 2d6cbbbe0b8849748abf2b817c93f9f8, type: 2}
+  defaultPlayerPrefab: {fileID: 5359458450767791847, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
+  defaultWeaponPrefab: {fileID: 6612317224034677057, guid: a0ed80306c1f5dd4ba9ccadb5bb288eb, type: 3}
+  damageTextPrefab: {fileID: 6519705689686096954, guid: ee3cbea162a1d8b4ab0191c152b1df01, type: 3}
+  propPresentationCatalog: {fileID: 11400000, guid: 8471ae8f049037f458bb624b30db3220, type: 2}
+  cardQualityPresentationCatalog: {fileID: 11400000, guid: 5225a814071d1f6409620ae539e83b5e, type: 2}
+  itemQualityVisualConfig: {fileID: 11400000, guid: 5cc524dd2fb4b59429962f8b2f8b3e02, type: 2}
+  damageTextVisualConfig: {fileID: 11400000, guid: 08daadb69b8441e46b0309730de7966e, type: 2}
+  itemQualityIconEffectMaterial: {fileID: 2100000, guid: beeb74436c2546543a86ed579df17936, type: 2}

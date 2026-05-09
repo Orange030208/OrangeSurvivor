@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: first_aid_protocol
+  m_EditorClassIdentifier: 
+  cardId: first_aid_protocol
+  title: "\u6025\u6551\u534F\u8BAE"
+  icon: {fileID: 7000129704716225790, guid: 21d00970a65119641990e950e399327f, type: 3}
+  rarity: 1
+  tags: 0b000000
+  description: "\u7ACB\u5373\u83B7\u5F97 10 \u79D2\u518D\u751F Buff\u3002"
+  propertyModifiers: []
+  specialFeatures:
+  - rid: 451547002770030687
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030687
+      type: {class: ApplyBuffCard, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        buffData: {fileID: 11400000, guid: eeef4f39cb1f6204f84f2f1afe73ee50, type: 2}
+        overrideDuration: 1
+        durationPolicy: 1
+        durationSeconds: 10

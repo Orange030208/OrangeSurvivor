@@ -34,7 +34,6 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(0f)] private float laserDuration = 0.75f;
     [SerializeField, Min(0.01f)] private float laserWidth = 1.2f;
     [Tooltip("Laser gameplay and visual length. The beam pierces targets within this length instead of stopping at the first hit.")]
-    [FormerlySerializedAs("laserNoHitVisualLength")]
     [SerializeField, Min(0.1f)] private float laserLength = 40f;
     [SerializeField, Min(0.01f)] private float laserDamageInterval = 0.25f;
     [SerializeField, Min(0f)] private float laserDamageMultiplier = 0.65f;

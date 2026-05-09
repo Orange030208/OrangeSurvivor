@@ -14,32 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_007
   displayName: Wave 7
-  duration: 60
+  duration: 30
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Frontline Mix
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 45
-      tags: 9
-    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-      weight: 30
-      tags: 5
-    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-      weight: 25
-      tags: 33
-    spawnFrequency: 1.0
+    spawnFrequency: 1
     spawnCountPerBatch: 3
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Elite Pair
     triggerMode: 1
-    enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    enemyTags: 2
-    enemyPool: []
     spawnFrequency: 0.01
     spawnCountPerBatch: 2
     maxSpawnBatches: 1

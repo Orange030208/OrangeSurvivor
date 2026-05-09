@@ -7,7 +7,6 @@ public class KnockbackReceiverConfigSO : ScriptableObject
     [Header("Runtime")]
     [SerializeField] private float duration = 0.12f;
     [Tooltip("Distance scalar for received knockback. With 1, every 10 KnockbackStrength is roughly 1 world unit before resistance, collision, and max velocity limits.")]
-    [FormerlySerializedAs("forceMultiplier")]
     [SerializeField] private float distanceMultiplier = 1f;
     [SerializeField] private float maxVelocity = 12f;
     [SerializeField] private AnimationCurve velocityCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);

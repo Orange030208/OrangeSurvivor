@@ -8,7 +8,7 @@ namespace Orange.UIFramework
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ViewBase : MonoBehaviour, IView
     {
-        private CanvasGroup canvasGroup;
+        private CanvasGroup resolvedCanvasGroup;
         private IViewTransition viewTransition;
         private ViewHandle handle;
         private bool initialized;
@@ -22,7 +22,7 @@ namespace Orange.UIFramework
         public ViewRuntimePhase Phase { get; private set; } = ViewRuntimePhase.None;
         protected ViewHandle Handle => handle;
         protected UIManager OwnerUIManager => handle.Owner;
-        protected CanvasGroup CanvasGroup => canvasGroup;
+        protected CanvasGroup CanvasGroup => resolvedCanvasGroup;
 
         protected virtual void Awake()
         {
@@ -48,8 +48,8 @@ namespace Orange.UIFramework
             ResolveReferences();
             InputActive = interactable;
             BlocksRaycasts = blocksRaycasts;
-            canvasGroup.interactable = interactable;
-            canvasGroup.blocksRaycasts = blocksRaycasts;
+            resolvedCanvasGroup.interactable = interactable;
+            resolvedCanvasGroup.blocksRaycasts = blocksRaycasts;
             OnInputChanged(interactable, blocksRaycasts);
         }
 
@@ -75,7 +75,7 @@ namespace Orange.UIFramework
 
             Phase = ViewRuntimePhase.Opening;
             gameObject.SetActive(true);
-            canvasGroup.alpha = 1f;
+            resolvedCanvasGroup.alpha = 1f;
             ApplyInputState(false, false);
 
             try
@@ -120,7 +120,7 @@ namespace Orange.UIFramework
                 ResetTransitionForInactiveState();
                 OnClosed(reason);
                 IsOpen = false;
-                canvasGroup.alpha = 1f;
+                resolvedCanvasGroup.alpha = 1f;
                 Phase = ViewRuntimePhase.Closed;
                 gameObject.SetActive(false);
             }
@@ -219,13 +219,13 @@ namespace Orange.UIFramework
 
         private void ResolveReferences()
         {
-            if (canvasGroup != null)
+            if (resolvedCanvasGroup != null)
             {
                 return;
             }
 
-            canvasGroup = GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
+            resolvedCanvasGroup = GetComponent<CanvasGroup>();
+            if (resolvedCanvasGroup == null)
             {
                 throw new MissingComponentException($"View '{name}' requires a CanvasGroup.");
             }

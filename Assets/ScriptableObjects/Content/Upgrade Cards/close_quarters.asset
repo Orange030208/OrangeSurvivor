@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: close_quarters
+  m_EditorClassIdentifier: 
+  cardId: close_quarters
+  title: "\u8D34\u8EAB\u77ED\u6253"
+  icon: {fileID: -134173984460781623, guid: 21d00970a65119641990e950e399327f, type: 3}
+  rarity: 1
+  tags: 0800000001000000
+  description: "伤害提升 +10%，护甲 +2，攻击范围 -10%。"
+  propertyModifiers:
+  - propType: 28
+    modifierType: 0
+    value: 10
+  - propType: 8
+    modifierType: 0
+    value: 2
+  - propType: 15
+    modifierType: 2
+    value: -10
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

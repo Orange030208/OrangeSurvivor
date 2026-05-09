@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public sealed class DescribableTooltip : TooltipBase
 {
     [SerializeField] private RectTransform root;
-    [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
@@ -25,11 +24,6 @@ public sealed class DescribableTooltip : TooltipBase
         if (root == null)
         {
             throw new MissingComponentException($"{nameof(DescribableTooltip)} '{name}' requires a RectTransform root.");
-        }
-
-        if (canvasGroup == null)
-        {
-            throw new MissingReferenceException($"{nameof(DescribableTooltip)} '{name}' is missing CanvasGroup.");
         }
 
         if (iconImage == null)

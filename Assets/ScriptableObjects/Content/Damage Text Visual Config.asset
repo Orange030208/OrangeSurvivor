@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d6c26d20c4244f2a8a3337302fe78fd, type: 3}
+  m_Name: Damage Text Visual Config
+  m_EditorClassIdentifier: 
+  showEnemyDamageOnly: 1
+  hideZeroDamage: 1
+  spawnOffset: {x: 0, y: 1.5}
+  spawnSpreadX: 0.18
+  normalStyle:
+    prefix: 
+    suffix: 
+    numberFormat: 0
+    fontStyle: 1
+    fontSize: 4.3
+    textColor: {r: 0.96, g: 0.98, b: 1, a: 1}
+    useVertexGradient: 1
+    gradientTopColor: {r: 1, g: 1, b: 1, a: 1}
+    gradientBottomColor: {r: 0.72, g: 0.9, b: 1, a: 1}
+    lifetime: 0.82
+    floatDistance: 0.78
+    horizontalDrift: 0.16
+    startScale: 0.58
+    peakScale: 1.12
+    endScale: 0.95
+    popDuration: 0.13
+    settleDuration: 0.12
+    popEase: 27
+    settleEase: 6
+    moveEase: 9
+    useFade: 1
+    fadeDelay: 0.34
+    fadeEase: 5
+    shakeStrength: 0
+    shakeDuration: 0.16
+    shakeVibrato: 14
+    shakeRandomness: 75
+  criticalStyle:
+    prefix: 
+    suffix: 
+    numberFormat: 0
+    fontStyle: 1
+    fontSize: 5.2
+    textColor: {r: 1, g: 0.72, b: 0.18, a: 1}
+    useVertexGradient: 1
+    gradientTopColor: {r: 1, g: 0.98, b: 0.46, a: 1}
+    gradientBottomColor: {r: 1, g: 0.28, b: 0.08, a: 1}
+    lifetime: 0.96
+    floatDistance: 1.05
+    horizontalDrift: 0.24
+    startScale: 0.78
+    peakScale: 1.42
+    endScale: 1.08
+    popDuration: 0.16
+    settleDuration: 0.16
+    popEase: 24
+    settleEase: 6
+    moveEase: 9
+    useFade: 1
+    fadeDelay: 0.42
+    fadeEase: 5
+    shakeStrength: 0.18
+    shakeDuration: 0.18
+    shakeVibrato: 18
+    shakeRandomness: 90
+  playerDamagedStyle:
+    prefix: 
+    suffix: 
+    numberFormat: 0
+    fontStyle: 1
+    fontSize: 4.8
+    textColor: {r: 1, g: 0.24, b: 0.22, a: 1}
+    useVertexGradient: 1
+    gradientTopColor: {r: 1, g: 0.58, b: 0.5, a: 1}
+    gradientBottomColor: {r: 0.76, g: 0.04, b: 0.03, a: 1}
+    lifetime: 0.9
+    floatDistance: 0.9
+    horizontalDrift: 0.2
+    startScale: 0.72
+    peakScale: 1.28
+    endScale: 1
+    popDuration: 0.14
+    settleDuration: 0.13
+    popEase: 27
+    settleEase: 6
+    moveEase: 9
+    useFade: 1
+    fadeDelay: 0.36
+    fadeEase: 5
+    shakeStrength: 0.1
+    shakeDuration: 0.16
+    shakeVibrato: 14
+    shakeRandomness: 80

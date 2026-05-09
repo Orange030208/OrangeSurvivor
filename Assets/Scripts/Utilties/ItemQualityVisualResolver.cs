@@ -2,7 +2,6 @@ using UnityEngine;
 
 public static class ItemQualityVisualResolver
 {
-    private const string DEFAULT_RESOURCE_PATH = "Data/UI/Item Quality Visual Config";
     private const int MIN_WEAPON_LEVEL = 1;
     private const int MAX_ACCESSORY_RARITY = 3;
 
@@ -21,9 +20,6 @@ public static class ItemQualityVisualResolver
         CreateDefaultStyle((int)AccessoryRarity.Epic, "Epic", new Color32(168, 97, 230, 255)),
         CreateDefaultStyle((int)AccessoryRarity.Legendary, "Legendary", new Color32(255, 168, 46, 255))
     };
-
-    private static ItemQualityVisualConfigSO cachedConfig;
-    private static bool configLoadAttempted;
 
     public static ItemQualityVisualStyle Resolve(ItemDataSO itemData, int qualityValue)
     {
@@ -118,13 +114,9 @@ public static class ItemQualityVisualResolver
 
     private static ItemQualityVisualConfigSO GetConfig()
     {
-        if (!configLoadAttempted)
-        {
-            cachedConfig = Resources.Load<ItemQualityVisualConfigSO>(DEFAULT_RESOURCE_PATH);
-            configLoadAttempted = true;
-        }
-
-        return cachedConfig;
+        return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.ItemQualityVisualConfig
+            : null;
     }
 
     private static ItemQualityVisualStyle CreateDefaultStyle(int qualityValue, string qualityLabel, Color primaryColor)

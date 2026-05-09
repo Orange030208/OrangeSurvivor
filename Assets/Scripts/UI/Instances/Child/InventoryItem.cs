@@ -58,7 +58,9 @@ public class InventoryItem : ViewPartBase, IDisposable
         }
 
         CardQuality quality = CardQualityResolver.FromItem(itemData, colorDependencyNumber);
-        CardQualityPresentationCatalogSO catalog = ResourcesManager.GetCardQualityPresentationCatalog();
+        CardQualityPresentationCatalogSO catalog = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.CardQualityPresentationCatalog
+            : null;
         if (catalog != null && catalog.TryGetProfile(quality, out CardQualityPresentationProfile profile))
         {
             cardQualityVisualController.Apply(profile);

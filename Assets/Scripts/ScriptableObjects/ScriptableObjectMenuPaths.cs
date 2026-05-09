@@ -33,6 +33,10 @@ public static class ScriptableObjectMenuPaths
     public const string SPAWN_LOCATION_POLICY = GAMEPLAY_ROOT + "Waves/Spawn Location Policy";
     public const string STAGE_DEFINITION = GAMEPLAY_ROOT + "Waves/Stage Definition";
     public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
+    public const string WAVE_SPAWN_PACK = GAMEPLAY_ROOT + "Waves/Wave Spawn Pack";
+    public const string CONTENT_POOL = GAMEPLAY_ROOT + "Content/Content Pool";
+    public const string CONTENT_TAG = GAMEPLAY_ROOT + "Content/Content Tag";
+    public const string CONTENT_FACT_DEFINITION = GAMEPLAY_ROOT + "Content/Fact Definition";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
     public const string GOLEM_MECHA_STONE_BOSS_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Golem Mecha Stone Boss Animation Config";

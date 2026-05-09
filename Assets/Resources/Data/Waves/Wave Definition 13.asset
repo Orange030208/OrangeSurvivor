@@ -14,35 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_013
   displayName: Wave 13
-  duration: 90
+  duration: 30
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Elite Weighted Mix
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 28
-      tags: 9
-    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-      weight: 32
-      tags: 5
-    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-      weight: 25
-      tags: 33
-    - enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-      weight: 15
-      tags: 2
     spawnFrequency: 1.45
     spawnCountPerBatch: 4
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Elite Pairs
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    enemyTags: 2
-    enemyPool: []
     spawnFrequency: 0.05
     spawnCountPerBatch: 2
     maxSpawnBatches: 3

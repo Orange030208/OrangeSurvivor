@@ -10,7 +10,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private const string WINDOW_TITLE = "武器工作台";
     private const string WORKBENCH_MENU_PATH = "Survivors/Weapons/武器工作台";
     private const string ASSET_CONTEXT_MENU_PATH = "Assets/在武器工作台中打开";
-    private const string WEAPON_PREFAB_RESOURCE_PATH = "Prefabs/Weapons/Weapon";
     private const float MIN_LEFT_PANEL_WIDTH = 260f;
     private const float MAX_LEFT_PANEL_WIDTH = 340f;
     private const float MIN_MIDDLE_PANEL_WIDTH = 430f;
@@ -508,6 +507,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         DrawWeaponDataProperty("levelStats", "Level Stats", true);
+        DrawWeaponDataProperty("attackUsage", "Attack Usage", true);
         EditorGUILayout.EndVertical();
     }
 
@@ -1617,7 +1617,9 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
             return default;
         }
 
-        Weapon weaponPrefab = Resources.Load<Weapon>(WEAPON_PREFAB_RESOURCE_PATH);
+        Weapon weaponPrefab = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.DefaultWeaponPrefab
+            : null;
         if (weaponPrefab != null)
         {
             SpriteRenderer renderer = null;

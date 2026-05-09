@@ -14,7 +14,7 @@ public static class PropDescriptionUtility
     {
         return RichTextStringUtility.Create()
             .AppendWithVOffset(propType.GetIconRichText(), iconOffset)
-            .Append(ResourcesManager.GetPropDisplayName(propType))
+            .Append(GameContentRuntime.GetPropDisplayName(propType))
             .ToString();
     }
 
@@ -53,7 +53,7 @@ public static class PropDescriptionUtility
 
     public static string BuildModifierDescription(this PropType propType, PropModifierType modifierType, float value)
     {
-        string propName = ResourcesManager.GetPropDisplayName(propType);
+        string propName = GameContentRuntime.GetPropDisplayName(propType);
         string coloredValue = ColorHelper.WrapRichTextColor(BuildPlainValueText(propType, modifierType, value), ColorHelper.GetColorByValue(value));
 
         return modifierType switch

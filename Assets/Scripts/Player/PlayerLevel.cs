@@ -33,7 +33,7 @@ public class PlayerLevel : EntityComponentBase
         propertiesManager = GetComponent<PropertiesManager>();
         if (levelConfig == null)
         {
-            levelConfig = ResourcesManager.GetPlayerLevelConfig();
+            levelConfig = GameContentRuntime.Provider.PlayerLevelConfig;
         }
 
         InitializeProgression();

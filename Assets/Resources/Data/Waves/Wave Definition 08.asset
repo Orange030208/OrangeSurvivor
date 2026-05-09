@@ -14,41 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_008
   displayName: Wave 8
-  duration: 65
+  duration: 30
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Ranged Skirmish
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 40
-      tags: 9
-    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-      weight: 40
-      tags: 5
-    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-      weight: 20
-      tags: 33
     spawnFrequency: 1.05
     spawnCountPerBatch: 3
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Ranged Layer
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    enemyTags: 5
-    enemyPool: []
     spawnFrequency: 0.45
     spawnCountPerBatch: 2
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 15, y: 90}
   - trackId: Elite Late
     triggerMode: 1
-    enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    enemyTags: 2
-    enemyPool: []
     spawnFrequency: 0.01
     spawnCountPerBatch: 1
     maxSpawnBatches: 1

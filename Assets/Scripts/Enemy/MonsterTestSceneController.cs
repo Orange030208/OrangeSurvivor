@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,26 +9,18 @@ using UnityEngine.Serialization;
 /// </summary>
 public sealed class MonsterTestSceneController : MonoBehaviour
 {
-    private const string DEFAULT_ENEMY_RESOURCE_PATH = "Data/Enemies/Skeleton/SkeletonEnemy";
-    private const string DEFAULT_PLAYER_RESOURCE_PATH = "Prefabs/Player/Character";
-    private const string DEFAULT_CHARACTER_RESOURCE_PATH = "Data/Characters/Test";
-
     [Header("Target")]
     [SerializeField] public Player testPlayer;
-    [SerializeField] public string playerResourcePath = DEFAULT_PLAYER_RESOURCE_PATH;
     [SerializeField] public CharacterDataSO testCharacterData;
-    [SerializeField] public string characterResourcePath = DEFAULT_CHARACTER_RESOURCE_PATH;
     [SerializeField] public Vector3 playerSpawnPosition = Vector3.zero;
 
     [Header("Enemy")]
     [SerializeField] public EnemySO enemyData;
-    [SerializeField] public string enemyResourcePath = DEFAULT_ENEMY_RESOURCE_PATH;
     [SerializeField] public int spawnCount = 3;
     [SerializeField] public float spawnRadius = 3f;
     [SerializeField] public bool spawnOnStart = true;
 
     [Header("Runtime")]
-    [FormerlySerializedAs("enemyRuntimeRegistry")]
     [SerializeField] public EnemyRegistry enemyRegistry;
     [SerializeField] public Transform enemyParent;
 
@@ -122,10 +115,12 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 
         if (testPlayer == null)
         {
-            Player playerPrefab = Resources.Load<Player>(playerResourcePath);
+            Player playerPrefab = GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+                ? provider.DefaultPlayerPrefab
+                : null;
             if (playerPrefab == null)
             {
-                Debug.LogError($"{nameof(MonsterTestSceneController)} cannot load player prefab at Resources/{playerResourcePath}.");
+                Debug.LogError($"{nameof(MonsterTestSceneController)} requires a test player or default player prefab in {nameof(GameContentCatalogSO)}.");
                 return;
             }
 
@@ -143,25 +138,14 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             return testCharacterData;
         }
 
-        if (string.IsNullOrWhiteSpace(characterResourcePath))
-        {
-            return null;
-        }
-
-        testCharacterData = Resources.Load<CharacterDataSO>(characterResourcePath);
-        if (testCharacterData == null)
-        {
-            Debug.LogWarning($"{nameof(MonsterTestSceneController)} cannot load character data at Resources/{characterResourcePath}.");
-        }
-
-        return testCharacterData;
+        return null;
     }
 
     private void SelectTestCharacter()
     {
         CharacterDataSO characterData = ResolveCharacterData();
-        CharacterDataSO[] characters = ResourcesManager.GetAllCharacters();
-        if (characters == null || characters.Length == 0)
+        IReadOnlyList<CharacterDataSO> characters = GameContentRuntime.Provider.Characters;
+        if (characters == null || characters.Count == 0)
         {
             Debug.LogWarning($"{nameof(MonsterTestSceneController)} cannot select a test character because no character data was loaded.");
             return;
@@ -170,7 +154,7 @@ public sealed class MonsterTestSceneController : MonoBehaviour
         int selectedIndex = 0;
         if (characterData != null)
         {
-            for (int i = 0; i < characters.Length; i++)
+            for (int i = 0; i < characters.Count; i++)
             {
                 if (characters[i] == characterData)
                 {
@@ -191,19 +175,8 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             return enemyData;
         }
 
-        if (string.IsNullOrWhiteSpace(enemyResourcePath))
-        {
-            Debug.LogError($"{nameof(MonsterTestSceneController)} requires an enemy data asset or Resources path.");
-            return null;
-        }
-
-        enemyData = Resources.Load<EnemySO>(enemyResourcePath);
-        if (enemyData == null)
-        {
-            Debug.LogError($"{nameof(MonsterTestSceneController)} cannot load enemy data at Resources/{enemyResourcePath}.");
-        }
-
-        return enemyData;
+        Debug.LogError($"{nameof(MonsterTestSceneController)} requires an explicit enemy data asset.");
+        return null;
     }
 
     private static void PublishTestGameState()

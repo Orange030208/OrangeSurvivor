@@ -33,7 +33,9 @@ public class HitStartModifier : IHitModifier
         if (target.TryGetComponent(out PropertiesManager propertiesManager))
         {
             hitContext.DodgeChance = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Dodge)));
-            float armorReduction = ResolveArmorDamageReduction(propertiesManager.GetPropValue(PropType.Armor));
+            float armorReduction = ResolveArmorDamageReduction(
+                propertiesManager.GetPropValue(PropType.Armor),
+                hitContext.ArmorPenetrationPercent);
             float damageReduction = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.DamageReduction)));
             hitContext.DamageReduction = CombineSequentialReductions(armorReduction, damageReduction);
             float knockbackResistance = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.KnockbackResistance)));
@@ -44,9 +46,15 @@ public class HitStartModifier : IHitModifier
         hitContext.IsDodged = Random.value <= hitContext.DodgeChance;
     }
 
-    private static float ResolveArmorDamageReduction(float armor)
+    private static float ResolveArmorDamageReduction(float armor, float armorPenetrationPercent)
     {
         armor = Mathf.Max(MIN_ARMOR, armor);
+        if (armor > 0f && armorPenetrationPercent > 0f)
+        {
+            float armorPenetrationRatio = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(armorPenetrationPercent));
+            armor *= 1f - armorPenetrationRatio;
+        }
+
         return armor / (armor + ARMOR_REDUCTION_SCALE);
     }
 

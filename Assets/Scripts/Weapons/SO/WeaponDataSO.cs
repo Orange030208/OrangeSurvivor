@@ -99,7 +99,6 @@ public struct WeaponLevelStatData
     [SerializeField, Range(0f, 100f)] private float criticalChance;
     [SerializeField, Min(100f)] private float criticalPercent;
     [SerializeField, Min(0f)] private float range;
-    [FormerlySerializedAs("knockbackForce")]
     [SerializeField, Min(0f)] private float knockbackStrength;
 
     public int Level => Mathf.Max(WeaponLevelHelper.MinLevel, level);
@@ -142,6 +141,49 @@ public struct WeaponLevelStatData
 
 }
 
+[Serializable]
+public struct WeaponAttackUsageData
+{
+    [Tooltip("近战攻击使用区，百分比点口径：20 表示吃到玩家近战攻击属性的 20%。")]
+    [SerializeField, Min(0f)] private float meleeAttackUsagePercent;
+    [Tooltip("远程攻击使用区，百分比点口径：20 表示吃到玩家远程攻击属性的 20%。")]
+    [SerializeField, Min(0f)] private float rangedAttackUsagePercent;
+    [Tooltip("魔法攻击使用区，百分比点口径：20 表示吃到玩家魔法攻击属性的 20%。")]
+    [SerializeField, Min(0f)] private float magicAttackUsagePercent;
+    [Tooltip("召唤攻击使用区，百分比点口径：20 表示吃到玩家召唤攻击属性的 20%。")]
+    [SerializeField, Min(0f)] private float summonAttackUsagePercent;
+
+    public float MeleeAttackUsagePercent => Mathf.Max(0f, meleeAttackUsagePercent);
+    public float RangedAttackUsagePercent => Mathf.Max(0f, rangedAttackUsagePercent);
+    public float MagicAttackUsagePercent => Mathf.Max(0f, magicAttackUsagePercent);
+    public float SummonAttackUsagePercent => Mathf.Max(0f, summonAttackUsagePercent);
+    public bool HasAnyUsage => MeleeAttackUsagePercent > 0f ||
+                               RangedAttackUsagePercent > 0f ||
+                               MagicAttackUsagePercent > 0f ||
+                               SummonAttackUsagePercent > 0f;
+
+    public WeaponAttackUsageData(
+        float meleeAttackUsagePercent,
+        float rangedAttackUsagePercent,
+        float magicAttackUsagePercent,
+        float summonAttackUsagePercent)
+    {
+        this.meleeAttackUsagePercent = Mathf.Max(0f, meleeAttackUsagePercent);
+        this.rangedAttackUsagePercent = Mathf.Max(0f, rangedAttackUsagePercent);
+        this.magicAttackUsagePercent = Mathf.Max(0f, magicAttackUsagePercent);
+        this.summonAttackUsagePercent = Mathf.Max(0f, summonAttackUsagePercent);
+    }
+
+    public WeaponAttackUsageData Validated()
+    {
+        return new WeaponAttackUsageData(
+            MeleeAttackUsagePercent,
+            RangedAttackUsagePercent,
+            MagicAttackUsagePercent,
+            SummonAttackUsagePercent);
+    }
+}
+
 [CreateAssetMenu(fileName = "Weapon Data", menuName = ScriptableObjectMenuPaths.WEAPON_DATA, order = 0)]
 public class WeaponDataSO : ItemDataSO, IDescribable
 {
@@ -166,6 +208,10 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private Vector2 hitBoxSize = new(1f, 1f);
     [SerializeField] private Vector2 hitBoxOffset;
 
+    [Header("攻击类型使用区")]
+    [Tooltip("百分比点口径：20 表示吃到对应玩家攻击属性的 20%。最终伤害 = (武器攻击力 + 各类型攻击贡献) * (1 + Damage / 100)。")]
+    [SerializeField] private WeaponAttackUsageData attackUsage;
+
     [Header("属性等级表")]
     [SerializeField] private List<WeaponLevelStatData> levelStats = new();
 
@@ -183,6 +229,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public GameObject HitVfxPrefab => hitVfxPrefab;
     public Vector2 HitBoxSize => hitBoxSize;
     public Vector2 HitBoxOffset => hitBoxOffset;
+    public WeaponAttackUsageData AttackUsage => attackUsage;
     public override string Description => BuildDescriptionForLevel(WeaponLevelHelper.MinLevel);
 
     private void OnValidate()
@@ -194,6 +241,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
         hitBoxSize.x = Mathf.Max(0.01f, hitBoxSize.x);
         hitBoxSize.y = Mathf.Max(0.01f, hitBoxSize.y);
+        attackUsage = attackUsage.Validated();
     }
 
     public bool HasTag(WeaponTag tag)
@@ -316,12 +364,13 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             infos.Add(new DescriptorInfo(string.Empty, description));
         }
 
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range)));
-        infos.Add(new DescriptorInfo(ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range)));
+        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength)));
+        AddAttackUsageInfos(infos);
         if (tags != null && tags.Length > 0)
         {
             infos.Add(new DescriptorInfo("标签", ItemDescriptionUtility.JoinWeaponTags(tags)));
@@ -346,29 +395,105 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         }
 
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.Attack),
+            GameContentRuntime.GetPropDisplayName(PropType.Attack),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.AttackSpeed),
+            GameContentRuntime.GetPropDisplayName(PropType.AttackSpeed),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.CriticalChance),
+            GameContentRuntime.GetPropDisplayName(PropType.CriticalChance),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.CriticalPercent),
+            GameContentRuntime.GetPropDisplayName(PropType.CriticalPercent),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.AttackRange),
+            GameContentRuntime.GetPropDisplayName(PropType.AttackRange),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range),
             ItemDescriptionLineKind.Property);
         yield return new ItemDescriptionLine(
-            ResourcesManager.GetPropDisplayName(PropType.KnockbackStrength),
+            GameContentRuntime.GetPropDisplayName(PropType.KnockbackStrength),
             ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength),
             ItemDescriptionLineKind.Property);
+
+        foreach (ItemDescriptionLine line in BuildAttackUsageDescriptionLines())
+        {
+            yield return line;
+        }
+    }
+
+    private void AddAttackUsageInfos(List<DescriptorInfo> infos)
+    {
+        if (infos == null || !attackUsage.HasAnyUsage)
+        {
+            return;
+        }
+
+        AddAttackUsageInfo(infos, PropType.MeleeAttack, attackUsage.MeleeAttackUsagePercent);
+        AddAttackUsageInfo(infos, PropType.RangedAttack, attackUsage.RangedAttackUsagePercent);
+        AddAttackUsageInfo(infos, PropType.MagicAttack, attackUsage.MagicAttackUsagePercent);
+        AddAttackUsageInfo(infos, PropType.SummonAttack, attackUsage.SummonAttackUsagePercent);
+    }
+
+    private static void AddAttackUsageInfo(List<DescriptorInfo> infos, PropType propType, float usagePercent)
+    {
+        if (usagePercent <= 0f)
+        {
+            return;
+        }
+
+        infos.Add(new DescriptorInfo(
+            $"{GameContentRuntime.GetPropDisplayName(propType)}使用区",
+            FormatAttackUsagePercent(usagePercent)));
+    }
+
+    private IEnumerable<ItemDescriptionLine> BuildAttackUsageDescriptionLines()
+    {
+        if (!attackUsage.HasAnyUsage)
+        {
+            yield break;
+        }
+
+        foreach (ItemDescriptionLine line in BuildAttackUsageLine(PropType.MeleeAttack, attackUsage.MeleeAttackUsagePercent))
+        {
+            yield return line;
+        }
+
+        foreach (ItemDescriptionLine line in BuildAttackUsageLine(PropType.RangedAttack, attackUsage.RangedAttackUsagePercent))
+        {
+            yield return line;
+        }
+
+        foreach (ItemDescriptionLine line in BuildAttackUsageLine(PropType.MagicAttack, attackUsage.MagicAttackUsagePercent))
+        {
+            yield return line;
+        }
+
+        foreach (ItemDescriptionLine line in BuildAttackUsageLine(PropType.SummonAttack, attackUsage.SummonAttackUsagePercent))
+        {
+            yield return line;
+        }
+    }
+
+    private static IEnumerable<ItemDescriptionLine> BuildAttackUsageLine(PropType propType, float usagePercent)
+    {
+        if (usagePercent <= 0f)
+        {
+            yield break;
+        }
+
+        yield return new ItemDescriptionLine(
+            $"{GameContentRuntime.GetPropDisplayName(propType)}使用区",
+            FormatAttackUsagePercent(usagePercent),
+            ItemDescriptionLineKind.Property);
+    }
+
+    private static string FormatAttackUsagePercent(float usagePercent)
+    {
+        return $"{Mathf.Max(0f, usagePercent):0.##}%";
     }
 
     private void EnsureLevelStatsTable()

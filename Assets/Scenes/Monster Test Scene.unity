@@ -348,12 +348,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   testPlayer: {fileID: 0}
-  playerResourcePath: Prefabs/Player/Character
   testCharacterData: {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
-  characterResourcePath: Data/Characters/Test
   playerSpawnPosition: {x: 0, y: 0, z: 0}
-  enemyData: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-  enemyResourcePath: Data/Enemies/Skeleton/SkeletonEnemy
+  enemyData: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
   spawnCount: 1
   spawnRadius: 3
   spawnOnStart: 1

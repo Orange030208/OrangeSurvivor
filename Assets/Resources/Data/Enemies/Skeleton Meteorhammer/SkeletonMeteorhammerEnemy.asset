@@ -29,7 +29,7 @@ MonoBehaviour:
     interruptPolicy: 0
   attackCommitNormalizedTime: 0.35
   attackSpeedBenefitRatio: 1.3333334
-  firstAttackCommitNormalizedTime: 0.35
+  firstAttackCommitNormalizedTime: 0.33
   firstAttackRangeMultiplier: 1
-  secondAttackCommitNormalizedTime: 0.7
+  secondAttackCommitNormalizedTime: 0.66
   secondAttackRangeMultiplier: 1.5

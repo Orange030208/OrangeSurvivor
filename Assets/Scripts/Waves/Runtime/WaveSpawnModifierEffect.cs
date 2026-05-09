@@ -15,11 +15,19 @@ public abstract class WaveSpawnModifierEffect : FeatureEffectBase, IWaveSpawnMod
     public override void OnInstall()
     {
         WaveSpawnModifierRegistry.Register(this);
+        if (this is IContentPoolModifier contentPoolModifier)
+        {
+            ContentPoolModifierRegistry.Register(contentPoolModifier);
+        }
     }
 
     public override void OnUninstall()
     {
         WaveSpawnModifierRegistry.Unregister(this);
+        if (this is IContentPoolModifier contentPoolModifier)
+        {
+            ContentPoolModifierRegistry.Unregister(contentPoolModifier);
+        }
     }
 
     public virtual void OnWaveStarted(WaveSpawnContext context)
@@ -31,10 +39,6 @@ public abstract class WaveSpawnModifierEffect : FeatureEffectBase, IWaveSpawnMod
     }
 
     public virtual void ModifySchedule(WaveSpawnModifierContext context, WaveSpawnSchedule schedule)
-    {
-    }
-
-    public virtual void ModifyEnemyCandidates(WaveSpawnModifierContext context, List<WaveEnemySpawnCandidate> candidates)
     {
     }
 

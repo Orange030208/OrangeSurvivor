@@ -9,9 +9,8 @@ using UnityEngine;
 
 public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 {
-    private const string DEFAULT_CARD_FOLDER = "Assets/Resources/Data/UpgradeCards/Cards";
-    private const string DEFAULT_POOL_PATH = "Assets/Resources/Data/UpgradeCards/Pool/Default Upgrade Card Pool.asset";
-    private const string DEFAULT_RARITY_CATALOG_PATH = "Assets/Resources/Data/UpgradeCards/Presentation/Upgrade Card Rarity Presentation Catalog.asset";
+    private const string DEFAULT_CARD_FOLDER = "Assets/ScriptableObjects/Content/Upgrade Cards";
+    private const string DEFAULT_RARITY_CATALOG_PATH = "Assets/ScriptableObjects/Content/Upgrade Card Rarity Presentation Catalog.asset";
     private const float LEFT_WIDTH = 300;
     private const float STYLE_WIDTH = 420f;
     private const HideFlags EDIT_COPY_HIDE_FLAGS =
@@ -31,10 +30,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private ReorderableList tagsList;
     private ReorderableList propertyModifiersList;
     private ReorderableList specialFeaturesList;
-    private ReorderableList requiredTagsList;
-    private ReorderableList requiredWeaponsList;
-    private ReorderableList requiredWeaponTagsList;
-    private ReorderableList mutuallyExclusiveList;
     private ReorderableList profilesList;
 
     private Vector2 cardListScroll;
@@ -47,7 +42,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private string newCardId = "new_upgrade_card";
     private string newCardTitle = "新升级卡";
     private UpgradeCardRarity newCardRarity = UpgradeCardRarity.Common;
-    private int newCardBaseWeight = 100;
 
     [MenuItem("Survivors/Upgrades/Card Workbench")]
     public static void Open()
@@ -183,7 +177,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         newCardId = EditorGUILayout.TextField("Card Id", newCardId);
         newCardTitle = EditorGUILayout.TextField("标题", newCardTitle);
         newCardRarity = (UpgradeCardRarity)EditorGUILayout.EnumPopup("稀有度", newCardRarity);
-        newCardBaseWeight = EditorGUILayout.IntField("基础权重", Mathf.Max(1, newCardBaseWeight));
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("创建"))
@@ -226,7 +219,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             SelectCard(card);
         }
 
-        EditorGUILayout.LabelField($"{card.CardId}  ·  {card.Rarity}  ·  W {card.BaseWeight}", EditorStyles.miniLabel);
+        EditorGUILayout.LabelField($"{card.CardId}  ·  {card.Rarity}", EditorStyles.miniLabel);
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
@@ -282,17 +275,7 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 
         DrawSection("抽取", () =>
         {
-            EditorGUILayout.PropertyField(cardObject.FindProperty("maxPickCount"), new GUIContent("最大选择次数", "0 表示不限制。"));
-            EditorGUILayout.PropertyField(cardObject.FindProperty("baseWeight"), new GUIContent("基础权重"));
-            SerializedProperty conditions = cardObject.FindProperty("offerConditions");
-            if (conditions != null)
-            {
-                EditorGUILayout.PropertyField(conditions.FindPropertyRelative("minWave"), new GUIContent("最小波次"));
-                requiredTagsList?.DoLayoutList();
-                requiredWeaponsList?.DoLayoutList();
-                requiredWeaponTagsList?.DoLayoutList();
-                mutuallyExclusiveList?.DoLayoutList();
-            }
+            EditorGUILayout.HelpBox("抽取权重、次数限制、互斥和条件统一配置在 ContentPool 条目中；卡牌资产只保留展示和效果数据。", MessageType.Info);
         });
 
         DrawSection("描述", () =>
@@ -415,7 +398,9 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
     private void RefreshCards()
     {
         cards.Clear();
-        string[] guids = AssetDatabase.FindAssets("t:UpgradeCardSO", new[] { DEFAULT_CARD_FOLDER });
+        string[] guids = AssetDatabase.FindAssets(
+            "t:UpgradeCardSO",
+            new[] { DEFAULT_CARD_FOLDER });
         for (int i = 0; i < guids.Length; i++)
         {
             string path = AssetDatabase.GUIDToAssetPath(guids[i]);
@@ -505,22 +490,12 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             tagsList = null;
             propertyModifiersList = null;
             specialFeaturesList = null;
-            requiredTagsList = null;
-            requiredWeaponsList = null;
-            requiredWeaponTagsList = null;
-            mutuallyExclusiveList = null;
             return;
         }
 
         tagsList = CreateSimpleList(cardObject.FindProperty("tags"), "标签");
         propertyModifiersList = CreateSimpleList(cardObject.FindProperty("propertyModifiers"), "属性修饰");
         specialFeaturesList = CreateFeatureList(cardObject.FindProperty("specialFeatures"), "特殊能力");
-
-        SerializedProperty conditions = cardObject.FindProperty("offerConditions");
-        requiredTagsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredTagPickCounts"), "要求标签选择数");
-        requiredWeaponsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredOwnedWeapons"), "要求已拥有武器");
-        requiredWeaponTagsList = CreateSimpleList(conditions?.FindPropertyRelative("requiredOwnedWeaponTags"), "要求已拥有武器标签");
-        mutuallyExclusiveList = CreateSimpleList(conditions?.FindPropertyRelative("mutuallyExclusiveCardIds"), "互斥卡牌 Id");
     }
 
     private void CreateCardEditCopy()
@@ -702,7 +677,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             cardId,
             string.IsNullOrWhiteSpace(newCardTitle) ? cardId : newCardTitle.Trim(),
             newCardRarity,
-            Mathf.Max(1, newCardBaseWeight),
             Array.Empty<UpgradeCardTag>(),
             string.Empty,
             Array.Empty<PropModifierData>(),
@@ -899,16 +873,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             messages.Add(CardValidationMessage.Warning("标题为空。"));
         }
 
-        if (card.BaseWeight <= 0)
-        {
-            messages.Add(CardValidationMessage.Error("基础权重必须大于 0。"));
-        }
-
-        if (card.MaxPickCount < UpgradeCardSO.UNLIMITED_PICK_COUNT)
-        {
-            messages.Add(CardValidationMessage.Error("最大选择次数不能小于 0。0 表示不限制。"));
-        }
-
         if (!card.HasAnyEffect())
         {
             messages.Add(CardValidationMessage.Error("卡牌没有任何属性修饰或特殊能力。"));
@@ -917,7 +881,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
         ValidateTags(card, messages);
         ValidatePropertyModifiers(card, messages);
         ValidateFeatures(card, messages);
-        ValidateOfferConditions(card, messages);
     }
 
     private void ValidateTags(UpgradeCardSO card, List<CardValidationMessage> messages)
@@ -959,89 +922,6 @@ public sealed class UpgradeCardWorkbenchWindow : EditorWindow
             if (features[i] == null)
             {
                 messages.Add(CardValidationMessage.Error($"第 {i + 1} 个特殊能力为空。"));
-            }
-        }
-    }
-
-    private void ValidateOfferConditions(UpgradeCardSO card, List<CardValidationMessage> messages)
-    {
-        UpgradeCardOfferConditions conditions = card.OfferConditions;
-        if (conditions == null)
-        {
-            messages.Add(CardValidationMessage.Error("抽取条件为空。"));
-            return;
-        }
-
-        if (conditions.MinWave < 1)
-        {
-            messages.Add(CardValidationMessage.Error("最小波次必须大于等于 1。"));
-        }
-
-        IReadOnlyList<UpgradeCardTagPickRequirement> tagRequirements = conditions.RequiredTagPickCounts;
-        HashSet<UpgradeCardTag> requiredTags = new();
-        for (int i = 0; i < tagRequirements.Count; i++)
-        {
-            UpgradeCardTagPickRequirement requirement = tagRequirements[i];
-            if (requirement.MinPickCount < 1)
-            {
-                messages.Add(CardValidationMessage.Error($"第 {i + 1} 个标签要求次数必须大于 0。"));
-            }
-
-            if (!requiredTags.Add(requirement.Tag))
-            {
-                messages.Add(CardValidationMessage.Warning($"标签要求重复: {requirement.Tag}。"));
-            }
-        }
-
-        IReadOnlyList<WeaponDataSO> requiredWeapons = conditions.RequiredOwnedWeapons;
-        for (int i = 0; i < requiredWeapons.Count; i++)
-        {
-            if (requiredWeapons[i] == null)
-            {
-                messages.Add(CardValidationMessage.Error($"第 {i + 1} 个要求武器为空。"));
-            }
-        }
-
-        IReadOnlyList<WeaponTagRequirement> weaponTagRequirements = conditions.RequiredOwnedWeaponTags;
-        HashSet<WeaponTag> requiredWeaponTags = new();
-        for (int i = 0; i < weaponTagRequirements.Count; i++)
-        {
-            WeaponTagRequirement requirement = weaponTagRequirements[i];
-            if (requirement.MinOwnedCount < 1)
-            {
-                messages.Add(CardValidationMessage.Error($"第 {i + 1} 个武器标签要求数量必须大于 0。"));
-            }
-
-            if (!requiredWeaponTags.Add(requirement.Tag))
-            {
-                messages.Add(CardValidationMessage.Warning($"武器标签要求重复: {requirement.Tag}。"));
-            }
-        }
-
-        IReadOnlyList<string> exclusions = conditions.MutuallyExclusiveCardIds;
-        HashSet<string> seenExclusions = new(StringComparer.Ordinal);
-        for (int i = 0; i < exclusions.Count; i++)
-        {
-            string excludedId = exclusions[i];
-            if (string.IsNullOrWhiteSpace(excludedId))
-            {
-                messages.Add(CardValidationMessage.Error($"第 {i + 1} 个互斥卡牌 Id 为空。"));
-                continue;
-            }
-
-            if (string.Equals(excludedId, card.CardId, StringComparison.Ordinal))
-            {
-                messages.Add(CardValidationMessage.Error("卡牌不能与自己互斥。"));
-            }
-
-            if (!seenExclusions.Add(excludedId))
-            {
-                messages.Add(CardValidationMessage.Warning($"互斥卡牌 Id 重复: {excludedId}。"));
-            }
-
-            if (!cards.Any(other => other != null && string.Equals(other.CardId, excludedId, StringComparison.Ordinal)))
-            {
-                messages.Add(CardValidationMessage.Warning($"互斥卡牌不存在: {excludedId}。"));
             }
         }
     }

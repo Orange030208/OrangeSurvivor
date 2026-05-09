@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>
@@ -19,8 +20,25 @@ public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionMan
 
     private void RefreshCharacters()
     {
-        characters = ResourcesManager.GetAllCharacters();
+        IReadOnlyList<CharacterDataSO> configuredCharacters = GameContentRuntime.Provider.Characters;
+        characters = ToArray(configuredCharacters);
         selectedIndex = -1;
+    }
+
+    private static CharacterDataSO[] ToArray(IReadOnlyList<CharacterDataSO> source)
+    {
+        if (source == null || source.Count == 0)
+        {
+            return Array.Empty<CharacterDataSO>();
+        }
+
+        CharacterDataSO[] result = new CharacterDataSO[source.Count];
+        for (int i = 0; i < source.Count; i++)
+        {
+            result[i] = source[i];
+        }
+
+        return result;
     }
 
     public bool SelectCharacter(int characterIndex)

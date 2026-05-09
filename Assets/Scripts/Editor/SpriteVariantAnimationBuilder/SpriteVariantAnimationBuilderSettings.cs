@@ -29,7 +29,7 @@ public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
     [SerializeField]
     private UnityEngine.Object inputSource;
 
-    [SerializeField, FormerlySerializedAs("spriteInputRoot")]
+    [SerializeField]
     private DefaultAsset inputRoot;
 
     [SerializeField, HideInInspector]

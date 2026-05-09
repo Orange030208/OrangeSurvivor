@@ -12,12 +12,15 @@ public class AccessoryDataListSO : ScriptableObject
     [field: SerializeField] public AccessoryDataSO[] Accessories { get; private set; }
 
 #if UNITY_EDITOR
-    private const string ACCESSORIES_DATA_PATH = "Assets/Resources/Data/Accessories";
+    private static readonly string[] ACCESSORIES_DATA_PATH =
+    {
+        "Assets/ScriptableObjects/Content/Accessories"
+    };
     
     [NaughtyAttributes.Button]
     public void RefreshAccessories()
     {
-        string[] guids = AssetDatabase.FindAssets("t:AccessoryDataSO", new[] { ACCESSORIES_DATA_PATH });
+        string[] guids = AssetDatabase.FindAssets("t:AccessoryDataSO", GetExistingAccessoryDataPaths());
 
         if (guids.Length == 0)
         {
@@ -43,6 +46,11 @@ public class AccessoryDataListSO : ScriptableObject
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
         Debug.Log($"Successfully loaded {Accessories.Length} accessories from {ACCESSORIES_DATA_PATH}");
+    }
+
+    private static string[] GetExistingAccessoryDataPaths()
+    {
+        return ACCESSORIES_DATA_PATH.Where(AssetDatabase.IsValidFolder).ToArray();
     }
 #endif
 }

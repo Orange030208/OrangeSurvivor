@@ -45,7 +45,8 @@ public static class PropValueUtility
                propType == PropType.ShopPriceDiscount ||
                propType == PropType.KnockbackResistance ||
                propType == PropType.DamageReduction ||
-               propType == PropType.HealingPower;
+               propType == PropType.HealingPower ||
+               propType == PropType.Damage;
     }
 
     public static bool IsAdditivePercentMultiplierProp(PropType propType)
@@ -81,7 +82,7 @@ public struct PropModifierData
 
     public readonly string GetDisplayName()
     {
-        string propName = ResourcesManager.GetPropDisplayName(propType);
+        string propName = GameContentRuntime.GetPropDisplayName(propType);
         return modifierType switch
         {
             PropModifierType.Add => propName,

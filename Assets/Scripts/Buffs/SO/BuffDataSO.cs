@@ -11,6 +11,9 @@ public class BuffDataSO : ScriptableObject, IDescribable
     [SerializeField] private string buffId = BUFF_ID_PREFIX;
     [SerializeField] private string displayName;
     [SerializeField] private Sprite icon;
+
+    [Header("描述")]
+    [TextArea]
     [SerializeField] private string description;
 
     [Header("分类")]
@@ -36,10 +39,13 @@ public class BuffDataSO : ScriptableObject, IDescribable
     public string DisplayName => displayName;
     public string Title => displayName;
     public Sprite Icon => icon;
-    public string Description => description;
+    public string Description => BuildDescription();
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
-        return null;
+        return ItemDescriptionUtility.BuildDescriptorInfos(
+            ShouldUseManualDescription() ? description : null,
+            propertyModifiers,
+            specialFeatures);
     }
 
     public BuffPolarity Polarity => polarity;
@@ -51,6 +57,26 @@ public class BuffDataSO : ScriptableObject, IDescribable
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
     public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+
+    private string BuildDescription()
+    {
+        return ItemDescriptionUtility.BuildDetailedDescription(
+            ShouldUseManualDescription() ? description : null,
+            propertyModifiers,
+            specialFeatures,
+            string.Empty);
+    }
+
+    private bool ShouldUseManualDescription()
+    {
+        return !HasAnyEffect() && !string.IsNullOrWhiteSpace(description);
+    }
+
+    private bool HasAnyEffect()
+    {
+        return (propertyModifiers != null && propertyModifiers.Count > 0) ||
+               (specialFeatures != null && specialFeatures.Count > 0);
+    }
 
     private void OnValidate()
     {
@@ -65,5 +91,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
 
         durationSeconds = Mathf.Max(MIN_DURATION_SECONDS, durationSeconds);
         maxStackCount = Mathf.Max(MIN_STACK_COUNT, maxStackCount);
+        propertyModifiers ??= new List<PropModifierData>();
+        specialFeatures ??= new List<FeatureEffectBase>();
     }
 }

@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class WeaponPosition : MonoBehaviour
 {
-    private const string WEAPON_PREFAB_RESOURCE_PATH = "Prefabs/Weapons/Weapon";
-
     public Weapon Weapon { get; private set; }
 
     public Weapon AssignWeapon(Entity owner,WeaponDataSO weaponData, int level)
@@ -35,12 +33,11 @@ public class WeaponPosition : MonoBehaviour
 
     private static Weapon LoadWeaponPrefab()
     {
-        Weapon weaponPrefab = Resources.Load<Weapon>(WEAPON_PREFAB_RESOURCE_PATH);
+        Weapon weaponPrefab = GameContentRuntime.Provider.DefaultWeaponPrefab;
         if (weaponPrefab == null)
         {
             throw new MissingReferenceException(
-                $"{nameof(WeaponPosition)} requires a {nameof(Weapon)} prefab at " +
-                $"Assets/Resources/{WEAPON_PREFAB_RESOURCE_PATH}.prefab.");
+                $"{nameof(WeaponPosition)} requires a default {nameof(Weapon)} prefab in {nameof(GameContentCatalogSO)}.");
         }
 
         return weaponPrefab;

@@ -14,44 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_014
   displayName: Wave 14
-  duration: 95
+  duration: 30
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Ranged Elite Mix
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 25
-      tags: 9
-    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-      weight: 35
-      tags: 5
-    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-      weight: 25
-      tags: 33
-    - enemyDefinition: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-      weight: 15
-      tags: 2
     spawnFrequency: 1.5
     spawnCountPerBatch: 4
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Skeleton Wall
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    enemyTags: 5
-    enemyPool: []
     spawnFrequency: 0.75
     spawnCountPerBatch: 2
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 20, y: 85}
   - trackId: Orange Golem Strike
     triggerMode: 1
-    enemyDefinition: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    enemyTags: 18
-    enemyPool: []
     spawnFrequency: 0.01
     spawnCountPerBatch: 1
     maxSpawnBatches: 1

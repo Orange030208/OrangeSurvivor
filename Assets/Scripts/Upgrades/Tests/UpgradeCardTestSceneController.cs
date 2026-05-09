@@ -53,7 +53,13 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     private void EnsurePlayer()
     {
-        Player prefab = playerPrefab != null ? playerPrefab : ResourcesManager.GetDefaultPlayerPrefab();
+        Player prefab = playerPrefab != null ? playerPrefab : GameContentRuntime.Provider.DefaultPlayerPrefab;
+        if (prefab == null)
+        {
+            Debug.LogError($"[{nameof(UpgradeCardTestSceneController)}] Missing player prefab. Assign one in the scene or {nameof(GameContentCatalogSO)}.", this);
+            return;
+        }
+
         player = Instantiate(prefab, playerSpawnPosition, Quaternion.identity);
         ConfigurePlayerForUpgradeTest(player);
     }

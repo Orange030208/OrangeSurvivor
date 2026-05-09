@@ -819,12 +819,37 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float finalAttackSpeed = Mathf.Max(
             propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed),
             0.01f);
-        Damage = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.Attack, weaponAttack));
+        float typedAttackContribution = ResolveAttackTypeContribution(WeaponData.AttackUsage);
+        float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
+        Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
         AttackInterval = 1f / finalAttackSpeed;
         CriticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
         Range = Mathf.Max(0.1f, propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange));
         KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
+    }
+
+    private float ResolveAttackTypeContribution(WeaponAttackUsageData attackUsage)
+    {
+        if (!attackUsage.HasAnyUsage)
+        {
+            return 0f;
+        }
+
+        return ResolveAttackTypeContribution(PropType.MeleeAttack, attackUsage.MeleeAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.RangedAttack, attackUsage.RangedAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.MagicAttack, attackUsage.MagicAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.SummonAttack, attackUsage.SummonAttackUsagePercent);
+    }
+
+    private float ResolveAttackTypeContribution(PropType propType, float usagePercent)
+    {
+        if (usagePercent <= 0f)
+        {
+            return 0f;
+        }
+
+        return propertiesManager.GetPropValue(propType) * PropValueUtility.PercentPointsToRatio(usagePercent);
     }
 
     private void ApplyCurrentConfiguration()
@@ -876,7 +901,11 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     private void OnPropertyChanged(PropType propType, float _)
     {
-        if (propType == PropType.Attack ||
+        if (propType == PropType.Damage ||
+            propType == PropType.MeleeAttack ||
+            propType == PropType.RangedAttack ||
+            propType == PropType.MagicAttack ||
+            propType == PropType.SummonAttack ||
             propType == PropType.AttackSpeed ||
             propType == PropType.CriticalChance ||
             propType == PropType.CriticalPercent ||

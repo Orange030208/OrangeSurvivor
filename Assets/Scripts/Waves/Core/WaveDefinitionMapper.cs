@@ -56,17 +56,10 @@ public static class WaveDefinitionMapper
         for (int i = 0; i < spawnPlans.Length; i++)
         {
             WaveSpawnPlan spawnPlan = spawnPlans[i];
-            WaveEnemySpawnOption[] enemyPool = FilterEnemyPool(spawnPlan.GetEffectiveEnemyPool());
-            if (enemyPool.Length == 0)
-            {
-                continue;
-            }
-
             Vector2 normalizedTimeRange = NormalizeTimeRange(spawnPlan.NormalizedTimeRange);
             WaveSpawnIdentity spawnIdentity = new WaveSpawnIdentity(
                 spawnPlan.TrackId,
                 spawnPlan.TriggerMode,
-                enemyPool,
                 spawnPlan.SpawnFrequency,
                 spawnPlan.SpawnCountPerBatch,
                 spawnPlan.MaxSpawnBatches,
@@ -84,25 +77,4 @@ public static class WaveDefinitionMapper
         return new Vector2(start, end);
     }
 
-    private static WaveEnemySpawnOption[] FilterEnemyPool(WaveEnemySpawnOption[] enemyPool)
-    {
-        if (enemyPool == null || enemyPool.Length == 0)
-        {
-            return Array.Empty<WaveEnemySpawnOption>();
-        }
-
-        List<WaveEnemySpawnOption> results = new(enemyPool.Length);
-        for (int i = 0; i < enemyPool.Length; i++)
-        {
-            WaveEnemySpawnOption option = enemyPool[i];
-            if (option.EnemyDefinition == null || option.Weight <= 0f)
-            {
-                continue;
-            }
-
-            results.Add(option);
-        }
-
-        return results.ToArray();
-    }
 }

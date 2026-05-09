@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: glass_cannon
+  m_EditorClassIdentifier: 
+  cardId: glass_cannon
+  title: "\u73BB\u7483\u5927\u70AE"
+  icon: {fileID: 4920631738397879039, guid: 21d00970a65119641990e950e399327f, type: 3}
+  rarity: 2
+  tags: 00000000
+  description: "伤害提升 +25%，最大生命 -12%。"
+  propertyModifiers:
+  - propType: 28
+    modifierType: 0
+    value: 25
+  - propType: 5
+    modifierType: 3
+    value: -12
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

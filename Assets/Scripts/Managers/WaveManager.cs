@@ -6,7 +6,8 @@ using UnityEngine;
 /// </summary>
 public class WaveManager : MonoBehaviour, IWaveController
 {
-    private StageDefinitionSO stageDefinition;
+    [SerializeField] private StageDefinitionSO stageDefinition;
+    [SerializeField] private ContentPoolSO waveSpawnPool;
     private SpawnPositionResolver spawnPositionResolver;
     private WaveSpawnExecutionService waveSpawnExecutionService;
     private EnemyFactory enemyFactory;
@@ -30,10 +31,14 @@ public class WaveManager : MonoBehaviour, IWaveController
 
     private void Awake()
     {
-        stageDefinition = ResourcesManager.GetStageDefinition();
         if (stageDefinition == null)
         {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(StageDefinitionSO)} resource at Data/Waves/Stage Definition.");
+            stageDefinition = GameContentRuntime.Provider.DefaultStageDefinition;
+        }
+
+        if (stageDefinition == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(StageDefinitionSO)} from the scene or {nameof(GameContentCatalogSO)}.");
         }
 
         runtimeWaves = WaveDefinitionMapper.ToRuntimeWaves(stageDefinition);
@@ -47,8 +52,18 @@ public class WaveManager : MonoBehaviour, IWaveController
             throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRegistry)} in the scene.");
         }
 
+        if (waveSpawnPool == null)
+        {
+            waveSpawnPool = GameContentRuntime.Provider.WaveSpawnPool;
+        }
+
+        if (waveSpawnPool == null)
+        {
+            throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(ContentPoolSO)} for wave spawn candidates from the scene or {nameof(GameContentCatalogSO)}.");
+        }
+
         enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);
-        waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory);
+        waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory, waveSpawnPool);
         ApplySpawnPositionPolicy(0);
     }
 

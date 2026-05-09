@@ -25,4 +25,9 @@ public enum PropType
     DamageReduction = 25,
     HealingPower = 26,
     WeaponSlotCount = 27,
+    Damage = 28,
+    MeleeAttack = 29,
+    RangedAttack = 30,
+    MagicAttack = 31,
+    SummonAttack = 32,
 }

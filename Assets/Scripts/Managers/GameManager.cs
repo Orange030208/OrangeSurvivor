@@ -589,10 +589,10 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        Player playerPrefab = ResourcesManager.GetDefaultPlayerPrefab();
+        Player playerPrefab = GameContentRuntime.Provider.DefaultPlayerPrefab;
         if (playerPrefab == null)
         {
-            Debug.LogError("GameManager: 默认玩家 prefab 不存在，无法进入游戏。");
+            Debug.LogError("GameManager: 默认玩家 prefab 未在 GameContentCatalogSO 中配置，无法进入游戏。");
             return;
         }
 

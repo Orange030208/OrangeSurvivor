@@ -12,14 +12,10 @@ using UnityEngine.UI;
 public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPointerClickHandler
 {
     [Header("--")]
-    [FormerlySerializedAs("IconImage")]
     [SerializeField] protected Image iconImage;
-
-    [FormerlySerializedAs("accessoryNameText")]
+    
     [SerializeField] protected TextMeshProUGUI nameText;
-
-    [FormerlySerializedAs("priceText")]
-    [FormerlySerializedAs("recyclePriceText")]
+    
     [SerializeField] protected ExtraInfoDescriber bottom;
 
     [Header("卡片品质表现")]

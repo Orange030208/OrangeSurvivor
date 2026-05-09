@@ -14,13 +14,13 @@ public class WeaponDataListSO : ScriptableObject
 #if UNITY_EDITOR
     private static readonly string[] WEAPONS_DATA_PATH = new string[]
     {
-        "Assets/Resources/Data/Weapons"
+        "Assets/ScriptableObjects/Content/Weapons"
     };
 
     [NaughtyAttributes.Button]
     public void RefreshWeapons()
     {
-        string[] guids = AssetDatabase.FindAssets("t:WeaponDataSO", WEAPONS_DATA_PATH);
+        string[] guids = AssetDatabase.FindAssets("t:WeaponDataSO", GetExistingWeaponDataPaths());
 
         if (guids.Length == 0)
         {
@@ -46,6 +46,11 @@ public class WeaponDataListSO : ScriptableObject
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
         Debug.Log($"Successfully loaded {Weapons.Length} weapons from {WEAPONS_DATA_PATH}");
+    }
+
+    private static string[] GetExistingWeaponDataPaths()
+    {
+        return WEAPONS_DATA_PATH.Where(AssetDatabase.IsValidFolder).ToArray();
     }
 #endif
 }

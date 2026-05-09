@@ -1,15 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 执行波次轨道节奏，并把敌人候选选择委托给 WaveSpawn ContentPool。
+/// </summary>
 public class WaveSpawnExecutionService
 {
     private readonly EnemyFactory enemyFactory;
-    private readonly List<WaveEnemySpawnCandidate> candidateBuffer = new();
+    private readonly ContentPoolSO waveSpawnPool;
     private readonly List<WaveSpawnRequest> requestBuffer = new();
+    private readonly ContentPoolRollService contentPoolRollService = new();
+    private readonly ContentPoolRuntimeState waveSpawnRuntimeState = new();
 
-    public WaveSpawnExecutionService(EnemyFactory enemyFactory)
+    public WaveSpawnExecutionService(EnemyFactory enemyFactory, ContentPoolSO waveSpawnPool)
     {
         this.enemyFactory = enemyFactory;
+        this.waveSpawnPool = waveSpawnPool;
     }
 
     public WaveSpawnExecutionResult Execute(
@@ -37,22 +43,17 @@ public class WaveSpawnExecutionService
         }
 
         requestBuffer.Clear();
-        WaveSpawnRequest spawnRequest = CreateSpawnRequest(modifierContext, schedule);
-        if (spawnRequest != null)
-        {
-            requestBuffer.Add(spawnRequest);
-        }
-
+        AppendRolledSpawnRequests(modifierContext, schedule, requestBuffer);
         AppendModifierRequests(modifierContext, requestBuffer);
-        bool spawnedAny = SpawnRequests(requestBuffer, spawnContext, spawnPositionResolver);
-        if (!spawnedAny)
+        int spawnedCount = SpawnRequests(requestBuffer, spawnContext, spawnPositionResolver);
+        if (spawnedCount <= 0)
         {
             return WaveSpawnExecutionResult.Skip(segmentState);
         }
 
         WaveSegmentRuntimeState nextState = segmentState;
         nextState.SpawnedBatchCount++;
-        nextState.SpawnedCount += schedule.SpawnCountPerBatch;
+        nextState.SpawnedCount += spawnedCount;
         nextState.LastSpawnTime = request.CurrentTimer;
         nextState.HasSpawned = true;
         return WaveSpawnExecutionResult.Spawned(nextState);
@@ -70,7 +71,7 @@ public class WaveSpawnExecutionService
         WaveSpawnModifierContext modifierContext = new WaveSpawnModifierContext(spawnContext, default, -1);
         requestBuffer.Clear();
         AppendModifierRequests(modifierContext, requestBuffer);
-        return SpawnRequests(requestBuffer, spawnContext, spawnPositionResolver);
+        return SpawnRequests(requestBuffer, spawnContext, spawnPositionResolver) > 0;
     }
 
     private static WaveSpawnContext CreateSpawnContext(WaveSpawnExecutionRequest request)
@@ -136,104 +137,133 @@ public class WaveSpawnExecutionService
         }
     }
 
-    private WaveSpawnRequest CreateSpawnRequest(WaveSpawnModifierContext modifierContext, WaveSpawnSchedule schedule)
+    private void AppendRolledSpawnRequests(
+        WaveSpawnModifierContext modifierContext,
+        WaveSpawnSchedule schedule,
+        List<WaveSpawnRequest> requests)
     {
-        WaveEnemySpawnCandidate candidate = SelectEnemyCandidate(modifierContext);
-        if (candidate == null || candidate.EnemyDefinition == null)
+        // 先从内容池抽取候选，再让波次 Modifier 对最终请求做结构性调整。
+        ContentRollItem? item = SelectEnemyContent(modifierContext);
+        if (!item.HasValue)
         {
-            return null;
+            return;
         }
 
-        WaveSpawnRequest request = new WaveSpawnRequest(
-            candidate.EnemyDefinition,
-            schedule.SpawnCountPerBatch,
-            candidate.Tags,
-            modifierContext.Segment.TrackId,
-            modifierContext.SegmentIndex);
+        ContentRollItem rollItem = item.Value;
+        if (rollItem.Content is EnemySO enemyDefinition)
+        {
+            WaveSpawnRequest request = new WaveSpawnRequest(
+                enemyDefinition,
+                schedule.SpawnCountPerBatch,
+                ResolveEnemyTags(rollItem),
+                modifierContext.Segment.TrackId,
+                modifierContext.SegmentIndex);
+            ApplySpawnRequestModifiers(modifierContext, request);
+            requests.Add(request);
+            return;
+        }
 
+        if (rollItem.Content is WaveSpawnPackSO spawnPack)
+        {
+            AppendPackSpawnRequests(modifierContext, rollItem, spawnPack, requests);
+        }
+    }
+
+    private void AppendPackSpawnRequests(
+        WaveSpawnModifierContext modifierContext,
+        ContentRollItem rollItem,
+        WaveSpawnPackSO spawnPack,
+        List<WaveSpawnRequest> requests)
+    {
+        IReadOnlyList<WaveSpawnPackEntry> entries = spawnPack.Entries;
+        if (entries == null || entries.Count == 0)
+        {
+            Debug.LogWarning($"[{nameof(WaveSpawnExecutionService)}] Wave spawn pack {spawnPack.name} has no entries.");
+            return;
+        }
+
+        WaveEnemyTag fallbackTags = ResolveEnemyTags(rollItem);
+        for (int i = 0; i < entries.Count; i++)
+        {
+            WaveSpawnPackEntry entry = entries[i];
+            if (!entry.IsValid)
+            {
+                continue;
+            }
+
+            // 包条目可独立覆盖标签；未覆盖时继承池条目的 DomainFlags，方便权重项和最终请求保持同一语义。
+            WaveSpawnRequest request = new WaveSpawnRequest(
+                entry.EnemyDefinition,
+                entry.SpawnCount,
+                entry.OverrideTags ? entry.EnemyTags : fallbackTags,
+                modifierContext.Segment.TrackId,
+                modifierContext.SegmentIndex);
+            ApplySpawnRequestModifiers(modifierContext, request);
+            requests.Add(request);
+        }
+    }
+
+    private static void ApplySpawnRequestModifiers(WaveSpawnModifierContext modifierContext, WaveSpawnRequest request)
+    {
         IReadOnlyList<IWaveSpawnModifier> modifiers = WaveSpawnModifierRegistry.ActiveModifiers;
         for (int i = 0; i < modifiers.Count; i++)
         {
             modifiers[i].ModifySpawnRequest(modifierContext, request);
         }
-
-        return request;
     }
 
-    private WaveEnemySpawnCandidate SelectEnemyCandidate(WaveSpawnModifierContext modifierContext)
+    private ContentRollItem? SelectEnemyContent(WaveSpawnModifierContext modifierContext)
     {
-        candidateBuffer.Clear();
-        WaveEnemySpawnOption[] enemyPool = modifierContext.Segment.EnemyPool;
-        if (enemyPool != null)
+        if (waveSpawnPool == null)
         {
-            for (int i = 0; i < enemyPool.Length; i++)
-            {
-                WaveEnemySpawnOption option = enemyPool[i];
-                if (option.EnemyDefinition == null || option.Weight <= 0f)
-                {
-                    continue;
-                }
-
-                candidateBuffer.Add(new WaveEnemySpawnCandidate(
-                    option.EnemyDefinition,
-                    option.Weight,
-                    option.Tags));
-            }
+            Debug.LogError($"[{nameof(WaveSpawnExecutionService)}] Missing wave spawn content pool.");
+            return null;
         }
 
-        IReadOnlyList<IWaveSpawnModifier> modifiers = WaveSpawnModifierRegistry.ActiveModifiers;
-        for (int i = 0; i < modifiers.Count; i++)
-        {
-            modifiers[i].ModifyEnemyCandidates(modifierContext, candidateBuffer);
-        }
-
-        return PickWeightedCandidate(candidateBuffer, modifierContext.SpawnContext.Roll01());
-    }
-
-    private static WaveEnemySpawnCandidate PickWeightedCandidate(
-        List<WaveEnemySpawnCandidate> candidates,
-        float roll)
-    {
-        float totalWeight = 0f;
-        for (int i = 0; i < candidates.Count; i++)
-        {
-            WaveEnemySpawnCandidate candidate = candidates[i];
-            if (candidate != null && candidate.IsValid)
-            {
-                totalWeight += candidate.Weight;
-            }
-        }
-
-        if (totalWeight <= 0f)
+        ContentRollResult result = contentPoolRollService.Roll(
+            waveSpawnPool,
+            CreateWaveFactSource(modifierContext),
+            waveSpawnRuntimeState,
+            1,
+            entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
+        if (!result.HasAny)
         {
             return null;
         }
 
-        float cursor = Mathf.Clamp01(roll) * totalWeight;
-        for (int i = 0; i < candidates.Count; i++)
-        {
-            WaveEnemySpawnCandidate candidate = candidates[i];
-            if (candidate == null || !candidate.IsValid)
-            {
-                continue;
-            }
+        return result.Items[0];
+    }
 
-            cursor -= candidate.Weight;
-            if (cursor <= 0f)
-            {
-                return candidate;
-            }
+    private static WaveEnemyTag ResolveEnemyTags(ContentRollItem item)
+    {
+        // WaveEnemyTag 存在内容池条目的 DomainFlags 中，未配置时按普通怪处理。
+        WaveEnemyTag tags = (WaveEnemyTag)item.DomainFlags;
+        return tags == WaveEnemyTag.None ? WaveEnemyTag.Normal : tags;
+    }
+
+    private static ContentFactSource CreateWaveFactSource(WaveSpawnModifierContext modifierContext)
+    {
+        // 刷怪池条件和 ContentPool Modifier 共享这份事实快照，避免再从旧波次候选字段取上下文。
+        Player player = modifierContext.SpawnContext.Player;
+        float progressPercent = modifierContext.SpawnContext.WaveDuration > 0f
+            ? Mathf.Clamp01(modifierContext.SpawnContext.ElapsedTime / modifierContext.SpawnContext.WaveDuration) * 100f
+            : 0f;
+        if (player != null)
+        {
+            ContentFactSource playerSource = ContentFactSource.ForPlayer(player, modifierContext.SpawnContext.WaveNumber);
+            playerSource.WaveId = modifierContext.SpawnContext.WaveId;
+            playerSource.WaveTrackId = modifierContext.Segment.TrackId;
+            playerSource.WaveProgressPercent = progressPercent;
+            return playerSource;
         }
 
-        for (int i = candidates.Count - 1; i >= 0; i--)
+        return new ContentFactSource
         {
-            if (candidates[i] != null && candidates[i].IsValid)
-            {
-                return candidates[i];
-            }
-        }
-
-        return null;
+            WaveNumber = Mathf.Max(1, modifierContext.SpawnContext.WaveNumber),
+            WaveId = modifierContext.SpawnContext.WaveId,
+            WaveTrackId = modifierContext.Segment.TrackId,
+            WaveProgressPercent = progressPercent
+        };
     }
 
     private static void AppendModifierRequests(
@@ -247,12 +277,12 @@ public class WaveSpawnExecutionService
         }
     }
 
-    private bool SpawnRequests(
+    private int SpawnRequests(
         List<WaveSpawnRequest> requests,
         WaveSpawnContext context,
         SpawnPositionResolver spawnPositionResolver)
     {
-        bool spawnedAny = false;
+        int spawnedCount = 0;
         Player player = context.Player;
         for (int requestIndex = 0; requestIndex < requests.Count; requestIndex++)
         {
@@ -266,10 +296,10 @@ public class WaveSpawnExecutionService
             {
                 Vector3 spawnPosition = spawnPositionResolver.Resolve(new SpawnContext(context.SpawnAnchor, context.ElapsedTime, context.WaveIndex));
                 enemyFactory.Spawn(spawnRequest.EnemyDefinition, player, spawnPosition, context.SpawnParent);
-                spawnedAny = true;
+                spawnedCount++;
             }
         }
 
-        return spawnedAny;
+        return spawnedCount;
     }
 }

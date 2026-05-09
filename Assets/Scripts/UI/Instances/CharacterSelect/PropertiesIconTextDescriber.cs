@@ -86,7 +86,7 @@ public sealed class PropertiesIconTextDescriber : Describer
 
     private PropPresentationEntry ResolvePresentation(string propName)
     {
-        if (ResourcesManager.TryGetPropPresentationEntry(propName, out PropPresentationEntry entry))
+        if (GameContentRuntime.TryGetPropPresentationEntry(propName, out PropPresentationEntry entry))
         {
             return entry;
         }

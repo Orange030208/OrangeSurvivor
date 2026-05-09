@@ -11,21 +11,26 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fa7e9ce7c0c8c24b9a8b29e701e2d88, type: 3}
   m_Name: "Buff_05_\u4E0D\u673D"
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   buffId: Buff_Immortal
   displayName: "\u4E0D\u673D"
   icon: {fileID: 335127650, guid: 80d9c25e3fb5718428929790d5add98f, type: 3}
+  description:
   polarity: 0
   durationPolicy: 1
   durationSeconds: 10
   maxStackCount: 1
   refreshMode: 1
   overflowMode: 1
-  descriptionLines:
-  - "\u6FD2\u6B7B\u65F6\u83B7\u5F97\u4E00\u5C42\u5438\u6536 500 \u70B9\u4F24\u5BB3\u7684\u62A4\u76FE\uFF0C\u51B7\u5374
-    30 \u79D2"
   propertyModifiers: []
-  specialFeatures: []
+  specialFeatures:
+  - rid: 451547002770030703
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 451547002770030703
+      type: {class: LethalDamageGuardFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 1
+        shieldAmount: 500
+        cooldownSeconds: 30

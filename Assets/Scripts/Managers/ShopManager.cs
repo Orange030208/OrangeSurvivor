@@ -7,6 +7,7 @@ public struct ShopItemData
     public ItemDataSO ItemData;
     public int Level;
     public bool Lock;
+    public float ContentPriceMultiplier;
     public float PriceMultiplier;
 
     public int GetPrice()
@@ -26,7 +27,9 @@ public struct ShopItemData
 
     private int ApplyPriceMultiplier(int basePrice)
     {
-        float multiplier = PriceMultiplier > 0f ? PriceMultiplier : 1f;
+        float contentMultiplier = ContentPriceMultiplier > 0f ? ContentPriceMultiplier : 1f;
+        float shopMultiplier = PriceMultiplier > 0f ? PriceMultiplier : 1f;
+        float multiplier = contentMultiplier * shopMultiplier;
         return Mathf.Max(0, Mathf.RoundToInt(basePrice * multiplier));
     }
 }
@@ -35,21 +38,24 @@ public class ShopManager : MonoBehaviour
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 4;
     private const int BASE_REROLL_COST = 5;
-    private const int ACCESSORY_WEIGHT = 2;
-    private const int WEAPON_WEIGHT = 1;
     private const float MIN_SHOP_PRICE_MULTIPLIER = 0.2f;
     private const float MAX_SHOP_PRICE_DISCOUNT = 0.8f;
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private int baseRerollCost = BASE_REROLL_COST;
     [SerializeField] private CurrencyWallet currencyWallet;
+    [SerializeField] private ContentPoolSO shopPool;
 
+    private readonly ContentPoolRollService contentPoolRollService = new();
+    private readonly ContentPoolRuntimeState shopRuntimeState = new();
     private ShopItemData[] currentItems;
     private Player player;
     private PropertiesManager propertiesManager;
     private int freeShopRerolls;
     private int rerollCost;
     private int rerollCount;
+    private int shopRefreshCount;
+    private int currentWaveNumber = 1;
     private int currentCurrency;
 
     public event Action<ShopViewState> ViewStateChanged;
@@ -68,6 +74,8 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
+        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
         TryBindWallet();
         RefreshCurrency();
@@ -82,6 +90,8 @@ public class ShopManager : MonoBehaviour
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
+        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
     }
 
     private void Start()
@@ -286,6 +296,7 @@ public class ShopManager : MonoBehaviour
 
     private void RefreshKeepingLockedItems()
     {
+        shopRefreshCount++;
         int count = Mathf.Max(1, containersToAdd);
         ShopItemData[] nextItems = new ShopItemData[count];
         int writeIndex = 0;
@@ -312,6 +323,7 @@ public class ShopManager : MonoBehaviour
     private void RerollShopItems()
     {
         rerollCount++;
+        shopRefreshCount++;
         rerollCost = baseRerollCost + rerollCount;
 
         int count = Mathf.Max(1, containersToAdd);
@@ -340,6 +352,7 @@ public class ShopManager : MonoBehaviour
 
     private void GenerateShopItems()
     {
+        shopRefreshCount++;
         int count = Mathf.Max(1, containersToAdd);
         currentItems = new ShopItemData[count];
 
@@ -353,14 +366,14 @@ public class ShopManager : MonoBehaviour
     {
         for (int attempt = 0; attempt < 8; attempt++)
         {
-            ShopItemData item = GenerateWeightedRandomShopItem();
+            ShopItemData item = RollShopItem();
             if (!ContainsDuplicate(existingItems, existingCount, item))
             {
                 return item;
             }
         }
 
-        return GenerateWeightedRandomShopItem();
+        return RollShopItem();
     }
 
     private bool ContainsDuplicate(ShopItemData[] existingItems, int existingCount, ShopItemData item)
@@ -391,50 +404,80 @@ public class ShopManager : MonoBehaviour
         return a.ItemData == b.ItemData && a.Level == b.Level;
     }
 
-    private ShopItemData GenerateWeightedRandomShopItem()
+    private ShopItemData RollShopItem()
     {
-        int randomValue = UnityEngine.Random.Range(0, ACCESSORY_WEIGHT + WEAPON_WEIGHT);
-        if (randomValue < ACCESSORY_WEIGHT)
+        ContentPoolSO pool = ResolveShopPool();
+        if (pool == null)
         {
-            return GenerateAccessoryItem();
+            Debug.LogError($"[ShopManager] Missing shop content pool in scene or {nameof(GameContentCatalogSO)}.", this);
+            return default;
         }
 
-        return GenerateWeaponItem();
+        ContentFactSource factSource = ContentFactSource.ForPlayer(player, currentWaveNumber);
+        factSource.ShopRefreshCount = shopRefreshCount;
+        factSource.ShopRerollCount = rerollCount;
+        ContentRollResult result = contentPoolRollService.Roll(
+            pool,
+            factSource,
+            shopRuntimeState,
+            1,
+            entry => entry.Content is ItemDataSO);
+        if (!result.HasAny)
+        {
+            Debug.LogWarning("[ShopManager] No shop item could be rolled from content pool.", this);
+            return default;
+        }
+
+        return CreateShopItemData(result.Items[0]);
     }
 
-    private ShopItemData GenerateAccessoryItem()
+    private ShopItemData CreateShopItemData(ContentRollItem rollItem)
     {
-        AccessoryDataSO accessoryData = ResourcesManager.GetRandomAccessory();
-        if (accessoryData == null)
+        ItemDataSO itemData = rollItem.Content as ItemDataSO;
+        if (itemData == null)
         {
-            Debug.LogWarning("Failed to get random accessory.");
             return default;
         }
 
         return new ShopItemData
         {
-            ItemData = accessoryData,
-            Level = WeaponLevelHelper.MinLevel,
-            Lock = false
+            ItemData = itemData,
+            Level = ResolveShopItemLevel(itemData, rollItem),
+            Lock = false,
+            ContentPriceMultiplier = rollItem.PriceMultiplier
         };
     }
 
-    private ShopItemData GenerateWeaponItem()
+    private static int ResolveShopItemLevel(ItemDataSO itemData, ContentRollItem rollItem)
     {
-        WeaponDataSO weaponData = ResourcesManager.GetRandomWeapon();
-        if (weaponData == null)
+        if (itemData == null || itemData.ItemType != ItemType.Weapon)
         {
-            Debug.LogWarning("No weapons available for shop.");
-            return default;
+            return WeaponLevelHelper.MinLevel;
         }
 
-        int level = WeaponLevelHelper.GetRandomLevelInclusiveMax();
-        return new ShopItemData
+        int minLevel = rollItem.MinLevel > 0 ? WeaponLevelHelper.ClampLevel(rollItem.MinLevel) : WeaponLevelHelper.MinLevel;
+        int maxLevel = rollItem.MaxLevel > 0 ? WeaponLevelHelper.ClampLevel(rollItem.MaxLevel) : WeaponLevelHelper.MaxLevel;
+        if (maxLevel < minLevel)
         {
-            ItemData = weaponData,
-            Level = level,
-            Lock = false
-        };
+            maxLevel = minLevel;
+        }
+
+        return UnityEngine.Random.Range(minLevel, maxLevel + 1);
+    }
+
+    private ContentPoolSO ResolveShopPool()
+    {
+        if (shopPool != null)
+        {
+            return shopPool;
+        }
+
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            return null;
+        }
+
+        return provider.ShopPool;
     }
 
     private void PublishViewState(ShopRefreshReason reason = ShopRefreshReason.StateUpdate)
@@ -583,6 +626,19 @@ public class ShopManager : MonoBehaviour
         if (propType == PropType.ShopPriceDiscount)
         {
             PublishViewState(ShopRefreshReason.StateUpdate);
+        }
+    }
+
+    private void OnWaveStarted(WaveStartedEvent eventData)
+    {
+        currentWaveNumber = Mathf.Max(1, eventData.CurrentWave);
+    }
+
+    private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
+    {
+        if (eventData.CurrentWave > 0)
+        {
+            currentWaveNumber = eventData.CurrentWave;
         }
     }
 

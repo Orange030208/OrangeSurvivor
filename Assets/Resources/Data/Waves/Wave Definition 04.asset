@@ -14,32 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_004
   displayName: Wave 4
-  duration: 45
+  duration: 30
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Main Swarm
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 65
-      tags: 9
-    - enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-      weight: 25
-      tags: 5
-    - enemyDefinition: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-      weight: 10
-      tags: 33
     spawnFrequency: 0.75
     spawnCountPerBatch: 2
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Skeleton Pressure
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    enemyTags: 5
-    enemyPool: []
     spawnFrequency: 0.3
     spawnCountPerBatch: 1
     maxSpawnBatches: 0
