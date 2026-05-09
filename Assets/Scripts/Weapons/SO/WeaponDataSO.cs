@@ -144,6 +144,8 @@ public struct WeaponLevelStatData
 [Serializable]
 public struct WeaponAttackUsageData
 {
+    public static WeaponAttackUsageData Zero => new(0f, 0f, 0f, 0f);
+
     [Tooltip("近战攻击使用区，百分比点口径：20 表示吃到玩家近战攻击属性的 20%。")]
     [SerializeField, Min(0f)] private float meleeAttackUsagePercent;
     [Tooltip("远程攻击使用区，百分比点口径：20 表示吃到玩家远程攻击属性的 20%。")]
@@ -181,6 +183,20 @@ public struct WeaponAttackUsageData
             RangedAttackUsagePercent,
             MagicAttackUsagePercent,
             SummonAttackUsagePercent);
+    }
+
+    public WeaponAttackUsageData Add(WeaponAttackUsageData other)
+    {
+        return new WeaponAttackUsageData(
+            MeleeAttackUsagePercent + other.MeleeAttackUsagePercent,
+            RangedAttackUsagePercent + other.RangedAttackUsagePercent,
+            MagicAttackUsagePercent + other.MagicAttackUsagePercent,
+            SummonAttackUsagePercent + other.SummonAttackUsagePercent);
+    }
+
+    public static WeaponAttackUsageData operator +(WeaponAttackUsageData left, WeaponAttackUsageData right)
+    {
+        return left.Add(right);
     }
 }
 

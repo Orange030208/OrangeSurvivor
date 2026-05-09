@@ -9,8 +9,8 @@ using UnityEngine;
 
 public sealed class Projectile2AnimatorWindow : EditorWindow
 {
-    private const string DefaultSourceFolder = "Assets/Resources/Sprites/Projectils";
-    private const string DefaultOutputFolder = "Assets/Resources/Animation/Projectile";
+    private const string DefaultSourceFolder = "Assets/GameContent/Weapons/Sprites/Projectiles";
+    private const string DefaultOutputFolder = "Assets/GameContent/Weapons/Animations/Projectiles";
     private const float DefaultSampleRate = 12f;
     private const string SpritePropertyName = "m_Sprite";
     private const string StateName = "Idle";

@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputSource: {fileID: 2800000, guid: 7c444e26d5c37e3468ce183187293e55, type: 3}
   inputRoot: {fileID: 102900000, guid: 7b21ecffe42e63143a153d308789685f, type: 3}
-  spriteInputRootPath: Assets/Resources/Sprites
+  spriteInputRootPath: Assets/GameContent/Combat/VFX/Sprites
   animationOutputRoot: {fileID: 102900000, guid: 4b7ee2d30b18f1a4bb99ac241e0a3c9a, type: 3}
-  animationOutputRootPath: Assets/Resources/Animation
+  animationOutputRootPath: Assets/GameContent/Combat/VFX/Animations
   prefabOutputRoot: {fileID: 102900000, guid: 8b47de111e3bc1d4fa56beb5e14af887, type: 3}
-  prefabOutputRootPath: Assets/Resources/Prefabs
+  prefabOutputRootPath: Assets/GameContent/Combat/VFX/Prefabs
   outputRoot: {fileID: 0}
   templatePrefab: {fileID: 6853986081789573359, guid: 1c465011f31210145805bf498edd009a, type: 3}
   spriteRendererPath: 

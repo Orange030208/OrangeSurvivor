@@ -9,8 +9,8 @@ using UnityEngine;
 
 public sealed class Character2AnimatorWindow : EditorWindow
 {
-    private const string DefaultSourceFolder = "Assets/Resources/Sprites/Characters";
-    private const string DefaultOutputFolder = "Assets/Resources/Animation/Character";
+    private const string DefaultSourceFolder = "Assets/GameContent/Characters/Sprites";
+    private const string DefaultOutputFolder = "Assets/GameContent/Characters/Animations";
     private const float DefaultSampleRate = 12f;
     private const string SpritePropertyName = "m_Sprite";
     private const string IdleStateName = "Idle";

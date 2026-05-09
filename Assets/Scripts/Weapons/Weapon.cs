@@ -68,6 +68,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected PropertiesManager propertiesManager;
     protected Entity owner;
     protected Entity currentTarget;
+    private WeaponsHolder weaponsHolder;
     private float attackCooldownTimer;
     private Vector2 lastAimDirection = Vector2.up;
     private Vector2 lockedAttackDirection = Vector2.up;
@@ -91,6 +92,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     {
         this.owner = owner;
         propertiesManager = GetComponentInParent<PropertiesManager>();
+        weaponsHolder = GetComponentInParent<WeaponsHolder>();
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
         hitBoxAttackExecutor = new HitBoxAttackExecutor(SpawnHitVfx);
     }
@@ -819,7 +821,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float finalAttackSpeed = Mathf.Max(
             propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed),
             0.01f);
-        float typedAttackContribution = ResolveAttackTypeContribution(WeaponData.AttackUsage);
+        float typedAttackContribution = ResolveAttackTypeContribution(ResolveAttackUsage());
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
         Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
         AttackInterval = 1f / finalAttackSpeed;
@@ -827,6 +829,19 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
         Range = Mathf.Max(0.1f, propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange));
         KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
+    }
+
+    private WeaponAttackUsageData ResolveAttackUsage()
+    {
+        WeaponAttackUsageData attackUsage = WeaponData.AttackUsage;
+        if (weaponsHolder == null)
+        {
+            weaponsHolder = GetComponentInParent<WeaponsHolder>();
+        }
+
+        return weaponsHolder != null
+            ? attackUsage + weaponsHolder.CurrentAttackUsageBonus
+            : attackUsage;
     }
 
     private float ResolveAttackTypeContribution(WeaponAttackUsageData attackUsage)

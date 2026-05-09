@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: RayGun
+  m_EditorClassIdentifier:
+  itemName: Ray Gun
+  itemIcon: {fileID: 21300000, guid: b2c4f9e109a71224d8ceac22f545ec23, type: 3}
+  itemPrice: 43
+  itemType: 0
+  itemDescription: Experimental ray weapon. Fast energy shots with better critical
+    scaling.
+  tags: 01000000020000000400000005000000
+  attackSequence: {fileID: 11400000, guid: fe4733ff985a4aacb45cc4c7eb26856c, type: 2}
+  visualForwardAngle: 45
+  stopAimingWhenAttackReady: 0
+  attackSequenceOccupancy: 0.9
+  spawnPoints: []
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 60199221bfb36fa4880399e9c009dd0b, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList:
+  - sfxKey: 303
+  sequenceVfxList: []
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 14
+    attackSpeed: 1.35
+    criticalChance: 11
+    criticalPercent: 200
+    range: 9.2
+    knockbackStrength: 0.7
+  - level: 2
+    attack: 16.52
+    attackSpeed: 1.395
+    criticalChance: 12
+    criticalPercent: 208
+    range: 9.45
+    knockbackStrength: 0.88
+  - level: 3
+    attack: 19.04
+    attackSpeed: 1.44
+    criticalChance: 13
+    criticalPercent: 216
+    range: 9.7
+    knockbackStrength: 1.06
+  - level: 4
+    attack: 21.56
+    attackSpeed: 1.485
+    criticalChance: 14
+    criticalPercent: 224
+    range: 9.95
+    knockbackStrength: 1.24

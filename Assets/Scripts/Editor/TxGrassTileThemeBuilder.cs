@@ -7,8 +7,8 @@ using UnityEngine.Tilemaps;
 
 public static class TxGrassTileThemeBuilder
 {
-    private const string TileFolderPath = "Assets/Resources/Tiles";
-    private const string ThemeAssetPath = "Assets/Resources/Tiles/TX Grass Ground Theme.asset";
+    private const string TileFolderPath = GameContentAssetPaths.MapTiles;
+    private const string ThemeAssetPath = GameContentAssetPaths.TxGrassGroundTheme;
     private const int DefaultGroundTileIndex = 0;
     private const int DefaultWallTileIndex = 128;
 

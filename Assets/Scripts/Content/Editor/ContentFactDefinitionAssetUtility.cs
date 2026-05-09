@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class ContentFactDefinitionAssetUtility
 {
-    private const string FactFolder = "Assets/ScriptableObjects/Content/Facts";
+    private const string FactFolder = GameContentAssetPaths.UpgradeFacts;
 
     [MenuItem("Survivors/Content/Create Built-in Fact Definitions")]
     public static void CreateBuiltInFactDefinitions()

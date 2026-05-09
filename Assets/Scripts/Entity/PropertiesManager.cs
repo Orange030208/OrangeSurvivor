@@ -7,12 +7,18 @@ public class PropertiesManager : EntityComponentBase, IDescribable
 {
     private Entity owner;
 
+    [Header("属性映射")]
+    [Tooltip("将一个属性的未含映射最终值转换为另一个属性的额外 Add。首版不做递归映射。")]
+    [SerializeField] private List<PropMappingData> propMappings = new();
+
     private readonly Dictionary<PropType, float> baseProps = new();
     private readonly Dictionary<PropType, float> addProps = new();
     private readonly Dictionary<PropType, float> baseOnlyMultiplierProps = new();
     private readonly Dictionary<PropType, float> bonusMultiplierProps = new();
     private readonly Dictionary<PropType, float> finalMultiplierProps = new();
     private readonly Dictionary<PropType, float> calculatedProps = new();
+    private readonly Dictionary<PropType, float> mappedAddProps = new();
+    private readonly Dictionary<PropType, float> unmappedCalculatedProps = new();
     private readonly Dictionary<string, List<PropModifierData>> modifierSources = new();
 
     public string Title => "属性";
@@ -51,6 +57,8 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         bonusMultiplierProps.Clear();
         finalMultiplierProps.Clear();
         calculatedProps.Clear();
+        mappedAddProps.Clear();
+        unmappedCalculatedProps.Clear();
     }
 
     private void InitializeProps()
@@ -142,6 +150,16 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         List<PropType> changedProps = notifyChanges ? new List<PropType>() : null;
 
         Array values = Enum.GetValues(typeof(PropType));
+        unmappedCalculatedProps.Clear();
+        for (int i = 0; i < values.Length; i++)
+        {
+            PropType propType = (PropType)values.GetValue(i);
+            float unmappedValue = CalculateFinalValue(propType, GetBaseValue(propType), 0f);
+            unmappedCalculatedProps[propType] = unmappedValue;
+        }
+
+        RebuildMappedAddProps();
+
         for (int i = 0; i < values.Length; i++)
         {
             PropType propType = (PropType)values.GetValue(i);
@@ -175,12 +193,13 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     private float CalculateFinalValue(PropType propType)
     {
         float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType));
-        return CalculateFinalValue(propType, baseValue);
+        float mappedAddValue = mappedAddProps.GetValueOrDefault(propType, 0f);
+        return CalculateFinalValue(propType, baseValue, mappedAddValue);
     }
 
-    private float CalculateFinalValue(PropType propType, float baseValue)
+    private float CalculateFinalValue(PropType propType, float baseValue, float additionalAddValue)
     {
-        float addValue = addProps.GetValueOrDefault(propType, 0f);
+        float addValue = addProps.GetValueOrDefault(propType, 0f) + additionalAddValue;
         float baseOnlyMultiplierValue = baseOnlyMultiplierProps.GetValueOrDefault(propType, 0f);
         float bonusMultiplierValue = bonusMultiplierProps.GetValueOrDefault(propType, 0f);
         float finalMultiplierValue = finalMultiplierProps.GetValueOrDefault(propType, 0f);
@@ -225,6 +244,65 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         return result;
     }
 
+    private void RebuildMappedAddProps()
+    {
+        mappedAddProps.Clear();
+        if (propMappings == null || propMappings.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < propMappings.Count; i++)
+        {
+            PropMappingData mapping = propMappings[i];
+            if (!IsValidMapping(mapping, i) || Mathf.Approximately(mapping.conversionPercent, 0f))
+            {
+                continue;
+            }
+
+            float sourceValue = unmappedCalculatedProps.GetValueOrDefault(
+                mapping.sourcePropType,
+                GetDefaultValue(mapping.sourcePropType));
+            float mappedAddValue = sourceValue * mapping.ConversionRatio;
+            AddValue(mappedAddProps, mapping.targetPropType, mappedAddValue);
+        }
+    }
+
+    private bool IsValidMapping(PropMappingData mapping, int index)
+    {
+        if (!Enum.IsDefined(typeof(PropType), mapping.sourcePropType) ||
+            !Enum.IsDefined(typeof(PropType), mapping.targetPropType))
+        {
+            Debug.LogWarning(
+                $"[PropertiesManager] Ignore invalid prop mapping #{index} on {GetOwnerName()}: " +
+                $"{mapping.sourcePropType} -> {mapping.targetPropType}.");
+            return false;
+        }
+
+        if (mapping.sourcePropType == mapping.targetPropType)
+        {
+            Debug.LogWarning(
+                $"[PropertiesManager] Ignore self prop mapping #{index} on {GetOwnerName()}: " +
+                $"{mapping.sourcePropType} -> {mapping.targetPropType}.");
+            return false;
+        }
+
+        if (float.IsNaN(mapping.conversionPercent) || float.IsInfinity(mapping.conversionPercent))
+        {
+            Debug.LogWarning(
+                $"[PropertiesManager] Ignore invalid prop mapping #{index} on {GetOwnerName()}: " +
+                $"{mapping.sourcePropType} -> {mapping.targetPropType}, conversionPercent={mapping.conversionPercent}.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private string GetOwnerName()
+    {
+        return owner != null ? owner.name : name;
+    }
+
     private static void AddValue(Dictionary<PropType, float> target, PropType propType, float value)
     {
         if (target.TryGetValue(propType, out float currentValue))
@@ -253,7 +331,8 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     public float GetPropValueWithAdditionalBase(PropType propType, float additionalBaseValue)
     {
         float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType)) + additionalBaseValue;
-        return CalculateFinalValue(propType, baseValue);
+        float mappedAddValue = mappedAddProps.GetValueOrDefault(propType, 0f);
+        return CalculateFinalValue(propType, baseValue, mappedAddValue);
     }
 
     public float GetBaseValue(PropType propType)

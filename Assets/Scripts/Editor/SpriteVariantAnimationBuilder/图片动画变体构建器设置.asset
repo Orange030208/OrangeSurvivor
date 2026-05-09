@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: "\u56FE\u7247\u52A8\u753B\u53D8\u4F53\u6784\u5EFA\u5668\u8BBE\u7F6E"
   m_EditorClassIdentifier: 
   inputRoot: {fileID: 102900000, guid: 7b21ecffe42e63143a153d308789685f, type: 3}
-  spriteInputRootPath: Assets/Resources/Sprites
+  spriteInputRootPath: Assets/GameContent
   animationOutputRoot: {fileID: 102900000, guid: 799333a60a4f68d48b354af1873596a4, type: 3}
-  animationOutputRootPath: Assets/Resources/Animation
+  animationOutputRootPath: Assets/GameContent
   prefabOutputRoot: {fileID: 102900000, guid: 79f437893a4cb7043aa35157f615a61d, type: 3}
-  prefabOutputRootPath: Assets/Resources/Prefabs
+  prefabOutputRootPath: Assets/GameContent
   outputRoot: {fileID: 0}
   templatePrefab: {fileID: 0}
   spriteRendererPath: 

@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 [Serializable]
 public struct CardQualityPresentationProfile
 {
+    [FormerlySerializedAs("rarity")]
     [SerializeField] private CardQuality quality;
     [SerializeField] private string presentationKey;
     [SerializeField] private AudioSfxKey revealSfxKey;

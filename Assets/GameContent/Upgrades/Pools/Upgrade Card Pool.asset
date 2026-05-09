@@ -1,0 +1,2214 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b3d8234ebc54bed973b7d1ffa094ae4, type: 3}
+  m_Name: Upgrade Card Pool
+  m_EditorClassIdentifier: 
+  purpose: 1
+  defaultRollCount: 3
+  allowDuplicateResults: 0
+  entries:
+  - entryId: armor_reinforcement
+    content: {fileID: 11400000, guid: 8782b6e73696679499dce9456dbb315b, type: 2}
+    baseWeight: 90
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776277
+    - rid: 7274045879173776278
+  - entryId: arsenal_drop
+    content: {fileID: 11400000, guid: 237593cb37ef6cc4ba0ccdd07e6d481d, type: 2}
+    baseWeight: 9
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 3
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776279
+    - rid: 7274045879173776280
+    weightRules:
+    - rid: 7274045879173776281
+    - rid: 7274045879173776282
+  - entryId: attack_training
+    content: {fileID: 11400000, guid: 020b9fa129f029c40b8d358821e205fc, type: 2}
+    baseWeight: 120
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776283
+    - rid: 7274045879173776284
+  - entryId: bargain_instinct
+    content: {fileID: 11400000, guid: bc0a5cbfdc312414299dd23b9f57af21, type: 2}
+    baseWeight: 55
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776285
+    weightRules:
+    - rid: 7274045879173776286
+    - rid: 7274045879173776287
+  - entryId: battle_frenzy
+    content: {fileID: 11400000, guid: 96221fcf11ca1224a8030bc779a0941a, type: 2}
+    baseWeight: 60
+    tags:
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776288
+    - rid: 7274045879173776289
+    weightRules:
+    - rid: 7274045879173776290
+    - rid: 7274045879173776291
+  - entryId: battle_scavenger
+    content: {fileID: 11400000, guid: 95f82c14ba1ba0b44a16eb9d46c80560, type: 2}
+    baseWeight: 90
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776292
+    - rid: 7274045879173776293
+  - entryId: blood_pact
+    content: {fileID: 11400000, guid: 15f4fe28023bb8a4c87b68045dbc8cc3, type: 2}
+    baseWeight: 34
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds:
+    - guardian_oath
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776294
+    - rid: 7274045879173776295
+    weightRules:
+    - rid: 7274045879173776296
+    - rid: 7274045879173776297
+    - rid: 7274045879173776298
+    - rid: 7274045879173776299
+  - entryId: bloodthirst_dose
+    content: {fileID: 11400000, guid: d02f851a35d9fb442b2b08b35ef3c92e, type: 2}
+    baseWeight: 44
+    tags:
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776300
+    - rid: 7274045879173776301
+    - rid: 7274045879173776302
+    weightRules:
+    - rid: 7274045879173776303
+    - rid: 7274045879173776304
+    - rid: 7274045879173776305
+  - entryId: close_quarters
+    content: {fileID: 11400000, guid: 8667d5e94c95757459fc07c9ebb2f348, type: 2}
+    baseWeight: 62
+    tags:
+    - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776306
+    - rid: 7274045879173776307
+    - rid: 7274045879173776308
+    weightRules:
+    - rid: 7274045879173776309
+    - rid: 7274045879173776310
+    - rid: 7274045879173776311
+  - entryId: critical_basics
+    content: {fileID: 11400000, guid: 47eb3c180751ab7408797bbcc32310e4, type: 2}
+    baseWeight: 80
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776312
+    - rid: 7274045879173776313
+  - entryId: duelist_blade
+    content: {fileID: 11400000, guid: 55ad64c5752ceae49aef220be2657ca9, type: 2}
+    baseWeight: 48
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776314
+    - rid: 7274045879173776315
+    - rid: 7274045879173776316
+  - entryId: eagle_sense
+    content: {fileID: 11400000, guid: 2de78fa4406aa854dbcae07ae9bdea31, type: 2}
+    baseWeight: 90
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776317
+    - rid: 7274045879173776318
+  - entryId: emergency_core
+    content: {fileID: 11400000, guid: f76e1bf51f0a87344813d45d3b9ff4e9, type: 2}
+    baseWeight: 26
+    tags:
+    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
+    - {fileID: 11400000, guid: 39fa33e95aa9a2145aa401dbe86f941d, type: 2}
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776319
+    - rid: 7274045879173776320
+    weightRules:
+    - rid: 7274045879173776321
+    - rid: 7274045879173776322
+    - rid: 7274045879173776323
+    - rid: 7274045879173776324
+  - entryId: field_supplies
+    content: {fileID: 11400000, guid: 2c6fbfd4b5646cb4eb57eb39735ae2c1, type: 2}
+    baseWeight: 70
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 4
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776325
+    - rid: 7274045879173776326
+  - entryId: first_aid_protocol
+    content: {fileID: 11400000, guid: d4bdcf551b33d1c40b338313004dbfd4, type: 2}
+    baseWeight: 50
+    tags:
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776327
+    - rid: 7274045879173776328
+    weightRules:
+    - rid: 7274045879173776329
+    - rid: 7274045879173776330
+  - entryId: glass_cannon
+    content: {fileID: 11400000, guid: ab55527fcf6299949a065c9f4a04051f, type: 2}
+    baseWeight: 40
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds:
+    - tough_body
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776331
+    - rid: 7274045879173776332
+  - entryId: gold_contract
+    content: {fileID: 11400000, guid: 824ef873a11b1604bb069890a0d788ee, type: 2}
+    baseWeight: 35
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776333
+    - rid: 7274045879173776334
+    weightRules:
+    - rid: 7274045879173776335
+    - rid: 7274045879173776336
+  - entryId: guardian_oath
+    content: {fileID: 11400000, guid: 479df396c91ca664c85a3827adc704cb, type: 2}
+    baseWeight: 34
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds:
+    - blood_pact
+    - glass_cannon
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776337
+    - rid: 7274045879173776338
+    weightRules:
+    - rid: 7274045879173776339
+    - rid: 7274045879173776340
+    - rid: 7274045879173776341
+  - entryId: harvest_route
+    content: {fileID: 11400000, guid: 81921166c6bee7049ab12e7f2ee74b53, type: 2}
+    baseWeight: 56
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776342
+    - rid: 7274045879173776343
+    weightRules:
+    - rid: 7274045879173776344
+    - rid: 7274045879173776345
+    - rid: 7274045879173776346
+  - entryId: heavy_critical
+    content: {fileID: 11400000, guid: 72295db1cb2568a41bebca82621dbb56, type: 2}
+    baseWeight: 70
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776347
+    weightRules:
+    - rid: 7274045879173776348
+    - rid: 7274045879173776349
+    - rid: 7274045879173776350
+  - entryId: immortal_second_wind
+    content: {fileID: 11400000, guid: 1d0b69e92d5777441a3f8077f3c53a2d, type: 2}
+    baseWeight: 8
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 3
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776351
+    - rid: 7274045879173776352
+    - rid: 7274045879173776353
+    weightRules:
+    - rid: 7274045879173776354
+    - rid: 7274045879173776355
+    - rid: 7274045879173776356
+  - entryId: king_ransom
+    content: {fileID: 11400000, guid: 7d459c1f597c76445bf5816a819863ff, type: 2}
+    baseWeight: 30
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776357
+    - rid: 7274045879173776358
+    weightRules:
+    - rid: 7274045879173776359
+    - rid: 7274045879173776360
+  - entryId: learning_curve
+    content: {fileID: 11400000, guid: e8493977bc6a52444acfbb60eb1926bd, type: 2}
+    baseWeight: 92
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776361
+    - rid: 7274045879173776362
+  - entryId: life_recovery
+    content: {fileID: 11400000, guid: c089454728a74074e94b1b2ec44041d5, type: 2}
+    baseWeight: 75
+    tags:
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776363
+    - rid: 7274045879173776364
+  - entryId: lifesteal_instinct
+    content: {fileID: 11400000, guid: e8ef9844507c0884b8fd3533cded72e8, type: 2}
+    baseWeight: 65
+    tags:
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776365
+    - rid: 7274045879173776366
+    weightRules:
+    - rid: 7274045879173776367
+    - rid: 7274045879173776368
+    - rid: 7274045879173776369
+  - entryId: light_steps
+    content: {fileID: 11400000, guid: 9bce828415ac0844b902912e795ff5eb, type: 2}
+    baseWeight: 95
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776370
+    - rid: 7274045879173776371
+  - entryId: long_barrel
+    content: {fileID: 11400000, guid: 66d39ed04ea917847b89e47d7e20bd3a, type: 2}
+    baseWeight: 66
+    tags:
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
+    - {fileID: 11400000, guid: b902831cbe5282e499242776d66ba3c5, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776372
+    - rid: 7274045879173776373
+    weightRules:
+    - rid: 7274045879173776374
+    - rid: 7274045879173776375
+    - rid: 7274045879173776376
+  - entryId: lucky_stipend
+    content: {fileID: 11400000, guid: 80ed6ea409664be4eade0ab060a61180, type: 2}
+    baseWeight: 68
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 3
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776377
+    - rid: 7274045879173776378
+    - rid: 7274045879173776379
+  - entryId: magnetic_belt
+    content: {fileID: 11400000, guid: ca1518f7495309d4aba3f385cdc34492, type: 2}
+    baseWeight: 88
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045879173776380
+    - rid: 7274045879173776381
+  - entryId: momentum_engine
+    content: {fileID: 11400000, guid: f8536522aba864540b197c3a0be7bba9, type: 2}
+    baseWeight: 58
+    tags:
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173776382
+    - rid: 7274045879173776383
+    - rid: 7274045887389368320
+    weightRules:
+    - rid: 7274045887389368321
+    - rid: 7274045887389368322
+    - rid: 7274045887389368323
+  - entryId: new_weapon_cache
+    content: {fileID: 11400000, guid: b962d3dd3de76a14b9ad3bd775cc0aa3, type: 2}
+    baseWeight: 30
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368324
+    weightRules:
+    - rid: 7274045887389368325
+    - rid: 7274045887389368326
+  - entryId: overloaded_magazine
+    content: {fileID: 11400000, guid: b8e702dd9bc5cea44ad9a3cbea082ae1, type: 2}
+    baseWeight: 32
+    tags:
+    - {fileID: 11400000, guid: b902831cbe5282e499242776d66ba3c5, type: 2}
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368327
+    - rid: 7274045887389368328
+    - rid: 7274045887389368329
+    weightRules:
+    - rid: 7274045887389368330
+    - rid: 7274045887389368331
+    - rid: 7274045887389368332
+  - entryId: patched_armor
+    content: {fileID: 11400000, guid: e7e5093e537c3944899803693895bff5, type: 2}
+    baseWeight: 82
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045887389368333
+    - rid: 7274045887389368334
+  - entryId: quick_strike
+    content: {fileID: 11400000, guid: 1db8662857714564089bcfca47f8aa68, type: 2}
+    baseWeight: 115
+    tags:
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045887389368335
+    - rid: 7274045887389368336
+  - entryId: reroll_coupon
+    content: {fileID: 11400000, guid: fb9577c4025330d489d1fc14e6901046, type: 2}
+    baseWeight: 52
+    tags:
+    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368337
+    - rid: 7274045887389368338
+    weightRules:
+    - rid: 7274045887389368339
+    - rid: 7274045887389368340
+  - entryId: slaughter_rhythm
+    content: {fileID: 11400000, guid: 01143a9fa2cf3ba4b93c950627628bdd, type: 2}
+    baseWeight: 28
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368341
+    - rid: 7274045887389368342
+    - rid: 7274045887389368343
+    weightRules:
+    - rid: 7274045887389368344
+    - rid: 7274045887389368345
+    - rid: 7274045887389368346
+  - entryId: sniper_stance
+    content: {fileID: 11400000, guid: 0dfb07df98ce0ee419aebaff7f426d6a, type: 2}
+    baseWeight: 36
+    tags:
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368347
+    - rid: 7274045887389368348
+    - rid: 7274045887389368349
+    weightRules:
+    - rid: 7274045887389368350
+    - rid: 7274045887389368351
+    - rid: 7274045887389368352
+  - entryId: steady_breath
+    content: {fileID: 11400000, guid: a30adff489b13cb4c89f4cce1792da7a, type: 2}
+    baseWeight: 84
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045887389368353
+    - rid: 7274045887389368354
+  - entryId: sun_scepter_cache
+    content: {fileID: 11400000, guid: 34907e4418869c04095187520c5962e4, type: 2}
+    baseWeight: 22
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368355
+    - rid: 7274045887389368356
+    weightRules:
+    - rid: 7274045887389368357
+    - rid: 7274045887389368358
+    - rid: 7274045887389368359
+  - entryId: sure_critical
+    content: {fileID: 11400000, guid: ff0883a1ddb239648bb66bfad693a8c7, type: 2}
+    baseWeight: 10
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 3
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368360
+    - rid: 7274045887389368361
+    - rid: 7274045887389368362
+    - rid: 7274045887389368363
+    weightRules:
+    - rid: 7274045887389368364
+    - rid: 7274045887389368365
+    - rid: 7274045887389368366
+  - entryId: swift_start
+    content: {fileID: 11400000, guid: fbe4f6b2121b1e641809e69b32efc48a, type: 2}
+    baseWeight: 55
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 2
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368367
+    - rid: 7274045887389368368
+    weightRules:
+    - rid: 7274045887389368369
+    - rid: 7274045887389368370
+  - entryId: tough_body
+    content: {fileID: 11400000, guid: 607c9383e3b52e240868730c5ae618aa, type: 2}
+    baseWeight: 110
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds:
+    - glass_cannon
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 7274045887389368371
+    - rid: 7274045887389368372
+  - entryId: weapon_focus
+    content: {fileID: 11400000, guid: 76541564641c95f4588cc3f622e7b71f, type: 2}
+    baseWeight: 75
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    maxRollCount: 0
+    maxPickCount: 3
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368373
+    weightRules:
+    - rid: 7274045887389368374
+    - rid: 7274045887389368375
+  - entryId: weapon_overclock
+    content: {fileID: 11400000, guid: a2fe7672ca705bb4d8c902ff98b73efa, type: 2}
+    baseWeight: 26
+    tags:
+    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 1
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045887389368376
+    - rid: 7274045887389368377
+    weightRules:
+    - rid: 7274045887389368378
+    - rid: 7274045887389368379
+    - rid: 7274045887389368380
+  references:
+    version: 2
+    RefIds:
+    - rid: 7274045879173776277
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776278
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776279
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 5
+          floatValue: 5
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776280
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776281
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776282
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776283
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776284
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776285
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776286
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776287
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776288
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776289
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776290
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776291
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776292
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776293
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776294
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776295
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776296
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776297
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776298
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776299
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776300
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 3
+          floatValue: 3
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776301
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776302
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776303
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776304
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776305
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776306
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776307
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776308
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 0ce727a0e88e24744812a26aadfa2849, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776309
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776310
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 9ab5f5a026e76d44dbbbb82885e878a4, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776311
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776312
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776313
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776314
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776315
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776316
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 9ab5f5a026e76d44dbbbb82885e878a4, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776317
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776318
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776319
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776320
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776321
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776322
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776323
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 0c95e45cf2ebc134e8b22c9112baceb0, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776324
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776325
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776326
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776327
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776328
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776329
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776330
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776331
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776332
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776333
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 3
+          floatValue: 3
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776334
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776335
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776336
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776337
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776338
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776339
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776340
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776341
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776342
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776343
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776344
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776345
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776346
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776347
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776348
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776349
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776350
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776351
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 6
+          floatValue: 6
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776352
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776353
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776354
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776355
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776356
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776357
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 3
+          floatValue: 3
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776358
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776359
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776360
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776361
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776362
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776363
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776364
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776365
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776366
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776367
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776368
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776369
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776370
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776371
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776372
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776373
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 03811cf9313f09e40a27293d9e57a202, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776374
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776375
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776376
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776377
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776378
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776379
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776380
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045879173776381
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045879173776382
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173776383
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368320
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368321
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368322
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368323
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368324
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368325
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368326
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368327
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368328
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368329
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 03811cf9313f09e40a27293d9e57a202, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368330
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368331
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368332
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368333
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368334
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368335
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368336
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368337
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368338
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368339
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368340
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368341
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 5
+          floatValue: 5
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368342
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368343
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368344
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368345
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368346
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368347
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 3
+          floatValue: 3
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368348
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368349
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: b4b269f29310e384ab57545373045a13, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368350
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368351
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368352
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368353
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368354
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368355
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368356
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368357
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368358
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368359
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368360
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 6
+          floatValue: 6
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368361
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368362
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368363
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 0f920f49de2a27c40a44ba5458d0d15e, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 0
+          boolValue: 1
+          intValue: 0
+          floatValue: 0
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368364
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368365
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368366
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368367
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 2
+          floatValue: 2
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368368
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368369
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368370
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368371
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368372
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368373
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 0f920f49de2a27c40a44ba5458d0d15e, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 0
+          boolValue: 1
+          intValue: 0
+          floatValue: 0
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368374
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368375
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368376
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 4
+          floatValue: 4
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368377
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        comparisonOperator: 3
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 1
+          floatValue: 1
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045887389368378
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 0.5
+    - rid: 7274045887389368379
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10
+    - rid: 7274045887389368380
+      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
+        weightPerFactPoint: 0.15
+        minMultiplier: 0
+        maxMultiplier: 10

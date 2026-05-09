@@ -56,6 +56,28 @@ public static class PropValueUtility
 }
 
 /// <summary>
+/// 属性映射规则。
+/// sourcePropType 的未含映射最终值会按 conversionPercent 转换为 targetPropType 的额外 Add。
+/// </summary>
+[Serializable]
+public struct PropMappingData
+{
+    public PropType sourcePropType;
+    public PropType targetPropType;
+    [Tooltip("映射比例，百分比点口径：100 表示源属性 1 点映射为目标属性 +1，50 表示 +0.5。")]
+    public float conversionPercent;
+
+    public PropMappingData(PropType sourcePropType, PropType targetPropType, float conversionPercent)
+    {
+        this.sourcePropType = sourcePropType;
+        this.targetPropType = targetPropType;
+        this.conversionPercent = conversionPercent;
+    }
+
+    public readonly float ConversionRatio => PropValueUtility.PercentPointsToRatio(conversionPercent);
+}
+
+/// <summary>
 /// 加成属性数据。
 /// 用于描述某个属性的额外修饰值及其结算类型。
 /// </summary>

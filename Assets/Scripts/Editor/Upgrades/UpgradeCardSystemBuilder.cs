@@ -10,21 +10,21 @@ using Orange.UIFramework;
 public static class UpgradeCardSystemBuilder
 {
     private const string AUTO_BUILD_SESSION_KEY = "Survivors.UpgradeCardSystemBuilder.AutoBuilt";
-    private const string CARD_FOLDER = "Assets/ScriptableObjects/Content/Upgrade Cards";
-    private const string POOL_FOLDER = "Assets/ScriptableObjects/Content/Pools";
-    private const string POOL_PATH = POOL_FOLDER + "/Upgrade Card Pool.asset";
-    private const string RARITY_PRESENTATION_CATALOG_PATH = "Assets/ScriptableObjects/Content/Upgrade Card Rarity Presentation Catalog.asset";
+    private const string CARD_FOLDER = GameContentAssetPaths.UpgradeCards;
+    private const string POOL_FOLDER = GameContentAssetPaths.UpgradePools;
+    private const string POOL_PATH = GameContentAssetPaths.UpgradeCardPool;
+    private const string RARITY_PRESENTATION_CATALOG_PATH = GameContentAssetPaths.CardQualityPresentationCatalog;
     private const string TEST_SCENE_PATH = "Assets/Scenes/Upgrade Card Test Scene.unity";
-    private const string PLAYER_PREFAB_PATH = "Assets/Prefabs/Player/Character.prefab";
-    private const string TEST_CHARACTER_DATA_PATH = "Assets/ScriptableObjects/Content/Characters/Character1.asset";
-    private const string UI_FRAMEWORK_SETTINGS_PATH = "Assets/Resources/Data/UI/OrangeUIFrameworkSettings.asset";
-    private const string UI_VIEW_CATALOG_PATH = "Assets/Resources/Data/UI/OrangeUIViewCatalog.asset";
-    private const string AUDIO_BUS_SETTINGS_PATH = "Assets/Resources/Data/Audios/Audio Bus Settings.asset";
-    private const string WOOD_BLOCK_SFX_PATH = "Assets/Resources/Audios/VFX/WoodBlock1.wav";
-    private const string SWIPE_SFX_PATH = "Assets/Resources/Audios/VFX/Swipe.wav";
-    private const string SLAP_SFX_PATH = "Assets/Resources/Audios/VFX/Slap.wav";
-    private const string UI_PAGE_FOLDER = "Assets/Resources/Prefabs/New UI/Pages";
-    private const string UI_CONTAINER_FOLDER = "Assets/Resources/Prefabs/New UI/Container";
+    private const string PLAYER_PREFAB_PATH = GameContentAssetPaths.DefaultPlayerPrefab;
+    private const string TEST_CHARACTER_DATA_PATH = GameContentAssetPaths.CharactersData + "/Character1.asset";
+    private const string UI_FRAMEWORK_SETTINGS_PATH = GameContentAssetPaths.UIFrameworkSettings;
+    private const string UI_VIEW_CATALOG_PATH = GameContentAssetPaths.UIViewCatalog;
+    private const string AUDIO_BUS_SETTINGS_PATH = GameContentAssetPaths.AudioBusSettings;
+    private const string WOOD_BLOCK_SFX_PATH = GameContentAssetPaths.WoodBlockSfx;
+    private const string SWIPE_SFX_PATH = GameContentAssetPaths.SwipeSfx;
+    private const string SLAP_SFX_PATH = GameContentAssetPaths.SlapSfx;
+    private const string UI_PAGE_FOLDER = GameContentAssetPaths.UIViewPages;
+    private const string UI_CONTAINER_FOLDER = GameContentAssetPaths.UIViewContainers;
 
     [MenuItem("Survivors/Upgrades/Rebuild Upgrade Card System")]
     public static void RebuildUpgradeCardSystem()
@@ -80,11 +80,12 @@ public static class UpgradeCardSystemBuilder
 
     private static void EnsureFolders()
     {
-        EnsureFolder("Assets/ScriptableObjects/Content");
+        EnsureFolder(GameContentAssetPaths.Root);
+        EnsureFolder(GameContentAssetPaths.Upgrades);
         EnsureFolder(CARD_FOLDER);
         EnsureFolder(POOL_FOLDER);
-        EnsureFolder("Assets/Materials/UI");
-        EnsureFolder("Assets/Shaders/UI");
+        EnsureFolder(GameContentAssetPaths.UIMaterials);
+        EnsureFolder(GameContentAssetPaths.UIShaders);
     }
 
     private static void EnsureFolder(string path)
@@ -610,7 +611,7 @@ public static class UpgradeCardSystemBuilder
 
     private static BuffDataSO LoadBuff(string assetName)
     {
-        string[] guids = AssetDatabase.FindAssets($"{assetName} t:BuffDataSO", new[] { "Assets/Resources/Data/Buffs" });
+        string[] guids = AssetDatabase.FindAssets($"{assetName} t:BuffDataSO", new[] { GameContentAssetPaths.CombatBuffs });
         if (guids.Length == 0)
         {
             return null;
@@ -621,7 +622,7 @@ public static class UpgradeCardSystemBuilder
 
     private static WeaponDataSO LoadWeapon(string assetName)
     {
-        return AssetDatabase.LoadAssetAtPath<WeaponDataSO>($"Assets/ScriptableObjects/Content/Weapons/{assetName}.asset");
+        return AssetDatabase.LoadAssetAtPath<WeaponDataSO>($"{GameContentAssetPaths.WeaponsData}/{assetName}.asset");
     }
 
     private static T LoadPrefabComponent<T>(string path) where T : Component

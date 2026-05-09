@@ -28,10 +28,14 @@ public class WeaponsHolder : EntityComponentBase
 
     private readonly List<EquippedWeaponInfo> equippedWeapons = new();
     private readonly List<WeaponPosition> weaponPositionPool = new();
+    private readonly Dictionary<string, WeaponAttackUsageData> attackUsageModifierSources = new();
+    private WeaponAttackUsageData currentAttackUsageBonus = WeaponAttackUsageData.Zero;
 
+    public event Action OnWeaponAttackUsageBonusChanged;
     public event Action OnWeaponsChanged;
     public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => equippedWeapons.AsReadOnly();
     public int WeaponSlotCount => weaponPositions?.Length ?? 0;
+    public WeaponAttackUsageData CurrentAttackUsageBonus => currentAttackUsageBonus;
 
     private Entity owner;
     private PropertiesManager propertiesManager;
@@ -93,6 +97,7 @@ public class WeaponsHolder : EntityComponentBase
     public override void OnDisableComponent()
     {
         UnsubscribeFromPropertiesManager();
+        ClearWeaponAttackUsageModifiers();
 
         if (weaponPositions == null)
         {
@@ -136,6 +141,44 @@ public class WeaponsHolder : EntityComponentBase
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
         return true;
+    }
+
+    public void AddWeaponAttackUsageModifier(string sourceId, WeaponAttackUsageData modifier)
+    {
+        if (string.IsNullOrWhiteSpace(sourceId))
+        {
+            Debug.LogWarning("[WeaponsHolder] AddWeaponAttackUsageModifier: sourceId is null or empty.");
+            return;
+        }
+
+        attackUsageModifierSources[sourceId] = modifier.Validated();
+        RecalculateAttackUsageBonus();
+    }
+
+    private void ClearWeaponAttackUsageModifiers()
+    {
+        if (attackUsageModifierSources.Count == 0)
+        {
+            return;
+        }
+
+        attackUsageModifierSources.Clear();
+        RecalculateAttackUsageBonus();
+    }
+
+    public void RemoveWeaponAttackUsageModifier(string sourceId)
+    {
+        if (string.IsNullOrWhiteSpace(sourceId))
+        {
+            return;
+        }
+
+        if (!attackUsageModifierSources.Remove(sourceId))
+        {
+            return;
+        }
+
+        RecalculateAttackUsageBonus();
     }
 
     public bool RemoveWeapon(Weapon weapon)
@@ -488,6 +531,46 @@ public class WeaponsHolder : EntityComponentBase
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
+    }
+
+    private void RecalculateAttackUsageBonus()
+    {
+        WeaponAttackUsageData previousBonus = currentAttackUsageBonus;
+        WeaponAttackUsageData nextBonus = WeaponAttackUsageData.Zero;
+        foreach (WeaponAttackUsageData modifier in attackUsageModifierSources.Values)
+        {
+            nextBonus += modifier;
+        }
+
+        currentAttackUsageBonus = nextBonus;
+        if (AreSameAttackUsage(previousBonus, currentAttackUsageBonus))
+        {
+            return;
+        }
+
+        RefreshEquippedWeaponRuntimeStats();
+        OnWeaponAttackUsageBonusChanged?.Invoke();
+    }
+
+    private void RefreshEquippedWeaponRuntimeStats()
+    {
+        if (weaponPositions == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            weaponPositions[i]?.Weapon?.RefreshRuntimeStats();
+        }
+    }
+
+    private static bool AreSameAttackUsage(WeaponAttackUsageData left, WeaponAttackUsageData right)
+    {
+        return Mathf.Approximately(left.MeleeAttackUsagePercent, right.MeleeAttackUsagePercent) &&
+               Mathf.Approximately(left.RangedAttackUsagePercent, right.RangedAttackUsagePercent) &&
+               Mathf.Approximately(left.MagicAttackUsagePercent, right.MagicAttackUsagePercent) &&
+               Mathf.Approximately(left.SummonAttackUsagePercent, right.SummonAttackUsagePercent);
     }
 
     private WeaponPosition FindWeaponPosition(Weapon weapon)

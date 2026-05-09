@@ -10,9 +10,9 @@ using UnityEngine.Serialization;
     menuName = "Survivors/编辑器/图片动画变体构建器设置")]
 public sealed class SpriteVariantAnimationBuilderSettings : ScriptableObject
 {
-    public const string DEFAULT_INPUT_ROOT = "Assets/Resources/Sprites";
-    public const string DEFAULT_ANIMATION_OUTPUT_ROOT = "Assets/Resources/Animation";
-    public const string DEFAULT_PREFAB_OUTPUT_ROOT = "Assets/Resources/Prefabs";
+    public const string DEFAULT_INPUT_ROOT = GameContentAssetPaths.Root;
+    public const string DEFAULT_ANIMATION_OUTPUT_ROOT = GameContentAssetPaths.Root;
+    public const string DEFAULT_PREFAB_OUTPUT_ROOT = GameContentAssetPaths.Root;
 
     public enum SpriteFrameSortMode
     {

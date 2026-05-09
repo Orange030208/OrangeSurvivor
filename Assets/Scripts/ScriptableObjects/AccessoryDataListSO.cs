@@ -14,7 +14,7 @@ public class AccessoryDataListSO : ScriptableObject
 #if UNITY_EDITOR
     private static readonly string[] ACCESSORIES_DATA_PATH =
     {
-        "Assets/ScriptableObjects/Content/Accessories"
+        GameContentAssetPaths.AccessoriesData
     };
     
     [NaughtyAttributes.Button]

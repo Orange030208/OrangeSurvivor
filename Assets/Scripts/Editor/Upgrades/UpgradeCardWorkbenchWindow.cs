@@ -9,8 +9,8 @@ using UnityEngine;
 
 public sealed class UpgradeCardWorkbenchWindow : EditorWindow
 {
-    private const string DEFAULT_CARD_FOLDER = "Assets/ScriptableObjects/Content/Upgrade Cards";
-    private const string DEFAULT_RARITY_CATALOG_PATH = "Assets/ScriptableObjects/Content/Upgrade Card Rarity Presentation Catalog.asset";
+    private const string DEFAULT_CARD_FOLDER = GameContentAssetPaths.UpgradeCards;
+    private const string DEFAULT_RARITY_CATALOG_PATH = GameContentAssetPaths.CardQualityPresentationCatalog;
     private const float LEFT_WIDTH = 300;
     private const float STYLE_WIDTH = 420f;
     private const HideFlags EDIT_COPY_HIDE_FLAGS =

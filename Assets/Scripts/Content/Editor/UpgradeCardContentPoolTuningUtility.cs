@@ -9,8 +9,8 @@ public static class UpgradeCardContentPoolTuningUtility
 {
     private const float DefaultPreviousOfferMultiplier = 0.5f;
     private const float DefaultMatchingTagWeightBonus = 0.15f;
-    private const string TagFolder = "Assets/ScriptableObjects/Content/Tags/Upgrade Cards";
-    private const string FactFolder = "Assets/ScriptableObjects/Content/Facts";
+    private const string TagFolder = GameContentAssetPaths.UpgradeCardTags;
+    private const string FactFolder = GameContentAssetPaths.UpgradeFacts;
 
     public static ContentPoolEntry CreateEntry(UpgradeCardSO card)
     {
@@ -353,7 +353,7 @@ public static class UpgradeCardContentPoolTuningUtility
 
     private static WeaponDataSO LoadWeapon(string assetName)
     {
-        return AssetDatabase.LoadAssetAtPath<WeaponDataSO>($"Assets/ScriptableObjects/Content/Weapons/{assetName}.asset");
+        return AssetDatabase.LoadAssetAtPath<WeaponDataSO>($"{GameContentAssetPaths.WeaponsData}/{assetName}.asset");
     }
 
     private static void EnsureFolder(string folderPath)

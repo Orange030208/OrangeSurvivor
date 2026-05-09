@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Enemy
   m_EditorClassIdentifier: 
   inputRoot: {fileID: 102900000, guid: 1f454624e3576014bab3c4af14319e4f, type: 3}
-  spriteInputRootPath: Assets/Resources/Sprites
+  spriteInputRootPath: Assets/GameContent/Enemies/Sprites
   animationOutputRoot: {fileID: 102900000, guid: 96efa0cd37419e44189369b096f6725e, type: 3}
-  animationOutputRootPath: Assets/Resources/Animation
+  animationOutputRootPath: Assets/GameContent/Enemies/Animations
   prefabOutputRoot: {fileID: 102900000, guid: 117154a7439d2d34490afe8deeb8a5d9, type: 3}
-  prefabOutputRootPath: Assets/Resources/Prefabs
+  prefabOutputRootPath: Assets/GameContent/Enemies/Prefabs
   outputRoot: {fileID: 102900000, guid: 117154a7439d2d34490afe8deeb8a5d9, type: 3}
   templatePrefab: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
   spriteRendererPath: Enemy Sprite

@@ -14,7 +14,7 @@ public class WeaponDataListSO : ScriptableObject
 #if UNITY_EDITOR
     private static readonly string[] WEAPONS_DATA_PATH = new string[]
     {
-        "Assets/ScriptableObjects/Content/Weapons"
+        GameContentAssetPaths.WeaponsData
     };
 
     [NaughtyAttributes.Button]

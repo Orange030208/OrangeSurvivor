@@ -10,8 +10,8 @@ using UnityEngine;
 /// </summary>
 public static class PropPresentationCatalogIconBinder
 {
-    private const string CATALOG_PATH = "Assets/ScriptableObjects/Content/Prop Presentation Catalog.asset";
-    private const string ICON_FOLDER = "Assets/Resources/Sprites/Icons";
+    private const string CATALOG_PATH = GameContentAssetPaths.PropPresentationCatalog;
+    private const string ICON_FOLDER = GameContentAssetPaths.UIIconSprites;
 
     [MenuItem("Survivors/Presentation/Bind Prop Presentation Icons")]
     public static void BindDefaultCatalogIcons()
