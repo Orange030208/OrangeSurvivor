@@ -16,11 +16,11 @@ MonoBehaviour:
   defaultRollCount: 3
   allowDuplicateResults: 0
   entries:
-  - entryId: armor_reinforcement
-    content: {fileID: 11400000, guid: 8782b6e73696679499dce9456dbb315b, type: 2}
-    baseWeight: 90
+  - entryId: 弦月流矢
+    content: {fileID: 11400000, guid: 503f397e24384d51a47506afb93ef7c7, type: 2}
+    baseWeight: 100
     tags:
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -31,30 +31,26 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776277
-    - rid: 7274045879173776278
-  - entryId: arsenal_drop
-    content: {fileID: 11400000, guid: 237593cb37ef6cc4ba0ccdd07e6d481d, type: 2}
-    baseWeight: 9
+    - rid: 8100000000000000000
+  - entryId: 余烬重鸣
+    content: {fileID: 11400000, guid: 25203f7028314f0594255706e50cd099, type: 2}
+    baseWeight: 100
     tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
     maxRollCount: 0
-    maxPickCount: 1
+    maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 3
+    qualityValue: 0
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776279
-    - rid: 7274045879173776280
+    conditions: []
     weightRules:
-    - rid: 7274045879173776281
-    - rid: 7274045879173776282
-  - entryId: attack_training
-    content: {fileID: 11400000, guid: 020b9fa129f029c40b8d358821e205fc, type: 2}
-    baseWeight: 120
+    - rid: 8100000000000000001
+  - entryId: 伤痕微光
+    content: {fileID: 11400000, guid: ab434624eaea46aa970e8a5bef9cc8f4, type: 2}
+    baseWeight: 100
     tags:
     - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
     maxRollCount: 0
@@ -67,133 +63,106 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776283
-    - rid: 7274045879173776284
-  - entryId: bargain_instinct
-    content: {fileID: 11400000, guid: bc0a5cbfdc312414299dd23b9f57af21, type: 2}
-    baseWeight: 55
-    tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776285
-    weightRules:
-    - rid: 7274045879173776286
-    - rid: 7274045879173776287
-  - entryId: battle_frenzy
-    content: {fileID: 11400000, guid: 96221fcf11ca1224a8030bc779a0941a, type: 2}
-    baseWeight: 60
-    tags:
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776288
-    - rid: 7274045879173776289
-    weightRules:
-    - rid: 7274045879173776290
-    - rid: 7274045879173776291
-  - entryId: battle_scavenger
-    content: {fileID: 11400000, guid: 95f82c14ba1ba0b44a16eb9d46c80560, type: 2}
-    baseWeight: 90
-    tags:
-    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776292
-    - rid: 7274045879173776293
-  - entryId: blood_pact
-    content: {fileID: 11400000, guid: 15f4fe28023bb8a4c87b68045dbc8cc3, type: 2}
-    baseWeight: 34
-    tags:
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds:
-    - guardian_oath
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776294
-    - rid: 7274045879173776295
-    weightRules:
-    - rid: 7274045879173776296
-    - rid: 7274045879173776297
-    - rid: 7274045879173776298
-    - rid: 7274045879173776299
-  - entryId: bloodthirst_dose
-    content: {fileID: 11400000, guid: d02f851a35d9fb442b2b08b35ef3c92e, type: 2}
-    baseWeight: 44
-    tags:
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776300
-    - rid: 7274045879173776301
-    - rid: 7274045879173776302
-    weightRules:
-    - rid: 7274045879173776303
-    - rid: 7274045879173776304
-    - rid: 7274045879173776305
-  - entryId: close_quarters
-    content: {fileID: 11400000, guid: 8667d5e94c95757459fc07c9ebb2f348, type: 2}
-    baseWeight: 62
+    - rid: 8100000000000000002
+  - entryId: 折柳藏锋
+    content: {fileID: 11400000, guid: 2f04160ef7564d4db4abcb179b1233de, type: 2}
+    baseWeight: 100
     tags:
     - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000003
+  - entryId: 踏叶轻行
+    content: {fileID: 11400000, guid: f41a59a9170545cb909a3e72984ce55d, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000004
+  - entryId: 拾光入囊
+    content: {fileID: 11400000, guid: 76a189e080504758998799d3fc69c0ac, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000005
+  - entryId: 望月远锋
+    content: {fileID: 11400000, guid: 2b9c1f72bc9e4f7f834d01be683255c9, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000006
+  - entryId: 旧甲新痕
+    content: {fileID: 11400000, guid: 1fd77dce9e914d76bd1dae08be5d7725, type: 2}
+    baseWeight: 100
+    tags:
     - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 1
+    qualityValue: 0
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776306
-    - rid: 7274045879173776307
-    - rid: 7274045879173776308
+    conditions: []
     weightRules:
-    - rid: 7274045879173776309
-    - rid: 7274045879173776310
-    - rid: 7274045879173776311
-  - entryId: critical_basics
-    content: {fileID: 11400000, guid: 47eb3c180751ab7408797bbcc32310e4, type: 2}
-    baseWeight: 80
+    - rid: 8100000000000000007
+  - entryId: 纸鹤成阵
+    content: {fileID: 11400000, guid: ca0439f94afe4bbfa63669eb2fc0f464, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000008
+  - entryId: 银线凝眸
+    content: {fileID: 11400000, guid: 18c3027f0b754edf8bddcba05a083bc0, type: 2}
+    baseWeight: 100
     tags:
     - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
     maxRollCount: 0
@@ -201,35 +170,239 @@ MonoBehaviour:
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 1
+    qualityValue: 0
     domainFlags: 0
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776312
-    - rid: 7274045879173776313
-  - entryId: duelist_blade
-    content: {fileID: 11400000, guid: 55ad64c5752ceae49aef220be2657ca9, type: 2}
-    baseWeight: 48
+    - rid: 8100000000000000009
+  - entryId: 春泉回息
+    content: {fileID: 11400000, guid: ca1773d7d1a24239809f8d06e3b6ae5f, type: 2}
+    baseWeight: 100
     tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000010
+  - entryId: 星尘秘语
+    content: {fileID: 11400000, guid: db204c6ec93e47d385d59d64963cd7b5, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000011
+  - entryId: 旅人微幸
+    content: {fileID: 11400000, guid: e256ee4487dc4578b34d14304164fd6f, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000012
+  - entryId: 温血未央
+    content: {fileID: 11400000, guid: 47e6247f78694d2ea8748e16763fdbb5, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000013
+  - entryId: 风过指尖
+    content: {fileID: 11400000, guid: aac9d43f878948f6a356eb9567f497cc, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000014
+  - entryId: 风中藏影
+    content: {fileID: 11400000, guid: 4f1da168acb346daa2fdab2b329ea65a, type: 2}
+    baseWeight: 100
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000015
+  - entryId: 万象同游
+    content: {fileID: 11400000, guid: e082c48438974417a6bca3a954f6b07e, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000016
+  - entryId: 烬海回响
+    content: {fileID: 11400000, guid: 3d5fbaf167904e0bb662d9146fc322c8, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000017
+  - entryId: 流云踏歌
+    content: {fileID: 11400000, guid: e0d3da13c39b47918ab4374c5b8af246, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000018
+  - entryId: 落星远鸣
+    content: {fileID: 11400000, guid: 93ee828456fb4f17a646a6a0ffa5a776, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000019
+  - entryId: 霜月一瞬
+    content: {fileID: 11400000, guid: 6e23d8a229974ebe91ded8bf0b505868, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000020
+  - entryId: 天涯准星
+    content: {fileID: 11400000, guid: 900b600846684bc39e9057f8c7a99072, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000021
+  - entryId: 长生烛火
+    content: {fileID: 11400000, guid: 91b090488a8b4e9893968d2b438770e1, type: 2}
+    baseWeight: 12
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 2
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000022
+  - entryId: 山河近誓
+    content: {fileID: 11400000, guid: a55f752389a045db8c329b2ef0ac6ac6, type: 2}
+    baseWeight: 12
+    tags:
     - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
     maxRollCount: 0
-    maxPickCount: 1
+    maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 1
+    qualityValue: 2
     domainFlags: 0
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776314
-    - rid: 7274045879173776315
-    - rid: 7274045879173776316
-  - entryId: eagle_sense
-    content: {fileID: 11400000, guid: 2de78fa4406aa854dbcae07ae9bdea31, type: 2}
-    baseWeight: 90
+    - rid: 8100000000000000023
+  - entryId: 苍穹秘辉
+    content: {fileID: 11400000, guid: 9b69fa29998b499887de5521f4ee5bc6, type: 2}
+    baseWeight: 12
     tags:
     - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
     maxRollCount: 0
@@ -237,1978 +410,478 @@ MonoBehaviour:
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776317
-    - rid: 7274045879173776318
-  - entryId: emergency_core
-    content: {fileID: 11400000, guid: f76e1bf51f0a87344813d45d3b9ff4e9, type: 2}
-    baseWeight: 26
-    tags:
-    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
-    - {fileID: 11400000, guid: 39fa33e95aa9a2145aa401dbe86f941d, type: 2}
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776319
-    - rid: 7274045879173776320
-    weightRules:
-    - rid: 7274045879173776321
-    - rid: 7274045879173776322
-    - rid: 7274045879173776323
-    - rid: 7274045879173776324
-  - entryId: field_supplies
-    content: {fileID: 11400000, guid: 2c6fbfd4b5646cb4eb57eb39735ae2c1, type: 2}
-    baseWeight: 70
-    tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    maxRollCount: 0
-    maxPickCount: 4
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776325
-    - rid: 7274045879173776326
-  - entryId: first_aid_protocol
-    content: {fileID: 11400000, guid: d4bdcf551b33d1c40b338313004dbfd4, type: 2}
-    baseWeight: 50
-    tags:
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776327
-    - rid: 7274045879173776328
-    weightRules:
-    - rid: 7274045879173776329
-    - rid: 7274045879173776330
-  - entryId: glass_cannon
-    content: {fileID: 11400000, guid: ab55527fcf6299949a065c9f4a04051f, type: 2}
-    baseWeight: 40
-    tags:
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds:
-    - tough_body
-    minLevel: 0
-    maxLevel: 0
     qualityValue: 2
     domainFlags: 0
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776331
-    - rid: 7274045879173776332
-  - entryId: gold_contract
-    content: {fileID: 11400000, guid: 824ef873a11b1604bb069890a0d788ee, type: 2}
-    baseWeight: 35
+    - rid: 8100000000000000024
+  - entryId: 疾雷入骨
+    content: {fileID: 11400000, guid: 35904240e997406396a2b207b0064b65, type: 2}
+    baseWeight: 12
     tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776333
-    - rid: 7274045879173776334
-    weightRules:
-    - rid: 7274045879173776335
-    - rid: 7274045879173776336
-  - entryId: guardian_oath
-    content: {fileID: 11400000, guid: 479df396c91ca664c85a3827adc704cb, type: 2}
-    baseWeight: 34
-    tags:
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds:
-    - blood_pact
-    - glass_cannon
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776337
-    - rid: 7274045879173776338
-    weightRules:
-    - rid: 7274045879173776339
-    - rid: 7274045879173776340
-    - rid: 7274045879173776341
-  - entryId: harvest_route
-    content: {fileID: 11400000, guid: 81921166c6bee7049ab12e7f2ee74b53, type: 2}
-    baseWeight: 56
-    tags:
-    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 1
+    qualityValue: 2
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776342
-    - rid: 7274045879173776343
+    conditions: []
     weightRules:
-    - rid: 7274045879173776344
-    - rid: 7274045879173776345
-    - rid: 7274045879173776346
-  - entryId: heavy_critical
-    content: {fileID: 11400000, guid: 72295db1cb2568a41bebca82621dbb56, type: 2}
-    baseWeight: 70
+    - rid: 8100000000000000025
+  - entryId: 万象归刃
+    content: {fileID: 11400000, guid: ad63d7ee4e394ac38b503c13bd1059c8, type: 2}
+    baseWeight: 3
     tags:
-    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
     - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776347
-    weightRules:
-    - rid: 7274045879173776348
-    - rid: 7274045879173776349
-    - rid: 7274045879173776350
-  - entryId: immortal_second_wind
-    content: {fileID: 11400000, guid: 1d0b69e92d5777441a3f8077f3c53a2d, type: 2}
-    baseWeight: 8
-    tags:
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
-    - {fileID: 11400000, guid: 5f3c6f2bb190213448c5ad5767d96985, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
     qualityValue: 3
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776351
-    - rid: 7274045879173776352
-    - rid: 7274045879173776353
-    weightRules:
-    - rid: 7274045879173776354
-    - rid: 7274045879173776355
-    - rid: 7274045879173776356
-  - entryId: king_ransom
-    content: {fileID: 11400000, guid: 7d459c1f597c76445bf5816a819863ff, type: 2}
-    baseWeight: 30
-    tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776357
-    - rid: 7274045879173776358
-    weightRules:
-    - rid: 7274045879173776359
-    - rid: 7274045879173776360
-  - entryId: learning_curve
-    content: {fileID: 11400000, guid: e8493977bc6a52444acfbb60eb1926bd, type: 2}
-    baseWeight: 92
-    tags:
-    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045879173776361
-    - rid: 7274045879173776362
-  - entryId: life_recovery
-    content: {fileID: 11400000, guid: c089454728a74074e94b1b2ec44041d5, type: 2}
-    baseWeight: 75
-    tags:
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776363
-    - rid: 7274045879173776364
-  - entryId: lifesteal_instinct
-    content: {fileID: 11400000, guid: e8ef9844507c0884b8fd3533cded72e8, type: 2}
-    baseWeight: 65
-    tags:
-    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776365
-    - rid: 7274045879173776366
-    weightRules:
-    - rid: 7274045879173776367
-    - rid: 7274045879173776368
-    - rid: 7274045879173776369
-  - entryId: light_steps
-    content: {fileID: 11400000, guid: 9bce828415ac0844b902912e795ff5eb, type: 2}
-    baseWeight: 95
+    - rid: 8100000000000000026
+  - entryId: 天涯逐光
+    content: {fileID: 11400000, guid: 5f2e75b7c991474bb4fe6f0fa8efce06, type: 2}
+    baseWeight: 3
     tags:
     - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776370
-    - rid: 7274045879173776371
-  - entryId: long_barrel
-    content: {fileID: 11400000, guid: 66d39ed04ea917847b89e47d7e20bd3a, type: 2}
-    baseWeight: 66
-    tags:
-    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
-    - {fileID: 11400000, guid: b902831cbe5282e499242776d66ba3c5, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776372
-    - rid: 7274045879173776373
-    weightRules:
-    - rid: 7274045879173776374
-    - rid: 7274045879173776375
-    - rid: 7274045879173776376
-  - entryId: lucky_stipend
-    content: {fileID: 11400000, guid: 80ed6ea409664be4eade0ab060a61180, type: 2}
-    baseWeight: 68
-    tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
-    maxRollCount: 0
-    maxPickCount: 3
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776377
-    - rid: 7274045879173776378
-    - rid: 7274045879173776379
-  - entryId: magnetic_belt
-    content: {fileID: 11400000, guid: ca1518f7495309d4aba3f385cdc34492, type: 2}
-    baseWeight: 88
-    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
     - {fileID: 11400000, guid: 44736239b6dce104a85dcea4f6420868, type: 2}
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045879173776380
-    - rid: 7274045879173776381
-  - entryId: momentum_engine
-    content: {fileID: 11400000, guid: f8536522aba864540b197c3a0be7bba9, type: 2}
-    baseWeight: 58
-    tags:
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
-    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045879173776382
-    - rid: 7274045879173776383
-    - rid: 7274045887389368320
-    weightRules:
-    - rid: 7274045887389368321
-    - rid: 7274045887389368322
-    - rid: 7274045887389368323
-  - entryId: new_weapon_cache
-    content: {fileID: 11400000, guid: b962d3dd3de76a14b9ad3bd775cc0aa3, type: 2}
-    baseWeight: 30
-    tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368324
-    weightRules:
-    - rid: 7274045887389368325
-    - rid: 7274045887389368326
-  - entryId: overloaded_magazine
-    content: {fileID: 11400000, guid: b8e702dd9bc5cea44ad9a3cbea082ae1, type: 2}
-    baseWeight: 32
-    tags:
-    - {fileID: 11400000, guid: b902831cbe5282e499242776d66ba3c5, type: 2}
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368327
-    - rid: 7274045887389368328
-    - rid: 7274045887389368329
-    weightRules:
-    - rid: 7274045887389368330
-    - rid: 7274045887389368331
-    - rid: 7274045887389368332
-  - entryId: patched_armor
-    content: {fileID: 11400000, guid: e7e5093e537c3944899803693895bff5, type: 2}
-    baseWeight: 82
-    tags:
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045887389368333
-    - rid: 7274045887389368334
-  - entryId: quick_strike
-    content: {fileID: 11400000, guid: 1db8662857714564089bcfca47f8aa68, type: 2}
-    baseWeight: 115
-    tags:
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045887389368335
-    - rid: 7274045887389368336
-  - entryId: reroll_coupon
-    content: {fileID: 11400000, guid: fb9577c4025330d489d1fc14e6901046, type: 2}
-    baseWeight: 52
-    tags:
-    - {fileID: 11400000, guid: 0259115d512f5624b80000594d1c378b, type: 2}
-    maxRollCount: 0
-    maxPickCount: 2
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368337
-    - rid: 7274045887389368338
-    weightRules:
-    - rid: 7274045887389368339
-    - rid: 7274045887389368340
-  - entryId: slaughter_rhythm
-    content: {fileID: 11400000, guid: 01143a9fa2cf3ba4b93c950627628bdd, type: 2}
-    baseWeight: 28
-    tags:
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368341
-    - rid: 7274045887389368342
-    - rid: 7274045887389368343
-    weightRules:
-    - rid: 7274045887389368344
-    - rid: 7274045887389368345
-    - rid: 7274045887389368346
-  - entryId: sniper_stance
-    content: {fileID: 11400000, guid: 0dfb07df98ce0ee419aebaff7f426d6a, type: 2}
-    baseWeight: 36
-    tags:
-    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
-    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368347
-    - rid: 7274045887389368348
-    - rid: 7274045887389368349
-    weightRules:
-    - rid: 7274045887389368350
-    - rid: 7274045887389368351
-    - rid: 7274045887389368352
-  - entryId: steady_breath
-    content: {fileID: 11400000, guid: a30adff489b13cb4c89f4cce1792da7a, type: 2}
-    baseWeight: 84
-    tags:
-    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules:
-    - rid: 7274045887389368353
-    - rid: 7274045887389368354
-  - entryId: sun_scepter_cache
-    content: {fileID: 11400000, guid: 34907e4418869c04095187520c5962e4, type: 2}
-    baseWeight: 22
-    tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
-    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368355
-    - rid: 7274045887389368356
-    weightRules:
-    - rid: 7274045887389368357
-    - rid: 7274045887389368358
-    - rid: 7274045887389368359
-  - entryId: sure_critical
-    content: {fileID: 11400000, guid: ff0883a1ddb239648bb66bfad693a8c7, type: 2}
-    baseWeight: 10
-    tags:
-    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
-    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
-    maxRollCount: 0
-    maxPickCount: 1
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
     qualityValue: 3
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368360
-    - rid: 7274045887389368361
-    - rid: 7274045887389368362
-    - rid: 7274045887389368363
+    conditions: []
     weightRules:
-    - rid: 7274045887389368364
-    - rid: 7274045887389368365
-    - rid: 7274045887389368366
-  - entryId: swift_start
-    content: {fileID: 11400000, guid: fbe4f6b2121b1e641809e69b32efc48a, type: 2}
-    baseWeight: 55
+    - rid: 8100000000000000027
+  - entryId: 星河战歌
+    content: {fileID: 11400000, guid: 51e7f3b32da449d6ba3ed4ed3f1b306f, type: 2}
+    baseWeight: 3
     tags:
-    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
     maxRollCount: 0
-    maxPickCount: 2
+    maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368367
-    - rid: 7274045887389368368
-    weightRules:
-    - rid: 7274045887389368369
-    - rid: 7274045887389368370
-  - entryId: tough_body
-    content: {fileID: 11400000, guid: 607c9383e3b52e240868730c5ae618aa, type: 2}
-    baseWeight: 110
-    tags:
-    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds:
-    - glass_cannon
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
+    qualityValue: 3
     domainFlags: 0
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 7274045887389368371
-    - rid: 7274045887389368372
-  - entryId: weapon_focus
-    content: {fileID: 11400000, guid: 76541564641c95f4588cc3f622e7b71f, type: 2}
-    baseWeight: 75
+    - rid: 8100000000000000028
+  - entryId: 不灭长风
+    content: {fileID: 11400000, guid: dfc9659a204249c7b5bce94b2e9193ac, type: 2}
+    baseWeight: 3
     tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
     maxRollCount: 0
-    maxPickCount: 3
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 3
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000029
+  - entryId: 青焰成诗
+    content: {fileID: 11400000, guid: a7fb9a7ce2434bae890f6c19a794cac7, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
     qualityValue: 1
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368373
+    conditions: []
     weightRules:
-    - rid: 7274045887389368374
-    - rid: 7274045887389368375
-  - entryId: weapon_overclock
-    content: {fileID: 11400000, guid: a2fe7672ca705bb4d8c902ff98b73efa, type: 2}
-    baseWeight: 26
+    - rid: 8100000000000000030
+  - entryId: 澄泉续命
+    content: {fileID: 11400000, guid: 5b117e950c8444f298f11f6fdec30852, type: 2}
+    baseWeight: 45
     tags:
-    - {fileID: 11400000, guid: 12b74e7352e261a42a5dd2487761af17, type: 2}
-    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    - {fileID: 11400000, guid: 23229cdf144c34645ab3634abdae05f0, type: 2}
     maxRollCount: 0
-    maxPickCount: 1
+    maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     minLevel: 0
     maxLevel: 0
-    qualityValue: 2
+    qualityValue: 1
     domainFlags: 0
     priceMultiplier: 1
-    conditions:
-    - rid: 7274045887389368376
-    - rid: 7274045887389368377
+    conditions: []
     weightRules:
-    - rid: 7274045887389368378
-    - rid: 7274045887389368379
-    - rid: 7274045887389368380
+    - rid: 8100000000000000031
+  - entryId: 云履无声
+    content: {fileID: 11400000, guid: 743010d216074d45bb02e365eba36f52, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: e5b1f42052729484aa53060ad6fcffad, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000032
+  - entryId: 冷月定心
+    content: {fileID: 11400000, guid: a3114f5afc0e4401b31558084308dac0, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000033
+  - entryId: 千里望舒
+    content: {fileID: 11400000, guid: 42a1a90fda2b4acfb911f594d5b1e771, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000034
+  - entryId: 疾风连弦
+    content: {fileID: 11400000, guid: 2251c17c529d48b887196f9296f42cd4, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 0d91a10f44e599548985622e8f340bf7, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000035
+  - entryId: 青金护心
+    content: {fileID: 11400000, guid: 603fddda15ff4db7818a6121a615d33d, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000036
+  - entryId: 岩灯守夜
+    content: {fileID: 11400000, guid: eadd2e0175ec4c67bb158a410562c963, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 15f1c002c6890054d9e6fa388056d737, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000037
+  - entryId: 长虹贯矢
+    content: {fileID: 11400000, guid: 6bff44250607487e860a881eebba4dd0, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 439839d94bb50b6489541f78a8cf1fa3, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000038
+  - entryId: 群星召令
+    content: {fileID: 11400000, guid: e91cd9c2bc864810b0890226a60f13d1, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000039
+  - entryId: 裂日锋芒
+    content: {fileID: 11400000, guid: 9517729f20144f849af251926bd2e5ab, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 5705948b57cce204399c6f700fd72d35, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000040
+  - entryId: 雷痕重鸣
+    content: {fileID: 11400000, guid: 8e9d64bcd33947ae83363a0232f33c5d, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: 1798e3788ea569d45ab824ff3ffaa945, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000041
+  - entryId: 断潮近誓
+    content: {fileID: 11400000, guid: bf99d0215d7546928ed62795d06c2dc3, type: 2}
+    baseWeight: 45
+    tags:
+    - {fileID: 11400000, guid: cc80a5d4d93e99841adc5a96865a19c4, type: 2}
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 1
+    domainFlags: 0
+    priceMultiplier: 1
+    conditions: []
+    weightRules:
+    - rid: 8100000000000000042
   references:
     version: 2
     RefIds:
-    - rid: 7274045879173776277
+    - rid: 8100000000000000000
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776278
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776279
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 5
-          floatValue: 5
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776280
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776281
+    - rid: 8100000000000000001
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776282
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776283
+    - rid: 8100000000000000002
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776284
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776285
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776286
+    - rid: 8100000000000000003
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776287
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776288
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776289
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776290
+    - rid: 8100000000000000004
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776291
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776292
+    - rid: 8100000000000000005
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776293
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776294
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776295
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776296
+    - rid: 8100000000000000006
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776297
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776298
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776299
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776300
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 3
-          floatValue: 3
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776301
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776302
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776303
+    - rid: 8100000000000000007
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776304
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776305
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776306
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776307
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776308
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 0ce727a0e88e24744812a26aadfa2849, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776309
+    - rid: 8100000000000000008
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776310
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 9ab5f5a026e76d44dbbbb82885e878a4, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776311
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776312
+    - rid: 8100000000000000009
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776313
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776314
+    - rid: 8100000000000000010
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776315
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776316
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 9ab5f5a026e76d44dbbbb82885e878a4, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776317
+    - rid: 8100000000000000011
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776318
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776319
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776320
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776321
+    - rid: 8100000000000000012
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776322
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776323
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 0c95e45cf2ebc134e8b22c9112baceb0, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776324
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776325
+    - rid: 8100000000000000013
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776326
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776327
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776328
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776329
+    - rid: 8100000000000000014
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776330
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776331
+    - rid: 8100000000000000015
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776332
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776333
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 3
-          floatValue: 3
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776334
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776335
+    - rid: 8100000000000000016
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776336
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776337
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776338
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776339
+    - rid: 8100000000000000017
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776340
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776341
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776342
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776343
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776344
+    - rid: 8100000000000000018
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776345
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776346
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776347
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776348
+    - rid: 8100000000000000019
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776349
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776350
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776351
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 6
-          floatValue: 6
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776352
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776353
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776354
+    - rid: 8100000000000000020
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776355
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776356
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c87f690b7b6bef248afb493b999cb329, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776357
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 3
-          floatValue: 3
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776358
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776359
+    - rid: 8100000000000000021
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776360
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776361
+    - rid: 8100000000000000022
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776362
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776363
+    - rid: 8100000000000000023
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776364
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776365
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776366
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776367
+    - rid: 8100000000000000024
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776368
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: e6323b8f9227dce468806ceaf788ec37, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776369
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776370
+    - rid: 8100000000000000025
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776371
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776372
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776373
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 03811cf9313f09e40a27293d9e57a202, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776374
+    - rid: 8100000000000000026
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776375
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776376
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776377
+    - rid: 8100000000000000027
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776378
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776379
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776380
+    - rid: 8100000000000000028
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045879173776381
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 31ff6cbf793384649a8361b3549f0476, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045879173776382
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045879173776383
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368320
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368321
+    - rid: 8100000000000000029
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368322
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368323
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368324
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368325
+    - rid: 8100000000000000030
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368326
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368327
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368328
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368329
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 03811cf9313f09e40a27293d9e57a202, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368330
+    - rid: 8100000000000000031
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368331
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7723c5e6ddd7c1645b46df18ee42e52c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368332
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368333
+    - rid: 8100000000000000032
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368334
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368335
+    - rid: 8100000000000000033
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368336
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368337
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368338
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368339
+    - rid: 8100000000000000034
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368340
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: c02317dcb3624dc44ac0e3b1ab7aa89d, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368341
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 5
-          floatValue: 5
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368342
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368343
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368344
+    - rid: 8100000000000000035
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368345
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368346
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368347
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 3
-          floatValue: 3
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368348
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368349
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: b4b269f29310e384ab57545373045a13, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368350
+    - rid: 8100000000000000036
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368351
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368352
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368353
+    - rid: 8100000000000000037
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368354
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368355
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368356
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368357
+    - rid: 8100000000000000038
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368358
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368359
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: a8b85302e97def94c826ed4da8636364, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368360
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 6
-          floatValue: 6
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368361
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368362
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368363
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 0f920f49de2a27c40a44ba5458d0d15e, type: 2}
-        comparisonOperator: 0
-        compareValue:
-          valueType: 0
-          boolValue: 1
-          intValue: 0
-          floatValue: 0
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368364
+    - rid: 8100000000000000039
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368365
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 875843c5fc7f06243a6daaa766a71b1c, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368366
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 7a4a99e9547a8764da154e5f9ec014db, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368367
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 2
-          floatValue: 2
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368368
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368369
+    - rid: 8100000000000000040
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368370
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2599fcf7b57da094e81408dd5b1bac32, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368371
+    - rid: 8100000000000000041
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368372
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 2babe4ecd64525f4e87544c70c82c588, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368373
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 0f920f49de2a27c40a44ba5458d0d15e, type: 2}
-        comparisonOperator: 0
-        compareValue:
-          valueType: 0
-          boolValue: 1
-          intValue: 0
-          floatValue: 0
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368374
+    - rid: 8100000000000000042
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 7274045887389368375
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368376
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 4
-          floatValue: 4
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368377
-      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        comparisonOperator: 3
-        compareValue:
-          valueType: 1
-          boolValue: 0
-          intValue: 1
-          floatValue: 1
-          stringValue: 
-          objectValue: {fileID: 0}
-    - rid: 7274045887389368378
-      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        multiplier: 0.5
-    - rid: 7274045887389368379
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 4a984cf39e833c74eb2b237066944972, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
-    - rid: 7274045887389368380
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
-      data:
-        factDefinition: {fileID: 11400000, guid: 862e2182aeb0ded4ebb58ff5f01e4edc, type: 2}
-        weightPerFactPoint: 0.15
-        minMultiplier: 0
-        maxMultiplier: 10
