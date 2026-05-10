@@ -103,6 +103,7 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
+        GrantWaveGoldRewardBonus();
         StartWaveEndFlow(eventData);
     }
 
@@ -356,6 +357,29 @@ public class GameManager : MonoSingletonBase<GameManager>
         }
 
         TransitionToState(GameState.Shop);
+    }
+
+    private void GrantWaveGoldRewardBonus()
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        CurrencyWallet currencyWallet = player.GetComponent<CurrencyWallet>();
+        PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
+        if (currencyWallet == null || propertiesManager == null)
+        {
+            return;
+        }
+
+        int rewardAmount = Mathf.FloorToInt(Mathf.Max(0f, propertiesManager.GetPropValue(PropType.WaveGoldRewardBonus)));
+        if (rewardAmount <= 0)
+        {
+            return;
+        }
+
+        currencyWallet.ChangeAmount(rewardAmount);
     }
 
     private async UniTask CloseCurrentStatePageAsync(CancellationToken cancellationToken)

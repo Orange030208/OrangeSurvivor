@@ -39,7 +39,7 @@ public sealed class CircleKiteMoveStrategy : IMoveStrategy
 
         targetDirection.Normalize();
         Vector2 circleDirection = new(-targetDirection.y, targetDirection.x);
-        float detectionRange = propertiesManager.GetPropValue(PropType.DetectionRange);
+        float detectionRange = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.DetectionRange));
         Vector2 targetPosition = (Vector2)target.Center
                                  - targetDirection * idealRangeRatio * detectionRange
                                  + circleDirection * Mathf.Sin(circleSpeedRatio * movable.Speed) * 2f;

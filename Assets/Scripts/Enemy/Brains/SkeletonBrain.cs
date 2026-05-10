@@ -91,7 +91,7 @@ public class SkeletonBrain : EnemyBrain
     protected void ExecuteMeleeAreaAttack(float rangeMultiplier)
     {
         Vector2 attackCenter = ResolveMeleeAttackCenter();
-        float attackRadius = propertiesManager.GetPropValue(PropType.AttackRange) * Mathf.Max(0f, rangeMultiplier);
+        float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, rangeMultiplier);
 
         int hitCount = Physics2D.OverlapCircleNonAlloc(
             attackCenter,

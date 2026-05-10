@@ -20,8 +20,8 @@ MonoBehaviour:
   - propType: 5
     value: 230
   - propType: 6
-    value: 1.6
+    value: 160
   - propType: 4
     value: 65
   - propType: 15
-    value: 1.2
+    value: 120

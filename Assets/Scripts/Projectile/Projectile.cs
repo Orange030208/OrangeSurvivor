@@ -12,6 +12,7 @@ public class Projectile : Entity, IProjectile
     [SerializeField] protected LayerMask targetsLayerMask;
     [Tooltip("弹射物碰到这些阻挡层时会播放命中特效并销毁。未配置时默认使用项目中的 Wall 层。")]
     [SerializeField] protected LayerMask obstacleLayerMask;
+    [Tooltip("未收到发射射程时的兜底最长飞行时间，仅用于换算兜底距离。正常武器发射按攻击距离销毁。")]
     [SerializeField] protected float maxLifetime = 5f;
     [SerializeField] protected int maxHitCount = 1;
     [SerializeField] protected Rigidbody2D rb;
@@ -21,10 +22,12 @@ public class Projectile : Entity, IProjectile
     /// </summary>
     private int currentHitCount = 0;
     private int currentMaxHitCount;
-    private float lifetimeTimer;
+    private float traveledDistance;
+    private Vector2 lastPosition;
     protected ProjectileLaunchContext launchContext;
     private float currentMoveSpeed;
     private float currentMaxLifetime;
+    private float currentMaxTravelDistance;
     private float currentDamageMultiplier = 1f;
     private Vector3 baseLocalScale;
     private Quaternion baseRotation;
@@ -38,6 +41,7 @@ public class Projectile : Entity, IProjectile
         rb = GetComponent<Rigidbody2D>();
         currentMoveSpeed = moveSpeed;
         currentMaxLifetime = maxLifetime;
+        currentMaxTravelDistance = moveSpeed * maxLifetime;
         baseLocalScale = transform.localScale;
         baseRotation = transform.rotation;
 
@@ -47,7 +51,8 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnEnable()
     {
-        lifetimeTimer = 0f;
+        traveledDistance = 0f;
+        lastPosition = transform.position;
         currentHitCount = 0;
         currentMaxHitCount = Mathf.Max(1, maxHitCount);
         isDespawning = false;
@@ -56,8 +61,11 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void Update()
     {
-        lifetimeTimer += Time.deltaTime;
-        if (lifetimeTimer >= currentMaxLifetime)
+        Vector2 currentPosition = transform.position;
+        traveledDistance += Vector2.Distance(lastPosition, currentPosition);
+        lastPosition = currentPosition;
+
+        if (traveledDistance >= currentMaxTravelDistance)
         {
             DestroyProjectile();
         }
@@ -70,6 +78,9 @@ public class Projectile : Entity, IProjectile
         currentMaxHitCount = Mathf.Max(1, maxHitCount + context.PierceCount);
         ApplyProjectileDefinition(context.ProjectileDefinition);
         transform.position = context.SpawnPosition;
+        lastPosition = context.SpawnPosition;
+        traveledDistance = 0f;
+        currentMaxTravelDistance = ResolveMaxTravelDistance(context);
         ApplyFacing(context.Direction, context.ProjectileDefinition);
         rb.velocity = context.Direction * currentMoveSpeed;
         OnLaunched(context);
@@ -152,6 +163,7 @@ public class Projectile : Entity, IProjectile
     {
         currentMoveSpeed = moveSpeed;
         currentMaxLifetime = maxLifetime;
+        currentMaxTravelDistance = moveSpeed * maxLifetime;
         currentDamageMultiplier = 1f;
         transform.localScale = baseLocalScale;
 
@@ -162,9 +174,20 @@ public class Projectile : Entity, IProjectile
 
         currentMoveSpeed *= projectileDefinition.SpeedMultiplier;
         currentMaxLifetime *= projectileDefinition.LifetimeMultiplier;
+        currentMaxTravelDistance = currentMoveSpeed * currentMaxLifetime;
         currentDamageMultiplier *= projectileDefinition.DamageMultiplier;
         transform.localScale = baseLocalScale * projectileDefinition.ScaleMultiplier;
         ApplyPresentation(projectileDefinition);
+    }
+
+    private float ResolveMaxTravelDistance(ProjectileLaunchContext context)
+    {
+        if (context.MaxTravelDistance > 0f)
+        {
+            return context.MaxTravelDistance;
+        }
+
+        return Mathf.Max(0f, currentMoveSpeed * currentMaxLifetime);
     }
 
     private void ApplyPresentation(ProjectileDefinitionSO projectileDefinition)

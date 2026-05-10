@@ -242,7 +242,7 @@ public class HealthComponent : EntityComponentBase
                 lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(newValue));
                 break;
             case PropType.HealthRecoverySpeed:
-                healthRecoveryPerSecond = Mathf.Max(0f, newValue);
+                healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(newValue);
                 break;
         }
     }
@@ -251,7 +251,12 @@ public class HealthComponent : EntityComponentBase
     {
         UpdateMaxHealth();
         lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.LifeSteal)));
-        healthRecoveryPerSecond = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.HealthRecoverySpeed));
+        healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed));
+    }
+
+    private static float ResolveHealthRecoveryPerSecond(float value)
+    {
+        return Mathf.Max(0f, PropValueUtility.HealthRecoveryPointsToHealthPerSecond(value));
     }
 
     private void UpdateMaxHealth()

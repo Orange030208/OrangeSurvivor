@@ -691,7 +691,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             projectileConfig.SpawnPointIndex,
             projectileConfig.BurstId,
             projectileConfig.FiringMode,
-            projectileConfig.PatternConfig));
+            projectileConfig.PatternConfig,
+            maxTravelDistance: Range));
     }
 
     public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
@@ -825,9 +826,10 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
         Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
         AttackInterval = 1f / finalAttackSpeed;
-        CriticalChance = Mathf.Clamp01(weaponCriticalChance + playerCriticalChance);
+        CriticalChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
-        Range = Mathf.Max(0.1f, propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange));
+        float rangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
+        Range = Mathf.Max(0.1f, PropValueUtility.DistancePointsToWorldUnits(rangePoints));
         KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
     }
 

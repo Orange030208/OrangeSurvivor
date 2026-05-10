@@ -5,8 +5,6 @@ using UnityEngine;
 [CustomEditor(typeof(AttackSequenceDefinitionSO))]
 public class AttackSequenceDefinitionSOEditor : Editor
 {
-    private WeaponAnimationSequencePresetId selectedPreset;
-
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -16,8 +14,6 @@ public class AttackSequenceDefinitionSOEditor : Editor
             AttackSequenceStudioWindow.Open((AttackSequenceDefinitionSO)target);
         }
 
-        EditorGUILayout.Space(8f);
-        DrawPresetToolbar();
         EditorGUILayout.Space(8f);
         DrawCoreProperties();
         EditorGUILayout.Space(8f);
@@ -143,49 +139,6 @@ public class AttackSequenceDefinitionSOEditor : Editor
     {
         EditorGUILayout.LabelField("Sequence Events", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("eventKeyframes"), true);
-    }
-
-    private void DrawPresetToolbar()
-    {
-        EditorGUILayout.LabelField("Preset Library", EditorStyles.boldLabel);
-        selectedPreset = (WeaponAnimationSequencePresetId)EditorGUILayout.EnumPopup("Preset", selectedPreset);
-
-        WeaponAnimationSequencePresetDefinition? definition = TryGetSelectedPresetDefinition();
-        if (definition.HasValue)
-        {
-            WeaponAnimationSequencePresetData previewData = definition.Value.Builder();
-            EditorGUILayout.HelpBox(
-                $"Apply preset: {definition.Value.DisplayName}\nMotion samples: {previewData.MotionFrameCount}\nEvents: {previewData.EventCount}\nSummary: {definition.Value.TendencySummary}",
-                MessageType.None);
-        }
-
-        if (GUILayout.Button("Apply Selected Preset"))
-        {
-            ApplySelectedPreset();
-        }
-    }
-
-    private WeaponAnimationSequencePresetDefinition? TryGetSelectedPresetDefinition()
-    {
-        var presets = WeaponAnimationSequencePresets.GetAllPresets();
-        for (int i = 0; i < presets.Count; i++)
-        {
-            if (presets[i].Id == selectedPreset)
-            {
-                return presets[i];
-            }
-        }
-
-        return null;
-    }
-
-    private void ApplySelectedPreset()
-    {
-        AttackSequenceDefinitionSO sequence = (AttackSequenceDefinitionSO)target;
-        Undo.RecordObject(sequence, "Apply Attack Sequence Preset");
-        WeaponAnimationSequencePresets.ApplyPreset(sequence, selectedPreset);
-        EditorUtility.SetDirty(sequence);
-        serializedObject.Update();
     }
 }
 #endif

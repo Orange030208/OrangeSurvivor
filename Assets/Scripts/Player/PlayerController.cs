@@ -34,7 +34,7 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
     public void MoveTo(Vector2 position)
     {
         if (IsMovementLocked) return;
-        rb.velocity = (position - Owner.Center).normalized * Time.deltaTime * speed;
+        rb.velocity = (position - Owner.Center).normalized * speed;
     }
 
     public void StopMoving()
@@ -61,7 +61,7 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
     private void Move(float deltaTime)
     {
         if (IsMovementLocked) return;
-        rb.velocity = moveDirection.normalized * deltaTime * speed;
+        rb.velocity = moveDirection.normalized * speed;
     }
 
     public void SetMoveInput(Vector2 moveDirection)
@@ -79,7 +79,7 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
 
     private void UpdateSpeed()
     {
-        speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
+        speed = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.MoveSpeed));
     }
 
     public void EnableMovement()

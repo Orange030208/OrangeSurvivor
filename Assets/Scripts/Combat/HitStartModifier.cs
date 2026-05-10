@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HitStartModifier : IHitModifier
 {
-    private const float ARMOR_REDUCTION_SCALE = 100f;
+    private const float ARMOR_REDUCTION_SCALE = 25f;
     private const float MIN_ARMOR = -95f;
     private const float MAX_SEQUENTIAL_REDUCTION = 0.95f;
 
@@ -32,13 +32,19 @@ public class HitStartModifier : IHitModifier
 
         if (target.TryGetComponent(out PropertiesManager propertiesManager))
         {
-            hitContext.DodgeChance = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Dodge)));
+            hitContext.DodgeChance = PropValueUtility.PercentPointsToEffectiveRatio(
+                PropType.Dodge,
+                propertiesManager.GetPropValue(PropType.Dodge));
             float armorReduction = ResolveArmorDamageReduction(
                 propertiesManager.GetPropValue(PropType.Armor),
                 hitContext.ArmorPenetrationPercent);
-            float damageReduction = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.DamageReduction)));
+            float damageReduction = PropValueUtility.PercentPointsToEffectiveRatio(
+                PropType.DamageReduction,
+                propertiesManager.GetPropValue(PropType.DamageReduction));
             hitContext.DamageReduction = CombineSequentialReductions(armorReduction, damageReduction);
-            float knockbackResistance = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.KnockbackResistance)));
+            float knockbackResistance = PropValueUtility.PercentPointsToEffectiveRatio(
+                PropType.KnockbackResistance,
+                propertiesManager.GetPropValue(PropType.KnockbackResistance));
             hitContext.KnockbackStrength = Mathf.Max(0f, hitContext.KnockbackStrength * (1f - knockbackResistance));
         }
 
@@ -55,7 +61,7 @@ public class HitStartModifier : IHitModifier
             armor *= 1f - armorPenetrationRatio;
         }
 
-        return armor / (armor + ARMOR_REDUCTION_SCALE);
+        return armor / (Mathf.Abs(armor) + ARMOR_REDUCTION_SCALE);
     }
 
     private static float CombineSequentialReductions(float firstReduction, float secondReduction)

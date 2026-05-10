@@ -48,7 +48,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     [SerializeField] private AttackSequenceDefinitionSO sequenceAsset;
     [SerializeField] private WeaponDataSO weaponDataAsset;
     [SerializeField] private StudioView selectedView = StudioView.Sequence;
-    [SerializeField] private WeaponAnimationSequencePresetId selectedPreset;
     [SerializeField] private float previewNormalizedTime;
     [SerializeField] private bool previewPlaying;
     [SerializeField] private bool loopPreview = true;
@@ -362,8 +361,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         {
             DrawSequenceSettings();
             EditorGUILayout.Space(6f);
-            DrawPresetPanel();
-            EditorGUILayout.Space(6f);
             DrawQuickActionsPanel();
             EditorGUILayout.Space(6f);
             DrawDiagnostics();
@@ -413,20 +410,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         DrawSequenceProperty("referenceTargetOffset", "Reference Target Offset");
         DrawSequenceProperty("retargetScaleWeight", "Scale Weight");
         DrawSequenceProperty("oppositeDirectionRetargetWeight", "Opposite Direction Weight");
-        EditorGUILayout.EndVertical();
-    }
-
-    private void DrawPresetPanel()
-    {
-        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUILayout.LabelField("Preset", EditorStyles.boldLabel);
-        selectedPreset = (WeaponAnimationSequencePresetId)EditorGUILayout.EnumPopup("Preset", selectedPreset);
-
-        if (GUILayout.Button("Apply Preset"))
-        {
-            ApplySelectedPreset();
-            GUIUtility.ExitGUI();
-        }
         EditorGUILayout.EndVertical();
     }
 
@@ -2547,22 +2530,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
     private static string FormatVector2(Vector2 value)
     {
         return $"({value.x:0.###}, {value.y:0.###})";
-    }
-
-    private void ApplySelectedPreset()
-    {
-        if (sequence == null)
-        {
-            return;
-        }
-
-        ApplySerializedDraftChanges();
-        Undo.RecordObject(sequence, "Apply Attack Sequence Preset");
-        WeaponAnimationSequencePresets.ApplyPreset(sequence, selectedPreset);
-        MarkSequenceDraftChanged();
-        selectedMotionIndex = 0;
-        selectedEventIndex = 0;
-        RebuildSerializedObjects();
     }
 
     private void SortMotionFramesByTime()

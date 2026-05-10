@@ -232,6 +232,7 @@ internal static class ItemDescriptionUtility
             PropType.AttackSpeed => $"{value:0.##}/秒",
             PropType.CriticalChance => $"{value:0.##}%",
             PropType.CriticalPercent => $"{value:0.##}%",
+            PropType.AttackRange => $"{PropValueUtility.DistancePointsToWorldUnits(value):0.##}格",
             _ => value.ToString("0.##")
         };
     }

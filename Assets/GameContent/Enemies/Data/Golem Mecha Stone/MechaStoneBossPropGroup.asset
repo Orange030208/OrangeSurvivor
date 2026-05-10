@@ -20,11 +20,11 @@ MonoBehaviour:
   - propType: 5
     value: 10000
   - propType: 6
-    value: 1
+    value: 100
   - propType: 4
     value: 80
   - propType: 15
-    value: 2
+    value: 200
   - propType: 8
     value: 10
   - propType: 19

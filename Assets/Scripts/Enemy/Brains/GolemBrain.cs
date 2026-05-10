@@ -558,7 +558,7 @@ public class GolemBrain : EnemyBrain
         private void TryCommitPostChargeAttack()
         {
             Vector2 attackCenter = brain.ResolveMeleeAttackCenter();
-            float attackRadius = brain.propertiesManager.GetPropValue(PropType.AttackRange);
+            float attackRadius = PropValueUtility.DistancePointsToWorldUnits(brain.propertiesManager.GetPropValue(PropType.AttackRange));
             int hitCount = Physics2D.OverlapCircleNonAlloc(
                 attackCenter,
                 attackRadius,

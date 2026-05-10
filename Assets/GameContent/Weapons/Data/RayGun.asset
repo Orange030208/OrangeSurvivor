@@ -48,26 +48,26 @@ MonoBehaviour:
     attackSpeed: 1.35
     criticalChance: 11
     criticalPercent: 200
-    range: 9.2
+    range: 920
     knockbackStrength: 0.7
   - level: 2
     attack: 16.52
     attackSpeed: 1.395
     criticalChance: 12
     criticalPercent: 208
-    range: 9.45
+    range: 945
     knockbackStrength: 0.88
   - level: 3
     attack: 19.04
     attackSpeed: 1.44
     criticalChance: 13
     criticalPercent: 216
-    range: 9.7
+    range: 970
     knockbackStrength: 1.06
   - level: 4
     attack: 21.56
     attackSpeed: 1.485
     criticalChance: 14
     criticalPercent: 224
-    range: 9.95
+    range: 995
     knockbackStrength: 1.24

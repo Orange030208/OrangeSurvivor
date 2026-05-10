@@ -17,11 +17,11 @@ MonoBehaviour:
   icon: {fileID: -985199106488442437, guid: 21d00970a65119641990e950e399327f, type: 3}
   rarity: 0
   tags: 0b000000
-  description: "\u751F\u547D\u6062\u590D\u901F\u5EA6 +1\u3002"
+  description: "\u751F\u547D\u6062\u590D\u901F\u5EA6 +10\u3002"
   propertyModifiers:
   - propType: 7
     modifierType: 0
-    value: 1
+    value: 10
   specialFeatures: []
   references:
     version: 2

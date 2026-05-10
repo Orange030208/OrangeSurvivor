@@ -54,9 +54,15 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
             direction.normalized,
             HitSpec.EnemyHitSpec(ResolveDamage()),
             attackController.AttackLayer,
-            projectileDefinition));
+            projectileDefinition,
+            maxTravelDistance: ResolveAttackRange()));
         AudioSfxBridge.RequestPlay(AudioSfxKey.GunshotLight);
         return true;
+    }
+
+    private float ResolveAttackRange()
+    {
+        return PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange));
     }
 
     private Vector3 ResolveFirePointPosition()

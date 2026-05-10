@@ -73,7 +73,7 @@ public abstract class MoveBase : EntityComponentBase, IMovable, IMovementLockabl
         }
 
         moveDirection = (position - Owner.Center).normalized;
-        rb.velocity = moveDirection * (Time.fixedDeltaTime * speed);
+        rb.velocity = moveDirection * speed;
     }
 
     public virtual void StopMoving()
@@ -102,7 +102,7 @@ public abstract class MoveBase : EntityComponentBase, IMovable, IMovementLockabl
 
     protected void RefreshMoveSpeed()
     {
-        speed = propertiesManager.GetPropValue(PropType.MoveSpeed);
+        speed = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.MoveSpeed));
     }
 
     private void BindProperties()

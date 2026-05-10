@@ -38,8 +38,6 @@ public class ShopManager : MonoBehaviour
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 4;
     private const int BASE_REROLL_COST = 5;
-    private const float MIN_SHOP_PRICE_MULTIPLIER = 0.2f;
-    private const float MAX_SHOP_PRICE_DISCOUNT = 0.8f;
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private int baseRerollCost = BASE_REROLL_COST;
@@ -592,9 +590,11 @@ public class ShopManager : MonoBehaviour
         }
 
         float discount = propertiesManager != null
-            ? Mathf.Clamp(PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.ShopPriceDiscount)), 0f, MAX_SHOP_PRICE_DISCOUNT)
+            ? PropValueUtility.PercentPointsToEffectiveRatio(
+                PropType.ShopPriceDiscount,
+                propertiesManager.GetPropValue(PropType.ShopPriceDiscount))
             : 0f;
-        return Mathf.Max(MIN_SHOP_PRICE_MULTIPLIER, 1f - discount);
+        return Mathf.Max(PropValueUtility.MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, 1f - discount);
     }
 
     private void BindPropertiesManager(PropertiesManager newPropertiesManager)

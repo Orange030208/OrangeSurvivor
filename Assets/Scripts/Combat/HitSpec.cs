@@ -16,7 +16,7 @@ public readonly struct HitSpec
     public HitSpec(float baseDamage, float critChance, float critMultiplier, float knockbackStrength)
     {
         BaseDamage = Mathf.Max(0f, baseDamage);
-        CritChance = Mathf.Clamp01(critChance);
+        CritChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, critChance);
         CritMultiplier = Mathf.Max(1f, critMultiplier);
         KnockbackStrength = Mathf.Max(0f, knockbackStrength);
     }

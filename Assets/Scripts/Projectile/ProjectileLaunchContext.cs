@@ -10,6 +10,7 @@ using UnityEngine;
 /// - 使用哪份弹射物定义；
 /// - 属于哪种模式；
 /// - 应该命中哪些目标层。
+/// - 最远可以飞行多远。
 /// </summary>
 public readonly struct ProjectileLaunchContext
 {
@@ -32,6 +33,7 @@ public readonly struct ProjectileLaunchContext
     public ProjectileFiringMode FiringMode { get; }
     public ProjectilePatternConfig PatternConfig { get; }
     public LayerMask TargetLayerMask { get; }
+    public float MaxTravelDistance { get; }
 
     public ProjectileLaunchContext(
         IProjectileLauncher launcher,
@@ -46,7 +48,8 @@ public readonly struct ProjectileLaunchContext
         int burstId = 0,
         ProjectileFiringMode firingMode = ProjectileFiringMode.Default,
         ProjectilePatternConfig patternConfig = default,
-        Weapon sourceWeapon = null)
+        Weapon sourceWeapon = null,
+        float maxTravelDistance = 0f)
     {
         Launcher = launcher;
         Source = source;
@@ -61,5 +64,6 @@ public readonly struct ProjectileLaunchContext
         BurstId = Mathf.Max(0, burstId);
         FiringMode = firingMode;
         PatternConfig = patternConfig.Equals(default(ProjectilePatternConfig)) ? ProjectilePatternConfig.Default : patternConfig;
+        MaxTravelDistance = Mathf.Max(0f, maxTravelDistance);
     }
 }

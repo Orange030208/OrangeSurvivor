@@ -24,7 +24,7 @@ public sealed class DistanceRangeDetectionStrategy : RangeDetectionStrategyBase
             return false;
         }
 
-        float range = propertiesManager.GetPropValue(PropType.DetectionRange) * rangeMultiplier;
+        float range = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.DetectionRange)) * rangeMultiplier;
         return target.IsColliderWithinRange(owner.Center, range);
     }
 }
