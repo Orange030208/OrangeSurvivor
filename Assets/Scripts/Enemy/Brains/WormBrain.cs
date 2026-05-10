@@ -14,7 +14,7 @@ public class WormBrain : EnemyBrain
 
     private readonly StateMachine<WormAIState> stateMachine = new();
 
-    [Header("Attack Points")]
+    [Header("攻击点位")]
     [SerializeField] private Transform attackPointTransform;
     [SerializeField] private Transform retreatAttackPointTransform;
 

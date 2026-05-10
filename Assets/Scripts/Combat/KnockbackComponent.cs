@@ -12,7 +12,7 @@ public class KnockbackComponent : EntityComponentBase
     private const int CAST_HIT_CAPACITY = 8;
     private const string WALL_LAYER_NAME = "Wall";
 
-    [Header("Config")]
+    [Header("配置")]
     [SerializeField] private KnockbackReceiverConfigSO receiverConfig;
 
     private Entity owner;
@@ -123,7 +123,7 @@ public class KnockbackComponent : EntityComponentBase
 
         float newKnockbackVelocity = CalculateKnockbackVelocity(newKnockbackDistance);
 
-        // Stronger hits replace the current displacement budget; weaker hits wait for the old knockback to finish.
+        // 更强的命中会替换当前位移预算；更弱的命中等待旧击退结束。
         if (isKnockbackActive && newKnockbackDistance <= remainingDistance)
         {
             return;

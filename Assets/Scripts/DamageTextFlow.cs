@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class DamageTextFlow : MonoBehaviour
 {
-    [Header("References")]
+    [Header("引用")]
     [SerializeField] private TextMeshPro _damageText;
 
-    [Header("Legacy Fallback")]
+    [Header("旧逻辑兜底")]
     [SerializeField, Min(0.01f)] private float floatTime = 0.8f;
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField, Min(0f)] private float startScale = 0.5f;

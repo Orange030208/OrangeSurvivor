@@ -19,6 +19,7 @@ public sealed class MechaStoneShootAttack : MechaStoneTaskBase
 
         StopMoving();
         FaceTarget();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GolemMechaStoneBossShoot);
         BeginBossAction(BossData.ShootAction);
     }
 

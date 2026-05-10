@@ -13,7 +13,7 @@ public class FlyForestBrain : EnemyBrain
 
     private readonly StateMachine<FlyForestAIState> stateMachine = new();
 
-    [Header("Attack Points")]
+    [Header("攻击点位")]
     [SerializeField] private Transform shootPointTransform;
 
     private EnemyAttackController attackController;

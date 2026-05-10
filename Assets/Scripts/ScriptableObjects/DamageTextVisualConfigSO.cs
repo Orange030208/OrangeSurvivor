@@ -5,17 +5,17 @@ public class DamageTextVisualConfigSO : ScriptableObject
 {
     public static readonly Vector2 DEFAULT_SPAWN_OFFSET = new(0f, 1.5f);
 
-    [Header("Visibility")]
-    [Tooltip("开启后只显示敌人和玩家受到的伤害，保持战斗 HUD 聚焦。")]
+    [Header("可见性")]
+    [Tooltip("开启后只显示敌人和玩家受到的伤害，保持战斗界面聚焦。")]
     [SerializeField] private bool showEnemyDamageOnly = true;
     [Tooltip("开启后会忽略 0 或更低的伤害数字。")]
     [SerializeField] private bool hideZeroDamage = true;
 
-    [Header("Spawn")]
+    [Header("生成")]
     [SerializeField] private Vector2 spawnOffset = DEFAULT_SPAWN_OFFSET;
     [SerializeField] [Min(0f)] private float spawnSpreadX = 0.18f;
 
-    [Header("Styles")]
+    [Header("样式")]
     [SerializeField] private DamageTextVisualStyle normalStyle = DamageTextVisualStyle.CreateDefaultNormal();
     [SerializeField] private DamageTextVisualStyle criticalStyle = DamageTextVisualStyle.CreateDefaultCritical();
     [SerializeField] private DamageTextVisualStyle playerDamagedStyle = DamageTextVisualStyle.CreateDefaultPlayerDamaged();

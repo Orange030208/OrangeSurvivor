@@ -10,7 +10,7 @@ public sealed class DamageTextVisualStyle
     private const string DEFAULT_NUMBER_FORMAT = "0";
     private const float MIN_DURATION = 0.01f;
 
-    [Header("Text")]
+    [Header("文本")]
     [SerializeField] private string prefix = string.Empty;
     [SerializeField] private string suffix = string.Empty;
     [SerializeField] private string numberFormat = DEFAULT_NUMBER_FORMAT;
@@ -21,7 +21,7 @@ public sealed class DamageTextVisualStyle
     [SerializeField] private Color gradientTopColor = Color.white;
     [SerializeField] private Color gradientBottomColor = new(0.85f, 0.92f, 1f, 1f);
 
-    [Header("Motion")]
+    [Header("运动")]
     [SerializeField] [Min(MIN_DURATION)] private float lifetime = 0.85f;
     [SerializeField] [Min(0f)] private float floatDistance = 0.85f;
     [SerializeField] [Min(0f)] private float horizontalDrift = 0.18f;
@@ -34,12 +34,12 @@ public sealed class DamageTextVisualStyle
     [SerializeField] private Ease settleEase = Ease.OutQuad;
     [SerializeField] private Ease moveEase = Ease.OutCubic;
 
-    [Header("Fade")]
+    [Header("淡出")]
     [SerializeField] private bool useFade = true;
     [SerializeField] [Min(0f)] private float fadeDelay = 0.34f;
     [SerializeField] private Ease fadeEase = Ease.InQuad;
 
-    [Header("Impact")]
+    [Header("冲击反馈")]
     [SerializeField] [Min(0f)] private float shakeStrength = 0f;
     [SerializeField] [Min(MIN_DURATION)] private float shakeDuration = 0.16f;
     [SerializeField] [Range(1, 40)] private int shakeVibrato = 14;

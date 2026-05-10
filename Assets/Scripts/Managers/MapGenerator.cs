@@ -14,17 +14,17 @@ public class MapGenerator : MonoBehaviour
     private static bool hasRuntimeBounds;
     private static Bounds runtimeBounds;
 
-    [Header("Map Size")]
+    [Header("地图尺寸")]
     [SerializeField] private int mapWidth = 30;
     [SerializeField] private int mapHeight = 30;
     [SerializeField] private float cellSize = 1f;
 
-    [Header("Map Structure")]
+    [Header("地图结构")]
     [SerializeField] private Grid targetGrid;
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Tilemap wallTilemap;
 
-    [Header("Tile Resources")]
+    [Header("瓦片资源")]
     [SerializeField] private TileBase groundTile;
     [SerializeField] private TileBase wallTile;
     [SerializeField] private MapGroundThemeSO groundTheme;

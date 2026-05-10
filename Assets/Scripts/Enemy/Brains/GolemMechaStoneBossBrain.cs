@@ -13,7 +13,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private BehaviorTree behaviorTree;
     private EnemyAttackController attackController;
     private GolemMechaStoneBossSO bossData;
-    [Header("Attack Points")]
+    [Header("攻击点位")]
     [SerializeField] private Transform meleePointTransform;
     [SerializeField] private Transform shootPointTransform;
     [SerializeField] private Transform laserOriginTransform;

@@ -5,11 +5,11 @@ public class SkeletonEnemySO : EnemySO
 {
     public const string ATTACK_ACTION_ID = "Skeleton_Attack";
 
-    [Header("Attack Timing")]
+    [Header("攻击时机")]
     [SerializeField] private EnemyActionDefinition attackAction = new();
     [SerializeField, HideInInspector, Range(0f, 1f)] private float attackCommitNormalizedTime = 0.5f;
 
-    [Header("Attack")]
+    [Header("攻击")]
     [SerializeField, Min(0.01f)] private float attackSpeedBenefitRatio = 1f;
 
     public EnemyActionDefinition AttackAction

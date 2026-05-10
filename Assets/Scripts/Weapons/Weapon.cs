@@ -20,31 +20,31 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
-    [Header("Sequence")]
+    [Header("序列")]
     [Tooltip("负责驱动武器动作序列并把关键帧事件转发回本类。")]
     [SerializeField] private WeaponSequenceBridge sequenceBridge;
 
-    [Header("Visual")]
-    [Tooltip("接收 WeaponDataSO.VisualForwardAngle 的表现节点。请拖入只负责显示的子 Transform，避免影响武器根节点、发射点和碰撞逻辑。")]
+    [Header("视觉表现")]
+    [Tooltip("接收武器表现朝向角的表现节点。请拖入只负责显示的子变换节点，避免影响武器根节点、发射点和碰撞逻辑。")]
     [SerializeField] private Transform visualForwardTransform;
 
     [SerializeField] private Transform animationTransform;
 
-    [Header("Hit Box")]
-    [Tooltip("近战命中盒的独立锚点。为空时退回 animationTransform，再退回武器根节点。不要使用 WeaponDataSO.Spawn Points，它们只用于弹射物/特效生成。")]
+    [Header("命中盒")]
+    [Tooltip("近战命中盒的独立锚点。为空时退回动画变换节点，再退回武器根节点。不要使用武器生成点位，它们只用于弹射物/特效生成。")]
     [SerializeField] private Transform hitBoxAnchorTransform;
 
-    [Tooltip("在 Scene 视图绘制命中盒实时位置、激活窗口和采样扫掠轨迹。仅用于调试，不影响实际判定。")]
+    [Tooltip("在场景视图绘制命中盒实时位置、激活窗口和采样扫掠轨迹。仅用于调试，不影响实际判定。")]
     [SerializeField] private bool drawHitBoxDebugGizmos = true;
 
-    [Header("Aim")]
+    [Header("瞄准")]
     [Tooltip("平时自动转向目标的插值速度。")]
     [SerializeField] protected float aimLerp = 10f;
 
     [Tooltip("允许发起攻击前，武器当前朝向与目标朝向之间的最大夹角。超过这个角度时会先继续转向，再等待下一帧攻击。")]
     [SerializeField] private float attackStartAimToleranceDegrees = 8f;
 
-    [Header("Runtime")]
+    [Header("运行时")]
     [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")]
     [SerializeField] protected LayerMask targetLayerMask;
 
@@ -52,9 +52,11 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     private readonly Dictionary<int, HitBoxDetectionPose> hitWindowLastPoses = new();
     private readonly HashSet<int> activeHitWindows = new();
     private readonly List<HitBoxDebugSample> hitBoxDebugSamples = new();
+    private readonly WeaponTargetSelector targetSelector = new();
     private HitBoxAttackExecutor hitBoxAttackExecutor;
     private AttackSequenceDefinitionSO attackSequence;
     private Vector2 pendingTargetPosition;
+    private Entity lockedAttackTarget;
     private int activeBurstId = -1;
 
     public int Level { get; private set; } = DEFAULT_WEAPON_LEVEL;
@@ -69,7 +71,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected Entity owner;
     protected Entity currentTarget;
     private WeaponsHolder weaponsHolder;
-    private float attackCooldownTimer;
+    private float cooldownRemaining = 1f;
+    private int cooldownStartedFrame = -1;
     private Vector2 lastAimDirection = Vector2.up;
     private Vector2 lockedAttackDirection = Vector2.up;
 
@@ -79,6 +82,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     public Transform AnimationTransform => animationTransform;
     public Transform HitBoxAnchorTransform => hitBoxAnchorTransform;
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : WeaponData != null ? WeaponData.AttackSequence : null;
+    public float DebugCooldownRemaining => cooldownRemaining;
     private Vector2 HitBoxSize => WeaponData != null ? WeaponData.HitBoxSize : Vector2.one;
 
     public LayerMask TargetLayerMask => targetLayerMask;
@@ -108,6 +112,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         SubscribeSequenceEvents();
         ApplyCurrentConfiguration();
         RefreshRuntimeStats();
+        cooldownRemaining = AttackInterval;
     }
 
     public virtual void OnDisableComponent()
@@ -133,10 +138,16 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         TickWeapon(deltaTime);
     }
 
-    public void SetLevel(int targetLevel)
+    public void SetLevel(int targetLevel, bool playSfx = false)
     {
+        int previousLevel = Level;
         Level = Mathf.Max(DEFAULT_WEAPON_LEVEL, targetLevel);
         RefreshRuntimeStats();
+        cooldownRemaining = Mathf.Min(cooldownRemaining, AttackInterval);
+        if (playSfx && Level > previousLevel)
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.WeaponLevelUp);
+        }
     }
 
     public void SetWeaponData(WeaponDataSO weaponData)
@@ -188,7 +199,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     private Entity GetCurrentTarget()
     {
-        return currentTarget;
+        return lockedAttackTarget != null ? lockedAttackTarget : currentTarget;
     }
 
     protected HitSpec BuildHitSpec()
@@ -316,8 +327,13 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         }
 
         float sequenceDuration = Mathf.Max(0.01f, sequence.Duration);
+        if (WeaponData != null && WeaponData.AttackTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown)
+        {
+            return sequenceDuration;
+        }
+
         float attackInterval = Mathf.Max(0.01f, AttackInterval);
-        float occupancy = WeaponData.AttackSequenceOccupancy;
+        float occupancy = WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f;
         float reservedWindow = Mathf.Max(0.01f, attackInterval * occupancy);
         return Mathf.Min(sequenceDuration, reservedWindow);
     }
@@ -325,7 +341,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected virtual void TickWeapon(float deltaTime)
     {
         TickActiveHitWindows();
-        attackCooldownTimer += deltaTime;
+        TickCooldown(deltaTime);
 
         if (currentTarget == null)
         {
@@ -337,7 +353,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             return;
         }
 
-        if (attackCooldownTimer < AttackInterval)
+        if (cooldownRemaining > 0f)
         {
             return;
         }
@@ -347,8 +363,24 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             return;
         }
 
-        attackCooldownTimer = 0f;
         BeginAttack(currentTarget);
+    }
+
+    private void TickCooldown(float deltaTime)
+    {
+        if (cooldownRemaining <= 0f)
+        {
+            return;
+        }
+
+        if (WeaponData != null &&
+            WeaponData.AttackTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown &&
+            cooldownStartedFrame == Time.frameCount)
+        {
+            return;
+        }
+
+        cooldownRemaining = Mathf.Max(0f, cooldownRemaining - deltaTime);
     }
 
     protected virtual bool CanStartAttack()
@@ -359,6 +391,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected virtual void BeginAttack(Entity target)
     {
         IsAttacking = true;
+        lockedAttackTarget = target;
         Vector2 originPosition = transform.position;
         Vector2 actualTargetPosition = ResolveTargetAimPoint(target, originPosition);
         LockAttackDirection(ResolveAttackDirection(actualTargetPosition));
@@ -371,6 +404,11 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
         Vector2 targetLocalOffset = transform.InverseTransformPoint(pendingTargetPosition);
+        if (WeaponData == null || WeaponData.AttackTimingMode == WeaponAttackTimingMode.CompressedIntoAttackInterval)
+        {
+            cooldownRemaining = AttackInterval;
+        }
+
         sequenceBridge.Play(attackSequence, targetLocalOffset, sequenceDuration);
     }
 
@@ -392,15 +430,19 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     protected virtual void TickTargeting(float deltaTime)
     {
+        if (IsAttacking)
+        {
+            return;
+        }
+
         Entity previousTarget = currentTarget;
-        //以自身为半径寻找目标而非持有实体
-        currentTarget = this.FindClosestTargetInRange(Range, targetLayerMask);
+        currentTarget = ResolveCurrentTarget();
 
         Vector2 desiredAimDirection = ResolveDesiredAimDirection(currentTarget);
         bool holdCurrentAim = IsAttacking ||
                               (ShouldStopAimingWhenAttackReady() &&
                                currentTarget != null &&
-                               attackCooldownTimer >= AttackInterval &&
+                               cooldownRemaining <= 0f &&
                                HasReachedAttackAimDirection(desiredAimDirection));
         if (holdCurrentAim)
         {
@@ -423,6 +465,23 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             ? (Vector3)nextAimDirection
             : transform.up;
         transform.up = Vector3.Lerp(transform.up, targetAimDirection, deltaTime * aimLerp);
+    }
+
+    private Entity ResolveCurrentTarget()
+    {
+        if (WeaponData != null && WeaponData.TargetingMode == WeaponTargetingMode.StableLock)
+        {
+            return targetSelector.SelectTarget(
+                currentTarget,
+                transform.position,
+                transform.up,
+                Range,
+                targetLayerMask,
+                WeaponTargetingMode.StableLock);
+        }
+
+        // 远程武器沿用旧的动态最近目标逻辑，保持既有手感。
+        return this.FindClosestTargetInRange(Range, targetLayerMask);
     }
 
     private void SubscribeSequenceEvents()
@@ -781,7 +840,14 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         hitWindowLastPoses.Clear();
         hitBoxDebugSamples.Clear();
         pendingTargetPosition = Vector2.zero;
+        lockedAttackTarget = null;
         activeBurstId = -1;
+        if (WeaponData != null && WeaponData.AttackTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown)
+        {
+            cooldownRemaining = AttackInterval;
+            cooldownStartedFrame = Time.frameCount;
+        }
+
         CompleteAttackCycle();
     }
 
@@ -792,7 +858,10 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         hitWindowLastPoses.Clear();
         hitBoxDebugSamples.Clear();
         pendingTargetPosition = Vector2.zero;
+        lockedAttackTarget = null;
         activeBurstId = -1;
+        cooldownRemaining = 0f;
+        cooldownStartedFrame = -1;
         CompleteAttackCycle();
         sequenceBridge?.Stop(true);
         StopAllCoroutines();
@@ -815,6 +884,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float weaponCriticalMultiplier = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalPercent);
         float weaponRange = weaponStats.Range;
         float weaponKnockbackStrength = weaponStats.KnockbackStrength;
+        float previousAttackInterval = AttackInterval;
 
         float playerCriticalChance = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalChance));
         float playerCriticalBonus = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalPercent));
@@ -826,11 +896,23 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
         Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
         AttackInterval = 1f / finalAttackSpeed;
+        RefreshCooldownForAttackIntervalChange(previousAttackInterval);
         CriticalChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
         float rangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
         Range = Mathf.Max(0.1f, PropValueUtility.DistancePointsToWorldUnits(rangePoints));
         KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
+    }
+
+    private void RefreshCooldownForAttackIntervalChange(float previousAttackInterval)
+    {
+        if (cooldownRemaining <= 0f || previousAttackInterval <= 0.0001f)
+        {
+            return;
+        }
+
+        float cooldownProgress = Mathf.Clamp01(1f - cooldownRemaining / previousAttackInterval);
+        cooldownRemaining = Mathf.Max(0f, AttackInterval * (1f - cooldownProgress));
     }
 
     private WeaponAttackUsageData ResolveAttackUsage()

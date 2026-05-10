@@ -4,23 +4,23 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 /// <summary>
-/// Minimal scene bootstrap for Monster Test Scene. It keeps monster testing independent
-/// from the full menu/UI wave flow while still using production enemy configuration.
+/// 怪物测试场景的最小启动入口。
+/// 让怪物测试脱离完整菜单、UI 和波次流程，同时继续使用正式敌人配置。
 /// </summary>
 public sealed class MonsterTestSceneController : MonoBehaviour
 {
-    [Header("Target")]
+    [Header("目标")]
     [SerializeField] public Player testPlayer;
     [SerializeField] public CharacterDataSO testCharacterData;
     [SerializeField] public Vector3 playerSpawnPosition = Vector3.zero;
 
-    [Header("Enemy")]
+    [Header("敌人")]
     [SerializeField] public EnemySO enemyData;
     [SerializeField] public int spawnCount = 3;
     [SerializeField] public float spawnRadius = 3f;
     [SerializeField] public bool spawnOnStart = true;
 
-    [Header("Runtime")]
+    [Header("运行时")]
     [SerializeField] public EnemyRegistry enemyRegistry;
     [SerializeField] public Transform enemyParent;
 

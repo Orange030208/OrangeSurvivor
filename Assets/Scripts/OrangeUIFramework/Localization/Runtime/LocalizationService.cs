@@ -13,11 +13,11 @@ namespace Orange.UIFramework
     {
         public static LocalizationService Current { get; private set; }
 
-        [Header("Language")]
+        [Header("语言")]
         [SerializeField] private string defaultLanguage = "zh-CN";
         [SerializeField] private bool dontDestroyOnLoad = true;
 
-        [Header("Tables")]
+        [Header("表格")]
         [SerializeField] private List<LocalizationTable> tables = new List<LocalizationTable>();
 
         private readonly Dictionary<string, LocalizationTable> tablesByLanguage = new Dictionary<string, LocalizationTable>();

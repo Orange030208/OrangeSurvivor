@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Plays a weapon motion sequence and applies target-offset retargeting at sample time.
+/// 播放武器动作序列，并在采样时应用目标偏移重定向。
 /// </summary>
 public sealed class WeaponMotionSequencePlayer
 {

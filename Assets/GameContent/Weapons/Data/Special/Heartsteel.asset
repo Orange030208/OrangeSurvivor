@@ -22,10 +22,12 @@ MonoBehaviour:
   visualForwardAngle: 90
   stopAimingWhenAttackReady: 1
   attackSequenceOccupancy: 0.85
+  attackTimingMode: 1
+  targetingMode: 1
   spawnPoints: []
   sequenceProjectileList: []
   sequenceSfxList:
-  - sfxKey: 308
+  - sfxKey: 3
   sequenceVfxList: []
   enableHitBox: 1
   hitVfxPrefab: {fileID: 0}

@@ -109,13 +109,12 @@ public class ShopUIPage : PageBase
 
     private void OnRerollRequested()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         shopManager?.RequestReroll();
     }
 
     private void OnContinueRequested()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 

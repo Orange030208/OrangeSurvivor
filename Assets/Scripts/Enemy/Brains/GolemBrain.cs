@@ -24,7 +24,7 @@ public class GolemBrain : EnemyBrain
     private readonly HashSet<Entity> chargeHitTargets = new();
     private readonly Collider2D[] chargeHitBuffer = new Collider2D[CHARGE_HIT_BUFFER_SIZE];
 
-    [Header("Attack Points")]
+    [Header("攻击点位")]
     [SerializeField] private Transform meleePointTransform;
 
     private EnemyAttackController attackController;

@@ -12,7 +12,7 @@ public class AudioBgmEntry
     [SerializeField] private AudioBgmKey bgmKey = AudioBgmKey.Menu;
     [Tooltip("该背景音乐对应的音频资源。")]
     [SerializeField] private AudioClip clip;
-    [Tooltip("播放模式。BGM 默认建议使用 Loop。")]
+    [Tooltip("播放模式。背景音乐默认建议使用循环播放。")]
     [SerializeField] private AudioPlaybackMode playbackMode = AudioPlaybackMode.Loop;
     [Tooltip("该背景音乐的基础音高。")]
     [SerializeField] [Range(AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH)] private float pitch = AudioConstants.DEFAULT_PITCH;

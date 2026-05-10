@@ -134,7 +134,7 @@ public class SettingsPanelManager : ViewPartBase, IPointerClickHandler
         PlayerPrefs.SetInt(USE_MASTER_VOLUME_KEY, savedState.UseMasterVolume ? 1 : 0);
         PlayerPrefs.Save();
         ApplyAudioSettings(savedState);
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
     public void ResetToDefaults()
@@ -149,7 +149,7 @@ public class SettingsPanelManager : ViewPartBase, IPointerClickHandler
         PlayerPrefs.SetFloat(MUSIC_VOLUME_KEY, savedState.MusicVolume);
         PlayerPrefs.SetInt(USE_MASTER_VOLUME_KEY, savedState.UseMasterVolume ? 1 : 0);
         PlayerPrefs.Save();
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
     private void BindClickTargets()
@@ -266,7 +266,7 @@ public class SettingsPanelManager : ViewPartBase, IPointerClickHandler
         editingState.UseMasterVolume = value;
         RefreshUseMasterVolumeToggle();
         ApplyPreviewIfNeeded();
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
     private void SetInteractionEnabled(bool enabled)

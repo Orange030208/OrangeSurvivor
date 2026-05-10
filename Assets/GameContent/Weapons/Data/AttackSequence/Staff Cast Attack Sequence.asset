@@ -194,12 +194,15 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   eventKeyframes:
+  - normalizedTime: 0.18
+    eventType: 3
+    eventKey: 0
   - normalizedTime: 0.5
     eventType: 2
     eventKey: 0
   - normalizedTime: 0.5
     eventType: 3
-    eventKey: 0
+    eventKey: 1
   - normalizedTime: 0.5
     eventType: 4
     eventKey: 0

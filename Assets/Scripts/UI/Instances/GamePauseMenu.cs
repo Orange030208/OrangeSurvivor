@@ -84,25 +84,25 @@ public class GamePauseMenu : PageBase
 
     private void OnContinueClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish<PauseMenuContinueClickedEvent>();
     }
 
     private void OnMenuClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
         GameEventBus.Publish<PauseMenuReturnToMenuClickedEvent>();
     }
 
     private void OnStatusClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         SetSettingsVisible(false);
     }
 
     private void OnSettingsClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(settingsVisible ? AudioSfxKey.UiCancel : AudioSfxKey.UiConfirm);
         SetSettingsVisible(!settingsVisible);
     }
 

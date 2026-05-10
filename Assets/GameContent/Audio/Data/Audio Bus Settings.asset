@@ -25,13 +25,13 @@ MonoBehaviour:
     sfxEntries: []
   - groupId: sfx.ui
     volume: 1
-    poolSize: 12
-    maxConcurrent: 10
+    poolSize: 16
+    maxConcurrent: 12
     priority: 80
     spatializeByDefault: 0
     sfxEntries:
-    - sfxKey: 1
-      clip: {fileID: 8300000, guid: 7b427140c5aaff849974a4b97b532de2, type: 3}
+    - sfxKey: 108
+      clip: {fileID: 8300000, guid: 59ebe67d412bae4d4fe8903657f2c0bf, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -41,109 +41,11 @@ MonoBehaviour:
       pitchMax: 1
       maxConcurrent: 4
       cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 100
-      clip: {fileID: 8300000, guid: 14cf7cde42fdc9649924788f94104fb9, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 101
-      clip: {fileID: 8300000, guid: c74d4405f74564e4fa0838f89ddf06f2, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1.03
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1.03
-      pitchMax: 1.03
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 102
-      clip: {fileID: 8300000, guid: 53fafcd5c8b01d94c9211a1df95cf13d, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 103
-      clip: {fileID: 8300000, guid: 1fc2399ddb9821847929a8940e139111, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 0.96
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 0.96
-      pitchMax: 0.96
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 104
-      clip: {fileID: 8300000, guid: 5d1ec7a1cee171349955d39dc76cb8ed, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 105
-      clip: {fileID: 8300000, guid: 2a0d85b0b81e8a5489620f6b67fb073f, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 106
-      clip: {fileID: 8300000, guid: 56ad84d6a4102914a8a1c4d4479e2324, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      priority: 100
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 107
-      clip: {fileID: 8300000, guid: e3b5e93027b52c44485d35d9e8565f50, type: 3}
+      clip: {fileID: 8300000, guid: 5b77289014830feeb349ded218e5d34d, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -153,25 +55,11 @@ MonoBehaviour:
       pitchMax: 1
       maxConcurrent: 4
       cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 108
-      clip: {fileID: 8300000, guid: 4374b114352a17944b4f9b151fe2a359, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      priority: 100
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 109
-      clip: {fileID: 8300000, guid: 4342b67b644e91a4f84c4ee168edb900, type: 3}
+      clip: {fileID: 8300000, guid: 2a72bfe48269ccf9b9ceced1c06d25ad, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -181,11 +69,11 @@ MonoBehaviour:
       pitchMax: 1
       maxConcurrent: 4
       cooldown: 0
-      priority: 128
+      priority: 96
       use2DSpatialBlend: 0
       clipVariants: []
-    - sfxKey: 110
-      clip: {fileID: 8300000, guid: c86e400ac3c67b54dbe113029efa82a6, type: 3}
+    - sfxKey: 100
+      clip: {fileID: 8300000, guid: 83bd25adcfcb61ab4f0b9c0aa380f680, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -195,53 +83,11 @@ MonoBehaviour:
       pitchMax: 1
       maxConcurrent: 4
       cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 111
-      clip: {fileID: 8300000, guid: 4342b67b644e91a4f84c4ee168edb900, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 0.95
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 0.95
-      pitchMax: 0.95
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 112
-      clip: {fileID: 8300000, guid: 1cad63dd714253a4ca546f06560fbba1, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1.04
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1.04
-      pitchMax: 1.04
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 0
-      clipVariants: []
-    - sfxKey: 113
-      clip: {fileID: 8300000, guid: b960b3f1b658459fa7b6c882e9a12d79, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.ui
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      priority: 96
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 114
-      clip: {fileID: 8300000, guid: 5799f0bdc57b2524eacfdffa16e20549, type: 3}
+      clip: {fileID: 8300000, guid: 0011669121ec63bd2396fa2c4c5f340d, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -251,186 +97,396 @@ MonoBehaviour:
       pitchMax: 1
       maxConcurrent: 4
       cooldown: 0
-      priority: 128
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 104
+      clip: {fileID: 8300000, guid: 292be69a97a31b4a591b62b03a4001d3, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 105
+      clip: {fileID: 8300000, guid: da80a9d1ced16d4d3bf90381b1a441e1, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 106
+      clip: {fileID: 8300000, guid: 53241ca3562a2c26c83aca3766e9751a, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 110
+      clip: {fileID: 8300000, guid: 078a2499d836cfb0173ce833f7f01288, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 100
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 111
+      clip: {fileID: 8300000, guid: 0b400be9cf5c5d59ff299f6dde8c688a, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 112
+      clip: {fileID: 8300000, guid: 52f1ab0b36355d05179a3798976473db, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 100
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 113
+      clip: {fileID: 8300000, guid: bdbfed107d5e6039be816a170332f66e, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 100
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 115
+      clip: {fileID: 8300000, guid: 9518e9bc2053975ce4a13547b7c93f85, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 100
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 116
+      clip: {fileID: 8300000, guid: ade19698ec787110cde3c1bf0025d870, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 100
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 117
+      clip: {fileID: 8300000, guid: 3900441435afe2522bb27391adaf9175, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 500
+      clip: {fileID: 8300000, guid: dda29e08322868f1d357b695d3105e23, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 96
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 600
+      clip: {fileID: 8300000, guid: 814c9ef4cb83b6f5f4993dd2cd1325ec, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 1
+      cooldown: 0.05
+      priority: 88
+      use2DSpatialBlend: 0
+      clipVariants: []
+    - sfxKey: 601
+      clip: {fileID: 8300000, guid: ccc97b788b9e2fa75f3c4d95f088b62a, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 2
+      cooldown: 0
+      priority: 88
       use2DSpatialBlend: 0
       clipVariants: []
   - groupId: sfx.combat
     volume: 1
-    poolSize: 24
-    maxConcurrent: 16
+    poolSize: 28
+    maxConcurrent: 18
     priority: 128
     spatializeByDefault: 1
     sfxEntries:
     - sfxKey: 2
-      clip: {fileID: 8300000, guid: 0a33980c47504539b60b5cfb4a6f1002, type: 3}
+      clip: {fileID: 8300000, guid: c7b42a04f508233585157bb3765453a7, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
       priority: 128
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 3
-      clip: {fileID: 8300000, guid: 735097dd269f4fd9a09f13d100c007ec, type: 3}
+      clip: {fileID: 8300000, guid: 29c884c6973418b353f643154615cab2, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
-      groupId: sfx.combat
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 1
-      clipVariants: []
-    - sfxKey: 300
-      clip: {fileID: 8300000, guid: b8fa1f3e1c63adb46ae4eb4494360417, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1
-      groupId: sfx.combat
-      baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 1
-      clipVariants: []
-    - sfxKey: 301
-      clip: {fileID: 8300000, guid: 44dcdfd33296e47438d2eb88c2f5d8bb, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 0.98
       groupId: sfx.combat
       baseVolumeScale: 1
       pitchMin: 0.98
-      pitchMax: 0.98
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 1
-      clipVariants: []
-    - sfxKey: 303
-      clip: {fileID: 8300000, guid: 2586a8b2af089d942bc2d2a660973c8a, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 1.05
-      groupId: sfx.combat
-      baseVolumeScale: 1
-      pitchMin: 1.05
-      pitchMax: 1.05
-      maxConcurrent: 4
-      cooldown: 0
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
       priority: 128
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 304
-      clip: {fileID: 8300000, guid: 0a33980c47504539b60b5cfb4a6f1002, type: 3}
+      clip: {fileID: 8300000, guid: 3adc91efd18ef430e852571c5905df6c, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
       priority: 128
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 305
-      clip: {fileID: 8300000, guid: 8b72d8f6c80b4cf48a8329c4784e72b5, type: 3}
+      clip: {fileID: 8300000, guid: 50a3a4938b9c579ba46c8ecf1e7f533e, type: 3}
       busType: 1
       playbackMode: 0
-      pitch: 0.92
+      pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 0.92
-      pitchMax: 0.92
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      pitchMin: 0.97
+      pitchMax: 1.01
+      maxConcurrent: 5
+      cooldown: 0.03
+      priority: 124
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 306
-      clip: {fileID: 8300000, guid: 96c9aed21b3b4021981044b2cd865602, type: 3}
+      clip: {fileID: 8300000, guid: c59603f877ece02833e87b3c0bd37f0d, type: 3}
       busType: 1
       playbackMode: 0
-      pitch: 1.08
+      pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1.08
-      pitchMax: 1.08
-      maxConcurrent: 4
-      cooldown: 0
+      pitchMin: 0.99
+      pitchMax: 1.04
+      maxConcurrent: 6
+      cooldown: 0.02
       priority: 128
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 307
-      clip: {fileID: 8300000, guid: 38adfadaae53b6a4583daddb569e5327, type: 3}
+      clip: {fileID: 8300000, guid: 10ef2f07b574438ed87ba1d4dd787a43, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 5
+      cooldown: 0.03
+      priority: 126
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 308
-      clip: {fileID: 8300000, guid: 373562beb217d3043a6188729987fac1, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 0.95
-      groupId: sfx.combat
-      baseVolumeScale: 1
-      pitchMin: 0.95
-      pitchMax: 0.95
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 1
-      clipVariants: []
-    - sfxKey: 309
-      clip: {fileID: 8300000, guid: 96c9aed21b3b4021981044b2cd865602, type: 3}
+      clip: {fileID: 8300000, guid: 6bd9007cb6e2885b56d3ef63e1c3a25d, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 5
+      cooldown: 0.03
+      priority: 126
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 300
+      clip: {fileID: 8300000, guid: 35ce62fc98b7c9937cc8f2c1469694c5, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 8
+      cooldown: 0.02
+      priority: 128
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 301
+      clip: {fileID: 8300000, guid: 52e4792a3619b6995fb93c950572838a, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
+      priority: 126
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 303
+      clip: {fileID: 8300000, guid: b2c2efa56497175f1f4f837928f10427, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
+      priority: 126
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 309
+      clip: {fileID: 8300000, guid: 2de177ab335645ec92bc8cba53812bd9, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 6
+      cooldown: 0.02
       priority: 128
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 400
-      clip: {fileID: 8300000, guid: 0336426ef5a94380b55d051a9fbf71b0, type: 3}
+      clip: {fileID: 8300000, guid: 86cde7e283efa561d7464fc00888573b, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
       baseVolumeScale: 1
-      pitchMin: 1
-      pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      pitchMin: 0.98
+      pitchMax: 1.03
+      maxConcurrent: 8
+      cooldown: 0.04
+      priority: 132
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 401
-      clip: {fileID: 8300000, guid: 0e1f35f87e35d9147b766b7442d2d908, type: 3}
+      clip: {fileID: 8300000, guid: f26db7894bb48999e4318f368f95f05a, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.03
+      maxConcurrent: 8
+      cooldown: 0.04
+      priority: 132
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 402
+      clip: {fileID: 8300000, guid: a887376b1c0756d6dedb54857bfbbec2, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.03
+      maxConcurrent: 8
+      cooldown: 0.04
+      priority: 132
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 450
+      clip: {fileID: 8300000, guid: febd64f92986e433861e1ac115883136, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -438,9 +494,65 @@ MonoBehaviour:
       baseVolumeScale: 1
       pitchMin: 1
       pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      maxConcurrent: 2
+      cooldown: 0.1
+      priority: 90
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 451
+      clip: {fileID: 8300000, guid: f0169bf4e7c46dcf9ee21fb5ff35058c, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 3
+      cooldown: 0.05
+      priority: 104
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 452
+      clip: {fileID: 8300000, guid: 05bf4a603ccda20b94dccebe26a5febb, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.02
+      maxConcurrent: 3
+      cooldown: 0.05
+      priority: 104
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 453
+      clip: {fileID: 8300000, guid: 9ce9480f97c143fb71cbd2be11cb81dc, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 2
+      cooldown: 0.1
+      priority: 92
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 454
+      clip: {fileID: 8300000, guid: 3116056a13ae276950b073e99d1814fc, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.combat
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 2
+      cooldown: 0.1
+      priority: 92
       use2DSpatialBlend: 1
       clipVariants: []
   - groupId: sfx.pickup
@@ -451,7 +563,21 @@ MonoBehaviour:
     spatializeByDefault: 1
     sfxEntries:
     - sfxKey: 200
-      clip: {fileID: 8300000, guid: b6bfe4887c8c4f34868f703f71aa8b93, type: 3}
+      clip: {fileID: 8300000, guid: 98248ddbdfded9c7e0531a24c1fcde24, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.pickup
+      baseVolumeScale: 1
+      pitchMin: 0.98
+      pitchMax: 1.03
+      maxConcurrent: 6
+      cooldown: 0.02
+      priority: 120
+      use2DSpatialBlend: 1
+      clipVariants: []
+    - sfxKey: 201
+      clip: {fileID: 8300000, guid: 8edc6da6619658907eca48f968510222, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -459,23 +585,9 @@ MonoBehaviour:
       baseVolumeScale: 1
       pitchMin: 1
       pitchMax: 1
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
-      use2DSpatialBlend: 1
-      clipVariants: []
-    - sfxKey: 201
-      clip: {fileID: 8300000, guid: 08369a2cc79dac049aaee6edc644d4c6, type: 3}
-      busType: 1
-      playbackMode: 0
-      pitch: 0.98
-      groupId: sfx.pickup
-      baseVolumeScale: 1
-      pitchMin: 0.98
-      pitchMax: 0.98
-      maxConcurrent: 4
-      cooldown: 0
-      priority: 128
+      maxConcurrent: 3
+      cooldown: 0.05
+      priority: 116
       use2DSpatialBlend: 1
       clipVariants: []
   - groupId: sfx.ambient

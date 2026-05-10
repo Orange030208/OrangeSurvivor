@@ -11,10 +11,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Audio Runtime Settings", menuName = ScriptableObjectMenuPaths.AUDIO_RUNTIME_SETTINGS, order = 1)]
 public class AudioRuntimeSettingsSO : ScriptableObject
 {
-    [Header("BGM")]
-    [Tooltip("BGM 切换与停止时使用的淡入淡出时长。0 表示立即切换。")]
+    [Header("背景音乐")]
+    [Tooltip("背景音乐切换与停止时使用的淡入淡出时长。0 表示立即切换。")]
     [SerializeField] [Min(AudioConstants.MIN_FADE_DURATION)] private float musicFadeDuration = AudioConstants.DEFAULT_MUSIC_FADE_DURATION;
-    [Tooltip("BGM 配置列表。每个枚举键直接对应一个具体音频配置。")]
+    [Tooltip("背景音乐配置列表。每个枚举键直接对应一个具体音频配置。")]
     [SerializeField] private AudioBgmEntry[] bgmCues = Array.Empty<AudioBgmEntry>();
 
     private Dictionary<AudioBgmKey, AudioCueData> bgmCueCache;

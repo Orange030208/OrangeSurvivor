@@ -4,9 +4,9 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "Knockback Receiver Config", menuName = ScriptableObjectMenuPaths.KNOCKBACK_RECEIVER_CONFIG, order = 0)]
 public class KnockbackReceiverConfigSO : ScriptableObject
 {
-    [Header("Runtime")]
+    [Header("运行时")]
     [SerializeField] private float duration = 0.12f;
-    [Tooltip("Distance scalar for received knockback. With 1, every 10 KnockbackStrength is roughly 1 world unit before resistance, collision, and max velocity limits.")]
+    [Tooltip("受到击退时的距离倍率。值为 1 时，每 10 点击退强度在抗性、碰撞和最大速度限制前约等于 1 个世界单位。")]
     [SerializeField] private float distanceMultiplier = 1f;
     [SerializeField] private float maxVelocity = 12f;
     [SerializeField] private AnimationCurve velocityCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);

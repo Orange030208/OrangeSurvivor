@@ -14,6 +14,18 @@ public enum WeaponTag
     Heavy = 6
 }
 
+public enum WeaponAttackTimingMode
+{
+    CompressedIntoAttackInterval = 0,
+    FixedSequenceThenCooldown = 1
+}
+
+public enum WeaponTargetingMode
+{
+    DynamicClosest = 0,
+    StableLock = 1
+}
+
 public readonly struct WeaponSpawnPointPose
 {
     public WeaponSpawnPointPose(Vector3 position, Quaternion rotation)
@@ -34,7 +46,7 @@ public struct WeaponSpawnPointDefinition
     [SerializeField] private string id;
     [Tooltip("相对武器根节点的本地位置。")]
     [SerializeField] private Vector2 localPosition;
-    [Tooltip("相对武器根节点的Z轴角度偏移，用于调试绘制、VFX朝向或其他基于点位的表现。")]
+    [Tooltip("相对武器根节点的 Z 轴角度偏移，用于调试绘制、特效朝向或其他基于点位的表现。")]
     [SerializeField] private float localRotationOffset;
 
     public string Id => id;
@@ -45,11 +57,11 @@ public struct WeaponSpawnPointDefinition
 [System.Serializable]
 public struct WeaponSequenceProjectileDefinition
 {
-    [Tooltip("使用哪个武器点位。映射到 WeaponDataSO 的 Spawn Points；未配置对应点位时使用武器根节点。")]
+    [Tooltip("使用哪个武器点位。映射到武器数据的生成点位列表；未配置对应点位时使用武器根节点。")]
     [SerializeField] private int spawnPointIndex;
     [Tooltip("直接引用要发射的弹射物定义资源。定义内部持有最终要实例化的弹射物预制体。")]
     [SerializeField] private ProjectileDefinitionSO projectileDefinition;
-    [Tooltip("Burst 分组 id。用于避免同一 burst 重复启动。")]
+    [Tooltip("连发分组标识。用于避免同一连发组重复启动。")]
     [SerializeField] private int burstId;
     [Tooltip("本次发射所使用的模式。")]
     [SerializeField] private ProjectileFiringMode firingMode;
@@ -77,7 +89,7 @@ public struct WeaponSequenceVfxDefinition
 {
     [Tooltip("该事件触发时要生成的特效预制体。")]
     [SerializeField] private GameObject vfxPrefab;
-    [Tooltip("生成锚点索引。映射到 WeaponDataSO 的 Spawn Points；未配置对应点位时使用武器根节点。")]
+    [Tooltip("生成锚点索引。映射到武器数据的生成点位列表；未配置对应点位时使用武器根节点。")]
     [SerializeField] private int spawnPointIndex;
     [Tooltip("相对锚点的局部偏移。")]
     [SerializeField] private Vector3 localOffset;
@@ -206,14 +218,18 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [Header("分类")]
     [SerializeField] private WeaponTag[] tags = System.Array.Empty<WeaponTag>();
 
-    [Header("Runtime")]
+    [Header("运行时")]
     [SerializeField] private AttackSequenceDefinitionSO attackSequence;
 
-    [Header("Attack Presentation")]
+    [Header("攻击表现")]
     [SerializeField] private float visualForwardAngle = 45f;
     [SerializeField] private bool stopAimingWhenAttackReady = true;
     [Range(0.1f, 1f)]
     [SerializeField] private float attackSequenceOccupancy = 0.85f;
+    [Tooltip("攻击序列和攻速冷却之间的关系。远程武器通常使用压缩模式；近战武器通常使用固定动画后冷却。")]
+    [SerializeField] private WeaponAttackTimingMode attackTimingMode = WeaponAttackTimingMode.CompressedIntoAttackInterval;
+    [Tooltip("自动索敌策略。远程武器通常使用动态最近目标；近战武器通常使用稳定锁定。")]
+    [SerializeField] private WeaponTargetingMode targetingMode = WeaponTargetingMode.DynamicClosest;
     [SerializeField] private WeaponSpawnPointDefinition[] spawnPoints = System.Array.Empty<WeaponSpawnPointDefinition>();
     [SerializeField] private WeaponSequenceProjectileDefinition[] sequenceProjectileList;
     [SerializeField] private WeaponSequenceSfxDefinition[] sequenceSfxList;
@@ -225,7 +241,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [SerializeField] private Vector2 hitBoxOffset;
 
     [Header("攻击类型使用区")]
-    [Tooltip("百分比点口径：20 表示吃到对应玩家攻击属性的 20%。最终伤害 = (武器攻击力 + 各类型攻击贡献) * (1 + Damage / 100)。")]
+    [Tooltip("百分比点口径：20 表示吃到对应玩家攻击属性的 20%。最终伤害 = (武器攻击力 + 各类型攻击贡献) * (1 + 伤害属性 / 100)。")]
     [SerializeField] private WeaponAttackUsageData attackUsage;
 
     [Header("属性等级表")]
@@ -237,6 +253,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public float VisualForwardAngle => visualForwardAngle;
     public bool StopAimingWhenAttackReady => stopAimingWhenAttackReady;
     public float AttackSequenceOccupancy => Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
+    public WeaponAttackTimingMode AttackTimingMode => attackTimingMode;
+    public WeaponTargetingMode TargetingMode => targetingMode;
     public IReadOnlyList<WeaponSpawnPointDefinition> SpawnPoints => spawnPoints;
     public IReadOnlyList<WeaponSequenceProjectileDefinition> SequenceProjectileList => sequenceProjectileList;
     public IReadOnlyList<WeaponSequenceSfxDefinition> SequenceSfxList => sequenceSfxList;

@@ -15,14 +15,14 @@ public sealed class ContentPoolEntry
     [SerializeField, Min(0)] private int maxPickCount;
     [SerializeField] private List<string> mutuallyExclusiveEntryIds = new();
 
-    [Header("Domain Metadata")]
+    [Header("领域元数据")]
     [SerializeField, Min(0)] private int minLevel;
     [SerializeField, Min(0)] private int maxLevel;
     [SerializeField] private int qualityValue;
     [SerializeField] private int domainFlags;
     [SerializeField, Min(MIN_PRICE_MULTIPLIER)] private float priceMultiplier = 1f;
 
-    [Header("Rules")]
+    [Header("规则")]
     [SerializeReference] private List<ContentCondition> conditions = new();
     [SerializeReference] private List<ContentWeightRule> weightRules = new();
 

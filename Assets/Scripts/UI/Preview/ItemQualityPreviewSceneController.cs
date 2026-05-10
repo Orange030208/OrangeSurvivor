@@ -11,18 +11,18 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 {
     private const string PREVIEW_SCENE_NAME = "Item Quality Preview";
 
-    [Header("Canvas")]
+    [Header("画布")]
     [SerializeField] private Vector2 referenceResolution = new(1920f, 1080f);
     [SerializeField] private Color backgroundColor = new(0.08f, 0.09f, 0.11f, 1f);
     [SerializeField] private Color sectionColor = new(0.13f, 0.15f, 0.18f, 0.92f);
     [SerializeField] private Color cellColor = new(0.16f, 0.18f, 0.22f, 0.92f);
 
-    [Header("Sizing")]
+    [Header("尺寸")]
     [SerializeField] private Vector2 inventoryPreviewSize = new(118f, 146f);
     [SerializeField] private Vector2 shopPreviewSize = new(280f, 248f);
     [SerializeField] private Vector2 popupPreviewSize = new(520f, 296f);
 
-    [Header("Preview Content")]
+    [Header("预览内容")]
     [SerializeField] private InventoryItem inventoryItemPrefab;
     [SerializeField] private ShopItemContainer shopItemPrefab;
     [SerializeField] private WeaponOperatePopup weaponOperatePopupPrefab;

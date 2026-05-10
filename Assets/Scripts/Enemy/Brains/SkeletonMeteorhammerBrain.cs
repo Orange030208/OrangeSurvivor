@@ -20,7 +20,7 @@ public sealed class SkeletonMeteorhammerBrain : SkeletonBrain
 
     protected override void OnAttackActionCommit()
     {
-        // Meteorhammer uses two explicit attack timings, then commits cooldown when the full action completes.
+        // 流星锤使用两段显式攻击时机，并在完整动作结束后提交冷却。
     }
 
     protected override void OnAttackActionProgress(AnimationStateProgress progress)

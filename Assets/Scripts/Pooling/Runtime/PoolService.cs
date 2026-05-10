@@ -5,14 +5,14 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class PoolService : MonoBehaviour
 {
-    [Header("Config")]
+    [Header("配置")]
     [SerializeField] private PoolCatalogSO catalog;
     [SerializeField] private Transform inactiveRoot;
     [SerializeField] private bool initializeOnAwake = true;
     [SerializeField] private bool registerAsDefaultService = true;
     [SerializeField] private bool createPoolsForUnregisteredPrefabs = true;
 
-    [Header("Runtime Defaults")]
+    [Header("运行时默认值")]
     [Min(0)] [SerializeField] private int runtimePreloadCount;
     [Min(1)] [SerializeField] private int runtimeMaxActiveCount = 64;
     [Min(0)] [SerializeField] private int runtimeMaxInactiveCount = 64;

@@ -7,14 +7,14 @@ public class GolemEnemySO : EnemySO
     public const string ATTACK_ACTION_ID = "Golem_Attack";
     public const string POST_CHARGE_ATTACK_ACTION_ID = "Golem_PostChargeAttack";
 
-    [Header("Attack Timing")]
+    [Header("攻击时机")]
     [SerializeField] private EnemyActionDefinition attackAction = new();
     [SerializeField] private EnemyActionDefinition chargeAction = new();
     [SerializeField] private EnemyActionDefinition postChargeAttackAction = new();
     [SerializeField] private EnemyActionDefinition recoveryAction = new();
     [SerializeField, HideInInspector, Range(0f, 1f)] private float attackCommitNormalizedTime = 0.55f;
 
-    [Header("Berserk Charge")]
+    [Header("狂暴冲锋")]
     [SerializeField, Min(0f)] private float berserkInterval = 8f;
     [SerializeField, Min(0f)] private float preChargeStunDuration = 1.2f;
     [SerializeField, Min(0.01f)] private float chargeDuration = 0.75f;
@@ -24,7 +24,7 @@ public class GolemEnemySO : EnemySO
     [SerializeField, Min(0f)] private float chargeDamageMultiplier = 1f;
     [SerializeField] private List<PropModifierData> chargeModifiers = new();
 
-    [Header("Attack")]
+    [Header("攻击")]
     [SerializeField, Min(0.01f)] private float attackSpeedBenefitRatio = 1f;
     [SerializeField] private List<PropModifierData> postChargeAttackModifiers = new();
 

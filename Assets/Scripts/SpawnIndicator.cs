@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class SpawnIndicator : MonoBehaviour
 {
-    [Header("Visuals")]
+    [Header("视觉表现")]
     [SerializeField] private GameObject visualRoot;
 
-    [Header("Animation")]
+    [Header("动画")]
     [SerializeField] private float targetScale = 1.2f;
     [SerializeField] private float pulseDuration = 0.3f;
     [SerializeField] private int pulseLoops = 5;

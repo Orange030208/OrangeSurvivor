@@ -8,7 +8,7 @@ public sealed class PropertiesIconTextDescriber : Describer
 {
     [Tooltip("属性行实例的父节点，通常挂 VerticalLayoutGroup 或同类布局组件。")]
     [SerializeField] private Transform contentRoot;
-    [Tooltip("单行属性 UI 预制体。需要包含 PropContainer 所需的 Image、属性名 TMP 与数值 TMP。")]
+    [Tooltip("单行属性界面预制体。需要包含 PropContainer 所需的 Image、属性名 TMP 与数值 TMP。")]
     [SerializeField] private PropContainer propContainerPrefab;
 
     private readonly List<PropContainer> propContainers = new List<PropContainer>();

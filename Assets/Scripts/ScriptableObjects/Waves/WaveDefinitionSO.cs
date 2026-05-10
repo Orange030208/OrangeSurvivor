@@ -9,11 +9,11 @@ public class WaveDefinitionSO : ScriptableObject
 {
     private const float MIN_DURATION = 1f;
 
-    [Header("Identity")]
+    [Header("标识")]
     [SerializeField] private string waveId = "Wave_001";
     [SerializeField] private string displayName = "Wave 1";
 
-    [Header("Runtime")]
+    [Header("运行时")]
     [SerializeField] private float duration = 30f;
     [SerializeField] private SpawnLocationPolicySO spawnLocationPolicy;
     [SerializeField] private WaveSpawnPlan[] spawnPlans;

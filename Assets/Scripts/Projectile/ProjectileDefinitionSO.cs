@@ -4,12 +4,12 @@ using UnityEngine;
 public class ProjectileDefinitionSO : ScriptableObject
 {
     [Header("标识")]
-    [Tooltip("用于配置和调试的稳定子弹唯一ID，例如 projectile_common 或 fire_ball")]
+    [Tooltip("用于配置和调试的稳定子弹唯一标识，例如 projectile_common 或 fire_ball")]
     [SerializeField] private string id;
     [Tooltip("在检视面板中显示的易读名称，供策划和调试使用")]
     [SerializeField] private string displayName;
 
-    [Header("Prefab")]
+    [Header("预制体")]
     [Tooltip("运行时要实例化的弹射物预制体。攻击链路统一通过该引用生成弹体实例。")]
     [SerializeField] private Projectile projectilePrefab;
 
@@ -32,7 +32,7 @@ public class ProjectileDefinitionSO : ScriptableObject
     [SerializeField] private Material material;
     [Tooltip("子弹精灵渲染器的排序层级覆盖")]
     [SerializeField] private int sortingOrder;
-    [Tooltip("供UI、调试面板或内容工具使用的可选图标")]
+    [Tooltip("供界面、调试面板或内容工具使用的可选图标")]
     [SerializeField] private Sprite icon;
     [Tooltip("用于场景辅助图标或子弹可视化工具的调试颜色")]
     [SerializeField] private Color debugColor = Color.white;
@@ -46,7 +46,7 @@ public class ProjectileDefinitionSO : ScriptableObject
     [Header("朝向设置")]
     [Tooltip("启用后，子弹会旋转以匹配自身的移动方向")]
     [SerializeField] private bool useDirectionFacing = true;
-    [Tooltip("在方向朝向逻辑后施加的额外Z轴旋转偏移")]
+    [Tooltip("在方向朝向逻辑后施加的额外 Z 轴旋转偏移")]
     [SerializeField] private float rotationOffset;
     [Tooltip("子弹发射时，在注入的动画器上触发的可选触发器名称")]
     [SerializeField] private string launchAnimationTrigger;

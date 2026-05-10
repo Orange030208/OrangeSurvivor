@@ -6,24 +6,24 @@ using UnityEngine;
     order = 0)]
 public class CardMotionProfileSO : ScriptableObject
 {
-    [Header("UIMotion片段")]
+    [Header("界面动画片段")]
     [SerializeField] private string revealClipId;
     [SerializeField] private string hoverInClipId;
     [SerializeField] private string hoverOutClipId;
     [SerializeField] private string pressClipId;
     [SerializeField] private string releaseClipId;
     [SerializeField] private string selectClipId;
-    [Tooltip("可选。为空时中断复位只恢复控制器记录的根节点Transform，不调用UIMotion采样，避免没有Visible/Show片段的资产刷警告。")]
+    [Tooltip("可选。为空时中断复位只恢复控制器记录的根节点 Transform，不调用界面动画采样，避免没有可见/显示片段的资产刷警告。")]
     [SerializeField] private string restClipId = string.Empty;
 
     [Header("复用与中断")]
-    [Tooltip("配置新卡牌内容时刷新UIMotion默认快照，避免对象复用后保留上一张卡的交互状态。")]
+    [Tooltip("配置新卡牌内容时刷新界面动画默认快照，避免对象复用后保留上一张卡的交互状态。")]
     [SerializeField] private bool refreshDefaultsOnConfigure;
 
     [Tooltip("对象隐藏或点击流程被打断时，采样到稳定可见状态后再刷新默认快照。")]
     [SerializeField] private bool resetToRestClipWhenInterrupted;
 
-    [Tooltip("卡牌配置新内容后是否播放Show片段。关闭后只刷新状态并恢复运行时浮动。")]
+    [Tooltip("卡牌配置新内容后是否播放显示片段。关闭后只刷新状态并恢复运行时浮动。")]
     [SerializeField] private bool playRevealOnConfigure;
 
     [Header("运行时卡牌动态")]

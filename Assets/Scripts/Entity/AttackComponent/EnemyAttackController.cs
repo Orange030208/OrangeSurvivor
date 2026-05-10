@@ -105,10 +105,10 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
         }
     }
 
-    [Header("Runtime Cooldowns")]
-    [Tooltip("技能冷却槽。通常不需要在 Prefab 上手动填，Controller 会按字符串 ID 自动注册槽。")]
+    [Header("运行时冷却")]
+    [Tooltip("技能冷却槽。通常不需要在预制体上手动填，控制器会按字符串标识自动注册槽。")]
     [SerializeField] private List<SkillSlot> skillSlots = new();
-    [Tooltip("普通攻击冷却槽。由攻击策略注册，间隔会跟随 AttackSpeed 与攻击收益系数刷新。")]
+    [Tooltip("普通攻击冷却槽。由攻击策略注册，间隔会跟随攻击速度与攻击收益系数刷新。")]
     [SerializeField] private List<BasicAttackSlot> basicAttackSlots = new();
 
     private readonly Dictionary<string, SkillSlot> skillSlotLookup = new(StringComparer.Ordinal);

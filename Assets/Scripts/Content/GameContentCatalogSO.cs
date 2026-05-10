@@ -13,29 +13,29 @@ public sealed class GameContentCatalogSO : ScriptableObject
 {
     // 这些字段保持显式序列化，方便在进 Play Mode 前从 Inspector 直接发现缺失引用。
     // 运行时代码统一读取下方只读属性，不直接修改 Catalog。
-    [Header("Gameplay Lists")]
+    [Header("玩法列表")]
     [SerializeField] private WeaponDataListSO weaponDataList;
     [SerializeField] private AccessoryDataListSO accessoryDataList;
     [SerializeField] private CharacterDataSO[] characters = System.Array.Empty<CharacterDataSO>();
 
-    [Header("Gameplay Config")]
+    [Header("玩法配置")]
     [SerializeField] private PlayerLevelConfigSO playerLevelConfig;
     [SerializeField] private ContentPoolSO upgradeCardPool;
     [SerializeField] private StageDefinitionSO defaultStageDefinition;
 
-    [Header("Content Pools")]
+    [Header("内容池")]
     [SerializeField] private ContentPoolSO chestRewardPool;
     [SerializeField] private ContentPoolSO shopPool;
     [SerializeField] private ContentPoolSO dropPool;
     [SerializeField] private ContentPoolSO waveSpawnPool;
     [SerializeField] private ContentPoolSO weaponRewardPool;
 
-    [Header("Prefabs")]
+    [Header("预制体")]
     [SerializeField] private Player defaultPlayerPrefab;
     [SerializeField] private Weapon defaultWeaponPrefab;
     [SerializeField] private DamageTextFlow damageTextPrefab;
 
-    [Header("Presentation")]
+    [Header("表现配置")]
     [SerializeField] private PropPresentationCatalogSO propPresentationCatalog;
     [SerializeField] private CardQualityPresentationCatalogSO cardQualityPresentationCatalog;
     [SerializeField] private ItemQualityVisualConfigSO itemQualityVisualConfig;

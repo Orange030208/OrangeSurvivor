@@ -4,17 +4,17 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(fileName = "Map Ground Theme", menuName = ScriptableObjectMenuPaths.MAP_GROUND_THEME, order = 0)]
 public class MapGroundThemeSO : ScriptableObject
 {
-    [Header("Fallback")]
+    [Header("兜底资源")]
     [SerializeField] private TileBase fallbackGroundTile;
     [SerializeField] private TileBase fallbackWallTile;
 
-    [Header("Tile Pools")]
+    [Header("瓦片池")]
     [SerializeField] private TileBase[] baseTiles;
     [SerializeField] private TileBase[] tuftTiles;
     [SerializeField] private TileBase[] whiteFlowerTiles;
     [SerializeField] private TileBase[] yellowFlowerTiles;
 
-    [Header("Macro Layout")]
+    [Header("宏观布局")]
     [Range(0f, 1f)]
     [SerializeField] private float tuftRegionWeight = 0.4f;
     [Range(0f, 1f)]
@@ -24,7 +24,7 @@ public class MapGroundThemeSO : ScriptableObject
     [SerializeField] private float macroNoiseScale = 0.055f;
     [SerializeField] private float microNoiseScale = 0.16f;
 
-    [Header("Declutter")]
+    [Header("去杂化")]
     [Range(0f, 1f)]
     [SerializeField] private float tuftBlendChance = 0.72f;
     [Range(0f, 1f)]

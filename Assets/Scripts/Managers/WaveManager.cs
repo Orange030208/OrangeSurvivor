@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class WaveManager : MonoBehaviour, IWaveController
 {
+    private const int COUNTDOWN_WARNING_SECONDS = 5;
+
     [SerializeField] private StageDefinitionSO stageDefinition;
     [SerializeField] private ContentPoolSO waveSpawnPool;
     private SpawnPositionResolver spawnPositionResolver;
@@ -13,6 +15,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     private EnemyFactory enemyFactory;
     private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
     private Wave[] runtimeWaves = System.Array.Empty<Wave>();
+    private int lastCountdownSecond = -1;
 
     [SerializeField]
     private Entity spawnAroundEntity;
@@ -95,6 +98,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             return;
         }
 
+        TryPlayCountdownTick();
         PublishWaveProgress();
     }
 
@@ -134,6 +138,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     public void StopCurrentWave()
     {
         runtimeState.IsRunning = false;
+        ResetCountdownTickState();
         PublishWaveRuntimeChanged();
     }
 
@@ -151,6 +156,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     public void ResetWaves()
     {
         runtimeState = WaveRuntimeState.CreateIdle();
+        ResetCountdownTickState();
         PublishWaveRuntimeChanged();
     }
 
@@ -215,6 +221,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             true,
             CreateSegmentStates(wave),
             false);
+        ResetCountdownTickState();
 
         PublishWaveRuntimeChanged();
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
@@ -334,6 +341,33 @@ public class WaveManager : MonoBehaviour, IWaveController
         float waveDuration = CurrentWaveDuration;
         float remaining = IsTimerOn ? Mathf.Max(0, waveDuration - CurrentTimer) : waveDuration;
         GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
+    }
+
+    private void TryPlayCountdownTick()
+    {
+        if (!IsTimerOn || !HasStarted)
+        {
+            return;
+        }
+
+        int remainingSeconds = Mathf.CeilToInt(Mathf.Max(0f, CurrentWaveDuration - CurrentTimer));
+        if (remainingSeconds <= 0 || remainingSeconds > COUNTDOWN_WARNING_SECONDS)
+        {
+            return;
+        }
+
+        if (remainingSeconds == lastCountdownSecond)
+        {
+            return;
+        }
+
+        lastCountdownSecond = remainingSeconds;
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WaveCountdownTick);
+    }
+
+    private void ResetCountdownTickState()
+    {
+        lastCountdownSecond = -1;
     }
 
     private void PublishWaveRuntimeChanged()

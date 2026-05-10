@@ -44,7 +44,7 @@ public class InventoryUI : ViewPartBase
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
             ClosePopup();
         }
     }
@@ -382,7 +382,6 @@ public class InventoryUI : ViewPartBase
 
         currentOperateEntryId = null;
         currentPopupHandle = default;
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         ClosePopupState();
     }
 

@@ -13,8 +13,8 @@ public class HealthComponent : EntityComponentBase
 {
     private const float LIFE_STEAL_HEAL_RATE_PER_RATIO = 0.1f;
 
-    [Header("Inspector")]
-    [Tooltip("没有 PropertiesManager 时使用的默认最大生命值。")]
+    [Header("检视面板")]
+    [Tooltip("没有属性管理器时使用的默认最大生命值。")]
     [SerializeField]
     private float defaultMaxHealth = 1f;
 
@@ -117,7 +117,6 @@ public class HealthComponent : EntityComponentBase
         }
 
         //暂时不屏蔽超出伤害了，后续有需要再修改
-        // float realDamage = Mathf.Min(result.FinalDamage, health);
         float realDamage = result.FinalDamage;
         if (realDamage <= 0f)
         {

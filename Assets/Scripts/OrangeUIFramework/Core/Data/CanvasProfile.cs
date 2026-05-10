@@ -5,14 +5,14 @@ namespace Orange.UIFramework
     [CreateAssetMenu(menuName = "Orange/UI Framework/Canvas Profile", fileName = "CanvasProfile")]
     public sealed class CanvasProfile : ScriptableObject
     {
-        [Header("Render")]
+        [Header("渲染")]
         [SerializeField] private RenderMode renderMode = RenderMode.ScreenSpaceOverlay;
         [SerializeField] private Camera uiCamera;
         [Min(0.01f)]
         [SerializeField] private float planeDistance = 100f;
         [SerializeField] private int rootSortingOrder;
 
-        [Header("Scale")]
+        [Header("缩放")]
         [SerializeField] private Vector2 referenceResolution = new Vector2(1920f, 1080f);
         [Range(0f, 1f)]
         [SerializeField] private float matchWidthOrHeight = 0.5f;

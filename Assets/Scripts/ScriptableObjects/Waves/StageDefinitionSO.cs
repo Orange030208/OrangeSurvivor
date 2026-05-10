@@ -7,11 +7,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Stage Definition", menuName = ScriptableObjectMenuPaths.STAGE_DEFINITION, order = 0)]
 public class StageDefinitionSO : ScriptableObject
 {
-    [Header("Identity")]
+    [Header("标识")]
     [SerializeField] private string stageId = "Stage_001";
     [SerializeField] private string displayName = "Stage 1";
 
-    [Header("Waves")]
+    [Header("波次")]
     // 按数组顺序决定关卡中的波次顺序。
     [SerializeField] private WaveDefinitionSO[] waves;
 

@@ -110,6 +110,7 @@ public class Chest : Collection
             return;
         }
 
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ChestOpened);
         animatable.PlayState(animConfig.OpenHash);
     }
 

@@ -16,7 +16,7 @@ public class SkeletonBrain : EnemyBrain
     private readonly StateMachine<SkeletonAIState> stateMachine = new();
     private readonly Collider2D[] areaHitBuffer = new Collider2D[AREA_HIT_BUFFER_SIZE];
 
-    [Header("Attack Points")]
+    [Header("攻击点位")]
     [SerializeField] private Transform meleePointTransform;
 
     private EnemyAttackController attackController;
@@ -119,7 +119,6 @@ public class SkeletonBrain : EnemyBrain
                 owner.Center));
         }
 
-        AudioSfxBridge.RequestPlay(AudioSfxKey.Slap);
     }
 
     protected void CommitAttackCooldown()

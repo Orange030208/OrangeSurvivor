@@ -54,13 +54,11 @@ public class WeaponOperatePopup : InventoryOperatePopupBase
 
     private void OnSellClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         SellRequested?.Invoke(currentEntryId);
     }
 
     private void OnMergeClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         MergeRequested?.Invoke(currentEntryId);
     }
 }

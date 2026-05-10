@@ -10,7 +10,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public const string LASER_ACTION_ID = "GolemMechaStoneBoss_Laser";
     public const string SHIELD_ACTION_ID = "GolemMechaStoneBoss_Shield";
 
-    [Header("Phase")]
+    [Header("阶段")]
     [SerializeField, Range(0f, 1f)] private float phaseTwoHealthRatio = 0.7f;
     [SerializeField, Range(0f, 1f)] private float phaseThreeHealthRatio = 0.35f;
     [SerializeField] private List<PropModifierData> phaseTransitionModifiers = new()
@@ -18,7 +18,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 100f),
     };
 
-    [Header("Attack Timing")]
+    [Header("攻击时机")]
     [SerializeField] private EnemyActionDefinition meleeAction = new();
     [SerializeField] private EnemyActionDefinition shootAction = new();
     [SerializeField] private EnemyActionDefinition laserAction = new();
@@ -27,24 +27,24 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, HideInInspector, Range(0f, 1f)] private float meleeCommitNormalizedTime = 0.55f;
     [SerializeField, HideInInspector, Range(0f, 1f)] private float shootCommitNormalizedTime = 0.48f;
 
-    [Header("Laser")]
+    [Header("激光")]
     [Tooltip("激光预瞄锁定目标方向的动画归一化时间；到达该时间后，开火前不再继续追踪玩家位置。")]
     [SerializeField, Range(0f, 1f)] private float laserAimLockNormalizedTime = 0.65f;
     [SerializeField, Range(0f, 1f)] private float laserFireStartNormalizedTime = 0.35f;
     [SerializeField, Min(0f)] private float laserDuration = 0.75f;
     [SerializeField, Min(0.01f)] private float laserWidth = 1.2f;
-    [Tooltip("Laser gameplay and visual length. The beam pierces targets within this length instead of stopping at the first hit.")]
+    [Tooltip("激光的玩法判定长度与视觉长度。光束会贯穿该长度内的目标，而不是命中第一个目标后停止。")]
     [SerializeField, Min(0.1f)] private float laserLength = 40f;
     [SerializeField, Min(0.01f)] private float laserDamageInterval = 0.25f;
     [SerializeField, Min(0f)] private float laserDamageMultiplier = 0.65f;
-    [Tooltip("Maximum active laser turn speed in degrees per second. Use 0 to keep the initial fire direction locked.")]
+    [Tooltip("激光激活期间每秒最大转向角度。设为 0 时保持初始开火方向锁定。")]
     [SerializeField, Min(0f)] private float laserTurnSpeedDegrees = 18f;
     [SerializeField, Min(0f)] private float laserCooldown = 8f;
     [SerializeField, Min(1)] private int laserMinPhase = 2;
     [SerializeField, Min(0f)] private float laserRangeMultiplier = 1f;
     [SerializeField] private GolemMechaStoneLaserVisual laserVisualPrefab;
 
-    [Header("Shield")]
+    [Header("护盾")]
     [SerializeField, Min(0f)] private float shieldDuration = 3f;
     [SerializeField, Min(0f)] private float shieldCooldown = 12f;
     [SerializeField, Min(1)] private int shieldMinPhase = 3;
@@ -53,13 +53,13 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 40f),
     };
 
-    [Header("Melee Attack")]
+    [Header("近战攻击")]
     [SerializeField, Min(0.01f)] private float meleeAttackSpeedBenefitRatio = 0.75f;
     [SerializeField, Min(0f)] private float meleeRangeMultiplier = 1f;
     [Tooltip("近战攻击提交时在实际攻击区域中心生成的挥出特效预制体；空挥也会生成。")]
     [SerializeField] private GameObject meleeHitVfxPrefab;
 
-    [Header("Shoot Attack")]
+    [Header("射击攻击")]
     [SerializeField, Min(0.01f)] private float shootAttackSpeedBenefitRatio = 0.5f;
     [SerializeField, Min(0f)] private float shootRangeMultiplier = 1f;
     [SerializeField] private ProjectileDefinitionSO shootProjectileDefinition;

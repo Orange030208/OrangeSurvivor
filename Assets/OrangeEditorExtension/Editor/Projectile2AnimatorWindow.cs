@@ -15,8 +15,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
     private const string SpritePropertyName = "m_Sprite";
     private const string StateName = "Idle";
 
-    // These values are intentionally plain strings so the tool stays usable in fresh checkouts
-    // without requiring a ScriptableObject settings asset.
+    // 这些值特意保留为普通字符串，让工具在全新检出后也能直接使用，不依赖额外的 ScriptableObject 设置资产。
     private string sourceFolder = DefaultSourceFolder;
     private string outputFolder = DefaultOutputFolder;
     private float sampleRate = DefaultSampleRate;
@@ -103,7 +102,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
 
         EnsureFolder(outputFolder);
 
-        // Collect textures under the source folder and generate assets per texture.
+        // 收集源目录下的纹理，并按每张纹理生成对应资源。
         string[] textureGuids = AssetDatabase.FindAssets("t:Texture2D", new[] { sourceFolder });
         List<string> texturePaths = textureGuids
             .Select(AssetDatabase.GUIDToAssetPath)
@@ -156,7 +155,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
 
     private bool TryGenerateForTexture(string texturePath)
     {
-        // Ensure we can load sub-sprites via LoadAllAssetRepresentationsAtPath.
+        // 确保后续可以通过 LoadAllAssetRepresentationsAtPath 读取子精灵。
         EnsureMultipleSpriteImport(texturePath);
 
         List<Sprite> sprites = LoadSprites(texturePath);
@@ -224,7 +223,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
             AssetDatabase.CreateAsset(clip, clipPath);
         }
 
-        // Rebuild the clip each run so this tool is deterministic and idempotent.
+        // 每次运行都重建 Clip，保证工具输出确定且可重复执行。
         clip.frameRate = sampleRate;
         clip.name = Path.GetFileNameWithoutExtension(clipPath);
 
@@ -240,7 +239,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
             propertyName = SpritePropertyName
         };
 
-        // Keyframes are spaced at 1 / sampleRate seconds.
+        // 关键帧间隔为 1 / sampleRate 秒。
         ObjectReferenceKeyframe[] keyframes = new ObjectReferenceKeyframe[sprites.Count];
         for (int i = 0; i < sprites.Count; i++)
         {
@@ -265,7 +264,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
             controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
         }
 
-        // Keep a single default state ("Idle") playing the generated clip.
+        // 保留一个默认状态 "Idle"，用于播放生成的 Clip。
         AnimatorControllerLayer layer = controller.layers.Length > 0 ? controller.layers[0] : null;
         if (layer == null)
         {
@@ -329,7 +328,7 @@ public sealed class Projectile2AnimatorWindow : EditorWindow
             return;
         }
 
-        // Create folders segment-by-segment so nested output paths work reliably.
+        // 按路径片段逐级创建文件夹，确保嵌套输出路径稳定可用。
         string normalizedPath = assetFolderPath.Replace("\\", "/");
         string[] segments = normalizedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
         if (segments.Length == 0)

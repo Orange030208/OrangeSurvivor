@@ -5,15 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Audio Bus Settings", menuName = ScriptableObjectMenuPaths.AUDIO_BUS_SETTINGS, order = 0)]
 public class AudioBusSettingsSO : ScriptableObject
 {
-    [Header("Volumes")]
+    [Header("音量")]
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float musicVolume = AudioConstants.DEFAULT_VOLUME;
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float sfxVolume = AudioConstants.DEFAULT_VOLUME;
 
-    [Header("SFX Groups")]
+    [Header("音效分组")]
     [SerializeField] private string defaultSfxGroupId = AudioConstants.DEFAULT_SFX_GROUP_ID;
     [SerializeField] private AudioSfxGroupSettings[] sfxGroups = CreateDefaultGroups();
 
-    [Header("2D Spatial")]
+    [Header("二维空间化")]
     [SerializeField] [Min(AudioConstants.MIN_2D_AUDIBLE_DISTANCE)] private float audibleDistance = AudioConstants.DEFAULT_2D_AUDIBLE_DISTANCE;
 
     private Dictionary<string, AudioSfxGroupSettings> sfxGroupCache;

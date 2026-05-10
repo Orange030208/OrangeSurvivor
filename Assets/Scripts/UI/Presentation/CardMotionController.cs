@@ -17,7 +17,7 @@ public class CardMotionController : ViewPartBase
     [SerializeField] private CardMotionProfileSO profile;
 
     [Header("复位根节点")]
-    [Tooltip("默认使用当前物体。后续如果卡牌拆出VisualRoot，可以把VisualRoot拖进来，避免和外层布局互相影响。")]
+    [Tooltip("默认使用当前物体。后续如果卡牌拆出视觉根节点，可以把视觉根节点拖进来，避免和外层布局互相影响。")]
     [SerializeField] private RectTransform restRoot;
 
     [Header("运行时动态")]

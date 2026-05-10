@@ -7,7 +7,7 @@ namespace Orange.UIFramework
     [RequireComponent(typeof(TMP_Text))]
     public sealed class LocalizedText : MonoBehaviour
     {
-        [Header("Localization")]
+        [Header("本地化")]
         [SerializeField] private LocalizationService localizationService;
         [SerializeField] private string key;
         [SerializeField] private bool refreshOnEnable = true;

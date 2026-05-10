@@ -6,7 +6,7 @@ public class DamageFlashComponent : EntityComponentBase
     private static readonly int FlashAmountId = Shader.PropertyToID("_FlashAmount");
     private static readonly int FlashColorId = Shader.PropertyToID("_FlashColor");
 
-    [Header("Flash")]
+    [Header("闪烁反馈")]
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private float flashDuration = 0.08f;
 

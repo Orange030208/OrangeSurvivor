@@ -48,13 +48,13 @@ public class MenuUIPage : PageBase
 
     private void OnStartButtonOnClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.GameStart);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish<MenuStartClickedEvent>();
     }
 
     private void OnSettingsButtonClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(settingsVisible ? AudioSfxKey.UiCancel : AudioSfxKey.UiConfirm);
         SetSettingsVisible(!settingsVisible);
     }
 

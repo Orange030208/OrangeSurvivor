@@ -8,7 +8,7 @@ public class PlayerLevel : EntityComponentBase
     private const int MIN_EXPERIENCE = 0;
     private const int DEFAULT_REQUIRED_EXPERIENCE = 1;
 
-    [Header("Config")]
+    [Header("配置")]
     [SerializeField] private PlayerLevelConfigSO levelConfig;
 
     private Entity owner;
@@ -85,16 +85,16 @@ public class PlayerLevel : EntityComponentBase
         unspentUpgradePoints = MIN_EXPERIENCE;
         pendingExperienceGain = 0f;
         requiredXP = CalculateRequiredXP(currentLevel);
-        ResolvePendingLevelUps();
+        ResolvePendingLevelUps(false);
     }
 
-    private void ResolvePendingLevelUps()
+    private void ResolvePendingLevelUps(bool playLevelUpSfx = true)
     {
         int safetyCounter = MIN_EXPERIENCE;
         while (currentXP >= requiredXP && requiredXP > MIN_EXPERIENCE)
         {
             currentXP -= requiredXP;
-            LevelUp();
+            LevelUp(playLevelUpSfx);
             safetyCounter++;
             if (safetyCounter > 1000)
             {
@@ -104,7 +104,7 @@ public class PlayerLevel : EntityComponentBase
         }
     }
 
-    private void LevelUp()
+    private void LevelUp(bool playSfx)
     {
         currentLevel++;
         int upgradePoints = GetUpgradePointsPerLevel();
@@ -113,6 +113,11 @@ public class PlayerLevel : EntityComponentBase
 
         if (upgradePoints > 0)
         {
+            if (playSfx)
+            {
+                AudioSfxBridge.RequestPlay(AudioSfxKey.PlayerLevelUp);
+            }
+
             GameEventBus.Publish(new UpgradeRewardAvailableEvent(unspentUpgradePoints));
         }
     }

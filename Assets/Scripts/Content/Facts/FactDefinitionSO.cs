@@ -10,7 +10,7 @@ public class FactDefinitionSO : ScriptableObject
     [SerializeField] private FactValueType valueType = FactValueType.Float;
     [SerializeField] private FactDefinitionBuiltInKind builtInKind;
 
-    [Header("Built-in Parameters")]
+    [Header("内建参数")]
     [SerializeField] private PropType propType;
     [SerializeField] private UpgradeCardTag upgradeCardTag;
     [SerializeField] private WeaponTag weaponTag;

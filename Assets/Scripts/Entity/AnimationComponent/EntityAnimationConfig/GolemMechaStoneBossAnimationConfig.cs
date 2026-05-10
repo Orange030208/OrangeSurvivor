@@ -6,7 +6,7 @@ using UnityEngine;
     menuName = ScriptableObjectMenuPaths.GOLEM_MECHA_STONE_BOSS_ANIMATION_CONFIG)]
 public sealed class GolemMechaStoneBossAnimationConfig : EntityAnimationConfig
 {
-    [Header("Golem Mecha Stone Boss States")]
+    [Header("机械石魔首领状态")]
     public string Melee = "Melee";
     public string Shoot = "Shoot";
     public string LaserCast = "LaserCast";

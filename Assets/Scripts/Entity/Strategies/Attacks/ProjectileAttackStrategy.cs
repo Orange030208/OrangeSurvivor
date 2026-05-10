@@ -56,7 +56,6 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
             attackController.AttackLayer,
             projectileDefinition,
             maxTravelDistance: ResolveAttackRange()));
-        AudioSfxBridge.RequestPlay(AudioSfxKey.GunshotLight);
         return true;
     }
 

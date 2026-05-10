@@ -182,7 +182,7 @@ public class ShopManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(-price);
-        playerAccessoryManager.EquipAccessory(accessoryData);
+        playerAccessoryManager.EquipAccessory(accessoryData, false);
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
@@ -213,7 +213,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        if (!weaponsHolder.AddWeapon(weaponData, itemData.Level))
+        if (!weaponsHolder.AddWeapon(weaponData, itemData.Level, false))
         {
             NotifyPurchaseFailed("No empty weapon slot available.");
             return;

@@ -55,7 +55,7 @@ public class GamingUIPage : PageBase
 
     private void OnPauseClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish(new PauseGameRequestedEvent());
     }
 

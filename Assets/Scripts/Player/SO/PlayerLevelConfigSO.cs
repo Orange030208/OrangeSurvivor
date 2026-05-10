@@ -8,11 +8,11 @@ public class PlayerLevelConfigSO : ScriptableObject
     private const int MIN_REQUIRED_EXPERIENCE = 1;
     private const int MIN_UPGRADE_POINTS = 1;
 
-    [Header("Start")]
+    [Header("起始状态")]
     [SerializeField] private int startLevel = MIN_LEVEL;
     [SerializeField] private int startExperience = MIN_EXPERIENCE;
 
-    [Header("Progression")]
+    [Header("成长曲线")]
     [SerializeField] private int baseRequiredExperience = 5;
     [SerializeField] private int requiredExperiencePerLevel = 5;
     [SerializeField] private int requiredExperienceGrowthPerLevel = 0;

@@ -16,7 +16,7 @@ MonoBehaviour:
   role: 0
   basePropsAsset: {fileID: 11400000, guid: 11d83d5cbe808c64f803388bedcde52c, type: 2}
   animConfig: {fileID: 11400000, guid: 84ce5795e7038434ebf1c35467a1f24a, type: 2}
-  damagedSfxKey: 400
+  damagedSfxKey: 402
   attackCommitNormalizedTime: 0.55
   berserkInterval: 7
   preChargeStunDuration: 1.1

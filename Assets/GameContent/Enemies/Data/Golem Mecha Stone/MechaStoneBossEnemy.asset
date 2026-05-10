@@ -16,7 +16,7 @@ MonoBehaviour:
   role: 1
   basePropsAsset: {fileID: 11400000, guid: 5d70ba9e3f5842458270116e8a486c5d, type: 2}
   animConfig: {fileID: 11400000, guid: 60d78afb42e94e0991dd1fab66ed0152, type: 2}
-  damagedSfxKey: 400
+  damagedSfxKey: 402
   phaseTwoHealthRatio: 0.7
   phaseThreeHealthRatio: 0.35
   phaseTransitionModifiers:

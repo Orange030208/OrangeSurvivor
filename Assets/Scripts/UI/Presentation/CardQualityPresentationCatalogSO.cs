@@ -60,8 +60,8 @@ public class CardQualityPresentationCatalogSO : ScriptableObject
             CardQuality.Rare => new CardQualityPresentationProfile(
                 CardQuality.Rare,
                 "rare",
-                AudioSfxKey.UpgradeCardRareReveal,
-                AudioSfxKey.UpgradeCardSelected,
+                AudioSfxKey.UpgradeCardReveal,
+                AudioSfxKey.UpgradeCardRareSelected,
                 new Color(0.078431375f, 0.19607843f, 0.26666668f, 0.8784314f),
                 new Color(0.3372549f, 0.8235294f, 1f, 1f),
                 new Color(0.6039216f, 0.9098039f, 1f, 1f),
@@ -72,8 +72,8 @@ public class CardQualityPresentationCatalogSO : ScriptableObject
             CardQuality.Epic => new CardQualityPresentationProfile(
                 CardQuality.Epic,
                 "epic",
-                AudioSfxKey.UpgradeCardEpicReveal,
-                AudioSfxKey.UpgradeCardSelected,
+                AudioSfxKey.UpgradeCardReveal,
+                AudioSfxKey.UpgradeCardEpicSelected,
                 new Color(0.21176471f, 0.13725491f, 0.30588236f, 0.8784314f),
                 new Color(0.7607843f, 0.47058824f, 1f, 1f),
                 new Color(0.89411765f, 0.74509805f, 1f, 1f),
@@ -84,8 +84,8 @@ public class CardQualityPresentationCatalogSO : ScriptableObject
             CardQuality.Legendary => new CardQualityPresentationProfile(
                 CardQuality.Legendary,
                 "legendary",
-                AudioSfxKey.UpgradeCardLegendaryReveal,
-                AudioSfxKey.UpgradeCardSelected,
+                AudioSfxKey.UpgradeCardReveal,
+                AudioSfxKey.UpgradeCardLegendarySelected,
                 new Color(0.30588236f, 0.20392157f, 0.08627451f, 0.9019608f),
                 new Color(1f, 0.7607843f, 0.32156864f, 1f),
                 new Color(1f, 0.87058824f, 0.5803922f, 1f),
@@ -96,8 +96,8 @@ public class CardQualityPresentationCatalogSO : ScriptableObject
             _ => new CardQualityPresentationProfile(
                 CardQuality.Common,
                 "common",
-                AudioSfxKey.UpgradeCardCommonReveal,
-                AudioSfxKey.UpgradeCardSelected,
+                AudioSfxKey.UpgradeCardReveal,
+                AudioSfxKey.UpgradeCardCommonSelected,
                 new Color(0.13333334f, 0.14901961f, 0.1764706f, 0.8627451f),
                 new Color(0.6039216f, 0.6509804f, 0.7137255f, 1f),
                 new Color(0.9098039f, 0.9254902f, 0.95686275f, 1f),

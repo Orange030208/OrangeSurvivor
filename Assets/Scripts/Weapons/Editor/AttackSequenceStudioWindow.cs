@@ -537,6 +537,8 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         DrawWeaponDataProperty("visualForwardAngle", "Visual Forward Angle");
         DrawWeaponDataProperty("stopAimingWhenAttackReady", "Stop Aiming When Ready");
         DrawWeaponDataProperty("attackSequenceOccupancy", "Sequence Occupancy");
+        DrawWeaponDataProperty("attackTimingMode", "Attack Timing Mode");
+        DrawWeaponDataProperty("targetingMode", "Targeting Mode");
         DrawWeaponDataProperty("spawnPoints", "Spawn Points", true);
         DrawWeaponDataProperty("enableHitBox", "Enable Hit Box");
         DrawWeaponDataProperty("hitVfxPrefab", "Hit VFX");

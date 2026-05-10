@@ -15,14 +15,14 @@ public class EntityAnimationConfig : ScriptableObject
 
     public RuntimeAnimatorController AnimatorController;
 
-    [Header("Facing")]
+    [Header("朝向")]
     public FacingDirection DefaultFacingDirection = FacingDirection.Right;
     
     [Header("通用基础状态")] 
     public string Idle = "Idle";
     public string Move = "Move";
 
-    [Header("Collection Animation States")]
+    [Header("收集动画状态")]
     public string Float = "Float";
     public string Open = "Open";
     

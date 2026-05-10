@@ -5,7 +5,7 @@ public sealed class SkeletonMeteorhammerEnemySO : SkeletonEnemySO
 {
     public new const string ATTACK_ACTION_ID = "SkeletonMeteorhammer_Attack";
 
-    [Header("Meteorhammer Attack")]
+    [Header("流星锤攻击")]
     [SerializeField, Range(0f, 1f)] private float firstAttackCommitNormalizedTime = 0.35f;
     [SerializeField, Min(0f)] private float firstAttackRangeMultiplier = 1f;
     [SerializeField, Range(0f, 1f)] private float secondAttackCommitNormalizedTime = 0.7f;

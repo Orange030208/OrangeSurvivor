@@ -6,7 +6,7 @@ public class WormEnemySO : EnemySO
     public const string ATTACK_ACTION_ID = "Worm_Attack";
     public const string RETREAT_ATTACK_ACTION_ID = "Worm_RetreatAttack";
 
-    [Header("Distance")]
+    [Header("距离")]
     [Min(0f)] public float retreatTriggerDistance = 4f;
     [Min(0f)] public float retreatCompleteDistance = 7f;
     
@@ -15,13 +15,13 @@ public class WormEnemySO : EnemySO
     [SerializeField] private EnemyActionDefinition retreatAttackAction = new();
     [HideInInspector, Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
 
-    [Header("Attacks")]
+    [Header("攻击")]
     [Min(0.01f)] public float attackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO attackProjectileDefinition;
     [Min(0.01f)] public float retreatAttackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO retreatAttackProjectileDefinition;
 
-    [Header("Movement")]
+    [Header("移动")]
     public RetreatMoveData retreatMovement = new()
     {
         safeDistance = 7f,

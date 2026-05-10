@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class MobileJoystick : MonoBehaviour
 {
-    [Header(" Elements ")]
+    [Header("元素")]
     [SerializeField] private RectTransform joystickOutline;
     [SerializeField] private RectTransform joystickKnob;
 
-    [Header(" Settings ")]
+    [Header("设置")]
     [SerializeField] private float moveFactor;
 
     private Canvas parentCanvas;

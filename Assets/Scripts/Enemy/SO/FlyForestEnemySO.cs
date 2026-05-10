@@ -6,19 +6,19 @@ public class FlyForestEnemySO : EnemySO
 {
     public const string NORMAL_ATTACK_ACTION_ID = "FlyForest_NormalAttack";
 
-    [Header("State Thresholds")]
+    [Header("状态阈值")]
     [Range(0f, 100f)] 
     public float lowHpPercent = 30f;
     
     public List<PropModifierData> fastBurstModifierData = new List<PropModifierData>();
 
-    [Header("Attack")]
+    [Header("攻击")]
     [SerializeField] private EnemyActionDefinition normalAttackAction = new();
     [SerializeField, HideInInspector, Range(0f, 1f)] private float normalAttackCommitNormalizedTime = 0.578f;
     [Min(0.01f)] public float normalAttackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO normalAttackProjectileDefinition;
 
-    [Header("Movement")]
+    [Header("移动")]
     public CircleKiteMoveData normalMovement = new()
     {
         circleSpeedRatio = 0.5f,

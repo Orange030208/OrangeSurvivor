@@ -16,10 +16,10 @@ public class WeaponsHolder : EntityComponentBase
     private const float CIRCLE_START_ANGLE_DEGREES = 90f;
     private const float FULL_CIRCLE_DEGREES = 360f;
 
-    [Header("Inspector")]
-    [Tooltip("玩家身上的武器槽位列表。每个槽位对应一个 WeaponPosition。")]
+    [Header("检视面板")]
+    [Tooltip("玩家身上的武器槽位列表。每个槽位对应一个武器位置组件。")]
     [SerializeField] private WeaponPosition[] weaponPositions;
-    [Tooltip("武器槽位围绕 Entity.Center 排布的半径。")]
+    [Tooltip("武器槽位围绕实体中心点排布的半径。")]
     [SerializeField, Min(0f)] private float weaponSlotRadius = DEFAULT_WEAPON_SLOT_RADIUS;
     [Tooltip("槽位父节点。留空时会复用现有槽位的父节点，仍为空则使用当前对象。")]
     [SerializeField] private Transform weaponSlotsRoot;
@@ -77,7 +77,7 @@ public class WeaponsHolder : EntityComponentBase
         for (int i = 0; i < initialWeapons.Count; i++)
         {
             WeaponEntry weapon = initialWeapons[i];
-            AddWeapon(weapon.weaponData, weapon.level);
+            AddWeapon(weapon.weaponData, weapon.level, false);
         }
     }
 
@@ -115,7 +115,7 @@ public class WeaponsHolder : EntityComponentBase
     /// 运行时可变配置如 targetLayerMask 必须在武器实例化后立即下发，
     /// 不应依赖武器在 Awake 阶段缓存旧值。
     /// </summary>
-    public bool AddWeapon(WeaponDataSO weaponData, int level)
+    public bool AddWeapon(WeaponDataSO weaponData, int level, bool playSfx = true)
     {
         if (weaponData == null)
         {
@@ -140,6 +140,10 @@ public class WeaponsHolder : EntityComponentBase
 
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
+        if (playSfx)
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.ItemEquipped);
+        }
         return true;
     }
 
@@ -261,7 +265,6 @@ public class WeaponsHolder : EntityComponentBase
             mergedWeapon.SetTargetLayerMask(targetLayerMask);
         }
 
-        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         RebuildEquippedWeaponsCache();
         OnWeaponsChanged?.Invoke();
         return true;

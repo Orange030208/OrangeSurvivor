@@ -13,7 +13,7 @@ namespace Orange.UIFramework
     {
         public static UIManager Instance { get; private set; }
 
-        [Header("Configuration")]
+        [Header("配置")]
         [SerializeField] private UIFrameworkSettings settings;
         [SerializeField] private ViewCatalog catalog;
         [SerializeField] private Canvas existingRootCanvas;

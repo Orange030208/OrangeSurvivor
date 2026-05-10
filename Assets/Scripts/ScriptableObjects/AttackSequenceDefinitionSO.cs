@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Defines one weapon attack sequence: sampled motion frames, retarget settings, and gameplay events.
+/// 定义一套武器攻击序列：动作采样帧、重定向设置与玩法事件。
 /// </summary>
 [CreateAssetMenu(fileName = "Weapon Attack Sequence", menuName = ScriptableObjectMenuPaths.WEAPON_ATTACK_SEQUENCE, order = 0)]
 public class AttackSequenceDefinitionSO : ScriptableObject
 {
-    [Header("Inspector")]
-    [Tooltip("Duration of one full attack sequence. Motion and event keyframes use normalized time from 0 to 1.")]
+    [Header("检视面板")]
+    [Tooltip("一次完整攻击序列的持续时间。动作和事件关键帧使用 0 到 1 的归一化时间。")]
     [SerializeField] private float duration = 0.25f;
-    [Tooltip("Whether the animated transform returns to its cached default pose when playback completes.")]
+    [Tooltip("播放完成后，动画目标是否回到缓存的默认姿态。")]
     [SerializeField] private bool restoreDefaultPoseOnComplete = true;
-    [Tooltip("How the runtime target offset is resolved when this sequence starts.")]
+    [Tooltip("该序列开始时如何解析运行时目标偏移。")]
     [SerializeField] private WeaponSequenceTargetOffsetMode targetOffsetMode = WeaponSequenceTargetOffsetMode.ActualTarget;
-    [Tooltip("The target local offset this animation was authored against. When the real target offset equals this value, motion samples play unchanged.")]
+    [Tooltip("制作该动画时参考的目标本地偏移。真实目标偏移等于该值时，动作采样会原样播放。")]
     [SerializeField] private Vector2 referenceTargetOffset = new(0f, 1f);
-    [Tooltip("Per-axis retarget scale weight. 0 keeps the authored sample, 1 fully scales that axis toward the current target offset.")]
+    [Tooltip("各轴重定向缩放权重。0 保留原始采样，1 表示该轴完全缩放到当前目标偏移。")]
     [SerializeField] private Vector2 retargetScaleWeight = new(0f, 1f);
-    [Tooltip("Per-axis multiplier used when a motion sample moves opposite to the reference target direction. 0 keeps backward windup authored, 1 keeps the regular retarget weight.")]
+    [Tooltip("动作采样朝参考目标反方向移动时使用的各轴倍率。0 保留原始后撤蓄力，1 使用正常重定向权重。")]
     [SerializeField] private Vector2 oppositeDirectionRetargetWeight = new(1f, 0f);
 
-    [Header("Motion")]
-    [Tooltip("Sampled local position and rotation frames for the attack motion.")]
+    [Header("运动")]
+    [Tooltip("攻击动作采样得到的本地位置与旋转帧。")]
     [SerializeField] private List<WeaponMotionKeyframe> motionKeyframes = new()
     {
         new WeaponMotionKeyframe(0f, Vector3.zero, Vector3.zero),
@@ -32,8 +32,8 @@ public class AttackSequenceDefinitionSO : ScriptableObject
         new WeaponMotionKeyframe(1f, Vector3.zero, Vector3.zero, WeaponMotionEase.InOutSine)
     };
 
-    [Header("Sequence Events")]
-    [Tooltip("Gameplay and presentation events triggered during sequence playback.")]
+    [Header("序列事件")]
+    [Tooltip("序列播放过程中触发的玩法事件与表现事件。")]
     [SerializeField] private List<WeaponSequenceEventKeyframe> eventKeyframes = new()
     {
         WeaponSequenceEventKeyframe.CreateWindowEvent(0.4f, WeaponSequenceEventType.OpenHitWindow, 0),

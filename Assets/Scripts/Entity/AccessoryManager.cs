@@ -27,7 +27,7 @@ public class AccessoryManager : EntityComponentBase
 
         foreach (var accessory in initialAccessories)
         {
-            EquipAccessory(accessory);
+            EquipAccessory(accessory, false);
         }
     }
 
@@ -36,7 +36,7 @@ public class AccessoryManager : EntityComponentBase
         ClearEquippedAccessories();
     }
 
-    public bool EquipAccessory(AccessoryDataSO accessoryData)
+    public bool EquipAccessory(AccessoryDataSO accessoryData, bool playSfx = true)
     {
         if (accessoryData == null || featureHost == null)
         {
@@ -58,6 +58,10 @@ public class AccessoryManager : EntityComponentBase
         propertiesManager.AddModifiers(newAccessoryData.RuntimeId, accessoryData.PropertyModifiers);
 
         OnAccessoryEquipped?.Invoke(accessoryData);
+        if (playSfx)
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.ItemEquipped);
+        }
         return true;
     }
 

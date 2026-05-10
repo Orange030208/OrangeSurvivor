@@ -4,10 +4,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Item Quality Visual Config", menuName = ScriptableObjectMenuPaths.ITEM_QUALITY_VISUAL_CONFIG, order = 0)]
 public class ItemQualityVisualConfigSO : ScriptableObject
 {
-    [Header("Weapon Level Styles")]
+    [Header("武器等级样式")]
     [SerializeField] private List<ItemQualityVisualStyle> weaponLevelStyles = new();
 
-    [Header("Accessory Rarity Styles")]
+    [Header("饰品稀有度样式")]
     [SerializeField] private List<ItemQualityVisualStyle> accessoryRarityStyles = new();
 
     public IReadOnlyList<ItemQualityVisualStyle> WeaponLevelStyles => weaponLevelStyles;

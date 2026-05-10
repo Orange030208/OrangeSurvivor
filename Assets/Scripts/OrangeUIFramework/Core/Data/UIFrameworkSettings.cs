@@ -6,20 +6,20 @@ namespace Orange.UIFramework
     [CreateAssetMenu(menuName = "Orange/UI Framework/Settings", fileName = "OrangeUIFrameworkSettings")]
     public sealed class UIFrameworkSettings : ScriptableObject
     {
-        [Header("Runtime")]
+        [Header("运行时")]
         [SerializeField] private string instanceIdPrefix = "ui_";
         [SerializeField] private bool useUnscaledTime = true;
 
-        [Header("Root")]
+        [Header("根节点")]
         [SerializeField] private string rootName = "UIRoot";
         [SerializeField] private CanvasProfile canvasProfile;
 
-        [Header("Pooling")]
+        [Header("对象池")]
         [SerializeField] private bool enablePooling = true;
         [Min(0)]
         [SerializeField] private int maxCachedInstancesPerView = 3;
 
-        [Header("Layers")]
+        [Header("层级")]
         [SerializeField] private List<LayerDefinition> layers = CreateDefaultLayers();
 
         public string InstanceIdPrefix => instanceIdPrefix;

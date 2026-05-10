@@ -19,6 +19,7 @@ public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
 
         StopMoving();
         FaceTarget();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GolemMechaStoneBossMelee);
         BeginBossAction(BossData.MeleeAction);
     }
 

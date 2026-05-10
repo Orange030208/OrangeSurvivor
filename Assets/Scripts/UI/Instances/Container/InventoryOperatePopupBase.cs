@@ -11,7 +11,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Graphic))]
 public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPointerClickHandler
 {
-    [Header("--")]
+    [Header("基础信息")]
     [SerializeField] protected Image iconImage;
     
     [SerializeField] protected TextMeshProUGUI nameText;

@@ -12,13 +12,13 @@ public class AudioSfxEntry
     [SerializeField] private AudioSfxKey sfxKey = AudioSfxKey.None;
     [Tooltip("兼容旧配置的主音频资源。新配置可继续使用它作为默认变体。")]
     [SerializeField] private AudioClip clip;
-    [Tooltip("兼容旧配置的总线字段。SFX 分组现在由 groupId 决定。")]
+    [Tooltip("兼容旧配置的总线字段。音效分组现在由分组编号字段决定。")]
     [SerializeField] private AudioBusType busType = AudioBusType.Sfx;
-    [Tooltip("播放模式。OneShot 适合按钮/命中音效，Loop 适合少量循环音效。")]
+    [Tooltip("播放模式。一次性播放适合按钮/命中音效，循环播放适合少量循环音效。")]
     [SerializeField] private AudioPlaybackMode playbackMode = AudioPlaybackMode.OneShot;
-    [Tooltip("兼容旧配置的基础音高。若 pitchMin/pitchMax 未单独调整，将使用该值。")]
+    [Tooltip("兼容旧配置的基础音高。若音高范围上下限未单独调整，将使用该值。")]
     [SerializeField] [Range(AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH)] private float pitch = AudioConstants.DEFAULT_PITCH;
-    [Tooltip("自定义 SFX 分组 ID。为空时会按语义键回退到基础分组。")]
+    [Tooltip("自定义音效分组标识。为空时会按语义键回退到基础分组。")]
     [SerializeField] private string groupId;
     [Tooltip("用于素材响度校准的基础倍率，不作为玩家可见的单独音效音量。")]
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float baseVolumeScale = AudioConstants.DEFAULT_VOLUME;
@@ -26,13 +26,13 @@ public class AudioSfxEntry
     [SerializeField] [Range(AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH)] private float pitchMin = AudioConstants.DEFAULT_PITCH;
     [Tooltip("音高随机范围上限。")]
     [SerializeField] [Range(AudioConstants.MIN_PITCH, AudioConstants.MAX_PITCH)] private float pitchMax = AudioConstants.DEFAULT_PITCH;
-    [Tooltip("同一个 Cue 的最大同时播放数量。")]
+    [Tooltip("同一个音效提示的最大同时播放数量。")]
     [SerializeField] [Range(AudioConstants.MIN_CONCURRENT_COUNT, AudioConstants.MAX_CONCURRENT_COUNT)] private int maxConcurrent = AudioConstants.DEFAULT_CUE_MAX_CONCURRENT;
-    [Tooltip("同一个 Cue 的最小播放间隔，用于限制高频重复音效。")]
+    [Tooltip("同一个音效提示的最小播放间隔，用于限制高频重复音效。")]
     [SerializeField] [Min(0f)] private float cooldown;
-    [Tooltip("Cue 优先级。数值越小越重要，会映射到 Unity AudioSource priority。")]
+    [Tooltip("音效提示优先级。数值越小越重要，会映射到 Unity 音源优先级。")]
     [SerializeField] [Range(0, 256)] private int priority = AudioConstants.DEFAULT_AUDIO_PRIORITY;
-    [Tooltip("启用后，带位置的播放请求会按 2D 距离做音量衰减与左右声像。")]
+    [Tooltip("启用后，带位置的播放请求会按二维距离做音量衰减与左右声像。")]
     [SerializeField] private bool use2DSpatialBlend;
     [Tooltip("可选随机变体。为空时仅播放主音频资源。")]
     [SerializeField] private AudioSfxClipVariant[] clipVariants = Array.Empty<AudioSfxClipVariant>();
@@ -129,7 +129,7 @@ public class AudioSfxEntry
         }
 
         int keyValue = (int)sfxKey;
-        if (keyValue >= 100 && keyValue < 200 || sfxKey == AudioSfxKey.WoodenButtonClicked)
+        if (keyValue >= 100 && keyValue < 200 || keyValue >= 500 && keyValue < 700)
         {
             return AudioConstants.UI_SFX_GROUP_ID;
         }

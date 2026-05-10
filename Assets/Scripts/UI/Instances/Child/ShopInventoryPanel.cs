@@ -64,7 +64,7 @@ public class ShopInventoryPanel : ViewPartBase
 
     private void OnToggleRequested()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(visible ? AudioSfxKey.UiCancel : AudioSfxKey.UiConfirm);
         SetVisible(!visible);
     }
 

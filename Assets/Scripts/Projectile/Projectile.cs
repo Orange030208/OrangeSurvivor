@@ -7,7 +7,7 @@ public class Projectile : Entity, IProjectile
 {
     private const string DEFAULT_OBSTACLE_LAYER_NAME = "Wall";
 
-    [Header("Base")]
+    [Header("基础")]
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected LayerMask targetsLayerMask;
     [Tooltip("弹射物碰到这些阻挡层时会播放命中特效并销毁。未配置时默认使用项目中的 Wall 层。")]

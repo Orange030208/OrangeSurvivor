@@ -352,6 +352,7 @@ public class GameManager : MonoSingletonBase<GameManager>
         if (!completedEvent.HasNextWave)
         {
             GameEventBus.Publish<AllWavesCompletedEvent>();
+            AudioSfxBridge.RequestPlay(AudioSfxKey.StageCompleted);
             TransitionToState(GameState.StageComplete);
             return;
         }

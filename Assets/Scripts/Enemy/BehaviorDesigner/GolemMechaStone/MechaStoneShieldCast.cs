@@ -23,6 +23,7 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
         StopMoving();
         FaceTarget();
         ApplyModifiers();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GolemMechaStoneBossShield);
         BeginBossAction(BossData.ShieldAction);
     }
 

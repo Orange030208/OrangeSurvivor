@@ -24,6 +24,7 @@ public sealed class MechaStonePhaseChange : MechaStoneTaskBase
         targetPhase = BossBrain.ResolveNextPhase();
         StopMoving();
         ApplyModifiers();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GolemMechaStoneBossPhaseChanged);
         BeginBossAction(BossData.PhaseChangeAction);
     }
 

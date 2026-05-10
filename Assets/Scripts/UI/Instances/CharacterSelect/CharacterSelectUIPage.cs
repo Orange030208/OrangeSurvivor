@@ -87,13 +87,13 @@ public class CharacterSelectUIPage : PageBase
             return;
         }
 
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish<CharacterSelectionCompletedEvent>();
     }
 
     private void OnBackOnClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
         GameEventBus.Publish<CharacterSelectionBackClickedEvent>();
 
     }

@@ -43,6 +43,6 @@ public sealed class UpgradeRandomEquippedWeaponCard : FeatureEffectBase
         }
 
         Weapon selected = candidates[UnityEngine.Random.Range(0, candidates.Count)];
-        selected.SetLevel(WeaponLevelHelper.ClampLevel(selected.Level + Mathf.Max(1, levelIncrease)));
+        selected.SetLevel(WeaponLevelHelper.ClampLevel(selected.Level + Mathf.Max(1, levelIncrease)), true);
     }
 }

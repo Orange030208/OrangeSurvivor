@@ -95,13 +95,12 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
 
     private void OnBuyButtonClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
         BuyRequested?.Invoke(currentIndex);
     }
 
     private void OnLockButtonClicked()
     {
-        AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         LockToggleRequested?.Invoke(currentIndex);
     }
 

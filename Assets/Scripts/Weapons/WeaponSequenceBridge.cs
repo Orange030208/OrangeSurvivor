@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class WeaponSequenceBridge : MonoBehaviour
 {
-    [Header("Inspector")]
+    [Header("检视面板")]
     [Tooltip("真正执行位移/旋转序列的目标。为空时默认驱动当前物体本身。")]
     [SerializeField] private Transform animatedTransform;
 

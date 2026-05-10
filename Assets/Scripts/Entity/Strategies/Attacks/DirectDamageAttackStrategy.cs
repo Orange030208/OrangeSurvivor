@@ -30,7 +30,6 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     protected override bool ExecuteCore(Entity target)
     {
         ExecuteCommittedAreaAttack();
-        AudioSfxBridge.RequestPlay(AudioSfxKey.Slap);
         return true;
     }
 

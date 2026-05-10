@@ -8,7 +8,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     private Entity owner;
 
     [Header("属性映射")]
-    [Tooltip("将一个属性的未含映射最终值转换为另一个属性的额外 Add。首版不做递归映射。")]
+    [Tooltip("将一个属性的未含映射最终值转换为另一个属性的额外加值。首版不做递归映射。")]
     [SerializeField] private List<PropMappingData> propMappings = new();
 
     private readonly Dictionary<PropType, float> baseProps = new();

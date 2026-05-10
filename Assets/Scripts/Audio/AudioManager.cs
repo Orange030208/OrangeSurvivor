@@ -19,13 +19,13 @@ public class AudioManager : MonoBehaviour
 
     private static AudioManager instance;
 
-    [Header("Config")]
-    [Tooltip("音频运行时设置。提供状态驱动的 BGM 配置与淡变时长。")]
+    [Header("配置")]
+    [Tooltip("音频运行时设置。提供状态驱动的背景音乐配置与淡变时长。")]
     [SerializeField] private AudioRuntimeSettingsSO runtimeSettings;
-    [Tooltip("音频总线设置。SFX 分组与各组下的 SFX 条目都在这里配置。")]
+    [Tooltip("音频总线设置。音效分组与各组下的音效条目都在这里配置。")]
     [SerializeField] private AudioBusSettingsSO busSettings;
 
-    [Header("Volumes")]
+    [Header("音量")]
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float masterVolume = AudioConstants.DEFAULT_VOLUME;
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float musicVolume = AudioConstants.DEFAULT_VOLUME;
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float sfxVolume = AudioConstants.DEFAULT_VOLUME;

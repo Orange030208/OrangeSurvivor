@@ -37,6 +37,7 @@ public class WeaponEditor : Editor
         {
             EditorGUILayout.LabelField("Damage", weapon.Damage.ToString("0.##"));
             EditorGUILayout.LabelField("Attack Interval", weapon.AttackInterval.ToString("0.###"));
+            EditorGUILayout.LabelField("Cooldown Remaining", weapon.DebugCooldownRemaining.ToString("0.###"));
             EditorGUILayout.LabelField("Range", weapon.Range.ToString("0.##"));
             EditorGUILayout.LabelField("Critical Chance", weapon.CriticalChance.ToString("0.##"));
             EditorGUILayout.LabelField("Critical Multiplier", weapon.CriticalMultiplier.ToString("0.##"));
@@ -45,13 +46,29 @@ public class WeaponEditor : Editor
             EditorGUILayout.LabelField("Sequence Timing", EditorStyles.boldLabel);
             AttackSequenceDefinitionSO sequence = GetCurrentSequence(weapon);
             float originalDuration = sequence != null ? Mathf.Max(0f, sequence.Duration) : 0f;
+            WeaponAttackTimingMode timingMode = weapon.WeaponData != null
+                ? weapon.WeaponData.AttackTimingMode
+                : WeaponAttackTimingMode.CompressedIntoAttackInterval;
             float timingWindow = Mathf.Max(0f, weapon.AttackInterval * (weapon.WeaponData != null ? weapon.WeaponData.AttackSequenceOccupancy : 0.85f));
-            float effectiveDuration = sequence != null ? Mathf.Min(Mathf.Max(0.01f, sequence.Duration), Mathf.Max(0.01f, timingWindow)) : 0f;
+            float effectiveDuration = sequence != null && timingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown
+                ? Mathf.Max(0.01f, sequence.Duration)
+                : sequence != null
+                    ? Mathf.Min(Mathf.Max(0.01f, sequence.Duration), Mathf.Max(0.01f, timingWindow))
+                    : 0f;
             float compressionRatio = originalDuration <= 0.0001f ? 1f : effectiveDuration / originalDuration;
+            EditorGUILayout.LabelField("Timing Mode", timingMode.ToString());
             EditorGUILayout.LabelField("Original Duration", originalDuration.ToString("0.###") + "s");
             EditorGUILayout.LabelField("Effective Duration", effectiveDuration.ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Timing Window", timingWindow.ToString("0.###") + "s");
-            EditorGUILayout.LabelField("Compression Ratio", (compressionRatio * 100f).ToString("0.#") + "%");
+            if (timingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown)
+            {
+                EditorGUILayout.LabelField("Post Sequence Cooldown", weapon.AttackInterval.ToString("0.###") + "s");
+                EditorGUILayout.LabelField("Full Cycle", (effectiveDuration + weapon.AttackInterval).ToString("0.###") + "s");
+            }
+            else
+            {
+                EditorGUILayout.LabelField("Timing Window", timingWindow.ToString("0.###") + "s");
+                EditorGUILayout.LabelField("Compression Ratio", (compressionRatio * 100f).ToString("0.#") + "%");
+            }
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField("Weapon Tips", EditorStyles.boldLabel);

@@ -37,6 +37,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
         lockedDirection = ResolveDirectionToTarget(executionTarget);
         StopMoving();
         FaceTarget();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.GolemMechaStoneBossLaser);
         BeginBossAction(BossData.LaserAction);
         EnsureLaserVisual();
         laserVisual?.PlayStart();

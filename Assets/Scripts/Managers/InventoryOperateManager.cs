@@ -147,7 +147,7 @@ public class InventoryOperateManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(item.GetSellPrice());
-        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.ItemSold);
         NotifyOperatePanelShouldClose(item.EntryId);
     }
 
@@ -187,7 +187,7 @@ public class InventoryOperateManager : MonoBehaviour
             return;
         }
 
-        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+        AudioSfxBridge.RequestPlay(AudioSfxKey.WeaponMerged);
         NotifyOperatePanelShouldClose(selectedItem.EntryId);
     }
 

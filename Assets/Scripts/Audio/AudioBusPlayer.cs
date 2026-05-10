@@ -13,7 +13,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class AudioBusPlayer : MonoBehaviour
 {
-    [Tooltip("当前总线对应的主 AudioSource。Music 总线使用该源播放循环内容；Sfx 总线可复用它生成临时 one-shot 播放源。")]
+    [Tooltip("当前总线对应的主音源组件。音乐总线使用该源播放循环内容；音效总线可复用它生成临时一次性播放源。")]
     [SerializeField] private AudioSource audioSource;
 
     private Tween volumeTween;

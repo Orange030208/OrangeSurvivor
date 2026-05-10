@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Prop Presentation Catalog", menuName = ScriptableObjectMenuPaths.PROP_PRESENTATION_CATALOG, order = 0)]
 public sealed class PropPresentationCatalogSO : ScriptableObject
 {
-    [Tooltip("属性展示配置列表。每个 PropType 应只保留一条，用于把描述数据里的属性名映射为 UI 可用的中文名与图标。")]
+    [Tooltip("属性展示配置列表。每种属性类型应只保留一条，用于把描述数据里的属性名映射为界面可用的中文名与图标。")]
     [SerializeField] private List<PropPresentationEntry> entries = new List<PropPresentationEntry>();
 
     public IReadOnlyList<PropPresentationEntry> Entries => entries;
@@ -86,11 +86,11 @@ public struct PropPresentationEntry
 {
     [Tooltip("属性类型。用于稳定排序，也作为英文属性名匹配来源。")]
     [SerializeField] private PropType propType;
-    [Tooltip("UI 上展示的属性中文名，也用于匹配 DescriptorInfo.label。")]
+    [Tooltip("界面上展示的属性中文名，也用于匹配描述信息的标签。")]
     [SerializeField] private string chineseName;
-    [Tooltip("属性说明文本，用于 tooltip、详情面板等需要解释属性含义的 UI。")]
+    [Tooltip("属性说明文本，用于悬浮提示、详情面板等需要解释属性含义的界面。")]
     [SerializeField] private string description;
-    [Tooltip("UI 上展示的属性图标。默认创建时暂时留空，可在 Inspector 中手动配置。")]
+    [Tooltip("界面上展示的属性图标。默认创建时暂时留空，可在检视面板中手动配置。")]
     [SerializeField] private Sprite icon;
 
     public PropType PropType => propType;

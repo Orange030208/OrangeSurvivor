@@ -22,6 +22,8 @@ MonoBehaviour:
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 1
   attackSequenceOccupancy: 0.86
+  attackTimingMode: 1
+  targetingMode: 1
   spawnPoints: []
   sequenceProjectileList: []
   sequenceSfxList:

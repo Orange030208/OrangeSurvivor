@@ -21,7 +21,7 @@ public class CharacterButton : ViewPartBase
         clickTarget.ClearListeners();
         clickTarget.OnClicked += () =>
         {
-            AudioSfxBridge.RequestPlay(AudioSfxKey.WoodenButtonClicked);
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
             onClick?.Invoke();
         };
     }

@@ -26,8 +26,8 @@ MonoBehaviour:
     shadowColor: {r: 0, g: 0, b: 0, a: 1}
   - quality: 1
     presentationKey: rare
-    revealSfxKey: 101
-    selectSfxKey: 114
+    revealSfxKey: 100
+    selectSfxKey: 104
     backgroundColor: {r: 0.05, g: 0.38, b: 0.62, a: 0.93}
     borderColor: {r: 0.3372549, g: 0.8235294, b: 1, a: 1}
     titleColor: {r: 0.6039216, g: 0.9098039, b: 1, a: 1}
@@ -37,8 +37,8 @@ MonoBehaviour:
     shadowColor: {r: 0, g: 0.09411765, b: 0.14901961, a: 1}
   - quality: 2
     presentationKey: epic
-    revealSfxKey: 102
-    selectSfxKey: 114
+    revealSfxKey: 100
+    selectSfxKey: 105
     backgroundColor: {r: 0.42, g: 0.17, b: 0.72, a: 0.94}
     borderColor: {r: 0.7607843, g: 0.47058824, b: 1, a: 1}
     titleColor: {r: 0.89411765, g: 0.74509805, b: 1, a: 1}
@@ -48,8 +48,8 @@ MonoBehaviour:
     shadowColor: {r: 0.10980392, g: 0.047058824, b: 0.17254902, a: 1}
   - quality: 3
     presentationKey: legendary
-    revealSfxKey: 103
-    selectSfxKey: 114
+    revealSfxKey: 100
+    selectSfxKey: 106
     backgroundColor: {r: 0.72, g: 0.42, b: 0.08, a: 0.95}
     borderColor: {r: 1, g: 0.7607843, b: 0.32156864, a: 1}
     titleColor: {r: 1, g: 0.87058824, b: 0.5803922, a: 1}
