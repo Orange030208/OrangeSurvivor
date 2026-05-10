@@ -58,14 +58,19 @@ public class DropsDetector : EntityComponentBase
     {
         if (propType == PropType.PickupRadius)
         {
-            detectRadius = Mathf.Max(0f, newValue);
+            RefreshDetectRadius(newValue);
         }
     }
 
     private void UpdateRadius()
     {
         if (propertiesManager == null) return;
-        detectRadius = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.PickupRadius));
+        RefreshDetectRadius(propertiesManager.GetPropValue(PropType.PickupRadius));
+    }
+
+    private void RefreshDetectRadius(float radiusPoints)
+    {
+        detectRadius = Mathf.Max(0f, PropValueUtility.DistancePointsToWorldUnits(radiusPoints));
     }
 
     private void Detect()

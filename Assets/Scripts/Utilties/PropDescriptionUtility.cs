@@ -47,6 +47,11 @@ public static class PropDescriptionUtility
             return FormatSignedPercent(value);
         }
 
+        if (IsDistancePointProp(propType))
+        {
+            return FormatSignedDistance(propType, value);
+        }
+
         string formatted = IsIntegerProp(propType) ? value.ToString("F0") : value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
     }
@@ -75,12 +80,19 @@ public static class PropDescriptionUtility
             PropModifierType.FinalMultiplier => FormatSignedNumber(value) + "%",
             _ => IsPercentModifierProp(propType)
                 ? FormatSignedNumber(value) + "%"
-                : FormatSignedNumber(propType, value)
+                : IsDistancePointProp(propType)
+                    ? FormatSignedDistance(propType, value)
+                    : FormatSignedNumber(propType, value)
         };
     }
 
     private static string FormatValue(PropType propType, float value)
     {
+        if (IsDistancePointProp(propType))
+        {
+            return FormatSignedDistance(propType, value);
+        }
+
         return IsPercentAdditiveProp(propType) ? FormatSignedPercent(value) : FormatSignedNumber(propType, value);
     }
 
@@ -106,6 +118,14 @@ public static class PropDescriptionUtility
                propType == PropType.ProjectilePierceCount;
     }
 
+    private static bool IsDistancePointProp(PropType propType)
+    {
+        return propType == PropType.MoveSpeed ||
+               propType == PropType.DetectionRange ||
+               propType == PropType.AttackRange ||
+               propType == PropType.PickupRadius;
+    }
+
     private static string FormatSignedPercent(float value)
     {
         string formatted = value.ToString("F1");
@@ -122,5 +142,13 @@ public static class PropDescriptionUtility
     {
         string formatted = IsIntegerProp(propType) ? value.ToString("F0") : value.ToString("F1");
         return value > 0 ? $"+{formatted}" : formatted;
+    }
+
+    private static string FormatSignedDistance(PropType propType, float value)
+    {
+        float worldUnits = PropValueUtility.DistancePointsToWorldUnits(value);
+        string formatted = worldUnits.ToString("0.##");
+        string suffix = propType == PropType.MoveSpeed ? "格/秒" : "格";
+        return value > 0 ? $"+{formatted}{suffix}" : $"{formatted}{suffix}";
     }
 }

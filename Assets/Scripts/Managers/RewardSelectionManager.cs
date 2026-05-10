@@ -6,13 +6,14 @@ using Orange.UIFramework;
 using UnityEngine;
 
 /// <summary>
-/// 即时奖励选择流程控制器：负责奖励请求排队、暂停/恢复游戏模拟、驱动三选一 Popup，并在选择后应用玩法结果。
+/// 即时奖励选择流程控制器：负责奖励请求排队、暂停/恢复游戏模拟、驱动奖励选择 Popup，并在选择后应用玩法结果。
 /// </summary>
 public class RewardSelectionManager : MonoBehaviour
 {
     private const string PAUSE_SOURCE_ID = "rewardSelection";
     private const string POPUP_GROUP_ID = "rewardSelection";
-    private const int OPTION_COUNT = 3;
+    private const int CHEST_REWARD_OPTION_COUNT = 3;
+    private const int UPGRADE_CARD_OPTION_COUNT = 4;
 
     [SerializeField] private UIManager uiManager;
     [SerializeField] private AccessoryManager accessoryManager;
@@ -160,7 +161,7 @@ public class RewardSelectionManager : MonoBehaviour
     private async UniTask ProcessChestRequestAsync(CancellationToken cancellationToken)
     {
         TryBindPlayerReferences();
-        AccessoryDataSO[] accessories = RollChestAccessories(OPTION_COUNT);
+        AccessoryDataSO[] accessories = RollChestAccessories(CHEST_REWARD_OPTION_COUNT);
         if (accessories.Length == 0)
         {
             Debug.LogWarning("[RewardSelectionManager] No accessories could be rolled for chest reward.", this);
@@ -298,7 +299,7 @@ public class RewardSelectionManager : MonoBehaviour
         AccessoryDataSO[] accessories,
         out RewardSelectionOption[] options)
     {
-        int count = Mathf.Min(OPTION_COUNT, accessories.Length);
+        int count = Mathf.Min(CHEST_REWARD_OPTION_COUNT, accessories.Length);
         RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
         options = new RewardSelectionOption[count];
 
@@ -324,7 +325,7 @@ public class RewardSelectionManager : MonoBehaviour
         IReadOnlyList<UpgradeCardRollOption> rollOptions,
         out RewardSelectionOption[] options)
     {
-        int count = Mathf.Min(OPTION_COUNT, rollOptions.Count);
+        int count = Mathf.Min(UPGRADE_CARD_OPTION_COUNT, rollOptions.Count);
         RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
         options = new RewardSelectionOption[count];
 

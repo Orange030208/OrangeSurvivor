@@ -21,7 +21,7 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 4
     modifierType: 0
-    value: 11
+    value: 22
   specialFeatures: []
   references:
     version: 2

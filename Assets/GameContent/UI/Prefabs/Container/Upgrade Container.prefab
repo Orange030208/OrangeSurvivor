@@ -456,6 +456,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8478885493683761380}
+  - component: {fileID: 6249183746502189331}
   m_Layer: 0
   m_Name: VisualRoot
   m_TagString: Untagged
@@ -487,6 +488,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &6249183746502189331
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5118342602331480787}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6577620965614793612
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +733,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   definition: {fileID: 11400000, guid: 8a21e0fd2cb8f4d468ff0b63301561a4, type: 2}
   targets:
-    bindings: []
+    bindings:
+    - key: Self
+      target: {fileID: 8478885493683761380}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
 --- !u!114 &4075162075622727433
@@ -756,7 +771,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   motionPlayer: {fileID: 823908526393948807}
   profile: {fileID: 11400000, guid: 6211f4ddc9204336b5adebbf7592c0b3, type: 2}
-  restRoot: {fileID: 8337600168010166629}
+  restRoot: {fileID: 8478885493683761380}
   dynamicRoot: {fileID: 8478885493683761380}
   autoResolveVisualRoot: 1
   autoResolveVisualLayers: 1

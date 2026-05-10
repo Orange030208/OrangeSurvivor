@@ -24,6 +24,7 @@ public enum AudioSfxKey
     ShopPurchaseFailed = 111,
     ShopRerolled = 112,
     GameStart = 113,
+    UpgradeCardSelected = 114,
 
     #endregion
 

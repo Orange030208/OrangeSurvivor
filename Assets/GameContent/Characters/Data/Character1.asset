@@ -23,10 +23,13 @@ MonoBehaviour:
     value: 1.5
   - propType: 4
     modifierType: 0
-    value: 3.5
+    value: 7
   - propType: 2
     modifierType: 0
     value: 8
+  - propType: 4
+    modifierType: 0
+    value: 400
   specialFeatures: []
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}

@@ -56,7 +56,7 @@ public class UpgradeCardAssetTests
         ContentPoolSO pool = AssetDatabase.LoadAssetAtPath<ContentPoolSO>(PoolPath);
         Assert.NotNull(pool);
         Assert.AreEqual(ContentPoolPurpose.UpgradeCard, pool.Purpose);
-        Assert.AreEqual(3, pool.DefaultRollCount);
+        Assert.AreEqual(4, pool.DefaultRollCount);
         Assert.IsFalse(pool.AllowDuplicateResults);
         Assert.AreEqual(cards.Length, pool.Entries.Count);
 

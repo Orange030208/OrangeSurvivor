@@ -20,7 +20,7 @@ MonoBehaviour:
   extraProps:
   - propType: 4
     modifierType: 0
-    value: 4
+    value: 8
   - propType: 1
     modifierType: 0
     value: 12

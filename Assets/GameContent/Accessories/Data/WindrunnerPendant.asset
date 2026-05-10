@@ -23,7 +23,7 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 4
     modifierType: 0
-    value: 10
+    value: 20
   - propType: 10
     modifierType: 0
     value: 4

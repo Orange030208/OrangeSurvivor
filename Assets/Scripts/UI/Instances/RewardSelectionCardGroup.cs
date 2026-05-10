@@ -10,35 +10,31 @@ public class RewardSelectionCardGroup : ViewPartBase
     private const float REFRESH_OUT_STAGGER_SECONDS = 0.04f;
 
     [SerializeField] private Transform root;
-    [SerializeField] private RewardSelectionCardContainer[] cardContainers;
+    [SerializeField] private RewardSelectionCardContainer cardContainerPrefab;
 
+    private readonly List<RewardSelectionCardContainer> activeContainers = new();
     private bool isSelectionLocked;
 
     private void Awake()
     {
         EnsureRoot();
-        BindSubmitGates();
     }
 
     public void Configure(RewardSelectionCardViewModel[] options, Action<int, string> optionSelected)
     {
         isSelectionLocked = false;
-        BindSubmitGates();
-        if (cardContainers == null)
-        {
-            return;
-        }
+        int optionCount = options != null ? options.Length : 0;
+        RebuildContainers(optionCount);
 
-        for (int i = 0; i < cardContainers.Length; i++)
+        for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardContainer container = cardContainers[i];
+            RewardSelectionCardContainer container = activeContainers[i];
             if (container == null)
             {
                 continue;
             }
 
             bool hasOption = options != null && i < options.Length;
-            container.gameObject.SetActive(hasOption);
             container.SetInteractionLocked(false);
 
             if (!hasOption)
@@ -67,37 +63,17 @@ public class RewardSelectionCardGroup : ViewPartBase
     public void Clear()
     {
         isSelectionLocked = false;
-        if (cardContainers == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < cardContainers.Length; i++)
-        {
-            RewardSelectionCardContainer container = cardContainers[i];
-            if (container == null)
-            {
-                continue;
-            }
-
-            container.SetInteractionLocked(false);
-            container.BindSubmitGate(null);
-            container.Dispose();
-        }
+        ClearGeneratedContainers();
     }
 
     public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         isSelectionLocked = true;
-        if (cardContainers == null)
-        {
-            return;
-        }
 
         List<UniTask> runningTasks = new();
-        for (int i = 0; i < cardContainers.Length; i++)
+        for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardContainer container = cardContainers[i];
+            RewardSelectionCardContainer container = activeContainers[i];
             if (container == null || !container.gameObject.activeInHierarchy)
             {
                 continue;
@@ -125,14 +101,9 @@ public class RewardSelectionCardGroup : ViewPartBase
         }
 
         isSelectionLocked = true;
-        if (cardContainers == null)
+        for (int i = 0; i < activeContainers.Count; i++)
         {
-            return true;
-        }
-
-        for (int i = 0; i < cardContainers.Length; i++)
-        {
-            RewardSelectionCardContainer container = cardContainers[i];
+            RewardSelectionCardContainer container = activeContainers[i];
             if (container == null)
             {
                 continue;
@@ -142,24 +113,6 @@ public class RewardSelectionCardGroup : ViewPartBase
         }
 
         return true;
-    }
-
-    private void BindSubmitGates()
-    {
-        if (cardContainers == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < cardContainers.Length; i++)
-        {
-            if (cardContainers[i] == null)
-            {
-                continue;
-            }
-
-            cardContainers[i].BindSubmitGate(TryBeginSelection);
-        }
     }
 
     private static async UniTask PlayContainerRefreshOutAsync(
@@ -185,6 +138,69 @@ public class RewardSelectionCardGroup : ViewPartBase
         if (root == null)
         {
             root = transform;
+        }
+    }
+
+    private void RebuildContainers(int requiredCount)
+    {
+        ClearGeneratedContainers();
+        if (requiredCount <= 0)
+        {
+            return;
+        }
+
+        EnsureRoot();
+        if (cardContainerPrefab == null)
+        {
+            Debug.LogError($"{nameof(RewardSelectionCardGroup)} '{name}' is missing card container prefab.", this);
+            return;
+        }
+
+        Transform parent = root != null ? root : transform;
+        for (int i = 0; i < requiredCount; i++)
+        {
+            RewardSelectionCardContainer container = Instantiate(cardContainerPrefab, parent, false);
+            container.name = $"{cardContainerPrefab.name} ({i + 1})";
+            container.gameObject.SetActive(true);
+            container.BindSubmitGate(TryBeginSelection);
+            activeContainers.Add(container);
+        }
+    }
+
+    private void ClearGeneratedContainers()
+    {
+        for (int i = 0; i < activeContainers.Count; i++)
+        {
+            RewardSelectionCardContainer container = activeContainers[i];
+            if (container == null)
+            {
+                continue;
+            }
+
+            container.SetInteractionLocked(false);
+            container.BindSubmitGate(null);
+            container.Dispose();
+            container.gameObject.SetActive(false);
+            DestroyGeneratedContainer(container);
+        }
+
+        activeContainers.Clear();
+    }
+
+    private static void DestroyGeneratedContainer(RewardSelectionCardContainer container)
+    {
+        if (container == null)
+        {
+            return;
+        }
+
+        if (Application.isPlaying)
+        {
+            Destroy(container.gameObject);
+        }
+        else
+        {
+            DestroyImmediate(container.gameObject);
         }
     }
 }

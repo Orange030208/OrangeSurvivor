@@ -89,7 +89,7 @@ public static class GameContentCatalogBuildUtility
             UpgradeCardPoolPath,
             ContentPoolPurpose.UpgradeCard,
             BuildUpgradeCardEntries(),
-            3,
+            4,
             false);
         CreateOrUpdatePool(
             ChestRewardPoolPath,

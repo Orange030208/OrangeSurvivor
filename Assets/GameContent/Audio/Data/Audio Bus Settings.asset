@@ -240,6 +240,20 @@ MonoBehaviour:
       priority: 128
       use2DSpatialBlend: 0
       clipVariants: []
+    - sfxKey: 114
+      clip: {fileID: 8300000, guid: 5799f0bdc57b2524eacfdffa16e20549, type: 3}
+      busType: 1
+      playbackMode: 0
+      pitch: 1
+      groupId: sfx.ui
+      baseVolumeScale: 1
+      pitchMin: 1
+      pitchMax: 1
+      maxConcurrent: 4
+      cooldown: 0
+      priority: 128
+      use2DSpatialBlend: 0
+      clipVariants: []
   - groupId: sfx.combat
     volume: 1
     poolSize: 24

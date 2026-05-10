@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Upgrade Card Pool
   m_EditorClassIdentifier: 
   purpose: 1
-  defaultRollCount: 3
+  defaultRollCount: 4
   allowDuplicateResults: 0
   entries:
   - entryId: 弦月流矢
