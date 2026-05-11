@@ -294,7 +294,13 @@ public class WaveSpawnExecutionService
 
             for (int i = 0; i < spawnRequest.SpawnCount; i++)
             {
-                Vector3 spawnPosition = spawnPositionResolver.Resolve(new SpawnContext(context.SpawnAnchor, context.ElapsedTime, context.WaveIndex));
+                SpawnContext positionContext = new(context.SpawnAnchor, context.ElapsedTime, context.WaveIndex);
+                if (!spawnPositionResolver.TryResolve(positionContext, spawnRequest.EnemyDefinition, out Vector3 spawnPosition))
+                {
+                    Debug.LogWarning($"[{nameof(WaveSpawnExecutionService)}] Skipped spawning {spawnRequest.EnemyDefinition.name} because no safe spawn position could be resolved.");
+                    continue;
+                }
+
                 enemyFactory.Spawn(spawnRequest.EnemyDefinition, player, spawnPosition, context.SpawnParent);
                 spawnedCount++;
             }
