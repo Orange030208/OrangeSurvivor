@@ -1,10 +1,11 @@
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopInventoryPanel : ViewPartBase
 {
     [SerializeField] private MonoBehaviour motionSource;
-    [SerializeField] private UIClickTarget toggleButton;
+    [SerializeField] private Button toggleButton;
     [SerializeField] private InventoryUI inventoryUI;
 
     private IUIRuntimeMotion motion;
@@ -47,7 +48,7 @@ public class ShopInventoryPanel : ViewPartBase
             return;
         }
 
-        toggleButton.OnClicked += OnToggleRequested;
+        toggleButton.onClick.AddListener(OnToggleRequested);
         eventsBound = true;
     }
 
@@ -58,7 +59,7 @@ public class ShopInventoryPanel : ViewPartBase
             return;
         }
 
-        toggleButton.OnClicked -= OnToggleRequested;
+        toggleButton.onClick.RemoveListener(OnToggleRequested);
         eventsBound = false;
     }
 

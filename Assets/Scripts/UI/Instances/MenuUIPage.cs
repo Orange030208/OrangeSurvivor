@@ -2,11 +2,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MenuUIPage : PageBase
 {
-    [SerializeField] private UIClickTarget startButton;
-    [SerializeField] private UIClickTarget settingsButton;
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button settingsButton;
     [SerializeField] private SettingsPanelManager settingsPanel;
 
     private bool settingsVisible;
@@ -20,13 +22,15 @@ public class MenuUIPage : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        startButton.OnClicked += OnStartButtonOnClicked;
+        settingsPanel.ConfigureOwner(OwnerUIManager);
+        startButton.onClick.AddListener(OnStartButtonOnClicked);
         if (settingsButton != null)
         {
-            settingsButton.OnClicked += OnSettingsButtonClicked;
+            settingsButton.onClick.AddListener(OnSettingsButtonClicked);
         }
 
         HideSettingsImmediate();
+        SelectDefaultControl();
         return UniTask.CompletedTask;
     }
 
@@ -37,12 +41,13 @@ public class MenuUIPage : PageBase
 
     protected override void OnClosed(CloseReason reason)
     {
-        startButton.OnClicked -= OnStartButtonOnClicked;
+        startButton.onClick.RemoveListener(OnStartButtonOnClicked);
         if (settingsButton != null)
         {
-            settingsButton.OnClicked -= OnSettingsButtonClicked;
+            settingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
         }
 
+        settingsPanel.ConfigureOwner(null);
         HideSettingsImmediate();
     }
 
@@ -68,6 +73,16 @@ public class MenuUIPage : PageBase
     {
         settingsVisible = false;
         settingsPanel.SetHiddenImmediate();
+    }
+
+    private void SelectDefaultControl()
+    {
+        if (startButton == null)
+        {
+            return;
+        }
+
+        EventSystem.current?.SetSelectedGameObject(startButton.gameObject);
     }
 
     private void ResolveViewParts()

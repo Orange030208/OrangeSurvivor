@@ -16,7 +16,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Unity.UnityInput
 
         public override TaskStatus OnUpdate()
         {
-            var axisValue = Input.GetAxis(axisName.Value);
+            var axisValue = BehaviorDesignerInputAdapter.GetAxis(axisName.Value, false);
 
             // if variable set to none, assume multiplier of 1
             if (!multiplier.IsNone) {

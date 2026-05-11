@@ -37,6 +37,9 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     [Tooltip("在场景视图绘制命中盒实时位置、激活窗口和采样扫掠轨迹。仅用于调试，不影响实际判定。")]
     [SerializeField] private bool drawHitBoxDebugGizmos = true;
 
+    [Tooltip("开启后，在攻击序列触发 PlaySfx 事件时输出事件时间、音效键和近战命中窗口状态，便于校准近战音效时机。")]
+    [SerializeField] private bool logSequenceSfxDebug;
+
     [Header("瞄准")]
     [Tooltip("平时自动转向目标的插值速度。")]
     [SerializeField] protected float aimLerp = 10f;
@@ -58,6 +61,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     private Vector2 pendingTargetPosition;
     private Entity lockedAttackTarget;
     private int activeBurstId = -1;
+    private float currentAttackStartedAt;
+    private float currentAttackSequenceDuration;
 
     public int Level { get; private set; } = DEFAULT_WEAPON_LEVEL;
     public float Damage { get; private set; }
@@ -403,6 +408,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         hitBoxDebugSamples.Clear();
 
         float sequenceDuration = ResolveAttackSequenceDuration(attackSequence);
+        currentAttackStartedAt = Time.time;
+        currentAttackSequenceDuration = sequenceDuration;
         Vector2 targetLocalOffset = transform.InverseTransformPoint(pendingTargetPosition);
         if (WeaponData == null || WeaponData.AttackTimingMode == WeaponAttackTimingMode.CompressedIntoAttackInterval)
         {
@@ -761,11 +768,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             throw new ArgumentNullException(nameof(projectile), $"{nameof(Weapon)} requires a valid {nameof(IProjectile)} instance.");
         }
 
-        if (context.ProjectileDefinition != null)
-        {
-            AudioSfxBridge.RequestPlay(context.ProjectileDefinition.LaunchSfxKey);
-        }
-
+        // 武器发射音效由攻击序列 PlaySfx 事件控制，避免散射/连发按每颗弹体重复播放。
         projectile.Launch(context);
     }
 
@@ -785,8 +788,54 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
         if (definition.SfxKey != AudioSfxKey.None)
         {
+            LogSequenceSfxDebug(eventKey, definition.SfxKey);
             AudioSfxBridge.RequestPlay(definition.SfxKey);
         }
+    }
+
+    private void LogSequenceSfxDebug(int eventKey, AudioSfxKey sfxKey)
+    {
+        if (!logSequenceSfxDebug)
+        {
+            return;
+        }
+
+        float configuredNormalizedTime = ResolveSequenceEventNormalizedTime(WeaponSequenceEventType.PlaySfx, eventKey);
+        float expectedSeconds = configuredNormalizedTime >= 0f
+            ? configuredNormalizedTime * currentAttackSequenceDuration
+            : -1f;
+        float elapsedSeconds = Mathf.Max(0f, Time.time - currentAttackStartedAt);
+        string configuredTimeText = configuredNormalizedTime >= 0f
+            ? $"{configuredNormalizedTime:0.###} ({expectedSeconds:0.###}s)"
+            : "not-found";
+
+        Debug.Log(
+            $"[WeaponSfxDebug] weapon='{name}', data='{(WeaponData != null ? WeaponData.name : "null")}', " +
+            $"sequence='{(attackSequence != null ? attackSequence.name : "null")}', eventKey={eventKey}, " +
+            $"sfx={sfxKey}, configuredTime={configuredTimeText}, elapsed={elapsedSeconds:0.###}s, " +
+            $"sequenceDuration={currentAttackSequenceDuration:0.###}s, frame={Time.frameCount}, " +
+            $"isMeleeHitBox={WeaponData != null && WeaponData.EnableHitBox}, activeHitWindows={activeHitWindows.Count}.",
+            this);
+    }
+
+    private float ResolveSequenceEventNormalizedTime(WeaponSequenceEventType eventType, int eventKey)
+    {
+        if (attackSequence == null || attackSequence.EventKeyframes == null)
+        {
+            return -1f;
+        }
+
+        IReadOnlyList<WeaponSequenceEventKeyframe> events = attackSequence.EventKeyframes;
+        for (int i = 0; i < events.Count; i++)
+        {
+            WeaponSequenceEventKeyframe keyframe = events[i];
+            if (keyframe.eventType == eventType && keyframe.eventKey == eventKey)
+            {
+                return keyframe.normalizedTime;
+            }
+        }
+
+        return -1f;
     }
 
     private void PlaySequenceVfx(int eventKey)

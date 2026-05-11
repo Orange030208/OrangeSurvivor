@@ -14,7 +14,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Unity.UnityInput
 
         public override TaskStatus OnUpdate()
         {
-            storeResult.Value = Input.GetButton(buttonName.Value);
+            storeResult.Value = BehaviorDesignerInputAdapter.GetButton(buttonName.Value);
             return TaskStatus.Success;
         }
 

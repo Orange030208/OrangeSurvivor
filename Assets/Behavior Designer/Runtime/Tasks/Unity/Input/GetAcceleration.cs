@@ -12,7 +12,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Unity.UnityInput
 
         public override TaskStatus OnUpdate()
         {
-            storeResult.Value = Input.acceleration;
+            storeResult.Value = BehaviorDesignerInputAdapter.Acceleration;
             return TaskStatus.Success;
         }
 

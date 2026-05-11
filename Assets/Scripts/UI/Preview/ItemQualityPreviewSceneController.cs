@@ -113,12 +113,15 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
 
     private static void EnsureEventSystem()
     {
-        if (FindObjectOfType<EventSystem>() != null)
+        EventSystem eventSystem = FindObjectOfType<EventSystem>();
+        if (eventSystem != null)
         {
+            GameInputService.ConfigureEventSystem(eventSystem);
             return;
         }
 
-        GameObject eventSystemObject = new("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+        GameObject eventSystemObject = new("EventSystem", typeof(EventSystem));
+        GameInputService.ConfigureEventSystem(eventSystemObject.GetComponent<EventSystem>());
         eventSystemObject.transform.SetAsLastSibling();
     }
 

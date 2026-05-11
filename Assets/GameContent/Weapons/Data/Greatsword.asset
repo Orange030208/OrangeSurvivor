@@ -33,31 +33,36 @@ MonoBehaviour:
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 0.36, y: 1.39}
   hitBoxOffset: {x: 0, y: 0.7}
+  attackUsage:
+    meleeAttackUsagePercent: 0
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
   levelStats:
   - level: 1
     attack: 24
-    attackSpeed: 0.72
+    attackSpeed: 0.5
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 2
     attack: 24
-    attackSpeed: 0.72
+    attackSpeed: 0.5
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 3
     attack: 24
-    attackSpeed: 0.72
+    attackSpeed: 0.5
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 4
     attack: 24
-    attackSpeed: 0.72
+    attackSpeed: 0.5
     criticalChance: 10
     criticalPercent: 220
     range: 300

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MobileJoystick : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class MobileJoystick : MonoBehaviour
 
     public void ClickedOnJoystickZoneCallback()
     {
-        clickedPosition = Input.mousePosition;
+        clickedPosition = ReadPointerPosition();
         joystickOutline.position = clickedPosition;
         ShowJoystick();
     }
@@ -66,7 +67,7 @@ public class MobileJoystick : MonoBehaviour
 
     private void ControlJoystick()
     {
-        Vector3 currentPosition = Input.mousePosition;
+        Vector3 currentPosition = ReadPointerPosition();
         Vector3 direction = currentPosition - clickedPosition;
 
         float canvasScale = GetCanvasScale();
@@ -81,10 +82,36 @@ public class MobileJoystick : MonoBehaviour
         Vector3 targetPosition = clickedPosition + move;
         joystickKnob.position = targetPosition;
 
-        if (Input.GetMouseButtonUp(0))
+        if (IsPointerReleased())
         {
             HideJoystick();
         }
+    }
+
+    private static Vector3 ReadPointerPosition()
+    {
+        if (Pointer.current != null)
+        {
+            Vector2 pointerPosition = Pointer.current.position.ReadValue();
+            return new Vector3(pointerPosition.x, pointerPosition.y, 0f);
+        }
+
+        return Vector3.zero;
+    }
+
+    private static bool IsPointerReleased()
+    {
+        if (Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            return true;
+        }
+
+        if (Touchscreen.current == null || Touchscreen.current.primaryTouch.press.isPressed)
+        {
+            return false;
+        }
+
+        return Touchscreen.current.primaryTouch.press.wasReleasedThisFrame;
     }
 
     private float GetCanvasScale()

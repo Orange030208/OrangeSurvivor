@@ -58,6 +58,9 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(0f)] private float meleeRangeMultiplier = 1f;
     [Tooltip("近战攻击提交时在实际攻击区域中心生成的挥出特效预制体；空挥也会生成。")]
     [SerializeField] private GameObject meleeHitVfxPrefab;
+    [SerializeField] private bool enableMeleeScreenShake = true;
+    [SerializeField] private ScreenShakeSettings meleeScreenShake = ScreenShakeSettings.CreateBossMeleeDefault();
+    [SerializeField, Min(0f)] private float meleeScreenShakeScale = 1f;
 
     [Header("射击攻击")]
     [SerializeField, Min(0.01f)] private float shootAttackSpeedBenefitRatio = 0.5f;
@@ -134,6 +137,16 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public float MeleeAttackSpeedBenefitRatio => Mathf.Max(0.01f, meleeAttackSpeedBenefitRatio);
     public float MeleeRangeMultiplier => Mathf.Max(0f, meleeRangeMultiplier);
     public GameObject MeleeHitVfxPrefab => meleeHitVfxPrefab;
+    public ScreenShakeSettings MeleeScreenShake
+    {
+        get
+        {
+            EnsureMeleeScreenShakeDefaults();
+            return enableMeleeScreenShake ? meleeScreenShake : null;
+        }
+    }
+
+    public float MeleeScreenShakeScale => Mathf.Max(0f, meleeScreenShakeScale);
     public float ShootAttackSpeedBenefitRatio => Mathf.Max(0.01f, shootAttackSpeedBenefitRatio);
     public float ShootRangeMultiplier => Mathf.Max(0f, shootRangeMultiplier);
     public ProjectileDefinitionSO ShootProjectileDefinition => shootProjectileDefinition;
@@ -156,6 +169,8 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         shieldMinPhase = Mathf.Max(1, shieldMinPhase);
         meleeAttackSpeedBenefitRatio = Mathf.Max(0.01f, meleeAttackSpeedBenefitRatio);
         meleeRangeMultiplier = Mathf.Max(0f, meleeRangeMultiplier);
+        EnsureMeleeScreenShakeDefaults();
+        meleeScreenShakeScale = Mathf.Max(0f, meleeScreenShakeScale);
         shootAttackSpeedBenefitRatio = Mathf.Max(0.01f, shootAttackSpeedBenefitRatio);
         shootRangeMultiplier = Mathf.Max(0f, shootRangeMultiplier);
         EnsureActionDefaults();
@@ -196,5 +211,11 @@ public sealed class GolemMechaStoneBossSO : EnemySO
             0f,
             EnemyActionCompletionMode.AnimationNormalizedTime,
             false);
+    }
+
+    private void EnsureMeleeScreenShakeDefaults()
+    {
+        meleeScreenShake ??= ScreenShakeSettings.CreateBossMeleeDefault();
+        meleeScreenShake.OnValidate();
     }
 }

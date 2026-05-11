@@ -11,6 +11,7 @@ public sealed class WeaponMotionSequencePlayer
     private Vector3 defaultLocalPosition;
     private Vector3 defaultLocalEulerAngles;
     private AttackSequenceDefinitionSO currentSequence;
+    private readonly List<WeaponSequenceEventKeyframe> orderedEvents = new();
     private Vector2 currentTargetLocalOffset;
     private bool hasRetargetTarget;
     private float elapsed;
@@ -55,6 +56,7 @@ public sealed class WeaponMotionSequencePlayer
         hasRetargetTarget = retarget;
         elapsed = 0f;
         nextEventIndex = 0;
+        RebuildOrderedEvents(sequence);
         IsPlaying = currentSequence != null;
         playbackDuration = currentSequence != null
             ? Mathf.Max(0.01f, durationOverride > 0f ? durationOverride : currentSequence.Duration)
@@ -101,6 +103,7 @@ public sealed class WeaponMotionSequencePlayer
     {
         IsPlaying = false;
         currentSequence = null;
+        orderedEvents.Clear();
         currentTargetLocalOffset = default;
         hasRetargetTarget = false;
         elapsed = 0f;
@@ -120,13 +123,40 @@ public sealed class WeaponMotionSequencePlayer
             return;
         }
 
-        IReadOnlyList<WeaponSequenceEventKeyframe> events = currentSequence.EventKeyframes;
-        while (nextEventIndex < events.Count && normalizedTime >= events[nextEventIndex].normalizedTime)
+        while (nextEventIndex < orderedEvents.Count && normalizedTime >= orderedEvents[nextEventIndex].normalizedTime)
         {
-            WeaponSequenceEventKeyframe keyframe = events[nextEventIndex];
+            WeaponSequenceEventKeyframe keyframe = orderedEvents[nextEventIndex];
             EventTriggered?.Invoke(keyframe.eventType, keyframe.eventKey);
             nextEventIndex++;
         }
+    }
+
+    private void RebuildOrderedEvents(AttackSequenceDefinitionSO sequence)
+    {
+        orderedEvents.Clear();
+        if (sequence == null || sequence.EventKeyframes == null)
+        {
+            return;
+        }
+
+        IReadOnlyList<WeaponSequenceEventKeyframe> events = sequence.EventKeyframes;
+        for (int i = 0; i < events.Count; i++)
+        {
+            orderedEvents.Add(events[i]);
+        }
+
+        orderedEvents.Sort(CompareSequenceEvents);
+    }
+
+    private static int CompareSequenceEvents(WeaponSequenceEventKeyframe left, WeaponSequenceEventKeyframe right)
+    {
+        int timeComparison = left.normalizedTime.CompareTo(right.normalizedTime);
+        if (timeComparison != 0)
+        {
+            return timeComparison;
+        }
+
+        return left.eventType.CompareTo(right.eventType);
     }
 
     private void SampleAndApplyPose(float normalizedTime)

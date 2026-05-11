@@ -40,7 +40,7 @@ public static class PropPresentationCatalogIconBinder
             SerializedProperty propTypeProperty = entry.FindPropertyRelative("propType");
             SerializedProperty iconProperty = entry.FindPropertyRelative("icon");
 
-            string propTypeName = ((PropType)propTypeProperty.enumValueIndex).ToString();
+            string propTypeName = ((PropType)propTypeProperty.intValue).ToString();
             if (!iconsByName.TryGetValue(propTypeName, out Sprite icon))
             {
                 Debug.LogWarning($"No prop icon named {propTypeName} was found under {iconFolder}.");

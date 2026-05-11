@@ -37,10 +37,10 @@ namespace Orange.UIFramework
         private RectTransform layersRoot;
         private RuntimeView currentTooltip;
         private RectTransform modalMaskRoot;
-        private Image modalMaskImage;
+        private Graphic modalMaskGraphic;
         private Button modalMaskButton;
         private RectTransform popupOutsideClickBlockerRoot;
-        private Image popupOutsideClickBlockerImage;
+        private Graphic popupOutsideClickBlockerGraphic;
         private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
         private IFloatingViewPositioner floatingViewPositioner;
@@ -1198,7 +1198,7 @@ namespace Orange.UIFramework
             RuntimeView topModal = modalStack.Count > 0 ? modalStack[modalStack.Count - 1] : null;
             return BuildBlockerDiagnostics(
                 modalMaskRoot,
-                modalMaskImage,
+                modalMaskGraphic,
                 modalMaskButton,
                 topModal,
                 topModal != null && topModal.Definition.CloseOnBackgroundClick);
@@ -1209,7 +1209,7 @@ namespace Orange.UIFramework
             RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
             return BuildBlockerDiagnostics(
                 popupOutsideClickBlockerRoot,
-                popupOutsideClickBlockerImage,
+                popupOutsideClickBlockerGraphic,
                 popupOutsideClickBlockerButton,
                 topPopup,
                 topPopup != null && topPopup.PopupOptions.CloseOnOutsideClick);
@@ -1217,7 +1217,7 @@ namespace Orange.UIFramework
 
         private static UIBlockerDiagnostics BuildBlockerDiagnostics(
             RectTransform blockerRoot,
-            Image image,
+            Graphic graphic,
             Button button,
             RuntimeView topView,
             bool clickCanCloseTopView)
@@ -1227,7 +1227,7 @@ namespace Orange.UIFramework
                 exists ? blockerRoot.name : string.Empty,
                 exists,
                 exists && blockerRoot.gameObject.activeInHierarchy,
-                image != null && image.raycastTarget && image.enabled,
+                graphic != null && graphic.raycastTarget && graphic.enabled,
                 button != null && button.enabled,
                 topView != null ? topView.InstanceId : string.Empty,
                 topView != null ? topView.Definition.Id : string.Empty,
@@ -1614,16 +1614,13 @@ namespace Orange.UIFramework
                 ViewLayer.ModalMask,
                 "ModalMask",
                 new Color(0f, 0f, 0f, 0.55f),
-                out modalMaskImage,
+                out modalMaskGraphic,
                 out modalMaskButton);
             modalMaskButton.onClick.AddListener(OnModalMaskClicked);
             modalMaskRoot.gameObject.SetActive(false);
 
-            popupOutsideClickBlockerRoot = CreateBlockingImage(
-                ViewLayer.Popup,
-                "PopupOutsideClickBlocker",
-                new Color(0f, 0f, 0f, 0f),
-                out popupOutsideClickBlockerImage,
+            popupOutsideClickBlockerRoot = CreatePopupOutsideClickBlocker(
+                out popupOutsideClickBlockerGraphic,
                 out popupOutsideClickBlockerButton);
             popupOutsideClickBlockerButton.onClick.AddListener(OnPopupOutsideClick);
             popupOutsideClickBlockerRoot.gameObject.SetActive(false);
@@ -1633,7 +1630,7 @@ namespace Orange.UIFramework
             ViewLayer layer,
             string blockerName,
             Color color,
-            out Image image,
+            out Graphic graphic,
             out Button button)
         {
             if (!TryGetLayerRoot(layer, out RectTransform layerRoot))
@@ -1642,7 +1639,7 @@ namespace Orange.UIFramework
             }
 
             RectTransform blockerRoot = EnsureChildRect(layerRoot, blockerName);
-            image = blockerRoot.GetComponent<Image>();
+            Image image = blockerRoot.GetComponent<Image>();
             if (image == null)
             {
                 image = blockerRoot.gameObject.AddComponent<Image>();
@@ -1650,6 +1647,7 @@ namespace Orange.UIFramework
 
             image.color = color;
             image.raycastTarget = true;
+            graphic = image;
 
             button = blockerRoot.GetComponent<Button>();
             if (button == null)
@@ -1658,6 +1656,50 @@ namespace Orange.UIFramework
             }
 
             button.transition = Selectable.Transition.None;
+            return blockerRoot;
+        }
+
+        private RectTransform CreatePopupOutsideClickBlocker(
+            out Graphic graphic,
+            out Button button)
+        {
+            GameObject prefab = settings.PopupOutsideClickBlocker.Prefab;
+            if (prefab == null)
+            {
+                return CreateBlockingImage(
+                    ViewLayer.Popup,
+                    "PopupOutsideClickBlocker",
+                    new Color(0f, 0f, 0f, 0f),
+                    out graphic,
+                    out button);
+            }
+
+            if (!TryGetLayerRoot(ViewLayer.Popup, out RectTransform layerRoot))
+            {
+                throw new KeyNotFoundException($"UIManager failed to create 'PopupOutsideClickBlocker': layer '{ViewLayer.Popup}' is not configured.");
+            }
+
+            Transform existing = layerRoot.Find("PopupOutsideClickBlocker");
+            if (existing != null)
+            {
+                Destroy(existing.gameObject);
+            }
+
+            GameObject instance = Instantiate(prefab, layerRoot, false);
+            instance.name = "PopupOutsideClickBlocker";
+
+            RectTransform blockerRoot = instance.transform as RectTransform;
+            if (blockerRoot == null)
+            {
+                throw new InvalidOperationException($"UIManager failed to create 'PopupOutsideClickBlocker': configured prefab '{prefab.name}' root must be a RectTransform.");
+            }
+
+            StretchToParent(blockerRoot);
+            if (!PopupOutsideClickBlockerSettings.TryFindClickableBlockerControls(instance, out button, out graphic))
+            {
+                throw new InvalidOperationException($"UIManager failed to create 'PopupOutsideClickBlocker': configured prefab '{prefab.name}' must contain an enabled Graphic with raycastTarget enabled and an enabled Button on the same object or one of its parents.");
+            }
+
             return blockerRoot;
         }
 

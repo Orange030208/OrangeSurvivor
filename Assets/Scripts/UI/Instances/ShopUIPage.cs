@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopUIPage : PageBase
 {
@@ -11,8 +12,8 @@ public class ShopUIPage : PageBase
     [SerializeField] private ShopItemListUI itemList;
 
     [Header("操作")]
-    [SerializeField] private UIClickTarget rerollButton;
-    [SerializeField] private UIClickTarget continueButton;
+    [SerializeField] private Button rerollButton;
+    [SerializeField] private Button continueButton;
     [SerializeField] private TextMeshProUGUI rerollCostText;
     [SerializeField] private TextMeshProUGUI currencyText;
 
@@ -89,7 +90,7 @@ public class ShopUIPage : PageBase
     private void UpdateRerollState(int rerollCost, bool canReroll)
     {
         rerollCostText.text = rerollCost.ToString();
-        rerollButton.Interactable = canReroll;
+        rerollButton.interactable = canReroll;
     }
 
     private void UpdateCurrencyAmount(int amount)
@@ -135,8 +136,8 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        rerollButton.OnClicked += OnRerollRequested;
-        continueButton.OnClicked += OnContinueRequested;
+        rerollButton.onClick.AddListener(OnRerollRequested);
+        continueButton.onClick.AddListener(OnContinueRequested);
         buttonEventsBound = true;
     }
 
@@ -147,8 +148,8 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        rerollButton.OnClicked -= OnRerollRequested;
-        continueButton.OnClicked -= OnContinueRequested;
+        rerollButton.onClick.RemoveListener(OnRerollRequested);
+        continueButton.onClick.RemoveListener(OnContinueRequested);
         buttonEventsBound = false;
     }
 

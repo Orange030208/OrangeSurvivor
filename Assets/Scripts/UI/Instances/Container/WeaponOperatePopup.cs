@@ -1,10 +1,11 @@
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponOperatePopup : InventoryOperatePopupBase
 {
-    [SerializeField] private UIClickTarget sellButton;
-    [SerializeField] private UIClickTarget mergeButton;
+    [SerializeField] private Button sellButton;
+    [SerializeField] private Button mergeButton;
     [SerializeField] private TMPro.TextMeshProUGUI sellPriceText;
 
     private string currentEntryId;
@@ -28,15 +29,15 @@ public class WeaponOperatePopup : InventoryOperatePopupBase
 
         currentEntryId = resource.entryId;
 
-        sellButton.OnClicked -= OnSellClicked;
-        mergeButton.OnClicked -= OnMergeClicked;
+        sellButton.onClick.RemoveListener(OnSellClicked);
+        mergeButton.onClick.RemoveListener(OnMergeClicked);
 
         bool canMerge = WeaponLevelHelper.CanMerge(resource.colorDependencyNumber);
 
-        sellButton.OnClicked += OnSellClicked;
+        sellButton.onClick.AddListener(OnSellClicked);
         if (canMerge)
         {
-            mergeButton.OnClicked += OnMergeClicked;
+            mergeButton.onClick.AddListener(OnMergeClicked);
         }
 
         CleanClickEvent();
@@ -45,8 +46,8 @@ public class WeaponOperatePopup : InventoryOperatePopupBase
     public override void Dispose()
     {
         base.Dispose();
-        sellButton.OnClicked -= OnSellClicked;
-        mergeButton.OnClicked -= OnMergeClicked;
+        sellButton.onClick.RemoveListener(OnSellClicked);
+        mergeButton.onClick.RemoveListener(OnMergeClicked);
         SellRequested = null;
         MergeRequested = null;
         currentEntryId = null;

@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, ExtraInfoDescriber>
 {
-    [SerializeField] private UIClickTarget buyButton;
+    [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI priceText;
-    [SerializeField] private UIClickTarget lockButton;
+    [SerializeField] private Button lockButton;
     [SerializeField] private Image lockImage;
     [SerializeField] private Sprite lockSprite, unlockSprite;
     [SerializeField] private CardMotionController cardMotionController;
@@ -64,8 +64,8 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
 
         CleanClickEvent();
 
-        buyButton.OnClicked -= OnBuyButtonClicked;
-        lockButton.OnClicked -= OnLockButtonClicked;
+        buyButton.onClick.RemoveListener(OnBuyButtonClicked);
+        lockButton.onClick.RemoveListener(OnLockButtonClicked);
 
         currentIndex = resource.index;
 
@@ -74,8 +74,8 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
             ConfigureCardMotionForReuse(playReveal);
         }
 
-        buyButton.OnClicked += OnBuyButtonClicked;
-        lockButton.OnClicked += OnLockButtonClicked;
+        buyButton.onClick.AddListener(OnBuyButtonClicked);
+        lockButton.onClick.AddListener(OnLockButtonClicked);
     }
 
     public override void Dispose()
@@ -86,8 +86,8 @@ public class ShopItemContainer : UIContainerBase<InfoAddIndex<ShopItemData>, Ext
 
     public void CleanUp()
     {
-        buyButton.OnClicked -= OnBuyButtonClicked;
-        lockButton.OnClicked -= OnLockButtonClicked;
+        buyButton.onClick.RemoveListener(OnBuyButtonClicked);
+        lockButton.onClick.RemoveListener(OnLockButtonClicked);
         BuyRequested = null;
         LockToggleRequested = null;
         currentIndex = -1;

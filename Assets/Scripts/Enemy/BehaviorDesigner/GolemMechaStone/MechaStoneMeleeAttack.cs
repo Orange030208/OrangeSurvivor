@@ -38,6 +38,7 @@ public sealed class MechaStoneMeleeAttack : MechaStoneTaskBase
             attackCommitted = true;
             ActionRunner.MarkCommitted();
             BossBrain.MeleeAttackStrategy.TryExecuteCommitted(executionTarget);
+            ScreenShakeBridge.Request(BossData.MeleeScreenShake, BossData.MeleeScreenShakeScale, OwnerEnemy.transform.position);
         }
 
         return ActionRunner.IsComplete ? TaskStatus.Success : TaskStatus.Running;

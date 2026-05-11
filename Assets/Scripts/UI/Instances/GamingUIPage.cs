@@ -12,7 +12,7 @@ public class GamingUIPage : PageBase
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI currencyText;
     [SerializeField] private CharacterStatusPanel characterStatusPanel;
-    [SerializeField] private UIClickTarget menuButton;
+    [SerializeField] private Button menuButton;
     [SerializeField] private MobileJoystick moveJoystick;
     [SerializeField] private BuffBarUI buffBarUI;
 
@@ -36,7 +36,12 @@ public class GamingUIPage : PageBase
 
         BindInput(currentContext.Player);
         BindHud(currentContext);
-        menuButton.OnClicked += OnPauseClicked;
+        GameInputService inputService = GameInputService.Instance;
+        if (inputService != null)
+        {
+            inputService.PausePerformed += OnPauseClicked;
+        }
+        menuButton.onClick.AddListener(OnPauseClicked);
         return UniTask.CompletedTask;
     }
 
@@ -44,7 +49,13 @@ public class GamingUIPage : PageBase
     {
         UnbindInput();
         UnbindHud();
-        menuButton.OnClicked -= OnPauseClicked;
+        GameInputService inputService = GameInputService.Instance;
+        if (inputService != null)
+        {
+            inputService.PausePerformed -= OnPauseClicked;
+        }
+
+        menuButton.onClick.RemoveListener(OnPauseClicked);
         currentContext = null;
     }
 
@@ -73,6 +84,13 @@ public class GamingUIPage : PageBase
 
     private Vector2 ReadMoveDirection()
     {
+        GameInputService inputService = GameInputService.Instance;
+        Vector2 inputMove = inputService != null ? inputService.Move : Vector2.zero;
+        if (inputMove.sqrMagnitude > 0.0001f)
+        {
+            return Vector2.ClampMagnitude(inputMove, 1f);
+        }
+
         return moveJoystick != null ? moveJoystick.GetMoveDirection() : Vector2.zero;
     }
 
@@ -216,9 +234,6 @@ public class GamingUIPage : PageBase
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing buff bar UI.");
         }
 
-        if (moveJoystick == null)
-        {
-            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing move joystick.");
-        }
+        // Mobile joystick is optional on PC builds; GameInputService is the primary input source.
     }
 }

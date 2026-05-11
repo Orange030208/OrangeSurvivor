@@ -4,11 +4,12 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StageCompleteUIPage : PageBase
 {
-    [SerializeField] private UIClickTarget restartButton;
-    [SerializeField] private UIClickTarget menuButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button menuButton;
     [SerializeField] private TextMeshProUGUI completedWavesText;
     [SerializeField] private TextMeshProUGUI survivalTimeText;
     [SerializeField] private TextMeshProUGUI killCountText;
@@ -19,8 +20,8 @@ public class StageCompleteUIPage : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        restartButton.OnClicked += OnRestartClicked;
-        menuButton.OnClicked += OnMenuClicked;
+        restartButton.onClick.AddListener(OnRestartClicked);
+        menuButton.onClick.AddListener(OnMenuClicked);
         StageCompletePageContext pageContext = context.GetPayload<StageCompletePageContext>()
             ?? throw new InvalidOperationException($"{nameof(StageCompleteUIPage)} requires {nameof(StageCompletePageContext)} payload.");
         ApplyResult(pageContext.Result);
@@ -29,8 +30,8 @@ public class StageCompleteUIPage : PageBase
 
     protected override void OnClosed(CloseReason reason)
     {
-        restartButton.OnClicked -= OnRestartClicked;
-        menuButton.OnClicked -= OnMenuClicked;
+        restartButton.onClick.RemoveListener(OnRestartClicked);
+        menuButton.onClick.RemoveListener(OnMenuClicked);
     }
 
     private void ApplyResult(StageCompleteResult result)

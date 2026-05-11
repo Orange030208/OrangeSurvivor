@@ -2,13 +2,14 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterSelectUIPage : PageBase
 {
     [SerializeField] private CharacterInfoCard characterInfoCard;
     [SerializeField] private CharacterListUI characterList;
-    [SerializeField] private UIClickTarget confirm;
-    [SerializeField] private UIClickTarget back;
+    [SerializeField] private Button confirm;
+    [SerializeField] private Button back;
 
     private CharacterSelectionManager characterSelectionManager;
     private int selectedCharacterIndex = -1;
@@ -25,8 +26,8 @@ public class CharacterSelectUIPage : PageBase
             ?? throw new System.InvalidOperationException($"{nameof(CharacterSelectUIPage)} requires {nameof(CharacterSelectionManager)} payload.");
         characterSelectionManager.SelectionChanged += OnCharacterSelectionChanged;
 
-        confirm.OnClicked += OnConfirmOnClicked;
-        back.OnClicked += OnBackOnClicked;
+        confirm.onClick.AddListener(OnConfirmOnClicked);
+        back.onClick.AddListener(OnBackOnClicked);
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
@@ -43,8 +44,8 @@ public class CharacterSelectUIPage : PageBase
             characterSelectionManager = null;
         }
 
-        confirm.OnClicked -= OnConfirmOnClicked;
-        back.OnClicked -= OnBackOnClicked;
+        confirm.onClick.RemoveListener(OnConfirmOnClicked);
+        back.onClick.RemoveListener(OnBackOnClicked);
 
         SetConfirmButtonInteractable(false);
         characterInfoCard.ClearInfo();
@@ -100,7 +101,7 @@ public class CharacterSelectUIPage : PageBase
 
     private void SetConfirmButtonInteractable(bool interactable)
     {
-        confirm.Interactable = interactable;
+        confirm.interactable = interactable;
     }
 
     private void ValidateConfiguration()

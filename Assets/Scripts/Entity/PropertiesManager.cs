@@ -326,11 +326,12 @@ public class PropertiesManager : EntityComponentBase, IDescribable
 
     /// <summary>
     /// 使用外部系统提供的基础值参与同一套属性修饰结算。
-    /// 例如武器自身攻击力不属于玩家 BasePropGroup，但仍应吃到玩家攻击乘区。
+    /// 例如武器自身基础属性不属于玩家 BasePropGroup，但仍应吃到玩家属性修饰乘区。
     /// </summary>
     public float GetPropValueWithAdditionalBase(PropType propType, float additionalBaseValue)
     {
-        float baseValue = baseProps.GetValueOrDefault(propType, GetDefaultValue(propType)) + additionalBaseValue;
+        float explicitBaseValue = baseProps.GetValueOrDefault(propType, 0f);
+        float baseValue = explicitBaseValue + additionalBaseValue;
         float mappedAddValue = mappedAddProps.GetValueOrDefault(propType, 0f);
         return CalculateFinalValue(propType, baseValue, mappedAddValue);
     }
@@ -344,7 +345,7 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     {
         return propType switch
         {
-            PropType.AttackSpeed => 1f,
+            PropType.AttackSpeed => 0.0000001f,
             PropType.CriticalPercent => 0f,
             PropType.ProjectileCount => 1f,
             PropType.ProjectileSpeed => 1f,

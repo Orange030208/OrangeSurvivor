@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1685cd5fa77f975468e488a098a05b86, type: 3}
   m_Name: Melee Heavy Horizontal Slash Attack Sequence
   m_EditorClassIdentifier: 
-  duration: 1
+  duration: 0.75
   restoreDefaultPoseOnComplete: 1
   targetOffsetMode: 0
   referenceTargetOffset: {x: 0, y: 1}
@@ -361,15 +361,15 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   eventKeyframes:
-  - normalizedTime: 0.3
-    eventType: 0
-    eventKey: 0
-  - normalizedTime: 0.58
-    eventType: 1
-    eventKey: 0
-  - normalizedTime: 0.3
+  - normalizedTime: 0.25
     eventType: 3
     eventKey: 0
   - normalizedTime: 0.3
+    eventType: 0
+    eventKey: 0
+  - normalizedTime: 0.3
     eventType: 4
+    eventKey: 0
+  - normalizedTime: 0.58
+    eventType: 1
     eventKey: 0

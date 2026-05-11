@@ -11,7 +11,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Unity.UnityInput
 
         public override TaskStatus OnUpdate()
         {
-            return Input.GetButtonDown(buttonName.Value) ? TaskStatus.Success : TaskStatus.Failure;
+            return BehaviorDesignerInputAdapter.GetButtonDown(buttonName.Value) ? TaskStatus.Success : TaskStatus.Failure;
         }
 
         public override void OnReset()

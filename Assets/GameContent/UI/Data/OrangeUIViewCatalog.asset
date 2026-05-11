@@ -145,3 +145,14 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: 1
     allowDuplicateViewType: 0
+  - id: modal.displayConfirm
+    kind: 2
+    layer: 5
+    prefab: {fileID: 5092620673197278662, guid: 31f9fbe70391433439e5e388850e0461, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0

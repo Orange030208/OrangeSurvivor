@@ -91,6 +91,21 @@ public sealed class PropertyMappingAndAttackUsageTests
     }
 
     [Test]
+    public void AdditionalAttackSpeedBaseDoesNotIncludeDefaultAttackSpeed()
+    {
+        PropertiesManager manager = CreatePropertiesManager(System.Array.Empty<BasePropData>());
+
+        Assert.That(manager.GetPropValue(PropType.AttackSpeed), Is.EqualTo(0.0000001f).Within(0.00000001f));
+        Assert.That(manager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, 0.1f), Is.EqualTo(0.1f).Within(0.0001f));
+
+        manager.AddModifier(
+            "attack_speed_bonus",
+            new PropModifierData(PropType.AttackSpeed, PropModifierType.Add, 20f));
+
+        Assert.That(manager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, 0.1f), Is.EqualTo(0.12f).Within(0.0001f));
+    }
+
+    [Test]
     public void WeaponAttackUsageDataAddsByPercentPoints()
     {
         WeaponAttackUsageData baseUsage = new(20f, 0f, 5f, 0f);

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class InventoryItem : ViewPartBase, IDisposable
 {
     [SerializeField] private Image iconImage;
-    [SerializeField] private UIClickTarget button;
+    [SerializeField] private Button button;
     [SerializeField] private CardQualityVisualController cardQualityVisualController;
 
     private string entryId;
@@ -24,8 +24,8 @@ public class InventoryItem : ViewPartBase, IDisposable
 
         ApplyCardQuality(itemData, colorDependencyNumber);
 
-        button.OnClicked -= OnItemClicked;
-        button.OnClicked += OnItemClicked;
+        button.onClick.RemoveListener(OnItemClicked);
+        button.onClick.AddListener(OnItemClicked);
     }
 
     private void OnItemClicked()
@@ -40,7 +40,7 @@ public class InventoryItem : ViewPartBase, IDisposable
 
     public void Dispose()
     {
-        button.OnClicked -= OnItemClicked;
+        button.onClick.RemoveListener(OnItemClicked);
         Clicked = null;
         entryId = null;
     }

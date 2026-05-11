@@ -114,23 +114,22 @@ MonoBehaviour:
     description: 
     icon: {fileID: 21300000, guid: 3c72b09e4be743e41a9e4e81d2e587aa, type: 3}
   - propType: 28
-    chineseName: "伤害提升"
+    chineseName: "\u4F24\u5BB3\u63D0\u5347"
     description: 
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 6971b4e3b755571cb3d3cee86b6ae688, type: 3}
   - propType: 29
-    chineseName: "近战攻击"
+    chineseName: "\u8FD1\u6218\u653B\u51FB"
     description: 
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 323e88d2352553fa35140848b2358110, type: 3}
   - propType: 30
-    chineseName: "远程攻击"
+    chineseName: "\u8FDC\u7A0B\u653B\u51FB"
     description: 
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: ee1a80b7d5cfe11fe480f842111f91b8, type: 3}
   - propType: 31
-    chineseName: "魔法攻击"
+    chineseName: "\u9B54\u6CD5\u653B\u51FB"
     description: 
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: aecf162fe20dd36b64f9232c4a33bd18, type: 3}
   - propType: 32
-    chineseName: "召唤攻击"
+    chineseName: "\u53EC\u5524\u653B\u51FB"
     description: 
-    icon: {fileID: 0}
-
+    icon: {fileID: 21300000, guid: b9451bcc396f5a51feafbf00bccbc599, type: 3}

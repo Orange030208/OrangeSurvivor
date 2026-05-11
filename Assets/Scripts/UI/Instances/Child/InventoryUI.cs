@@ -23,6 +23,7 @@ public class InventoryUI : ViewPartBase
     private string currentOperateEntryId;
     private int popupVersion;
     private ViewHandle currentPopupHandle;
+    private bool cancelInputBound;
 
     private void Awake()
     {
@@ -33,25 +34,57 @@ public class InventoryUI : ViewPartBase
     private void OnEnable()
     {
         StartInventorySession();
+        BindCancelInput();
     }
 
-    private void Update()
+    private void OnDisable()
+    {
+        UnbindCancelInput();
+        StopInventorySession();
+    }
+
+    private void BindCancelInput()
+    {
+        if (cancelInputBound)
+        {
+            return;
+        }
+
+        GameInputService inputService = GameInputService.Instance;
+        if (inputService == null)
+        {
+            return;
+        }
+
+        inputService.UiCancelPerformed += OnCancelInputPerformed;
+        cancelInputBound = true;
+    }
+
+    private void UnbindCancelInput()
+    {
+        if (!cancelInputBound)
+        {
+            return;
+        }
+
+        GameInputService inputService = GameInputService.Instance;
+        if (inputService != null)
+        {
+            inputService.UiCancelPerformed -= OnCancelInputPerformed;
+        }
+
+        cancelInputBound = false;
+    }
+
+    private void OnCancelInputPerformed()
     {
         if (!HasOpenPopup)
         {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-            ClosePopup();
-        }
-    }
-
-    private void OnDisable()
-    {
-        StopInventorySession();
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+        ClosePopup();
     }
 
     public void WarmUp()

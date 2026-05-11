@@ -2,6 +2,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// 暂停菜单页面本体：负责按钮绑定、属性同步以及暂停栏内容面板的切换动画。
@@ -10,10 +12,10 @@ using UnityEngine;
 public class GamePauseMenu : PageBase
 {
     [Header("暂停栏按钮")]
-    [SerializeField] private UIClickTarget statusButton;
-    [SerializeField] private UIClickTarget continueButton;
-    [SerializeField] private UIClickTarget settingsButton;
-    [SerializeField] private UIClickTarget menuButton;
+    [SerializeField] private Button statusButton;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button menuButton;
 
     [Header("页面子部件")]
     [SerializeField] private SettingsPanelManager settingsPanel;
@@ -30,8 +32,10 @@ public class GamePauseMenu : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
+        settingsPanel.ConfigureOwner(OwnerUIManager);
         BindButtonEvents();
         HideSettingsImmediate();
+        SelectDefaultControl();
         return UniTask.CompletedTask;
     }
 
@@ -43,6 +47,7 @@ public class GamePauseMenu : PageBase
     protected override void OnClosed(CloseReason reason)
     {
         UnbindButtonEvents();
+        settingsPanel.ConfigureOwner(null);
         HideSettingsImmediate();
     }
 
@@ -53,14 +58,14 @@ public class GamePauseMenu : PageBase
             return;
         }
 
-        continueButton.OnClicked += OnContinueClicked;
-        menuButton.OnClicked += OnMenuClicked;
+        continueButton.onClick.AddListener(OnContinueClicked);
+        menuButton.onClick.AddListener(OnMenuClicked);
         if (statusButton != null)
         {
-            statusButton.OnClicked += OnStatusClicked;
+            statusButton.onClick.AddListener(OnStatusClicked);
         }
 
-        settingsButton.OnClicked += OnSettingsClicked;
+        settingsButton.onClick.AddListener(OnSettingsClicked);
         buttonEventsBound = true;
     }
 
@@ -71,14 +76,14 @@ public class GamePauseMenu : PageBase
             return;
         }
 
-        continueButton.OnClicked -= OnContinueClicked;
-        menuButton.OnClicked -= OnMenuClicked;
+        continueButton.onClick.RemoveListener(OnContinueClicked);
+        menuButton.onClick.RemoveListener(OnMenuClicked);
         if (statusButton != null)
         {
-            statusButton.OnClicked -= OnStatusClicked;
+            statusButton.onClick.RemoveListener(OnStatusClicked);
         }
 
-        settingsButton.OnClicked -= OnSettingsClicked;
+        settingsButton.onClick.RemoveListener(OnSettingsClicked);
         buttonEventsBound = false;
     }
 
@@ -116,6 +121,16 @@ public class GamePauseMenu : PageBase
     {
         settingsVisible = false;
         settingsPanel.SetHiddenImmediate();
+    }
+
+    private void SelectDefaultControl()
+    {
+        if (continueButton == null)
+        {
+            return;
+        }
+
+        EventSystem.current?.SetSelectedGameObject(continueButton.gameObject);
     }
 
     private void ValidateConfiguration()

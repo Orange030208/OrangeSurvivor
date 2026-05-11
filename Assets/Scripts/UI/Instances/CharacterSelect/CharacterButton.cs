@@ -1,13 +1,16 @@
 using Orange.UIFramework;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(UIClickTarget))]
+[RequireComponent(typeof(Button))]
 public class CharacterButton : ViewPartBase
 {
     [SerializeField] private Image characterIconImage;
-    [SerializeField] private UIClickTarget clickTarget;
+    [SerializeField] private Button button;
+
+    private UnityAction currentClickAction;
 
     private void Awake()
     {
@@ -18,12 +21,17 @@ public class CharacterButton : ViewPartBase
     {
         ResolveReferences();
         characterIconImage.sprite = characterIcon;
-        clickTarget.ClearListeners();
-        clickTarget.OnClicked += () =>
+        if (currentClickAction != null)
+        {
+            button.onClick.RemoveListener(currentClickAction);
+        }
+
+        currentClickAction = () =>
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
             onClick?.Invoke();
         };
+        button.onClick.AddListener(currentClickAction);
     }
 
     public void SetSelected(bool selected)
@@ -38,14 +46,14 @@ public class CharacterButton : ViewPartBase
             characterIconImage = GetComponentInChildren<Image>(true);
         }
 
-        if (clickTarget == null)
+        if (button == null)
         {
-            clickTarget = GetComponent<UIClickTarget>();
+            button = GetComponent<Button>();
         }
 
-        if (clickTarget == null)
+        if (button == null)
         {
-            clickTarget = GetComponentInChildren<UIClickTarget>(true);
+            button = GetComponentInChildren<Button>(true);
         }
 
         if (characterIconImage == null)
@@ -53,9 +61,9 @@ public class CharacterButton : ViewPartBase
             throw new MissingReferenceException($"{nameof(CharacterButton)} '{name}' is missing character icon image.");
         }
 
-        if (clickTarget == null)
+        if (button == null)
         {
-            throw new MissingReferenceException($"{nameof(CharacterButton)} '{name}' is missing click target.");
+            throw new MissingReferenceException($"{nameof(CharacterButton)} '{name}' is missing button.");
         }
     }
 }

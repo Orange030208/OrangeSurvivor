@@ -12,7 +12,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Unity.UnityInput
 
         public override TaskStatus OnUpdate()
         {
-            storeResult.Value = Input.mousePosition;
+            storeResult.Value = BehaviorDesignerInputAdapter.MousePosition;
             return TaskStatus.Success;
         }
 

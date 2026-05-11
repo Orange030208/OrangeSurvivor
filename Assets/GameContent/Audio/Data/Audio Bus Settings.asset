@@ -31,7 +31,7 @@ MonoBehaviour:
     spatializeByDefault: 0
     sfxEntries:
     - sfxKey: 108
-      clip: {fileID: 8300000, guid: 59ebe67d412bae4d4fe8903657f2c0bf, type: 3}
+      clip: {fileID: 8300000, guid: 618299d016f127749a83bbd747ff9469, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -73,7 +73,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 100
-      clip: {fileID: 8300000, guid: 83bd25adcfcb61ab4f0b9c0aa380f680, type: 3}
+      clip: {fileID: 8300000, guid: badbf6d63938165459d5f723579935a1, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -87,7 +87,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 114
-      clip: {fileID: 8300000, guid: 0011669121ec63bd2396fa2c4c5f340d, type: 3}
+      clip: {fileID: 8300000, guid: ad53df7a46cf5354299927557093c6fe, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -101,7 +101,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 104
-      clip: {fileID: 8300000, guid: 292be69a97a31b4a591b62b03a4001d3, type: 3}
+      clip: {fileID: 8300000, guid: dd3c712f5e935144dafe7bd984315f8a, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -115,7 +115,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 105
-      clip: {fileID: 8300000, guid: da80a9d1ced16d4d3bf90381b1a441e1, type: 3}
+      clip: {fileID: 8300000, guid: 64a2e68ed558b7941881c857f7abfb69, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -129,7 +129,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 106
-      clip: {fileID: 8300000, guid: 53241ca3562a2c26c83aca3766e9751a, type: 3}
+      clip: {fileID: 8300000, guid: 6e7665611e81b814db6d14b64729c7fa, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -171,7 +171,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 112
-      clip: {fileID: 8300000, guid: 52f1ab0b36355d05179a3798976473db, type: 3}
+      clip: {fileID: 8300000, guid: 11c1ddfa6c67dd34a909b3d54732b0a7, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -318,7 +318,7 @@ MonoBehaviour:
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 304
-      clip: {fileID: 8300000, guid: 3adc91efd18ef430e852571c5905df6c, type: 3}
+      clip: {fileID: 8300000, guid: 215d75ec34ae3d745970d0d9d32e4eda, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -393,7 +393,7 @@ MonoBehaviour:
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
-      baseVolumeScale: 1
+      baseVolumeScale: 0.5
       pitchMin: 0.98
       pitchMax: 1.02
       maxConcurrent: 8
@@ -407,7 +407,7 @@ MonoBehaviour:
       playbackMode: 0
       pitch: 1
       groupId: sfx.combat
-      baseVolumeScale: 1
+      baseVolumeScale: 0.5
       pitchMin: 0.98
       pitchMax: 1.02
       maxConcurrent: 6
@@ -444,7 +444,7 @@ MonoBehaviour:
       use2DSpatialBlend: 1
       clipVariants: []
     - sfxKey: 400
-      clip: {fileID: 8300000, guid: 86cde7e283efa561d7464fc00888573b, type: 3}
+      clip: {fileID: 8300000, guid: 8e418ddf04ff82b49b17e19b051300b3, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1
@@ -563,7 +563,7 @@ MonoBehaviour:
     spatializeByDefault: 1
     sfxEntries:
     - sfxKey: 200
-      clip: {fileID: 8300000, guid: 98248ddbdfded9c7e0531a24c1fcde24, type: 3}
+      clip: {fileID: 8300000, guid: 70c4d017febc1324bb3896d71fa8bb5c, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1

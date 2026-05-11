@@ -22,6 +22,9 @@ namespace Orange.UIFramework
         [Header("层级")]
         [SerializeField] private List<LayerDefinition> layers = CreateDefaultLayers();
 
+        [Header("Popup 外部点击拦截器")]
+        [SerializeField] private PopupOutsideClickBlockerSettings popupOutsideClickBlocker = new PopupOutsideClickBlockerSettings();
+
         public string InstanceIdPrefix => instanceIdPrefix;
         public bool UseUnscaledTime => useUnscaledTime;
         public string RootName => string.IsNullOrWhiteSpace(rootName) ? "UIRoot" : rootName;
@@ -29,6 +32,7 @@ namespace Orange.UIFramework
         public bool EnablePooling => enablePooling;
         public int MaxCachedInstancesPerView => maxCachedInstancesPerView;
         public IReadOnlyList<LayerDefinition> Layers => layers;
+        public PopupOutsideClickBlockerSettings PopupOutsideClickBlocker => popupOutsideClickBlocker ?? new PopupOutsideClickBlockerSettings();
 
         public ValidationReport Validate(ViewCatalog catalog = null)
         {
@@ -48,6 +52,7 @@ namespace Orange.UIFramework
             }
 
             ValidateLayers(report);
+            popupOutsideClickBlocker?.Validate(name, report);
 
             if (catalog != null)
             {
@@ -122,6 +127,11 @@ namespace Orange.UIFramework
             instanceIdPrefix = string.IsNullOrWhiteSpace(instanceIdPrefix) ? "ui_" : instanceIdPrefix.Trim();
             rootName = string.IsNullOrWhiteSpace(rootName) ? "UIRoot" : rootName.Trim();
             maxCachedInstancesPerView = Mathf.Max(0, maxCachedInstancesPerView);
+
+            if (popupOutsideClickBlocker == null)
+            {
+                popupOutsideClickBlocker = new PopupOutsideClickBlockerSettings();
+            }
 
             if (layers == null)
             {
