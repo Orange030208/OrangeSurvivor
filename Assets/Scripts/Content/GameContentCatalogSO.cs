@@ -20,6 +20,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
 
     [Header("玩法配置")]
     [SerializeField] private PlayerLevelConfigSO playerLevelConfig;
+    [SerializeField] private RunProgressionProfileSO runProgressionProfile;
     [SerializeField] private ContentPoolSO upgradeCardPool;
     [SerializeField] private StageDefinitionSO defaultStageDefinition;
 
@@ -54,6 +55,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     public Player DefaultPlayerPrefab => defaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => defaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => playerLevelConfig;
+    public RunProgressionProfileSO RunProgressionProfile => runProgressionProfile;
     public ContentPoolSO UpgradeCardPool => upgradeCardPool;
     public ContentPoolSO ChestRewardPool => chestRewardPool;
     public ContentPoolSO ShopPool => shopPool;
@@ -80,6 +82,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(weaponDataList, nameof(weaponDataList), errors);
         ValidateRequired(accessoryDataList, nameof(accessoryDataList), errors);
         ValidateRequired(playerLevelConfig, nameof(playerLevelConfig), errors);
+        ValidateRequired(runProgressionProfile, nameof(runProgressionProfile), errors);
         ValidateRequired(upgradeCardPool, nameof(upgradeCardPool), errors);
         ValidatePoolPurpose(upgradeCardPool, ContentPoolPurpose.UpgradeCard, nameof(upgradeCardPool), errors);
         ValidateRequired(chestRewardPool, nameof(chestRewardPool), errors);
@@ -88,6 +91,8 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidatePoolPurpose(shopPool, ContentPoolPurpose.Shop, nameof(shopPool), errors);
         ValidateRequired(dropPool, nameof(dropPool), errors);
         ValidatePoolPurpose(dropPool, ContentPoolPurpose.Drop, nameof(dropPool), errors);
+        ValidateRequired(waveSpawnPool, nameof(waveSpawnPool), errors);
+        ValidatePoolPurpose(waveSpawnPool, ContentPoolPurpose.WaveSpawn, nameof(waveSpawnPool), errors);
         ValidateRequired(weaponRewardPool, nameof(weaponRewardPool), errors);
         ValidatePoolPurpose(weaponRewardPool, ContentPoolPurpose.WeaponReward, nameof(weaponRewardPool), errors);
         ValidateRequired(defaultStageDefinition, nameof(defaultStageDefinition), errors);

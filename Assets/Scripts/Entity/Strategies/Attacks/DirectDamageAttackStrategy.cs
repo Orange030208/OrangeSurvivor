@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public sealed class DirectDamageAttackStrategy : AttackStrategyBase
@@ -8,6 +9,8 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private readonly Transform attackPointTransform;
     private readonly float rangeMultiplier;
     private readonly GameObject hitVfxPrefab;
+    private readonly DirectDamageHitShape hitShape;
+    private readonly Func<Vector2> attackDirectionProvider;
     private bool hasWarnedMissingAttackPoint;
 
     public DirectDamageAttackStrategy(
@@ -19,12 +22,16 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
         IRangeDetectionStrategy detectionStrategy,
         Transform attackPointTransform = null,
         float rangeMultiplier = 1f,
-        GameObject hitVfxPrefab = null)
+        GameObject hitVfxPrefab = null,
+        DirectDamageHitShape hitShape = DirectDamageHitShape.Circle,
+        Func<Vector2> attackDirectionProvider = null)
         : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio, detectionStrategy)
     {
         this.attackPointTransform = attackPointTransform;
         this.rangeMultiplier = Mathf.Max(0f, rangeMultiplier);
         this.hitVfxPrefab = hitVfxPrefab;
+        this.hitShape = hitShape;
+        this.attackDirectionProvider = attackDirectionProvider;
     }
 
     protected override bool ExecuteCore(Entity target)
@@ -39,11 +46,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
         float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
         RuntimeVfx.Spawn(hitVfxPrefab, attackCenter, Quaternion.identity);
 
-        int hitCount = Physics2D.OverlapCircleNonAlloc(
-            attackCenter,
-            attackRadius,
-            areaHitBuffer,
-            attackController.AttackLayer);
+        int hitCount = QueryAreaHits(attackCenter, attackRadius);
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -64,6 +67,27 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
                 HitSourceKind.Direct,
                 owner.Center));
         }
+    }
+
+    private int QueryAreaHits(Vector2 attackCenter, float attackRadius)
+    {
+        return hitShape == DirectDamageHitShape.FacingSemicircle
+            ? AreaHitQueryUtility.OverlapFacingSemicircleNonAlloc(
+                attackCenter,
+                attackRadius,
+                ResolveAttackDirection(),
+                areaHitBuffer,
+                attackController.AttackLayer)
+            : AreaHitQueryUtility.OverlapCircleNonAlloc(
+                attackCenter,
+                attackRadius,
+                areaHitBuffer,
+                attackController.AttackLayer);
+    }
+
+    private Vector2 ResolveAttackDirection()
+    {
+        return attackDirectionProvider != null ? attackDirectionProvider.Invoke() : Vector2.right;
     }
 
     private Vector2 ResolveAttackCenter()

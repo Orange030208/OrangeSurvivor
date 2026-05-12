@@ -42,6 +42,7 @@ public static class WaveDefinitionMapper
             waveDefinition.WaveId,
             waveName,
             waveDefinition.Duration,
+            waveDefinition.CompletionMode,
             segments);
     }
 

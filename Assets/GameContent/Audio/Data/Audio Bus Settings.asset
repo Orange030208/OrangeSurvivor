@@ -73,7 +73,7 @@ MonoBehaviour:
       use2DSpatialBlend: 0
       clipVariants: []
     - sfxKey: 100
-      clip: {fileID: 8300000, guid: badbf6d63938165459d5f723579935a1, type: 3}
+      clip: {fileID: 8300000, guid: b91023b5c626fda4f92083058aa166fb, type: 3}
       busType: 1
       playbackMode: 0
       pitch: 1

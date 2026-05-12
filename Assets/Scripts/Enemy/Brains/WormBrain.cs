@@ -73,7 +73,7 @@ public class WormBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         approachMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, enemyData.retreatMovement);
+        retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
 
         IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(
             owner,

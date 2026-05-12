@@ -66,20 +66,34 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         Clear();
         if (!this.owner.TryGetComponent<IPropGroupProvider>(out IPropGroupProvider basePropProvider))
         {
-            Debug.LogWarning($"{owner.name}应该实现IPropGroupProvider为PropertiesManager提供基础属性");
+            // Entities without a base property provider intentionally use PropType defaults only.
         }
-
-        IReadOnlyList<BasePropData> values = basePropProvider.BasePropsGroup.Values;
-        for (int i = 0; i < values.Count; i++)
+        else if (basePropProvider.BasePropsGroup == null)
         {
-            BasePropData baseProp = values[i];
-            AddValue(baseProps, baseProp.propType, baseProp.value);
+            Debug.LogWarning($"{owner.name} has no BasePropsGroup. PropertiesManager will use default base properties.", this);
+        }
+        else
+        {
+            IReadOnlyList<BasePropData> values = basePropProvider.BasePropsGroup.Values;
+            if (values != null)
+            {
+                for (int i = 0; i < values.Count; i++)
+                {
+                    BasePropData baseProp = values[i];
+                    AddValue(baseProps, baseProp.propType, baseProp.value);
+                }
+            }
         }
 
         if (this.owner.TryGetComponent<IPropModifierProvider>(out IPropModifierProvider propModifierProvider))
         {
             var propModifierDataList = propModifierProvider.PropModifierDataList;
             AddModifiers(owner.RuntimeId, propModifierDataList);
+        }
+
+        if (owner is Enemy enemy)
+        {
+            enemy.ApplyInitialProgressionModifiers(this);
         }
 
         RecalculateAllProps(false);
@@ -217,12 +231,6 @@ public class PropertiesManager : EntityComponentBase, IDescribable
                 switch (entry.modifierType)
                 {
                     case PropModifierType.Add:
-                        if (PropValueUtility.IsAdditivePercentMultiplierProp(entry.propType))
-                        {
-                            bonusMultiplierValue += PropValueUtility.PercentPointsToRatio(entry.value);
-                            break;
-                        }
-
                         addValue += entry.value;
                         break;
                     case PropModifierType.BaseMultiplier:
@@ -345,7 +353,6 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     {
         return propType switch
         {
-            PropType.AttackSpeed => 0.0000001f,
             PropType.CriticalPercent => 0f,
             PropType.ProjectileCount => 1f,
             PropType.ProjectileSpeed => 1f,

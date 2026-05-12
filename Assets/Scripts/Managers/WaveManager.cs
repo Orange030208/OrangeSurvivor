@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 敌波管理器：负责波次数据推进、计时和刷怪。
-/// 波次当前固定为计时结束，波末状态切换由 GameManager 根据玩家本波收益决定。
+/// 波末状态切换由 GameManager 根据玩家本波收益决定。
 /// </summary>
 public class WaveManager : MonoBehaviour, IWaveController
 {
@@ -13,8 +13,10 @@ public class WaveManager : MonoBehaviour, IWaveController
     private SpawnPositionResolver spawnPositionResolver;
     private WaveSpawnExecutionService waveSpawnExecutionService;
     private EnemyFactory enemyFactory;
+    private RunProgressionService runProgressionService;
     private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
     private Wave[] runtimeWaves = System.Array.Empty<Wave>();
+    private IWaveCompletionRule currentCompletionRule = new TimerOnlyWaveCompletionRule();
     private int lastCountdownSecond = -1;
 
     [SerializeField]
@@ -66,6 +68,10 @@ public class WaveManager : MonoBehaviour, IWaveController
         }
 
         enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);
+        RunProgressionProfileSO progressionProfile = GameContentRuntime.Provider.RunProgressionProfile;
+        runProgressionService = new RunProgressionService(progressionProfile);
+        runProgressionService.Reset(runtimeWaves.Length);
+        RunProgressionRuntime.SetProvider(runProgressionService);
         waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory, waveSpawnPool);
         ApplySpawnPositionPolicy(0);
     }
@@ -73,6 +79,8 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void OnEnable()
     {
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
+        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
 
         TryBindSpawnAnchor();
         PublishWaveRuntimeChanged();
@@ -81,6 +89,9 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void OnDisable()
     {
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
+        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        RunProgressionRuntime.ClearProvider(runProgressionService);
     }
 
     private void Update()
@@ -92,9 +103,10 @@ public class WaveManager : MonoBehaviour, IWaveController
 
         ProcessCurrentWaveSpawns();
         runtimeState.Timer += Time.deltaTime;
+        runProgressionService?.Tick(Time.deltaTime);
         if (CurrentTimer >= CurrentWaveDuration)
         {
-            CompleteCurrentWave();
+            HandleWaveTimerElapsed();
             return;
         }
 
@@ -105,6 +117,31 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         spawnAroundEntity = eventData.Player;
+    }
+
+    private void OnEnemyRegistered(EnemyRegisteredEvent eventData)
+    {
+        if (runtimeState.CompletionTriggered || CurrentWaveIndex < 0 || CurrentWaveIndex >= runtimeWaves.Length)
+        {
+            return;
+        }
+
+        ApplyCompletionDecision(currentCompletionRule.OnEnemyRegistered(eventData.Role, CreateCompletionContext()));
+    }
+
+    private void OnEntityDied(EntityDiedEvent eventData)
+    {
+        if (runtimeState.CompletionTriggered || CurrentWaveIndex < 0 || CurrentWaveIndex >= runtimeWaves.Length)
+        {
+            return;
+        }
+
+        if (eventData.Entity is not Enemy enemy)
+        {
+            return;
+        }
+
+        ApplyCompletionDecision(currentCompletionRule.OnEnemyDied(enemy.Role, CreateCompletionContext()));
     }
 
     public void StartFirstWave()
@@ -156,6 +193,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     public void ResetWaves()
     {
         runtimeState = WaveRuntimeState.CreateIdle();
+        currentCompletionRule = new TimerOnlyWaveCompletionRule();
         ResetCountdownTickState();
         PublishWaveRuntimeChanged();
     }
@@ -183,7 +221,8 @@ public class WaveManager : MonoBehaviour, IWaveController
             CurrentTimer,
             waveDuration,
             spawnAroundEntity,
-            transform);
+            transform,
+            runProgressionService);
         waveSpawnExecutionService.ExecuteModifierOnlyRequests(spawnContext, spawnPositionResolver);
 
         for (int i = 0; i < segments.Length; i++)
@@ -197,7 +236,8 @@ public class WaveManager : MonoBehaviour, IWaveController
                 currentWave.WaveId,
                 currentWave.Name,
                 spawnAroundEntity,
-                transform);
+                transform,
+                runProgressionService);
             WaveSegmentRuntimeState segmentState = runtimeState.SegmentStates[i];
             WaveSpawnExecutionResult result = waveSpawnExecutionService.Execute(request, segmentState, spawnPositionResolver);
             runtimeState.SegmentStates[i] = result.SegmentState;
@@ -215,17 +255,22 @@ public class WaveManager : MonoBehaviour, IWaveController
         TryBindSpawnAnchor();
         ApplySpawnPositionPolicy(waveIndex);
         Wave wave = runtimeWaves[waveIndex];
+        currentCompletionRule = WaveCompletionRuleFactory.Create(wave.CompletionMode);
         runtimeState = new WaveRuntimeState(
             waveIndex,
             0f,
             true,
             CreateSegmentStates(wave),
             false);
+        runProgressionService?.BeginWave(CurrentWave, TotalWaves);
         ResetCountdownTickState();
 
         PublishWaveRuntimeChanged();
         GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
-        GameEventBus.Publish(new WaveProgressEvent(CurrentWaveDuration, CurrentWaveDuration));
+        GameEventBus.Publish(new WaveProgressEvent(
+            CurrentWaveDuration,
+            CurrentWaveDuration,
+            currentCompletionRule.ShowsCountdownTimer));
         WaveSpawnModifierRegistry.NotifyWaveStarted(new WaveSpawnContext(
             CurrentWaveIndex,
             CurrentWave,
@@ -234,7 +279,38 @@ public class WaveManager : MonoBehaviour, IWaveController
             0f,
             CurrentWaveDuration,
             spawnAroundEntity,
-            transform));
+            transform,
+            runProgressionService));
+    }
+
+    private void HandleWaveTimerElapsed()
+    {
+        ApplyCompletionDecision(currentCompletionRule.OnTimerElapsed(CreateCompletionContext()));
+    }
+
+    private void ApplyCompletionDecision(WaveCompletionDecision decision)
+    {
+        if (decision.HasDiagnosticError)
+        {
+            Debug.LogError(decision.DiagnosticError, this);
+        }
+
+        if (decision.StopTimer)
+        {
+            runtimeState.Timer = CurrentWaveDuration;
+            runtimeState.IsRunning = false;
+            ResetCountdownTickState();
+            if (!decision.CompleteWave)
+            {
+                PublishWaveProgress();
+                PublishWaveRuntimeChanged();
+            }
+        }
+
+        if (decision.CompleteWave)
+        {
+            CompleteCurrentWave();
+        }
     }
 
     private void CompleteCurrentWave()
@@ -246,6 +322,7 @@ public class WaveManager : MonoBehaviour, IWaveController
 
         runtimeState.IsRunning = false;
         runtimeState.CompletionTriggered = true;
+        runProgressionService?.CompleteWave(CurrentWave);
         Wave currentWave = runtimeWaves[CurrentWaveIndex];
         WaveSpawnModifierRegistry.NotifyWaveEnded(new WaveSpawnContext(
             CurrentWaveIndex,
@@ -255,7 +332,8 @@ public class WaveManager : MonoBehaviour, IWaveController
             CurrentTimer,
             CurrentWaveDuration,
             spawnAroundEntity,
-            transform));
+            transform,
+            runProgressionService));
         PublishWaveRuntimeChanged();
         WaveCompletedEvent completedEvent = new WaveCompletedEvent(
             CurrentWave,
@@ -309,8 +387,14 @@ public class WaveManager : MonoBehaviour, IWaveController
     public WaveHudViewData CreateHudViewData()
     {
         float waveDuration = CurrentWaveDuration;
-        float remaining = IsTimerOn ? Mathf.Max(0, waveDuration - CurrentTimer) : waveDuration;
-        return new WaveHudViewData(CurrentWave, TotalWaves, HasStarted, remaining, waveDuration);
+        float remaining = CalculateRemainingWaveTime(waveDuration);
+        return new WaveHudViewData(
+            CurrentWave,
+            TotalWaves,
+            HasStarted,
+            remaining,
+            waveDuration,
+            HasStarted && currentCompletionRule.ShowsCountdownTimer);
     }
 
     public WaveRuntimeViewData CreateRuntimeViewData()
@@ -339,13 +423,26 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void PublishWaveProgress()
     {
         float waveDuration = CurrentWaveDuration;
-        float remaining = IsTimerOn ? Mathf.Max(0, waveDuration - CurrentTimer) : waveDuration;
-        GameEventBus.Publish(new WaveProgressEvent(remaining, waveDuration));
+        float remaining = CalculateRemainingWaveTime(waveDuration);
+        GameEventBus.Publish(new WaveProgressEvent(
+            remaining,
+            waveDuration,
+            HasStarted && currentCompletionRule.ShowsCountdownTimer));
+    }
+
+    private float CalculateRemainingWaveTime(float waveDuration)
+    {
+        if (!HasStarted)
+        {
+            return waveDuration;
+        }
+
+        return Mathf.Max(0f, waveDuration - CurrentTimer);
     }
 
     private void TryPlayCountdownTick()
     {
-        if (!IsTimerOn || !HasStarted)
+        if (!IsTimerOn || !HasStarted || !currentCompletionRule.PlaysCountdownWarning)
         {
             return;
         }
@@ -368,6 +465,15 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void ResetCountdownTickState()
     {
         lastCountdownSecond = -1;
+    }
+
+    private WaveCompletionContext CreateCompletionContext()
+    {
+        return new WaveCompletionContext(
+            CurrentWaveIndex,
+            CurrentWave,
+            CurrentTimer,
+            CurrentWaveDuration);
     }
 
     private void PublishWaveRuntimeChanged()

@@ -18,29 +18,28 @@ MonoBehaviour:
   <CharacterAnimatorController>k__BackingField: {fileID: 9100000, guid: f7ddd534e3dd56d46bf19df1ca47b078, type: 2}
   basePropsAsset: {fileID: 11400000, guid: 26684d967bd04984ea973d7dd3921ed0, type: 2}
   extraProps:
-  - propType: 28
+  - propType: 11
     modifierType: 0
-    value: 1.5
-  - propType: 4
+    value: 4
+  - propType: 1
     modifierType: 0
-    value: 7
-  - propType: 2
-    modifierType: 0
-    value: 8
-  - propType: 4
-    modifierType: 0
-    value: 400
-  specialFeatures: []
+    value: 50
+  specialFeatures:
+  - rid: 7274045950615355394
   initialWeapons:
   - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 1
+    level: 4
+  - weaponData: {fileID: 11400000, guid: 64adce1de1ee2f74ba9c6d80f871c170, type: 2}
+    level: 4
   - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 2
-  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 3
+    level: 4
   - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
     level: 4
   initialAccessories: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274045950615355394
+      type: {class: ForceCriticalFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0

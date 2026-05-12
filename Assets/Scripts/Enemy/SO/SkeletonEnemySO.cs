@@ -10,7 +10,7 @@ public class SkeletonEnemySO : EnemySO
     [SerializeField, HideInInspector, Range(0f, 1f)] private float attackCommitNormalizedTime = 0.5f;
 
     [Header("攻击")]
-    [SerializeField, Min(0.01f)] private float attackSpeedBenefitRatio = 1f;
+    [SerializeField, Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float attackSpeedBenefitRatio = 1f;
 
     public EnemyActionDefinition AttackAction
     {
@@ -22,14 +22,14 @@ public class SkeletonEnemySO : EnemySO
     }
 
     public float AttackCommitNormalizedTime => AttackAction.CommitNormalizedTime;
-    public float AttackSpeedBenefitRatio => Mathf.Max(0.01f, attackSpeedBenefitRatio);
+    public float AttackSpeedBenefitRatio => PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
     protected virtual string DefaultAttackActionId => ATTACK_ACTION_ID;
     protected virtual string DefaultAttackAnimationStateName => AnimConfig != null ? AnimConfig.Attack : "Attack";
 
     protected virtual void OnValidate()
     {
         attackCommitNormalizedTime = Mathf.Clamp01(attackCommitNormalizedTime);
-        attackSpeedBenefitRatio = Mathf.Max(0.01f, attackSpeedBenefitRatio);
+        attackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
         EnsureActionDefaults();
     }
 

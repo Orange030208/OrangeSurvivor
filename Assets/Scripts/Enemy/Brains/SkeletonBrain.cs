@@ -23,6 +23,7 @@ public class SkeletonBrain : EnemyBrain
     private SkeletonEnemySO enemyData;
     private IMoveStrategy chaseMoveStrategy;
     private IAttackStrategy attackStrategy;
+    private Vector2 lockedAttackDirection = Vector2.right;
     private bool hasWarnedMissingMeleePoint;
 
     protected EnemyAttackController AttackController => attackController;
@@ -93,9 +94,10 @@ public class SkeletonBrain : EnemyBrain
         Vector2 attackCenter = ResolveMeleeAttackCenter();
         float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, rangeMultiplier);
 
-        int hitCount = Physics2D.OverlapCircleNonAlloc(
+        int hitCount = AreaHitQueryUtility.OverlapFacingSemicircleNonAlloc(
             attackCenter,
             attackRadius,
+            lockedAttackDirection,
             areaHitBuffer,
             attackController.AttackLayer);
 
@@ -136,7 +138,10 @@ public class SkeletonBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        IRangeDetectionStrategy detectionStrategy = new DistanceRangeDetectionStrategy(owner, propertiesManager);
+        IRangeDetectionStrategy detectionStrategy = new FacingSemicircleRangeDetectionStrategy(
+            owner,
+            propertiesManager,
+            meleePointTransform);
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
@@ -144,7 +149,9 @@ public class SkeletonBrain : EnemyBrain
             enemyData.AttackAction.ActionId,
             enemyData.AttackSpeedBenefitRatio,
             detectionStrategy,
-            meleePointTransform);
+            meleePointTransform,
+            hitShape: DirectDamageHitShape.FacingSemicircle,
+            attackDirectionProvider: ResolveLockedAttackDirection);
     }
 
     private bool CanUseAttack(Entity target)
@@ -166,6 +173,27 @@ public class SkeletonBrain : EnemyBrain
         }
 
         return owner.Center;
+    }
+
+    private void LockAttackDirection()
+    {
+        Vector2 direction = target != null ? target.Center - owner.Center : lockedAttackDirection;
+        if (Mathf.Abs(direction.x) <= Mathf.Epsilon)
+        {
+            direction = owner.transform.localScale.x < 0f ? Vector2.left : Vector2.right;
+        }
+
+        lockedAttackDirection = direction.x < 0f ? Vector2.left : Vector2.right;
+    }
+
+    private void FaceLockedAttackDirection()
+    {
+        facingController?.FaceDirection(lockedAttackDirection);
+    }
+
+    private Vector2 ResolveLockedAttackDirection()
+    {
+        return lockedAttackDirection;
     }
 
     private float ResolveDamage()
@@ -311,13 +339,14 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            brain.FaceTarget();
+            brain.LockAttackDirection();
+            brain.FaceLockedAttackDirection();
             actionRunner.Begin(brain.enemyData.AttackAction, brain.currentAnimatable);
         }
 
         public override void OnUpdate()
         {
-            brain.FaceTarget();
+            brain.FaceLockedAttackDirection();
             actionRunner.Tick(Time.deltaTime);
 
             if (actionRunner.ShouldCommit)

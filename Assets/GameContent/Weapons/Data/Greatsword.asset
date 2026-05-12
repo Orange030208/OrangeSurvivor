@@ -41,28 +41,28 @@ MonoBehaviour:
   levelStats:
   - level: 1
     attack: 24
-    attackSpeed: 0.5
+    attackSpeed: 50
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 2
     attack: 24
-    attackSpeed: 0.5
+    attackSpeed: 50
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 3
     attack: 24
-    attackSpeed: 0.5
+    attackSpeed: 50
     criticalChance: 10
     criticalPercent: 220
     range: 300
     knockbackStrength: 0
   - level: 4
     attack: 24
-    attackSpeed: 0.5
+    attackSpeed: 50
     criticalChance: 10
     criticalPercent: 220
     range: 300

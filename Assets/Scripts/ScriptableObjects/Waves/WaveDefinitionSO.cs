@@ -15,12 +15,14 @@ public class WaveDefinitionSO : ScriptableObject
 
     [Header("运行时")]
     [SerializeField] private float duration = 30f;
+    [SerializeField] private WaveCompletionMode completionMode = WaveCompletionMode.TimerOnly;
     [SerializeField] private SpawnLocationPolicySO spawnLocationPolicy;
     [SerializeField] private WaveSpawnPlan[] spawnPlans;
 
     public string WaveId => waveId;
     public string DisplayName => displayName;
     public float Duration => Mathf.Max(MIN_DURATION, duration);
+    public WaveCompletionMode CompletionMode => completionMode;
     public SpawnLocationPolicySO SpawnLocationPolicy => spawnLocationPolicy;
     public WaveSpawnPlan[] SpawnPlans => spawnPlans;
 
@@ -37,6 +39,10 @@ public class WaveDefinitionSO : ScriptableObject
         }
 
         duration = Mathf.Max(MIN_DURATION, duration);
+        if (!System.Enum.IsDefined(typeof(WaveCompletionMode), completionMode))
+        {
+            completionMode = WaveCompletionMode.TimerOnly;
+        }
         spawnPlans ??= System.Array.Empty<WaveSpawnPlan>();
     }
 }

@@ -16,7 +16,7 @@ MonoBehaviour:
   defaultRollCount: 4
   allowDuplicateResults: 0
   entries:
-  - entryId: 弦月流矢
+  - entryId: "\u5F26\u6708\u6D41\u77E2"
     content: {fileID: 11400000, guid: 503f397e24384d51a47506afb93ef7c7, type: 2}
     baseWeight: 100
     tags:
@@ -31,8 +31,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000000
-  - entryId: 余烬重鸣
+    - rid: 7274045934577123461
+  - entryId: "\u4F59\u70EC\u91CD\u9E23"
     content: {fileID: 11400000, guid: 25203f7028314f0594255706e50cd099, type: 2}
     baseWeight: 100
     tags:
@@ -47,8 +47,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000001
-  - entryId: 伤痕微光
+    - rid: 7274045934577123462
+  - entryId: "\u4F24\u75D5\u5FAE\u5149"
     content: {fileID: 11400000, guid: ab434624eaea46aa970e8a5bef9cc8f4, type: 2}
     baseWeight: 100
     tags:
@@ -63,8 +63,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000002
-  - entryId: 折柳藏锋
+    - rid: 7274045934577123463
+  - entryId: "\u6298\u67F3\u85CF\u950B"
     content: {fileID: 11400000, guid: 2f04160ef7564d4db4abcb179b1233de, type: 2}
     baseWeight: 100
     tags:
@@ -79,8 +79,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000003
-  - entryId: 踏叶轻行
+    - rid: 7274045934577123464
+  - entryId: "\u8E0F\u53F6\u8F7B\u884C"
     content: {fileID: 11400000, guid: f41a59a9170545cb909a3e72984ce55d, type: 2}
     baseWeight: 100
     tags:
@@ -95,8 +95,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000004
-  - entryId: 拾光入囊
+    - rid: 7274045934577123465
+  - entryId: "\u62FE\u5149\u5165\u56CA"
     content: {fileID: 11400000, guid: 76a189e080504758998799d3fc69c0ac, type: 2}
     baseWeight: 100
     tags:
@@ -111,8 +111,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000005
-  - entryId: 望月远锋
+    - rid: 7274045934577123466
+  - entryId: "\u671B\u6708\u8FDC\u950B"
     content: {fileID: 11400000, guid: 2b9c1f72bc9e4f7f834d01be683255c9, type: 2}
     baseWeight: 100
     tags:
@@ -127,8 +127,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000006
-  - entryId: 旧甲新痕
+    - rid: 7274045934577123467
+  - entryId: "\u65E7\u7532\u65B0\u75D5"
     content: {fileID: 11400000, guid: 1fd77dce9e914d76bd1dae08be5d7725, type: 2}
     baseWeight: 100
     tags:
@@ -143,8 +143,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000007
-  - entryId: 纸鹤成阵
+    - rid: 7274045934577123468
+  - entryId: "\u7EB8\u9E64\u6210\u9635"
     content: {fileID: 11400000, guid: ca0439f94afe4bbfa63669eb2fc0f464, type: 2}
     baseWeight: 100
     tags:
@@ -159,8 +159,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000008
-  - entryId: 银线凝眸
+    - rid: 7274045934577123469
+  - entryId: "\u94F6\u7EBF\u51DD\u7738"
     content: {fileID: 11400000, guid: 18c3027f0b754edf8bddcba05a083bc0, type: 2}
     baseWeight: 100
     tags:
@@ -175,8 +175,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000009
-  - entryId: 春泉回息
+    - rid: 7274045934577123470
+  - entryId: "\u6625\u6CC9\u56DE\u606F"
     content: {fileID: 11400000, guid: ca1773d7d1a24239809f8d06e3b6ae5f, type: 2}
     baseWeight: 100
     tags:
@@ -191,8 +191,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000010
-  - entryId: 星尘秘语
+    - rid: 7274045934577123471
+  - entryId: "\u661F\u5C18\u79D8\u8BED"
     content: {fileID: 11400000, guid: db204c6ec93e47d385d59d64963cd7b5, type: 2}
     baseWeight: 100
     tags:
@@ -207,8 +207,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000011
-  - entryId: 旅人微幸
+    - rid: 7274045934577123472
+  - entryId: "\u65C5\u4EBA\u5FAE\u5E78"
     content: {fileID: 11400000, guid: e256ee4487dc4578b34d14304164fd6f, type: 2}
     baseWeight: 100
     tags:
@@ -223,8 +223,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000012
-  - entryId: 温血未央
+    - rid: 7274045934577123473
+  - entryId: "\u6E29\u8840\u672A\u592E"
     content: {fileID: 11400000, guid: 47e6247f78694d2ea8748e16763fdbb5, type: 2}
     baseWeight: 100
     tags:
@@ -239,8 +239,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000013
-  - entryId: 风过指尖
+    - rid: 7274045934577123474
+  - entryId: "\u98CE\u8FC7\u6307\u5C16"
     content: {fileID: 11400000, guid: aac9d43f878948f6a356eb9567f497cc, type: 2}
     baseWeight: 100
     tags:
@@ -255,8 +255,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000014
-  - entryId: 风中藏影
+    - rid: 7274045934577123475
+  - entryId: "\u98CE\u4E2D\u85CF\u5F71"
     content: {fileID: 11400000, guid: 4f1da168acb346daa2fdab2b329ea65a, type: 2}
     baseWeight: 100
     tags:
@@ -271,8 +271,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000015
-  - entryId: 万象同游
+    - rid: 7274045934577123476
+  - entryId: "\u4E07\u8C61\u540C\u6E38"
     content: {fileID: 11400000, guid: e082c48438974417a6bca3a954f6b07e, type: 2}
     baseWeight: 12
     tags:
@@ -287,8 +287,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000016
-  - entryId: 烬海回响
+    - rid: 7274045934577123477
+  - entryId: "\u70EC\u6D77\u56DE\u54CD"
     content: {fileID: 11400000, guid: 3d5fbaf167904e0bb662d9146fc322c8, type: 2}
     baseWeight: 12
     tags:
@@ -303,8 +303,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000017
-  - entryId: 流云踏歌
+    - rid: 7274045934577123478
+  - entryId: "\u6D41\u4E91\u8E0F\u6B4C"
     content: {fileID: 11400000, guid: e0d3da13c39b47918ab4374c5b8af246, type: 2}
     baseWeight: 12
     tags:
@@ -319,8 +319,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000018
-  - entryId: 落星远鸣
+    - rid: 7274045934577123479
+  - entryId: "\u843D\u661F\u8FDC\u9E23"
     content: {fileID: 11400000, guid: 93ee828456fb4f17a646a6a0ffa5a776, type: 2}
     baseWeight: 12
     tags:
@@ -335,8 +335,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000019
-  - entryId: 霜月一瞬
+    - rid: 7274045934577123480
+  - entryId: "\u971C\u6708\u4E00\u77AC"
     content: {fileID: 11400000, guid: 6e23d8a229974ebe91ded8bf0b505868, type: 2}
     baseWeight: 12
     tags:
@@ -351,8 +351,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000020
-  - entryId: 天涯准星
+    - rid: 7274045934577123481
+  - entryId: "\u5929\u6DAF\u51C6\u661F"
     content: {fileID: 11400000, guid: 900b600846684bc39e9057f8c7a99072, type: 2}
     baseWeight: 12
     tags:
@@ -367,8 +367,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000021
-  - entryId: 长生烛火
+    - rid: 7274045934577123482
+  - entryId: "\u957F\u751F\u70DB\u706B"
     content: {fileID: 11400000, guid: 91b090488a8b4e9893968d2b438770e1, type: 2}
     baseWeight: 12
     tags:
@@ -383,8 +383,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000022
-  - entryId: 山河近誓
+    - rid: 7274045934577123483
+  - entryId: "\u5C71\u6CB3\u8FD1\u8A93"
     content: {fileID: 11400000, guid: a55f752389a045db8c329b2ef0ac6ac6, type: 2}
     baseWeight: 12
     tags:
@@ -399,8 +399,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000023
-  - entryId: 苍穹秘辉
+    - rid: 7274045934577123484
+  - entryId: "\u82CD\u7A79\u79D8\u8F89"
     content: {fileID: 11400000, guid: 9b69fa29998b499887de5521f4ee5bc6, type: 2}
     baseWeight: 12
     tags:
@@ -415,8 +415,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000024
-  - entryId: 疾雷入骨
+    - rid: 7274045934577123485
+  - entryId: "\u75BE\u96F7\u5165\u9AA8"
     content: {fileID: 11400000, guid: 35904240e997406396a2b207b0064b65, type: 2}
     baseWeight: 12
     tags:
@@ -431,8 +431,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000025
-  - entryId: 万象归刃
+    - rid: 7274045934577123486
+  - entryId: "\u4E07\u8C61\u5F52\u5203"
     content: {fileID: 11400000, guid: ad63d7ee4e394ac38b503c13bd1059c8, type: 2}
     baseWeight: 3
     tags:
@@ -449,8 +449,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000026
-  - entryId: 天涯逐光
+    - rid: 7274045934577123487
+  - entryId: "\u5929\u6DAF\u9010\u5149"
     content: {fileID: 11400000, guid: 5f2e75b7c991474bb4fe6f0fa8efce06, type: 2}
     baseWeight: 3
     tags:
@@ -467,8 +467,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000027
-  - entryId: 星河战歌
+    - rid: 7274045934577123488
+  - entryId: "\u661F\u6CB3\u6218\u6B4C"
     content: {fileID: 11400000, guid: 51e7f3b32da449d6ba3ed4ed3f1b306f, type: 2}
     baseWeight: 3
     tags:
@@ -485,8 +485,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000028
-  - entryId: 不灭长风
+    - rid: 7274045934577123489
+  - entryId: "\u4E0D\u706D\u957F\u98CE"
     content: {fileID: 11400000, guid: dfc9659a204249c7b5bce94b2e9193ac, type: 2}
     baseWeight: 3
     tags:
@@ -501,8 +501,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000029
-  - entryId: 青焰成诗
+    - rid: 7274045934577123490
+  - entryId: "\u9752\u7130\u6210\u8BD7"
     content: {fileID: 11400000, guid: a7fb9a7ce2434bae890f6c19a794cac7, type: 2}
     baseWeight: 45
     tags:
@@ -517,8 +517,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000030
-  - entryId: 澄泉续命
+    - rid: 7274045934577123491
+  - entryId: "\u6F84\u6CC9\u7EED\u547D"
     content: {fileID: 11400000, guid: 5b117e950c8444f298f11f6fdec30852, type: 2}
     baseWeight: 45
     tags:
@@ -533,8 +533,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000031
-  - entryId: 云履无声
+    - rid: 7274045934577123492
+  - entryId: "\u4E91\u5C65\u65E0\u58F0"
     content: {fileID: 11400000, guid: 743010d216074d45bb02e365eba36f52, type: 2}
     baseWeight: 45
     tags:
@@ -549,8 +549,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000032
-  - entryId: 冷月定心
+    - rid: 7274045934577123493
+  - entryId: "\u51B7\u6708\u5B9A\u5FC3"
     content: {fileID: 11400000, guid: a3114f5afc0e4401b31558084308dac0, type: 2}
     baseWeight: 45
     tags:
@@ -565,8 +565,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000033
-  - entryId: 千里望舒
+    - rid: 7274045934577123494
+  - entryId: "\u5343\u91CC\u671B\u8212"
     content: {fileID: 11400000, guid: 42a1a90fda2b4acfb911f594d5b1e771, type: 2}
     baseWeight: 45
     tags:
@@ -581,8 +581,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000034
-  - entryId: 疾风连弦
+    - rid: 7274045934577123495
+  - entryId: "\u75BE\u98CE\u8FDE\u5F26"
     content: {fileID: 11400000, guid: 2251c17c529d48b887196f9296f42cd4, type: 2}
     baseWeight: 45
     tags:
@@ -597,8 +597,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000035
-  - entryId: 青金护心
+    - rid: 7274045934577123496
+  - entryId: "\u9752\u91D1\u62A4\u5FC3"
     content: {fileID: 11400000, guid: 603fddda15ff4db7818a6121a615d33d, type: 2}
     baseWeight: 45
     tags:
@@ -613,8 +613,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000036
-  - entryId: 岩灯守夜
+    - rid: 7274045934577123497
+  - entryId: "\u5CA9\u706F\u5B88\u591C"
     content: {fileID: 11400000, guid: eadd2e0175ec4c67bb158a410562c963, type: 2}
     baseWeight: 45
     tags:
@@ -629,8 +629,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000037
-  - entryId: 长虹贯矢
+    - rid: 7274045934577123498
+  - entryId: "\u957F\u8679\u8D2F\u77E2"
     content: {fileID: 11400000, guid: 6bff44250607487e860a881eebba4dd0, type: 2}
     baseWeight: 45
     tags:
@@ -645,8 +645,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000038
-  - entryId: 群星召令
+    - rid: 7274045934577123499
+  - entryId: "\u7FA4\u661F\u53EC\u4EE4"
     content: {fileID: 11400000, guid: e91cd9c2bc864810b0890226a60f13d1, type: 2}
     baseWeight: 45
     tags:
@@ -661,8 +661,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000039
-  - entryId: 裂日锋芒
+    - rid: 7274045934577123500
+  - entryId: "\u88C2\u65E5\u950B\u8292"
     content: {fileID: 11400000, guid: 9517729f20144f849af251926bd2e5ab, type: 2}
     baseWeight: 45
     tags:
@@ -677,8 +677,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000040
-  - entryId: 雷痕重鸣
+    - rid: 7274045934577123501
+  - entryId: "\u96F7\u75D5\u91CD\u9E23"
     content: {fileID: 11400000, guid: 8e9d64bcd33947ae83363a0232f33c5d, type: 2}
     baseWeight: 45
     tags:
@@ -693,8 +693,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000041
-  - entryId: 断潮近誓
+    - rid: 7274045934577123502
+  - entryId: "\u65AD\u6F6E\u8FD1\u8A93"
     content: {fileID: 11400000, guid: bf99d0215d7546928ed62795d06c2dc3, type: 2}
     baseWeight: 45
     tags:
@@ -709,179 +709,179 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules:
-    - rid: 8100000000000000042
+    - rid: 7274045934577123503
   references:
     version: 2
     RefIds:
-    - rid: 8100000000000000000
+    - rid: 7274045934577123461
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000001
+    - rid: 7274045934577123462
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000002
+    - rid: 7274045934577123463
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000003
+    - rid: 7274045934577123464
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000004
+    - rid: 7274045934577123465
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000005
+    - rid: 7274045934577123466
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000006
+    - rid: 7274045934577123467
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000007
+    - rid: 7274045934577123468
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000008
+    - rid: 7274045934577123469
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000009
+    - rid: 7274045934577123470
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000010
+    - rid: 7274045934577123471
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000011
+    - rid: 7274045934577123472
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000012
+    - rid: 7274045934577123473
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000013
+    - rid: 7274045934577123474
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000014
+    - rid: 7274045934577123475
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000015
+    - rid: 7274045934577123476
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000016
+    - rid: 7274045934577123477
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000017
+    - rid: 7274045934577123478
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000018
+    - rid: 7274045934577123479
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000019
+    - rid: 7274045934577123480
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000020
+    - rid: 7274045934577123481
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000021
+    - rid: 7274045934577123482
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000022
+    - rid: 7274045934577123483
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000023
+    - rid: 7274045934577123484
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000024
+    - rid: 7274045934577123485
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000025
+    - rid: 7274045934577123486
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000026
+    - rid: 7274045934577123487
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000027
+    - rid: 7274045934577123488
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000028
+    - rid: 7274045934577123489
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000029
+    - rid: 7274045934577123490
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000030
+    - rid: 7274045934577123491
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000031
+    - rid: 7274045934577123492
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000032
+    - rid: 7274045934577123493
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000033
+    - rid: 7274045934577123494
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000034
+    - rid: 7274045934577123495
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000035
+    - rid: 7274045934577123496
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000036
+    - rid: 7274045934577123497
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000037
+    - rid: 7274045934577123498
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000038
+    - rid: 7274045934577123499
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000039
+    - rid: 7274045934577123500
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000040
+    - rid: 7274045934577123501
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000041
+    - rid: 7274045934577123502
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5
-    - rid: 8100000000000000042
+    - rid: 7274045934577123503
       type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
       data:
         multiplier: 0.5

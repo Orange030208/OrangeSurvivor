@@ -17,16 +17,19 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 5b80b26554184b547876d735e9625c9c, type: 2}
   animConfig: {fileID: 11400000, guid: 89d96c6114136f04387029c1f88e012a, type: 2}
   damagedSfxKey: 400
-  lowHpPercent: 30
-  fastBurstModifierData:
-  - propType: 1
-    modifierType: 3
-    value: 2
+  normalAttackAction:
+    actionId: FlyForest_NormalAttack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.578
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  normalAttackCommitNormalizedTime: 0.578
   normalAttackSpeedBenefitRatio: 1
   normalAttackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
   normalMovement:
     circleSpeedRatio: 0.5
     idealRangeRatio: 0.95
-  retreatMovement:
-    safeDistance: 8
-    retreatStepDistance: 3

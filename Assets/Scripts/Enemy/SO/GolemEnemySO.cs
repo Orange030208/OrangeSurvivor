@@ -25,7 +25,7 @@ public class GolemEnemySO : EnemySO
     [SerializeField] private List<PropModifierData> chargeModifiers = new();
 
     [Header("攻击")]
-    [SerializeField, Min(0.01f)] private float attackSpeedBenefitRatio = 1f;
+    [SerializeField, Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float attackSpeedBenefitRatio = 1f;
     [SerializeField] private List<PropModifierData> postChargeAttackModifiers = new();
 
     public EnemyActionDefinition AttackAction
@@ -73,7 +73,7 @@ public class GolemEnemySO : EnemySO
     public float ChargeDamageRadius => chargeDamageRadius;
     public float ChargeDamageMultiplier => chargeDamageMultiplier;
     public IReadOnlyList<PropModifierData> ChargeModifiers => chargeModifiers;
-    public float AttackSpeedBenefitRatio => Mathf.Max(0.01f, attackSpeedBenefitRatio);
+    public float AttackSpeedBenefitRatio => PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
     public IReadOnlyList<PropModifierData> PostChargeAttackModifiers => postChargeAttackModifiers;
 
     private void OnValidate()
@@ -85,7 +85,7 @@ public class GolemEnemySO : EnemySO
         postChargeStunDuration = Mathf.Max(0f, postChargeStunDuration);
         chargeDamageRadius = Mathf.Max(0f, chargeDamageRadius);
         chargeDamageMultiplier = Mathf.Max(0f, chargeDamageMultiplier);
-        attackSpeedBenefitRatio = Mathf.Max(0.01f, attackSpeedBenefitRatio);
+        attackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
         EnsureActionDefaults();
     }
 

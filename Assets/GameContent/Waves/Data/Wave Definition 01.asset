@@ -15,28 +15,17 @@ MonoBehaviour:
   waveId: Wave_001
   displayName: Wave 1
   duration: 30
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
   - trackId: Main Swarm
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-      weight: 100
-      tags: 9
     spawnFrequency: 0.45
     spawnCountPerBatch: 2
     maxSpawnBatches: 0
     normalizedTimeRange: {x: 0, y: 100}
   - trackId: Main Swarm
     triggerMode: 0
-    enemyDefinition: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-    enemyTags: 1
-    enemyPool:
-    - enemyDefinition: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-      weight: 100
-      tags: 9
     spawnFrequency: 1
     spawnCountPerBatch: 1
     maxSpawnBatches: 1

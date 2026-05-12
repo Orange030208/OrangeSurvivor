@@ -26,6 +26,7 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public Player DefaultPlayerPrefab => catalog.DefaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => catalog.DefaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => catalog.PlayerLevelConfig;
+    public RunProgressionProfileSO RunProgressionProfile => catalog.RunProgressionProfile;
     public ContentPoolSO UpgradeCardPool => catalog.UpgradeCardPool;
     public ContentPoolSO ChestRewardPool => catalog.ChestRewardPool;
     public ContentPoolSO ShopPool => catalog.ShopPool;

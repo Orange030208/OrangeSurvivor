@@ -520,50 +520,8 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules: []
-  - entryId: AK-47
+  - entryId: "\u7A81\u51FB\u6B65\u67AA"
     content: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Blue Laser
-    content: {fileID: 11400000, guid: 5fe3ca95f0e05724abe9a4b26d05859d, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Desert Eagle
-    content: {fileID: 11400000, guid: a7ae77180d3c46249952ba6a80dcdada, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Fire Plasma
-    content: {fileID: 11400000, guid: bb0f1d1d310bae1409730f64982e3796, type: 2}
     baseWeight: 1
     tags: []
     maxRollCount: 0
@@ -578,20 +536,6 @@ MonoBehaviour:
     weightRules: []
   - entryId: "\u71E7\u53D1\u624B\u67AA"
     content: {fileID: 11400000, guid: e8afa3e0c84d4ef4fb82903f4a30c132, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Glock-19
-    content: {fileID: 11400000, guid: 226812e54d6907d4d95d3d40982df8f4, type: 2}
     baseWeight: 1
     tags: []
     maxRollCount: 0
@@ -632,20 +576,6 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules: []
-  - entryId: High Quality Plasma
-    content: {fileID: 11400000, guid: d2fcbc69bccb0dd4bb31e5fd7700df0d, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
   - entryId: "\u730E\u624B\u77ED\u5315"
     content: {fileID: 11400000, guid: 61476edcc2b619f4f948efe5e5c2fb2d, type: 2}
     baseWeight: 1
@@ -674,62 +604,6 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules: []
-  - entryId: Lever Rifle
-    content: {fileID: 11400000, guid: de9da307cb4a15048b5f5126044325fa, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: M1911
-    content: {fileID: 11400000, guid: 42d8fe6934e126e45b86c956f14c62b7, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Magnum
-    content: {fileID: 11400000, guid: db8bda7f245761e4196d3efa5afbe7a8, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Mini Uzi
-    content: {fileID: 11400000, guid: 6e78c52383480b8438f4952e51bbcbd7, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
   - entryId: "\u6E38\u4FA0\u5F2F\u5200"
     content: {fileID: 11400000, guid: d7c04844678d21f4b9a94eff92d757a2, type: 2}
     baseWeight: 1
@@ -744,49 +618,7 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules: []
-  - entryId: Ray Gun
-    content: {fileID: 11400000, guid: 153043d44ec70c046ac45a5cc54ec479, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Regular Pistol
-    content: {fileID: 11400000, guid: 2611f3d66ccb9944dab26bf91b3714da, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Short Gun
-    content: {fileID: 11400000, guid: 1a59722a5da1e2e40a09b2e0c05bf8ec, type: 2}
-    baseWeight: 1
-    tags: []
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
-    conditions: []
-    weightRules: []
-  - entryId: Shotgun
+  - entryId: "\u9730\u5F39\u67AA"
     content: {fileID: 11400000, guid: 64adce1de1ee2f74ba9c6d80f871c170, type: 2}
     baseWeight: 1
     tags: []
@@ -800,7 +632,7 @@ MonoBehaviour:
     priceMultiplier: 1
     conditions: []
     weightRules: []
-  - entryId: Sniper Rifle
+  - entryId: "\u72D9\u51FB\u6B65\u67AA"
     content: {fileID: 11400000, guid: bdb916c20f90cc04abe37dc7353bd8fc, type: 2}
     baseWeight: 1
     tags: []

@@ -41,11 +41,18 @@ public struct WaveProgressEvent : IGameEvent
 {
     public float RemainingTime;
     public float TotalTime;
+    public bool ShowTimer;
 
     public WaveProgressEvent(float remainingTime, float totalTime)
+        : this(remainingTime, totalTime, true)
+    {
+    }
+
+    public WaveProgressEvent(float remainingTime, float totalTime, bool showTimer)
     {
         RemainingTime = remainingTime;
         TotalTime = totalTime;
+        ShowTimer = showTimer;
     }
 }
 

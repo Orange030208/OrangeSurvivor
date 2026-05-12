@@ -14,6 +14,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 {
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
+    private const string HOLDER_LEVEL_MODIFIER_SOURCE_PREFIX = "WEAPON_LEVEL_";
     private static readonly Color HIT_BOX_IDLE_GIZMO_COLOR = new(1f, 0.15f, 0.15f, 0.85f);
     private static readonly Color HIT_BOX_ACTIVE_GIZMO_COLOR = new(1f, 0.65f, 0f, 0.95f);
     private static readonly Color HIT_BOX_SWEEP_GIZMO_COLOR = new(1f, 0.35f, 0f, 0.45f);
@@ -76,6 +77,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     protected Entity owner;
     protected Entity currentTarget;
     private WeaponsHolder weaponsHolder;
+    private string activeHolderLevelModifierSourceId;
     private float cooldownRemaining = 1f;
     private int cooldownStartedFrame = -1;
     private Vector2 lastAimDirection = Vector2.up;
@@ -122,6 +124,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     public virtual void OnDisableComponent()
     {
+        RemoveLevelHolderModifiers();
         if (propertiesManager != null)
         {
             propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
@@ -134,6 +137,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
     private void OnDestroy()
     {
+        RemoveLevelHolderModifiers();
         UnsubscribeSequenceEvents();
     }
 
@@ -147,6 +151,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     {
         int previousLevel = Level;
         Level = Mathf.Max(DEFAULT_WEAPON_LEVEL, targetLevel);
+        ApplyLevelHolderModifiers();
         RefreshRuntimeStats();
         cooldownRemaining = Mathf.Min(cooldownRemaining, AttackInterval);
         if (playSfx && Level > previousLevel)
@@ -160,6 +165,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         WeaponData = weaponData ?? throw new ArgumentNullException(nameof(weaponData),
             $"{nameof(Weapon)} requires a non-null {nameof(WeaponDataSO)}.");
         ApplyCurrentConfiguration();
+        ApplyLevelHolderModifiers();
         RefreshRuntimeStats();
     }
 
@@ -933,24 +939,40 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         float weaponCriticalMultiplier = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalPercent);
         float weaponRange = weaponStats.Range;
         float weaponKnockbackStrength = weaponStats.KnockbackStrength;
+        WeaponBenefitData benefits = ResolveWeaponBenefits(weaponStats);
         float previousAttackInterval = AttackInterval;
 
-        float playerCriticalChance = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalChance));
-        float playerCriticalBonus = PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalPercent));
+        float playerCriticalChance = benefits.ApplyToExternalValue(
+            PropType.CriticalChance,
+            PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalChance)));
+        float playerCriticalBonus = benefits.ApplyToExternalValue(
+            PropType.CriticalPercent,
+            PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalPercent)));
 
-        float finalAttackSpeed = Mathf.Max(
-            propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed),
-            0.01f);
-        float typedAttackContribution = ResolveAttackTypeContribution(ResolveAttackUsage());
+        float resolvedAttackSpeedPoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed);
+        float finalAttackSpeedPoints = benefits.ApplyToResolvedStat(
+            PropType.AttackSpeed,
+            weaponAttackSpeed,
+            resolvedAttackSpeedPoints);
+        float typedAttackContribution = ResolveAttackTypeContribution(benefits);
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
         Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
-        AttackInterval = 1f / finalAttackSpeed;
+        AttackInterval = PropValueUtility.AttackSpeedPointsToAttackInterval(finalAttackSpeedPoints);
         RefreshCooldownForAttackIntervalChange(previousAttackInterval);
         CriticalChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, weaponCriticalChance + playerCriticalChance);
         CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
-        float rangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
+        float resolvedRangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
+        float rangePoints = benefits.ApplyToResolvedStat(PropType.AttackRange, weaponRange, resolvedRangePoints);
         Range = Mathf.Max(0.1f, PropValueUtility.DistancePointsToWorldUnits(rangePoints));
-        KnockbackStrength = Mathf.Max(0f, propertiesManager.GetPropValueWithAdditionalBase(PropType.KnockbackStrength, weaponKnockbackStrength));
+        float resolvedKnockbackStrength = propertiesManager.GetPropValueWithAdditionalBase(
+            PropType.KnockbackStrength,
+            weaponKnockbackStrength);
+        KnockbackStrength = Mathf.Max(
+            0f,
+            benefits.ApplyToResolvedStat(
+                PropType.KnockbackStrength,
+                weaponKnockbackStrength,
+                resolvedKnockbackStrength));
     }
 
     private void RefreshCooldownForAttackIntervalChange(float previousAttackInterval)
@@ -964,30 +986,66 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         cooldownRemaining = Mathf.Max(0f, AttackInterval * (1f - cooldownProgress));
     }
 
-    private WeaponAttackUsageData ResolveAttackUsage()
+    private WeaponBenefitData ResolveWeaponBenefits(WeaponLevelStatData weaponStats)
     {
-        WeaponAttackUsageData attackUsage = WeaponData.AttackUsage;
+        WeaponBenefitData benefits = WeaponData.Benefits + weaponStats.GetAttackUsageBenefits();
         if (weaponsHolder == null)
         {
             weaponsHolder = GetComponentInParent<WeaponsHolder>();
         }
 
         return weaponsHolder != null
-            ? attackUsage + weaponsHolder.CurrentAttackUsageBonus
-            : attackUsage;
+            ? benefits + weaponsHolder.CurrentWeaponBenefitBonus
+            : benefits;
     }
 
-    private float ResolveAttackTypeContribution(WeaponAttackUsageData attackUsage)
+    private void ApplyLevelHolderModifiers()
     {
-        if (!attackUsage.HasAnyUsage)
+        RemoveLevelHolderModifiers();
+        if (WeaponData == null || propertiesManager == null)
+        {
+            return;
+        }
+
+        WeaponLevelStatData weaponStats = WeaponData.GetLevelStats(Level);
+        IReadOnlyList<PropModifierData> holderModifiers = weaponStats.HolderModifiers;
+        if (holderModifiers == null || holderModifiers.Count == 0)
+        {
+            return;
+        }
+
+        activeHolderLevelModifierSourceId = BuildHolderLevelModifierSourceId();
+        propertiesManager.AddModifiers(activeHolderLevelModifierSourceId, holderModifiers);
+    }
+
+    private void RemoveLevelHolderModifiers()
+    {
+        if (propertiesManager == null || string.IsNullOrWhiteSpace(activeHolderLevelModifierSourceId))
+        {
+            activeHolderLevelModifierSourceId = null;
+            return;
+        }
+
+        propertiesManager.RemoveModifiers(activeHolderLevelModifierSourceId);
+        activeHolderLevelModifierSourceId = null;
+    }
+
+    private string BuildHolderLevelModifierSourceId()
+    {
+        return $"{HOLDER_LEVEL_MODIFIER_SOURCE_PREFIX}{RuntimeId}";
+    }
+
+    private float ResolveAttackTypeContribution(WeaponBenefitData benefits)
+    {
+        if (!benefits.HasAnyUsage)
         {
             return 0f;
         }
 
-        return ResolveAttackTypeContribution(PropType.MeleeAttack, attackUsage.MeleeAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.RangedAttack, attackUsage.RangedAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.MagicAttack, attackUsage.MagicAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.SummonAttack, attackUsage.SummonAttackUsagePercent);
+        return ResolveAttackTypeContribution(PropType.MeleeAttack, benefits.MeleeAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.RangedAttack, benefits.RangedAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.MagicAttack, benefits.MagicAttackUsagePercent) +
+               ResolveAttackTypeContribution(PropType.SummonAttack, benefits.SummonAttackUsagePercent);
     }
 
     private float ResolveAttackTypeContribution(PropType propType, float usagePercent)

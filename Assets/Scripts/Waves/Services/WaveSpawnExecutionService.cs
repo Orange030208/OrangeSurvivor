@@ -84,7 +84,8 @@ public class WaveSpawnExecutionService
             request.CurrentTimer,
             request.WaveDuration,
             request.SpawnAnchor,
-            request.SpawnParent);
+            request.SpawnParent,
+            request.RunProgressionService);
     }
 
     private static WaveSpawnSchedule CreateSchedule(WaveSegment segment)
@@ -254,6 +255,7 @@ public class WaveSpawnExecutionService
             playerSource.WaveId = modifierContext.SpawnContext.WaveId;
             playerSource.WaveTrackId = modifierContext.Segment.TrackId;
             playerSource.WaveProgressPercent = progressPercent;
+            playerSource.ProgressionSnapshot = modifierContext.SpawnContext.ProgressionSnapshot;
             return playerSource;
         }
 
@@ -262,7 +264,8 @@ public class WaveSpawnExecutionService
             WaveNumber = Mathf.Max(1, modifierContext.SpawnContext.WaveNumber),
             WaveId = modifierContext.SpawnContext.WaveId,
             WaveTrackId = modifierContext.Segment.TrackId,
-            WaveProgressPercent = progressPercent
+            WaveProgressPercent = progressPercent,
+            ProgressionSnapshot = modifierContext.SpawnContext.ProgressionSnapshot
         };
     }
 
@@ -301,7 +304,25 @@ public class WaveSpawnExecutionService
                     continue;
                 }
 
-                enemyFactory.Spawn(spawnRequest.EnemyDefinition, player, spawnPosition, context.SpawnParent);
+                try
+                {
+                    enemyFactory.Spawn(
+                        spawnRequest.EnemyDefinition,
+                        player,
+                        spawnPosition,
+                        context.SpawnParent,
+                        context.ProgressionSnapshot,
+                        spawnRequest.EnemyTags);
+                }
+                catch (System.Exception exception)
+                {
+                    Debug.LogError(
+                        $"[{nameof(WaveSpawnExecutionService)}] Failed to spawn {spawnRequest.EnemyDefinition.name} on wave {context.WaveNumber}, track '{spawnRequest.SourceTrackId}'.",
+                        context.SpawnParent);
+                    Debug.LogException(exception, context.SpawnParent);
+                    continue;
+                }
+
                 spawnedCount++;
             }
         }

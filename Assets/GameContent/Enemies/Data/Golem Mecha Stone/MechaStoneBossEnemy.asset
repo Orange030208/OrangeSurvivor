@@ -82,7 +82,7 @@ MonoBehaviour:
   laserLength: 40
   laserDamageInterval: 0.25
   laserDamageMultiplier: 0.5
-  laserTurnSpeedDegrees: 18
+  laserTurnSpeedDegrees: 21
   laserCooldown: 10
   laserMinPhase: 2
   laserRangeMultiplier: 10
@@ -97,6 +97,50 @@ MonoBehaviour:
   meleeAttackSpeedBenefitRatio: 2
   meleeRangeMultiplier: 1.2
   meleeHitVfxPrefab: {fileID: 3966012196220114742, guid: 60306f76a0f51274cbba1a0462040760, type: 3}
+  enableMeleeScreenShake: 1
+  meleeScreenShake:
+    enabled: 1
+    duration: 0.18
+    positionStrength: 0.32
+    rotationStrength: 2.2
+    zoomStrength: 0.08
+    frequency: 42
+    strengthScale: 1
+    useUnscaledTime: 1
+    fadeCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.35
+        value: 0.72
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  meleeScreenShakeScale: 1
   shootAttackSpeedBenefitRatio: 1
   shootRangeMultiplier: 8
   shootProjectileDefinition: {fileID: 11400000, guid: a91e53d9c34a4cb3b4e4838897351a4f, type: 2}

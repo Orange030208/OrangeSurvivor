@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
 {
-    private const float MIN_ATTACK_SPEED = 0.01f;
-    private const float MIN_ATTACK_SPEED_BENEFIT_RATIO = 0.01f;
-
     /// <summary>
     /// 技能槽只记录显式技能冷却，不受 AttackSpeed 影响。
     /// </summary>
@@ -51,7 +48,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
     private sealed class BasicAttackSlot
     {
         [SerializeField] private string attackId;
-        [SerializeField, Min(MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float attackSpeedBenefitRatio = 1f;
+        [SerializeField] private float attackSpeedBenefitRatio = 1f;
         [SerializeField, Min(0f)] private float attackInterval = 1f;
 
         private float cooldownTimer;
@@ -75,14 +72,13 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
 
         public void SetAttackSpeedBenefitRatio(float value)
         {
-            attackSpeedBenefitRatio = Mathf.Max(MIN_ATTACK_SPEED_BENEFIT_RATIO, value);
+            attackSpeedBenefitRatio = value;
         }
 
-        public void RefreshInterval(float attackSpeed)
+        public void RefreshInterval(float attackSpeedPoints)
         {
             float oldInterval = attackInterval;
-            float benefitRatio = Mathf.Max(MIN_ATTACK_SPEED_BENEFIT_RATIO, attackSpeedBenefitRatio);
-            attackInterval = 1f / Mathf.Max(MIN_ATTACK_SPEED, attackSpeed * benefitRatio);
+            attackInterval = PropValueUtility.AttackSpeedPointsToAttackInterval(attackSpeedPoints * attackSpeedBenefitRatio);
 
             if (oldInterval <= 0f)
             {
@@ -337,18 +333,18 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
 
     private void RefreshBasicAttackSlots()
     {
-        float attackSpeed = ResolveAttackSpeed();
+        float attackSpeedPoints = ResolveAttackSpeed();
         for (int i = 0; i < basicAttackSlots.Count; i++)
         {
-            basicAttackSlots[i]?.RefreshInterval(attackSpeed);
+            basicAttackSlots[i]?.RefreshInterval(attackSpeedPoints);
         }
     }
 
     private float ResolveAttackSpeed()
     {
         return propertiesManager != null
-            ? Mathf.Max(propertiesManager.GetPropValue(PropType.AttackSpeed), MIN_ATTACK_SPEED)
-            : 1f;
+            ? propertiesManager.GetPropValue(PropType.AttackSpeed)
+            : PropValueUtility.ATTACK_SPEED_POINTS_PER_ATTACK_PER_SECOND;
     }
 
     private void BindProperties()

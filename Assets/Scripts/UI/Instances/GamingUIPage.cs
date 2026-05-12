@@ -186,7 +186,7 @@ public class GamingUIPage : PageBase
 
     private void OnWaveProgress(WaveProgressEvent eventData)
     {
-        timerText.text = $"{Mathf.RoundToInt(eventData.RemainingTime)}s / {Mathf.RoundToInt(eventData.TotalTime)}s";
+        ApplyWaveTimer(eventData.ShowTimer, eventData.RemainingTime, eventData.TotalTime);
     }
 
     private void ApplyWaveHud(WaveHudViewData waveHudViewData)
@@ -194,12 +194,19 @@ public class GamingUIPage : PageBase
         if (waveHudViewData.HasStarted)
         {
             waveText.text = $"波次 {waveHudViewData.CurrentWave}/{waveHudViewData.TotalWaves}";
-            timerText.text = $"{Mathf.RoundToInt(waveHudViewData.RemainingTime)}s / {Mathf.RoundToInt(waveHudViewData.TotalTime)}s";
+            ApplyWaveTimer(waveHudViewData.ShowTimer, waveHudViewData.RemainingTime, waveHudViewData.TotalTime);
             return;
         }
 
         waveText.text = "准备开始";
         timerText.text = string.Empty;
+    }
+
+    private void ApplyWaveTimer(bool showTimer, float remainingTime, float totalTime)
+    {
+        timerText.text = showTimer
+            ? $"{Mathf.RoundToInt(remainingTime)}s / {Mathf.RoundToInt(totalTime)}s"
+            : string.Empty;
     }
 
     private void ValidateConfiguration()

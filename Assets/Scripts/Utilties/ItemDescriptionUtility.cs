@@ -171,13 +171,10 @@ internal static class ItemDescriptionUtility
     {
         return tag switch
         {
-            WeaponTag.Melee => "近战",
-            WeaponTag.Ranged => "远程",
-            WeaponTag.Projectile => "投射物",
-            WeaponTag.AreaDamage => "范围伤害",
-            WeaponTag.Critical => "暴击",
-            WeaponTag.Fast => "快速",
             WeaponTag.Heavy => "重型",
+            WeaponTag.Fast => "快速",
+            WeaponTag.Growth => "成长",
+            WeaponTag.Precision => "精准",
             _ => tag.ToString()
         };
     }
@@ -229,7 +226,7 @@ internal static class ItemDescriptionUtility
     {
         return propType switch
         {
-            PropType.AttackSpeed => $"{value:0.##}/秒",
+            PropType.AttackSpeed => $"{value:0}",
             PropType.CriticalChance => $"{value:0.##}%",
             PropType.CriticalPercent => $"{value:0.##}%",
             PropType.AttackRange => $"{PropValueUtility.DistancePointsToWorldUnits(value):0.##}格",

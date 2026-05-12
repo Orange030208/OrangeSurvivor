@@ -10,6 +10,9 @@ public static class GameContentAssetPaths
     public const string DropPool = CatalogPools + "/Drop Pool.asset";
     public const string WeaponRewardPool = CatalogPools + "/Weapon Reward Pool.asset";
 
+    public const string RunProgression = Root + "/RunProgression";
+    public const string RunProgressionProfile = RunProgression + "/Run Progression Profile.asset";
+
     public const string Characters = Root + "/Characters";
     public const string CharactersData = Characters + "/Data";
     public const string CharactersPrefabs = Characters + "/Prefabs";

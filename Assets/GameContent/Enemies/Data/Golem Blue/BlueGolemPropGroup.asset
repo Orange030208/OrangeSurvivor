@@ -16,12 +16,12 @@ MonoBehaviour:
   - propType: 0
     value: 35
   - propType: 1
-    value: 0.45
+    value: 45
   - propType: 5
-    value: 230
+    value: 350
   - propType: 6
     value: 160
   - propType: 4
-    value: 130
+    value: 300
   - propType: 15
-    value: 120
+    value: 200

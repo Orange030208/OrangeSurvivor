@@ -81,6 +81,24 @@ public static class ContentFactCollector
             case FactDefinitionBuiltInKind.WaveProgressPercent:
                 value = ContentFactValue.FromFloat(Mathf.Clamp(source.WaveProgressPercent, 0f, 100f));
                 return true;
+            case FactDefinitionBuiltInKind.DifficultyCoefficient:
+                value = ContentFactValue.FromFloat(ResolveProgressionSnapshot(source).DifficultyCoefficient);
+                return true;
+            case FactDefinitionBuiltInKind.EconomyCoefficient:
+                value = ContentFactValue.FromFloat(ResolveProgressionSnapshot(source).EconomyCoefficient);
+                return true;
+            case FactDefinitionBuiltInKind.ShopPriceMultiplier:
+                value = ContentFactValue.FromFloat(ResolveProgressionSnapshot(source).ShopPriceMultiplier);
+                return true;
+            case FactDefinitionBuiltInKind.EndlessLoop:
+                value = ContentFactValue.FromInt(ResolveProgressionSnapshot(source).EndlessLoop);
+                return true;
+            case FactDefinitionBuiltInKind.EndlessWave:
+                value = ContentFactValue.FromBool(ResolveProgressionSnapshot(source).IsEndlessWave);
+                return true;
+            case FactDefinitionBuiltInKind.DangerTier:
+                value = ContentFactValue.FromInt(ResolveProgressionSnapshot(source).DangerTier);
+                return true;
             default:
                 return false;
         }
@@ -95,6 +113,13 @@ public static class ContentFactCollector
         factSet.Set(ContentFactIds.ShopRerollCount, ContentFactValue.FromInt(Mathf.Max(0, source.ShopRerollCount)));
         factSet.Set(ContentFactIds.OwnedWeaponCount, ContentFactValue.FromInt(GetOwnedWeaponCount(source)));
         factSet.Set(ContentFactIds.WaveProgressPercent, ContentFactValue.FromFloat(Mathf.Clamp(source.WaveProgressPercent, 0f, 100f)));
+        RunProgressionSnapshot snapshot = ResolveProgressionSnapshot(source);
+        factSet.Set(ContentFactIds.DifficultyCoefficient, ContentFactValue.FromFloat(snapshot.DifficultyCoefficient));
+        factSet.Set(ContentFactIds.EconomyCoefficient, ContentFactValue.FromFloat(snapshot.EconomyCoefficient));
+        factSet.Set(ContentFactIds.ShopPriceMultiplier, ContentFactValue.FromFloat(snapshot.ShopPriceMultiplier));
+        factSet.Set(ContentFactIds.EndlessLoop, ContentFactValue.FromInt(snapshot.EndlessLoop));
+        factSet.Set(ContentFactIds.EndlessWave, ContentFactValue.FromBool(snapshot.IsEndlessWave));
+        factSet.Set(ContentFactIds.DangerTier, ContentFactValue.FromInt(snapshot.DangerTier));
 
         if (source.CharacterData != null)
         {
@@ -121,6 +146,12 @@ public static class ContentFactCollector
         }
 
         return propertiesManager != null ? propertiesManager.GetPropValue(propType) : 0f;
+    }
+
+    private static RunProgressionSnapshot ResolveProgressionSnapshot(ContentFactSource source)
+    {
+        RunProgressionSnapshot snapshot = source.ProgressionSnapshot;
+        return snapshot.WaveNumber > 0 ? snapshot : RunProgressionRuntime.CurrentSnapshot;
     }
 
     private static int GetOwnedWeaponCount(ContentFactSource source)

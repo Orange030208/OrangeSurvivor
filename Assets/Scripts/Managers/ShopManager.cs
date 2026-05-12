@@ -8,29 +8,23 @@ public struct ShopItemData
     public int Level;
     public bool Lock;
     public float ContentPriceMultiplier;
-    public float PriceMultiplier;
+    public float RunPriceMultiplier;
+    public float PlayerDiscountMultiplier;
+
+    public float PriceMultiplier
+    {
+        get => PlayerDiscountMultiplier;
+        set => PlayerDiscountMultiplier = value;
+    }
 
     public int GetPrice()
     {
-        if (ItemData == null)
-        {
-            return 0;
-        }
-
-        if (ItemData.ItemType == ItemType.Weapon)
-        {
-            return ApplyPriceMultiplier(WeaponPriceHelper.GetPrice(ItemData.ItemPrice, Level));
-        }
-
-        return ApplyPriceMultiplier(ItemData.ItemPrice);
-    }
-
-    private int ApplyPriceMultiplier(int basePrice)
-    {
-        float contentMultiplier = ContentPriceMultiplier > 0f ? ContentPriceMultiplier : 1f;
-        float shopMultiplier = PriceMultiplier > 0f ? PriceMultiplier : 1f;
-        float multiplier = contentMultiplier * shopMultiplier;
-        return Mathf.Max(0, Mathf.RoundToInt(basePrice * multiplier));
+        return ShopPricingService.GetPrice(
+            ItemData,
+            Level,
+            ContentPriceMultiplier,
+            RunPriceMultiplier,
+            PlayerDiscountMultiplier);
     }
 }
 
@@ -259,13 +253,14 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        if (currentCurrency < rerollCost)
+        int currentRerollCost = ResolveCurrentRerollCost();
+        if (currentCurrency < currentRerollCost)
         {
-            NotifyPurchaseFailed($"Not enough currency for reroll. Cost: {rerollCost}");
+            NotifyPurchaseFailed($"Not enough currency for reroll. Cost: {currentRerollCost}");
             return;
         }
 
-        currencyWallet?.ChangeAmount(-rerollCost);
+        currencyWallet?.ChangeAmount(-currentRerollCost);
         RerollShopItems();
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishViewState(ShopRefreshReason.Reroll);
@@ -414,6 +409,7 @@ public class ShopManager : MonoBehaviour
         ContentFactSource factSource = ContentFactSource.ForPlayer(player, currentWaveNumber);
         factSource.ShopRefreshCount = shopRefreshCount;
         factSource.ShopRerollCount = rerollCount;
+        factSource.ProgressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
         ContentRollResult result = contentPoolRollService.Roll(
             pool,
             factSource,
@@ -442,7 +438,9 @@ public class ShopManager : MonoBehaviour
             ItemData = itemData,
             Level = ResolveShopItemLevel(itemData, rollItem),
             Lock = false,
-            ContentPriceMultiplier = rollItem.PriceMultiplier
+            ContentPriceMultiplier = rollItem.PriceMultiplier,
+            RunPriceMultiplier = ResolveRunPriceMultiplier(),
+            PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier()
         };
     }
 
@@ -486,16 +484,19 @@ public class ShopManager : MonoBehaviour
         }
 
         ApplyShopPriceMultiplier();
-        bool canReroll = currentCurrency >= rerollCost || freeShopRerolls > 0;
-        ViewStateChanged?.Invoke(new ShopViewState(currentItems, rerollCost, canReroll, reason));
+        int currentRerollCost = ResolveCurrentRerollCost();
+        bool canReroll = currentCurrency >= currentRerollCost || freeShopRerolls > 0;
+        ViewStateChanged?.Invoke(new ShopViewState(currentItems, currentRerollCost, canReroll, reason));
     }
 
     private void ApplyShopPriceMultiplier()
     {
-        float priceMultiplier = ResolveShopPriceMultiplier();
+        float runPriceMultiplier = ResolveRunPriceMultiplier();
+        float playerDiscountMultiplier = ResolvePlayerDiscountMultiplier();
         for (int i = 0; i < currentItems.Length; i++)
         {
-            currentItems[i].PriceMultiplier = priceMultiplier;
+            currentItems[i].RunPriceMultiplier = runPriceMultiplier;
+            currentItems[i].PlayerDiscountMultiplier = playerDiscountMultiplier;
         }
     }
 
@@ -582,7 +583,7 @@ public class ShopManager : MonoBehaviour
         return player == null || player == eventPlayer;
     }
 
-    private float ResolveShopPriceMultiplier()
+    private float ResolvePlayerDiscountMultiplier()
     {
         if (propertiesManager == null)
         {
@@ -595,6 +596,18 @@ public class ShopManager : MonoBehaviour
                 propertiesManager.GetPropValue(PropType.ShopPriceDiscount))
             : 0f;
         return Mathf.Max(PropValueUtility.MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, 1f - discount);
+    }
+
+    private float ResolveRunPriceMultiplier()
+    {
+        RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
+        return snapshot.ShopPriceMultiplier > 0f ? snapshot.ShopPriceMultiplier : 1f;
+    }
+
+    private int ResolveCurrentRerollCost()
+    {
+        float runPriceMultiplier = ResolveRunPriceMultiplier();
+        return Mathf.Max(0, Mathf.RoundToInt(rerollCost * runPriceMultiplier));
     }
 
     private void BindPropertiesManager(PropertiesManager newPropertiesManager)

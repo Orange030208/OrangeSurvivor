@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   values:
   - propType: 0
-    value: 20
+    value: 18
   - propType: 1
-    value: 0.4
-  - propType: 4
-    value: 200
+    value: 25
   - propType: 5
     value: 100
   - propType: 6
-    value: 650
+    value: 800
+  - propType: 4
+    value: 200
+  - propType: 15
+    value: 800

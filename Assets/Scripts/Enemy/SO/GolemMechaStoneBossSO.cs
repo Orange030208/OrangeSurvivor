@@ -54,7 +54,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     };
 
     [Header("近战攻击")]
-    [SerializeField, Min(0.01f)] private float meleeAttackSpeedBenefitRatio = 0.75f;
+    [SerializeField, Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float meleeAttackSpeedBenefitRatio = 0.75f;
     [SerializeField, Min(0f)] private float meleeRangeMultiplier = 1f;
     [Tooltip("近战攻击提交时在实际攻击区域中心生成的挥出特效预制体；空挥也会生成。")]
     [SerializeField] private GameObject meleeHitVfxPrefab;
@@ -63,7 +63,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(0f)] private float meleeScreenShakeScale = 1f;
 
     [Header("射击攻击")]
-    [SerializeField, Min(0.01f)] private float shootAttackSpeedBenefitRatio = 0.5f;
+    [SerializeField, Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float shootAttackSpeedBenefitRatio = 0.5f;
     [SerializeField, Min(0f)] private float shootRangeMultiplier = 1f;
     [SerializeField] private ProjectileDefinitionSO shootProjectileDefinition;
 
@@ -134,7 +134,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     public float ShieldCooldown => shieldCooldown;
     public int ShieldMinPhase => Mathf.Max(1, shieldMinPhase);
     public IReadOnlyList<PropModifierData> ShieldModifiers => shieldModifiers;
-    public float MeleeAttackSpeedBenefitRatio => Mathf.Max(0.01f, meleeAttackSpeedBenefitRatio);
+    public float MeleeAttackSpeedBenefitRatio => PropValueUtility.ClampAttackSpeedBenefitRatio(meleeAttackSpeedBenefitRatio);
     public float MeleeRangeMultiplier => Mathf.Max(0f, meleeRangeMultiplier);
     public GameObject MeleeHitVfxPrefab => meleeHitVfxPrefab;
     public ScreenShakeSettings MeleeScreenShake
@@ -147,7 +147,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     }
 
     public float MeleeScreenShakeScale => Mathf.Max(0f, meleeScreenShakeScale);
-    public float ShootAttackSpeedBenefitRatio => Mathf.Max(0.01f, shootAttackSpeedBenefitRatio);
+    public float ShootAttackSpeedBenefitRatio => PropValueUtility.ClampAttackSpeedBenefitRatio(shootAttackSpeedBenefitRatio);
     public float ShootRangeMultiplier => Mathf.Max(0f, shootRangeMultiplier);
     public ProjectileDefinitionSO ShootProjectileDefinition => shootProjectileDefinition;
     private void OnValidate()
@@ -167,11 +167,11 @@ public sealed class GolemMechaStoneBossSO : EnemySO
         shieldDuration = Mathf.Max(0f, shieldDuration);
         shieldCooldown = Mathf.Max(0f, shieldCooldown);
         shieldMinPhase = Mathf.Max(1, shieldMinPhase);
-        meleeAttackSpeedBenefitRatio = Mathf.Max(0.01f, meleeAttackSpeedBenefitRatio);
+        meleeAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(meleeAttackSpeedBenefitRatio);
         meleeRangeMultiplier = Mathf.Max(0f, meleeRangeMultiplier);
         EnsureMeleeScreenShakeDefaults();
         meleeScreenShakeScale = Mathf.Max(0f, meleeScreenShakeScale);
-        shootAttackSpeedBenefitRatio = Mathf.Max(0.01f, shootAttackSpeedBenefitRatio);
+        shootAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(shootAttackSpeedBenefitRatio);
         shootRangeMultiplier = Mathf.Max(0f, shootRangeMultiplier);
         EnsureActionDefaults();
     }

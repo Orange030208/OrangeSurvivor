@@ -25,5 +25,5 @@ MonoBehaviour:
   retreatAttackSpeedBenefitRatio: 0.5
   retreatAttackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
   retreatMovement:
-    safeDistance: 7
-    retreatStepDistance: 3
+    safeDistanceRatio: 1
+    retreatStepDistanceRatio: 0.42857143

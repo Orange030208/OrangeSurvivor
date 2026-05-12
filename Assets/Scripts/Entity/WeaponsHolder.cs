@@ -28,14 +28,14 @@ public class WeaponsHolder : EntityComponentBase
 
     private readonly List<EquippedWeaponInfo> equippedWeapons = new();
     private readonly List<WeaponPosition> weaponPositionPool = new();
-    private readonly Dictionary<string, WeaponAttackUsageData> attackUsageModifierSources = new();
-    private WeaponAttackUsageData currentAttackUsageBonus = WeaponAttackUsageData.Zero;
+    private readonly Dictionary<string, WeaponBenefitData> weaponBenefitModifierSources = new();
+    private WeaponBenefitData currentWeaponBenefitBonus = WeaponBenefitData.Zero;
 
-    public event Action OnWeaponAttackUsageBonusChanged;
+    public event Action OnWeaponBenefitBonusChanged;
     public event Action OnWeaponsChanged;
     public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => equippedWeapons.AsReadOnly();
     public int WeaponSlotCount => weaponPositions?.Length ?? 0;
-    public WeaponAttackUsageData CurrentAttackUsageBonus => currentAttackUsageBonus;
+    public WeaponBenefitData CurrentWeaponBenefitBonus => currentWeaponBenefitBonus;
 
     private Entity owner;
     private PropertiesManager propertiesManager;
@@ -97,7 +97,7 @@ public class WeaponsHolder : EntityComponentBase
     public override void OnDisableComponent()
     {
         UnsubscribeFromPropertiesManager();
-        ClearWeaponAttackUsageModifiers();
+        ClearWeaponBenefitModifiers();
 
         if (weaponPositions == null)
         {
@@ -147,42 +147,42 @@ public class WeaponsHolder : EntityComponentBase
         return true;
     }
 
-    public void AddWeaponAttackUsageModifier(string sourceId, WeaponAttackUsageData modifier)
+    public void AddWeaponBenefitModifier(string sourceId, WeaponBenefitData modifier)
     {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
-            Debug.LogWarning("[WeaponsHolder] AddWeaponAttackUsageModifier: sourceId is null or empty.");
+            Debug.LogWarning("[WeaponsHolder] AddWeaponBenefitModifier: sourceId is null or empty.");
             return;
         }
 
-        attackUsageModifierSources[sourceId] = modifier.Validated();
-        RecalculateAttackUsageBonus();
+        weaponBenefitModifierSources[sourceId] = modifier.Validated();
+        RecalculateWeaponBenefitBonus();
     }
 
-    private void ClearWeaponAttackUsageModifiers()
+    private void ClearWeaponBenefitModifiers()
     {
-        if (attackUsageModifierSources.Count == 0)
+        if (weaponBenefitModifierSources.Count == 0)
         {
             return;
         }
 
-        attackUsageModifierSources.Clear();
-        RecalculateAttackUsageBonus();
+        weaponBenefitModifierSources.Clear();
+        RecalculateWeaponBenefitBonus();
     }
 
-    public void RemoveWeaponAttackUsageModifier(string sourceId)
+    public void RemoveWeaponBenefitModifier(string sourceId)
     {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
             return;
         }
 
-        if (!attackUsageModifierSources.Remove(sourceId))
+        if (!weaponBenefitModifierSources.Remove(sourceId))
         {
             return;
         }
 
-        RecalculateAttackUsageBonus();
+        RecalculateWeaponBenefitBonus();
     }
 
     public bool RemoveWeapon(Weapon weapon)
@@ -536,23 +536,23 @@ public class WeaponsHolder : EntityComponentBase
         OnWeaponsChanged?.Invoke();
     }
 
-    private void RecalculateAttackUsageBonus()
+    private void RecalculateWeaponBenefitBonus()
     {
-        WeaponAttackUsageData previousBonus = currentAttackUsageBonus;
-        WeaponAttackUsageData nextBonus = WeaponAttackUsageData.Zero;
-        foreach (WeaponAttackUsageData modifier in attackUsageModifierSources.Values)
+        WeaponBenefitData previousBonus = currentWeaponBenefitBonus;
+        WeaponBenefitData nextBonus = WeaponBenefitData.Zero;
+        foreach (WeaponBenefitData modifier in weaponBenefitModifierSources.Values)
         {
             nextBonus += modifier;
         }
 
-        currentAttackUsageBonus = nextBonus;
-        if (AreSameAttackUsage(previousBonus, currentAttackUsageBonus))
+        currentWeaponBenefitBonus = nextBonus;
+        if (AreSameWeaponBenefits(previousBonus, currentWeaponBenefitBonus))
         {
             return;
         }
 
         RefreshEquippedWeaponRuntimeStats();
-        OnWeaponAttackUsageBonusChanged?.Invoke();
+        OnWeaponBenefitBonusChanged?.Invoke();
     }
 
     private void RefreshEquippedWeaponRuntimeStats()
@@ -568,9 +568,14 @@ public class WeaponsHolder : EntityComponentBase
         }
     }
 
-    private static bool AreSameAttackUsage(WeaponAttackUsageData left, WeaponAttackUsageData right)
+    private static bool AreSameWeaponBenefits(WeaponBenefitData left, WeaponBenefitData right)
     {
-        return Mathf.Approximately(left.MeleeAttackUsagePercent, right.MeleeAttackUsagePercent) &&
+        return Mathf.Approximately(left.AttackSpeedBenefitPercent, right.AttackSpeedBenefitPercent) &&
+               Mathf.Approximately(left.CriticalChanceBenefitPercent, right.CriticalChanceBenefitPercent) &&
+               Mathf.Approximately(left.CriticalPercentBenefitPercent, right.CriticalPercentBenefitPercent) &&
+               Mathf.Approximately(left.RangeBenefitPercent, right.RangeBenefitPercent) &&
+               Mathf.Approximately(left.KnockbackStrengthBenefitPercent, right.KnockbackStrengthBenefitPercent) &&
+               Mathf.Approximately(left.MeleeAttackUsagePercent, right.MeleeAttackUsagePercent) &&
                Mathf.Approximately(left.RangedAttackUsagePercent, right.RangedAttackUsagePercent) &&
                Mathf.Approximately(left.MagicAttackUsagePercent, right.MagicAttackUsagePercent) &&
                Mathf.Approximately(left.SummonAttackUsagePercent, right.SummonAttackUsagePercent);

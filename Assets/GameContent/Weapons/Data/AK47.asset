@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: AK47
   m_EditorClassIdentifier: 
-  itemName: AK-47
+  itemName: "\u7A81\u51FB\u6B65\u67AA"
   itemIcon: {fileID: 21300000, guid: dceaccc930a314f4e80bbed41f73688b, type: 3}
   itemPrice: 36
   itemType: 0
-  itemDescription: Reliable automatic rifle. Fires short bursts with steady mid-range
-    damage.
+  itemDescription: "\u7A33\u5B9A\u7684\u81EA\u52A8\u6B65\u67AA\u3002\u4EE5\u77ED\u70B9\u5C04\u6301\u7EED\u8F93\u51FA\uFF0C\u9002\u5408\u4E2D\u8DDD\u79BB\u538B\u5236\u3002"
   tags: 010000000200000005000000
   attackSequence: {fileID: 11400000, guid: b1ad746dfc0d4569a8eea93b3af756aa, type: 2}
   visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.779
+  attackTimingMode: 0
+  targetingMode: 0
   spawnPoints:
   - id: muzzle
     localPosition: {x: -0.22785732, y: 0.6164285}
@@ -45,31 +46,36 @@ MonoBehaviour:
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}
   hitBoxOffset: {x: 0, y: 0}
+  attackUsage:
+    meleeAttackUsagePercent: 0
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
   levelStats:
   - level: 1
     attack: 9
-    attackSpeed: 4
+    attackSpeed: 200
     criticalChance: 6
     criticalPercent: 170
     range: 800
     knockbackStrength: 1
   - level: 2
     attack: 10.62
-    attackSpeed: 4
+    attackSpeed: 250
     criticalChance: 7
     criticalPercent: 178
     range: 825
     knockbackStrength: 1.18
   - level: 3
     attack: 12.24
-    attackSpeed: 4
+    attackSpeed: 300
     criticalChance: 8
     criticalPercent: 186
     range: 850
     knockbackStrength: 1.36
   - level: 4
     attack: 13.86
-    attackSpeed: 4
+    attackSpeed: 350
     criticalChance: 9
     criticalPercent: 194
     range: 875

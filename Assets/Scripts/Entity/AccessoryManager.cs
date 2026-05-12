@@ -23,11 +23,20 @@ public class AccessoryManager : EntityComponentBase
         this.owner = owner;
         featureHost = this.owner.GetComponent<FeatureHost>();
         propertiesManager = this.owner.GetComponent<PropertiesManager>();
-        var initialAccessories = this.owner.GetComponent<IInitialAccessoryProvider>().InitialAccessories;
-
-        foreach (var accessory in initialAccessories)
+        if (!this.owner.TryGetComponent<IInitialAccessoryProvider>(out IInitialAccessoryProvider initialAccessoryProvider))
         {
-            EquipAccessory(accessory, false);
+            return;
+        }
+
+        IReadOnlyList<AccessoryDataSO> initialAccessories = initialAccessoryProvider.InitialAccessories;
+        if (initialAccessories == null || initialAccessories.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < initialAccessories.Count; i++)
+        {
+            EquipAccessory(initialAccessories[i], false);
         }
     }
 
@@ -38,7 +47,7 @@ public class AccessoryManager : EntityComponentBase
 
     public bool EquipAccessory(AccessoryDataSO accessoryData, bool playSfx = true)
     {
-        if (accessoryData == null || featureHost == null)
+        if (accessoryData == null || featureHost == null || propertiesManager == null)
         {
             return false;
         }
@@ -67,6 +76,11 @@ public class AccessoryManager : EntityComponentBase
 
     public bool UnequipAccessory(AccessoryDataSO accessoryData)
     {
+        if (accessoryData == null || featureHost == null || propertiesManager == null)
+        {
+            return false;
+        }
+
         if (!equippedAccessoryDict.TryGetValue(accessoryData.AccessoryId, out var dictList)) return false;
         if (dictList.Count == 0)
         {
@@ -94,6 +108,13 @@ public class AccessoryManager : EntityComponentBase
 
     private void ClearEquippedAccessories()
     {
+        if (featureHost == null || propertiesManager == null)
+        {
+            equippedAccessoryDict.Clear();
+            equippedAccessoryList.Clear();
+            return;
+        }
+
         foreach (var pair in equippedAccessoryDict)
         {
             List<RuntimeAccessoryData> list = pair.Value;

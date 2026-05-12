@@ -11,6 +11,7 @@ public readonly struct WaveSpawnContext
     public readonly float WaveDuration;
     public readonly Entity SpawnAnchor;
     public readonly Transform SpawnParent;
+    public readonly RunProgressionService RunProgressionService;
 
     public WaveSpawnContext(
         int waveIndex,
@@ -20,7 +21,8 @@ public readonly struct WaveSpawnContext
         float elapsedTime,
         float waveDuration,
         Entity spawnAnchor,
-        Transform spawnParent)
+        Transform spawnParent,
+        RunProgressionService runProgressionService = null)
     {
         WaveIndex = waveIndex;
         WaveNumber = waveNumber;
@@ -30,10 +32,13 @@ public readonly struct WaveSpawnContext
         WaveDuration = waveDuration;
         SpawnAnchor = spawnAnchor;
         SpawnParent = spawnParent;
+        RunProgressionService = runProgressionService;
     }
 
     public Player Player => SpawnAnchor as Player;
     public float NormalizedProgress => WaveDuration > 0f ? Mathf.Clamp01(ElapsedTime / WaveDuration) : 0f;
+    public RunProgressionSnapshot ProgressionSnapshot =>
+        RunProgressionService != null ? RunProgressionService.CurrentSnapshot : RunProgressionRuntime.CurrentSnapshot;
 
     public float Roll01()
     {

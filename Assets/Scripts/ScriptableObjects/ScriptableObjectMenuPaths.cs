@@ -18,6 +18,7 @@ public static class ScriptableObjectMenuPaths
     public const string GOLEM_MECHA_STONE_BOSS = GAMEPLAY_ROOT + "Enemies/Golem Mecha Stone Boss";
     public const string BASE_PROP_GROUP = GAMEPLAY_ROOT + "Player/Base Prop Group";
     public const string PLAYER_LEVEL_CONFIG = GAMEPLAY_ROOT + "Player/Level Config";
+    public const string RUN_PROGRESSION_PROFILE = GAMEPLAY_ROOT + "Run Progression/Profile";
     public const string UPGRADE_CARD = GAMEPLAY_ROOT + "Upgrades/Upgrade Card";
     public const string UPGRADE_CARD_POOL = GAMEPLAY_ROOT + "Upgrades/Upgrade Card Pool";
     public const string UPGRADE_CARD_RARITY_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Upgrades/Upgrade Card Rarity Presentation Catalog";

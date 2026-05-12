@@ -28,6 +28,7 @@ public static class GameContentCatalogBuildUtility
     public static void RebuildRuntimeContentCatalog()
     {
         EnsureFolders();
+        RefreshWeaponDataList();
         ContentFactDefinitionAssetUtility.CreateBuiltInFactDefinitions();
         CreateOrUpdateContentPools();
         GameContentCatalogSO catalog = GetOrCreateCatalog();
@@ -43,6 +44,7 @@ public static class GameContentCatalogBuildUtility
         EnsureFolder(GameContentAssetPaths.Root);
         EnsureFolder(GameContentAssetPaths.CatalogFolder);
         EnsureFolder(GameContentAssetPaths.CatalogPools);
+        EnsureFolder(GameContentAssetPaths.RunProgression);
         EnsureFolder(GameContentAssetPaths.Characters);
         EnsureFolder(GameContentAssetPaths.Weapons);
         EnsureFolder(GameContentAssetPaths.Accessories);
@@ -158,6 +160,18 @@ public static class GameContentCatalogBuildUtility
         {
             Debug.LogError($"{path} expects purpose {expectedPurpose} but is {pool.Purpose}.", pool);
         }
+    }
+
+    private static void RefreshWeaponDataList()
+    {
+        WeaponDataListSO weaponDataList = AssetDatabase.LoadAssetAtPath<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList);
+        if (weaponDataList == null)
+        {
+            Debug.LogError($"Missing required weapon data list at {GameContentAssetPaths.WeaponDataList}.");
+            return;
+        }
+
+        weaponDataList.RefreshWeapons();
     }
 
     private static List<ContentPoolEntry> BuildUpgradeCardEntries()
@@ -311,6 +325,7 @@ public static class GameContentCatalogBuildUtility
         SetObject(serializedObject, "weaponDataList", LoadRequired<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList));
         SetObject(serializedObject, "accessoryDataList", LoadRequired<AccessoryDataListSO>(GameContentAssetPaths.AccessoryDataList));
         SetObject(serializedObject, "playerLevelConfig", LoadRequired<PlayerLevelConfigSO>(GameContentAssetPaths.PlayerLevelConfig));
+        SetObject(serializedObject, "runProgressionProfile", GetOrCreateRunProgressionProfile());
         SetObject(serializedObject, "upgradeCardPool", LoadRequired<ContentPoolSO>(UpgradeCardPoolPath));
         SetObject(serializedObject, "defaultStageDefinition", stageDefinition);
         SetObject(serializedObject, "chestRewardPool", LoadRequired<ContentPoolSO>(ChestRewardPoolPath));
@@ -421,6 +436,23 @@ public static class GameContentCatalogBuildUtility
         AssetDatabase.CreateAsset(config, DamageTextVisualConfigPath);
         EditorUtility.SetDirty(config);
         return config;
+    }
+
+    private static RunProgressionProfileSO GetOrCreateRunProgressionProfile()
+    {
+        RunProgressionProfileSO profile =
+            AssetDatabase.LoadAssetAtPath<RunProgressionProfileSO>(GameContentAssetPaths.RunProgressionProfile);
+        if (profile != null)
+        {
+            return profile;
+        }
+
+        EnsureFolder(GameContentAssetPaths.RunProgression);
+        profile = ScriptableObject.CreateInstance<RunProgressionProfileSO>();
+        profile.name = Path.GetFileNameWithoutExtension(GameContentAssetPaths.RunProgressionProfile);
+        AssetDatabase.CreateAsset(profile, GameContentAssetPaths.RunProgressionProfile);
+        EditorUtility.SetDirty(profile);
+        return profile;
     }
 
     private static void SetObject(SerializedObject serializedObject, string propertyName, UnityEngine.Object value)

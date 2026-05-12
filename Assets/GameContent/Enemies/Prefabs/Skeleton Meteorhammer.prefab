@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 567385469487708262, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       propertyPath: m_Controller
       value: 
@@ -88,11 +96,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6528778357964241054}
   m_SourcePrefab: {fileID: 100100000, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
---- !u!4 &2161579137218380597 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
-  m_PrefabInstance: {fileID: 4320269586671119549}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3086934095492513253 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
@@ -122,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 317caf05df714afe8d5f6e86789cbf06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleePointTransform: {fileID: 2161579137218380597}
+  meleePointTransform: {fileID: 4048907747104952113}
 --- !u!61 &6528778357964241054
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -168,3 +171,8 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.69483125, y: 1.3051686}
   m_EdgeRadius: 0
+--- !u!4 &4048907747104952113 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+  m_PrefabInstance: {fileID: 4320269586671119549}
+  m_PrefabAsset: {fileID: 0}

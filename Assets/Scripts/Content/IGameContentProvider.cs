@@ -13,6 +13,7 @@ public interface IGameContentProvider
     Player DefaultPlayerPrefab { get; }
     Weapon DefaultWeaponPrefab { get; }
     PlayerLevelConfigSO PlayerLevelConfig { get; }
+    RunProgressionProfileSO RunProgressionProfile { get; }
     ContentPoolSO UpgradeCardPool { get; }
     ContentPoolSO ChestRewardPool { get; }
     ContentPoolSO ShopPool { get; }

@@ -156,3 +156,25 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
+  - id: popup.shop.inventory
+    kind: 1
+    layer: 3
+    prefab: {fileID: 3817496776507657762, guid: b48563450afdfde4f9dec6e3a2bbec43, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: popup.shop.properties
+    kind: 1
+    layer: 3
+    prefab: {fileID: 338527030024816530, guid: c69b2c2eb94f69c4cb5579a2a8a1c593, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0

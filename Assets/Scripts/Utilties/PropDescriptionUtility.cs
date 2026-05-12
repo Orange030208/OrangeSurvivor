@@ -108,13 +108,13 @@ public static class PropDescriptionUtility
 
     private static bool IsPercentModifierProp(PropType propType)
     {
-        return IsPercentAdditiveProp(propType) ||
-               PropValueUtility.IsAdditivePercentMultiplierProp(propType);
+        return IsPercentAdditiveProp(propType);
     }
 
     private static bool IsIntegerProp(PropType propType)
     {
-        return propType == PropType.WeaponSlotCount ||
+        return propType == PropType.AttackSpeed ||
+               propType == PropType.WeaponSlotCount ||
                propType == PropType.ProjectilePierceCount;
     }
 

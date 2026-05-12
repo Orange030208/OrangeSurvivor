@@ -79,29 +79,36 @@ Assets/Scripts/OrangeUIFramework/
   Editor/
 ```
 
-框架资产推荐放置：
+框架资产推荐按项目资源目录落地。当前 Survivors 项目使用：
 
 ```text
-Assets/ScriptableObjects/OrangeUIFramework/
-  Settings/
-  Catalogs/
-  Canvas/
-  Motions/
-  Localization/
+Assets/GameContent/UI/
+  Data/
+    OrangeUIFrameworkSettings.asset
+    OrangeUIViewCatalog.asset
+    OrangeCanvasProfile.asset
+  Motion/
+  Sprites/
+  Fonts/
+  Materials/
+  Shaders/
 ```
 
-UI Prefab 推荐放置：
+UI Prefab 当前放置：
 
 ```text
-Assets/Prefabs/UI/
-  Pages/
-  Popups/
+Assets/GameContent/UI/Prefabs/
+  Buttons/
+  Container/
+  Indicators/
+  Item/
   Modals/
-  Tooltips/
-  Parts/
+  Pages/
+  Panel/
+  Titles/
 ```
 
-这些目录是推荐约定，不是框架硬编码路径。框架运行时依赖 Inspector 中绑定的 `UIFrameworkSettings`、`ViewCatalog` 和 Prefab 引用。
+这些目录是当前工程约定，不是框架硬编码路径。框架运行时依赖 Inspector 中绑定的 `UIFrameworkSettings`、`ViewCatalog` 和 Prefab 引用；迁移或新增 UI 资源时，应优先保持在 `Assets/GameContent/UI/` 下按资源类型归档。
 
 ## 4. 命名空间和命名规则
 
@@ -1225,10 +1232,11 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class MyPage : PageBase
 {
-    [SerializeField] private UIClickTarget closeButton;
+    [SerializeField] private Button closeButton;
 
     protected override void Awake()
     {
@@ -1241,14 +1249,14 @@ public sealed class MyPage : PageBase
         MyPageContext pageContext = context.GetPayload<MyPageContext>()
             ?? throw new InvalidOperationException($"{nameof(MyPage)} requires {nameof(MyPageContext)} payload.");
 
-        closeButton.OnClicked += OnCloseClicked;
+        closeButton.onClick.AddListener(OnCloseClicked);
         Apply(pageContext);
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        closeButton.OnClicked -= OnCloseClicked;
+        closeButton.onClick.RemoveListener(OnCloseClicked);
     }
 
     private void OnCloseClicked()
@@ -1455,38 +1463,16 @@ await uiManager.ShowTooltipAsync<MyTooltip>(
 - 有独立生命周期、复杂绑定、复用价值或独立表现逻辑时再拆。
 - ViewPart 不应主动扫描场景寻找 UIManager。
 
-## 27. UIClickTarget
+## 27. Button 点击绑定
 
-`UIClickTarget` 是轻量点击目标组件。
-
-能力：
-
-- 鼠标左键点击。
-- Submit 提交。
-- 方向导航。
-- `OnClicked` 事件。
-- `Interactable` 开关。
-
-典型使用：
-
-```csharp
-protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
-{
-    actionButton.OnClicked += OnActionClicked;
-    return UniTask.CompletedTask;
-}
-
-protected override void OnClosed(CloseReason reason)
-{
-    actionButton.OnClicked -= OnActionClicked;
-}
-```
+UI 点击目标统一使用 Unity `Button`。
 
 规则：
 
-- 打开时订阅，关闭时解绑。
+- 打开时通过 `button.onClick.AddListener(...)` 订阅，关闭时通过 `RemoveListener(...)` 解绑。
 - 不要多次打开后重复订阅。
-- 需要默认焦点时可调用 `Select()` 或通过 `EventSystem` 设置。
+- 可交互状态使用 `button.interactable`。
+- 需要默认焦点时通过 `EventSystem.current?.SetSelectedGameObject(button.gameObject)` 设置。
 
 ## 28. 诊断
 

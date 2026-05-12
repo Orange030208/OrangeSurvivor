@@ -16,26 +16,32 @@ public class WormEnemySO : EnemySO
     [HideInInspector, Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
 
     [Header("攻击")]
-    [Min(0.01f)] public float attackSpeedBenefitRatio = 1f;
+    [Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] public float attackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO attackProjectileDefinition;
-    [Min(0.01f)] public float retreatAttackSpeedBenefitRatio = 1f;
+    [Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] public float retreatAttackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO retreatAttackProjectileDefinition;
 
     [Header("移动")]
     public RetreatMoveData retreatMovement = new()
     {
-        safeDistance = 7f,
-        retreatStepDistance = 3f,
+        safeDistanceRatio = 1f,
+        retreatStepDistanceRatio = 0.42857143f,
     };
 
     private void OnValidate()
     {
         retreatTriggerDistance = Mathf.Max(0f, retreatTriggerDistance);
         retreatCompleteDistance = Mathf.Max(retreatTriggerDistance, retreatCompleteDistance);
-        attackSpeedBenefitRatio = Mathf.Max(0.01f, attackSpeedBenefitRatio);
-        retreatAttackSpeedBenefitRatio = Mathf.Max(0.01f, retreatAttackSpeedBenefitRatio);
-        retreatMovement.safeDistance = Mathf.Max(retreatTriggerDistance, retreatMovement.safeDistance);
+        attackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
+        retreatAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(retreatAttackSpeedBenefitRatio);
         ValidateRetreatMoveData(ref retreatMovement);
+        float baseDetectionRange = ResolveBaseDetectionRangeWorldUnits();
+        if (baseDetectionRange > Mathf.Epsilon)
+        {
+            retreatMovement.safeDistanceRatio = Mathf.Max(
+                retreatTriggerDistance / baseDetectionRange,
+                retreatMovement.safeDistanceRatio);
+        }
         EnsureActionDefaults();
     }
 
@@ -59,8 +65,27 @@ public class WormEnemySO : EnemySO
 
     private static void ValidateRetreatMoveData(ref RetreatMoveData config)
     {
-        config.safeDistance = Mathf.Max(0f, config.safeDistance);
-        config.retreatStepDistance = Mathf.Max(0f, config.retreatStepDistance);
+        config.safeDistanceRatio = Mathf.Max(0f, config.safeDistanceRatio);
+        config.retreatStepDistanceRatio = Mathf.Max(0f, config.retreatStepDistanceRatio);
+    }
+
+    private float ResolveBaseDetectionRangeWorldUnits()
+    {
+        if (BasePropsAsset == null)
+        {
+            return 0f;
+        }
+
+        var values = BasePropsAsset.Values;
+        for (int i = 0; i < values.Count; i++)
+        {
+            if (values[i].propType == PropType.DetectionRange)
+            {
+                return PropValueUtility.DistancePointsToWorldUnits(values[i].value);
+            }
+        }
+
+        return 0f;
     }
 
     private void EnsureActionDefaults()

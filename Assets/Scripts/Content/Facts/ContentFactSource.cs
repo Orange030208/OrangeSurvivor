@@ -14,13 +14,15 @@ public sealed class ContentFactSource
     public float WaveProgressPercent { get; set; }
     public int ShopRefreshCount { get; set; }
     public int ShopRerollCount { get; set; }
+    public RunProgressionSnapshot ProgressionSnapshot { get; set; }
 
     public static ContentFactSource ForPlayer(Player player, int waveNumber = 1)
     {
         ContentFactSource source = new()
         {
             Player = player,
-            WaveNumber = UnityEngine.Mathf.Max(1, waveNumber)
+            WaveNumber = UnityEngine.Mathf.Max(1, waveNumber),
+            ProgressionSnapshot = RunProgressionRuntime.CurrentSnapshot
         };
 
         if (player == null)

@@ -8,6 +8,11 @@ using UnityEngine.UI;
 
 public class ShopUIPage : PageBase
 {
+    private const string PROPERTIES_POPUP_BUTTON_NAME = "Arrow Right Button";
+    private const string INVENTORY_POPUP_BUTTON_NAME = "Arrow Left Button";
+    private const string PROPERTIES_POPUP_GROUP_ID = "shop.properties";
+    private const string INVENTORY_POPUP_GROUP_ID = "shop.inventory";
+
     [Header("商品")]
     [SerializeField] private ShopItemListUI itemList;
 
@@ -17,14 +22,21 @@ public class ShopUIPage : PageBase
     [SerializeField] private TextMeshProUGUI rerollCostText;
     [SerializeField] private TextMeshProUGUI currencyText;
 
-    [Header("页面子面板")]
-    [SerializeField] private ShopPropertiesPanel propertiesPanel;
-    [SerializeField] private ShopInventoryPanel inventoryPanel;
+    [Header("Popup 入口")]
+    [SerializeField] private Button propertiesPopupButton;
+    [SerializeField] private Button inventoryPopupButton;
 
     private ShopManager shopManager;
     private CurrencyWallet currencyWallet;
+    private ShopPageContext currentContext;
+    private ViewHandle<ShopPropertiesPopup> propertiesPopupHandle;
+    private ViewHandle<ShopInventoryPopup> inventoryPopupHandle;
     private bool buttonEventsBound;
     private bool managerEventsBound;
+    private bool propertiesPopupOpen;
+    private bool inventoryPopupOpen;
+    private int propertiesPopupVersion;
+    private int inventoryPopupVersion;
 
     protected override void Awake()
     {
@@ -56,13 +68,11 @@ public class ShopUIPage : PageBase
 
         shopManager = context.ShopManager;
         currencyWallet = context.CurrencyWallet;
+        currentContext = context;
 
         BindButtonEvents();
         BindManagerEvents();
         BindItemListEvents();
-
-        propertiesPanel.BeginSession(context.PropertiesManager);
-        inventoryPanel.BeginSession(context.InventoryOperateManager, OwnerUIManager);
 
         UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
         shopManager.RefreshViewState();
@@ -70,16 +80,18 @@ public class ShopUIPage : PageBase
 
     private void ExitShopSession()
     {
+        ClosePropertiesPopupAsync(CloseReason.Cancel).Forget();
+        CloseInventoryPopupAsync(CloseReason.Cancel).Forget();
+
         UnbindButtonEvents();
         UnbindManagerEvents();
         UnbindItemListEvents();
 
         itemList.Clear();
-        propertiesPanel.EndSession();
-        inventoryPanel.EndSession();
 
         shopManager = null;
         currencyWallet = null;
+        currentContext = null;
     }
 
     private void RenderShopItems(ShopItemData[] items, ShopRefreshReason reason)
@@ -119,6 +131,192 @@ public class ShopUIPage : PageBase
         GameEventBus.Publish<ShopContinueClickedEvent>();
     }
 
+    private void OnPropertiesPopupRequested()
+    {
+        TogglePropertiesPopupAsync().Forget();
+    }
+
+    private void OnInventoryPopupRequested()
+    {
+        ToggleInventoryPopupAsync().Forget();
+    }
+
+    private async UniTaskVoid TogglePropertiesPopupAsync()
+    {
+        if (propertiesPopupOpen)
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+            await ClosePropertiesPopupAsync(CloseReason.Normal);
+            return;
+        }
+
+        if (currentContext == null)
+        {
+            return;
+        }
+
+        int version = ++propertiesPopupVersion;
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+
+        try
+        {
+            PopupOptions options = new PopupOptions(
+                closeOnOutsideClick: true,
+                groupId: PROPERTIES_POPUP_GROUP_ID,
+                replaceSameGroup: true,
+                trackInStack: true,
+                preferredAnchor: FloatingViewAnchor.Center);
+
+            ViewHandle<ShopPropertiesPopup> handle = await OwnerUIManager.ShowPopupAsync<ShopPropertiesPopup>(
+                new ShopPropertiesPopupContext(currentContext.PropertiesManager),
+                options,
+                this.GetCancellationTokenOnDestroy());
+
+            if (version != propertiesPopupVersion || currentContext == null)
+            {
+                await handle.CloseAsync(CloseReason.Cancel);
+                return;
+            }
+
+            propertiesPopupHandle = handle;
+            propertiesPopupOpen = true;
+            ObservePropertiesPopupClosedAsync(handle, version).Forget();
+        }
+        catch (Exception exception)
+        {
+            if (version == propertiesPopupVersion)
+            {
+                propertiesPopupOpen = false;
+                propertiesPopupHandle = default;
+            }
+
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTaskVoid ToggleInventoryPopupAsync()
+    {
+        if (inventoryPopupOpen)
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+            await CloseInventoryPopupAsync(CloseReason.Normal);
+            return;
+        }
+
+        if (currentContext == null)
+        {
+            return;
+        }
+
+        int version = ++inventoryPopupVersion;
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+
+        try
+        {
+            PopupOptions options = new PopupOptions(
+                closeOnOutsideClick: true,
+                groupId: INVENTORY_POPUP_GROUP_ID,
+                replaceSameGroup: true,
+                trackInStack: true,
+                preferredAnchor: FloatingViewAnchor.Center);
+
+            ViewHandle<ShopInventoryPopup> handle = await OwnerUIManager.ShowPopupAsync<ShopInventoryPopup>(
+                new ShopInventoryPopupContext(currentContext.InventoryOperateManager, OwnerUIManager),
+                options,
+                this.GetCancellationTokenOnDestroy());
+
+            if (version != inventoryPopupVersion || currentContext == null)
+            {
+                await handle.CloseAsync(CloseReason.Cancel);
+                return;
+            }
+
+            inventoryPopupHandle = handle;
+            inventoryPopupOpen = true;
+            ObserveInventoryPopupClosedAsync(handle, version).Forget();
+        }
+        catch (Exception exception)
+        {
+            if (version == inventoryPopupVersion)
+            {
+                inventoryPopupOpen = false;
+                inventoryPopupHandle = default;
+            }
+
+            Debug.LogException(exception, this);
+        }
+    }
+
+    private async UniTaskVoid ObservePropertiesPopupClosedAsync(ViewHandle<ShopPropertiesPopup> handle, int version)
+    {
+        try
+        {
+            await handle.ClosedTask;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+
+        if (version != propertiesPopupVersion)
+        {
+            return;
+        }
+
+        propertiesPopupOpen = false;
+        propertiesPopupHandle = default;
+    }
+
+    private async UniTaskVoid ObserveInventoryPopupClosedAsync(ViewHandle<ShopInventoryPopup> handle, int version)
+    {
+        try
+        {
+            await handle.ClosedTask;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+
+        if (version != inventoryPopupVersion)
+        {
+            return;
+        }
+
+        inventoryPopupOpen = false;
+        inventoryPopupHandle = default;
+    }
+
+    private async UniTask ClosePropertiesPopupAsync(CloseReason reason)
+    {
+        propertiesPopupVersion++;
+        propertiesPopupOpen = false;
+
+        ViewHandle<ShopPropertiesPopup> handle = propertiesPopupHandle;
+        propertiesPopupHandle = default;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        await handle.CloseAsync(reason);
+    }
+
+    private async UniTask CloseInventoryPopupAsync(CloseReason reason)
+    {
+        inventoryPopupVersion++;
+        inventoryPopupOpen = false;
+
+        ViewHandle<ShopInventoryPopup> handle = inventoryPopupHandle;
+        inventoryPopupHandle = default;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        await handle.CloseAsync(reason);
+    }
+
     private void OnItemBuyRequested(int itemIndex)
     {
         shopManager?.RequestBuyItem(itemIndex);
@@ -138,6 +336,8 @@ public class ShopUIPage : PageBase
 
         rerollButton.onClick.AddListener(OnRerollRequested);
         continueButton.onClick.AddListener(OnContinueRequested);
+        propertiesPopupButton.onClick.AddListener(OnPropertiesPopupRequested);
+        inventoryPopupButton.onClick.AddListener(OnInventoryPopupRequested);
         buttonEventsBound = true;
     }
 
@@ -150,6 +350,8 @@ public class ShopUIPage : PageBase
 
         rerollButton.onClick.RemoveListener(OnRerollRequested);
         continueButton.onClick.RemoveListener(OnContinueRequested);
+        propertiesPopupButton.onClick.RemoveListener(OnPropertiesPopupRequested);
+        inventoryPopupButton.onClick.RemoveListener(OnInventoryPopupRequested);
         buttonEventsBound = false;
     }
 
@@ -236,14 +438,14 @@ public class ShopUIPage : PageBase
             itemList = GetComponentInChildren<ShopItemListUI>(true);
         }
 
-        if (propertiesPanel == null)
+        if (propertiesPopupButton == null)
         {
-            propertiesPanel = GetComponentInChildren<ShopPropertiesPanel>(true);
+            propertiesPopupButton = FindButtonByName(PROPERTIES_POPUP_BUTTON_NAME);
         }
 
-        if (inventoryPanel == null)
+        if (inventoryPopupButton == null)
         {
-            inventoryPanel = GetComponentInChildren<ShopInventoryPanel>(true);
+            inventoryPopupButton = FindButtonByName(INVENTORY_POPUP_BUTTON_NAME);
         }
     }
 
@@ -274,14 +476,29 @@ public class ShopUIPage : PageBase
             throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing currency text.");
         }
 
-        if (propertiesPanel == null)
+        if (propertiesPopupButton == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties panel.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties popup button.");
         }
 
-        if (inventoryPanel == null)
+        if (inventoryPopupButton == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory panel.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory popup button.");
         }
+    }
+
+    private Button FindButtonByName(string buttonName)
+    {
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            Button button = buttons[i];
+            if (button != null && button.name == buttonName)
+            {
+                return button;
+            }
+        }
+
+        return null;
     }
 }

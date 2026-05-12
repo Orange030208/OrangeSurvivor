@@ -22,5 +22,11 @@ public enum FactDefinitionBuiltInKind
     WaveTrackId = 10,
     WaveProgressPercent = 11,
     OwnedWeapon = 12,
-    WaveId = 13
+    WaveId = 13,
+    DifficultyCoefficient = 14,
+    EconomyCoefficient = 15,
+    ShopPriceMultiplier = 16,
+    EndlessLoop = 17,
+    EndlessWave = 18,
+    DangerTier = 19
 }

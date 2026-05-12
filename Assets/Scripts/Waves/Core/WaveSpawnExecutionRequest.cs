@@ -11,6 +11,7 @@ public readonly struct WaveSpawnExecutionRequest
     public readonly string CurrentWaveName;
     public readonly Entity SpawnAnchor;
     public readonly Transform SpawnParent;
+    public readonly RunProgressionService RunProgressionService;
 
     public WaveSpawnExecutionRequest(
         WaveSegment segment,
@@ -21,7 +22,8 @@ public readonly struct WaveSpawnExecutionRequest
         string currentWaveId,
         string currentWaveName,
         Entity spawnAnchor,
-        Transform spawnParent)
+        Transform spawnParent,
+        RunProgressionService runProgressionService = null)
     {
         Segment = segment;
         SegmentIndex = segmentIndex;
@@ -32,5 +34,6 @@ public readonly struct WaveSpawnExecutionRequest
         CurrentWaveName = currentWaveName;
         SpawnAnchor = spawnAnchor;
         SpawnParent = spawnParent;
+        RunProgressionService = runProgressionService;
     }
 }

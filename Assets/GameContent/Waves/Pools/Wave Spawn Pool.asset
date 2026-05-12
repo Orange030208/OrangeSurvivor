@@ -2122,6 +2122,54 @@ MonoBehaviour:
     - rid: 7274045879173775770
     - rid: 7274045879173775771
     weightRules: []
+  - entryId: Wave010_Boss_MechaStone
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 1
+    tags: []
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 16
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173775900
+    - rid: 7274045879173775901
+    weightRules: []
+  - entryId: Wave015_Boss_MechaStone
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 1
+    tags: []
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 16
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173775902
+    - rid: 7274045879173775903
+    weightRules: []
+  - entryId: Wave020_Boss_MechaStone
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 1
+    tags: []
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    minLevel: 0
+    maxLevel: 0
+    qualityValue: 0
+    domainFlags: 16
+    priceMultiplier: 1
+    conditions:
+    - rid: 7274045879173775904
+    - rid: 7274045879173775905
+    weightRules: []
   references:
     version: 2
     RefIds:
@@ -7740,4 +7788,76 @@ MonoBehaviour:
           intValue: 0
           floatValue: 100
           stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775900
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 10
+          floatValue: 10
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775901
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 701335fb8b7b06b408e69bf03032a411, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 3
+          boolValue: 0
+          intValue: 0
+          floatValue: 0
+          stringValue: Boss Gate
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775902
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 15
+          floatValue: 15
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775903
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 701335fb8b7b06b408e69bf03032a411, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 3
+          boolValue: 0
+          intValue: 0
+          floatValue: 0
+          stringValue: Boss Gate
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775904
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 6e93f6b7801f4cc47a9c7b94e7ef2b33, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 1
+          boolValue: 0
+          intValue: 20
+          floatValue: 20
+          stringValue: 
+          objectValue: {fileID: 0}
+    - rid: 7274045879173775905
+      type: {class: FactCompareContentCondition, ns: , asm: Assembly-CSharp}
+      data:
+        factDefinition: {fileID: 11400000, guid: 701335fb8b7b06b408e69bf03032a411, type: 2}
+        comparisonOperator: 0
+        compareValue:
+          valueType: 3
+          boolValue: 0
+          intValue: 0
+          floatValue: 0
+          stringValue: Boss Gate
           objectValue: {fileID: 0}

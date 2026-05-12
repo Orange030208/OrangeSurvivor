@@ -17,21 +17,59 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 21f41c3b28dac424bb0f532a76a27cde, type: 2}
   animConfig: {fileID: 11400000, guid: 41efa156e817d3c488cb81700223a388, type: 2}
   damagedSfxKey: 402
+  attackAction:
+    actionId: Golem_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.55
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  chargeAction:
+    actionId: Golem_Charge
+    animationStateName: Move
+    completionMode: 1
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 1.5
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  postChargeAttackAction:
+    actionId: Golem_PostChargeAttack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.55
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  recoveryAction:
+    actionId: Golem_Recovery
+    animationStateName: Idle
+    completionMode: 1
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
   attackCommitNormalizedTime: 0.55
-  berserkInterval: 8
-  preChargeStunDuration: 1.2
+  berserkInterval: 5
+  preChargeStunDuration: 0.4
   chargeDuration: 1.5
-  chargeAnimationSpeedMultiplier: 2.5
+  chargeAnimationSpeedMultiplier: 3
   postChargeStunDuration: 1
   chargeDamageRadius: 1.15
   chargeDamageMultiplier: 1
   chargeModifiers:
   - propType: 4
     modifierType: 3
-    value: 500
+    value: 400
   attackSpeedBenefitRatio: 2.2222223
-  attackForwardOffset: 0
-  postChargeAttackForwardOffset: 0
   postChargeAttackModifiers:
   - propType: 15
     modifierType: 3

@@ -1,12 +1,10 @@
 using UnityEngine;
 
-[HideInFeatureMenu]
 [System.Serializable]
 public sealed class PropertyModifierFeature : FeatureEffectBase
 {
     [SerializeField] private PropModifierData modifier;
-    [HideInInspector]
-    [SerializeField] private string sourceId;
+    private string sourceId;
 
     public PropertyModifierFeature()
     {

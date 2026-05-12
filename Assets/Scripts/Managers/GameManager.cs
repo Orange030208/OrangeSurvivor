@@ -28,6 +28,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     private GameState currentGameState = GameState.None;
     private bool isPaused;
     private bool hasMoreWaves;
+    private bool isRunTerminated;
     private readonly HashSet<string> pauseSources = new();
     private int stateTransitionVersion;
     private bool isSceneReloading;
@@ -88,17 +89,18 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnEntityDied(EntityDiedEvent eventData)
     {
-        if (eventData.Entity != player)
+        if (isRunTerminated || eventData.Entity != player)
         {
             return;
         }
 
+        TerminateRunBecausePlayerDied();
         TransitionToState(GameState.GameOver);
     }
 
     private void OnWaveCompleted(WaveCompletedEvent eventData)
     {
-        if (currentGameState != GameState.Game)
+        if (isRunTerminated || currentGameState != GameState.Game)
         {
             return;
         }
@@ -139,7 +141,7 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void OnShopContinueClicked()
     {
-        if (currentGameState != GameState.Shop)
+        if (isRunTerminated || currentGameState != GameState.Shop)
         {
             return;
         }
@@ -169,6 +171,11 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void TransitionToState(GameState targetState)
     {
+        if (ShouldBlockTerminatedRunTransition(targetState))
+        {
+            return;
+        }
+
         int transitionVersion = ++stateTransitionVersion;
         RunStateTransitionAsync(targetState, transitionVersion).Forget();
     }
@@ -255,9 +262,31 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private bool ShouldBlockGameplayRequest(GameState targetState)
     {
+        if (ShouldBlockTerminatedRunTransition(targetState))
+        {
+            return true;
+        }
+
         return targetState == GameState.Game
                && currentGameState == GameState.Shop
                && !hasMoreWaves;
+    }
+
+    private bool ShouldBlockTerminatedRunTransition(GameState targetState)
+    {
+        return isRunTerminated && IsRunContinuingState(targetState);
+    }
+
+    private static bool IsRunContinuingState(GameState state)
+    {
+        return state == GameState.Game || state == GameState.Shop;
+    }
+
+    private void TerminateRunBecausePlayerDied()
+    {
+        // UI 页面切换是异步的，死亡时先锁定本局，避免延迟到达的波次/商店事件覆盖 GameOver。
+        isRunTerminated = true;
+        StopCurrentWave();
     }
 
     private void ExitState(GameState oldState, GameState newState)
@@ -333,6 +362,11 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void EnterGameState(GameState oldState)
     {
+        if (oldState != GameState.Shop)
+        {
+            isRunTerminated = false;
+        }
+
         EnsureMapGenerated();
         EnsurePlayerSpawned();
 
@@ -347,6 +381,11 @@ public class GameManager : MonoSingletonBase<GameManager>
 
     private void StartWaveEndFlow(WaveCompletedEvent completedEvent)
     {
+        if (isRunTerminated)
+        {
+            return;
+        }
+
         DefeatAllTrackedEnemies();
 
         if (!completedEvent.HasNextWave)

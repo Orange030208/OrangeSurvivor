@@ -15,8 +15,15 @@ MonoBehaviour:
   waveId: Wave_015
   displayName: Wave 15
   duration: 30
+  completionMode: 1
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
+  - trackId: Boss Gate
+    triggerMode: 1
+    spawnFrequency: 1
+    spawnCountPerBatch: 1
+    maxSpawnBatches: 1
+    normalizedTimeRange: {x: 0, y: 100}
   - trackId: High Density Mix
     triggerMode: 0
     spawnFrequency: 1.6

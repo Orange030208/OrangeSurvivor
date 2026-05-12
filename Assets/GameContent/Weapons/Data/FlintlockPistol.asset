@@ -11,17 +11,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: FlintlockPistol
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   itemName: "\u71E7\u53D1\u624B\u67AA"
   itemIcon: {fileID: 21300000, guid: 77c90fd2e0e799049930686fffb5342d, type: 3}
   itemPrice: 24
   itemType: 0
-  itemDescription:
+  itemDescription: "\u53E4\u5178\u5355\u53D1\u624B\u67AA\u3002\u5C04\u901F\u8F83\u6162\u4F46\u5355\u53D1\u53EF\u9760\uFF0C\u9002\u5408\u7A33\u5065\u7684\u4E2D\u8DDD\u79BB\u6253\u51FB\u3002"
   tags: 0100000002000000
   attackSequence: {fileID: 11400000, guid: b1ad746dfc0d4569a8eea93b3af756aa, type: 2}
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.92
+  attackTimingMode: 0
+  targetingMode: 0
   spawnPoints: []
   sequenceProjectileList:
   - spawnPointIndex: 0
@@ -41,31 +43,36 @@ MonoBehaviour:
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}
   hitBoxOffset: {x: 0, y: 0}
+  attackUsage:
+    meleeAttackUsagePercent: 0
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
   levelStats:
   - level: 1
     attack: 15
-    attackSpeed: 1.12
+    attackSpeed: 112
     criticalChance: 8
     criticalPercent: 200
     range: 850
     knockbackStrength: 0
   - level: 2
     attack: 15
-    attackSpeed: 1.12
+    attackSpeed: 112
     criticalChance: 8
     criticalPercent: 200
     range: 850
     knockbackStrength: 0
   - level: 3
     attack: 15
-    attackSpeed: 1.12
+    attackSpeed: 112
     criticalChance: 8
     criticalPercent: 200
     range: 850
     knockbackStrength: 0
   - level: 4
     attack: 15
-    attackSpeed: 1.12
+    attackSpeed: 112
     criticalChance: 8
     criticalPercent: 200
     range: 850

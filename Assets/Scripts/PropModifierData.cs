@@ -30,6 +30,9 @@ public static class PropValueUtility
 {
     public const float PERCENT_POINT_TO_RATIO = 0.01f;
     public const float DISTANCE_POINTS_PER_WORLD_UNIT = 100f;
+    public const float ATTACK_SPEED_POINTS_PER_ATTACK_PER_SECOND = 100f;
+    public const float MIN_EFFECTIVE_ATTACK_SPEED_POINTS = 1f;
+    public const float MIN_ATTACK_SPEED_BENEFIT_RATIO = 0.01f;
     public const float HEALTH_RECOVERY_POINTS_PER_HEALTH_PER_SECOND = 10f;
     public const float MAX_EFFECTIVE_CRITICAL_CHANCE_RATIO = 1f;
     public const float MAX_EFFECTIVE_DODGE_CHANCE_RATIO = 0.5f;
@@ -45,6 +48,26 @@ public static class PropValueUtility
     public static float DistancePointsToWorldUnits(float value)
     {
         return value / DISTANCE_POINTS_PER_WORLD_UNIT;
+    }
+
+    public static float AttackSpeedPointsToAttacksPerSecond(float value)
+    {
+        return ClampEffectiveAttackSpeedPoints(value) / ATTACK_SPEED_POINTS_PER_ATTACK_PER_SECOND;
+    }
+
+    public static float ClampEffectiveAttackSpeedPoints(float value)
+    {
+        return Mathf.Max(MIN_EFFECTIVE_ATTACK_SPEED_POINTS, value);
+    }
+
+    public static float ClampAttackSpeedBenefitRatio(float value)
+    {
+        return Mathf.Max(MIN_ATTACK_SPEED_BENEFIT_RATIO, value);
+    }
+
+    public static float AttackSpeedPointsToAttackInterval(float value)
+    {
+        return 1f / AttackSpeedPointsToAttacksPerSecond(value);
     }
 
     public static float HealthRecoveryPointsToHealthPerSecond(float value)
@@ -86,10 +109,6 @@ public static class PropValueUtility
                propType == PropType.Damage;
     }
 
-    public static bool IsAdditivePercentMultiplierProp(PropType propType)
-    {
-        return propType == PropType.AttackSpeed;
-    }
 }
 
 /// <summary>

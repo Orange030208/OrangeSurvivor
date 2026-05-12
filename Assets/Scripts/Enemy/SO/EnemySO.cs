@@ -10,8 +10,8 @@ public struct CircleKiteMoveData
 [System.Serializable]
 public struct RetreatMoveData
 {
-    [Min(0f)] public float safeDistance;
-    [Min(0f)] public float retreatStepDistance;
+    [Min(0f)] public float safeDistanceRatio;
+    [Min(0f)] public float retreatStepDistanceRatio;
 }
 
 public abstract class EnemySO : ScriptableObject

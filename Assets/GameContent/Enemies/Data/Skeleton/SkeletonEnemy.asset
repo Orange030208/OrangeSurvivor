@@ -17,6 +17,15 @@ MonoBehaviour:
   basePropsAsset: {fileID: 11400000, guid: 6c0debfdbb6fc6645979fcc6454c3413, type: 2}
   animConfig: {fileID: 11400000, guid: 17d247971b3b4614886e12c75e799d6a, type: 2}
   damagedSfxKey: 401
+  attackAction:
+    actionId: Skeleton_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.58
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
   attackCommitNormalizedTime: 0.55
   attackSpeedBenefitRatio: 1.3333334
-  attackForwardOffset: 0

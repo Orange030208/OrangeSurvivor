@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   values:
   - propType: 0
-    value: 50
+    value: 60
   - propType: 1
-    value: 0.4
+    value: 40
   - propType: 5
     value: 10000
   - propType: 6
@@ -24,7 +24,7 @@ MonoBehaviour:
   - propType: 4
     value: 160
   - propType: 15
-    value: 200
+    value: 300
   - propType: 8
     value: 10
   - propType: 19

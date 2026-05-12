@@ -46,11 +46,13 @@ public sealed class GameContentBootstrap : MonoBehaviour
         List<string> errors = new();
         if (!catalog.ValidateCatalog(errors))
         {
-            // 先完整输出配置问题，再继续安装 Provider；这样错误会指向 Catalog，而不是后续某个无关系统。
+            // 先完整输出配置问题，再阻断 Provider 安装；避免后续系统在不完整 Catalog 上继续启动。
             for (int i = 0; i < errors.Count; i++)
             {
                 Debug.LogError(errors[i], catalog);
             }
+
+            return false;
         }
 
         provider = new GameContentCatalogProvider(catalog);

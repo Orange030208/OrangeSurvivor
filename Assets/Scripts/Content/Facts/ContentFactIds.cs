@@ -12,4 +12,10 @@ public static class ContentFactIds
     public const string WaveId = "wave_id";
     public const string WaveTrackId = "wave_track_id";
     public const string WaveProgressPercent = "wave_progress_percent";
+    public const string DifficultyCoefficient = "difficulty_coefficient";
+    public const string EconomyCoefficient = "economy_coefficient";
+    public const string ShopPriceMultiplier = "shop_price_multiplier";
+    public const string EndlessLoop = "endless_loop";
+    public const string EndlessWave = "endless_wave";
+    public const string DangerTier = "danger_tier";
 }

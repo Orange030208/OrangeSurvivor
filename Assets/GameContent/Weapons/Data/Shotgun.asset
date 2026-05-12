@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: Shotgun
   m_EditorClassIdentifier: 
-  itemName: Shotgun
+  itemName: "\u9730\u5F39\u67AA"
   itemIcon: {fileID: 21300000, guid: 3450be1940341e847a28915b5de06590, type: 3}
   itemPrice: 39
   itemType: 0
-  itemDescription: Wide cone shotgun. Short range, high knockback, strong against
-    packs.
+  itemDescription: "\u8FD1\u8DDD\u79BB\u6563\u5C04\u67AA\u68B0\u3002\u5C04\u7A0B\u8F83\u77ED\u3001\u51FB\u9000\u5F3A\uFF0C\u9002\u5408\u6E05\u7406\u6210\u7FA4\u654C\u4EBA\u3002"
   tags: 01000000020000000300000006000000
   attackSequence: {fileID: 11400000, guid: c9a81a0e747841f9bf8c5ac52038f009, type: 2}
   visualForwardAngle: 90
   stopAimingWhenAttackReady: 0
   attackSequenceOccupancy: 0.9
+  attackTimingMode: 0
+  targetingMode: 0
   spawnPoints:
   - id: muzzle
     localPosition: {x: -0.18785661, y: 0.5649998}
@@ -45,31 +46,36 @@ MonoBehaviour:
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 1, y: 1}
   hitBoxOffset: {x: 0, y: 0}
+  attackUsage:
+    meleeAttackUsagePercent: 0
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
   levelStats:
   - level: 1
     attack: 13
-    attackSpeed: 0.75
+    attackSpeed: 75
     criticalChance: 6
     criticalPercent: 170
     range: 580
     knockbackStrength: 2.4
   - level: 2
     attack: 15.34
-    attackSpeed: 0.795
+    attackSpeed: 79.5
     criticalChance: 7
     criticalPercent: 178
     range: 605
     knockbackStrength: 2.58
   - level: 3
     attack: 17.68
-    attackSpeed: 0.84
+    attackSpeed: 84
     criticalChance: 8
     criticalPercent: 186
     range: 630
     knockbackStrength: 2.76
   - level: 4
     attack: 20.02
-    attackSpeed: 0.885
+    attackSpeed: 88.5
     criticalChance: 9
     criticalPercent: 194
     range: 655

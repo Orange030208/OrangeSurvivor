@@ -133,7 +133,7 @@ public class UpgradeCardAssetTests
             PropType.AttackSpeed => 20f,
             PropType.CriticalChance => 50f,
             PropType.CriticalPercent => 12f,
-            PropType.MoveSpeed => 20f,
+            PropType.MoveSpeed => 10f,
             PropType.MaxHealth => 10f,
             PropType.HealthRecoverySpeed => 5f,
             PropType.Armor => 100f,

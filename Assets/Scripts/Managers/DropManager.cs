@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class DropManager : MonoBehaviour
 {
+    private static readonly CoinRewardData FixedCoinReward = new(1, 1);
+
     [SerializeField] private ContentPoolSO dropPool;
 
     private readonly ContentPoolRollService contentPoolRollService = new();
@@ -24,7 +26,8 @@ public class DropManager : MonoBehaviour
             return;
         }
 
-        CollectionSO dropSO = RollDrop(deadEvent.Source);
+        RunProgressionSnapshot progressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
+        CollectionSO dropSO = RollDrop(deadEvent.Source, progressionSnapshot.WaveNumber);
 
         if (dropSO == null)
         {
@@ -39,11 +42,15 @@ public class DropManager : MonoBehaviour
 
         Collection instance = Instantiate(dropSO.prefab, deadEvent.Position, Quaternion.identity, transform);
         instance.Configure(dropSO);
+        if (dropSO.prefab is Coin && instance is Coin coin)
+        {
+            coin.ConfigureReward(FixedCoinReward);
+        }
     }
 
-    private CollectionSO RollDrop(Entity source)
+    private CollectionSO RollDrop(Entity source, int waveNumber)
     {
-        ContentFactSource factSource = CreateDropFactSource(source);
+        ContentFactSource factSource = CreateDropFactSource(source, waveNumber);
         ContentPoolSO configuredPool = ResolveConfiguredDropPool();
         if (configuredPool == null)
         {
@@ -75,14 +82,15 @@ public class DropManager : MonoBehaviour
         return null;
     }
 
-    private static ContentFactSource CreateDropFactSource(Entity source)
+    private static ContentFactSource CreateDropFactSource(Entity source, int waveNumber)
     {
         if (source is Player player)
         {
-            return ContentFactSource.ForPlayer(player);
+            return ContentFactSource.ForPlayer(player, waveNumber);
         }
 
         ContentFactSource factSource = new();
+        factSource.WaveNumber = Mathf.Max(1, waveNumber);
         if (source != null && source.TryGetComponent(out PropertiesManager propertiesManager))
         {
             factSource.PropertiesManager = propertiesManager;
@@ -90,4 +98,5 @@ public class DropManager : MonoBehaviour
 
         return factSource;
     }
+
 }

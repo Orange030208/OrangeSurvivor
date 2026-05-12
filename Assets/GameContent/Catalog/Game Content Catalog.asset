@@ -35,6 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b9cd45e5335f439da776bace7ac9fe4a, type: 2}
   - {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
   playerLevelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
+  runProgressionProfile: {fileID: 11400000, guid: 4cd17ac9c4b5df14fb25d788d036682f, type: 2}
   upgradeCardPool: {fileID: 11400000, guid: 91899d46f59ffe341b884ff6f41757bb, type: 2}
   defaultStageDefinition: {fileID: 11400000, guid: 1ba2fe3cee27d8a4fb1987665006d3f2, type: 2}
   chestRewardPool: {fileID: 11400000, guid: eba180f75ac11db439bb7dfc290fbb34, type: 2}

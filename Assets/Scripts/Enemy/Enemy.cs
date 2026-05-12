@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(IAnimatable))]
@@ -16,6 +17,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
     private EnemyBrain brain;
     private Rigidbody2D rb;
     private bool isRuntimeRegistered;
+    private IReadOnlyList<PropModifierData> initialProgressionModifiers = Array.Empty<PropModifierData>();
 
     public override IMovable MoveComponent => activeMovement;
 
@@ -69,6 +71,11 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 
     public void Configure(EnemySO enemyData, Entity target)
     {
+        Configure(enemyData, target, Array.Empty<PropModifierData>());
+    }
+
+    public void Configure(EnemySO enemyData, Entity target, IReadOnlyList<PropModifierData> progressionModifiers)
+    {
         if (enemyData == null)
         {
             throw new ArgumentNullException(nameof(enemyData),
@@ -85,7 +92,18 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 
         this.enemyData = enemyData;
         targetEntity = target;
+        initialProgressionModifiers = progressionModifiers ?? Array.Empty<PropModifierData>();
         RegisterRuntime();
+    }
+
+    public void ApplyInitialProgressionModifiers(PropertiesManager targetPropertiesManager)
+    {
+        if (targetPropertiesManager == null || initialProgressionModifiers.Count == 0)
+        {
+            return;
+        }
+
+        targetPropertiesManager.AddModifiers(RunProgressionEnemyScaling.SourceId, initialProgressionModifiers);
     }
 
     public override void EnableRuntime()
