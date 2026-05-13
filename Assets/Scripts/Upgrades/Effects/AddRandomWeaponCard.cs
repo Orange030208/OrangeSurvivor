@@ -5,7 +5,7 @@ using UnityEngine;
 public sealed class AddRandomWeaponCard : FeatureEffectBase
 {
     private static ContentPoolRollService weaponRewardRollService = new();
-    private static ContentPoolRuntimeState weaponRewardRuntimeState = new();
+    private static ContentHistoryState weaponRewardHistoryState = new();
 
     [SerializeField] private WeaponDataSO weaponData;
     [SerializeField] private ContentPoolSO weaponRewardPool;
@@ -25,7 +25,7 @@ public sealed class AddRandomWeaponCard : FeatureEffectBase
     private static void ResetRuntimeState()
     {
         weaponRewardRollService = new ContentPoolRollService();
-        weaponRewardRuntimeState = new ContentPoolRuntimeState();
+        weaponRewardHistoryState = new ContentHistoryState();
     }
 
     public override string Description
@@ -64,13 +64,18 @@ public sealed class AddRandomWeaponCard : FeatureEffectBase
         }
 
         Player player = Context?.OwnerEntity as Player;
-        ContentFactSource factSource = player != null
-            ? ContentFactSource.ForPlayer(player)
-            : new ContentFactSource { WeaponsHolder = weaponsHolder };
+        ContentHistoryScope scope = CreateHistoryScope(pool, player);
+        ContentRollContext context = new(
+            ContentPoolScopeIds.WeaponReward,
+            player,
+            progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
+            historyScope: scope,
+            history: weaponRewardHistoryState,
+            source: Context?.OwnerEntity,
+            weaponsHolder: weaponsHolder);
         ContentRollResult result = weaponRewardRollService.Roll(
             pool,
-            factSource,
-            weaponRewardRuntimeState,
+            context,
             1,
             entry => entry.Content is WeaponDataSO);
         if (!result.HasAny)
@@ -80,8 +85,15 @@ public sealed class AddRandomWeaponCard : FeatureEffectBase
         }
 
         ContentRollItem item = result.Items[0];
-        weaponRewardRuntimeState.RecordPick(item);
+        weaponRewardHistoryState.RecordPick(scope, item);
         return item.Content as WeaponDataSO;
+    }
+
+    private static ContentHistoryScope CreateHistoryScope(ContentPoolSO pool, Player player)
+    {
+        string poolId = pool != null ? pool.name : ContentPoolScopeIds.WeaponReward;
+        string ownerId = player != null ? player.GetInstanceID().ToString() : string.Empty;
+        return new ContentHistoryScope(ContentPoolScopeIds.WeaponReward, poolId, ownerId);
     }
 
     private ContentPoolSO ResolveWeaponRewardPool()

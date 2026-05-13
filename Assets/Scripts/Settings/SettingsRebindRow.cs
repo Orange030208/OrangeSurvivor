@@ -1,4 +1,5 @@
 using System;
+using Orange.Input;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,13 +17,13 @@ public sealed class SettingsRebindRow : MonoBehaviour
 
     private Action<SettingsRebindRow> rebindRequested;
 
-    public InputRebindService.RebindEntry Entry =>
+    public InputRebindEntry Entry =>
         new(actionPath, string.IsNullOrWhiteSpace(compositePartName) ? null : compositePartName, label, controlScheme);
 
     public string ControlScheme => controlScheme;
     public Selectable DefaultSelectable => rebindButton;
 
-    public void Configure(InputRebindService.RebindEntry entry)
+    public void Configure(InputRebindEntry entry)
     {
         actionPath = entry.ActionPath;
         compositePartName = entry.CompositePartName;

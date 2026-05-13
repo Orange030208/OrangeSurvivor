@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u5C0F\u78C1\u6263"
   itemIcon: {fileID: 21300000, guid: ff7319cab77ae95418e6d07bb01aa2aa, type: 3}
-  itemPrice: 16
+  itemPrice: 15
   itemType: 1
   itemDescription: ""
   accessoryId: small_magnetic_clasp
@@ -22,8 +22,8 @@ MonoBehaviour:
   rarity: 0
   propertyModifiers:
   - propType: 12
-    modifierType: 2
-    value: 15
+    modifierType: 0
+    value: 7.5
   specialFeatures: []
   references:
     version: 2

@@ -289,8 +289,8 @@ public sealed class RunProgressionProfileSO : ScriptableObject
     {
         return new List<RunProgressionPropMultiplier>
         {
-            new(PropType.MaxHealth, 1.35f),
-            new(PropType.Attack, 1.15f)
+            new(PropType.MaxHealth, 1.6f),
+            new(PropType.Attack, 1.25f)
         };
     }
 
@@ -302,15 +302,15 @@ public sealed class RunProgressionProfileSO : ScriptableObject
                 WaveEnemyTag.Elite,
                 new[]
                 {
-                    new RunProgressionPropMultiplier(PropType.MaxHealth, 1.18f),
-                    new RunProgressionPropMultiplier(PropType.Attack, 1.12f)
+                    new RunProgressionPropMultiplier(PropType.MaxHealth, 1.3f),
+                    new RunProgressionPropMultiplier(PropType.Attack, 1.18f)
                 }),
             new(
                 WaveEnemyTag.BossLike,
                 new[]
                 {
-                    new RunProgressionPropMultiplier(PropType.MaxHealth, 1.25f),
-                    new RunProgressionPropMultiplier(PropType.Attack, 1.1f)
+                    new RunProgressionPropMultiplier(PropType.MaxHealth, 1.45f),
+                    new RunProgressionPropMultiplier(PropType.Attack, 1.18f)
                 }),
             new(
                 WaveEnemyTag.Ranged,

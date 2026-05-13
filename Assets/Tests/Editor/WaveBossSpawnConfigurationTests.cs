@@ -31,21 +31,15 @@ public sealed class WaveBossSpawnConfigurationTests
     {
         ContentPoolSO pool = LoadRequired<ContentPoolSO>(WaveSpawnPoolPath);
         EnemySO bossEnemy = LoadRequired<EnemySO>(BossEnemyPath);
-        ContentFactSet facts = ContentFactCollector.Collect(
-            new ContentFactSource
-            {
-                WaveNumber = waveNumber,
-                WaveTrackId = BossTrackId,
-                WaveProgressPercent = 0f
-            },
-            CreateWaveSpawnFactDefinitions(pool));
+        ContentRollContext context = CreateWaveSpawnRollContext(waveNumber, BossTrackId);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, facts, null, 1, entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
+            .Roll(pool, context, 1, entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
 
         Assert.IsTrue(result.HasAny);
         Assert.AreSame(bossEnemy, result.Items[0].Content);
-        Assert.AreEqual((int)WaveEnemyTag.BossLike, result.Items[0].DomainFlags);
+        Assert.IsTrue(result.Items[0].TryGetMetadata(out WaveSpawnMetadata metadata));
+        Assert.AreEqual(WaveEnemyTag.BossLike, metadata.Tags);
     }
 
     [TestCase(10)]
@@ -69,17 +63,10 @@ public sealed class WaveBossSpawnConfigurationTests
     {
         ContentPoolSO pool = LoadRequired<ContentPoolSO>(WaveSpawnPoolPath);
         EnemySO bossEnemy = LoadRequired<EnemySO>(BossEnemyPath);
-        ContentFactSet facts = ContentFactCollector.Collect(
-            new ContentFactSource
-            {
-                WaveNumber = waveNumber,
-                WaveTrackId = trackId,
-                WaveProgressPercent = 0f
-            },
-            CreateWaveSpawnFactDefinitions(pool));
+        ContentRollContext context = CreateWaveSpawnRollContext(waveNumber, trackId);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, facts, null, 8, entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
+            .Roll(pool, context, 8, entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
 
         Assert.IsTrue(result.HasAny);
         for (int i = 0; i < result.Items.Count; i++)
@@ -88,11 +75,13 @@ public sealed class WaveBossSpawnConfigurationTests
         }
     }
 
-    private static FactDefinitionSO[] CreateWaveSpawnFactDefinitions(ContentPoolSO pool)
+    private static ContentRollContext CreateWaveSpawnRollContext(int waveNumber, string trackId)
     {
-        System.Collections.Generic.List<FactDefinitionSO> definitions = new();
-        pool.CollectFactDefinitions(definitions);
-        return definitions.ToArray();
+        return new ContentRollContext(
+            ContentPoolScopeIds.WaveSpawn,
+            progressionSnapshot: new RunProgressionSnapshot(waveNumber, 20, 0f, 0, 1f, 1f, 1f, 0),
+            waveTrackId: trackId,
+            waveProgressPercent: 0f);
     }
 
     private static string WaveDefinitionPath(int waveNumber)

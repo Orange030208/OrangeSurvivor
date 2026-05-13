@@ -10,6 +10,7 @@ public struct ShopItemData
     public float ContentPriceMultiplier;
     public float RunPriceMultiplier;
     public float PlayerDiscountMultiplier;
+    public ContentRollItem RollItem;
 
     public float PriceMultiplier
     {
@@ -39,7 +40,7 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private ContentPoolSO shopPool;
 
     private readonly ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentPoolRuntimeState shopRuntimeState = new();
+    private readonly ContentHistoryState contentHistoryState = new();
     private ShopItemData[] currentItems;
     private Player player;
     private PropertiesManager propertiesManager;
@@ -177,6 +178,7 @@ public class ShopManager : MonoBehaviour
 
         currencyWallet?.ChangeAmount(-price);
         playerAccessoryManager.EquipAccessory(accessoryData, false);
+        RecordShopPick(itemData);
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
@@ -214,6 +216,7 @@ public class ShopManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(-price);
+        RecordShopPick(itemData);
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
@@ -406,14 +409,10 @@ public class ShopManager : MonoBehaviour
             return default;
         }
 
-        ContentFactSource factSource = ContentFactSource.ForPlayer(player, currentWaveNumber);
-        factSource.ShopRefreshCount = shopRefreshCount;
-        factSource.ShopRerollCount = rerollCount;
-        factSource.ProgressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
+        ContentRollContext context = CreateShopRollContext(pool);
         ContentRollResult result = contentPoolRollService.Roll(
             pool,
-            factSource,
-            shopRuntimeState,
+            context,
             1,
             entry => entry.Content is ItemDataSO);
         if (!result.HasAny)
@@ -438,10 +437,41 @@ public class ShopManager : MonoBehaviour
             ItemData = itemData,
             Level = ResolveShopItemLevel(itemData, rollItem),
             Lock = false,
-            ContentPriceMultiplier = rollItem.PriceMultiplier,
+            ContentPriceMultiplier = ResolveShopPriceMultiplier(rollItem),
             RunPriceMultiplier = ResolveRunPriceMultiplier(),
-            PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier()
+            PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier(),
+            RollItem = rollItem
         };
+    }
+
+    private ContentRollContext CreateShopRollContext(ContentPoolSO pool)
+    {
+        ContentHistoryScope scope = CreateHistoryScope(pool);
+        return new ContentRollContext(
+            ContentPoolScopeIds.Shop,
+            player,
+            progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
+            historyScope: scope,
+            history: contentHistoryState,
+            shopRefreshCount: shopRefreshCount,
+            shopRerollCount: rerollCount);
+    }
+
+    private void RecordShopPick(ShopItemData itemData)
+    {
+        if (itemData.ItemData == null)
+        {
+            return;
+        }
+
+        contentHistoryState.RecordPick(CreateHistoryScope(ResolveShopPool()), itemData.RollItem);
+    }
+
+    private ContentHistoryScope CreateHistoryScope(ContentPoolSO pool)
+    {
+        string poolId = pool != null ? pool.name : ContentPoolScopeIds.Shop;
+        string ownerId = player != null ? player.GetInstanceID().ToString() : string.Empty;
+        return new ContentHistoryScope(ContentPoolScopeIds.Shop, poolId, ownerId);
     }
 
     private static int ResolveShopItemLevel(ItemDataSO itemData, ContentRollItem rollItem)
@@ -451,14 +481,27 @@ public class ShopManager : MonoBehaviour
             return WeaponLevelHelper.MinLevel;
         }
 
-        int minLevel = rollItem.MinLevel > 0 ? WeaponLevelHelper.ClampLevel(rollItem.MinLevel) : WeaponLevelHelper.MinLevel;
-        int maxLevel = rollItem.MaxLevel > 0 ? WeaponLevelHelper.ClampLevel(rollItem.MaxLevel) : WeaponLevelHelper.MaxLevel;
+        int minLevel = WeaponLevelHelper.MinLevel;
+        int maxLevel = WeaponLevelHelper.MaxLevel;
+        if (rollItem.TryGetMetadata(out WeaponLevelRollMetadata levelMetadata))
+        {
+            minLevel = levelMetadata.MinLevel;
+            maxLevel = levelMetadata.MaxLevel;
+        }
+
         if (maxLevel < minLevel)
         {
             maxLevel = minLevel;
         }
 
         return UnityEngine.Random.Range(minLevel, maxLevel + 1);
+    }
+
+    private static float ResolveShopPriceMultiplier(ContentRollItem rollItem)
+    {
+        return rollItem.TryGetMetadata(out ShopPricingMetadata pricingMetadata)
+            ? pricingMetadata.PriceMultiplier
+            : 1f;
     }
 
     private ContentPoolSO ResolveShopPool()

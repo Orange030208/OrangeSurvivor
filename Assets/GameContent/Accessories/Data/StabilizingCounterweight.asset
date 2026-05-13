@@ -23,9 +23,9 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 18
     modifierType: 0
-    value: 8
+    value: 14
   - propType: 14
-    modifierType: 2
+    modifierType: 0
     value: 8
   specialFeatures: []
   references:

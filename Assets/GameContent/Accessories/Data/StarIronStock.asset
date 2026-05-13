@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u661F\u94C1\u67AA\u6258"
   itemIcon: {fileID: 21300000, guid: d953af425d2565e408fbb57f778b773d, type: 3}
-  itemPrice: 68
+  itemPrice: 70
   itemType: 1
   itemDescription: ""
   accessoryId: star_iron_stock
@@ -23,10 +23,10 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 18
     modifierType: 0
-    value: 15
+    value: 20
   - propType: 28
     modifierType: 0
-    value: 5
+    value: 9
   specialFeatures: []
   references:
     version: 2

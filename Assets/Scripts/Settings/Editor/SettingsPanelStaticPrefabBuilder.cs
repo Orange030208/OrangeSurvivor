@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using Orange.Input;
 using Orange.UIFramework;
 using TMPro;
 using UnityEditor;
@@ -229,7 +230,7 @@ public static class SettingsPanelStaticPrefabBuilder
 
         GameObject inputSection = CreateSection(content, "InputSection", "输入");
         List<SettingsRebindRow> rebindRows = new();
-        IReadOnlyList<InputRebindService.RebindEntry> entries = InputRebindService.RebindEntries;
+        IReadOnlyList<InputRebindEntry> entries = GameInputRebindCatalog.Entries;
         for (int i = 0; i < entries.Count; i++)
         {
             rebindRows.Add(CreateRebindRow(inputSection.transform, entries[i]));
@@ -492,7 +493,7 @@ public static class SettingsPanelStaticPrefabBuilder
         return component;
     }
 
-    private static SettingsRebindRow CreateRebindRow(Transform parent, InputRebindService.RebindEntry entry)
+    private static SettingsRebindRow CreateRebindRow(Transform parent, InputRebindEntry entry)
     {
         RectTransform row = CreateRow(parent, $"RebindRow_{SanitizeName(entry.DisplayLabel)}", 44f);
         TextMeshProUGUI labelText = CreateText("Label", row, entry.DisplayLabel, 15, FontStyles.Normal, TextAlignmentOptions.Left);

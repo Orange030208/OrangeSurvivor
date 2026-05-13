@@ -28,7 +28,8 @@ public sealed class FacingSemicircleRangeDetectionStrategy : RangeDetectionStrat
         }
 
         Vector2 attackCenter = ResolveAttackCenter();
-        float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
+        float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
         if (!target.IsColliderWithinRange(attackCenter, attackRadius))
         {
             return false;

@@ -50,13 +50,13 @@ public class InventoryUI : ViewPartBase
             return;
         }
 
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService == null)
+        GameInput input = GameInput.Instance;
+        if (input == null)
         {
             return;
         }
 
-        inputService.UiCancelPerformed += OnCancelInputPerformed;
+        input.UiCancelPerformed += OnCancelInputPerformed;
         cancelInputBound = true;
     }
 
@@ -67,10 +67,10 @@ public class InventoryUI : ViewPartBase
             return;
         }
 
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService != null)
+        GameInput input = GameInput.Instance;
+        if (input != null)
         {
-            inputService.UiCancelPerformed -= OnCancelInputPerformed;
+            input.UiCancelPerformed -= OnCancelInputPerformed;
         }
 
         cancelInputBound = false;

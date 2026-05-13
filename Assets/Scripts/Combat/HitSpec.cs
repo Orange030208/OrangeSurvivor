@@ -15,10 +15,10 @@ public readonly struct HitSpec
 
     public HitSpec(float baseDamage, float critChance, float critMultiplier, float knockbackStrength)
     {
-        BaseDamage = Mathf.Max(0f, baseDamage);
+        BaseDamage = PropValueUtility.ClampNonNegative(baseDamage);
         CritChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, critChance);
-        CritMultiplier = Mathf.Max(1f, critMultiplier);
-        KnockbackStrength = Mathf.Max(0f, knockbackStrength);
+        CritMultiplier = PropValueUtility.ClampEffectiveCriticalMultiplier(critMultiplier);
+        KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(knockbackStrength);
     }
 
     public static HitSpec EnemyHitSpec(float baseDamage)

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u6B66\u5907\u8BB8\u53EF\u8BC1"
   itemIcon: {fileID: 21300000, guid: cbbf295de8ebd6544b4b913c2f044939, type: 3}
-  itemPrice: 68
+  itemPrice: 70
   itemType: 1
   itemDescription: ""
   accessoryId: arsenal_license
@@ -26,7 +26,7 @@ MonoBehaviour:
     value: 1
   - propType: 28
     modifierType: 0
-    value: -8
+    value: -10
   - propType: 1
     modifierType: 0
     value: -6

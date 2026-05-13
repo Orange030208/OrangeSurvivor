@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-public enum ContentFactComparisonOperator
+public enum ContentComparisonOperator
 {
     Equal = 0,
     NotEqual = 1,
@@ -12,126 +11,74 @@ public enum ContentFactComparisonOperator
     LessOrEqual = 5
 }
 
-[Serializable]
-public abstract class ContentCondition : IContentFactDefinitionProvider
+public enum ContentTagMatchMode
 {
-    public abstract bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry);
+    Any = 0,
+    All = 1,
+    None = 2,
+    Exact = 3
+}
 
-    public virtual void CollectFactDefinitions(List<FactDefinitionSO> results)
+internal static class ContentConditionCompareUtility
+{
+    public static bool Compare(float left, float right, ContentComparisonOperator comparisonOperator)
     {
+        return comparisonOperator switch
+        {
+            ContentComparisonOperator.Equal => Mathf.Approximately(left, right),
+            ContentComparisonOperator.NotEqual => !Mathf.Approximately(left, right),
+            ContentComparisonOperator.Greater => left > right,
+            ContentComparisonOperator.GreaterOrEqual => left >= right,
+            ContentComparisonOperator.Less => left < right,
+            ContentComparisonOperator.LessOrEqual => left <= right,
+            _ => false
+        };
     }
+
+    public static bool Compare(int left, int right, ContentComparisonOperator comparisonOperator)
+    {
+        return comparisonOperator switch
+        {
+            ContentComparisonOperator.Equal => left == right,
+            ContentComparisonOperator.NotEqual => left != right,
+            ContentComparisonOperator.Greater => left > right,
+            ContentComparisonOperator.GreaterOrEqual => left >= right,
+            ContentComparisonOperator.Less => left < right,
+            ContentComparisonOperator.LessOrEqual => left <= right,
+            _ => false
+        };
+    }
+}
+
+internal static class ContentTagMatchUtility
+{
+    public static bool Matches(UpgradeCardTag candidateTags, UpgradeCardTag requiredTags, ContentTagMatchMode matchMode)
+    {
+        return matchMode switch
+        {
+            ContentTagMatchMode.Any => requiredTags != UpgradeCardTag.None && (candidateTags & requiredTags) != 0,
+            ContentTagMatchMode.All => requiredTags != UpgradeCardTag.None && (candidateTags & requiredTags) == requiredTags,
+            ContentTagMatchMode.None => requiredTags == UpgradeCardTag.None
+                ? candidateTags == UpgradeCardTag.None
+                : (candidateTags & requiredTags) == 0,
+            ContentTagMatchMode.Exact => candidateTags == requiredTags,
+            _ => false
+        };
+    }
+}
+
+[Serializable]
+public abstract class ContentCondition
+{
+    public abstract bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry);
 }
 
 [Serializable]
 public sealed class AlwaysContentCondition : ContentCondition
 {
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
     {
         return true;
-    }
-}
-
-[Serializable]
-public sealed class FactExistsContentCondition : ContentCondition
-{
-    [SerializeField] private FactDefinitionSO factDefinition;
-    [SerializeField] private bool expectedExists = true;
-
-    public FactExistsContentCondition()
-    {
-    }
-
-    public FactExistsContentCondition(FactDefinitionSO factDefinition, bool expectedExists = true)
-    {
-        this.factDefinition = factDefinition;
-        this.expectedExists = expectedExists;
-    }
-
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
-    {
-        bool exists = context.Facts != null && context.Facts.Has(factDefinition);
-        return exists == expectedExists;
-    }
-
-    public override void CollectFactDefinitions(List<FactDefinitionSO> results)
-    {
-        AddFact(results, factDefinition);
-    }
-
-    private static void AddFact(List<FactDefinitionSO> results, FactDefinitionSO fact)
-    {
-        if (fact != null && results != null && !results.Contains(fact))
-        {
-            results.Add(fact);
-        }
-    }
-}
-
-[Serializable]
-public sealed class FactCompareContentCondition : ContentCondition
-{
-    [SerializeField] private FactDefinitionSO factDefinition;
-    [SerializeField] private ContentFactComparisonOperator comparisonOperator = ContentFactComparisonOperator.GreaterOrEqual;
-    [SerializeField] private ContentFactValue compareValue;
-
-    public FactCompareContentCondition()
-    {
-    }
-
-    public FactCompareContentCondition(
-        FactDefinitionSO factDefinition,
-        ContentFactComparisonOperator comparisonOperator,
-        ContentFactValue compareValue)
-    {
-        this.factDefinition = factDefinition;
-        this.comparisonOperator = comparisonOperator;
-        this.compareValue = compareValue;
-    }
-
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
-    {
-        if (context.Facts == null || !context.Facts.TryGet(factDefinition, out ContentFactValue factValue))
-        {
-            return false;
-        }
-
-        return Compare(factValue, compareValue, comparisonOperator);
-    }
-
-    public override void CollectFactDefinitions(List<FactDefinitionSO> results)
-    {
-        if (factDefinition != null && results != null && !results.Contains(factDefinition))
-        {
-            results.Add(factDefinition);
-        }
-    }
-
-    private static bool Compare(
-        ContentFactValue left,
-        ContentFactValue right,
-        ContentFactComparisonOperator comparisonOperator)
-    {
-        if (left.TryGetNumber(out float leftNumber) && right.TryGetNumber(out float rightNumber))
-        {
-            return comparisonOperator switch
-            {
-                ContentFactComparisonOperator.Equal => Mathf.Approximately(leftNumber, rightNumber),
-                ContentFactComparisonOperator.NotEqual => !Mathf.Approximately(leftNumber, rightNumber),
-                ContentFactComparisonOperator.Greater => leftNumber > rightNumber,
-                ContentFactComparisonOperator.GreaterOrEqual => leftNumber >= rightNumber,
-                ContentFactComparisonOperator.Less => leftNumber < rightNumber,
-                ContentFactComparisonOperator.LessOrEqual => leftNumber <= rightNumber,
-                _ => false
-            };
-        }
-
-        bool equals = left.EqualsValue(right);
-        return comparisonOperator switch
-        {
-            ContentFactComparisonOperator.Equal => equals,
-            ContentFactComparisonOperator.NotEqual => !equals,
-            _ => false
-        };
     }
 }
 
@@ -149,7 +96,7 @@ public sealed class CandidateTypeContentCondition : ContentCondition
         this.requiredTypeName = requiredTypeName;
     }
 
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
     {
         if (entry?.Content == null || string.IsNullOrWhiteSpace(requiredTypeName))
         {
@@ -173,29 +120,6 @@ public sealed class CandidateTypeContentCondition : ContentCondition
 }
 
 [Serializable]
-public sealed class CandidateTagContentCondition : ContentCondition
-{
-    [SerializeField] private ContentTagSO requiredTag;
-    [SerializeField] private bool required = true;
-
-    public CandidateTagContentCondition()
-    {
-    }
-
-    public CandidateTagContentCondition(ContentTagSO requiredTag, bool required = true)
-    {
-        this.requiredTag = requiredTag;
-        this.required = required;
-    }
-
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
-    {
-        bool hasTag = entry != null && entry.HasTag(requiredTag);
-        return hasTag == required;
-    }
-}
-
-[Serializable]
 public sealed class CandidateAssetContentCondition : ContentCondition
 {
     [SerializeField] private UnityEngine.Object requiredAsset;
@@ -211,9 +135,481 @@ public sealed class CandidateAssetContentCondition : ContentCondition
         this.required = required;
     }
 
-    public override bool IsSatisfied(ContentPoolEvaluationContext context, ContentPoolEntry entry)
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
     {
         bool isMatch = entry != null && entry.Content == requiredAsset;
         return isMatch == required;
+    }
+}
+
+[Serializable]
+public sealed class CurrentWaveCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(1)] private int compareValue = 1;
+
+    public CurrentWaveCondition()
+    {
+    }
+
+    public CurrentWaveCondition(ContentComparisonOperator comparisonOperator, int compareValue)
+    {
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = Mathf.Max(1, compareValue);
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int currentWave = context != null ? context.CurrentWaveNumber : 1;
+        return ContentConditionCompareUtility.Compare(currentWave, Mathf.Max(1, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class WaveTrackCondition : ContentCondition
+{
+    [SerializeField] private string requiredTrackId;
+    [SerializeField] private bool required = true;
+
+    public WaveTrackCondition()
+    {
+    }
+
+    public WaveTrackCondition(string requiredTrackId, bool required = true)
+    {
+        this.requiredTrackId = requiredTrackId;
+        this.required = required;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        bool matches = context != null &&
+                       string.Equals(
+                           context.WaveTrackId ?? string.Empty,
+                           requiredTrackId ?? string.Empty,
+                           StringComparison.Ordinal);
+        return matches == required;
+    }
+}
+
+[Serializable]
+public sealed class WaveIdCondition : ContentCondition
+{
+    [SerializeField] private string requiredWaveId;
+    [SerializeField] private bool required = true;
+
+    public WaveIdCondition()
+    {
+    }
+
+    public WaveIdCondition(string requiredWaveId, bool required = true)
+    {
+        this.requiredWaveId = requiredWaveId;
+        this.required = required;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        bool matches = context != null &&
+                       string.Equals(
+                           context.WaveId ?? string.Empty,
+                           requiredWaveId ?? string.Empty,
+                           StringComparison.Ordinal);
+        return matches == required;
+    }
+}
+
+[Serializable]
+public sealed class WaveProgressCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Range(0f, 100f)] private float compareValue;
+
+    public WaveProgressCondition()
+    {
+    }
+
+    public WaveProgressCondition(ContentComparisonOperator comparisonOperator, float compareValue)
+    {
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = Mathf.Clamp(compareValue, 0f, 100f);
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        float currentProgress = context != null ? Mathf.Clamp(context.WaveProgressPercent, 0f, 100f) : 0f;
+        return ContentConditionCompareUtility.Compare(
+            currentProgress,
+            Mathf.Clamp(compareValue, 0f, 100f),
+            comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class RunProgressionValueCondition : ContentCondition
+{
+    [SerializeField] private RunProgressionValue value = RunProgressionValue.DifficultyCoefficient;
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField] private float compareValue;
+
+    public RunProgressionValueCondition()
+    {
+    }
+
+    public RunProgressionValueCondition(
+        RunProgressionValue value,
+        ContentComparisonOperator comparisonOperator,
+        float compareValue)
+    {
+        this.value = value;
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = compareValue;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        return ContentConditionCompareUtility.Compare(
+            ResolveValue(context != null ? context.ProgressionSnapshot : RunProgressionSnapshot.Default),
+            compareValue,
+            comparisonOperator);
+    }
+
+    private float ResolveValue(RunProgressionSnapshot snapshot)
+    {
+        return value switch
+        {
+            RunProgressionValue.WaveNumber => snapshot.WaveNumber,
+            RunProgressionValue.TotalWaves => snapshot.TotalWaves,
+            RunProgressionValue.RunMinutes => snapshot.RunMinutes,
+            RunProgressionValue.EndlessLoop => snapshot.EndlessLoop,
+            RunProgressionValue.DifficultyCoefficient => snapshot.DifficultyCoefficient,
+            RunProgressionValue.EconomyCoefficient => snapshot.EconomyCoefficient,
+            RunProgressionValue.ShopPriceMultiplier => snapshot.ShopPriceMultiplier,
+            RunProgressionValue.DangerTier => snapshot.DangerTier,
+            _ => 0f
+        };
+    }
+}
+
+public enum RunProgressionValue
+{
+    WaveNumber = 0,
+    TotalWaves = 1,
+    RunMinutes = 2,
+    EndlessLoop = 3,
+    DifficultyCoefficient = 4,
+    EconomyCoefficient = 5,
+    ShopPriceMultiplier = 6,
+    DangerTier = 7
+}
+
+[Serializable]
+public sealed class PlayerPropertyCondition : ContentCondition
+{
+    [SerializeField] private PropType propType;
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField] private float compareValue;
+
+    public PlayerPropertyCondition()
+    {
+    }
+
+    public PlayerPropertyCondition(
+        PropType propType,
+        ContentComparisonOperator comparisonOperator,
+        float compareValue)
+    {
+        this.propType = propType;
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = compareValue;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        float value = context != null ? context.GetPropertyValue(propType) : 0f;
+        return ContentConditionCompareUtility.Compare(value, compareValue, comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class ShopRefreshCountCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(0)] private int compareValue;
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = context != null ? context.ShopRefreshCount : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class ShopRerollCountCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(0)] private int compareValue;
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = context != null ? context.ShopRerollCount : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class OwnedWeaponCountCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(0)] private int compareValue;
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = context != null ? context.GetOwnedWeaponCount() : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class OwnedWeaponTagCountCondition : ContentCondition
+{
+    [SerializeField] private WeaponTag weaponTag;
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(0)] private int compareValue;
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = context != null ? context.GetOwnedWeaponTagCount(weaponTag) : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class OwnedWeaponCondition : ContentCondition
+{
+    [SerializeField] private WeaponDataSO weaponData;
+    [SerializeField] private bool required = true;
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        bool hasWeapon = context != null && context.HasOwnedWeapon(weaponData);
+        return hasWeapon == required;
+    }
+}
+
+[Serializable]
+public sealed class UpgradeCardTagCondition : ContentCondition
+{
+    [SerializeField] private UpgradeCardTag requiredTags;
+    [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
+    [SerializeField] private bool required = true;
+
+    public UpgradeCardTagCondition()
+    {
+    }
+
+    public UpgradeCardTagCondition(UpgradeCardTag requiredTags, bool required = true)
+    {
+        this.requiredTags = requiredTags;
+        this.required = required;
+    }
+
+    public UpgradeCardTagCondition(
+        UpgradeCardTag requiredTags,
+        ContentTagMatchMode matchMode,
+        bool required = true)
+    {
+        this.requiredTags = requiredTags;
+        this.matchMode = matchMode;
+        this.required = required;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        bool matches = entry?.Content is UpgradeCardSO card &&
+                       ContentTagMatchUtility.Matches(card.Tags, requiredTags, matchMode);
+        return matches == required;
+    }
+}
+
+[Serializable]
+public sealed class UpgradeCardTagPickCountCondition : ContentCondition
+{
+    [SerializeField] private UpgradeCardTag requiredTags;
+    [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
+    [SerializeField, Min(0)] private int compareValue;
+
+    public UpgradeCardTagPickCountCondition()
+    {
+    }
+
+    public UpgradeCardTagPickCountCondition(
+        UpgradeCardTag requiredTags,
+        ContentComparisonOperator comparisonOperator,
+        int compareValue)
+        : this(requiredTags, ContentTagMatchMode.Any, comparisonOperator, compareValue)
+    {
+    }
+
+    public UpgradeCardTagPickCountCondition(
+        UpgradeCardTag requiredTags,
+        ContentTagMatchMode matchMode,
+        ContentComparisonOperator comparisonOperator,
+        int compareValue)
+    {
+        this.requiredTags = requiredTags;
+        this.matchMode = matchMode;
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = Mathf.Max(0, compareValue);
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = context?.History != null
+            ? context.History.GetUpgradeCardTagPickCount(context.HistoryScope, requiredTags, matchMode)
+            : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class ContentPickCountCondition : ContentCondition
+{
+    [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.Less;
+    [SerializeField, Min(0)] private int compareValue = 1;
+
+    public ContentPickCountCondition()
+    {
+    }
+
+    public ContentPickCountCondition(ContentComparisonOperator comparisonOperator, int compareValue)
+    {
+        this.comparisonOperator = comparisonOperator;
+        this.compareValue = Mathf.Max(0, compareValue);
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        int count = entry != null ? context.GetPickCount(entry.EntryId) : 0;
+        return ContentConditionCompareUtility.Compare(count, Mathf.Max(0, compareValue), comparisonOperator);
+    }
+}
+
+[Serializable]
+public sealed class UniqueUpgradeCardTagCondition : ContentCondition
+{
+    [SerializeField] private UpgradeCardTag restrictedTags = UpgradeCardTag.None;
+
+    public UniqueUpgradeCardTagCondition()
+    {
+    }
+
+    public UniqueUpgradeCardTagCondition(UpgradeCardTag restrictedTags)
+    {
+        this.restrictedTags = restrictedTags;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        if (entry?.Content is not UpgradeCardSO candidateCard || context?.SelectedEntries == null)
+        {
+            return true;
+        }
+
+        UpgradeCardTag candidateTags = ResolveComparedTags(candidateCard.Tags);
+        if (candidateTags == UpgradeCardTag.None)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < context.SelectedEntries.Count; i++)
+        {
+            if (context.SelectedEntries[i]?.Content is not UpgradeCardSO selectedCard)
+            {
+                continue;
+            }
+
+            if ((candidateTags & ResolveComparedTags(selectedCard.Tags)) != 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private UpgradeCardTag ResolveComparedTags(UpgradeCardTag sourceTags)
+    {
+        return restrictedTags == UpgradeCardTag.None ? sourceTags : sourceTags & restrictedTags;
+    }
+}
+
+[Serializable]
+public sealed class UniqueContentTypeCondition : ContentCondition
+{
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        if (entry?.Content == null || context?.SelectedEntries == null)
+        {
+            return true;
+        }
+
+        Type candidateType = entry.Content.GetType();
+        for (int i = 0; i < context.SelectedEntries.Count; i++)
+        {
+            if (context.SelectedEntries[i]?.Content != null &&
+                context.SelectedEntries[i].Content.GetType() == candidateType)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+[Serializable]
+public sealed class UniqueAssetCondition : ContentCondition
+{
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        if (entry?.Content == null || context?.SelectedEntries == null)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < context.SelectedEntries.Count; i++)
+        {
+            if (context.SelectedEntries[i]?.Content == entry.Content)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+[Serializable]
+public sealed class ContentOfferHistoryCondition : ContentCondition
+{
+    [SerializeField] private bool expectedPreviouslyOffered = true;
+
+    public ContentOfferHistoryCondition()
+    {
+    }
+
+    public ContentOfferHistoryCondition(bool expectedPreviouslyOffered)
+    {
+        this.expectedPreviouslyOffered = expectedPreviouslyOffered;
+    }
+
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        bool wasOffered = entry != null &&
+                          context.History != null &&
+                          context.History.WasPreviouslyOffered(context.HistoryScope, entry.EntryId);
+        return wasOffered == expectedPreviouslyOffered;
     }
 }

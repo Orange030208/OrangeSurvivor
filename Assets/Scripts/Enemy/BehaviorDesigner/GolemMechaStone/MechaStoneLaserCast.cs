@@ -158,7 +158,8 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
                 continue;
             }
 
-            float damage = Mathf.Max(0f, PropertiesManager.GetPropValue(PropType.Attack) * BossData.LaserDamageMultiplier);
+            float damage = PropValueUtility.ClampNonNegative(
+                PropertiesManager.GetPropValue(PropType.Attack) * BossData.LaserDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - OwnerEnemy.Center;
             Vector2 hitPoint = hitEntity.GetClosestPointTo(laserOrigin);
             HitService.Apply(new HitRequest(

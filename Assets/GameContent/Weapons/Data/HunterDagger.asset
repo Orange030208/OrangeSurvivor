@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   itemName: "\u730E\u624B\u77ED\u5315"
   itemIcon: {fileID: 21300000, guid: 3bec63423237dae4b9efefecb5294bcc, type: 3}
-  itemPrice: 20
+  itemPrice: 24
   itemType: 0
   itemDescription:
-  tags: 000000000400000005000000
+  tags:
+  - 1
+  - 0
   attackSequence: {fileID: 11400000, guid: 143599165d09493984f23099e5b05479, type: 2}
   visualForwardAngle: 45
   stopAimingWhenAttackReady: 1
@@ -33,32 +35,62 @@ MonoBehaviour:
   hitVfxPrefab: {fileID: 0}
   hitBoxSize: {x: 0.55, y: 1}
   hitBoxOffset: {x: 0, y: 0.92}
+  benefits:
+    attackSpeedBenefitPercent: 80
+    criticalChanceBenefitPercent: 100
+    criticalPercentBenefitPercent: 90
+    rangeBenefitPercent: 90
+    knockbackStrengthBenefitPercent: 30
+    meleeAttackUsagePercent: 0
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
   levelStats:
   - level: 1
-    attack: 16
-    attackSpeed: 108
-    criticalChance: 9
+    attack: 12
+    attackSpeed: 160
+    criticalChance: 10
     criticalPercent: 200
-    range: 480
-    knockbackStrength: 0
+    range: 430
+    knockbackStrength: 0.3
+    meleeAttackUsagePercent: 15
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
+    holderModifiers: []
   - level: 2
-    attack: 16
-    attackSpeed: 108
-    criticalChance: 9
-    criticalPercent: 200
-    range: 480
-    knockbackStrength: 0
+    attack: 14
+    attackSpeed: 190
+    criticalChance: 12
+    criticalPercent: 210
+    range: 440
+    knockbackStrength: 0.35
+    meleeAttackUsagePercent: 22
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
+    holderModifiers: []
   - level: 3
     attack: 16
-    attackSpeed: 108
-    criticalChance: 9
-    criticalPercent: 200
-    range: 480
-    knockbackStrength: 0
+    attackSpeed: 225
+    criticalChance: 15
+    criticalPercent: 220
+    range: 450
+    knockbackStrength: 0.4
+    meleeAttackUsagePercent: 28
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
+    holderModifiers: []
   - level: 4
-    attack: 16
-    attackSpeed: 108
-    criticalChance: 9
-    criticalPercent: 200
-    range: 480
-    knockbackStrength: 0
+    attack: 18
+    attackSpeed: 260
+    criticalChance: 18
+    criticalPercent: 230
+    range: 460
+    knockbackStrength: 0.5
+    meleeAttackUsagePercent: 35
+    rangedAttackUsagePercent: 0
+    magicAttackUsagePercent: 0
+    summonAttackUsagePercent: 0
+    holderModifiers: []

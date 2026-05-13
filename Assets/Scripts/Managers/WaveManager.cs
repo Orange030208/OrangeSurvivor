@@ -11,7 +11,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     [SerializeField] private StageDefinitionSO stageDefinition;
     [SerializeField] private ContentPoolSO waveSpawnPool;
     private SpawnPositionResolver spawnPositionResolver;
-    private WaveSpawnExecutionService waveSpawnExecutionService;
+    private WaveSpawnExecutor waveSpawnExecutor;
     private EnemyFactory enemyFactory;
     private RunProgressionService runProgressionService;
     private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
@@ -72,7 +72,7 @@ public class WaveManager : MonoBehaviour, IWaveController
         runProgressionService = new RunProgressionService(progressionProfile);
         runProgressionService.Reset(runtimeWaves.Length);
         RunProgressionRuntime.SetProvider(runProgressionService);
-        waveSpawnExecutionService = new WaveSpawnExecutionService(enemyFactory, waveSpawnPool);
+        waveSpawnExecutor = new WaveSpawnExecutor(enemyFactory, waveSpawnPool);
         ApplySpawnPositionPolicy(0);
     }
 
@@ -223,7 +223,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             spawnAroundEntity,
             transform,
             runProgressionService);
-        waveSpawnExecutionService.ExecuteModifierOnlyRequests(spawnContext, spawnPositionResolver);
+        waveSpawnExecutor.ExecuteModifierOnlyRequests(spawnContext, spawnPositionResolver);
 
         for (int i = 0; i < segments.Length; i++)
         {
@@ -239,7 +239,7 @@ public class WaveManager : MonoBehaviour, IWaveController
                 transform,
                 runProgressionService);
             WaveSegmentRuntimeState segmentState = runtimeState.SegmentStates[i];
-            WaveSpawnExecutionResult result = waveSpawnExecutionService.Execute(request, segmentState, spawnPositionResolver);
+            WaveSpawnExecutionResult result = waveSpawnExecutor.Execute(request, segmentState, spawnPositionResolver);
             runtimeState.SegmentStates[i] = result.SegmentState;
         }
     }

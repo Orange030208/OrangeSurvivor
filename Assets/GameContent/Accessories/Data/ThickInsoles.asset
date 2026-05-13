@@ -23,10 +23,10 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 4
     modifierType: 0
-    value: 14
+    value: 7
   - propType: 10
     modifierType: 0
-    value: 2
+    value: 1.22
   specialFeatures: []
   references:
     version: 2

@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 春泉回息
   icon: {fileID: 0}
   rarity: 0
-  tags: 0b000000
+  tags: 00080000
   description: 
-  propertyModifiers:
-  - propType: 7
-    modifierType: 0
-    value: 20
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000011001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000011001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 7
+          modifierType: 0
+          value: 20

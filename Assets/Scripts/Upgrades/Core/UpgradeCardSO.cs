@@ -12,15 +12,11 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     [SerializeField] private string title;
     [SerializeField] private Sprite icon;
     [SerializeField] private UpgradeCardRarity rarity = UpgradeCardRarity.Common;
-    [SerializeField] private UpgradeCardTag[] tags = Array.Empty<UpgradeCardTag>();
+    [SerializeField] private UpgradeCardTag tags = UpgradeCardTag.None;
 
     [Header("描述")]
     [TextArea]
     [SerializeField] private string description;
-
-    [Header("属性修饰")]
-    [Tooltip("按照属性语义填写。百分比属性与所有乘区统一使用百分比点：1 表示 1%，10 表示 10%。点数属性仍按属性单位填写。")]
-    [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]
     [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
@@ -30,8 +26,8 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     public Sprite Icon => icon;
     public string Description => BuildDescription();
     public UpgradeCardRarity Rarity => rarity;
-    public IReadOnlyList<UpgradeCardTag> Tags => tags;
-    public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
+    public UpgradeCardTag Tags => tags;
+    public UpgradeCardTag[] TagList => ToTagArray(tags);
     public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
 
     private void OnValidate()
@@ -41,14 +37,12 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             cardId = Guid.NewGuid().ToString("N")[..8];
         }
 
-        tags ??= Array.Empty<UpgradeCardTag>();
-        propertyModifiers ??= new List<PropModifierData>();
         specialFeatures ??= new List<FeatureEffectBase>();
     }
 
     public bool HasAnyEffect()
     {
-        return propertyModifiers.Count > 0 || specialFeatures.Count > 0;
+        return specialFeatures.Count > 0;
     }
 
     public void InitializeRuntime(
@@ -57,38 +51,21 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         UpgradeCardRarity runtimeRarity,
         IReadOnlyList<UpgradeCardTag> runtimeTags,
         string runtimeDescription,
-        IReadOnlyList<PropModifierData> runtimePropertyModifiers)
+        IReadOnlyList<FeatureEffectBase> runtimeSpecialFeatures = null)
     {
         cardId = string.IsNullOrWhiteSpace(runtimeCardId) ? Guid.NewGuid().ToString("N")[..8] : runtimeCardId;
         title = runtimeTitle;
         rarity = runtimeRarity;
-        tags = runtimeTags != null ? ToArray(runtimeTags) : Array.Empty<UpgradeCardTag>();
+        tags = ToTagMask(runtimeTags);
         description = runtimeDescription;
-        propertyModifiers = runtimePropertyModifiers != null
-            ? new List<PropModifierData>(runtimePropertyModifiers)
-            : new List<PropModifierData>();
-        specialFeatures = new List<FeatureEffectBase>();
-    }
-
-    public void InitializeRuntime(
-        string runtimeCardId,
-        string runtimeTitle,
-        UpgradeCardRarity runtimeRarity,
-        IReadOnlyList<UpgradeCardTag> runtimeTags,
-        string runtimeDescription,
-        IReadOnlyList<PropModifierData> runtimePropertyModifiers,
-        IReadOnlyList<FeatureEffectBase> runtimeSpecialFeatures)
-    {
-        InitializeRuntime(
-            runtimeCardId,
-            runtimeTitle,
-            runtimeRarity,
-            runtimeTags,
-            runtimeDescription,
-            runtimePropertyModifiers);
         specialFeatures = runtimeSpecialFeatures != null
             ? new List<FeatureEffectBase>(runtimeSpecialFeatures)
             : new List<FeatureEffectBase>();
+    }
+
+    public bool HasTag(UpgradeCardTag tag)
+    {
+        return tag != UpgradeCardTag.None && (tags & tag) != 0;
     }
 
     public UpgradeCardOptionViewData CreateOptionViewData(int pickCount, int maxPickCount)
@@ -100,7 +77,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             ResolveDisplayIcon(),
             BuildDescription(),
             Rarity,
-            tags,
+            TagList,
             pickCount,
             maxPickCount,
             hasPickLimit);
@@ -110,7 +87,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     {
         return ItemDescriptionUtility.BuildDescriptorInfos(
             ShouldUseManualDescription() ? description : null,
-            propertyModifiers,
+            null,
             specialFeatures,
             BuildMetaInfos());
     }
@@ -119,7 +96,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     {
         return ItemDescriptionUtility.BuildDetailedDescription(
             ShouldUseManualDescription() ? description : null,
-            propertyModifiers,
+            null,
             specialFeatures,
             null,
             "获得一项升级。");
@@ -134,7 +111,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     {
         yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
 
-        string tagText = ItemDescriptionUtility.JoinUpgradeCardTags(tags, tags != null ? tags.Length : 0);
+        string tagText = ItemDescriptionUtility.JoinUpgradeCardTags(tags, int.MaxValue);
         if (!string.IsNullOrWhiteSpace(tagText))
         {
             yield return new DescriptorInfo("标签", tagText);
@@ -148,22 +125,68 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             return icon;
         }
 
-        if (propertyModifiers.Count > 0)
+        PropertyModifierFeature firstPropertyFeature = ResolveFirstPropertyFeature();
+        if (firstPropertyFeature != null)
         {
-            return GameContentRuntime.GetPropIcon(propertyModifiers[0].propType);
+            return GameContentRuntime.GetPropIcon(firstPropertyFeature.Modifier.propType);
         }
 
         return null;
     }
 
-    private static UpgradeCardTag[] ToArray(IReadOnlyList<UpgradeCardTag> source)
+    private PropertyModifierFeature ResolveFirstPropertyFeature()
     {
-        UpgradeCardTag[] result = new UpgradeCardTag[source.Count];
-        for (int i = 0; i < source.Count; i++)
+        if (specialFeatures == null)
         {
-            result[i] = source[i];
+            return null;
         }
 
-        return result;
+        for (int i = 0; i < specialFeatures.Count; i++)
+        {
+            if (specialFeatures[i] is PropertyModifierFeature propertyFeature)
+            {
+                return propertyFeature;
+            }
+        }
+
+        return null;
     }
+
+    private static UpgradeCardTag ToTagMask(IReadOnlyList<UpgradeCardTag> source)
+    {
+        UpgradeCardTag mask = UpgradeCardTag.None;
+        if (source == null)
+        {
+            return mask;
+        }
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            mask |= source[i];
+        }
+
+        return mask;
+    }
+
+    private static UpgradeCardTag[] ToTagArray(UpgradeCardTag mask)
+    {
+        if (mask == UpgradeCardTag.None)
+        {
+            return Array.Empty<UpgradeCardTag>();
+        }
+
+        List<UpgradeCardTag> result = new();
+        foreach (UpgradeCardTag tag in Enum.GetValues(typeof(UpgradeCardTag)))
+        {
+            if (tag == UpgradeCardTag.None || (mask & tag) == 0)
+            {
+                continue;
+            }
+
+            result.Add(tag);
+        }
+
+        return result.ToArray();
+    }
+
 }

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8942135171135419737
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2891059109544340393}
+  m_Layer: 6
+  m_Name: MeleePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2891059109544340393
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8942135171135419737}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8690355670144626361}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2423080276397076816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104,7 +135,10 @@ PrefabInstance:
     - {fileID: 6319776215309285148, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
     - {fileID: 2576062534117598723, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 2891059109544340393}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       insertIndex: 2
@@ -116,11 +150,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6103810281823100695}
   m_SourcePrefab: {fileID: 100100000, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
---- !u!4 &2478300051442963164 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
-  m_PrefabInstance: {fileID: 2423080276397076816}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3495588071473995784 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
@@ -183,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdd80c81727a994d905bd2631929e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleePointTransform: {fileID: 2478300051442963164}
+  meleePointTransform: {fileID: 2891059109544340393}
 --- !u!114 &6103810281823100695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,3 +227,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillSlots: []
   basicAttackSlots: []
+--- !u!4 &8690355670144626361 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+  m_PrefabInstance: {fileID: 2423080276397076816}
+  m_PrefabAsset: {fileID: 0}

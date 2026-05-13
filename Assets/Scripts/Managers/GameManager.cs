@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 /// 游戏主状态管理器：负责全局游戏状态切换、暂停控制、回菜单以及主 UI 过渡编排。
 /// 它统一消费 UI 意图事件，并通过 UIManager 驱动页面切换。
 /// </summary>
-public class GameManager : MonoSingletonBase<GameManager>
+public class GameManager : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
@@ -413,7 +413,8 @@ public class GameManager : MonoSingletonBase<GameManager>
             return;
         }
 
-        int rewardAmount = Mathf.FloorToInt(Mathf.Max(0f, propertiesManager.GetPropValue(PropType.WaveGoldRewardBonus)));
+        int rewardAmount = PropValueUtility.FloatPointsToNonNegativeFlooredInt(
+            propertiesManager.GetPropValue(PropType.WaveGoldRewardBonus));
         if (rewardAmount <= 0)
         {
             return;

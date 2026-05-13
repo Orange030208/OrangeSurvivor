@@ -345,7 +345,7 @@ public class WeaponsHolder : EntityComponentBase
     {
         float rawSlotCount = propertiesManager.GetPropValue(PropType.WeaponSlotCount);
 
-        return Mathf.Max(0, Mathf.RoundToInt(rawSlotCount));
+        return PropValueUtility.FloatPointsToNonNegativeRoundedInt(rawSlotCount);
     }
 
     private int GetMinimumSlotCountForEquippedWeapons()

@@ -2,20 +2,45 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterSelectionManager : MonoSingletonBase<CharacterSelectionManager>
+public class CharacterSelectionManager : MonoBehaviour
 {
+    private static CharacterSelectionManager instance;
+
     private CharacterDataSO[] characters = Array.Empty<CharacterDataSO>();
     private int selectedIndex = -1;
 
     public event Action<CharacterSelectionChangedArgs> SelectionChanged;
 
+    public static CharacterSelectionManager Instance => instance;
     public int SelectedIndex => selectedIndex;
     public CharacterDataSO SelectedCharacter =>
         selectedIndex >= 0 && selectedIndex < characters.Length ? characters[selectedIndex] : null;
 
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Debug.LogError(
+                $"{nameof(CharacterSelectionManager)} duplicate found on '{name}'. Keep exactly one scene-owned instance.",
+                this);
+            enabled = false;
+            return;
+        }
+
+        instance = this;
+    }
+
     private void OnEnable()
     {
         RefreshCharacters();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 
     private void RefreshCharacters()

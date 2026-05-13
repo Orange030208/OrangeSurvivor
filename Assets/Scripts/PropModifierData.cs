@@ -33,10 +33,16 @@ public static class PropValueUtility
     public const float ATTACK_SPEED_POINTS_PER_ATTACK_PER_SECOND = 100f;
     public const float MIN_EFFECTIVE_ATTACK_SPEED_POINTS = 1f;
     public const float MIN_ATTACK_SPEED_BENEFIT_RATIO = 0.01f;
+    public const float MIN_EFFECTIVE_ATTACK_RANGE_WORLD_UNITS = 0.1f;
+    public const float MIN_EFFECTIVE_CRITICAL_MULTIPLIER = 1f;
     public const float HEALTH_RECOVERY_POINTS_PER_HEALTH_PER_SECOND = 10f;
+    public const float MIN_EFFECTIVE_MAX_HEALTH = 1f;
+    public const float ARMOR_REDUCTION_SCALE = 25f;
+    public const float MIN_EFFECTIVE_ARMOR = -95f;
     public const float MAX_EFFECTIVE_CRITICAL_CHANCE_RATIO = 1f;
     public const float MAX_EFFECTIVE_DODGE_CHANCE_RATIO = 0.5f;
     public const float MAX_EFFECTIVE_DAMAGE_REDUCTION_RATIO = 0.5f;
+    public const float MAX_EFFECTIVE_TOTAL_DAMAGE_REDUCTION_RATIO = 0.95f;
     public const float MAX_EFFECTIVE_SHOP_PRICE_DISCOUNT_RATIO = 0.5f;
     public const float MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER = 0.5f;
 
@@ -48,6 +54,16 @@ public static class PropValueUtility
     public static float DistancePointsToWorldUnits(float value)
     {
         return value / DISTANCE_POINTS_PER_WORLD_UNIT;
+    }
+
+    public static float DistancePointsToNonNegativeWorldUnits(float value)
+    {
+        return Mathf.Max(0f, DistancePointsToWorldUnits(value));
+    }
+
+    public static float DistancePointsToEffectiveAttackRangeWorldUnits(float value)
+    {
+        return Mathf.Max(MIN_EFFECTIVE_ATTACK_RANGE_WORLD_UNITS, DistancePointsToWorldUnits(value));
     }
 
     public static float AttackSpeedPointsToAttacksPerSecond(float value)
@@ -75,6 +91,72 @@ public static class PropValueUtility
         return value / HEALTH_RECOVERY_POINTS_PER_HEALTH_PER_SECOND;
     }
 
+    public static float ClampEffectiveMaxHealth(float value)
+    {
+        return Mathf.Max(MIN_EFFECTIVE_MAX_HEALTH, value);
+    }
+
+    public static float PercentPointsToNonNegativeRatio(float value)
+    {
+        return Mathf.Max(0f, PercentPointsToRatio(value));
+    }
+
+    public static float HealthRecoveryPointsToEffectiveHealthPerSecond(float value)
+    {
+        return Mathf.Max(0f, HealthRecoveryPointsToHealthPerSecond(value));
+    }
+
+    public static float ResolveArmorDamageReductionRatio(float armor, float armorPenetrationPercent)
+    {
+        float effectiveArmor = Mathf.Max(MIN_EFFECTIVE_ARMOR, armor);
+        if (effectiveArmor > 0f && armorPenetrationPercent > 0f)
+        {
+            float armorPenetrationRatio = Mathf.Clamp01(PercentPointsToRatio(armorPenetrationPercent));
+            effectiveArmor *= 1f - armorPenetrationRatio;
+        }
+
+        return effectiveArmor / (Mathf.Abs(effectiveArmor) + ARMOR_REDUCTION_SCALE);
+    }
+
+    public static float CombineDamageReductionRatios(float firstReduction, float secondReduction)
+    {
+        float clampedFirstReduction = Mathf.Min(firstReduction, MAX_EFFECTIVE_TOTAL_DAMAGE_REDUCTION_RATIO);
+        float clampedSecondReduction = Mathf.Min(secondReduction, MAX_EFFECTIVE_TOTAL_DAMAGE_REDUCTION_RATIO);
+        return Mathf.Min(
+            1f - (1f - clampedFirstReduction) * (1f - clampedSecondReduction),
+            MAX_EFFECTIVE_TOTAL_DAMAGE_REDUCTION_RATIO);
+    }
+
+    public static float ClampEffectiveKnockbackStrength(float value)
+    {
+        return Mathf.Max(0f, value);
+    }
+
+    public static float ClampEffectiveCriticalMultiplier(float value)
+    {
+        return Mathf.Max(MIN_EFFECTIVE_CRITICAL_MULTIPLIER, value);
+    }
+
+    public static float ClampNonNegative(float value)
+    {
+        return Mathf.Max(0f, value);
+    }
+
+    public static int FloatPointsToNonNegativeRoundedInt(float value)
+    {
+        return Mathf.Max(0, Mathf.RoundToInt(value));
+    }
+
+    public static int FloatPointsToNonNegativeFlooredInt(float value)
+    {
+        return Mathf.Max(0, Mathf.FloorToInt(value));
+    }
+
+    public static int ResolveNonNegativePrice(float value)
+    {
+        return Mathf.Max(0, Mathf.RoundToInt(value));
+    }
+
     public static float ClampEffectiveRatio(PropType propType, float ratio)
     {
         float maxRatio = propType switch
@@ -93,6 +175,13 @@ public static class PropValueUtility
     public static float PercentPointsToEffectiveRatio(PropType propType, float value)
     {
         return ClampEffectiveRatio(propType, PercentPointsToRatio(value));
+    }
+
+    public static float ResolveEffectiveShopPriceMultiplier(float playerDiscountMultiplier)
+    {
+        return playerDiscountMultiplier > 0f
+            ? Mathf.Max(MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, playerDiscountMultiplier)
+            : 1f;
     }
 
     public static bool IsPercentPointProp(PropType propType)

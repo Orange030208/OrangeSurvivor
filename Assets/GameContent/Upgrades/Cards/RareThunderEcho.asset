@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 雷痕重鸣
   icon: {fileID: 0}
   rarity: 1
-  tags: 02000000
+  tags: 04000000
   description: 
-  propertyModifiers:
-  - propType: 3
-    modifierType: 0
-    value: 12
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000042001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000042001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 3
+          modifierType: 0
+          value: 12

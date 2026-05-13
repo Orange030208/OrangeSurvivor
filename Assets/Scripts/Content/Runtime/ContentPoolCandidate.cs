@@ -1,47 +1,58 @@
+using System.Collections.Generic;
+
 public sealed class ContentPoolCandidate
 {
     private const float MIN_PRICE_MULTIPLIER = 0.01f;
+    private readonly List<ContentEntryMetadata> metadata;
 
     public ContentPoolCandidate(ContentPoolEntry entry, float weight)
     {
         Entry = entry;
         Weight = weight;
-        MinLevel = entry != null ? entry.MinLevel : 0;
-        MaxLevel = entry != null ? entry.MaxLevel : 0;
-        QualityValue = entry != null ? entry.QualityValue : 0;
-        DomainFlags = entry != null ? entry.DomainFlags : 0;
-        PriceMultiplier = entry != null ? entry.PriceMultiplier : 1f;
+        metadata = ContentMetadataUtility.CloneMetadata(entry?.Metadata);
     }
 
     public ContentPoolEntry Entry { get; }
     public float Weight { get; set; }
-    public int MinLevel { get; private set; }
-    public int MaxLevel { get; private set; }
-    public int QualityValue { get; private set; }
-    public int DomainFlags { get; private set; }
-    public float PriceMultiplier { get; private set; }
+    public IReadOnlyList<ContentEntryMetadata> Metadata => metadata;
     public bool IsRemoved { get; private set; }
     public UnityEngine.Object Content => Entry != null ? Entry.Content : null;
 
+    public bool TryGetMetadata<T>(out T value)
+        where T : ContentEntryMetadata
+    {
+        return ContentMetadataUtility.TryGetMetadata(Metadata, out value);
+    }
+
     public void ConfigureLevelRange(int minLevel, int maxLevel)
     {
-        MinLevel = UnityEngine.Mathf.Max(0, minLevel);
-        MaxLevel = UnityEngine.Mathf.Max(MinLevel, maxLevel);
+        WeaponLevelRollMetadata levelMetadata = ContentMetadataUtility.GetOrCreateMetadata<WeaponLevelRollMetadata>(metadata);
+        levelMetadata.ConfigureRange(minLevel, maxLevel);
     }
 
     public void ConfigureQualityValue(int qualityValue)
     {
-        QualityValue = qualityValue;
+        QualityMetadata qualityMetadata = ContentMetadataUtility.GetOrCreateMetadata<QualityMetadata>(metadata);
+        qualityMetadata.ConfigureQualityValue(qualityValue);
     }
 
-    public void ConfigureDomainFlags(int domainFlags)
+    public void ConfigureWaveSpawnTags(WaveEnemyTag tags)
     {
-        DomainFlags = domainFlags;
+        WaveSpawnMetadata spawnMetadata = ContentMetadataUtility.GetOrCreateMetadata<WaveSpawnMetadata>(metadata);
+        spawnMetadata.ConfigureTags(tags);
     }
 
     public void ConfigurePriceMultiplier(float priceMultiplier)
     {
-        PriceMultiplier = UnityEngine.Mathf.Max(MIN_PRICE_MULTIPLIER, priceMultiplier);
+        ShopPricingMetadata pricingMetadata = ContentMetadataUtility.GetOrCreateMetadata<ShopPricingMetadata>(metadata);
+        pricingMetadata.ConfigurePriceMultiplier(UnityEngine.Mathf.Max(MIN_PRICE_MULTIPLIER, priceMultiplier));
+    }
+
+    public float GetPriceMultiplier()
+    {
+        return TryGetMetadata(out ShopPricingMetadata pricingMetadata)
+            ? pricingMetadata.PriceMultiplier
+            : 1f;
     }
 
     public void Remove()

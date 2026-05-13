@@ -50,8 +50,8 @@ public readonly struct HitResult
     {
         Source = source;
         Target = target;
-        FinalDamage = Mathf.Max(0f, finalDamage);
-        KnockbackStrength = Mathf.Max(0f, knockbackStrength);
+        FinalDamage = PropValueUtility.ClampNonNegative(finalDamage);
+        KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(knockbackStrength);
         HitPoint = hitPoint;
         SourcePosition = sourcePosition;
         HasKnockbackDirection = hasKnockbackDirection &&

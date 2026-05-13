@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 旅人微幸
   icon: {fileID: 0}
   rarity: 0
-  tags: 05000000
+  tags: 20000000
   description: 
-  propertyModifiers:
-  - propType: 9
-    modifierType: 0
-    value: 5
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000013001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000013001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 9
+          modifierType: 0
+          value: 5

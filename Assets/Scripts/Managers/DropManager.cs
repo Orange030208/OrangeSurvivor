@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class DropManager : MonoBehaviour
 {
-    private static readonly CoinRewardData FixedCoinReward = new(1, 1);
+    private const int BASE_KILL_EXPERIENCE = 1;
+
+    private static readonly CoinRewardData FixedCoinReward = new(1);
 
     [SerializeField] private ContentPoolSO dropPool;
 
     private readonly ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentPoolRuntimeState dropRuntimeState = new();
+    private readonly ContentHistoryState contentHistoryState = new();
 
     private void OnEnable()
     {
@@ -25,6 +27,8 @@ public class DropManager : MonoBehaviour
         {
             return;
         }
+
+        TryGrantKillExperience(deadEvent.Source);
 
         RunProgressionSnapshot progressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
         CollectionSO dropSO = RollDrop(deadEvent.Source, progressionSnapshot.WaveNumber);
@@ -48,9 +52,46 @@ public class DropManager : MonoBehaviour
         }
     }
 
+    public static bool TryGrantKillExperience(Entity source)
+    {
+        return TryGrantKillExperience(source, BASE_KILL_EXPERIENCE);
+    }
+
+    public static bool TryGrantKillExperience(Entity source, int baseExperience)
+    {
+        PlayerLevel playerLevel = ResolvePlayerLevel(source);
+        if (playerLevel == null || baseExperience <= 0)
+        {
+            return false;
+        }
+
+        playerLevel.AddXP(baseExperience);
+        return true;
+    }
+
+    private static PlayerLevel ResolvePlayerLevel(Entity source)
+    {
+        if (source == null)
+        {
+            return null;
+        }
+
+        if (source.TryGetComponent(out PlayerLevel playerLevel))
+        {
+            return playerLevel;
+        }
+
+        if (source is Weapon weapon && weapon.Owner != null &&
+            weapon.Owner.TryGetComponent(out PlayerLevel ownerPlayerLevel))
+        {
+            return ownerPlayerLevel;
+        }
+
+        return null;
+    }
+
     private CollectionSO RollDrop(Entity source, int waveNumber)
     {
-        ContentFactSource factSource = CreateDropFactSource(source, waveNumber);
         ContentPoolSO configuredPool = ResolveConfiguredDropPool();
         if (configuredPool == null)
         {
@@ -60,8 +101,7 @@ public class DropManager : MonoBehaviour
 
         ContentRollResult configuredResult = contentPoolRollService.Roll(
             configuredPool,
-            factSource,
-            dropRuntimeState,
+            CreateDropRollContext(configuredPool, source, waveNumber),
             1,
             entry => entry.Content is CollectionSO);
         return configuredResult.HasAny ? configuredResult.Items[0].Content as CollectionSO : null;
@@ -82,21 +122,39 @@ public class DropManager : MonoBehaviour
         return null;
     }
 
-    private static ContentFactSource CreateDropFactSource(Entity source, int waveNumber)
+    private ContentRollContext CreateDropRollContext(ContentPoolSO pool, Entity source, int waveNumber)
     {
-        if (source is Player player)
+        Player player = source as Player;
+        RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
+        if (snapshot.WaveNumber != Mathf.Max(1, waveNumber))
         {
-            return ContentFactSource.ForPlayer(player, waveNumber);
+            snapshot = new RunProgressionSnapshot(
+                waveNumber,
+                snapshot.TotalWaves,
+                snapshot.RunMinutes,
+                snapshot.EndlessLoop,
+                snapshot.DifficultyCoefficient,
+                snapshot.EconomyCoefficient,
+                snapshot.ShopPriceMultiplier,
+                snapshot.DangerTier);
         }
 
-        ContentFactSource factSource = new();
-        factSource.WaveNumber = Mathf.Max(1, waveNumber);
-        if (source != null && source.TryGetComponent(out PropertiesManager propertiesManager))
-        {
-            factSource.PropertiesManager = propertiesManager;
-        }
+        return new ContentRollContext(
+            ContentPoolScopeIds.Drop,
+            player,
+            progressionSnapshot: snapshot,
+            historyScope: CreateHistoryScope(pool),
+            history: contentHistoryState,
+            source: source,
+            propertiesManager: source != null && source.TryGetComponent(out PropertiesManager propertiesManager)
+                ? propertiesManager
+                : null);
+    }
 
-        return factSource;
+    private static ContentHistoryScope CreateHistoryScope(ContentPoolSO pool)
+    {
+        string poolId = pool != null ? pool.name : ContentPoolScopeIds.Drop;
+        return new ContentHistoryScope(ContentPoolScopeIds.Drop, poolId);
     }
 
 }

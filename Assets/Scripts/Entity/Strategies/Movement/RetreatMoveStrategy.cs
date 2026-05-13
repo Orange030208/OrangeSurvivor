@@ -30,7 +30,8 @@ public sealed class RetreatMoveStrategy : IMoveStrategy
             return;
         }
 
-        float detectionRange = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.DetectionRange));
+        float detectionRange = PropValueUtility.DistancePointsToNonNegativeWorldUnits(
+            propertiesManager.GetPropValue(PropType.DetectionRange));
         float safeDistance = detectionRange * safeDistanceRatio;
         float retreatStepDistance = detectionRange * retreatStepDistanceRatio;
         float currentDistance = Vector2.Distance(owner.Center, target.Center);

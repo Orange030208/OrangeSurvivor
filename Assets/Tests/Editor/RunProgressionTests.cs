@@ -11,6 +11,8 @@ public sealed class RunProgressionTests
     [TearDown]
     public void TearDown()
     {
+        GameEventBus.Clear();
+
         for (int i = 0; i < createdObjects.Count; i++)
         {
             if (createdObjects[i] != null)
@@ -50,13 +52,28 @@ public sealed class RunProgressionTests
     }
 
     [Test]
-    public void CoinRewardDataKeepsFixedGoldAndExperienceValues()
+    public void CoinRewardDataKeepsFixedGoldValueOnly()
     {
-        CoinRewardData reward = new(1, 1);
+        CoinRewardData reward = new(1);
 
         Assert.AreEqual(1, reward.GoldValue);
-        Assert.AreEqual(1, reward.ExperienceValue);
         Assert.IsTrue(reward.HasAnyReward);
+    }
+
+    [Test]
+    public void DropManagerGrantsExperienceFromEnemyKillSource()
+    {
+        TestEntity killer = CreateGameObject("killer").AddComponent<TestEntity>();
+        PlayerLevel playerLevel = killer.gameObject.AddComponent<PlayerLevel>();
+        PlayerLevelConfigSO levelConfig = ScriptableObject.CreateInstance<PlayerLevelConfigSO>();
+        createdObjects.Add(levelConfig);
+        SetPrivateField(playerLevel, "levelConfig", levelConfig);
+        playerLevel.Initialize(killer);
+
+        bool granted = DropManager.TryGrantKillExperience(killer);
+
+        Assert.IsTrue(granted);
+        Assert.AreEqual(1, playerLevel.CurrentXP);
     }
 
     [Test]
@@ -75,11 +92,11 @@ public sealed class RunProgressionTests
     public void WeaponPriceUsesConfiguredLevelMultiplierTable()
     {
         Assert.AreEqual(20, WeaponPriceHelper.GetPrice(20, 1));
-        Assert.AreEqual(36, WeaponPriceHelper.GetPrice(20, 2));
-        Assert.AreEqual(76, WeaponPriceHelper.GetPrice(20, 3));
-        Assert.AreEqual(156, WeaponPriceHelper.GetPrice(20, 4));
-        Assert.AreEqual(195, WeaponPriceHelper.GetPrice(25, 4));
-        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(4), Is.EqualTo(7.8f).Within(0.0001f));
+        Assert.AreEqual(32, WeaponPriceHelper.GetPrice(20, 2));
+        Assert.AreEqual(72, WeaponPriceHelper.GetPrice(20, 3));
+        Assert.AreEqual(144, WeaponPriceHelper.GetPrice(20, 4));
+        Assert.AreEqual(180, WeaponPriceHelper.GetPrice(25, 4));
+        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(4), Is.EqualTo(7.2f).Within(0.0001f));
     }
 
     [Test]
@@ -89,7 +106,7 @@ public sealed class RunProgressionTests
 
         int price = ShopPricingService.GetPrice(weapon, 3, 1.5f, 2f, 1f);
 
-        Assert.AreEqual(228, price);
+        Assert.AreEqual(216, price);
     }
 
     [Test]
@@ -108,6 +125,18 @@ public sealed class RunProgressionTests
         Assert.That(late.GetMultiplier(PropType.MoveSpeed), Is.GreaterThanOrEqualTo(early.GetMultiplier(PropType.MoveSpeed)));
         Assert.That(late.GetMultiplier(PropType.AttackSpeed), Is.GreaterThanOrEqualTo(early.GetMultiplier(PropType.AttackSpeed)));
         Assert.AreEqual(EnemyRole.Normal, enemyData.role);
+    }
+
+    [Test]
+    public void DefaultEnemyScaleMatchesNumericSpecAtWave20()
+    {
+        RunProgressionProfileSO profile = CreateProfile();
+        RunProgressionEnemyScale scale = profile.EvaluateEnemyScale(profile.Evaluate(20, 20, 10f * 60f), null);
+
+        Assert.That(scale.GetMultiplier(PropType.MaxHealth), Is.EqualTo(6f).Within(0.0001f));
+        Assert.That(scale.GetMultiplier(PropType.Attack), Is.EqualTo(2.1f).Within(0.0001f));
+        Assert.That(scale.GetMultiplier(PropType.MoveSpeed), Is.EqualTo(1.12f).Within(0.0001f));
+        Assert.That(scale.GetMultiplier(PropType.AttackSpeed), Is.EqualTo(1.25f).Within(0.0001f));
     }
 
     [Test]
@@ -156,47 +185,19 @@ public sealed class RunProgressionTests
 
         Assert.That(
             boss.GetMultiplier(PropType.MaxHealth),
-            Is.EqualTo(normal.GetMultiplier(PropType.MaxHealth) * 1.35f).Within(0.0001f));
+            Is.EqualTo(normal.GetMultiplier(PropType.MaxHealth) * 1.6f).Within(0.0001f));
         Assert.That(
             boss.GetMultiplier(PropType.Attack),
-            Is.EqualTo(normal.GetMultiplier(PropType.Attack) * 1.15f).Within(0.0001f));
+            Is.EqualTo(normal.GetMultiplier(PropType.Attack) * 1.25f).Within(0.0001f));
         Assert.That(
             tagged.GetMultiplier(PropType.MaxHealth),
-            Is.EqualTo(normal.GetMultiplier(PropType.MaxHealth) * 1.18f).Within(0.0001f));
+            Is.EqualTo(normal.GetMultiplier(PropType.MaxHealth) * 1.3f).Within(0.0001f));
         Assert.That(
             tagged.GetMultiplier(PropType.Attack),
-            Is.EqualTo(normal.GetMultiplier(PropType.Attack) * 1.12f).Within(0.0001f));
+            Is.EqualTo(normal.GetMultiplier(PropType.Attack) * 1.18f).Within(0.0001f));
         Assert.That(
             tagged.GetMultiplier(PropType.MoveSpeed),
             Is.EqualTo(normal.GetMultiplier(PropType.MoveSpeed) * 1.08f).Within(0.0001f));
-    }
-
-    [Test]
-    public void ContentFactsExposeProgressionSnapshot()
-    {
-        RunProgressionSnapshot snapshot = new(
-            25,
-            20,
-            12f,
-            1,
-            4f,
-            2.5f,
-            3f,
-            5);
-        ContentFactSet facts = ContentFactCollector.Collect(
-            new ContentFactSource
-            {
-                WaveNumber = snapshot.WaveNumber,
-                ProgressionSnapshot = snapshot
-            },
-            null);
-
-        AssertFactFloat(facts, ContentFactIds.DifficultyCoefficient, 4f);
-        AssertFactFloat(facts, ContentFactIds.EconomyCoefficient, 2.5f);
-        AssertFactFloat(facts, ContentFactIds.ShopPriceMultiplier, 3f);
-        AssertFactInt(facts, ContentFactIds.EndlessLoop, 1);
-        AssertFactBool(facts, ContentFactIds.EndlessWave, true);
-        AssertFactInt(facts, ContentFactIds.DangerTier, 5);
     }
 
     private RunProgressionProfileSO CreateProfile()
@@ -231,22 +232,11 @@ public sealed class RunProgressionTests
         Assert.That(value, Is.GreaterThanOrEqualTo(0f));
     }
 
-    private static void AssertFactFloat(ContentFactSet facts, string factId, float expected)
+    private GameObject CreateGameObject(string name)
     {
-        Assert.IsTrue(facts.TryGet(factId, out ContentFactValue value), $"Missing fact '{factId}'.");
-        Assert.That(value.FloatValue, Is.EqualTo(expected).Within(0.0001f));
-    }
-
-    private static void AssertFactInt(ContentFactSet facts, string factId, int expected)
-    {
-        Assert.IsTrue(facts.TryGet(factId, out ContentFactValue value), $"Missing fact '{factId}'.");
-        Assert.AreEqual(expected, value.IntValue);
-    }
-
-    private static void AssertFactBool(ContentFactSet facts, string factId, bool expected)
-    {
-        Assert.IsTrue(facts.TryGet(factId, out ContentFactValue value), $"Missing fact '{factId}'.");
-        Assert.AreEqual(expected, value.BoolValue);
+        GameObject gameObject = new(name);
+        createdObjects.Add(gameObject);
+        return gameObject;
     }
 
     private static void SetPrivateField<TTarget>(TTarget target, string fieldName, object value)
@@ -259,5 +249,9 @@ public sealed class RunProgressionTests
 
         Assert.IsNotNull(field, $"Missing private field '{fieldName}' on {typeof(TTarget).Name}.");
         field.SetValue(target, value);
+    }
+
+    private sealed class TestEntity : Entity
+    {
     }
 }

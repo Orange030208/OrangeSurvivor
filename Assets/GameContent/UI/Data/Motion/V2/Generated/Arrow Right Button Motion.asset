@@ -20,7 +20,6 @@ MonoBehaviour:
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 451547002770030734
     - rid: 451547002770030735
     - rid: 451547002770030736
     - rid: 451547002770030737
@@ -31,7 +30,6 @@ MonoBehaviour:
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 451547002770030739
     - rid: 451547002770030740
     - rid: 451547002770030741
     - rid: 451547002770030742
@@ -42,7 +40,6 @@ MonoBehaviour:
     conflictPolicy: 1
     durationScale: 1
     tracks:
-    - rid: 451547002770030744
     - rid: 451547002770030745
     - rid: 451547002770030746
     - rid: 451547002770030747
@@ -83,7 +80,6 @@ MonoBehaviour:
     conflictPolicy: 0
     durationScale: 1
     tracks:
-    - rid: 451547002770030761
     - rid: 451547002770030762
     - rid: 451547002770030763
     - rid: 451547002770030764
@@ -100,22 +96,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 451547002770030734
-      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0.5
-        ease: 1
-        frames:
-        - {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-        - {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-        reverse: 0
-        keepLastFrameOnComplete: 1
-        setNativeSizeIfEmpty: 0
-        timingMode: 0
-        framesPerSecond: 12
-        frameEvents: []
     - rid: 451547002770030735
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
@@ -160,16 +140,6 @@ MonoBehaviour:
         fromValue: {x: 0, y: 0, z: 0}
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
-    - rid: 451547002770030739
-      type: {class: UISpriteSwapMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0
-        ease: 1
-        sprite: {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-        restoreInitialOnStart: 0
-        setNativeSizeIfEmpty: 0
     - rid: 451547002770030740
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
@@ -214,22 +184,6 @@ MonoBehaviour:
         fromValue: {x: 0, y: 0, z: 0}
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
-    - rid: 451547002770030744
-      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0.5
-        ease: 1
-        frames:
-        - {fileID: 0}
-        - {fileID: 0}
-        reverse: 1
-        keepLastFrameOnComplete: 1
-        setNativeSizeIfEmpty: 0
-        timingMode: 0
-        framesPerSecond: 12
-        frameEvents: []
     - rid: 451547002770030745
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
@@ -406,16 +360,6 @@ MonoBehaviour:
         fromValue: {x: 0, y: 0, z: 0}
         toMode: 3
         toValue: {x: 0, y: 0, z: 0}
-    - rid: 451547002770030761
-      type: {class: UISpriteSwapMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
-      data:
-        targetKey: Self
-        startDelay: 0
-        duration: 0
-        ease: 1
-        sprite: {fileID: 1048717825, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
-        restoreInitialOnStart: 0
-        setNativeSizeIfEmpty: 0
     - rid: 451547002770030762
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:

@@ -62,7 +62,7 @@ public abstract class AttackStrategyBase : IAttackStrategy
 
     protected float ResolveDamage()
     {
-        return Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Attack));
+        return PropValueUtility.ClampNonNegative(propertiesManager.GetPropValue(PropType.Attack));
     }
 
     protected abstract bool ExecuteCore(Entity target);

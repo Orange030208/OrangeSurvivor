@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 疾风连弦
   icon: {fileID: 0}
   rarity: 1
-  tags: 03000000
+  tags: 08000000
   description: 
-  propertyModifiers:
-  - propType: 1
-    modifierType: 0
-    value: 7
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000036001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000036001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 1
+          modifierType: 0
+          value: 7

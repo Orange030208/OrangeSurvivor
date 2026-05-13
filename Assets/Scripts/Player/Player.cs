@@ -90,7 +90,13 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
             return;
         }
 
-        CharacterDataSO selectedCharacter = CharacterSelectionManager.Instance.SelectedCharacter;
+        CharacterSelectionManager characterSelectionManager = CharacterSelectionManager.Instance;
+        if (characterSelectionManager == null)
+        {
+            return;
+        }
+
+        CharacterDataSO selectedCharacter = characterSelectionManager.SelectedCharacter;
         if (selectedCharacter != null)
         {
             characterData = selectedCharacter;

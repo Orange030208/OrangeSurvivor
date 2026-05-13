@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8789485232641245912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3115145502414665861}
+  m_Layer: 6
+  m_Name: MeleePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3115145502414665861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8789485232641245912}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.11, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7119756225919988564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4320269586671119549
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -84,7 +115,10 @@ PrefabInstance:
     - {fileID: 2859848195627263458, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
     - {fileID: 2576062534117598723, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3115145502414665861}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1234637727428497752, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
       insertIndex: 3
@@ -125,7 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 317caf05df714afe8d5f6e86789cbf06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleePointTransform: {fileID: 4048907747104952113}
+  meleePointTransform: {fileID: 3115145502414665861}
 --- !u!61 &6528778357964241054
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -171,8 +205,8 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.69483125, y: 1.3051686}
   m_EdgeRadius: 0
---- !u!4 &4048907747104952113 stripped
+--- !u!4 &7119756225919988564 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 271397300980425612, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
+  m_CorrespondingSourceObject: {fileID: 6429692057025159145, guid: 581ec4e1834e87844aaae86438dc9186, type: 3}
   m_PrefabInstance: {fileID: 4320269586671119549}
   m_PrefabAsset: {fileID: 0}

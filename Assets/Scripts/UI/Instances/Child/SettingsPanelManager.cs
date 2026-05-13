@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Orange.Input;
 using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -156,9 +157,9 @@ public class SettingsPanelManager : ViewPartBase
     {
         GameSettingsState previousState = savedState.Clone();
         GameSettingsState targetState = editingState.Clone();
-        GameInputService inputService = GameInputService.Instance;
-        targetState.InputRebindsJson = inputService != null
-            ? inputService.SaveBindingOverrides()
+        GameInput input = GameInput.Instance;
+        targetState.InputRebindsJson = input != null
+            ? input.SaveBindingOverrides()
             : targetState.InputRebindsJson;
         targetState.Sanitize();
 
@@ -184,8 +185,8 @@ public class SettingsPanelManager : ViewPartBase
 
         editingState = GameSettingsState.Default();
         savedState = editingState.Clone();
-        GameInputService inputService = GameInputService.Instance;
-        inputService?.ClearBindingOverrides();
+        GameInput input = GameInput.Instance;
+        input?.ClearBindingOverrides();
         editingState.InputRebindsJson = string.Empty;
         savedState.InputRebindsJson = string.Empty;
         GameSettingsService.Save(savedState);
@@ -250,8 +251,8 @@ public class SettingsPanelManager : ViewPartBase
     private void LoadSavedState()
     {
         savedState = GameSettingsService.Load();
-        GameInputService inputService = GameInputService.Instance;
-        inputService?.LoadBindingOverrides(savedState.InputRebindsJson);
+        GameInput input = GameInput.Instance;
+        input?.LoadBindingOverrides(savedState.InputRebindsJson);
         editingState = savedState.Clone();
         ClampEditingStateToProfile();
     }
@@ -338,8 +339,8 @@ public class SettingsPanelManager : ViewPartBase
         activeRebind?.Dispose();
         activeRebind = null;
 
-        GameInputService inputService = GameInputService.Instance;
-        inputService?.ClearBindingOverrides();
+        GameInput input = GameInput.Instance;
+        input?.ClearBindingOverrides();
         editingState.InputRebindsJson = string.Empty;
         RefreshRebindRows();
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
@@ -358,10 +359,10 @@ public class SettingsPanelManager : ViewPartBase
         row.SetValue("按下按键...");
         row.SetInteractable(false);
 
-        GameInputService inputService = GameInputService.Instance;
-        InputRebindService.RebindEntry entry = row.Entry;
+        GameInput input = GameInput.Instance;
+        InputRebindEntry entry = row.Entry;
         activeRebind = InputRebindService.StartInteractiveRebind(
-            inputService,
+            input,
             entry,
             (result, message) =>
             {
@@ -371,8 +372,8 @@ public class SettingsPanelManager : ViewPartBase
 
                 if (result == InputRebindResult.Success)
                 {
-                    editingState.InputRebindsJson = inputService != null
-                        ? inputService.SaveBindingOverrides()
+                    editingState.InputRebindsJson = input != null
+                        ? input.SaveBindingOverrides()
                         : string.Empty;
                     RefreshRebindRows();
                     AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
@@ -485,7 +486,7 @@ public class SettingsPanelManager : ViewPartBase
 
     private void RefreshRebindRows()
     {
-        GameInputService inputService = GameInputService.Instance;
+        GameInput input = GameInput.Instance;
         activeRebindRows.Clear();
 
         for (int i = 0; i < rebindRows.Length; i++)
@@ -503,7 +504,7 @@ public class SettingsPanelManager : ViewPartBase
             if (allowed)
             {
                 activeRebindRows.Add(row);
-                row.SetValue(InputRebindService.GetDisplayString(inputService, row.Entry));
+                row.SetValue(InputRebindService.GetDisplayString(input, row.Entry));
             }
         }
 

@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 长生烛火
   icon: {fileID: 0}
   rarity: 2
-  tags: 01000000
+  tags: 02000000
   description: 
-  propertyModifiers:
-  - propType: 5
-    modifierType: 0
-    value: 22
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000023001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000023001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 5
+          modifierType: 0
+          value: 28.125

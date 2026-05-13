@@ -2,10 +2,6 @@ using UnityEngine;
 
 public class HitStartModifier : IHitModifier
 {
-    private const float ARMOR_REDUCTION_SCALE = 25f;
-    private const float MIN_ARMOR = -95f;
-    private const float MAX_SEQUENTIAL_REDUCTION = 0.95f;
-
     public int HitPriority => HitModifierPriority.Core;
     public HitModifierTiming HitModifierTiming => HitModifierTiming.Deal;
 
@@ -35,39 +31,21 @@ public class HitStartModifier : IHitModifier
             hitContext.DodgeChance = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.Dodge,
                 propertiesManager.GetPropValue(PropType.Dodge));
-            float armorReduction = ResolveArmorDamageReduction(
+            float armorReduction = PropValueUtility.ResolveArmorDamageReductionRatio(
                 propertiesManager.GetPropValue(PropType.Armor),
                 hitContext.ArmorPenetrationPercent);
             float damageReduction = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.DamageReduction,
                 propertiesManager.GetPropValue(PropType.DamageReduction));
-            hitContext.DamageReduction = CombineSequentialReductions(armorReduction, damageReduction);
+            hitContext.DamageReduction = PropValueUtility.CombineDamageReductionRatios(armorReduction, damageReduction);
             float knockbackResistance = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.KnockbackResistance,
                 propertiesManager.GetPropValue(PropType.KnockbackResistance));
-            hitContext.KnockbackStrength = Mathf.Max(0f, hitContext.KnockbackStrength * (1f - knockbackResistance));
+            hitContext.KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(
+                hitContext.KnockbackStrength * (1f - knockbackResistance));
         }
 
         hitContext.IsCritical = Random.value <= hitContext.CritChance;
         hitContext.IsDodged = Random.value <= hitContext.DodgeChance;
-    }
-
-    private static float ResolveArmorDamageReduction(float armor, float armorPenetrationPercent)
-    {
-        armor = Mathf.Max(MIN_ARMOR, armor);
-        if (armor > 0f && armorPenetrationPercent > 0f)
-        {
-            float armorPenetrationRatio = Mathf.Clamp01(PropValueUtility.PercentPointsToRatio(armorPenetrationPercent));
-            armor *= 1f - armorPenetrationRatio;
-        }
-
-        return armor / (Mathf.Abs(armor) + ARMOR_REDUCTION_SCALE);
-    }
-
-    private static float CombineSequentialReductions(float firstReduction, float secondReduction)
-    {
-        firstReduction = Mathf.Min(firstReduction, MAX_SEQUENTIAL_REDUCTION);
-        secondReduction = Mathf.Min(secondReduction, MAX_SEQUENTIAL_REDUCTION);
-        return Mathf.Min(1f - (1f - firstReduction) * (1f - secondReduction), MAX_SEQUENTIAL_REDUCTION);
     }
 }

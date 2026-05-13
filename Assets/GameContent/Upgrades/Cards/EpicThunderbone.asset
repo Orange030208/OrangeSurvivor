@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 疾雷入骨
   icon: {fileID: 0}
   rarity: 2
-  tags: 03000000
+  tags: 08000000
   description: 
-  propertyModifiers:
-  - propType: 1
-    modifierType: 0
-    value: 11
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000026001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000026001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 1
+          modifierType: 0
+          value: 11

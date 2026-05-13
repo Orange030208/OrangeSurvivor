@@ -29,7 +29,6 @@ public static class GameContentCatalogBuildUtility
     {
         EnsureFolders();
         RefreshWeaponDataList();
-        ContentFactDefinitionAssetUtility.CreateBuiltInFactDefinitions();
         CreateOrUpdateContentPools();
         GameContentCatalogSO catalog = GetOrCreateCatalog();
         PopulateCatalog(catalog);
@@ -58,8 +57,6 @@ public static class GameContentCatalogBuildUtility
         EnsureFolder(GameContentAssetPaths.Map);
         EnsureFolder(GameContentAssetPaths.UpgradePools);
         EnsureFolder(GameContentAssetPaths.UpgradePresentation);
-        EnsureFolder(GameContentAssetPaths.UpgradeTags);
-        EnsureFolder(GameContentAssetPaths.UpgradeFacts);
         EnsureFolder(GameContentAssetPaths.WavePools);
         EnsureFolder(GameContentAssetPaths.CombatData);
         EnsureFolder(GameContentAssetPaths.CombatMaterials);
@@ -89,32 +86,27 @@ public static class GameContentCatalogBuildUtility
     {
         CreateOrUpdatePool(
             UpgradeCardPoolPath,
-            ContentPoolPurpose.UpgradeCard,
             BuildUpgradeCardEntries(),
             4,
             false);
         CreateOrUpdatePool(
             ChestRewardPoolPath,
-            ContentPoolPurpose.ChestReward,
             BuildChestRewardEntries(),
             3,
             false);
         CreateOrUpdatePool(
             ShopPoolPath,
-            ContentPoolPurpose.Shop,
             BuildShopEntries(),
             4,
             false);
         CreateOrUpdatePool(
             DropPoolPath,
-            ContentPoolPurpose.Drop,
             BuildDropEntries(),
             1,
             false);
-        EnsureExistingPool(WaveSpawnPoolPath, ContentPoolPurpose.WaveSpawn, "Wave Spawn Pool must be authored directly; wave definitions no longer contain enemy candidates.");
+        EnsureExistingPool(WaveSpawnPoolPath, "Wave Spawn Pool must be authored directly; wave definitions no longer contain enemy candidates.");
         CreateOrUpdatePool(
             WeaponRewardPoolPath,
-            ContentPoolPurpose.WeaponReward,
             BuildWeaponRewardEntries(),
             1,
             false);
@@ -122,7 +114,6 @@ public static class GameContentCatalogBuildUtility
 
     private static ContentPoolSO CreateOrUpdatePool(
         string path,
-        ContentPoolPurpose purpose,
         IReadOnlyList<ContentPoolEntry> entries,
         int rollCount,
         bool allowDuplicateResults)
@@ -142,23 +133,18 @@ public static class GameContentCatalogBuildUtility
             AssetDatabase.CreateAsset(pool, path);
         }
 
-        pool.Initialize(purpose, entries, rollCount, allowDuplicateResults);
+        pool.Initialize(entries, rollCount, allowDuplicateResults);
         EditorUtility.SetDirty(pool);
         return pool;
     }
 
-    private static void EnsureExistingPool(string path, ContentPoolPurpose expectedPurpose, string missingMessage)
+    private static void EnsureExistingPool(string path, string missingMessage)
     {
         ContentPoolSO pool = AssetDatabase.LoadAssetAtPath<ContentPoolSO>(path);
         if (pool == null)
         {
             Debug.LogError($"{missingMessage} Missing asset at {path}.");
             return;
-        }
-
-        if (pool.Purpose != expectedPurpose)
-        {
-            Debug.LogError($"{path} expects purpose {expectedPurpose} but is {pool.Purpose}.", pool);
         }
     }
 
@@ -205,7 +191,10 @@ public static class GameContentCatalogBuildUtility
             }
 
             ContentPoolEntry entry = new(accessory, DefaultAccessoryWeight, accessory.AccessoryId);
-            entry.ConfigureRuntimeMetadata(0, 0, accessory.Rarity, 1f);
+            entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+            {
+                new QualityMetadata(accessory.Rarity)
+            });
             entries.Add(entry);
         }
 
@@ -223,7 +212,11 @@ public static class GameContentCatalogBuildUtility
             }
 
             ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, weapon.ItemName);
-            entry.ConfigureRuntimeMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel, 0, 1f);
+            entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+            {
+                new WeaponLevelRollMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel),
+                new ShopPricingMetadata(1f)
+            });
             entries.Add(entry);
         }
 
@@ -248,7 +241,7 @@ public static class GameContentCatalogBuildUtility
             {
                 entry.ConfigureRuntimeRules(
                     null,
-                    new[] { new FactScaleWeightContentRule(LoadFact("Luck.asset"), 0.02f, 0f, 5f) });
+                    new[] { new PlayerPropertyScaleWeightRule(PropType.Luck, 0.02f, 0f, 5f) });
             }
 
             entries.Add(entry);
@@ -268,16 +261,14 @@ public static class GameContentCatalogBuildUtility
             }
 
             ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, weapon.ItemName);
-            entry.ConfigureRuntimeMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel, 0, 1f);
+            entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+            {
+                new WeaponLevelRollMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel)
+            });
             entries.Add(entry);
         }
 
         return entries;
-    }
-
-    private static FactDefinitionSO LoadFact(string fileName)
-    {
-        return AssetDatabase.LoadAssetAtPath<FactDefinitionSO>($"{GameContentAssetPaths.UpgradeFacts}/{fileName}");
     }
 
     private static IReadOnlyList<T> LoadAssets<T>(params string[] folders) where T : UnityEngine.Object

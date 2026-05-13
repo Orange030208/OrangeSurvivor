@@ -43,7 +43,8 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private void ExecuteCommittedAreaAttack()
     {
         Vector2 attackCenter = ResolveAttackCenter();
-        float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
+        float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
         RuntimeVfx.Spawn(hitVfxPrefab, attackCenter, Quaternion.identity);
 
         int hitCount = QueryAreaHits(attackCenter, attackRadius);

@@ -18,12 +18,12 @@ MonoBehaviour:
   itemType: 1
   itemDescription: ""
   accessoryId: old_wallet
-  recyclePrice: 4
+  recyclePrice: 5
   rarity: 0
   propertyModifiers:
   - propType: 22
     modifierType: 0
-    value: 2
+    value: 5
   specialFeatures: []
   references:
     version: 2

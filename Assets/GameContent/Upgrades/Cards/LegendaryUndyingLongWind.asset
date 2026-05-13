@@ -16,19 +16,36 @@ MonoBehaviour:
   title: 不灭长风
   icon: {fileID: 0}
   rarity: 3
-  tags: 01000000
+  tags: 02000000
   description: 
-  propertyModifiers:
-  - propType: 5
-    modifierType: 0
-    value: 18
-  - propType: 8
-    modifierType: 0
-    value: 1
-  - propType: 25
-    modifierType: 0
-    value: 2
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000030001
+  - rid: 830000000000030002
+  - rid: 830000000000030003
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000030001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 5
+          modifierType: 0
+          value: 20
+    - rid: 830000000000030002
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 8
+          modifierType: 0
+          value: 1
+    - rid: 830000000000030003
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 25
+          modifierType: 0
+          value: 2

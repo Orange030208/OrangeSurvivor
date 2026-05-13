@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b3d8234ebc54bed973b7d1ffa094ae4, type: 3}
   m_Name: Chest Reward Pool
   m_EditorClassIdentifier: 
-  purpose: 2
   defaultRollCount: 3
   allowDuplicateResults: 0
   entries:
@@ -22,12 +21,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000001
     conditions: []
     weightRules: []
   - entryId: arsenal_license
@@ -36,12 +31,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000002
     conditions: []
     weightRules: []
   - entryId: black_market_membership_card
@@ -50,12 +41,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000003
     conditions: []
     weightRules: []
   - entryId: blood_oath_pendant
@@ -64,12 +51,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000004
     conditions: []
     weightRules: []
   - entryId: caravan_ledger
@@ -78,12 +61,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000005
     conditions: []
     weightRules: []
   - entryId: champion_ammo_belt
@@ -92,12 +71,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000006
     conditions: []
     weightRules: []
   - entryId: collector_cufflinks
@@ -106,12 +81,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000007
     conditions: []
     weightRules: []
   - entryId: composite_armor_core
@@ -120,12 +91,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000008
     conditions: []
     weightRules: []
   - entryId: constellation_scope
@@ -134,12 +101,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000009
     conditions: []
     weightRules: []
   - entryId: cracked_sight
@@ -148,12 +111,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000010
     conditions: []
     weightRules: []
   - entryId: energy_magazine
@@ -162,12 +121,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000011
     conditions: []
     weightRules: []
   - entryId: featherlight_exoskeleton
@@ -176,12 +131,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000012
     conditions: []
     weightRules: []
   - entryId: first_aid_spray
@@ -190,12 +141,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000013
     conditions: []
     weightRules: []
   - entryId: hunter_badge
@@ -204,12 +151,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000014
     conditions: []
     weightRules: []
   - entryId: leather_ammo_belt
@@ -218,12 +161,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000015
     conditions: []
     weightRules: []
   - entryId: lightweight_stock
@@ -232,12 +171,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000016
     conditions: []
     weightRules: []
   - entryId: long_range_lens
@@ -246,12 +181,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000017
     conditions: []
     weightRules: []
   - entryId: lucky_dice
@@ -260,12 +191,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000018
     conditions: []
     weightRules: []
   - entryId: magnetic_field_backpack
@@ -274,12 +201,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000019
     conditions: []
     weightRules: []
   - entryId: old_running_shoes
@@ -288,12 +211,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000020
     conditions: []
     weightRules: []
   - entryId: old_wallet
@@ -302,12 +221,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000021
     conditions: []
     weightRules: []
   - entryId: overload_trigger
@@ -316,12 +231,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000022
     conditions: []
     weightRules: []
   - entryId: piercing_magazine
@@ -330,12 +241,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000023
     conditions: []
     weightRules: []
   - entryId: polished_ammo_box
@@ -344,12 +251,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000024
     conditions: []
     weightRules: []
   - entryId: portable_med_patch
@@ -358,12 +261,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000025
     conditions: []
     weightRules: []
   - entryId: precision_rangefinder
@@ -372,12 +271,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000026
     conditions: []
     weightRules: []
   - entryId: rusty_brooch
@@ -386,12 +281,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000027
     conditions: []
     weightRules: []
   - entryId: small_magnetic_clasp
@@ -400,12 +291,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000028
     conditions: []
     weightRules: []
   - entryId: stabilizing_counterweight
@@ -414,12 +301,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000029
     conditions: []
     weightRules: []
   - entryId: star_iron_stock
@@ -428,12 +311,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000030
     conditions: []
     weightRules: []
   - entryId: tactical_gloves
@@ -442,12 +321,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000031
     conditions: []
     weightRules: []
   - entryId: thick_insoles
@@ -456,12 +331,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 1
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000032
     conditions: []
     weightRules: []
   - entryId: unyielding_core
@@ -470,12 +341,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 3
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000033
     conditions: []
     weightRules: []
   - entryId: vampiric_fang_pendant
@@ -484,12 +351,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000034
     conditions: []
     weightRules: []
   - entryId: windrunner_pendant
@@ -498,12 +361,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 2
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000035
     conditions: []
     weightRules: []
   - entryId: worn_wristguard
@@ -512,14 +371,154 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000036
     conditions: []
     weightRules: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274046000000000001
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000002
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000003
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000004
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000005
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000006
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000007
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000008
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000009
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000010
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000011
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000012
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000013
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000014
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000015
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000016
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000017
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000018
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000019
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000020
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000021
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000022
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000023
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000024
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000025
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000026
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000027
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000028
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046000000000029
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000030
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000031
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000032
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046000000000033
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046000000000034
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000035
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046000000000036
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0

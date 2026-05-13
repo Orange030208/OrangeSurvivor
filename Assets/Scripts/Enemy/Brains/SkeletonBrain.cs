@@ -92,7 +92,8 @@ public class SkeletonBrain : EnemyBrain
     protected void ExecuteMeleeAreaAttack(float rangeMultiplier)
     {
         Vector2 attackCenter = ResolveMeleeAttackCenter();
-        float attackRadius = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, rangeMultiplier);
+        float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, rangeMultiplier);
 
         int hitCount = AreaHitQueryUtility.OverlapFacingSemicircleNonAlloc(
             attackCenter,
@@ -198,7 +199,7 @@ public class SkeletonBrain : EnemyBrain
 
     private float ResolveDamage()
     {
-        return Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Attack));
+        return PropValueUtility.ClampNonNegative(propertiesManager.GetPropValue(PropType.Attack));
     }
 
     private void RequestIdleOrChaseAfterAttack()

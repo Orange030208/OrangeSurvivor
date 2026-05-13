@@ -1,23 +1,31 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public sealed class PropertyModifierFeature : FeatureEffectBase
 {
     [SerializeField] private PropModifierData modifier;
-    private string sourceId;
+    private string runtimeSourceId;
+
+    public PropModifierData Modifier => modifier;
 
     public PropertyModifierFeature()
     {
     }
 
-    public PropertyModifierFeature(string sourceId, PropModifierData modifier)
+    public PropertyModifierFeature(PropModifierData modifier)
     {
-        this.sourceId = sourceId;
         this.modifier = modifier;
     }
 
-    public override string Description => string.Empty;
-    
+    public PropertyModifierFeature(string sourceId, PropModifierData modifier)
+    {
+        SourceId = sourceId;
+        this.modifier = modifier;
+    }
+
+    public override string Title => modifier.GetDisplayName();
+    public override string Description => modifier.GetDisplayValueText();
 
     public override void OnInstall()
     {
@@ -26,7 +34,8 @@ public sealed class PropertyModifierFeature : FeatureEffectBase
             return;
         }
 
-        Context.PropertiesManager.AddModifier(sourceId, modifier);
+        runtimeSourceId = ResolveRuntimeSourceId();
+        Context.PropertiesManager.AddModifier(runtimeSourceId, modifier);
     }
 
     public override void OnUninstall()
@@ -36,6 +45,23 @@ public sealed class PropertyModifierFeature : FeatureEffectBase
             return;
         }
 
-        Context.PropertiesManager.RemoveModifier(sourceId, modifier.propType, modifier.modifierType);
+        Context.PropertiesManager.RemoveModifier(ResolveRuntimeSourceId(), modifier.propType, modifier.modifierType);
+    }
+
+    public override IEnumerable<DescriptorInfo> GetExtraInfos()
+    {
+        yield return new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText());
+    }
+
+    private string ResolveRuntimeSourceId()
+    {
+        if (!string.IsNullOrWhiteSpace(runtimeSourceId))
+        {
+            return runtimeSourceId;
+        }
+
+        return string.IsNullOrWhiteSpace(SourceId)
+            ? $"{nameof(PropertyModifierFeature)}_{GetHashCode()}"
+            : $"{SourceId}:{nameof(PropertyModifierFeature)}_{GetHashCode()}";
     }
 }

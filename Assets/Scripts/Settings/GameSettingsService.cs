@@ -134,10 +134,10 @@ public static class GameSettingsService
             return;
         }
 
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService != null)
+        GameInput input = GameInput.Instance;
+        if (input != null)
         {
-            inputService.LoadBindingOverrides(rebindsJson);
+            input.LoadBindingOverrides(rebindsJson);
         }
     }
 }

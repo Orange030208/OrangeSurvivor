@@ -137,3 +137,7 @@ Thumbs.db
 
 # User Settings
 [Uu]ser[Ss]ettings/
+
+# Local Codex tooling state
+.codex/config.toml
+.superpowers/

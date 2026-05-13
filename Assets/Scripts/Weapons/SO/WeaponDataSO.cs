@@ -4,10 +4,10 @@ using UnityEngine;
 
 public enum WeaponTag
 {
-    Precision = 4,
-    Fast = 5,
-    Heavy = 6,
-    Growth = 7
+    Precision = 0,
+    Fast = 1,
+    Heavy = 2,
+    Growth = 3
 }
 
 public enum WeaponAttackTimingMode

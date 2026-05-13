@@ -44,9 +44,6 @@ public static class GameContentAssetPaths
     public const string UpgradeCards = Upgrades + "/Cards";
     public const string UpgradePools = Upgrades + "/Pools";
     public const string UpgradePresentation = Upgrades + "/Presentation";
-    public const string UpgradeTags = Upgrades + "/Tags";
-    public const string UpgradeCardTags = UpgradeTags + "/Upgrade Cards";
-    public const string UpgradeFacts = Upgrades + "/Facts";
     public const string UpgradeCardPool = UpgradePools + "/Upgrade Card Pool.asset";
     public const string CardQualityPresentationCatalog = UpgradePresentation + "/Upgrade Card Rarity Presentation Catalog.asset";
 

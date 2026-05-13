@@ -70,7 +70,7 @@ public class DropsDetector : EntityComponentBase
 
     private void RefreshDetectRadius(float radiusPoints)
     {
-        detectRadius = Mathf.Max(0f, PropValueUtility.DistancePointsToWorldUnits(radiusPoints));
+        detectRadius = PropValueUtility.DistancePointsToNonNegativeWorldUnits(radiusPoints);
     }
 
     private void Detect()

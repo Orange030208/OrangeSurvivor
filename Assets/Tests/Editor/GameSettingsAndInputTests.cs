@@ -1,9 +1,13 @@
 using NUnit.Framework;
+using Orange.Input;
 using Orange.UIFramework;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 public class GameSettingsAndInputTests
@@ -149,6 +153,175 @@ public class GameSettingsAndInputTests
     }
 
     [Test]
+    public void GameInputUsesExplicitlyAssignedInputActions()
+    {
+        GameObject gameObject = new("explicit_input_service");
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        try
+        {
+            GameInput service = gameObject.AddComponent<GameInput>();
+            InputActionRuntime runtime = gameObject.AddComponent<InputActionRuntime>();
+            SetPrivateField(runtime, "actionsAsset", asset);
+            SetPrivateField(service, "inputRuntime", runtime);
+
+            service.Initialize();
+
+            Assert.AreSame(asset, service.ActionsAsset);
+            Assert.NotNull(service.MoveAction);
+            Assert.NotNull(service.PauseAction);
+            Assert.NotNull(service.UiCancelAction);
+        }
+        finally
+        {
+            GameInput.UnregisterSceneInstance(GameInput.Instance);
+            Object.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void GameInputRequiresExplicitInputActions()
+    {
+        GameObject gameObject = new("missing_input_asset_service");
+        try
+        {
+            LogAssert.Expect(LogType.Error, "GameInput on 'missing_input_asset_service' requires an explicit InputActionRuntime reference.");
+            GameInput service = gameObject.AddComponent<GameInput>();
+
+            service.Initialize();
+
+            Assert.IsNull(service.ActionsAsset);
+            Assert.IsNull(service.MoveAction);
+        }
+        finally
+        {
+            GameInput.UnregisterSceneInstance(GameInput.Instance);
+            Object.DestroyImmediate(gameObject);
+        }
+    }
+
+    [Test]
+    public void InputActionRuntimeRequiresExplicitInputActions()
+    {
+        GameObject gameObject = new("missing_input_action_runtime");
+        try
+        {
+            LogAssert.Expect(LogType.Error, "InputActionRuntime on 'missing_input_action_runtime' requires an explicit InputActionAsset reference.");
+            InputActionRuntime runtime = gameObject.AddComponent<InputActionRuntime>();
+
+            runtime.Initialize();
+
+            Assert.IsNull(runtime.ActionsAsset);
+            Assert.IsFalse(runtime.TryFindAction("Gameplay/Move", out InputAction action));
+            Assert.IsNull(action);
+        }
+        finally
+        {
+            Object.DestroyImmediate(gameObject);
+        }
+    }
+
+    [Test]
+    public void InputSystemUiBinderConfiguresEventSystemFromProvider()
+    {
+        GameObject inputObject = new("input_runtime");
+        GameObject eventSystemObject = new("event_system", typeof(EventSystem), typeof(StandaloneInputModule));
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        try
+        {
+            InputActionRuntime runtime = inputObject.AddComponent<InputActionRuntime>();
+            SetPrivateField(runtime, "actionsAsset", asset);
+            runtime.Initialize();
+
+            InputSystemUiActionPaths paths = InputSystemUiActionPaths.Default;
+            InputSystemUiBinder.Configure(eventSystemObject.GetComponent<EventSystem>(), runtime, paths);
+
+            StandaloneInputModule legacyModule = eventSystemObject.GetComponent<StandaloneInputModule>();
+            InputSystemUIInputModule inputModule = eventSystemObject.GetComponent<InputSystemUIInputModule>();
+            Assert.IsFalse(legacyModule.enabled);
+            Assert.NotNull(inputModule);
+            Assert.AreSame(asset, inputModule.actionsAsset);
+            Assert.NotNull(inputModule.point);
+            Assert.NotNull(inputModule.leftClick);
+            Assert.NotNull(inputModule.scrollWheel);
+            Assert.NotNull(inputModule.move);
+            Assert.NotNull(inputModule.submit);
+            Assert.NotNull(inputModule.cancel);
+        }
+        finally
+        {
+            Object.DestroyImmediate(eventSystemObject);
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void GameInputSceneBinderRegistersInputAndConfiguresEventSystem()
+    {
+        GameObject inputObject = new("scene_input", typeof(GameInput), typeof(InputActionRuntime));
+        GameObject eventSystemObject = new("event_system", typeof(EventSystem), typeof(StandaloneInputModule));
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        try
+        {
+            GameInput input = inputObject.GetComponent<GameInput>();
+            InputActionRuntime runtime = inputObject.GetComponent<InputActionRuntime>();
+            SetPrivateField(runtime, "actionsAsset", asset);
+            SetPrivateField(input, "inputRuntime", runtime);
+            GameInputSceneBinder binder = inputObject.AddComponent<GameInputSceneBinder>();
+            SetPrivateField(binder, "input", input);
+            SetPrivateField(binder, "inputRuntime", runtime);
+            SetPrivateField(binder, "eventSystem", eventSystemObject.GetComponent<EventSystem>());
+
+            binder.Bind();
+
+            Assert.AreSame(input, GameInput.Instance);
+            Assert.IsTrue(input.MoveAction.enabled);
+            Assert.NotNull(eventSystemObject.GetComponent<InputSystemUIInputModule>());
+            Assert.IsFalse(eventSystemObject.GetComponent<StandaloneInputModule>().enabled);
+        }
+        finally
+        {
+            GameInput.UnregisterSceneInstance(GameInput.Instance);
+            Object.DestroyImmediate(eventSystemObject);
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void GameInputRejectsDuplicateSceneRegistration()
+    {
+        GameObject firstObject = new("first_scene_input", typeof(GameInput), typeof(InputActionRuntime));
+        GameObject secondObject = new("second_scene_input", typeof(GameInput), typeof(InputActionRuntime));
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        try
+        {
+            GameInput firstInput = firstObject.GetComponent<GameInput>();
+            InputActionRuntime firstRuntime = firstObject.GetComponent<InputActionRuntime>();
+            SetPrivateField(firstRuntime, "actionsAsset", asset);
+            SetPrivateField(firstInput, "inputRuntime", firstRuntime);
+
+            GameInput secondInput = secondObject.GetComponent<GameInput>();
+            InputActionRuntime secondRuntime = secondObject.GetComponent<InputActionRuntime>();
+            SetPrivateField(secondRuntime, "actionsAsset", asset);
+            SetPrivateField(secondInput, "inputRuntime", secondRuntime);
+
+            Assert.IsTrue(GameInput.TryRegisterSceneInstance(firstInput));
+            LogAssert.Expect(LogType.Error, "GameInput duplicate found on 'second_scene_input'. Keep exactly one scene or scene binder-owned instance.");
+            Assert.IsFalse(GameInput.TryRegisterSceneInstance(secondInput));
+            Assert.AreSame(firstInput, GameInput.Instance);
+        }
+        finally
+        {
+            GameInput.UnregisterSceneInstance(GameInput.Instance);
+            Object.DestroyImmediate(secondObject);
+            Object.DestroyImmediate(firstObject);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
     public void InputRebindConflictDetectsDuplicateBindingInSameAction()
     {
         InputActionAsset asset = CreateTestInputActions();
@@ -159,6 +332,7 @@ public class GameSettingsAndInputTests
 
         Assert.IsTrue(InputRebindService.HasConflict(move, upIndex, move.bindings[upIndex].effectivePath));
         Assert.IsFalse(InputRebindService.HasConflict(move, leftIndex, move.bindings[leftIndex].effectivePath));
+        Assert.AreEqual(10, GameInputRebindCatalog.Entries.Count);
     }
 
     [Test]
@@ -228,7 +402,7 @@ public class GameSettingsAndInputTests
             }
 
             SerializedProperty rebindRowsProperty = managerObject.FindProperty("rebindRows");
-            Assert.AreEqual(InputRebindService.RebindEntries.Count, rebindRowsProperty.arraySize);
+            Assert.AreEqual(GameInputRebindCatalog.Entries.Count, rebindRowsProperty.arraySize);
             for (int i = 0; i < rebindRowsProperty.arraySize; i++)
             {
                 Assert.NotNull(rebindRowsProperty.GetArrayElementAtIndex(i).objectReferenceValue);
@@ -338,7 +512,7 @@ public class GameSettingsAndInputTests
         Assert.IsFalse(definition.TrackInBackStack);
     }
 
-    private static InputActionAsset CreateTestInputActions()
+    private static InputActionAsset CreateTestInputActions(bool includeUi = false)
     {
         InputActionAsset asset = ScriptableObject.CreateInstance<InputActionAsset>();
         InputActionMap gameplay = asset.AddActionMap("Gameplay");
@@ -351,7 +525,31 @@ public class GameSettingsAndInputTests
             .With("Right", "<Keyboard>/d", groups: "Keyboard&Mouse");
         gameplay.AddAction("Pause", InputActionType.Button)
             .AddBinding("<Keyboard>/escape", groups: "Keyboard&Mouse");
+        if (includeUi)
+        {
+            InputActionMap ui = asset.AddActionMap("UI");
+            ui.AddAction("Cancel", InputActionType.Button).AddBinding("<Keyboard>/escape", groups: "Keyboard&Mouse");
+            ui.AddAction("Point", InputActionType.Value).AddBinding("<Pointer>/position");
+            ui.AddAction("Click", InputActionType.Button).AddBinding("<Pointer>/press");
+            ui.AddAction("Scroll", InputActionType.Value).AddBinding("<Mouse>/scroll");
+            ui.AddAction("Navigate", InputActionType.Value).AddCompositeBinding("2DVector")
+                .With("Up", "<Keyboard>/upArrow")
+                .With("Down", "<Keyboard>/downArrow")
+                .With("Left", "<Keyboard>/leftArrow")
+                .With("Right", "<Keyboard>/rightArrow");
+            ui.AddAction("Submit", InputActionType.Button).AddBinding("<Keyboard>/enter");
+        }
+
         return asset;
+    }
+
+    private static void SetPrivateField<TTarget>(TTarget target, string fieldName, object value)
+    {
+        System.Reflection.FieldInfo field = typeof(TTarget).GetField(
+            fieldName,
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.NotNull(field, $"Missing private field '{fieldName}' on {typeof(TTarget).Name}.");
+        field.SetValue(target, value);
     }
 
     private static int FindBindingIndex(InputAction action, string partName)

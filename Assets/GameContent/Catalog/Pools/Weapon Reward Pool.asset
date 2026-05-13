@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b3d8234ebc54bed973b7d1ffa094ae4, type: 3}
   m_Name: Weapon Reward Pool
   m_EditorClassIdentifier: 
-  purpose: 6
   defaultRollCount: 1
   allowDuplicateResults: 0
   entries:
@@ -22,12 +21,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000001
     conditions: []
     weightRules: []
   - entryId: "\u71E7\u53D1\u624B\u67AA"
@@ -36,12 +31,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000002
     conditions: []
     weightRules: []
   - entryId: "\u5DE8\u5203\u5927\u5251"
@@ -50,12 +41,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000003
     conditions: []
     weightRules: []
   - entryId: "\u5FC3\u4E4B\u94A2"
@@ -64,12 +51,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000004
     conditions: []
     weightRules: []
   - entryId: "\u730E\u624B\u77ED\u5315"
@@ -78,12 +61,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000005
     conditions: []
     weightRules: []
   - entryId: "\u94C1\u5251"
@@ -92,12 +71,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000006
     conditions: []
     weightRules: []
   - entryId: "\u6E38\u4FA0\u5F2F\u5200"
@@ -106,12 +81,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000007
     conditions: []
     weightRules: []
   - entryId: "\u9730\u5F39\u67AA"
@@ -120,12 +91,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000008
     conditions: []
     weightRules: []
   - entryId: "\u72D9\u51FB\u6B65\u67AA"
@@ -134,12 +101,8 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000009
     conditions: []
     weightRules: []
   - entryId: "\u66DC\u91D1\u6743\u6756"
@@ -148,14 +111,60 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 1
-    maxLevel: 4
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
+    metadata:
+    - rid: 7274046000000000010
     conditions: []
     weightRules: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274046000000000001
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000002
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000003
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000004
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000005
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000006
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000007
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000008
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000009
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046000000000010
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4

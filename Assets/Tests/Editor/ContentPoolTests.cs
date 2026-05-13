@@ -11,47 +11,28 @@ public class ContentPoolTests
     }
 
     [Test]
-    public void FactSetStoresAndReadsTypedValues()
+    public void CurrentWaveConditionFiltersCandidates()
     {
-        FactDefinitionSO fact = CreateFact("test_int", FactValueType.Int);
-        ContentFactSet facts = new();
-
-        facts.Set(fact, ContentFactValue.FromInt(7));
-
-        Assert.IsTrue(facts.TryGet(fact, out ContentFactValue value));
-        Assert.AreEqual(FactValueType.Int, value.ValueType);
-        Assert.AreEqual(7, value.IntValue);
-    }
-
-    [Test]
-    public void FactCompareConditionFiltersCandidates()
-    {
-        FactDefinitionSO waveFact = CreateFact(
-            "current_wave",
-            FactValueType.Int,
-            FactDefinitionBuiltInKind.CurrentWave);
         ContentPoolEntry earlyEntry = CreateEntry("early", 1f);
         ContentPoolEntry lateEntry = CreateEntry("late", 1f);
         lateEntry.ConfigureRuntimeRules(
             new ContentCondition[]
             {
-                new FactCompareContentCondition(
-                    waveFact,
-                    ContentFactComparisonOperator.GreaterOrEqual,
-                    ContentFactValue.FromInt(3))
+                new CurrentWaveCondition(
+                    ContentComparisonOperator.GreaterOrEqual,
+                    3)
             },
             null);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.Generic,
             new[] { earlyEntry, lateEntry },
             4,
             true);
-        ContentFactSet facts = ContentFactCollector.Collect(
-            new ContentFactSource { WaveNumber = 2 },
-            new[] { waveFact });
+        ContentRollContext context = new(
+            ContentPoolScopeIds.Generic,
+            progressionSnapshot: new RunProgressionSnapshot(2, 20, 0f, 0, 1f, 1f, 1f, 0));
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(10))
-            .Roll(pool, facts, null, 4);
+            .Roll(pool, context, 4);
 
         Assert.AreEqual(4, result.Items.Count);
         for (int i = 0; i < result.Items.Count; i++)
@@ -66,13 +47,12 @@ public class ContentPoolTests
         ContentPoolEntry zeroEntry = CreateEntry("zero", 0f);
         ContentPoolEntry weightedEntry = CreateEntry("weighted", 1f);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.Generic,
             new[] { zeroEntry, weightedEntry },
             8,
             true);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(20))
-            .Roll(pool, ContentFactSet.Empty, null, 8);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic), 8);
 
         Assert.AreEqual(8, result.Items.Count);
         for (int i = 0; i < result.Items.Count; i++)
@@ -85,15 +65,14 @@ public class ContentPoolTests
     public void SameSeedProducesSameRollSequence()
     {
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.Generic,
             new[] { CreateEntry("a", 1f), CreateEntry("b", 2f), CreateEntry("c", 3f) },
             12,
             true);
 
         ContentRollResult first = new ContentPoolRollService(new SystemContentRandom(1234))
-            .Roll(pool, ContentFactSet.Empty, null, 12);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic), 12);
         ContentRollResult second = new ContentPoolRollService(new SystemContentRandom(1234))
-            .Roll(pool, ContentFactSet.Empty, null, 12);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic), 12);
 
         Assert.AreEqual(first.Items.Count, second.Items.Count);
         for (int i = 0; i < first.Items.Count; i++)
@@ -109,7 +88,6 @@ public class ContentPoolTests
         ContentPoolEntry targetEntry = new(target, 1f, "target");
         ContentPoolEntry otherEntry = CreateEntry("other", 1f);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.Generic,
             new[] { targetEntry, otherEntry },
             1,
             false);
@@ -117,11 +95,11 @@ public class ContentPoolTests
 
         ContentPoolModifierRegistry.Register(modifier);
         ContentRollResult modifiedResult = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 1);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic), 1);
 
         ContentPoolModifierRegistry.Unregister(modifier);
         ContentRollResult restoredResult = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 1);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic), 1);
 
         Assert.AreSame(otherEntry.Content, modifiedResult.Items[0].Content);
         Assert.AreSame(targetEntry.Content, restoredResult.Items[0].Content);
@@ -131,9 +109,12 @@ public class ContentPoolTests
     public void RegisteredModifierCanOverrideRolledMetadata()
     {
         ContentPoolEntry entry = CreateEntry("priced", 1f);
-        entry.ConfigureRuntimeMetadata(1, 4, 0, 1f);
+        entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+        {
+            new WeaponLevelRollMetadata(1, 4),
+            new ShopPricingMetadata(1f)
+        });
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.Shop,
             new[] { entry },
             1,
             false);
@@ -141,29 +122,116 @@ public class ContentPoolTests
 
         ContentPoolModifierRegistry.Register(modifier);
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 1);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Shop), 1);
 
-        Assert.AreEqual(2, result.Items[0].MinLevel);
-        Assert.AreEqual(3, result.Items[0].MaxLevel);
-        Assert.AreEqual(0.5f, result.Items[0].PriceMultiplier);
+        Assert.IsTrue(result.Items[0].TryGetMetadata(out WeaponLevelRollMetadata levelMetadata));
+        Assert.AreEqual(2, levelMetadata.MinLevel);
+        Assert.AreEqual(3, levelMetadata.MaxLevel);
+        Assert.IsTrue(result.Items[0].TryGetMetadata(out ShopPricingMetadata pricingMetadata));
+        Assert.AreEqual(0.5f, pricingMetadata.PriceMultiplier);
+        Assert.IsTrue(entry.TryGetMetadata(out WeaponLevelRollMetadata entryLevelMetadata));
+        Assert.AreEqual(1, entryLevelMetadata.MinLevel);
+        Assert.AreEqual(4, entryLevelMetadata.MaxLevel);
     }
 
     [Test]
     public void MaxPickCountFiltersPreviouslyPickedEntry()
     {
         ContentPoolEntry limitedEntry = CreateEntry("limited", 100f);
-        limitedEntry.ConfigureRuntimeLimits(0, 1, null);
+        limitedEntry.ConfigureRuntimeLimits(0, 1);
         ContentPoolEntry fallbackEntry = CreateEntry("fallback", 1f);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.UpgradeCard,
             new[] { limitedEntry, fallbackEntry },
             1,
             false);
-        ContentPoolRuntimeState runtimeState = new();
-        runtimeState.RecordPick("limited");
+        ContentHistoryState history = new();
+        ContentHistoryScope scope = new(ContentPoolScopeIds.UpgradeCard, "upgrade_pool", "player");
+        history.RecordPick(scope, new ContentRollItem(limitedEntry, limitedEntry.Content, 1f));
+        ContentRollContext context = new(
+            ContentPoolScopeIds.UpgradeCard,
+            historyScope: scope,
+            history: history);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, runtimeState, 1);
+            .Roll(pool, context, 1);
+
+        Assert.AreSame(fallbackEntry.Content, result.Items[0].Content);
+    }
+
+    [Test]
+    public void ContentHistoryStateScopesRollAndPickCounts()
+    {
+        ContentHistoryState history = new();
+        ContentHistoryScope upgradeScope = new(ContentPoolScopeIds.UpgradeCard, "upgrade_pool", "player");
+        ContentHistoryScope shopScope = new(ContentPoolScopeIds.Shop, "shop_pool", "player");
+        ContentPoolEntry entry = CreateEntry("shared_entry", 1f);
+        ContentRollItem item = new(entry, entry.Content, 1f);
+
+        history.RecordRoll(upgradeScope, new[] { item });
+        history.RecordPick(upgradeScope, item);
+
+        Assert.AreEqual(1, history.GetRollCount(upgradeScope, "shared_entry"));
+        Assert.AreEqual(1, history.GetPickCount(upgradeScope, "shared_entry"));
+        Assert.IsTrue(history.WasPreviouslyRolled(upgradeScope, "shared_entry"));
+        Assert.IsTrue(history.WasPreviouslyOffered(upgradeScope, "shared_entry"));
+
+        Assert.AreEqual(0, history.GetRollCount(shopScope, "shared_entry"));
+        Assert.AreEqual(0, history.GetPickCount(shopScope, "shared_entry"));
+        Assert.IsFalse(history.WasPreviouslyRolled(shopScope, "shared_entry"));
+        Assert.IsFalse(history.WasPreviouslyOffered(shopScope, "shared_entry"));
+    }
+
+    [Test]
+    public void ContentHistoryStateRecordsAllUpgradeCardTagBits()
+    {
+        ContentHistoryState history = new();
+        ContentHistoryScope scope = new(ContentPoolScopeIds.UpgradeCard, "upgrade_pool", "player");
+        UpgradeCardSO card = ScriptableObject.CreateInstance<UpgradeCardSO>();
+        card.InitializeRuntime(
+            "multi_tag",
+            "Multi Tag",
+            UpgradeCardRarity.Common,
+            new[] { UpgradeCardTag.Attack, UpgradeCardTag.Weapon, UpgradeCardTag.Ranged },
+            string.Empty);
+        ContentPoolEntry entry = new(card, 1f, card.CardId);
+        ContentRollItem item = new(entry, card, 1f);
+
+        history.RecordPick(scope, item);
+
+        Assert.AreEqual(1, history.GetUpgradeCardTagPickCount(scope, UpgradeCardTag.Attack));
+        Assert.AreEqual(1, history.GetUpgradeCardTagPickCount(scope, UpgradeCardTag.Weapon));
+        Assert.AreEqual(1, history.GetUpgradeCardTagPickCount(scope, UpgradeCardTag.Ranged));
+        Assert.AreEqual(1, history.GetUpgradeCardTagPickCount(
+            scope,
+            UpgradeCardTag.Attack | UpgradeCardTag.Weapon,
+            ContentTagMatchMode.All));
+        Assert.AreEqual(1, history.GetUpgradeCardTagPickCount(
+            scope,
+            UpgradeCardTag.Attack | UpgradeCardTag.Weapon | UpgradeCardTag.Ranged,
+            ContentTagMatchMode.Exact));
+        Assert.AreEqual(0, history.GetUpgradeCardTagPickCount(scope, UpgradeCardTag.Defense));
+    }
+
+    [Test]
+    public void RollWithContentRollContextUsesHistoryForMaxPickCount()
+    {
+        ContentPoolEntry limitedEntry = CreateEntry("limited", 100f);
+        limitedEntry.ConfigureRuntimeLimits(0, 1);
+        ContentPoolEntry fallbackEntry = CreateEntry("fallback", 1f);
+        ContentPoolSO pool = CreatePool(
+            new[] { limitedEntry, fallbackEntry },
+            1,
+            false);
+        ContentHistoryState history = new();
+        ContentHistoryScope scope = new(ContentPoolScopeIds.UpgradeCard, "upgrade_pool", "player");
+        history.RecordPick(scope, new ContentRollItem(limitedEntry, limitedEntry.Content, 1f));
+        ContentRollContext context = new(
+            ContentPoolScopeIds.UpgradeCard,
+            historyScope: scope,
+            history: history);
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, context, 1);
 
         Assert.AreSame(fallbackEntry.Content, result.Items[0].Content);
     }
@@ -172,37 +240,59 @@ public class ContentPoolTests
     public void MutualExclusionPreventsSameRollSelection()
     {
         ContentPoolEntry left = CreateEntry("left", 100f);
-        left.ConfigureRuntimeLimits(0, 0, new[] { "right" });
+        left.ConfigureRuntimeMutuallyExclusiveEntries(new[] { "right" });
         ContentPoolEntry right = CreateEntry("right", 100f);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.UpgradeCard,
             new[] { left, right },
             2,
             false);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 2);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.UpgradeCard), 2);
 
         Assert.AreEqual(1, result.Items.Count);
         Assert.IsTrue(result.Items[0].EntryId == "left" || result.Items[0].EntryId == "right");
     }
 
     [Test]
-    public void WaveSpawnPurposeUsesContentPoolModifiers()
+    public void UniqueUpgradeCardTagConditionPreventsSameTagInSingleRoll()
+    {
+        UpgradeCardSO firstCard = CreateUpgradeCard("first", UpgradeCardTag.Attack);
+        UpgradeCardSO secondCard = CreateUpgradeCard("second", UpgradeCardTag.Attack);
+        ContentPoolEntry firstEntry = new(firstCard, 100f, firstCard.CardId);
+        firstEntry.ConfigureRuntimeRules(
+            new ContentCondition[] { new UniqueUpgradeCardTagCondition(UpgradeCardTag.Attack) },
+            null);
+        ContentPoolEntry secondEntry = new(secondCard, 100f, secondCard.CardId);
+        secondEntry.ConfigureRuntimeRules(
+            new ContentCondition[] { new UniqueUpgradeCardTagCondition(UpgradeCardTag.Attack) },
+            null);
+        ContentPoolSO pool = CreatePool(
+            new[] { firstEntry, secondEntry },
+            2,
+            false);
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.UpgradeCard), 2);
+
+        Assert.AreEqual(1, result.Items.Count);
+    }
+
+    [Test]
+    public void WaveSpawnScopeUsesContentPoolModifiers()
     {
         Object target = ScriptableObject.CreateInstance<ContentPoolSO>();
         ContentPoolEntry targetEntry = new(target, 1f, "target");
         ContentPoolEntry otherEntry = CreateEntry("other_wave", 1f);
-        TestPurposeWeightModifier modifier = new(ContentPoolPurpose.WaveSpawn, target, -1f);
+        TestScopeWeightModifier modifier = new(ContentPoolScopeIds.WaveSpawn, target, -1f);
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.WaveSpawn,
             new[] { targetEntry, otherEntry },
             1,
             false);
 
         ContentPoolModifierRegistry.Register(modifier);
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 1);
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.WaveSpawn), 1);
 
         Assert.AreSame(otherEntry.Content, result.Items[0].Content);
     }
@@ -222,13 +312,16 @@ public class ContentPoolTests
             });
         ContentPoolEntry packEntry = new(spawnPack, 1f, "ambush_pack");
         ContentPoolSO pool = CreatePool(
-            ContentPoolPurpose.WaveSpawn,
             new[] { packEntry },
             1,
             false);
 
         ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
-            .Roll(pool, ContentFactSet.Empty, null, 1, entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
+            .Roll(
+                pool,
+                new ContentRollContext(ContentPoolScopeIds.WaveSpawn),
+                1,
+                entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
 
         Assert.IsTrue(result.HasAny);
         Assert.AreSame(spawnPack, result.Items[0].Content);
@@ -237,14 +330,26 @@ public class ContentPoolTests
         Assert.AreEqual(WaveEnemyTag.Ranged, spawnPack.Entries[1].EnemyTags);
     }
 
-    private static FactDefinitionSO CreateFact(
-        string factId,
-        FactValueType valueType,
-        FactDefinitionBuiltInKind builtInKind = FactDefinitionBuiltInKind.None)
+    [Test]
+    public void RollItemCarriesTypedWaveSpawnMetadata()
     {
-        FactDefinitionSO fact = ScriptableObject.CreateInstance<FactDefinitionSO>();
-        fact.InitializeRuntime(factId, valueType, builtInKind);
-        return fact;
+        WormEnemySO enemy = ScriptableObject.CreateInstance<WormEnemySO>();
+        ContentPoolEntry enemyEntry = new(enemy, 1f, "elite_ranged");
+        enemyEntry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+        {
+            new WaveSpawnMetadata(WaveEnemyTag.Elite | WaveEnemyTag.Ranged)
+        });
+        ContentPoolSO pool = CreatePool(
+            new[] { enemyEntry },
+            1,
+            false);
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.WaveSpawn), 1);
+
+        Assert.IsTrue(result.HasAny);
+        Assert.IsTrue(result.Items[0].TryGetMetadata(out WaveSpawnMetadata metadata));
+        Assert.AreEqual(WaveEnemyTag.Elite | WaveEnemyTag.Ranged, metadata.Tags);
     }
 
     private static ContentPoolEntry CreateEntry(string entryId, float weight)
@@ -253,14 +358,25 @@ public class ContentPoolTests
         return new ContentPoolEntry(content, weight, entryId);
     }
 
+    private static UpgradeCardSO CreateUpgradeCard(string cardId, UpgradeCardTag tag)
+    {
+        UpgradeCardSO card = ScriptableObject.CreateInstance<UpgradeCardSO>();
+        card.InitializeRuntime(
+            cardId,
+            cardId,
+            UpgradeCardRarity.Common,
+            new[] { tag },
+            string.Empty);
+        return card;
+    }
+
     private static ContentPoolSO CreatePool(
-        ContentPoolPurpose purpose,
         IReadOnlyList<ContentPoolEntry> entries,
         int rollCount,
         bool allowDuplicateResults)
     {
         ContentPoolSO pool = ScriptableObject.CreateInstance<ContentPoolSO>();
-        pool.Initialize(purpose, entries, rollCount, allowDuplicateResults);
+        pool.Initialize(entries, rollCount, allowDuplicateResults);
         return pool;
     }
 
@@ -277,12 +393,12 @@ public class ContentPoolTests
 
         public int Priority => 0;
 
-        public bool AffectsPurpose(ContentPoolPurpose purpose)
+        public bool AffectsContext(ContentRollContext context)
         {
             return true;
         }
 
-        public void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+        public void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
         {
             for (int i = 0; i < candidates.Count; i++)
             {
@@ -312,12 +428,13 @@ public class ContentPoolTests
 
         public int Priority => 0;
 
-        public bool AffectsPurpose(ContentPoolPurpose purpose)
+        public bool AffectsContext(ContentRollContext context)
         {
-            return purpose == ContentPoolPurpose.Shop;
+            return context != null &&
+                   string.Equals(context.ScopeId, ContentPoolScopeIds.Shop, System.StringComparison.Ordinal);
         }
 
-        public void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+        public void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
         {
             for (int i = 0; i < candidates.Count; i++)
             {
@@ -333,27 +450,28 @@ public class ContentPoolTests
         }
     }
 
-    private sealed class TestPurposeWeightModifier : IContentPoolModifier
+    private sealed class TestScopeWeightModifier : IContentPoolModifier
     {
-        private readonly ContentPoolPurpose purpose;
+        private readonly string scopeId;
         private readonly Object target;
         private readonly float addedWeight;
 
-        public TestPurposeWeightModifier(ContentPoolPurpose purpose, Object target, float addedWeight)
+        public TestScopeWeightModifier(string scopeId, Object target, float addedWeight)
         {
-            this.purpose = purpose;
+            this.scopeId = ContentPoolScopeIds.Normalize(scopeId);
             this.target = target;
             this.addedWeight = addedWeight;
         }
 
         public int Priority => 0;
 
-        public bool AffectsPurpose(ContentPoolPurpose purpose)
+        public bool AffectsContext(ContentRollContext context)
         {
-            return this.purpose == purpose;
+            return context != null &&
+                   string.Equals(scopeId, context.ScopeId, System.StringComparison.Ordinal);
         }
 
-        public void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+        public void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
         {
             for (int i = 0; i < candidates.Count; i++)
             {

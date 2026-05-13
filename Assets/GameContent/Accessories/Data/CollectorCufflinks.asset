@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u6536\u85CF\u5BB6\u8896\u6263"
   itemIcon: {fileID: 21300000, guid: 6147021b35d552441989a30655fc77d4, type: 3}
-  itemPrice: 68
+  itemPrice: 70
   itemType: 1
   itemDescription: ""
   accessoryId: collector_cufflinks
@@ -23,13 +23,13 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 9
     modifierType: 0
-    value: 6
+    value: 4
   - propType: 22
     modifierType: 0
     value: 6
   - propType: 20
     modifierType: 0
-    value: 10
+    value: 8.34
   specialFeatures: []
   references:
     version: 2

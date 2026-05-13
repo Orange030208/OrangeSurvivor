@@ -131,11 +131,7 @@ public class PlayerLevel : EntityComponentBase
         }
 
         int normalizedLevel = Mathf.Max(MIN_LEVEL, level);
-        int levelOffset = normalizedLevel - MIN_LEVEL;
-        int incrementalRequirement = config.RequiredExperiencePerLevel * levelOffset;
-        int growthRequirement = config.RequiredExperienceGrowthPerLevel * levelOffset * Mathf.Max(0, levelOffset - 1) / 2;
-        int totalRequirement = config.BaseRequiredExperience + incrementalRequirement + growthRequirement;
-        return Mathf.Max(config.MinimumRequiredExperience, totalRequirement);
+        return config.GetRequiredExperienceForLevel(normalizedLevel);
     }
 
     private int ResolveExperienceGain(int baseXp)
@@ -146,12 +142,12 @@ public class PlayerLevel : EntityComponentBase
         }
 
         float bonus = propertiesManager != null
-            ? Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.ExperienceGain)))
+            ? PropValueUtility.PercentPointsToNonNegativeRatio(propertiesManager.GetPropValue(PropType.ExperienceGain))
             : 0f;
         pendingExperienceGain += baseXp * (1f + bonus);
         int resolvedXp = Mathf.FloorToInt(pendingExperienceGain);
         pendingExperienceGain -= resolvedXp;
-        return Mathf.Max(0, resolvedXp);
+        return PropValueUtility.FloatPointsToNonNegativeRoundedInt(resolvedXp);
     }
 
     private int GetConfiguredStartLevel()

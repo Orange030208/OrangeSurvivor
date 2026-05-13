@@ -112,13 +112,15 @@ public sealed class LethalDamageGuardFeature : FeatureEffectBase
             return 0f;
         }
 
-        return Mathf.Max(0f, hitContext.Damage) * multiplier;
+        return PropValueUtility.ClampNonNegative(hitContext.Damage) * multiplier;
     }
 
     private static float GetFinalDamageMultiplier(HitContext hitContext)
     {
-        float critMultiplier = hitContext.IsCritical ? Mathf.Max(1f, hitContext.CritMultiplier) : 1f;
-        float damageReductionMultiplier = Mathf.Max(0f, 1f - hitContext.DamageReduction);
+        float critMultiplier = hitContext.IsCritical
+            ? PropValueUtility.ClampEffectiveCriticalMultiplier(hitContext.CritMultiplier)
+            : 1f;
+        float damageReductionMultiplier = PropValueUtility.ClampNonNegative(1f - hitContext.DamageReduction);
         return critMultiplier * damageReductionMultiplier;
     }
 }

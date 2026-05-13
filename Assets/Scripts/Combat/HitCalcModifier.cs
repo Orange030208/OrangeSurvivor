@@ -18,12 +18,12 @@ public class HitCalcModifier : IHitModifier
             return;
         }
 
-        float damage = Mathf.Max(0f, hitContext.Damage);
+        float damage = PropValueUtility.ClampNonNegative(hitContext.Damage);
         if (hitContext.IsCritical)
         {
             damage *= hitContext.CritMultiplier;
         }
 
-        hitContext.Damage = damage * Mathf.Max(0f, 1f - hitContext.DamageReduction);
+        hitContext.Damage = damage * PropValueUtility.ClampNonNegative(1f - hitContext.DamageReduction);
     }
 }

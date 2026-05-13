@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u5438\u8840\u9F7F\u5760"
   itemIcon: {fileID: 21300000, guid: 505bad966412fdc488cb9ea81a1fcbfc, type: 3}
-  itemPrice: 44
+  itemPrice: 45
   itemType: 1
   itemDescription: ""
   accessoryId: vampiric_fang_pendant
@@ -23,7 +23,7 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 11
     modifierType: 0
-    value: 4
+    value: 2
   - propType: 28
     modifierType: 0
     value: 4

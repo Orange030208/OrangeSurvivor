@@ -150,13 +150,13 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
             return;
         }
 
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService == null)
+        GameInput input = GameInput.Instance;
+        if (input == null)
         {
             return;
         }
 
-        inputService.UiCancelPerformed += OnUiCancelPerformed;
+        input.UiCancelPerformed += OnUiCancelPerformed;
         inputBound = true;
     }
 
@@ -167,10 +167,10 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
             return;
         }
 
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService != null)
+        GameInput input = GameInput.Instance;
+        if (input != null)
         {
-            inputService.UiCancelPerformed -= OnUiCancelPerformed;
+            input.UiCancelPerformed -= OnUiCancelPerformed;
         }
 
         inputBound = false;

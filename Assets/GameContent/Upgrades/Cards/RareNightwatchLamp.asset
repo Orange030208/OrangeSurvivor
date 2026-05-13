@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 岩灯守夜
   icon: {fileID: 0}
   rarity: 1
-  tags: 01000000
+  tags: 02000000
   description: 
-  propertyModifiers:
-  - propType: 25
-    modifierType: 0
-    value: 4
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000038001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000038001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 25
+          modifierType: 0
+          value: 4

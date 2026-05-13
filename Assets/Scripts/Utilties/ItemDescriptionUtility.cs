@@ -201,6 +201,11 @@ internal static class ItemDescriptionUtility
         return builder.ToString();
     }
 
+    public static string JoinUpgradeCardTags(UpgradeCardTag tags, int maxCount)
+    {
+        return JoinUpgradeCardTags(ToUpgradeCardTagArray(tags), maxCount);
+    }
+
     public static string JoinWeaponTags(IReadOnlyList<WeaponTag> tags)
     {
         if (tags == null || tags.Count == 0)
@@ -411,6 +416,27 @@ internal static class ItemDescriptionUtility
     private static bool IsDescriptionLabel(string label)
     {
         return string.Equals(label?.Trim(), "说明", StringComparison.Ordinal);
+    }
+
+    private static UpgradeCardTag[] ToUpgradeCardTagArray(UpgradeCardTag mask)
+    {
+        if (mask == UpgradeCardTag.None)
+        {
+            return Array.Empty<UpgradeCardTag>();
+        }
+
+        List<UpgradeCardTag> result = new();
+        foreach (UpgradeCardTag tag in Enum.GetValues(typeof(UpgradeCardTag)))
+        {
+            if (tag == UpgradeCardTag.None || (mask & tag) == 0)
+            {
+                continue;
+            }
+
+            result.Add(tag);
+        }
+
+        return result.ToArray();
     }
 
     private static bool IsPlaceholderDescription(string description)

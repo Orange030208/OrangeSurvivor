@@ -781,7 +781,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     private int ResolveProjectilePierceCount()
     {
         return propertiesManager != null
-            ? Mathf.Max(0, Mathf.FloorToInt(propertiesManager.GetPropValue(PropType.ProjectilePierceCount)))
+            ? PropValueUtility.FloatPointsToNonNegativeFlooredInt(
+                propertiesManager.GetPropValue(PropType.ProjectilePierceCount))
             : 0;
     }
 
@@ -956,19 +957,18 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
             resolvedAttackSpeedPoints);
         float typedAttackContribution = ResolveAttackTypeContribution(benefits);
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
-        Damage = Mathf.Max(0f, (weaponAttack + typedAttackContribution) * damageMultiplier);
+        Damage = PropValueUtility.ClampNonNegative((weaponAttack + typedAttackContribution) * damageMultiplier);
         AttackInterval = PropValueUtility.AttackSpeedPointsToAttackInterval(finalAttackSpeedPoints);
         RefreshCooldownForAttackIntervalChange(previousAttackInterval);
         CriticalChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, weaponCriticalChance + playerCriticalChance);
-        CriticalMultiplier = Mathf.Max(1f, weaponCriticalMultiplier + playerCriticalBonus);
+        CriticalMultiplier = PropValueUtility.ClampEffectiveCriticalMultiplier(weaponCriticalMultiplier + playerCriticalBonus);
         float resolvedRangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
         float rangePoints = benefits.ApplyToResolvedStat(PropType.AttackRange, weaponRange, resolvedRangePoints);
-        Range = Mathf.Max(0.1f, PropValueUtility.DistancePointsToWorldUnits(rangePoints));
+        Range = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(rangePoints);
         float resolvedKnockbackStrength = propertiesManager.GetPropValueWithAdditionalBase(
             PropType.KnockbackStrength,
             weaponKnockbackStrength);
-        KnockbackStrength = Mathf.Max(
-            0f,
+        KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(
             benefits.ApplyToResolvedStat(
                 PropType.KnockbackStrength,
                 weaponKnockbackStrength,

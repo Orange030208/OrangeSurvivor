@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 银线凝眸
   icon: {fileID: 0}
   rarity: 0
-  tags: 02000000
+  tags: 04000000
   description: 
-  propertyModifiers:
-  - propType: 2
-    modifierType: 0
-    value: 2
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000010001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000010001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 2
+          modifierType: 0
+          value: 2

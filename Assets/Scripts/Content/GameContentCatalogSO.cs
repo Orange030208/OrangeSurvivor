@@ -84,17 +84,17 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(playerLevelConfig, nameof(playerLevelConfig), errors);
         ValidateRequired(runProgressionProfile, nameof(runProgressionProfile), errors);
         ValidateRequired(upgradeCardPool, nameof(upgradeCardPool), errors);
-        ValidatePoolPurpose(upgradeCardPool, ContentPoolPurpose.UpgradeCard, nameof(upgradeCardPool), errors);
+        ValidatePoolContents<UpgradeCardSO>(upgradeCardPool, nameof(upgradeCardPool), errors);
         ValidateRequired(chestRewardPool, nameof(chestRewardPool), errors);
-        ValidatePoolPurpose(chestRewardPool, ContentPoolPurpose.ChestReward, nameof(chestRewardPool), errors);
+        ValidatePoolContents<AccessoryDataSO>(chestRewardPool, nameof(chestRewardPool), errors);
         ValidateRequired(shopPool, nameof(shopPool), errors);
-        ValidatePoolPurpose(shopPool, ContentPoolPurpose.Shop, nameof(shopPool), errors);
+        ValidatePoolContents<ItemDataSO>(shopPool, nameof(shopPool), errors);
         ValidateRequired(dropPool, nameof(dropPool), errors);
-        ValidatePoolPurpose(dropPool, ContentPoolPurpose.Drop, nameof(dropPool), errors);
+        ValidatePoolContents<CollectionSO>(dropPool, nameof(dropPool), errors);
         ValidateRequired(waveSpawnPool, nameof(waveSpawnPool), errors);
-        ValidatePoolPurpose(waveSpawnPool, ContentPoolPurpose.WaveSpawn, nameof(waveSpawnPool), errors);
+        ValidatePoolContents(waveSpawnPool, nameof(waveSpawnPool), errors, content => content is EnemySO or WaveSpawnPackSO);
         ValidateRequired(weaponRewardPool, nameof(weaponRewardPool), errors);
-        ValidatePoolPurpose(weaponRewardPool, ContentPoolPurpose.WeaponReward, nameof(weaponRewardPool), errors);
+        ValidatePoolContents<WeaponDataSO>(weaponRewardPool, nameof(weaponRewardPool), errors);
         ValidateRequired(defaultStageDefinition, nameof(defaultStageDefinition), errors);
         ValidateRequired(defaultPlayerPrefab, nameof(defaultPlayerPrefab), errors);
         ValidateRequired(defaultWeaponPrefab, nameof(defaultWeaponPrefab), errors);
@@ -150,19 +150,37 @@ public sealed class GameContentCatalogSO : ScriptableObject
         }
     }
 
-    private static void ValidatePoolPurpose(
+    private static void ValidatePoolContents<T>(
         ContentPoolSO pool,
-        ContentPoolPurpose expectedPurpose,
         string fieldName,
         List<string> errors)
+        where T : UnityEngine.Object
     {
-        if (pool == null || pool.Purpose == expectedPurpose)
+        ValidatePoolContents(pool, fieldName, errors, content => content is T);
+    }
+
+    private static void ValidatePoolContents(
+        ContentPoolSO pool,
+        string fieldName,
+        List<string> errors,
+        System.Predicate<UnityEngine.Object> isAllowedContent)
+    {
+        if (pool == null || pool.Entries == null || isAllowedContent == null)
         {
             return;
         }
 
-        errors.Add(
-            $"{nameof(GameContentCatalogSO)} field '{fieldName}' expects {expectedPurpose} but references {pool.Purpose}.");
+        for (int i = 0; i < pool.Entries.Count; i++)
+        {
+            ContentPoolEntry entry = pool.Entries[i];
+            if (entry?.Content == null || isAllowedContent(entry.Content))
+            {
+                continue;
+            }
+
+            errors.Add(
+                $"{nameof(GameContentCatalogSO)} field '{fieldName}' contains unsupported entry '{entry.EntryId}' ({entry.Content.GetType().Name}).");
+        }
     }
 
     private static void ValidateNoDuplicates<T>(IReadOnlyList<T> items, string label, List<string> errors)

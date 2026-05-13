@@ -16,8 +16,7 @@ public sealed class ContentPoolRollService
 
     public ContentRollResult Roll(
         ContentPoolSO pool,
-        ContentFactSet facts,
-        ContentPoolRuntimeState runtimeState = null,
+        ContentRollContext rollContext,
         int? rollCountOverride = null,
         System.Predicate<ContentPoolEntry> entryFilter = null)
     {
@@ -27,63 +26,44 @@ public sealed class ContentPoolRollService
             return new ContentRollResult(resultBuffer);
         }
 
+        ContentRollContext context = (rollContext ?? new ContentRollContext(ContentPoolScopeIds.Generic))
+            .WithSelectedEntries(selectedEntries);
         return Roll(
-            pool.Purpose,
             pool.Entries,
-            facts,
-            runtimeState,
+            context,
             rollCountOverride ?? pool.DefaultRollCount,
             pool.AllowDuplicateResults,
             entryFilter);
     }
 
     public ContentRollResult Roll(
-        ContentPoolSO pool,
-        ContentFactSource factSource,
-        ContentPoolRuntimeState runtimeState = null,
-        int? rollCountOverride = null,
-        System.Predicate<ContentPoolEntry> entryFilter = null)
-    {
-        List<FactDefinitionSO> definitions = new();
-        pool?.CollectFactDefinitions(definitions);
-        CollectModifierFactDefinitions(pool != null ? pool.Purpose : ContentPoolPurpose.Generic, definitions);
-        ContentFactSet facts = ContentFactCollector.Collect(factSource, definitions);
-        return Roll(pool, facts, runtimeState, rollCountOverride, entryFilter);
-    }
-
-    public ContentRollResult Roll(
-        ContentPoolPurpose purpose,
+        string scopeId,
         IReadOnlyList<ContentPoolEntry> entries,
-        ContentFactSource factSource,
-        ContentPoolRuntimeState runtimeState = null,
+        ContentRollContext rollContext,
         int rollCount = 1,
         bool allowDuplicateResults = false,
         System.Predicate<ContentPoolEntry> entryFilter = null)
     {
-        List<FactDefinitionSO> definitions = new();
-        CollectFactDefinitions(entries, definitions);
-        CollectModifierFactDefinitions(purpose, definitions);
-        ContentFactSet facts = ContentFactCollector.Collect(factSource, definitions);
-        return Roll(purpose, entries, facts, runtimeState, rollCount, allowDuplicateResults, entryFilter);
+        ContentRollContext context = rollContext ?? new ContentRollContext(scopeId);
+        return Roll(entries, context, rollCount, allowDuplicateResults, entryFilter);
     }
 
-    public ContentRollResult Roll(
-        ContentPoolPurpose purpose,
+    private ContentRollResult Roll(
         IReadOnlyList<ContentPoolEntry> entries,
-        ContentFactSet facts,
-        ContentPoolRuntimeState runtimeState = null,
-        int rollCount = 1,
-        bool allowDuplicateResults = false,
-        System.Predicate<ContentPoolEntry> entryFilter = null)
+        ContentRollContext rollContext,
+        int rollCount,
+        bool allowDuplicateResults,
+        System.Predicate<ContentPoolEntry> entryFilter)
     {
         resultBuffer.Clear();
         selectedEntries.Clear();
         selectedEntryIds.Clear();
 
         rollCount = Mathf.Max(1, rollCount);
-        ContentPoolEvaluationContext context = new(purpose, facts, runtimeState);
-        BuildCandidates(entries, context, entryFilter);
-        ApplyModifiers(context);
+        ContentRollContext contextWithSelection = (rollContext ?? new ContentRollContext(ContentPoolScopeIds.Generic))
+            .WithSelectedEntries(selectedEntries);
+        BuildCandidates(entries, contextWithSelection, entryFilter);
+        ApplyModifiers(contextWithSelection);
 
         for (int i = 0; i < rollCount; i++)
         {
@@ -94,22 +74,24 @@ public sealed class ContentPoolRollService
             }
 
             resultBuffer.Add(new ContentRollItem(selected));
+            selectedEntries.Add(selected.Entry);
             if (!allowDuplicateResults)
             {
-                selectedEntries.Add(selected.Entry);
                 selectedEntryIds.Add(selected.Entry.EntryId);
                 selected.Remove();
             }
+
+            RefreshCandidateAvailability(contextWithSelection);
         }
 
         ContentRollResult result = new(resultBuffer);
-        runtimeState?.RecordRoll(result.Items);
+        contextWithSelection.RecordRoll(result);
         return result;
     }
 
     private void BuildCandidates(
         IReadOnlyList<ContentPoolEntry> entries,
-        ContentPoolEvaluationContext context,
+        ContentRollContext context,
         System.Predicate<ContentPoolEntry> entryFilter)
     {
         candidateBuffer.Clear();
@@ -141,16 +123,14 @@ public sealed class ContentPoolRollService
         }
     }
 
-    private static bool CanUseEntry(ContentPoolEvaluationContext context, ContentPoolEntry entry)
+    private static bool CanUseEntry(ContentRollContext context, ContentPoolEntry entry)
     {
-        if (entry.MaxRollCount > 0 && context.RuntimeState != null &&
-            context.RuntimeState.GetRollCount(entry.EntryId) >= entry.MaxRollCount)
+        if (entry.MaxRollCount > 0 && context.GetRollCount(entry.EntryId) >= entry.MaxRollCount)
         {
             return false;
         }
 
-        if (entry.MaxPickCount > 0 && context.RuntimeState != null &&
-            context.RuntimeState.GetPickCount(entry.EntryId) >= entry.MaxPickCount)
+        if (entry.MaxPickCount > 0 && context.GetPickCount(entry.EntryId) >= entry.MaxPickCount)
         {
             return false;
         }
@@ -173,7 +153,60 @@ public sealed class ContentPoolRollService
         return true;
     }
 
-    private static float CalculateWeight(ContentPoolEvaluationContext context, ContentPoolEntry entry)
+    private static bool SelectedEntriesAllowCandidate(ContentRollContext context, ContentPoolEntry candidateEntry)
+    {
+        if (context?.SelectedEntries == null || candidateEntry == null)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < context.SelectedEntries.Count; i++)
+        {
+            ContentPoolEntry selectedEntry = context.SelectedEntries[i];
+            if (selectedEntry == null)
+            {
+                continue;
+            }
+
+            if (EntriesAreMutuallyExclusive(selectedEntry, candidateEntry))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool EntriesAreMutuallyExclusive(ContentPoolEntry selectedEntry, ContentPoolEntry candidateEntry)
+    {
+        if (selectedEntry == null || candidateEntry == null)
+        {
+            return false;
+        }
+
+        return ContainsEntryId(selectedEntry.MutuallyExclusiveEntryIds, candidateEntry.EntryId) ||
+               ContainsEntryId(candidateEntry.MutuallyExclusiveEntryIds, selectedEntry.EntryId);
+    }
+
+    private static bool ContainsEntryId(IReadOnlyList<string> entryIds, string entryId)
+    {
+        if (entryIds == null || string.IsNullOrWhiteSpace(entryId))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < entryIds.Count; i++)
+        {
+            if (string.Equals(entryIds[i], entryId, System.StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static float CalculateWeight(ContentRollContext context, ContentPoolEntry entry)
     {
         float weight = entry.BaseWeight;
         IReadOnlyList<ContentWeightRule> rules = entry.WeightRules;
@@ -194,53 +227,46 @@ public sealed class ContentPoolRollService
         return Mathf.Max(0f, weight);
     }
 
-    private void ApplyModifiers(ContentPoolEvaluationContext context)
+    private static void RefreshCandidateAvailability(ContentRollContext context, List<ContentPoolCandidate> candidates)
+    {
+        if (candidates == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            ContentPoolCandidate candidate = candidates[i];
+            if (candidate == null || candidate.IsRemoved || candidate.Entry == null)
+            {
+                continue;
+            }
+
+            if (!CanUseEntry(context, candidate.Entry) ||
+                !SelectedEntriesAllowCandidate(context, candidate.Entry))
+            {
+                candidate.Remove();
+            }
+        }
+    }
+
+    private void RefreshCandidateAvailability(ContentRollContext context)
+    {
+        RefreshCandidateAvailability(context, candidateBuffer);
+    }
+
+    private void ApplyModifiers(ContentRollContext context)
     {
         IReadOnlyList<IContentPoolModifier> modifiers = ContentPoolModifierRegistry.ActiveModifiers;
         for (int i = 0; i < modifiers.Count; i++)
         {
             IContentPoolModifier modifier = modifiers[i];
-            if (modifier == null || !modifier.AffectsPurpose(context.Purpose))
+            if (modifier == null || !modifier.AffectsContext(context))
             {
                 continue;
             }
 
             modifier.ModifyCandidates(context, candidateBuffer);
-        }
-    }
-
-    private static void CollectFactDefinitions(
-        IReadOnlyList<ContentPoolEntry> entries,
-        List<FactDefinitionSO> results)
-    {
-        if (entries == null || results == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < entries.Count; i++)
-        {
-            entries[i]?.CollectFactDefinitions(results);
-        }
-    }
-
-    private static void CollectModifierFactDefinitions(ContentPoolPurpose purpose, List<FactDefinitionSO> results)
-    {
-        if (results == null)
-        {
-            return;
-        }
-
-        IReadOnlyList<IContentPoolModifier> modifiers = ContentPoolModifierRegistry.ActiveModifiers;
-        for (int i = 0; i < modifiers.Count; i++)
-        {
-            if (modifiers[i] is not IContentFactDefinitionProvider provider ||
-                !modifiers[i].AffectsPurpose(purpose))
-            {
-                continue;
-            }
-
-            provider.CollectFactDefinitions(results);
         }
     }
 
@@ -303,36 +329,6 @@ public sealed class ContentPoolRollService
             return false;
         }
 
-        if (!allowDuplicateResults && IsMutuallyExclusiveWithSelected(candidate.Entry))
-        {
-            return false;
-        }
-
         return candidate.Weight > 0f;
-    }
-
-    private bool IsMutuallyExclusiveWithSelected(ContentPoolEntry entry)
-    {
-        if (entry == null || selectedEntryIds.Count == 0)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < selectedEntries.Count; i++)
-        {
-            ContentPoolEntry selectedEntry = selectedEntries[i];
-            if (selectedEntry == null)
-            {
-                continue;
-            }
-
-            if (entry.IsMutuallyExclusiveWith(selectedEntry.EntryId) ||
-                selectedEntry.IsMutuallyExclusiveWith(entry.EntryId))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -36,10 +36,10 @@ public class GamingUIPage : PageBase
 
         BindInput(currentContext.Player);
         BindHud(currentContext);
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService != null)
+        GameInput input = GameInput.Instance;
+        if (input != null)
         {
-            inputService.PausePerformed += OnPauseClicked;
+            input.PausePerformed += OnPauseClicked;
         }
         menuButton.onClick.AddListener(OnPauseClicked);
         return UniTask.CompletedTask;
@@ -49,10 +49,10 @@ public class GamingUIPage : PageBase
     {
         UnbindInput();
         UnbindHud();
-        GameInputService inputService = GameInputService.Instance;
-        if (inputService != null)
+        GameInput input = GameInput.Instance;
+        if (input != null)
         {
-            inputService.PausePerformed -= OnPauseClicked;
+            input.PausePerformed -= OnPauseClicked;
         }
 
         menuButton.onClick.RemoveListener(OnPauseClicked);
@@ -84,8 +84,8 @@ public class GamingUIPage : PageBase
 
     private Vector2 ReadMoveDirection()
     {
-        GameInputService inputService = GameInputService.Instance;
-        Vector2 inputMove = inputService != null ? inputService.Move : Vector2.zero;
+        GameInput input = GameInput.Instance;
+        Vector2 inputMove = input != null ? input.Move : Vector2.zero;
         if (inputMove.sqrMagnitude > 0.0001f)
         {
             return Vector2.ClampMagnitude(inputMove, 1f);
@@ -241,6 +241,6 @@ public class GamingUIPage : PageBase
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing buff bar UI.");
         }
 
-        // Mobile joystick is optional on PC builds; GameInputService is the primary input source.
+        // Mobile joystick is optional on PC builds; GameInput is the primary input source.
     }
 }

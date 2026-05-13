@@ -116,12 +116,10 @@ public sealed class ItemQualityPreviewSceneController : MonoBehaviour
         EventSystem eventSystem = FindObjectOfType<EventSystem>();
         if (eventSystem != null)
         {
-            GameInputService.ConfigureEventSystem(eventSystem);
             return;
         }
 
         GameObject eventSystemObject = new("EventSystem", typeof(EventSystem));
-        GameInputService.ConfigureEventSystem(eventSystemObject.GetComponent<EventSystem>());
         eventSystemObject.transform.SetAsLastSibling();
     }
 

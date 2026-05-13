@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b3d8234ebc54bed973b7d1ffa094ae4, type: 3}
   m_Name: Drop Pool
   m_EditorClassIdentifier: 
-  purpose: 4
   defaultRollCount: 1
   allowDuplicateResults: 0
   entries:
@@ -22,12 +21,6 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
     conditions: []
     weightRules:
     - rid: 7274045879173776276
@@ -37,21 +30,15 @@ MonoBehaviour:
     tags: []
     maxRollCount: 0
     maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    minLevel: 0
-    maxLevel: 0
-    qualityValue: 0
-    domainFlags: 0
-    priceMultiplier: 1
     conditions: []
     weightRules: []
   references:
     version: 2
     RefIds:
     - rid: 7274045879173776276
-      type: {class: FactScaleWeightContentRule, ns: , asm: Assembly-CSharp}
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
       data:
-        factDefinition: {fileID: 11400000, guid: 5dc7c21e05aa51d45934028eeeb48147, type: 2}
-        weightPerFactPoint: 0.01
+        propType: 9
+        weightPerPoint: 0.01
         minMultiplier: 0
         maxMultiplier: 100

@@ -32,9 +32,7 @@ public static class ShopPricingService
     {
         float contentMultiplier = contentPriceMultiplier > 0f ? contentPriceMultiplier : 1f;
         float runMultiplier = runPriceMultiplier > 0f ? runPriceMultiplier : 1f;
-        float discountMultiplier = playerDiscountMultiplier > 0f
-            ? Mathf.Max(PropValueUtility.MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, playerDiscountMultiplier)
-            : 1f;
-        return Mathf.Max(0, Mathf.RoundToInt(basePrice * contentMultiplier * runMultiplier * discountMultiplier));
+        float discountMultiplier = PropValueUtility.ResolveEffectiveShopPriceMultiplier(playerDiscountMultiplier);
+        return PropValueUtility.ResolveNonNegativePrice(basePrice * contentMultiplier * runMultiplier * discountMultiplier);
     }
 }

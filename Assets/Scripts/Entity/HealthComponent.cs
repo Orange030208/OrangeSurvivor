@@ -238,7 +238,7 @@ public class HealthComponent : EntityComponentBase
                 UpdateMaxHealth();
                 break;
             case PropType.LifeSteal:
-                lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(newValue));
+                lifeStealRatio = PropValueUtility.PercentPointsToNonNegativeRatio(newValue);
                 break;
             case PropType.HealthRecoverySpeed:
                 healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(newValue);
@@ -249,13 +249,14 @@ public class HealthComponent : EntityComponentBase
     private void UpdateAllProperties()
     {
         UpdateMaxHealth();
-        lifeStealRatio = Mathf.Max(0f, PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.LifeSteal)));
+        lifeStealRatio = PropValueUtility.PercentPointsToNonNegativeRatio(
+            propertiesManager.GetPropValue(PropType.LifeSteal));
         healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed));
     }
 
     private static float ResolveHealthRecoveryPerSecond(float value)
     {
-        return Mathf.Max(0f, PropValueUtility.HealthRecoveryPointsToHealthPerSecond(value));
+        return PropValueUtility.HealthRecoveryPointsToEffectiveHealthPerSecond(value);
     }
 
     private void UpdateMaxHealth()
@@ -265,10 +266,10 @@ public class HealthComponent : EntityComponentBase
 
     private void SetMaxHealth(float value, bool preserveRatio)
     {
-        float oldMaxHealth = Mathf.Max(maxHealth, 1f);
+        float oldMaxHealth = PropValueUtility.ClampEffectiveMaxHealth(maxHealth);
         float healthPercent = oldMaxHealth > 0f ? health / oldMaxHealth : 1f;
 
-        maxHealth = Mathf.Max(value, 1f);
+        maxHealth = PropValueUtility.ClampEffectiveMaxHealth(value);
         if (!preserveRatio || health <= 0f)
         {
             health = maxHealth;

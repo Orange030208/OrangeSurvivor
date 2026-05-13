@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public abstract class ContentPoolModifierEffect : FeatureEffectBase, IContentPoolModifier, IContentFactDefinitionProvider
+public abstract class ContentPoolModifierEffect : FeatureEffectBase, IContentPoolModifier
 {
     [SerializeField] private int priority;
-    [SerializeField] private ContentPoolPurpose targetPurpose = ContentPoolPurpose.Generic;
-    [SerializeField] private bool affectAllPurposes;
+    [SerializeField] private string targetScopeId;
+    [SerializeField] private bool affectAllScopes;
 
     public virtual int Priority => priority;
 
@@ -21,28 +21,33 @@ public abstract class ContentPoolModifierEffect : FeatureEffectBase, IContentPoo
         ContentPoolModifierRegistry.Unregister(this);
     }
 
-    public virtual bool AffectsPurpose(ContentPoolPurpose purpose)
+    public virtual bool AffectsContext(ContentRollContext context)
     {
-        return affectAllPurposes || targetPurpose == ContentPoolPurpose.Generic || purpose == targetPurpose;
+        if (affectAllScopes)
+        {
+            return true;
+        }
+
+        return string.Equals(
+            ContentPoolScopeIds.Normalize(context?.ScopeId),
+            ContentPoolScopeIds.Normalize(targetScopeId),
+            StringComparison.Ordinal);
     }
 
-    public virtual void CollectFactDefinitions(List<FactDefinitionSO> results)
-    {
-    }
-
-    public abstract void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates);
+    public abstract void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates);
 }
 
 [Serializable]
-public sealed class TagContentPoolWeightModifierEffect : ContentPoolModifierEffect
+public sealed class UpgradeCardTagContentPoolWeightModifierEffect : ContentPoolModifierEffect
 {
-    [SerializeField] private ContentTagSO targetTag;
+    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private float weightMultiplier = 1f;
     [SerializeField] private float addedWeight;
 
-    public override string Description => "调整匹配标签内容的出现权重。";
+    public override string Description => "调整匹配升级卡标签内容的出现权重。";
 
-    public override void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+    public override void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
     {
         if (candidates == null)
         {
@@ -52,7 +57,8 @@ public sealed class TagContentPoolWeightModifierEffect : ContentPoolModifierEffe
         for (int i = 0; i < candidates.Count; i++)
         {
             ContentPoolCandidate candidate = candidates[i];
-            if (candidate?.Entry == null || !candidate.Entry.HasTag(targetTag))
+            if (candidate?.Content is not UpgradeCardSO card ||
+                !ContentTagMatchUtility.Matches(card.Tags, targetTags, matchMode))
             {
                 continue;
             }
@@ -71,7 +77,7 @@ public sealed class AssetContentPoolWeightModifierEffect : ContentPoolModifierEf
 
     public override string Description => "调整指定内容的出现权重。";
 
-    public override void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+    public override void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
     {
         if (candidates == null || targetAsset == null)
         {
@@ -92,9 +98,10 @@ public sealed class AssetContentPoolWeightModifierEffect : ContentPoolModifierEf
 }
 
 [Serializable]
-public sealed class TagContentPoolMetadataModifierEffect : ContentPoolModifierEffect
+public sealed class UpgradeCardTagContentPoolMetadataModifierEffect : ContentPoolModifierEffect
 {
-    [SerializeField] private ContentTagSO targetTag;
+    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private bool overrideLevelRange;
     [SerializeField, Min(0)] private int minLevel;
     [SerializeField, Min(0)] private int maxLevel;
@@ -103,9 +110,9 @@ public sealed class TagContentPoolMetadataModifierEffect : ContentPoolModifierEf
     [SerializeField] private bool multiplyPrice;
     [SerializeField] private float priceMultiplier = 1f;
 
-    public override string Description => "调整匹配标签内容的等级、品质或价格元数据。";
+    public override string Description => "调整匹配升级卡标签内容的等级、品质或价格元数据。";
 
-    public override void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+    public override void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
     {
         if (candidates == null)
         {
@@ -115,7 +122,8 @@ public sealed class TagContentPoolMetadataModifierEffect : ContentPoolModifierEf
         for (int i = 0; i < candidates.Count; i++)
         {
             ContentPoolCandidate candidate = candidates[i];
-            if (candidate?.Entry == null || !candidate.Entry.HasTag(targetTag))
+            if (candidate?.Content is not UpgradeCardSO card ||
+                !ContentTagMatchUtility.Matches(card.Tags, targetTags, matchMode))
             {
                 continue;
             }
@@ -138,7 +146,7 @@ public sealed class TagContentPoolMetadataModifierEffect : ContentPoolModifierEf
 
         if (multiplyPrice)
         {
-            candidate.ConfigurePriceMultiplier(candidate.PriceMultiplier * Mathf.Max(0f, priceMultiplier));
+            candidate.ConfigurePriceMultiplier(candidate.GetPriceMultiplier() * Mathf.Max(0f, priceMultiplier));
         }
     }
 }
@@ -157,7 +165,7 @@ public sealed class AssetContentPoolMetadataModifierEffect : ContentPoolModifier
 
     public override string Description => "调整指定内容的等级、品质或价格元数据。";
 
-    public override void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+    public override void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
     {
         if (candidates == null || targetAsset == null)
         {
@@ -190,7 +198,7 @@ public sealed class AssetContentPoolMetadataModifierEffect : ContentPoolModifier
 
         if (multiplyPrice)
         {
-            candidate.ConfigurePriceMultiplier(candidate.PriceMultiplier * Mathf.Max(0f, priceMultiplier));
+            candidate.ConfigurePriceMultiplier(candidate.GetPriceMultiplier() * Mathf.Max(0f, priceMultiplier));
         }
     }
 }

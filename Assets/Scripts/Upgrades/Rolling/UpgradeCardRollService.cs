@@ -4,9 +4,8 @@ using UnityEngine;
 public class UpgradeCardRollService
 {
     private readonly ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentPoolRuntimeState contentPoolRuntimeState = new();
 
-    public List<UpgradeCardRollOption> RollOptions(ContentPoolSO pool, ContentFactSource factSource)
+    public List<UpgradeCardRollOption> RollOptions(ContentPoolSO pool, ContentRollContext rollContext)
     {
         List<UpgradeCardRollOption> options = new();
         if (pool == null)
@@ -15,17 +14,23 @@ public class UpgradeCardRollService
             return options;
         }
 
-        factSource ??= new ContentFactSource();
-
         ContentRollResult result = contentPoolRollService.Roll(
             pool,
-            factSource,
-            contentPoolRuntimeState,
+            rollContext,
             null,
             entry => entry.Content is UpgradeCardSO card &&
                      !string.IsNullOrWhiteSpace(card.CardId) &&
                      card.HasAnyEffect());
 
+        AddOptions(options, result, entryId => ResolvePickCount(rollContext, entryId));
+        return options;
+    }
+
+    private static void AddOptions(
+        List<UpgradeCardRollOption> options,
+        ContentRollResult result,
+        System.Func<string, int> resolvePickCount)
+    {
         for (int i = 0; i < result.Items.Count; i++)
         {
             ContentRollItem item = result.Items[i];
@@ -35,20 +40,18 @@ public class UpgradeCardRollService
                 options.Add(new UpgradeCardRollOption(
                     card,
                     item,
-                    contentPoolRuntimeState.GetPickCount(item.EntryId)));
+                    resolvePickCount != null ? resolvePickCount(item.EntryId) : 0));
             }
         }
-
-        return options;
     }
 
-    public void RecordPick(UpgradeCardRollOption option)
+    private static int ResolvePickCount(ContentRollContext rollContext, string entryId)
     {
-        if (string.IsNullOrWhiteSpace(option.EntryId))
+        if (rollContext?.History != null)
         {
-            return;
+            return rollContext.History.GetPickCount(rollContext.HistoryScope, entryId);
         }
 
-        contentPoolRuntimeState.RecordPick(option.RollItem);
+        return 0;
     }
 }

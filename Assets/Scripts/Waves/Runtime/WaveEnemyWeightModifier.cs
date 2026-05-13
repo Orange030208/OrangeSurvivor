@@ -38,14 +38,15 @@ public sealed class WaveEnemyWeightModifier : FeatureEffectBase, IContentPoolMod
         ContentPoolModifierRegistry.Unregister(this);
     }
 
-    public bool AffectsPurpose(ContentPoolPurpose purpose)
+    public bool AffectsContext(ContentRollContext context)
     {
-        return purpose == ContentPoolPurpose.WaveSpawn;
+        return context != null &&
+               string.Equals(context.ScopeId, ContentPoolScopeIds.WaveSpawn, StringComparison.Ordinal);
     }
 
-    public void ModifyCandidates(ContentPoolEvaluationContext context, List<ContentPoolCandidate> candidates)
+    public void ModifyCandidates(ContentRollContext context, List<ContentPoolCandidate> candidates)
     {
-        if (candidates == null || !AffectsWaveFacts(context))
+        if (candidates == null || !AffectsContext(context) || !AffectsWaveContext(context))
         {
             return;
         }
@@ -63,10 +64,9 @@ public sealed class WaveEnemyWeightModifier : FeatureEffectBase, IContentPoolMod
                 continue;
             }
 
-            // WaveSpawn 池用 DomainFlags 保存 WaveEnemyTag，避免候选抽取层反向依赖刷怪业务类型。
-            WaveEnemyTag candidateTags = (WaveEnemyTag)candidate.DomainFlags;
+            WaveEnemyTag candidateTags = ResolveCandidateTags(candidate);
             if (targetEnemyDefinition == null &&
-                !MatchesTags(candidateTags == WaveEnemyTag.None ? WaveEnemyTag.Normal : candidateTags, targetTags))
+                !MatchesTags(candidateTags, targetTags))
             {
                 continue;
             }
@@ -75,16 +75,19 @@ public sealed class WaveEnemyWeightModifier : FeatureEffectBase, IContentPoolMod
         }
     }
 
-    private bool AffectsWaveFacts(ContentPoolEvaluationContext context)
+    private static WaveEnemyTag ResolveCandidateTags(ContentPoolCandidate candidate)
     {
-        // 波次范围从事实快照读取，保证 Modifier 与池条件使用同一份上下文。
-        int currentWave = 1;
-        if (context?.Facts != null &&
-            context.Facts.TryGet(ContentFactIds.CurrentWave, out ContentFactValue waveValue) &&
-            waveValue.TryGetNumber(out float waveNumber))
+        if (candidate != null && candidate.TryGetMetadata(out WaveSpawnMetadata metadata))
         {
-            currentWave = Mathf.Max(1, Mathf.RoundToInt(waveNumber));
+            return metadata.Tags;
         }
+
+        return WaveEnemyTag.Normal;
+    }
+
+    private bool AffectsWaveContext(ContentRollContext context)
+    {
+        int currentWave = context != null ? context.CurrentWaveNumber : 1;
 
         if (currentWave < Mathf.Max(1, minWaveNumber))
         {
@@ -101,9 +104,8 @@ public sealed class WaveEnemyWeightModifier : FeatureEffectBase, IContentPoolMod
             return true;
         }
 
-        return context?.Facts != null &&
-               context.Facts.TryGet(ContentFactIds.WaveId, out ContentFactValue waveIdValue) &&
-               string.Equals(waveId, waveIdValue.StringValue, StringComparison.Ordinal);
+        return context != null &&
+               string.Equals(waveId, context.WaveId, StringComparison.Ordinal);
     }
 
     private static bool MatchesTags(WaveEnemyTag sourceTags, WaveEnemyTag requiredTags)

@@ -260,7 +260,8 @@ public class GolemBrain : EnemyBrain
             }
 
             chargeHitTargets.Add(hitEntity);
-            float damage = Mathf.Max(0f, propertiesManager.GetPropValue(PropType.Attack) * enemyData.ChargeDamageMultiplier);
+            float damage = PropValueUtility.ClampNonNegative(
+                propertiesManager.GetPropValue(PropType.Attack) * enemyData.ChargeDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - owner.Center;
             HitService.Apply(new HitRequest(
                 owner,
@@ -558,7 +559,8 @@ public class GolemBrain : EnemyBrain
         private void TryCommitPostChargeAttack()
         {
             Vector2 attackCenter = brain.ResolveMeleeAttackCenter();
-            float attackRadius = PropValueUtility.DistancePointsToWorldUnits(brain.propertiesManager.GetPropValue(PropType.AttackRange));
+            float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+                brain.propertiesManager.GetPropValue(PropType.AttackRange));
             int hitCount = Physics2D.OverlapCircleNonAlloc(
                 attackCenter,
                 attackRadius,
@@ -575,7 +577,7 @@ public class GolemBrain : EnemyBrain
 
                 Vector2 hitPoint = hitEntity.GetClosestPointTo(attackCenter);
                 Vector2 knockbackDirection = hitEntity.Center - brain.owner.Center;
-                float damage = Mathf.Max(0f, brain.propertiesManager.GetPropValue(PropType.Attack));
+                float damage = PropValueUtility.ClampNonNegative(brain.propertiesManager.GetPropValue(PropType.Attack));
                 HitService.Apply(new HitRequest(
                     brain.owner,
                     hitEntity,

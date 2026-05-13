@@ -61,7 +61,8 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
 
     private float ResolveAttackRange()
     {
-        return PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.AttackRange));
+        return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange));
     }
 
     private Vector3 ResolveFirePointPosition()

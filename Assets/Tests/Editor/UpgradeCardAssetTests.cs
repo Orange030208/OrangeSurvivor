@@ -9,7 +9,7 @@ public class UpgradeCardAssetTests
     private const float BudgetTolerance = 0.1f;
 
     [Test]
-    public void UpgradeCardsUseChineseIdsAndPurePropertyModifiers()
+    public void UpgradeCardsUseChineseIdsAndPropertyModifierFeatures()
     {
         UpgradeCardSO[] cards = LoadUpgradeCards();
         Assert.AreEqual(43, cards.Length);
@@ -21,12 +21,12 @@ public class UpgradeCardAssetTests
             Assert.IsFalse(string.IsNullOrWhiteSpace(card.CardId), card.name);
             Assert.IsTrue(ContainsChinese(card.CardId), card.CardId);
             Assert.IsTrue(cardIds.Add(card.CardId), $"Duplicated cardId: {card.CardId}");
-            Assert.Greater(card.PropertyModifiers.Count, 0, card.CardId);
-            Assert.AreEqual(0, card.SpecialFeatures.Count, card.CardId);
+            IReadOnlyList<PropertyModifierFeature> propertyFeatures = GetPropertyModifierFeatures(card);
+            Assert.Greater(propertyFeatures.Count, 0, card.CardId);
 
             if (card.Rarity != UpgradeCardRarity.Legendary)
             {
-                Assert.AreEqual(1, card.PropertyModifiers.Count, card.CardId);
+                Assert.AreEqual(1, propertyFeatures.Count, card.CardId);
             }
         }
     }
@@ -55,7 +55,6 @@ public class UpgradeCardAssetTests
         UpgradeCardSO[] cards = LoadUpgradeCards();
         ContentPoolSO pool = AssetDatabase.LoadAssetAtPath<ContentPoolSO>(PoolPath);
         Assert.NotNull(pool);
-        Assert.AreEqual(ContentPoolPurpose.UpgradeCard, pool.Purpose);
         Assert.AreEqual(4, pool.DefaultRollCount);
         Assert.IsFalse(pool.AllowDuplicateResults);
         Assert.AreEqual(cards.Length, pool.Entries.Count);
@@ -70,7 +69,8 @@ public class UpgradeCardAssetTests
             Assert.AreEqual(card.CardId, entry.EntryId);
             Assert.AreEqual(GetRarityWeight(card.Rarity), entry.BaseWeight);
             Assert.AreEqual(UpgradeCardSO.UNLIMITED_PICK_COUNT, entry.MaxPickCount);
-            Assert.AreEqual((int)card.Rarity, entry.QualityValue);
+            Assert.IsTrue(entry.TryGetMetadata(out QualityMetadata qualityMetadata), entry.EntryId);
+            Assert.AreEqual((int)card.Rarity, qualityMetadata.QualityValue, entry.EntryId);
             Assert.AreEqual(0, entry.Conditions.Count, card.CardId);
             Assert.AreEqual(1, entry.WeightRules.Count, card.CardId);
             Assert.IsInstanceOf<PreviousRollWeightContentRule>(entry.WeightRules[0], card.CardId);
@@ -111,14 +111,33 @@ public class UpgradeCardAssetTests
     private static float CalculateBudget(UpgradeCardSO card)
     {
         float budget = 0f;
-        for (int i = 0; i < card.PropertyModifiers.Count; i++)
+        IReadOnlyList<PropertyModifierFeature> propertyFeatures = GetPropertyModifierFeatures(card);
+        for (int i = 0; i < propertyFeatures.Count; i++)
         {
-            PropModifierData modifier = card.PropertyModifiers[i];
+            PropModifierData modifier = propertyFeatures[i].Modifier;
             Assert.AreEqual(PropModifierType.Add, modifier.modifierType, card.CardId);
             budget += modifier.value * GetPointValue(modifier.propType);
         }
 
         return budget;
+    }
+
+    private static IReadOnlyList<PropertyModifierFeature> GetPropertyModifierFeatures(UpgradeCardSO card)
+    {
+        List<PropertyModifierFeature> propertyFeatures = new();
+        IReadOnlyList<FeatureEffectBase> specialFeatures = card.SpecialFeatures;
+        for (int i = 0; i < specialFeatures.Count; i++)
+        {
+            if (specialFeatures[i] is PropertyModifierFeature propertyFeature)
+            {
+                propertyFeatures.Add(propertyFeature);
+                continue;
+            }
+
+            Assert.Fail($"{card.CardId} has non-property upgrade feature {specialFeatures[i]?.GetType().Name}.");
+        }
+
+        return propertyFeatures;
     }
 
     private static float GetPointValue(PropType propType)
@@ -134,9 +153,9 @@ public class UpgradeCardAssetTests
             PropType.CriticalChance => 50f,
             PropType.CriticalPercent => 12f,
             PropType.MoveSpeed => 10f,
-            PropType.MaxHealth => 10f,
+            PropType.MaxHealth => 8f,
             PropType.HealthRecoverySpeed => 5f,
-            PropType.Armor => 100f,
+            PropType.Armor => 80f,
             PropType.Luck => 20f,
             PropType.Dodge => 33f,
             PropType.PickupRadius => 8f,

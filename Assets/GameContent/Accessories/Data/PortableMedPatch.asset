@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u4FBF\u643A\u836F\u8D34"
   itemIcon: {fileID: 21300000, guid: 81ffdb3754a6fbd4d816b88c585ef1b8, type: 3}
-  itemPrice: 16
+  itemPrice: 15
   itemType: 1
   itemDescription: ""
   accessoryId: portable_med_patch
@@ -23,7 +23,7 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 7
     modifierType: 0
-    value: 4
+    value: 12
   specialFeatures: []
   references:
     version: 2

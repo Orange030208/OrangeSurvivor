@@ -600,8 +600,8 @@ FeatureHost 中 Buff RuntimeSourceId 对应的运行时 Feature
 数据来源优先级：
 
 ```text
-UpgradeCardSO.PropertyModifiers
 UpgradeCardSO.SpecialFeatures
+PropertyModifierFeature
 UpgradeCardSO.GetExtraInfos()
 选择预览服务产出的差异
 ```

@@ -68,7 +68,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -79,7 +79,7 @@ MonoBehaviour:
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 1868327620, guid: ef5746f5bb41a7f4fa43cc777cf40cbe, type: 3}
     m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
@@ -89,7 +89,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 2738362673911831729}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -150,7 +150,6 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: 853b14fcace3d12459b225869d8e9560, type: 2}
   targets:
     bindings: []
-  currentConfigOption: 
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
 --- !u!114 &5972903202193092270

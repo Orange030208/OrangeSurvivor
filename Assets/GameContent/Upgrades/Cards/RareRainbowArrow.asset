@@ -16,13 +16,18 @@ MonoBehaviour:
   title: 长虹贯矢
   icon: {fileID: 0}
   rarity: 1
-  tags: 09000000
+  tags: 00020000
   description: 
-  propertyModifiers:
-  - propType: 30
-    modifierType: 0
-    value: 15
-  specialFeatures: []
+  specialFeatures:
+  - rid: 830000000000039001
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 830000000000039001
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        modifier:
+          propType: 30
+          modifierType: 0
+          value: 15

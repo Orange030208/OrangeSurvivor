@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\u8FC7\u8F7D\u6273\u673A"
   itemIcon: {fileID: 21300000, guid: 3a5fabeb1af72a143b5127826a38b52c, type: 3}
-  itemPrice: 44
+  itemPrice: 45
   itemType: 1
   itemDescription: ""
   accessoryId: overload_trigger
@@ -23,10 +23,10 @@ MonoBehaviour:
   propertyModifiers:
   - propType: 1
     modifierType: 0
-    value: 12
+    value: 6
   - propType: 3
     modifierType: 0
-    value: 12
+    value: 5
   specialFeatures: []
   references:
     version: 2
