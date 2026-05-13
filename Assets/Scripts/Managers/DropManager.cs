@@ -23,6 +23,11 @@ public class DropManager : MonoBehaviour
 
     private void OnEntityDied(EntityDiedEvent deadEvent)
     {
+        if (deadEvent.Reason == EntityDeathReason.WaveCleanup)
+        {
+            return;
+        }
+
         if (deadEvent.Entity is not Enemy)
         {
             return;

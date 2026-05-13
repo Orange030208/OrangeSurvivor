@@ -535,7 +535,10 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         DrawWeaponDataProperty("visualForwardAngle", "Visual Forward Angle");
-        DrawWeaponDataProperty("stopAimingWhenAttackReady", "Stop Aiming When Ready");
+        DrawWeaponDataProperty(
+            "holdAimWhenAttackReady",
+            "Hold Aim When Attack Ready",
+            "When cooldown is ready and the weapon is already aligned to its target, keep the current aim until the attack starts.");
         DrawWeaponDataProperty("attackSequenceOccupancy", "Sequence Occupancy");
         DrawWeaponDataProperty("attackTimingMode", "Attack Timing Mode");
         DrawWeaponDataProperty("targetingMode", "Targeting Mode");
@@ -2517,6 +2520,11 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
 
     private void DrawWeaponDataProperty(string propertyName, string label, bool includeChildren = false)
     {
+        DrawWeaponDataProperty(propertyName, label, null, includeChildren);
+    }
+
+    private void DrawWeaponDataProperty(string propertyName, string label, string tooltip, bool includeChildren = false)
+    {
         if (weaponDataObject == null)
         {
             return;
@@ -2525,7 +2533,7 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         SerializedProperty property = weaponDataObject.FindProperty(propertyName);
         if (property != null)
         {
-            EditorGUILayout.PropertyField(property, new GUIContent(label), includeChildren);
+            EditorGUILayout.PropertyField(property, new GUIContent(label, tooltip), includeChildren);
         }
     }
 

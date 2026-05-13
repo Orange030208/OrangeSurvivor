@@ -24,6 +24,12 @@ MonoBehaviour:
   - propType: 1
     modifierType: 0
     value: 50
+  - propType: 8
+    modifierType: 0
+    value: 50
+  - propType: 15
+    modifierType: 0
+    value: 500
   specialFeatures:
   - rid: 7274045950615355394
   initialWeapons:

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
-public class Projectile : Entity, IProjectile
+public class Projectile : Entity, IProjectile, IWaveEndStep
 {
     private const string DEFAULT_OBSTACLE_LAYER_NAME = "Wall";
 
@@ -35,6 +37,7 @@ public class Projectile : Entity, IProjectile
     private Animator cachedAnimator;
     private bool isDespawning;
     private readonly HashSet<HealthComponent> hitTargets = new();
+    public int WaveEndPriority => WaveEndPriorities.EntityCleanup;
 
     protected virtual void Awake()
     {
@@ -61,6 +64,11 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void Update()
     {
+        if (isDespawning)
+        {
+            return;
+        }
+
         Vector2 currentPosition = transform.position;
         traveledDistance += Vector2.Distance(lastPosition, currentPosition);
         lastPosition = currentPosition;
@@ -82,8 +90,44 @@ public class Projectile : Entity, IProjectile
         traveledDistance = 0f;
         currentMaxTravelDistance = ResolveMaxTravelDistance(context);
         ApplyFacing(context.Direction, context.ProjectileDefinition);
-        rb.velocity = context.Direction * currentMoveSpeed;
+        Rigidbody2D runtimeRigidbody = ResolveRigidbody();
+        runtimeRigidbody.simulated = true;
+        runtimeRigidbody.velocity = context.Direction * currentMoveSpeed;
         OnLaunched(context);
+    }
+
+    public void PrepareForWaveEnd()
+    {
+        StopProjectileMotion();
+        if (isDespawning)
+        {
+            return;
+        }
+
+        isDespawning = true;
+    }
+
+    public void PrepareForWaveCleanup()
+    {
+        PrepareForWaveEnd();
+    }
+
+    public async UniTask ExecuteWaveEndAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        ReleaseForWaveEnd();
+        await WaitUntilDestroyedForWaveEndAsync(cancellationToken);
+    }
+
+    public void ReleaseForWaveEnd()
+    {
+        PrepareForWaveEnd();
+        Destroy(gameObject);
+    }
+
+    public void ReleaseForWaveCleanup()
+    {
+        ReleaseForWaveEnd();
     }
 
     protected virtual void OnLaunched(ProjectileLaunchContext context)
@@ -93,6 +137,11 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
+        if (isDespawning)
+        {
+            return;
+        }
+
         if (TryHandleObstacleImpact(collider, ResolveImpactPosition(collider)))
         {
             return;
@@ -123,6 +172,11 @@ public class Projectile : Entity, IProjectile
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
+        if (isDespawning)
+        {
+            return;
+        }
+
         if (collision == null || collision.collider == null)
         {
             return;
@@ -309,7 +363,43 @@ public class Projectile : Entity, IProjectile
         }
 
         isDespawning = true;
+        StopProjectileMotion();
         Destroy(gameObject);
+    }
+
+    private void StopProjectileMotion()
+    {
+        Rigidbody2D runtimeRigidbody = ResolveRigidbody();
+        if (runtimeRigidbody != null)
+        {
+            runtimeRigidbody.velocity = Vector2.zero;
+            runtimeRigidbody.angularVelocity = 0f;
+            runtimeRigidbody.simulated = false;
+        }
+
+        if (EntityCollider != null)
+        {
+            EntityCollider.enabled = false;
+        }
+    }
+
+    private Rigidbody2D ResolveRigidbody()
+    {
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        return rb;
+    }
+
+    private async UniTask WaitUntilDestroyedForWaveEndAsync(CancellationToken cancellationToken)
+    {
+        while (this != null)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
     }
 
     private bool IsInLayerMask(int layer, LayerMask layerMask)

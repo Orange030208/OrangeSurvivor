@@ -393,6 +393,40 @@ public sealed class PropertyMappingAndAttackUsageTests
     }
 
     [Test]
+    public void WeaponStopForWaveCleanupKeepsHolderModifiers()
+    {
+        PropertiesManager manager = CreatePropertiesManager(System.Array.Empty<BasePropData>());
+
+        GameObject gameObject = CreateGameObject("weapon_cleanup_holder_modifiers_runtime");
+        Weapon weapon = gameObject.AddComponent<Weapon>();
+        SetPrivateField(weapon, "propertiesManager", manager);
+        SetPrivateField(weapon, "<WeaponData>k__BackingField", CreateWeaponData(
+            WeaponBenefitData.Full,
+            new WeaponLevelStatData(
+                level: 1,
+                attack: 10f,
+                attackSpeed: 100f,
+                criticalChance: 0f,
+                criticalPercent: 100f,
+                range: 0f,
+                knockbackStrength: 0f,
+                holderModifiers: new[]
+                {
+                    new PropModifierData(PropType.Damage, 15f)
+                })));
+
+        weapon.SetLevel(1);
+
+        weapon.StopForWaveCleanup();
+
+        Assert.That(manager.GetPropValue(PropType.Damage), Is.EqualTo(15f).Within(0.0001f));
+
+        weapon.OnDisableComponent();
+
+        Assert.That(manager.GetPropValue(PropType.Damage), Is.EqualTo(0f).Within(0.0001f));
+    }
+
+    [Test]
     public void WeaponBenefitModifierFeatureInstallsAndUninstallsHolderBonus()
     {
         GameObject gameObject = CreateGameObject("weapon_usage_feature");

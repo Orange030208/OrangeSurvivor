@@ -164,8 +164,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97298f3cde2751143b36beb5dedc2aaf, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   containersToAdd: 4
   baseRerollCost: 5
   currencyWallet: {fileID: 0}
@@ -25564,8 +25564,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70452e71c360ab44988c18f13506913c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &475326733
 GameObject:
   m_ObjectHideFlags: 0
@@ -25608,8 +25608,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a3725aa447f4b05967362c38519e395, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   uiManager: {fileID: 2066110832}
   player: {fileID: 0}
   characterSelectionManager: {fileID: 360436080}
@@ -25619,6 +25619,9 @@ MonoBehaviour:
   inventoryOperateManager: {fileID: 1941351701}
   shopManager: {fileID: 59292223}
   stageCompleteSummaryManager: {fileID: 1566269878}
+  waveEndSettings:
+    enemyDeathInterval: 0.08
+    projectileReleaseInterval: 0.04
   initialGameState: 1
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
@@ -25660,8 +25663,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
@@ -25770,8 +25773,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e079f14c8c9ebed4cac88c39590a74d5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   target: {fileID: 519420032}
   minXY: {x: -10, y: -10}
   maxXY: {x: 10, y: 10}
@@ -25786,8 +25789,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 052e445d8f6c441389c720fa86ee93b2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   targetCamera: {fileID: 0}
   globalStrengthScale: 1
   maxPositionOffset: 2.5
@@ -26111,8 +26114,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b67509ccf34147dbac66debaf0d0b722, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   inputRuntime: {fileID: 842639266}
   dontDestroyOnLoad: 1
   moveActionPath: Gameplay/Move
@@ -26143,8 +26146,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0d6ca855b144bdeb1b8a07623484bb5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   input: {fileID: 842639263}
   inputRuntime: {fileID: 842639266}
   eventSystem: {fileID: 1432474700}
@@ -26165,8 +26168,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56405d8805ae4253a52f0106b1133dc5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   actionsAsset: {fileID: -944628639613478452, guid: 3a8513d4e1e24f64bbd128f3efb74f5d, type: 3}
   dontDestroyOnLoad: 1
 --- !u!1 &885074028

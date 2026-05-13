@@ -21,7 +21,7 @@ MonoBehaviour:
   - 3
   attackSequence: {fileID: 11400000, guid: fe4733ff985a4aacb45cc4c7eb26856c, type: 2}
   visualForwardAngle: 45
-  stopAimingWhenAttackReady: 0
+  holdAimWhenAttackReady: 0
   attackSequenceOccupancy: 0.9
   spawnPoints:
   - id: muzzle

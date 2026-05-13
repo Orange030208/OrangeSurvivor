@@ -22,7 +22,7 @@ MonoBehaviour:
   - 3
   attackSequence: {fileID: 11400000, guid: 80958bf42744413e95ead02c52422bc7, type: 2}
   visualForwardAngle: 90
-  stopAimingWhenAttackReady: 1
+  holdAimWhenAttackReady: 1
   attackSequenceOccupancy: 0.85
   attackTimingMode: 1
   targetingMode: 1

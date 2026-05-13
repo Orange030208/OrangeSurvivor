@@ -17,11 +17,10 @@ MonoBehaviour:
   itemPrice: 35
   itemType: 0
   itemDescription: "\u7A33\u5B9A\u7684\u81EA\u52A8\u6B65\u67AA\u3002\u4EE5\u77ED\u70B9\u5C04\u6301\u7EED\u8F93\u51FA\uFF0C\u9002\u5408\u4E2D\u8DDD\u79BB\u538B\u5236\u3002"
-  tags:
-  - 1
+  tags: 01000000
   attackSequence: {fileID: 11400000, guid: b1ad746dfc0d4569a8eea93b3af756aa, type: 2}
   visualForwardAngle: 90
-  stopAimingWhenAttackReady: 0
+  holdAimWhenAttackReady: 1
   attackSequenceOccupancy: 0.779
   attackTimingMode: 0
   targetingMode: 0

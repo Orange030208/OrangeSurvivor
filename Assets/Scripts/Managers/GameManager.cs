@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     private readonly HashSet<string> pauseSources = new();
     private int stateTransitionVersion;
     private bool isSceneReloading;
+    private bool isWaveEndFlowRunning;
+    private bool isEnteringPostWaveStateAfterCleanup;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -100,13 +102,13 @@ public class GameManager : MonoBehaviour
 
     private void OnWaveCompleted(WaveCompletedEvent eventData)
     {
-        if (isRunTerminated || currentGameState != GameState.Game)
+        if (isRunTerminated || isWaveEndFlowRunning || currentGameState != GameState.Game)
         {
             return;
         }
 
         GrantWaveGoldRewardBonus();
-        StartWaveEndFlow(eventData);
+        StartWaveEndFlowAsync(eventData).Forget();
     }
 
     private void OnCharacterSelectionCompleted()
@@ -221,12 +223,23 @@ public class GameManager : MonoBehaviour
         }
 
         GameState oldState = currentGameState;
-        ExitState(oldState, targetState);
-        currentGameState = targetState;
-        ApplySimulationState();
-        EnterState(oldState, currentGameState);
-        ApplyStateMusic(currentGameState);
-        GameEventBus.Publish(new GameStateChangedEvent(oldState, currentGameState));
+        bool wasEnteringPostWaveStateAfterCleanup = isEnteringPostWaveStateAfterCleanup;
+        try
+        {
+            ExitState(oldState, targetState);
+            currentGameState = targetState;
+            ApplySimulationState();
+            EnterState(oldState, currentGameState);
+            ApplyStateMusic(currentGameState);
+            GameEventBus.Publish(new GameStateChangedEvent(oldState, currentGameState));
+        }
+        finally
+        {
+            if (wasEnteringPostWaveStateAfterCleanup)
+            {
+                isEnteringPostWaveStateAfterCleanup = false;
+            }
+        }
     }
 
     private void OnGameOverRestartClicked()
@@ -251,7 +264,7 @@ public class GameManager : MonoBehaviour
 
     private void OnPauseGameRequested()
     {
-        if (currentGameState != GameState.Game || isPaused)
+        if (currentGameState != GameState.Game || isPaused || isWaveEndFlowRunning)
         {
             return;
         }
@@ -296,7 +309,7 @@ public class GameManager : MonoBehaviour
             StopCurrentWave();
         }
 
-        if (newState == GameState.Shop)
+        if (newState == GameState.Shop && !isEnteringPostWaveStateAfterCleanup)
         {
             DefeatAllTrackedEnemies();
         }
@@ -362,6 +375,7 @@ public class GameManager : MonoBehaviour
 
     private void EnterGameState(GameState oldState)
     {
+        RestorePlayerAfterWaveCleanup();
         if (oldState != GameState.Shop)
         {
             isRunTerminated = false;
@@ -379,24 +393,76 @@ public class GameManager : MonoBehaviour
         StartFirstWave();
     }
 
-    private void StartWaveEndFlow(WaveCompletedEvent completedEvent)
+    private async UniTaskVoid StartWaveEndFlowAsync(WaveCompletedEvent completedEvent)
     {
-        if (isRunTerminated)
+        if (isRunTerminated || isWaveEndFlowRunning)
         {
             return;
         }
 
-        DefeatAllTrackedEnemies();
-
-        if (!completedEvent.HasNextWave)
+        isWaveEndFlowRunning = true;
+        bool transitionRequested = false;
+        try
         {
-            GameEventBus.Publish<AllWavesCompletedEvent>();
-            AudioSfxBridge.RequestPlay(AudioSfxKey.StageCompleted);
-            TransitionToState(GameState.StageComplete);
+            await RunWaveEndPipelineAsync(this.GetCancellationTokenOnDestroy());
+            if (isRunTerminated || currentGameState != GameState.Game)
+            {
+                return;
+            }
+
+            isEnteringPostWaveStateAfterCleanup = true;
+            if (!completedEvent.HasNextWave)
+            {
+                GameEventBus.Publish<AllWavesCompletedEvent>();
+                AudioSfxBridge.RequestPlay(AudioSfxKey.StageCompleted);
+                transitionRequested = true;
+                TransitionToState(GameState.StageComplete);
+                return;
+            }
+
+            transitionRequested = true;
+            TransitionToState(GameState.Shop);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception, this);
+        }
+        finally
+        {
+            if (!transitionRequested)
+            {
+                RestorePlayerAfterWaveCleanup();
+            }
+
+            isWaveEndFlowRunning = false;
+        }
+    }
+
+    private async UniTask RunWaveEndPipelineAsync(CancellationToken cancellationToken)
+    {
+        WaveEndPipeline pipeline = WaveEndPipelineFactory.CreateDefault(player, enemyRegistry);
+        await pipeline.RunAsync(cancellationToken);
+    }
+
+    private void RestorePlayerAfterWaveCleanup()
+    {
+        if (player == null)
+        {
             return;
         }
 
-        TransitionToState(GameState.Shop);
+        if (player.MoveComponent is IMovementLockable movementLockable)
+        {
+            movementLockable.RemoveMovementLock(typeof(WaveEndPipeline));
+        }
+
+        if (player.TryGetComponent(out WeaponsHolder weaponsHolder))
+        {
+            weaponsHolder.EnableWeaponsAfterWaveCleanup();
+        }
     }
 
     private void GrantWaveGoldRewardBonus()

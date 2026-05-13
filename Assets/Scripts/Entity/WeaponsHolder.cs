@@ -30,6 +30,7 @@ public class WeaponsHolder : EntityComponentBase
     private readonly List<WeaponPosition> weaponPositionPool = new();
     private readonly Dictionary<string, WeaponBenefitData> weaponBenefitModifierSources = new();
     private WeaponBenefitData currentWeaponBenefitBonus = WeaponBenefitData.Zero;
+    private bool runtimeWeaponsDisabled;
 
     public event Action OnWeaponBenefitBonusChanged;
     public event Action OnWeaponsChanged;
@@ -83,7 +84,7 @@ public class WeaponsHolder : EntityComponentBase
 
     public override void OnTick(float deltaTime)
     {
-        if (weaponPositions == null)
+        if (runtimeWeaponsDisabled || weaponPositions == null)
         {
             return;
         }
@@ -98,7 +99,33 @@ public class WeaponsHolder : EntityComponentBase
     {
         UnsubscribeFromPropertiesManager();
         ClearWeaponBenefitModifiers();
+        DisableRuntimeWeapons();
+        runtimeWeaponsDisabled = false;
+    }
 
+    public void DisableWeaponsForWaveCleanup()
+    {
+        if (runtimeWeaponsDisabled)
+        {
+            return;
+        }
+
+        runtimeWeaponsDisabled = true;
+        StopRuntimeWeaponsForWaveCleanup();
+    }
+
+    public void EnableWeaponsAfterWaveCleanup()
+    {
+        if (!runtimeWeaponsDisabled)
+        {
+            return;
+        }
+
+        runtimeWeaponsDisabled = false;
+    }
+
+    private void DisableRuntimeWeapons()
+    {
         if (weaponPositions == null)
         {
             return;
@@ -107,6 +134,19 @@ public class WeaponsHolder : EntityComponentBase
         for (int i = 0; i < weaponPositions.Length; i++)
         {
             weaponPositions[i]?.Weapon?.OnDisableComponent();
+        }
+    }
+
+    private void StopRuntimeWeaponsForWaveCleanup()
+    {
+        if (weaponPositions == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < weaponPositions.Length; i++)
+        {
+            weaponPositions[i]?.Weapon?.StopForWaveCleanup();
         }
     }
 

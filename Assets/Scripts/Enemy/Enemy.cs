@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PropertiesManager))]
-public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
+public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWaveEndStep
 {
     private IAnimatable animComponent;
     private HealthComponent healthComponent;
@@ -31,6 +33,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
     public EntityAnimationConfig AnimationConfig => enemyData.AnimConfig;
+    public int WaveEndPriority => WaveEndPriorities.EntityCleanup;
 
     private void Awake()
     {
@@ -136,6 +139,65 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider
 
         UnregisterRuntime();
         Destroy(gameObject);
+    }
+
+    public void PrepareForWaveEnd()
+    {
+        if (!IsRuntimeEnabled)
+        {
+            return;
+        }
+
+        DisableRuntime();
+    }
+
+    public void PrepareForWaveCleanup()
+    {
+        PrepareForWaveEnd();
+    }
+
+    public async UniTask ExecuteWaveEndAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        PrepareForWaveEnd();
+        DefeatForWaveEnd();
+        await WaitUntilDestroyedForWaveEndAsync(cancellationToken);
+    }
+
+    public bool DefeatForWaveEnd()
+    {
+        if (healthComponent == null)
+        {
+            DefeatSilently();
+            return false;
+        }
+
+        if (healthComponent.IsDeathSequenceRunning)
+        {
+            return true;
+        }
+
+        bool started = healthComponent.ForceDeath(null, EntityDeathReason.WaveCleanup);
+        if (!started && !healthComponent.IsDeathSequenceRunning)
+        {
+            DefeatSilently();
+        }
+
+        return started;
+    }
+
+    public bool DefeatForWaveCleanup()
+    {
+        return DefeatForWaveEnd();
+    }
+
+    private async UniTask WaitUntilDestroyedForWaveEndAsync(CancellationToken cancellationToken)
+    {
+        while (this != null)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
     }
 
     private void RegisterRuntime()

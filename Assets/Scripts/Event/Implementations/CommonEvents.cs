@@ -58,22 +58,35 @@ public struct EntityDamagedEvent : IGameEvent
     }
 }
 
+public enum EntityDeathReason
+{
+    Combat = 0,
+    WaveCleanup = 1
+}
+
 public struct EntityDiedEvent : IGameEvent
 {
     public Entity Entity;
     public Vector2 Position;
     public Entity Source;
+    public EntityDeathReason Reason;
 
     public EntityDiedEvent(Entity entity, Vector2 position)
-        : this(entity, position, null)
+        : this(entity, position, null, EntityDeathReason.Combat)
     {
     }
 
     public EntityDiedEvent(Entity entity, Vector2 position, Entity source)
+        : this(entity, position, source, EntityDeathReason.Combat)
+    {
+    }
+
+    public EntityDiedEvent(Entity entity, Vector2 position, Entity source, EntityDeathReason reason)
     {
         Entity = entity;
         Position = position;
         Source = source;
+        Reason = reason;
     }
 }
 

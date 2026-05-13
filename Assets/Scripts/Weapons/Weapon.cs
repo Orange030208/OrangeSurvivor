@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +12,7 @@ using UnityEngine;
 /// 3. 通过 WeaponDataSO 的 Spawn Points 统一描述子弹和表现生成点。
 /// </summary>
 [RequireComponent(typeof(WeaponSequenceBridge))]
-public class Weapon : Entity, ILifecycle, IProjectileLauncher
+public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
 {
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
@@ -90,6 +92,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     public Transform HitBoxAnchorTransform => hitBoxAnchorTransform;
     public AttackSequenceDefinitionSO DebugAttackSequence => attackSequence != null ? attackSequence : WeaponData != null ? WeaponData.AttackSequence : null;
     public float DebugCooldownRemaining => cooldownRemaining;
+    public int WaveEndPriority => WaveEndPriorities.StopCombat;
     private Vector2 HitBoxSize => WeaponData != null ? WeaponData.HitBoxSize : Vector2.one;
 
     public LayerMask TargetLayerMask => targetLayerMask;
@@ -112,6 +115,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
     {
         if (propertiesManager != null)
         {
+            propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
+            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
             propertiesManager.OnAllPropertiesChanged += RefreshRuntimeStats;
             propertiesManager.OnPropertyChanged += OnPropertyChanged;
         }
@@ -133,6 +138,18 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
         UnsubscribeSequenceEvents();
         ForceResetAttackState();
+    }
+
+    public void StopForWaveCleanup()
+    {
+        ForceResetAttackState();
+    }
+
+    public UniTask ExecuteWaveEndAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        StopForWaveCleanup();
+        return UniTask.CompletedTask;
     }
 
     private void OnDestroy()
@@ -453,7 +470,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
 
         Vector2 desiredAimDirection = ResolveDesiredAimDirection(currentTarget);
         bool holdCurrentAim = IsAttacking ||
-                              (ShouldStopAimingWhenAttackReady() &&
+                              (ShouldHoldAimWhenAttackReady() &&
                                currentTarget != null &&
                                cooldownRemaining <= 0f &&
                                HasReachedAttackAimDirection(desiredAimDirection));
@@ -1100,9 +1117,9 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher
         sequenceBridge?.CacheDefaultPose();
     }
 
-    private bool ShouldStopAimingWhenAttackReady()
+    private bool ShouldHoldAimWhenAttackReady()
     {
-        return WeaponData.StopAimingWhenAttackReady;
+        return WeaponData.HoldAimWhenAttackReady;
     }
 
     private void OnPropertyChanged(PropType propType, float _)

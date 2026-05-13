@@ -16,13 +16,16 @@ MonoBehaviour:
   bgmCues:
   - bgmKey: 1
     clip: {fileID: 8300000, guid: bdf538c2013dac848aa6bc6bce644f34, type: 3}
-    playbackMode: 1
-    pitch: 1
-  - bgmKey: 2
-    clip: {fileID: 8300000, guid: bdf538c2013dac848aa6bc6bce644f34, type: 3}
-    playbackMode: 1
-    pitch: 1
-  - bgmKey: 3
-    clip: {fileID: 8300000, guid: 64bac0fe31356bb4c929407f8d8a10c8, type: 3}
+    clipVariants:
+    - clip: {fileID: 8300000, guid: 4ab58a12658846343b217014e0f0abd2, type: 3}
+      weight: 1
+    - clip: {fileID: 8300000, guid: 1922007c2c206e347885fb2030a5c2f2, type: 3}
+      weight: 1
+    - clip: {fileID: 8300000, guid: 453a7fe9cee420945b7733e14b60cf04, type: 3}
+      weight: 1
+    - clip: {fileID: 8300000, guid: 27ab250fce1f7ed4c9d226375418f7bf, type: 3}
+      weight: 1
+    - clip: {fileID: 8300000, guid: bdf538c2013dac848aa6bc6bce644f34, type: 3}
+      weight: 1
     playbackMode: 1
     pitch: 1

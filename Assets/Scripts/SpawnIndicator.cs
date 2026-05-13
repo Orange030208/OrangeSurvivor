@@ -84,6 +84,19 @@ public class SpawnIndicator : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void PrepareForWaveCleanup()
+    {
+        pulseTween?.Kill();
+        pulseTween = null;
+        isPlaying = false;
+    }
+
+    public void ReleaseForWaveCleanup()
+    {
+        PrepareForWaveCleanup();
+        Destroy(gameObject);
+    }
+
     private void SetVisualVisible(bool visible)
     {
         if (visualRoot != null)

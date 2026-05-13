@@ -37,6 +37,7 @@ public class HealthComponent : EntityComponentBase
 
     public float CurrentHealth => health;
     public float MaxHealth => maxHealth;
+    public bool IsDeathSequenceRunning => isDeathSequenceRunning;
     public override Entity Owner => owner;
 
     public override void Initialize(Entity owner)
@@ -135,8 +136,22 @@ public class HealthComponent : EntityComponentBase
 
         if (health <= 0f)
         {
-            HandleDeath();
+            HandleDeath(EntityDeathReason.Combat);
         }
+    }
+
+    public bool ForceDeath(Entity source, EntityDeathReason deathReason)
+    {
+        if (isDeathSequenceRunning || health <= 0f)
+        {
+            return false;
+        }
+
+        lastDamageSource = source;
+        health = 0f;
+        PublishHealthChanged();
+        HandleDeath(deathReason);
+        return true;
     }
 
     public void Heal(float amount)
@@ -181,7 +196,7 @@ public class HealthComponent : EntityComponentBase
         PublishHealthChanged();
     }
 
-    private void HandleDeath()
+    private void HandleDeath(EntityDeathReason deathReason)
     {
         if (isDeathSequenceRunning)
         {
@@ -191,7 +206,7 @@ public class HealthComponent : EntityComponentBase
         isDeathSequenceRunning = true;
         owner.DisableRuntime();
         OnDeathSequenceStarted?.Invoke();
-        GameEventBus.Publish(new EntityDiedEvent(owner, transform.position, lastDamageSource));
+        GameEventBus.Publish(new EntityDiedEvent(owner, transform.position, lastDamageSource, deathReason));
         StartCoroutine(RunDeathSequence());
     }
 

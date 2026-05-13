@@ -65,13 +65,25 @@ public class EnemyRegistry : MonoBehaviour
         }
     }
 
+    public Enemy[] CreateAliveEnemySnapshot()
+    {
+        Enemy[] enemies = new Enemy[aliveEnemies.Count];
+        aliveEnemies.Values.CopyTo(enemies, 0);
+        return enemies;
+    }
+
+    public void CancelPendingEnemySpawns()
+    {
+        CancelPendingEnemySpawnIndicators();
+    }
+
     public void ClearTracking()
     {
         aliveEnemies.Clear();
         aliveBossIds.Clear();
     }
 
-    private static void CancelPendingEnemySpawns()
+    private static void CancelPendingEnemySpawnIndicators()
     {
         SpawnIndicator[] indicators = FindObjectsByType<SpawnIndicator>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         for (int i = 0; i < indicators.Length; i++)

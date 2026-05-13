@@ -28,16 +28,6 @@ public sealed class VfxLifetime : MonoBehaviour
     public Mode LifetimeMode => mode;
     public float FixedLifetime => Mathf.Max(MinimumLifetime, fixedLifetime);
 
-    private void OnEnable()
-    {
-        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-    }
-
-    private void OnDisable()
-    {
-        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-    }
-
     private void Update()
     {
         if (mode == Mode.AnimationFinished && !isScheduled)
@@ -78,9 +68,15 @@ public sealed class VfxLifetime : MonoBehaviour
         ScheduleDestroy(0f);
     }
 
-    private void OnWaveCompleted(WaveCompletedEvent eventData)
+    public void ReleaseForWaveCleanup()
     {
-        Release();
+        if (this == null || gameObject == null)
+        {
+            return;
+        }
+
+        isScheduled = true;
+        Destroy(gameObject);
     }
 
     private void ScheduleDestroy(float delay)

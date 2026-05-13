@@ -78,7 +78,7 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void OnEntityDied(EntityDiedEvent eventData)
     {
-        if (!isRunActive || eventData.Entity is not Enemy)
+        if (!isRunActive || eventData.Reason == EntityDeathReason.WaveCleanup || eventData.Entity is not Enemy)
         {
             return;
         }

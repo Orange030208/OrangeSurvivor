@@ -328,7 +328,8 @@ public class WeaponDataSO : ItemDataSO, IDescribable
 
     [Header("攻击表现")]
     [SerializeField] private float visualForwardAngle = 45f;
-    [SerializeField] private bool stopAimingWhenAttackReady = true;
+    [Tooltip("启用后，当武器冷却结束且已经对准当前目标时，会保持当前瞄准方向，不再继续跟随目标转动，直到本次攻击开始。一般推荐没有前摇的武器使用。")]
+    [SerializeField] private bool holdAimWhenAttackReady = true;
     [Range(0.1f, 1f)]
     [SerializeField] private float attackSequenceOccupancy = 0.85f;
     [Tooltip("攻击序列和攻速冷却之间的关系。远程武器通常使用压缩模式；近战武器通常使用固定动画后冷却。")]
@@ -356,7 +357,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public IReadOnlyList<WeaponLevelStatData> LevelStats => levelStats;
     public AttackSequenceDefinitionSO AttackSequence => attackSequence;
     public float VisualForwardAngle => visualForwardAngle;
-    public bool StopAimingWhenAttackReady => stopAimingWhenAttackReady;
+    public bool HoldAimWhenAttackReady => holdAimWhenAttackReady;
     public float AttackSequenceOccupancy => Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
     public WeaponAttackTimingMode AttackTimingMode => attackTimingMode;
     public WeaponTargetingMode TargetingMode => targetingMode;

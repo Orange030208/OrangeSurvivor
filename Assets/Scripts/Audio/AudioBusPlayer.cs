@@ -158,19 +158,21 @@ public class AudioBusPlayer : MonoBehaviour
 
     private void PlayOneShot(AudioCueData cueData)
     {
+        AudioClip selectedClip = cueData.SelectClip();
+        float selectedPitch = cueData.SelectPitch();
         GameObject tempObject = new($"{nameof(AudioBusPlayer)}_{cueData.CueId}");
         tempObject.transform.SetParent(transform, false);
 
         AudioSource oneShotSource = tempObject.AddComponent<AudioSource>();
         CopyOneShotSettings(oneShotSource);
-        oneShotSource.clip = cueData.Clip;
+        oneShotSource.clip = selectedClip;
         oneShotSource.volume = GetTargetVolume();
-        oneShotSource.pitch = cueData.Pitch;
+        oneShotSource.pitch = selectedPitch;
         oneShotSource.loop = false;
         oneShotSource.Play();
         activeOneShotSources.Add(oneShotSource);
 
-        float clipDuration = Mathf.Max(0.01f, cueData.Clip.length / Mathf.Max(0.01f, Mathf.Abs(cueData.Pitch)));
+        float clipDuration = Mathf.Max(0.01f, selectedClip.length / Mathf.Max(0.01f, Mathf.Abs(selectedPitch)));
         Destroy(tempObject, clipDuration);
     }
 
@@ -191,11 +193,13 @@ public class AudioBusPlayer : MonoBehaviour
 
     private void ApplyLoopCue(AudioSource source, AudioCueData cueData)
     {
+        AudioClip selectedClip = cueData.SelectClip();
+        float selectedPitch = cueData.SelectPitch();
         volumeTween?.Kill();
         currentCueId = cueData.CueId;
         source.loop = true;
-        source.clip = cueData.Clip;
-        source.pitch = cueData.Pitch;
+        source.clip = selectedClip;
+        source.pitch = selectedPitch;
         source.volume = GetTargetVolume();
         source.Play();
     }
