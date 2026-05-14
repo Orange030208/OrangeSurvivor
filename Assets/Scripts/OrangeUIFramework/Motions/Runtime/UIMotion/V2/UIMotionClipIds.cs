@@ -13,5 +13,7 @@ namespace Orange.UIFramework
     public const string RELEASE = "Release";
     public const string CLICK_PULSE = "ClickPulse";
     public const string EMPHASIS = "Emphasis";
+    public const string SELECTED_CLAIM = "SelectedClaim";
+    public const string REJECTED_RIP_FALL = "RejectedRipFall";
 }
 }

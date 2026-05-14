@@ -226,6 +226,58 @@ public class CardMotionController : ViewPartBase
         await motionPlayer.PlayAsync(profile.SelectClipId, cancellationToken);
     }
 
+    public async UniTask PlaySelectedSubmitAsync(CancellationToken cancellationToken)
+    {
+        ResolveDependencies();
+        if (!HasProfile())
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        StopRuntimeDynamics(restorePose: true);
+        PlaySelectVisualLayer();
+
+        if (motionPlayer == null)
+        {
+            return;
+        }
+
+        string clipId = !string.IsNullOrWhiteSpace(profile.SelectedClaimClipId)
+            ? profile.SelectedClaimClipId
+            : profile.SelectClipId;
+        if (string.IsNullOrWhiteSpace(clipId))
+        {
+            return;
+        }
+
+        await motionPlayer.PlayAsync(clipId, cancellationToken);
+    }
+
+    public async UniTask PlayRejectedSubmitAsync(CancellationToken cancellationToken)
+    {
+        ResolveDependencies();
+        if (!HasProfile())
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        isRevealPlaying = false;
+        StopRuntimeDynamics(restorePose: true);
+        PlayIdleVisualLayer(immediate: false);
+
+        if (motionPlayer == null)
+        {
+            return;
+        }
+
+        string clipId = !string.IsNullOrWhiteSpace(profile.RejectedSubmitClipId)
+            ? profile.RejectedSubmitClipId
+            : UIMotionClipIds.HIDE;
+        await motionPlayer.PlayAsync(clipId, cancellationToken);
+    }
+
     public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();

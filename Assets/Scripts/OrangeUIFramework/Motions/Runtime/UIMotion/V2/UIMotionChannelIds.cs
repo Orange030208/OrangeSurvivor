@@ -7,5 +7,6 @@ namespace Orange.UIFramework
     public const string INTERACTION = "Interaction";
     public const string FEEDBACK = "Feedback";
     public const string PRESENTATION = "Presentation";
+    public const string SUBMIT = "Submit";
 }
 }

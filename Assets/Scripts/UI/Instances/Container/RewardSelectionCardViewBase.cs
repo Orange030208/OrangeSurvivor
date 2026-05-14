@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
@@ -29,9 +30,10 @@ public abstract class RewardSelectionCardViewBase :
     [SerializeField] private bool playRevealSfx = true;
 
     private CanvasGroup cardCanvasGroup;
-    private CancellationTokenSource submitCancellation;
     private Func<int, bool> submitGate;
     private int containerIndex = -1;
+    private string optionId = string.Empty;
+    private Action<int, string> submitRequested;
     private bool isSubmitting;
     private bool interactionLocked;
     private bool isPointerPressed;
@@ -40,6 +42,8 @@ public abstract class RewardSelectionCardViewBase :
 
     protected abstract RewardOptionKind ExpectedKind { get; }
     protected virtual string ExpectedKindDescription => ExpectedKind.ToString();
+    public int OptionIndex => containerIndex;
+    public string OptionId => optionId;
 
     protected virtual bool SupportsKind(RewardOptionKind kind)
     {
@@ -58,6 +62,8 @@ public abstract class RewardSelectionCardViewBase :
             return;
         }
 
+        optionId = option.OptionId;
+        submitRequested = resource.SubmitRequested;
         ValidatePresentationKind(option);
         currentOptionInteractable = option.Interactable;
         RenderPresentation(option);
@@ -196,15 +202,20 @@ public abstract class RewardSelectionCardViewBase :
             return;
         }
 
-        StopSubmitRoutine();
-        submitCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-        SubmitAfterClickMotionAsync(eventData, submitCancellation).Forget();
+        if (submitRequested != null)
+        {
+            submitRequested.Invoke(containerIndex, optionId);
+            return;
+        }
+
+        RaiseClicked(eventData);
     }
 
     public void Dispose()
     {
         StopSubmitRoutine();
         CleanClickEvent();
+        submitRequested = null;
     }
 
     public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
@@ -216,6 +227,59 @@ public abstract class RewardSelectionCardViewBase :
         }
 
         await motionController.PlayRefreshOutAsync(cancellationToken);
+    }
+
+    public virtual async UniTask PlaySelectedSubmitAsync(CancellationToken cancellationToken)
+    {
+        isSubmitting = true;
+        isPointerPressed = false;
+        SetRaycastBlocking(false);
+        try
+        {
+            CardMotionController motionController = GetMotion();
+            if (motionController != null)
+            {
+                await motionController.PlaySelectedSubmitAsync(cancellationToken);
+            }
+        }
+        finally
+        {
+            SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
+            isSubmitting = false;
+        }
+    }
+
+    public virtual async UniTask PlayRejectedSubmitAsync(float startDelay, CancellationToken cancellationToken)
+    {
+        isSubmitting = true;
+        isPointerPressed = false;
+        SetRaycastBlocking(false);
+        try
+        {
+            if (startDelay > 0f)
+            {
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(startDelay),
+                    DelayType.UnscaledDeltaTime,
+                    PlayerLoopTiming.Update,
+                    cancellationToken);
+            }
+
+            CardMotionController motionController = GetMotion();
+            if (motionController != null)
+            {
+                await motionController.PlayRejectedSubmitAsync(cancellationToken);
+            }
+            else
+            {
+                await PlayFallbackRejectedSubmitAsync(cancellationToken);
+            }
+        }
+        finally
+        {
+            SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
+            isSubmitting = false;
+        }
     }
 
     protected virtual void RenderPresentation(IRewardCardPresentation option)
@@ -256,62 +320,48 @@ public abstract class RewardSelectionCardViewBase :
         GetMotion()?.ConfigureForReuse();
     }
 
-    private async UniTaskVoid SubmitAfterClickMotionAsync(PointerEventData eventData, CancellationTokenSource cancellationSource)
-    {
-        CancellationToken cancellationToken = cancellationSource.Token;
-        bool shouldRaiseClicked = false;
-        isSubmitting = true;
-        isPointerPressed = false;
-        SetRaycastBlocking(false);
-
-        try
-        {
-            CardMotionController motionController = GetMotion();
-            if (motionController != null)
-            {
-                await motionController.PlaySelectAsync(cancellationToken);
-                motionController.ResetToRest();
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            shouldRaiseClicked = isActiveAndEnabled;
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        finally
-        {
-            SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
-            isSubmitting = false;
-
-            if (ReferenceEquals(submitCancellation, cancellationSource))
-            {
-                submitCancellation = null;
-            }
-
-            cancellationSource.Dispose();
-        }
-
-        if (shouldRaiseClicked)
-        {
-            RaiseClicked(eventData);
-        }
-    }
-
     private void StopSubmitRoutine()
     {
-        if (submitCancellation != null)
-        {
-            CancellationTokenSource cancellationSource = submitCancellation;
-            submitCancellation = null;
-            cancellationSource.Cancel();
-        }
-
         SetRaycastBlocking(wasRaycastBlockingBeforeSubmit);
         isSubmitting = false;
         interactionLocked = false;
         isPointerPressed = false;
         GetMotion()?.CancelAndReset();
+    }
+
+    private async UniTask PlayFallbackRejectedSubmitAsync(CancellationToken cancellationToken)
+    {
+        CanvasGroup canvasGroup = ResolveCanvasGroup();
+        RectTransform rectTransform = transform as RectTransform;
+        if (canvasGroup == null && rectTransform == null)
+        {
+            return;
+        }
+
+        Sequence sequence = DOTween.Sequence();
+        if (canvasGroup != null)
+        {
+            sequence.Join(canvasGroup.DOFade(0f, 0.24f));
+        }
+
+        if (rectTransform != null)
+        {
+            sequence.Join(rectTransform.DOAnchorPosY(rectTransform.anchoredPosition.y - 96f, 0.24f));
+            sequence.Join(rectTransform.DOScale(0.92f, 0.24f));
+        }
+
+        sequence.SetEase(Ease.InCubic).SetUpdate(true);
+        await sequence.WaitForCompletionAsync(cancellationToken);
+    }
+
+    private CanvasGroup ResolveCanvasGroup()
+    {
+        if (cardCanvasGroup == null)
+        {
+            cardCanvasGroup = GetComponent<CanvasGroup>();
+        }
+
+        return cardCanvasGroup;
     }
 
     private CardMotionController GetMotion()

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -65,6 +68,56 @@ public sealed class RewardSelectionTests
                 null));
 
         StringAssert.Contains(nameof(RewardCardStyle.EquipmentReward), exception.Message);
+    }
+
+    [Test]
+    public async Task RewardSelectionCardGroupDefersSelectionCallbackUntilSubmitAnimationsComplete()
+    {
+        GameObject groupObject = CreateGameObject("Reward Card Group");
+        RewardSelectionCardGroup group = groupObject.AddComponent<RewardSelectionCardGroup>();
+        TestRewardSelectionCardView upgradePrefab = CreateViewPrefab<TestRewardSelectionCardView>("Test Upgrade Prefab");
+        SetPrefabMappings(group, new RewardCardPrefabEntry(RewardCardStyle.UpgradeCard, upgradePrefab));
+
+        int callbackCount = 0;
+        int selectedIndex = -1;
+        string selectedOptionId = null;
+        group.Configure(
+            new IRewardCardPresentation[]
+            {
+                CreateUpgradePresentation("option-0"),
+                CreateUpgradePresentation("option-1"),
+                CreateUpgradePresentation("option-2")
+            },
+            (index, optionId) =>
+            {
+                callbackCount++;
+                selectedIndex = index;
+                selectedOptionId = optionId;
+            });
+
+        TestRewardSelectionCardView first = groupObject.transform.GetChild(0).GetComponent<TestRewardSelectionCardView>();
+        TestRewardSelectionCardView selected = groupObject.transform.GetChild(1).GetComponent<TestRewardSelectionCardView>();
+        TestRewardSelectionCardView third = groupObject.transform.GetChild(2).GetComponent<TestRewardSelectionCardView>();
+
+        selected.OnPointerClick(null);
+        await UniTask.Yield();
+
+        Assert.AreEqual(1, selected.SelectedSubmitCount);
+        Assert.AreEqual(1, first.RejectedSubmitCount);
+        Assert.AreEqual(1, third.RejectedSubmitCount);
+        Assert.AreEqual(0, callbackCount);
+
+        selected.CompleteSelectedSubmit();
+        first.CompleteRejectedSubmit();
+        await UniTask.Yield();
+        Assert.AreEqual(0, callbackCount);
+
+        third.CompleteRejectedSubmit();
+        await UniTask.Yield();
+
+        Assert.AreEqual(1, callbackCount);
+        Assert.AreEqual(1, selectedIndex);
+        Assert.AreEqual("option-1", selectedOptionId);
     }
 
     [Test]
@@ -292,6 +345,39 @@ public sealed class RewardSelectionTests
         public IEnumerable<DescriptorInfo> GetExtraInfos()
         {
             return Enumerable.Empty<DescriptorInfo>();
+        }
+    }
+
+    private sealed class TestRewardSelectionCardView : RewardSelectionCardViewBase
+    {
+        private readonly UniTaskCompletionSource selectedSubmitCompletion = new();
+        private readonly UniTaskCompletionSource rejectedSubmitCompletion = new();
+
+        protected override RewardOptionKind ExpectedKind => RewardOptionKind.UpgradeCard;
+
+        public int SelectedSubmitCount { get; private set; }
+        public int RejectedSubmitCount { get; private set; }
+
+        public override async UniTask PlaySelectedSubmitAsync(CancellationToken cancellationToken)
+        {
+            SelectedSubmitCount++;
+            await selectedSubmitCompletion.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        public override async UniTask PlayRejectedSubmitAsync(float startDelay, CancellationToken cancellationToken)
+        {
+            RejectedSubmitCount++;
+            await rejectedSubmitCompletion.Task.AttachExternalCancellation(cancellationToken);
+        }
+
+        public void CompleteSelectedSubmit()
+        {
+            selectedSubmitCompletion.TrySetResult();
+        }
+
+        public void CompleteRejectedSubmit()
+        {
+            rejectedSubmitCompletion.TrySetResult();
         }
     }
 }

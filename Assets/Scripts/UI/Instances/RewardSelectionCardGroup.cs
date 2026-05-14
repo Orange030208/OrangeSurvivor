@@ -28,11 +28,14 @@ public sealed class RewardCardPrefabEntry
 public class RewardSelectionCardGroup : ViewPartBase
 {
     private const float REFRESH_OUT_STAGGER_SECONDS = 0.04f;
+    private const float SUBMIT_REJECTED_STAGGER_SECONDS = 0.045f;
 
     [SerializeField] private Transform root;
     [SerializeField] private RewardCardPrefabEntry[] cardPrefabs = Array.Empty<RewardCardPrefabEntry>();
 
     private readonly List<RewardSelectionCardViewBase> activeContainers = new();
+    private CancellationTokenSource submitCancellation;
+    private Action<int, string> optionSelected;
     private bool isSelectionLocked;
 
     private void Awake()
@@ -42,6 +45,8 @@ public class RewardSelectionCardGroup : ViewPartBase
 
     public void Configure(IRewardCardPresentation[] options, Action<int, string> optionSelected)
     {
+        CancelSubmitAnimation();
+        this.optionSelected = optionSelected;
         isSelectionLocked = false;
         RebuildContainers(options);
 
@@ -61,7 +66,11 @@ public class RewardSelectionCardGroup : ViewPartBase
                 continue;
             }
 
-            container.Configure(new RewardSelectionCardBinding(options[i], i, optionSelected));
+            container.Configure(new RewardSelectionCardBinding(
+                options[i],
+                i,
+                optionSelected,
+                OnCardSubmitRequested));
         }
     }
 
@@ -81,6 +90,8 @@ public class RewardSelectionCardGroup : ViewPartBase
 
     public void Clear()
     {
+        CancelSubmitAnimation();
+        optionSelected = null;
         isSelectionLocked = false;
         ClearGeneratedContainers();
     }
@@ -132,6 +143,77 @@ public class RewardSelectionCardGroup : ViewPartBase
         }
 
         return true;
+    }
+
+    private void OnCardSubmitRequested(int selectedIndex, string selectedOptionId)
+    {
+        if (selectedIndex < 0 || selectedIndex >= activeContainers.Count)
+        {
+            Debug.LogWarning(
+                $"{nameof(RewardSelectionCardGroup)} '{name}' received an invalid selected index '{selectedIndex}'.",
+                this);
+            return;
+        }
+
+        CancelSubmitAnimation();
+        submitCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        PlaySubmitSelectionAsync(selectedIndex, selectedOptionId, submitCancellation).Forget();
+    }
+
+    private async UniTaskVoid PlaySubmitSelectionAsync(
+        int selectedIndex,
+        string selectedOptionId,
+        CancellationTokenSource cancellationSource)
+    {
+        CancellationToken cancellationToken = cancellationSource.Token;
+        try
+        {
+            List<UniTask> runningTasks = new();
+            int rejectedOrder = 0;
+            for (int i = 0; i < activeContainers.Count; i++)
+            {
+                RewardSelectionCardViewBase container = activeContainers[i];
+                if (container == null || !container.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                if (i == selectedIndex)
+                {
+                    container.transform.SetAsLastSibling();
+                    runningTasks.Add(container.PlaySelectedSubmitAsync(cancellationToken));
+                    continue;
+                }
+
+                runningTasks.Add(container.PlayRejectedSubmitAsync(
+                    rejectedOrder * SUBMIT_REJECTED_STAGGER_SECONDS,
+                    cancellationToken));
+                rejectedOrder++;
+            }
+
+            if (runningTasks.Count > 0)
+            {
+                await UniTask.WhenAll(runningTasks);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            if (ReferenceEquals(submitCancellation, cancellationSource))
+            {
+                optionSelected?.Invoke(selectedIndex, selectedOptionId);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (ReferenceEquals(submitCancellation, cancellationSource))
+            {
+                submitCancellation = null;
+            }
+
+            cancellationSource.Dispose();
+        }
     }
 
     private static async UniTask PlayContainerRefreshOutAsync(
@@ -208,6 +290,29 @@ public class RewardSelectionCardGroup : ViewPartBase
         }
 
         activeContainers.Clear();
+    }
+
+    private void CancelSubmitAnimation()
+    {
+        if (submitCancellation == null)
+        {
+            return;
+        }
+
+        CancellationTokenSource cancellationSource = submitCancellation;
+        submitCancellation = null;
+        cancellationSource.Cancel();
+        cancellationSource.Dispose();
+    }
+
+    private void OnDisable()
+    {
+        CancelSubmitAnimation();
+    }
+
+    private void OnDestroy()
+    {
+        Clear();
     }
 
     private RewardSelectionCardViewBase ResolvePrefab(RewardCardStyle style)
