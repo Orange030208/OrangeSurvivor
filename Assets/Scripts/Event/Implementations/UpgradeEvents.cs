@@ -4,7 +4,8 @@ public enum RewardSelectionReason
 {
     None,
     Chest,
-    Upgrade
+    Upgrade,
+    Weapon
 }
 
 public struct UpgradeRewardAvailableEvent : IGameEvent

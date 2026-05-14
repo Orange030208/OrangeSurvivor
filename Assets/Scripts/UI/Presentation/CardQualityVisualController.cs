@@ -8,29 +8,29 @@ public class CardQualityVisualController : ViewPartBase
     [Header("自动绑定")]
     [SerializeField] private bool autoResolveReferences = true;
     [SerializeField] private Image backgroundImage;
-    [SerializeField] private Image borderImage;
-    [SerializeField] private Image iconImage;
+    [SerializeField] private Image iconFrameImage;
+    [SerializeField] private Image iconBackgroundImage;
     [SerializeField] private Image glowImage;
-    [SerializeField] private Image shadowImage;
     [SerializeField] private TMP_Text titleText;
+    [SerializeField] private RectTransform shadowRect;
+    [SerializeField] private RectTransform glowRect;
 
-    [Header("强度")]
-    [SerializeField] [Range(0f, 1f)] private float backgroundColorStrength = 0.58f;
-    [SerializeField] [Range(0f, 1f)] private float iconTintStrength = 0.22f;
-
-    private bool capturedBaseColors;
+    private bool capturedBaseVisuals;
     private Color baseBackgroundColor;
-    private Color baseBorderColor;
-    private Color baseIconColor;
+    private Color baseIconFrameColor;
+    private Color baseIconBackgroundColor;
     private Color baseGlowColor;
-    private Color baseShadowColor;
     private Color baseTitleColor;
-    private Vector2 baseGlowSizeDelta;
+    private Sprite baseBackgroundSprite;
+    private Sprite baseIconFrameSprite;
+    private Sprite baseIconBackgroundSprite;
+    private Vector3 baseShadowScale = Vector3.one;
+    private Vector3 baseGlowScale = Vector3.one;
 
     private void Awake()
     {
         ResolveReferencesIfNeeded();
-        CaptureBaseColorsIfNeeded();
+        CaptureBaseVisualsIfNeeded();
     }
 
     private void OnValidate()
@@ -43,28 +43,18 @@ public class CardQualityVisualController : ViewPartBase
 
     public void Apply(CardQualityPresentationProfile profile)
     {
+        profile.Validate();
         ResolveReferencesIfNeeded();
-        CaptureBaseColorsIfNeeded();
+        CaptureBaseVisualsIfNeeded();
 
         if (backgroundImage != null)
         {
-            backgroundImage.color = Color.Lerp(
-                baseBackgroundColor,
-                profile.BackgroundColor,
-                backgroundColorStrength);
-        }
+            if (profile.BackgroundSprite != null)
+            {
+                backgroundImage.sprite = profile.BackgroundSprite;
+            }
 
-        if (borderImage != null)
-        {
-            borderImage.color = profile.BorderColor;
-        }
-
-        if (iconImage != null)
-        {
-            iconImage.color = Color.Lerp(
-                baseIconColor,
-                profile.IconTintColor,
-                iconTintStrength);
+            backgroundImage.color = ResolveBackgroundColor(profile.BackgroundAlpha);
         }
 
         if (titleText != null)
@@ -72,16 +62,25 @@ public class CardQualityVisualController : ViewPartBase
             titleText.color = profile.TitleColor;
         }
 
-        if (glowImage != null)
+        if (iconFrameImage != null && profile.IconFrameSprite != null)
         {
-            glowImage.color = ResolveLayerColor(profile.GlowColor, glowImage);
-            ApplyGlowRange(profile.GlowScaleMultiplier);
+            iconFrameImage.sprite = profile.IconFrameSprite;
+            iconFrameImage.color = baseIconFrameColor;
         }
 
-        if (shadowImage != null)
+        if (iconBackgroundImage != null && profile.IconBackgroundSprite != null)
         {
-            shadowImage.color = ResolveLayerColor(profile.ShadowColor, shadowImage);
+            iconBackgroundImage.sprite = profile.IconBackgroundSprite;
+            iconBackgroundImage.color = baseIconBackgroundColor;
         }
+
+        if (glowImage != null)
+        {
+            glowImage.color = ResolveLayerColor(profile.MainColor, glowImage);
+        }
+
+        ApplyLayerScale(shadowRect, baseShadowScale, profile.ShadowScale);
+        ApplyLayerScale(glowRect, baseGlowScale, profile.GlowScale);
     }
 
     public bool Apply(CardQuality quality)
@@ -101,21 +100,12 @@ public class CardQualityVisualController : ViewPartBase
     public void ResetVisuals()
     {
         ResolveReferencesIfNeeded();
-        CaptureBaseColorsIfNeeded();
+        CaptureBaseVisualsIfNeeded();
 
         if (backgroundImage != null)
         {
+            backgroundImage.sprite = baseBackgroundSprite;
             backgroundImage.color = baseBackgroundColor;
-        }
-
-        if (borderImage != null)
-        {
-            borderImage.color = baseBorderColor;
-        }
-
-        if (iconImage != null)
-        {
-            iconImage.color = baseIconColor;
         }
 
         if (titleText != null)
@@ -123,49 +113,62 @@ public class CardQualityVisualController : ViewPartBase
             titleText.color = baseTitleColor;
         }
 
+        if (iconFrameImage != null)
+        {
+            iconFrameImage.sprite = baseIconFrameSprite;
+            iconFrameImage.color = baseIconFrameColor;
+        }
+
+        if (iconBackgroundImage != null)
+        {
+            iconBackgroundImage.sprite = baseIconBackgroundSprite;
+            iconBackgroundImage.color = baseIconBackgroundColor;
+        }
+
         if (glowImage != null)
         {
             glowImage.color = baseGlowColor;
-            glowImage.rectTransform.sizeDelta = baseGlowSizeDelta;
         }
 
-        if (shadowImage != null)
+        if (shadowRect != null)
         {
-            shadowImage.color = baseShadowColor;
+            shadowRect.localScale = baseShadowScale;
+        }
+
+        if (glowRect != null)
+        {
+            glowRect.localScale = baseGlowScale;
         }
     }
 
-    private void CaptureBaseColorsIfNeeded()
+    private void CaptureBaseVisualsIfNeeded()
     {
-        if (capturedBaseColors)
+        if (capturedBaseVisuals)
         {
             return;
         }
 
         if (backgroundImage != null)
         {
+            baseBackgroundSprite = backgroundImage.sprite;
             baseBackgroundColor = backgroundImage.color;
         }
 
-        if (borderImage != null)
+        if (iconFrameImage != null)
         {
-            baseBorderColor = borderImage.color;
+            baseIconFrameSprite = iconFrameImage.sprite;
+            baseIconFrameColor = iconFrameImage.color;
         }
 
-        if (iconImage != null)
+        if (iconBackgroundImage != null)
         {
-            baseIconColor = iconImage.color;
+            baseIconBackgroundSprite = iconBackgroundImage.sprite;
+            baseIconBackgroundColor = iconBackgroundImage.color;
         }
 
         if (glowImage != null)
         {
             baseGlowColor = glowImage.color;
-            baseGlowSizeDelta = glowImage.rectTransform.sizeDelta;
-        }
-
-        if (shadowImage != null)
-        {
-            baseShadowColor = shadowImage.color;
         }
 
         if (titleText != null)
@@ -173,7 +176,17 @@ public class CardQualityVisualController : ViewPartBase
             baseTitleColor = titleText.color;
         }
 
-        capturedBaseColors = true;
+        if (shadowRect != null)
+        {
+            baseShadowScale = shadowRect.localScale;
+        }
+
+        if (glowRect != null)
+        {
+            baseGlowScale = glowRect.localScale;
+        }
+
+        capturedBaseVisuals = true;
     }
 
     private void ResolveReferencesIfNeeded()
@@ -188,14 +201,14 @@ public class CardQualityVisualController : ViewPartBase
             backgroundImage = FindImageByName("Background");
         }
 
-        if (borderImage == null)
+        if (iconFrameImage == null)
         {
-            borderImage = FindImageByName("Border");
+            iconFrameImage = FindImageByName("IconFrame");
         }
 
-        if (iconImage == null)
+        if (iconBackgroundImage == null)
         {
-            iconImage = FindImageByName("Item Icon");
+            iconBackgroundImage = FindImageByName("IconBackground");
         }
 
         if (glowImage == null)
@@ -203,14 +216,21 @@ public class CardQualityVisualController : ViewPartBase
             glowImage = FindImageByName("Glow");
         }
 
-        if (shadowImage == null)
-        {
-            shadowImage = FindImageByName("Shadow");
-        }
-
         if (titleText == null)
         {
             titleText = FindTextByName("NameText");
+        }
+
+        if (shadowRect == null)
+        {
+            shadowRect = FindRectTransformByName("Shadow");
+        }
+
+        if (glowRect == null)
+        {
+            glowRect = glowImage != null
+                ? glowImage.rectTransform
+                : FindRectTransformByName("Glow");
         }
     }
 
@@ -226,6 +246,26 @@ public class CardQualityVisualController : ViewPartBase
         return target != null ? target.GetComponent<TMP_Text>() : null;
     }
 
+    private RectTransform FindRectTransformByName(string targetName)
+    {
+        Transform target = FindChildByName(transform, targetName);
+        return target != null ? target.GetComponent<RectTransform>() : null;
+    }
+
+    private static void ApplyLayerScale(RectTransform target, Vector3 baseScale, float scale)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        float normalizedScale = scale > 0f ? scale : 1f;
+        target.localScale = new Vector3(
+            baseScale.x * normalizedScale,
+            baseScale.y * normalizedScale,
+            baseScale.z);
+    }
+
     private static Color ResolveLayerColor(Color sourceColor, Component layerComponent)
     {
         Color resolvedColor = sourceColor;
@@ -238,15 +278,9 @@ public class CardQualityVisualController : ViewPartBase
         return resolvedColor;
     }
 
-    private void ApplyGlowRange(float scaleMultiplier)
+    private static Color ResolveBackgroundColor(float alpha)
     {
-        if (glowImage == null)
-        {
-            return;
-        }
-
-        float resolvedMultiplier = Mathf.Max(0.1f, scaleMultiplier);
-        glowImage.rectTransform.sizeDelta = baseGlowSizeDelta * resolvedMultiplier;
+        return new Color(1f, 1f, 1f, Mathf.Clamp01(alpha));
     }
 
     private static Transform FindChildByName(Transform root, string targetName)

@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 96, y: 96}
+  m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4381097726896377810
 CanvasRenderer:
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 38820f2b826a49a19a55e635505f16f9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cc7b595540d94961b04c3e099e53f6e2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -84,7 +84,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 871986212204959366}
   m_Enabled: 1
-  m_Alpha: 0.12
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -280,14 +280,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6754716, g: 0.6754716, b: 0.6754716, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5c4028215e1d60d4e87bf97e7981dcbd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0d0c33a382b0b8f4c9b3965206807c44, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.3137255}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.47058824}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -461,7 +461,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 56, y: 56}
+  m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2925298746508596474
 CanvasRenderer:
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 10a5bb88616e48ae88ab3f06d5b5acd0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd90f8681e5b4f9f8dd6e3cb95f87f42, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -509,7 +509,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6577620965614793612}
   m_Enabled: 1
-  m_Alpha: 0.68
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -560,11 +560,10 @@ GameObject:
   - component: {fileID: 8337600168010166629}
   - component: {fileID: 3955513483040631225}
   - component: {fileID: 293202892692610221}
-  - component: {fileID: 3600694285946655353}
   - component: {fileID: 823908526393948807}
-  - component: {fileID: 4075162075622727433}
   - component: {fileID: 3343985659854495284}
   - component: {fileID: 2110993686870779454}
+  - component: {fileID: 8623527939464767253}
   m_Layer: 0
   m_Name: Upgrade Card
   m_TagString: Untagged
@@ -592,7 +591,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 450}
+  m_SizeDelta: {x: 384, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3955513483040631225
 CanvasRenderer:
@@ -614,36 +613,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3600694285946655353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7139556483707835314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &823908526393948807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,25 +632,6 @@ MonoBehaviour:
       target: {fileID: 8478885493683761380}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
---- !u!114 &4075162075622727433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7139556483707835314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 872b95cd8d75fab408bf1b6dc84fcb88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  iconImage: {fileID: 0}
-  nameText: {fileID: 0}
-  bottom: {fileID: 964150818085217147}
-  cardQualityVisualController: {fileID: 2110993686870779454}
-  cardMotionController: {fileID: 3343985659854495284}
-  qualityVisualController: {fileID: 2110993686870779454}
-  playRevealSfx: 1
 --- !u!114 &3343985659854495284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -717,13 +667,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoResolveReferences: 1
   backgroundImage: {fileID: 5215344984666563382}
-  borderImage: {fileID: 7880508672085269928}
-  iconImage: {fileID: 0}
+  iconFrameImage: {fileID: 0}
+  iconBackgroundImage: {fileID: 0}
   glowImage: {fileID: 3384547312911755051}
-  shadowImage: {fileID: 4970988003369397942}
   titleText: {fileID: 8294777454420629685}
-  backgroundColorStrength: 0.992
-  iconTintStrength: 1
+  shadowRect: {fileID: 9117456449783719404}
+  glowRect: {fileID: 1608392474127027030}
+--- !u!114 &8623527939464767253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139556483707835314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c815c33c56fc451682d70b107ab24206, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameText: {fileID: 8294777454420629685}
+  bottom: {fileID: 964150818085217147}
+  qualityVisual: {fileID: 2110993686870779454}
+  qualityPresentationCatalogOverride: {fileID: 11400000, guid: 5225a814071d1f6409620ae539e83b5e, type: 2}
+  motion: {fileID: 3343985659854495284}
+  playRevealSfx: 1
 --- !u!1 &7919045028222055534
 GameObject:
   m_ObjectHideFlags: 0

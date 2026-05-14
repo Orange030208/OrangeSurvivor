@@ -32,7 +32,7 @@ public class GamePauseMenu : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        settingsPanel.ConfigureOwner(OwnerUIManager);
+        settingsPanel.Bind(new SettingsPanelManager.Context(OwnerUIManager));
         BindButtonEvents();
         HideSettingsImmediate();
         SelectDefaultControl();
@@ -47,7 +47,7 @@ public class GamePauseMenu : PageBase
     protected override void OnClosed(CloseReason reason)
     {
         UnbindButtonEvents();
-        settingsPanel.ConfigureOwner(null);
+        settingsPanel.Unbind();
         HideSettingsImmediate();
     }
 

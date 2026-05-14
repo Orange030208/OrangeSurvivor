@@ -118,8 +118,8 @@ TextureImporter:
         width: 62
         height: 4
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 3, y: 1, z: 2, w: 1}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 3, y: 1, z: 3, w: 1}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -127,7 +127,7 @@ TextureImporter:
       spriteID: fa05a282ff4d3c54a966fd9ef1978e42
       internalID: 355622369
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -139,7 +139,7 @@ TextureImporter:
         width: 7
         height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -148,7 +148,7 @@ TextureImporter:
       spriteID: 7703838733fb5f243a6a8d7748cdd589
       internalID: -1919793221
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -160,7 +160,7 @@ TextureImporter:
         width: 30
         height: 2
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -169,7 +169,7 @@ TextureImporter:
       spriteID: 58b5e25c55cfdee409c710bcdd645942
       internalID: 1753785177
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -181,7 +181,7 @@ TextureImporter:
         width: 30
         height: 2
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -190,7 +190,7 @@ TextureImporter:
       spriteID: cedf8a7a00464b94480991ac59ea25f6
       internalID: 1159909693
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     outline: []
@@ -199,7 +199,7 @@ TextureImporter:
     spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
-    indices:
+    indices: 
     edges: []
     weights: []
     secondaryTextures: []
@@ -208,8 +208,8 @@ TextureImporter:
       Slider_1: -1919793221
       Slider_2: 1753785177
       Slider_3: 1159909693
-  mipmapLimitGroupName:
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

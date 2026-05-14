@@ -12,6 +12,16 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class SettingsPanelManager : ViewPartBase
 {
+    public readonly struct Context
+    {
+        public Context(UIManager ownerUIManager)
+        {
+            OwnerUIManager = ownerUIManager;
+        }
+
+        public UIManager OwnerUIManager { get; }
+    }
+
     [Header("显示")]
     [SerializeField] private MonoBehaviour motionSource;
     [SerializeField] private CanvasGroup canvasGroup;
@@ -66,7 +76,6 @@ public class SettingsPanelManager : ViewPartBase
         ResolvePresentationReferences();
         ResolveActiveProfile();
         ValidateConfiguration();
-        BindControls();
         ResolveResolutionOptions();
         LoadSavedState();
         ApplyProfileToSections();
@@ -105,6 +114,30 @@ public class SettingsPanelManager : ViewPartBase
     }
 
     public bool IsVisible => visible;
+
+    public override void Bind(object context)
+    {
+        if (context is not Context panelContext)
+        {
+            throw new ArgumentException($"{nameof(SettingsPanelManager)} '{name}' expects {nameof(Context)}.", nameof(context));
+        }
+
+        ConfigureOwner(panelContext.OwnerUIManager);
+        BindControls();
+        LoadSavedState();
+        ApplyProfileToSections();
+        ApplyEditingStateToView();
+        GameSettingsService.ApplyAudio(editingState);
+    }
+
+    public override void Unbind()
+    {
+        activeRebind?.Cancel();
+        activeRebind?.Dispose();
+        activeRebind = null;
+        UnbindControls();
+        ConfigureOwner(null);
+    }
 
     public void ConfigureOwner(UIManager ownerUIManager)
     {
@@ -204,16 +237,16 @@ public class SettingsPanelManager : ViewPartBase
             return;
         }
 
-        masterVolume.Initialize("总音量", OnMasterVolumeChanged);
-        sfxVolume.Initialize("音效", OnSfxVolumeChanged);
-        musicVolume.Initialize("音乐", OnMusicVolumeChanged);
-        resolutionRow.Initialize("分辨率", OffsetResolution);
-        windowModeRow.Initialize("窗口模式", OffsetWindowMode);
-        languageRow.Initialize("语言", OffsetLanguage);
+        masterVolume.Bind(new SettingsSliderRow.Context("总音量", OnMasterVolumeChanged));
+        sfxVolume.Bind(new SettingsSliderRow.Context("音效", OnSfxVolumeChanged));
+        musicVolume.Bind(new SettingsSliderRow.Context("音乐", OnMusicVolumeChanged));
+        resolutionRow.Bind(new SettingsOptionRow.Context("分辨率", OffsetResolution));
+        windowModeRow.Bind(new SettingsOptionRow.Context("窗口模式", OffsetWindowMode));
+        languageRow.Bind(new SettingsOptionRow.Context("语言", OffsetLanguage));
 
         for (int i = 0; i < rebindRows.Length; i++)
         {
-            rebindRows[i]?.Initialize(OnRebindClicked);
+            rebindRows[i]?.Bind(new SettingsRebindRow.Context(OnRebindClicked));
         }
 
         resetBindingsButton.onClick.RemoveListener(OnResetBindingsClicked);
@@ -245,6 +278,21 @@ public class SettingsPanelManager : ViewPartBase
         if (resetButton != null)
         {
             resetButton.onClick.RemoveListener(ResetToDefaults);
+        }
+
+        masterVolume?.Unbind();
+        sfxVolume?.Unbind();
+        musicVolume?.Unbind();
+        resolutionRow?.Unbind();
+        windowModeRow?.Unbind();
+        languageRow?.Unbind();
+
+        if (rebindRows != null)
+        {
+            for (int i = 0; i < rebindRows.Length; i++)
+            {
+                rebindRows[i]?.Unbind();
+            }
         }
 
         controlsBound = false;

@@ -12,25 +12,23 @@ public class RewardSelectionManager : MonoBehaviour
 {
     private const string PAUSE_SOURCE_ID = "rewardSelection";
     private const string POPUP_GROUP_ID = "rewardSelection";
-    private const int CHEST_REWARD_OPTION_COUNT = 3;
-    private const int UPGRADE_CARD_OPTION_COUNT = 4;
 
     [SerializeField] private UIManager uiManager;
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
     [SerializeField] private ContentPoolSO upgradeCardPool;
     [SerializeField] private ContentPoolSO chestRewardPool;
+    [SerializeField] private ContentPoolSO weaponRewardPool;
 
     private readonly Queue<RewardSelectionRequest> pendingRequests = new();
     private readonly ContentHistoryState contentHistoryState = new();
-    private readonly UpgradeCardRollService upgradeCardRollService = new();
-    private readonly UpgradeCardApplyService upgradeCardApplyService = new();
-    private readonly ContentPoolRollService contentPoolRollService = new();
     private RewardSelectionOption[] currentOptions = Array.Empty<RewardSelectionOption>();
+    private Dictionary<RewardSelectionReason, IRewardSelectionHandler> handlers;
     private ViewHandle<RewardSelectionPopup> currentPopupHandle;
     private GameManager gameManager;
     private CancellationTokenSource flowCancellation;
     private PlayerLevel playerLevel;
+    private WeaponsHolder weaponsHolder;
     private int currentWaveNumber = 1;
     private RewardSelectionReason currentReason = RewardSelectionReason.None;
     private UniTaskCompletionSource<RewardSelectionResult> currentSelectionCompletionSource;
@@ -40,6 +38,7 @@ public class RewardSelectionManager : MonoBehaviour
 
     private void OnEnable()
     {
+        EnsureHandlers();
         GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
         GameEventBus.Subscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
@@ -115,11 +114,14 @@ public class RewardSelectionManager : MonoBehaviour
                 switch (request.Reason)
                 {
                     case RewardSelectionReason.Chest:
-                        await ProcessChestRequestAsync(cancellationToken);
-                        break;
                     case RewardSelectionReason.Upgrade:
-                        await ProcessUpgradeRequestAsync(cancellationToken);
-                        upgradeRequestQueuedOrProcessing = false;
+                    case RewardSelectionReason.Weapon:
+                        await ProcessRequestAsync(request.Reason, cancellationToken);
+                        if (request.Reason == RewardSelectionReason.Upgrade)
+                        {
+                            upgradeRequestQueuedOrProcessing = false;
+                        }
+
                         break;
                 }
             }
@@ -157,64 +159,44 @@ public class RewardSelectionManager : MonoBehaviour
         }
     }
 
-    private async UniTask ProcessChestRequestAsync(CancellationToken cancellationToken)
+    private async UniTask ProcessRequestAsync(RewardSelectionReason reason, CancellationToken cancellationToken)
     {
         TryBindPlayerReferences();
-        List<ContentRollItem> accessories = RollChestAccessories(CHEST_REWARD_OPTION_COUNT);
-        if (accessories.Count == 0)
+        if (!TryGetHandler(reason, out IRewardSelectionHandler handler))
         {
-            Debug.LogWarning("[RewardSelectionManager] No accessories could be rolled for chest reward.", this);
+            Debug.LogError($"[RewardSelectionManager] No handler registered for reward reason '{reason}'.", this);
             return;
         }
 
-        UniTask<RewardSelectionResult> selectionTask = WaitForCurrentSelectionAsync(cancellationToken);
-        RewardSelectionPopupModel model = CreateChestPopupModel(accessories, out RewardSelectionOption[] options);
-        await ShowOrRefreshPopupAsync(model, options, cancellationToken);
-        RewardSelectionResult selectionResult = await selectionTask;
-        if (!TryResolveSelectedOption(selectionResult, out RewardSelectionOption selectedOption))
+        bool hasProcessedSelection = false;
+        while (IsGameStateActive())
         {
-            return;
-        }
-
-        if (selectedOption.AccessoryData != null)
-        {
-            accessoryManager?.EquipAccessory(selectedOption.AccessoryData);
-            contentHistoryState.RecordPick(CreateHistoryScope(chestRewardPool), selectedOption.AccessoryRollItem);
-        }
-
-        await CloseCurrentPopupAsync(CloseReason.Normal);
-    }
-
-    private async UniTask ProcessUpgradeRequestAsync(CancellationToken cancellationToken)
-    {
-        TryBindPlayerReferences();
-        while (playerLevel != null && playerLevel.UnspentUpgradePoints > 0 && IsGameStateActive())
-        {
-            List<UpgradeCardRollOption> rolledOptions = RollUpgradeCards();
-            if (rolledOptions.Count == 0)
+            RewardSelectionHandlerContext context = CreateHandlerContext();
+            if (!handler.ShouldCreateSelection(context, hasProcessedSelection))
             {
-                Debug.LogWarning("[RewardSelectionManager] No upgrade cards could be rolled for upgrade reward.", this);
-                return;
+                break;
             }
 
+            RewardSelectionRound round = handler.CreateSelection(context);
+            if (round == null || !round.HasAnyOption)
+            {
+                break;
+            }
+
+            RewardSelectionPopupModel model = new(
+                round.Title,
+                round.Description,
+                round.CreatePresentations(),
+                OnCurrentOptionSelected);
             UniTask<RewardSelectionResult> selectionTask = WaitForCurrentSelectionAsync(cancellationToken);
-            RewardSelectionPopupModel model = CreateUpgradePopupModel(rolledOptions, out RewardSelectionOption[] options);
-            await ShowOrRefreshPopupAsync(model, options, cancellationToken);
+            await ShowOrRefreshPopupAsync(model, round.Options, cancellationToken);
             RewardSelectionResult selectionResult = await selectionTask;
             if (!TryResolveSelectedOption(selectionResult, out RewardSelectionOption selectedOption))
             {
                 continue;
             }
 
-            UpgradeCardSO selectedCard = selectedOption.UpgradeCard;
-            if (!upgradeCardApplyService.Apply(selectedCard, player))
-            {
-                Debug.LogWarning($"[RewardSelectionManager] Failed to apply upgrade card {selectedCard?.name}.", this);
-                continue;
-            }
-
-            contentHistoryState.RecordPick(CreateHistoryScope(upgradeCardPool), selectedOption.UpgradeCardOption.RollItem);
-            playerLevel.ConsumeUpgradePoint();
+            hasProcessedSelection = handler.ApplySelection(selectedOption, CreateHandlerContext()) || hasProcessedSelection;
         }
 
         await CloseCurrentPopupAsync(CloseReason.Normal);
@@ -292,163 +274,6 @@ public class RewardSelectionManager : MonoBehaviour
 
         selectedOption = candidate;
         return true;
-    }
-
-    private RewardSelectionPopupModel CreateChestPopupModel(
-        IReadOnlyList<ContentRollItem> accessories,
-        out RewardSelectionOption[] options)
-    {
-        int count = Mathf.Min(CHEST_REWARD_OPTION_COUNT, accessories.Count);
-        RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
-        options = new RewardSelectionOption[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            ContentRollItem rollItem = accessories[i];
-            AccessoryDataSO accessory = rollItem.Content as AccessoryDataSO;
-            string optionId = accessory != null ? accessory.AccessoryId : string.Empty;
-            cardModels[i] = new RewardSelectionCardViewModel(
-                optionId,
-                accessory != null ? accessory.ItemName : string.Empty,
-                accessory != null ? accessory.ItemIcon : null,
-                accessory != null ? accessory.Description : string.Empty,
-                accessory != null ? CardQualityResolver.FromAccessoryRarity(accessory.RarityGrade) : CardQuality.Common,
-                new[] { "饰品" },
-                accessory != null);
-            options[i] = RewardSelectionOption.ForAccessory(optionId, accessory, rollItem);
-        }
-
-        return new RewardSelectionPopupModel("选择宝箱奖励", "选择 1 个饰品立即装备。", cardModels, OnCurrentOptionSelected);
-    }
-
-    private RewardSelectionPopupModel CreateUpgradePopupModel(
-        IReadOnlyList<UpgradeCardRollOption> rollOptions,
-        out RewardSelectionOption[] options)
-    {
-        int count = Mathf.Min(UPGRADE_CARD_OPTION_COUNT, rollOptions.Count);
-        RewardSelectionCardViewModel[] cardModels = new RewardSelectionCardViewModel[count];
-        options = new RewardSelectionOption[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            UpgradeCardRollOption rollOption = rollOptions[i];
-            UpgradeCardSO card = rollOption.Card;
-            UpgradeCardOptionViewData viewData = rollOption.CreateViewData();
-            cardModels[i] = new RewardSelectionCardViewModel(
-                viewData.CardId,
-                viewData.Title,
-                viewData.Icon,
-                viewData.Description,
-                CardQualityResolver.FromUpgradeCardRarity(viewData.Rarity),
-                BuildUpgradeTagLabels(viewData.Tags),
-                card != null);
-            options[i] = RewardSelectionOption.ForUpgradeCard(viewData.CardId, rollOption);
-        }
-
-        return new RewardSelectionPopupModel("选择升级奖励", "选择 1 张升级卡。", cardModels, OnCurrentOptionSelected);
-    }
-
-    private List<UpgradeCardRollOption> RollUpgradeCards()
-    {
-        ContentPoolSO pool = ResolveUpgradeCardPool();
-        ContentRollContext context = new(
-            ContentPoolScopeIds.UpgradeCard,
-            player,
-            progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
-            historyScope: CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
-            history: contentHistoryState);
-        return upgradeCardRollService.RollOptions(pool, context);
-    }
-
-    private ContentPoolSO ResolveUpgradeCardPool()
-    {
-        if (upgradeCardPool == null)
-        {
-            upgradeCardPool = GameContentRuntime.Provider.UpgradeCardPool;
-        }
-
-        if (upgradeCardPool == null)
-        {
-            Debug.LogError($"[RewardSelectionManager] Missing upgrade card content pool in scene or {nameof(GameContentCatalogSO)}.", this);
-        }
-
-        return upgradeCardPool;
-    }
-
-    private List<ContentRollItem> RollChestAccessories(int count)
-    {
-        if (count <= 0)
-        {
-            return new List<ContentRollItem>();
-        }
-
-        ContentPoolSO pool = ResolveChestRewardPool();
-        if (pool == null)
-        {
-            return new List<ContentRollItem>();
-        }
-
-        ContentRollContext context = new(
-            ContentPoolScopeIds.ChestReward,
-            player,
-            progressionSnapshot: CreateWaveProgressionSnapshot(currentWaveNumber),
-            historyScope: CreateHistoryScope(pool, ContentPoolScopeIds.ChestReward),
-            history: contentHistoryState);
-        ContentRollResult result = contentPoolRollService.Roll(
-            pool,
-            context,
-            count,
-            entry => entry.Content is AccessoryDataSO);
-        return new List<ContentRollItem>(result.Items);
-    }
-
-    private static RunProgressionSnapshot CreateWaveProgressionSnapshot(int waveNumber)
-    {
-        RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
-        if (snapshot.WaveNumber == Mathf.Max(1, waveNumber))
-        {
-            return snapshot;
-        }
-
-        return new RunProgressionSnapshot(
-            waveNumber,
-            snapshot.TotalWaves,
-            snapshot.RunMinutes,
-            snapshot.EndlessLoop,
-            snapshot.DifficultyCoefficient,
-            snapshot.EconomyCoefficient,
-            snapshot.ShopPriceMultiplier,
-            snapshot.DangerTier);
-    }
-
-    private ContentHistoryScope CreateHistoryScope(ContentPoolSO pool, string scopeId = ContentPoolScopeIds.Generic)
-    {
-        scopeId = ContentPoolScopeIds.Normalize(scopeId);
-        string poolId = pool != null ? pool.name : scopeId;
-        string ownerId = player != null ? player.GetInstanceID().ToString() : string.Empty;
-        return new ContentHistoryScope(scopeId, poolId, ownerId);
-    }
-
-    private ContentPoolSO ResolveChestRewardPool()
-    {
-        if (chestRewardPool != null)
-        {
-            return chestRewardPool;
-        }
-
-        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
-        {
-            return null;
-        }
-
-        if (provider.ChestRewardPool != null)
-        {
-            chestRewardPool = provider.ChestRewardPool;
-            return chestRewardPool;
-        }
-
-        Debug.LogError($"[RewardSelectionManager] Missing chest reward content pool in scene or {nameof(GameContentCatalogSO)}.", this);
-        return null;
     }
 
     private async UniTask CloseCurrentPopupAsync(CloseReason closeReason)
@@ -582,6 +407,11 @@ public class RewardSelectionManager : MonoBehaviour
         {
             playerLevel = player.GetComponent<PlayerLevel>();
         }
+
+        if (weaponsHolder == null)
+        {
+            weaponsHolder = player.GetComponent<WeaponsHolder>();
+        }
     }
 
     private UIManager ResolveUIManager()
@@ -619,20 +449,73 @@ public class RewardSelectionManager : MonoBehaviour
         return false;
     }
 
-    private static string[] BuildUpgradeTagLabels(UpgradeCardTag[] tags)
+    private void EnsureHandlers()
     {
-        if (tags == null || tags.Length == 0)
+        if (handlers != null)
         {
-            return Array.Empty<string>();
+            return;
         }
 
-        string[] labels = new string[tags.Length];
-        for (int i = 0; i < tags.Length; i++)
+        handlers = new Dictionary<RewardSelectionReason, IRewardSelectionHandler>();
+        RegisterHandler(EquipmentRewardSelectionHandler.CreateAccessory());
+        RegisterHandler(new UpgradeRewardSelectionHandler());
+        RegisterHandler(EquipmentRewardSelectionHandler.CreateWeapon());
+    }
+
+    private void RegisterHandler(IRewardSelectionHandler handler)
+    {
+        if (handler == null || handler.Reason == RewardSelectionReason.None)
         {
-            labels[i] = ItemDescriptionUtility.FormatUpgradeCardTag(tags[i]);
+            return;
         }
 
-        return labels;
+        handlers[handler.Reason] = handler;
+    }
+
+    private bool TryGetHandler(RewardSelectionReason reason, out IRewardSelectionHandler handler)
+    {
+        EnsureHandlers();
+        return handlers.TryGetValue(reason, out handler);
+    }
+
+    private RewardSelectionHandlerContext CreateHandlerContext()
+    {
+        TryBindPlayerReferences();
+        ResolveContentPoolsFromProvider();
+        return new RewardSelectionHandlerContext(
+            player,
+            playerLevel,
+            accessoryManager,
+            weaponsHolder,
+            contentHistoryState,
+            currentWaveNumber,
+            upgradeCardPool,
+            chestRewardPool,
+            weaponRewardPool,
+            this);
+    }
+
+    private void ResolveContentPoolsFromProvider()
+    {
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            return;
+        }
+
+        if (upgradeCardPool == null)
+        {
+            upgradeCardPool = provider.UpgradeCardPool;
+        }
+
+        if (chestRewardPool == null)
+        {
+            chestRewardPool = provider.ChestRewardPool;
+        }
+
+        if (weaponRewardPool == null)
+        {
+            weaponRewardPool = provider.WeaponRewardPool;
+        }
     }
 
     private readonly struct RewardSelectionRequest
@@ -645,37 +528,4 @@ public class RewardSelectionManager : MonoBehaviour
         public RewardSelectionReason Reason { get; }
     }
 
-    private readonly struct RewardSelectionOption
-    {
-        private RewardSelectionOption(
-            string optionId,
-            UpgradeCardRollOption upgradeCardOption,
-            AccessoryDataSO accessoryData,
-            ContentRollItem accessoryRollItem)
-        {
-            OptionId = optionId ?? string.Empty;
-            UpgradeCardOption = upgradeCardOption;
-            AccessoryData = accessoryData;
-            AccessoryRollItem = accessoryRollItem;
-        }
-
-        public string OptionId { get; }
-        public UpgradeCardSO UpgradeCard => UpgradeCardOption.Card;
-        public UpgradeCardRollOption UpgradeCardOption { get; }
-        public AccessoryDataSO AccessoryData { get; }
-        public ContentRollItem AccessoryRollItem { get; }
-
-        public static RewardSelectionOption ForUpgradeCard(string optionId, UpgradeCardRollOption upgradeCardOption)
-        {
-            return new RewardSelectionOption(optionId, upgradeCardOption, null, default);
-        }
-
-        public static RewardSelectionOption ForAccessory(
-            string optionId,
-            AccessoryDataSO accessoryData,
-            ContentRollItem accessoryRollItem)
-        {
-            return new RewardSelectionOption(optionId, default, accessoryData, accessoryRollItem);
-        }
-    }
 }

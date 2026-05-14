@@ -1,12 +1,23 @@
 using System;
 using Orange.Input;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public sealed class SettingsRebindRow : MonoBehaviour
+public sealed class SettingsRebindRow : ViewPartBase
 {
+    public readonly struct Context
+    {
+        public Context(Action<SettingsRebindRow> rebindRequested)
+        {
+            RebindRequested = rebindRequested;
+        }
+
+        public Action<SettingsRebindRow> RebindRequested { get; }
+    }
+
     [SerializeField] private string actionPath;
     [SerializeField] private string compositePartName;
     [SerializeField] private string label;
@@ -32,6 +43,25 @@ public sealed class SettingsRebindRow : MonoBehaviour
 
     public string ControlScheme => controlScheme;
     public Selectable DefaultSelectable => rebindButton;
+
+    public override void Bind(object context)
+    {
+        if (context is not Context rowContext)
+        {
+            throw new ArgumentException($"{nameof(SettingsRebindRow)} '{name}' expects {nameof(Context)}.", nameof(context));
+        }
+
+        Initialize(rowContext.RebindRequested);
+    }
+
+    public override void Unbind()
+    {
+        rebindRequested = null;
+        if (rebindButton != null)
+        {
+            rebindButton.onClick.RemoveListener(OnRebindClicked);
+        }
+    }
 
     public void Configure(InputRebindEntry entry)
     {

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -59,11 +58,12 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     private readonly HashSet<int> activeHitWindows = new();
     private readonly List<HitBoxDebugSample> hitBoxDebugSamples = new();
     private readonly WeaponTargetSelector targetSelector = new();
+    private readonly WeaponRuntimeStatsResolver runtimeStatsResolver = new();
+    private readonly ProjectilePatternEmitter projectilePatternEmitter = new();
     private HitBoxAttackExecutor hitBoxAttackExecutor;
     private AttackSequenceDefinitionSO attackSequence;
     private Vector2 pendingTargetPosition;
     private Entity lockedAttackTarget;
-    private int activeBurstId = -1;
     private float currentAttackStartedAt;
     private float currentAttackSequenceDuration;
 
@@ -424,7 +424,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
         Vector2 actualTargetPosition = ResolveTargetAimPoint(target, originPosition);
         LockAttackDirection(ResolveAttackDirection(actualTargetPosition));
         pendingTargetPosition = ResolveSequenceTargetPosition(originPosition, actualTargetPosition);
-        activeBurstId = -1;
+        projectilePatternEmitter.ResetBurstState();
         activeHitWindows.Clear();
         hitWindowTargets.Clear();
         hitWindowLastPoses.Clear();
@@ -673,115 +673,22 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
 
     private void FireProjectiles(WeaponSequenceProjectileDefinition projectileConfig)
     {
-        switch (projectileConfig.FiringMode)
-        {
-            case ProjectileFiringMode.Burst:
-                TryStartBurst(projectileConfig);
-                break;
-            case ProjectileFiringMode.Spread:
-                FireSpread(projectileConfig);
-                break;
-            case ProjectileFiringMode.Nova:
-                FireNova(projectileConfig);
-                break;
-            default:
-                FireSingle(projectileConfig, null);
-                break;
-        }
+        projectilePatternEmitter.Emit(projectileConfig, CreateProjectileEmissionContext());
     }
 
-    private void TryStartBurst(WeaponSequenceProjectileDefinition projectileConfig)
+    private ProjectilePatternEmissionContext CreateProjectileEmissionContext()
     {
-        if (activeBurstId == projectileConfig.BurstId)
-        {
-            return;
-        }
-
-        activeBurstId = projectileConfig.BurstId;
-        StartCoroutine(BurstRoutine(projectileConfig));
-    }
-
-    private IEnumerator BurstRoutine(WeaponSequenceProjectileDefinition projectileConfig)
-    {
-        int burstCount = projectileConfig.PatternConfig.BurstCount;
-        float burstInterval = projectileConfig.PatternConfig.BurstInterval;
-
-        for (int i = 0; i < burstCount; i++)
-        {
-            FireSingle(projectileConfig, null);
-            if (i < burstCount - 1)
-            {
-                yield return new WaitForSeconds(burstInterval);
-            }
-        }
-
-        activeBurstId = -1;
-    }
-
-    private void FireSpread(WeaponSequenceProjectileDefinition projectileConfig)
-    {
-        int spreadCount = projectileConfig.PatternConfig.SpreadCount;
-        if (spreadCount <= 1)
-        {
-            FireSingle(projectileConfig, null);
-            return;
-        }
-
-        float spreadAngle = projectileConfig.PatternConfig.SpreadAngle;
-        float step = spreadCount > 1 ? (spreadAngle * 2f) / (spreadCount - 1) : 0f;
-        for (int i = 0; i < spreadCount; i++)
-        {
-            float angle = -spreadAngle + (step * i);
-            FireSingle(projectileConfig, angle);
-        }
-    }
-
-    private void FireNova(WeaponSequenceProjectileDefinition projectileConfig)
-    {
-        int novaCount = projectileConfig.PatternConfig.NovaCount;
-        for (int i = 0; i < novaCount; i++)
-        {
-            float angle = 360f / novaCount * i;
-            FireSingle(projectileConfig, angle);
-        }
-    }
-
-    private void FireSingle(WeaponSequenceProjectileDefinition projectileConfig, float? angleOffset)
-    {
-        WeaponSpawnPointPose origin = ResolveSpawnPointPose(projectileConfig.SpawnPointIndex);
-        Entity sourceEntity = ResolveAttackSourceEntity();
-        HitSpec hitSpec = BuildHitSpec();
-        Vector2 aimDirection = ResolveAttackDirection(pendingTargetPosition, origin.Position);
-        if (angleOffset.HasValue)
-        {
-            aimDirection = (Quaternion.Euler(0f, 0f, angleOffset.Value) * aimDirection).normalized;
-        }
-
-        ExecuteProjectileAttack(sourceEntity, origin, aimDirection, hitSpec, projectileConfig);
-    }
-
-    private void ExecuteProjectileAttack(
-        Entity sourceEntity,
-        WeaponSpawnPointPose origin,
-        Vector2 aimDirection,
-        HitSpec hitSpec,
-        WeaponSequenceProjectileDefinition projectileConfig)
-    {
-        Projectile projectile = ProjectileFactory.CreateProjectile(projectileConfig.ProjectileDefinition, origin.Position, Quaternion.identity);
-        LaunchProjectile(projectile, new ProjectileLaunchContext(
+        return new ProjectilePatternEmissionContext(
             this,
-            sourceEntity,
-            origin.Position,
-            aimDirection,
-            hitSpec,
-            TargetLayerMask,
-            projectileConfig.ProjectileDefinition,
-            ResolveProjectilePierceCount(),
-            projectileConfig.SpawnPointIndex,
-            projectileConfig.BurstId,
-            projectileConfig.FiringMode,
-            projectileConfig.PatternConfig,
-            maxTravelDistance: Range));
+            ResolveAttackSourceEntity,
+            BuildHitSpec,
+            ResolveSpawnPointPose,
+            origin => ResolveAttackDirection(pendingTargetPosition, origin.Position),
+            ResolveProjectilePierceCount,
+            () => TargetLayerMask,
+            () => Range,
+            LaunchProjectile,
+            StartCoroutine);
     }
 
     public void LaunchProjectile(IProjectile projectile, in ProjectileLaunchContext context)
@@ -914,7 +821,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
         hitBoxDebugSamples.Clear();
         pendingTargetPosition = Vector2.zero;
         lockedAttackTarget = null;
-        activeBurstId = -1;
+        projectilePatternEmitter.ResetBurstState();
         if (WeaponData != null && WeaponData.AttackTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown)
         {
             cooldownRemaining = AttackInterval;
@@ -932,7 +839,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
         hitBoxDebugSamples.Clear();
         pendingTargetPosition = Vector2.zero;
         lockedAttackTarget = null;
-        activeBurstId = -1;
+        projectilePatternEmitter.ResetBurstState();
         cooldownRemaining = 0f;
         cooldownStartedFrame = -1;
         CompleteAttackCycle();
@@ -949,47 +856,25 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
                 $"Ensure the weapon is a child of an entity with a {nameof(PropertiesManager)} component.");
         }
 
-        WeaponLevelStatData weaponStats = WeaponData.GetLevelStats(Level);
+        if (weaponsHolder == null)
+        {
+            weaponsHolder = GetComponentInParent<WeaponsHolder>();
+        }
 
-        float weaponAttack = weaponStats.Attack;
-        float weaponAttackSpeed = weaponStats.AttackSpeed;
-        float weaponCriticalChance = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalChance);
-        float weaponCriticalMultiplier = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalPercent);
-        float weaponRange = weaponStats.Range;
-        float weaponKnockbackStrength = weaponStats.KnockbackStrength;
-        WeaponBenefitData benefits = ResolveWeaponBenefits(weaponStats);
         float previousAttackInterval = AttackInterval;
+        WeaponRuntimeStats runtimeStats = runtimeStatsResolver.Resolve(new WeaponRuntimeStatsRequest(
+            WeaponData,
+            Level,
+            propertiesManager,
+            weaponsHolder));
 
-        float playerCriticalChance = benefits.ApplyToExternalValue(
-            PropType.CriticalChance,
-            PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalChance)));
-        float playerCriticalBonus = benefits.ApplyToExternalValue(
-            PropType.CriticalPercent,
-            PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.CriticalPercent)));
-
-        float resolvedAttackSpeedPoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackSpeed, weaponAttackSpeed);
-        float finalAttackSpeedPoints = benefits.ApplyToResolvedStat(
-            PropType.AttackSpeed,
-            weaponAttackSpeed,
-            resolvedAttackSpeedPoints);
-        float typedAttackContribution = ResolveAttackTypeContribution(benefits);
-        float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(propertiesManager.GetPropValue(PropType.Damage));
-        Damage = PropValueUtility.ClampNonNegative((weaponAttack + typedAttackContribution) * damageMultiplier);
-        AttackInterval = PropValueUtility.AttackSpeedPointsToAttackInterval(finalAttackSpeedPoints);
+        Damage = runtimeStats.Damage;
+        AttackInterval = runtimeStats.AttackInterval;
         RefreshCooldownForAttackIntervalChange(previousAttackInterval);
-        CriticalChance = PropValueUtility.ClampEffectiveRatio(PropType.CriticalChance, weaponCriticalChance + playerCriticalChance);
-        CriticalMultiplier = PropValueUtility.ClampEffectiveCriticalMultiplier(weaponCriticalMultiplier + playerCriticalBonus);
-        float resolvedRangePoints = propertiesManager.GetPropValueWithAdditionalBase(PropType.AttackRange, weaponRange);
-        float rangePoints = benefits.ApplyToResolvedStat(PropType.AttackRange, weaponRange, resolvedRangePoints);
-        Range = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(rangePoints);
-        float resolvedKnockbackStrength = propertiesManager.GetPropValueWithAdditionalBase(
-            PropType.KnockbackStrength,
-            weaponKnockbackStrength);
-        KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(
-            benefits.ApplyToResolvedStat(
-                PropType.KnockbackStrength,
-                weaponKnockbackStrength,
-                resolvedKnockbackStrength));
+        CriticalChance = runtimeStats.CriticalChance;
+        CriticalMultiplier = runtimeStats.CriticalMultiplier;
+        Range = runtimeStats.Range;
+        KnockbackStrength = runtimeStats.KnockbackStrength;
     }
 
     private void RefreshCooldownForAttackIntervalChange(float previousAttackInterval)
@@ -1001,19 +886,6 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
 
         float cooldownProgress = Mathf.Clamp01(1f - cooldownRemaining / previousAttackInterval);
         cooldownRemaining = Mathf.Max(0f, AttackInterval * (1f - cooldownProgress));
-    }
-
-    private WeaponBenefitData ResolveWeaponBenefits(WeaponLevelStatData weaponStats)
-    {
-        WeaponBenefitData benefits = WeaponData.Benefits + weaponStats.GetAttackUsageBenefits();
-        if (weaponsHolder == null)
-        {
-            weaponsHolder = GetComponentInParent<WeaponsHolder>();
-        }
-
-        return weaponsHolder != null
-            ? benefits + weaponsHolder.CurrentWeaponBenefitBonus
-            : benefits;
     }
 
     private void ApplyLevelHolderModifiers()
@@ -1050,29 +922,6 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     private string BuildHolderLevelModifierSourceId()
     {
         return $"{HOLDER_LEVEL_MODIFIER_SOURCE_PREFIX}{RuntimeId}";
-    }
-
-    private float ResolveAttackTypeContribution(WeaponBenefitData benefits)
-    {
-        if (!benefits.HasAnyUsage)
-        {
-            return 0f;
-        }
-
-        return ResolveAttackTypeContribution(PropType.MeleeAttack, benefits.MeleeAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.RangedAttack, benefits.RangedAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.MagicAttack, benefits.MagicAttackUsagePercent) +
-               ResolveAttackTypeContribution(PropType.SummonAttack, benefits.SummonAttackUsagePercent);
-    }
-
-    private float ResolveAttackTypeContribution(PropType propType, float usagePercent)
-    {
-        if (usagePercent <= 0f)
-        {
-            return 0f;
-        }
-
-        return propertiesManager.GetPropValue(propType) * PropValueUtility.PercentPointsToRatio(usagePercent);
     }
 
     private void ApplyCurrentConfiguration()
@@ -1289,131 +1138,6 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
             float angle = (360f / count) * i;
             Vector3 direction = Quaternion.Euler(0f, 0f, angle) * Vector3.up;
             Gizmos.DrawRay(origin.Position, direction * 1f);
-        }
-    }
-}
-
-internal readonly struct HitBoxDetectionPose
-{
-    public Vector2 Position { get; }
-    public float RotationZ { get; }
-
-    public HitBoxDetectionPose(Vector2 position, float rotationZ)
-    {
-        Position = position;
-        RotationZ = rotationZ;
-    }
-}
-
-internal readonly struct HitBoxDebugSample
-{
-    public HitBoxDetectionPose Pose { get; }
-    public Vector2 Size { get; }
-    public float Time { get; }
-
-    public HitBoxDebugSample(in HitBoxDetectionPose pose, Vector2 size, float time)
-    {
-        Pose = pose;
-        Size = size;
-        Time = time;
-    }
-}
-
-internal sealed class HitBoxAttackExecutor
-{
-    private readonly float innerCompensationRadius;
-    private readonly Action<Vector2> hitVfxCallback;
-
-    public HitBoxAttackExecutor(Action<Vector2> hitVfxCallback, float innerCompensationRadius = 1.1f)
-    {
-        this.hitVfxCallback = hitVfxCallback;
-        this.innerCompensationRadius = Mathf.Max(0.05f, innerCompensationRadius);
-    }
-
-    public void ExecuteAttack(
-        Weapon weapon,
-        Entity sourceEntity,
-        HitSpec hitSpec,
-        Vector2 hitBoxSize,
-        HashSet<HealthComponent> hitTargets,
-        LayerMask targetLayerMask,
-        in HitBoxDetectionPose fromPose,
-        in HitBoxDetectionPose toPose,
-        Action<HitBoxDetectionPose> hitBoxDebugCallback = null)
-    {
-        if (hitTargets == null)
-        {
-            return;
-        }
-
-        int sampleCount = CalculateSampleCount(hitBoxSize, fromPose, toPose);
-        for (int i = 0; i < sampleCount; i++)
-        {
-            float t = sampleCount == 1 ? 1f : i / (sampleCount - 1f);
-            Vector2 sampledPosition = Vector2.Lerp(fromPose.Position, toPose.Position, t);
-            float sampledAngle = Mathf.LerpAngle(fromPose.RotationZ, toPose.RotationZ, t);
-            hitBoxDebugCallback?.Invoke(new HitBoxDetectionPose(sampledPosition, sampledAngle));
-            Collider2D[] colliders = Physics2D.OverlapBoxAll(sampledPosition, hitBoxSize, sampledAngle, targetLayerMask);
-            ApplyDamage(colliders, weapon, sourceEntity, hitSpec, hitTargets, sampledPosition, hitVfxCallback);
-        }
-    }
-
-    private int CalculateSampleCount(Vector2 hitBoxSize, in HitBoxDetectionPose fromPose, in HitBoxDetectionPose toPose)
-    {
-        float positionDelta = Vector2.Distance(fromPose.Position, toPose.Position);
-        float rotationDelta = Mathf.Abs(Mathf.DeltaAngle(fromPose.RotationZ, toPose.RotationZ));
-        float minHitExtent = Mathf.Max(0.05f, Mathf.Min(hitBoxSize.x, hitBoxSize.y) * 0.5f);
-        float positionStep = Mathf.Max(0.05f, minHitExtent / innerCompensationRadius);
-        int positionSamples = Mathf.Max(1, Mathf.CeilToInt(positionDelta / positionStep) + 1);
-        int rotationSamples = Mathf.Max(1, Mathf.CeilToInt(rotationDelta / 12f) + 1);
-        return Mathf.Max(positionSamples, rotationSamples);
-    }
-
-    private static void ApplyDamage(
-        Collider2D[] colliders,
-        Weapon weapon,
-        Entity sourceEntity,
-        HitSpec hitSpec,
-        HashSet<HealthComponent> hitTargets,
-        Vector2 sourcePosition,
-        Action<Vector2> hitVfxCallback)
-    {
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (!colliders[i].TryGetComponent(out HealthComponent healthComponent))
-            {
-                continue;
-            }
-
-            if (hitTargets.Contains(healthComponent))
-            {
-                continue;
-            }
-
-            Entity target = healthComponent.GetComponent<Entity>();
-            if (target == null)
-            {
-                continue;
-            }
-
-            hitTargets.Add(healthComponent);
-            Vector2 knockbackDirection = sourceEntity != null
-                ? target.Center - sourceEntity.Center
-                : target.Center - (Vector2)healthComponent.transform.position;
-            HitRequest request = new HitRequest(
-                sourceEntity,
-                target,
-                hitSpec,
-                healthComponent.transform.position,
-                knockbackDirection,
-                HitSourceKind.Weapon,
-                sourcePosition: sourcePosition,
-                sourceWeapon: weapon);
-            HitResult hitResult = weapon.ApplyHit(request);
-            if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
-            {
-                hitVfxCallback?.Invoke(hitResult.HitPoint);
-            }
         }
     }
 }

@@ -17,43 +17,47 @@ MonoBehaviour:
     presentationKey: common
     revealSfxKey: 100
     selectSfxKey: 114
-    backgroundColor: {r: 0.34, g: 0.38, b: 0.44, a: 0.92}
-    borderColor: {r: 0.6039216, g: 0.6509804, b: 0.7137255, a: 1}
+    mainColor: {r: 0.9098039, g: 0.9254902, b: 0.95686275, a: 1}
     titleColor: {r: 0.9098039, g: 0.9254902, b: 0.95686275, a: 1}
-    iconTintColor: {r: 0.9647059, g: 0.972549, b: 0.9882353, a: 1}
-    glowColor: {r: 0.5882353, g: 0.6509804, b: 0.74509805, a: 0.3529412}
-    glowScaleMultiplier: 1
-    shadowColor: {r: 0, g: 0, b: 0, a: 1}
+    backgroundSprite: {fileID: 21300000, guid: 74f2b2915054d81439992354e2a44992, type: 3}
+    iconFrameSprite: {fileID: 0}
+    iconBackgroundSprite: {fileID: 0}
+    backgroundAlpha: 1
+    shadowScale: 1
+    glowScale: 1.2
   - quality: 1
     presentationKey: rare
     revealSfxKey: 100
     selectSfxKey: 104
-    backgroundColor: {r: 0.05, g: 0.38, b: 0.62, a: 0.93}
-    borderColor: {r: 0.3372549, g: 0.8235294, b: 1, a: 1}
+    mainColor: {r: 0.6039216, g: 0.9098039, b: 1, a: 1}
     titleColor: {r: 0.6039216, g: 0.9098039, b: 1, a: 1}
-    iconTintColor: {r: 0.83137256, g: 0.95686275, b: 1, a: 1}
-    glowColor: {r: 0.3137255, g: 0.8235294, b: 1, a: 0.50980395}
-    glowScaleMultiplier: 1.18
-    shadowColor: {r: 0, g: 0.09411765, b: 0.14901961, a: 1}
+    backgroundSprite: {fileID: 21300000, guid: a47843a4b6a55ed4a8dd39ce9ccac938, type: 3}
+    iconFrameSprite: {fileID: 0}
+    iconBackgroundSprite: {fileID: 0}
+    backgroundAlpha: 1
+    shadowScale: 1
+    glowScale: 1.4
   - quality: 2
     presentationKey: epic
     revealSfxKey: 100
     selectSfxKey: 105
-    backgroundColor: {r: 0.42, g: 0.17, b: 0.72, a: 0.94}
-    borderColor: {r: 0.7607843, g: 0.47058824, b: 1, a: 1}
+    mainColor: {r: 0.89411765, g: 0.74509805, b: 1, a: 1}
     titleColor: {r: 0.89411765, g: 0.74509805, b: 1, a: 1}
-    iconTintColor: {r: 0.9490196, g: 0.8784314, b: 1, a: 1}
-    glowColor: {r: 0.7607843, g: 0.47058824, b: 1, a: 0.5686275}
-    glowScaleMultiplier: 1.38
-    shadowColor: {r: 0.10980392, g: 0.047058824, b: 0.17254902, a: 1}
+    backgroundSprite: {fileID: 21300000, guid: 0d0c33a382b0b8f4c9b3965206807c44, type: 3}
+    iconFrameSprite: {fileID: 0}
+    iconBackgroundSprite: {fileID: 0}
+    backgroundAlpha: 1
+    shadowScale: 1
+    glowScale: 1.6
   - quality: 3
     presentationKey: legendary
     revealSfxKey: 100
     selectSfxKey: 106
-    backgroundColor: {r: 0.72, g: 0.42, b: 0.08, a: 0.95}
-    borderColor: {r: 1, g: 0.7607843, b: 0.32156864, a: 1}
+    mainColor: {r: 1, g: 0.87058824, b: 0.5803922, a: 1}
     titleColor: {r: 1, g: 0.87058824, b: 0.5803922, a: 1}
-    iconTintColor: {r: 1, g: 0.93333334, b: 0.7921569, a: 1}
-    glowColor: {r: 1, g: 0.7372549, b: 0.29803923, a: 0.6666667}
-    glowScaleMultiplier: 1.62
-    shadowColor: {r: 0.1882353, g: 0.10980392, b: 0.019607844, a: 1}
+    backgroundSprite: {fileID: 21300000, guid: 11f0d2d00e7c8d746903589e4900afc3, type: 3}
+    iconFrameSprite: {fileID: 0}
+    iconBackgroundSprite: {fileID: 0}
+    backgroundAlpha: 1
+    shadowScale: 1
+    glowScale: 1.8

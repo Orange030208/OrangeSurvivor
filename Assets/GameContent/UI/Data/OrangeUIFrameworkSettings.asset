@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3123b8fd90f4221b3683a138155d45b, type: 3}
   m_Name: OrangeUIFrameworkSettings
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   instanceIdPrefix: UIInst_
   useUnscaledTime: 1
   rootName: UIRoot
@@ -55,3 +55,5 @@ MonoBehaviour:
     rootName: DebugLayer
     sortingOrder: 900
     blocksRaycasts: 1
+  popupOutsideClickBlocker:
+    prefab: {fileID: 5977609757145941152, guid: c2f95bd782735aa4188697310f2a2ba2, type: 3}

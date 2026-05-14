@@ -1,0 +1,7 @@
+interface:
+  display_name: "Card Border From Reference"
+  short_description: "Generate transparent 96x128 card borders"
+  default_prompt: "Use $card-border-from-reference to generate a transparent 96x128 card border from my reference image."
+
+policy:
+  allow_implicit_invocation: false

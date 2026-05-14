@@ -22,7 +22,7 @@ public class MenuUIPage : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        settingsPanel.ConfigureOwner(OwnerUIManager);
+        settingsPanel.Bind(new SettingsPanelManager.Context(OwnerUIManager));
         startButton.onClick.AddListener(OnStartButtonOnClicked);
         if (settingsButton != null)
         {
@@ -47,7 +47,7 @@ public class MenuUIPage : PageBase
             settingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
         }
 
-        settingsPanel.ConfigureOwner(null);
+        settingsPanel.Unbind();
         HideSettingsImmediate();
     }
 

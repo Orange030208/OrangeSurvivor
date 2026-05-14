@@ -1,11 +1,24 @@
 using System;
+using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public sealed class SettingsSliderRow : MonoBehaviour
+public sealed class SettingsSliderRow : ViewPartBase
 {
+    public readonly struct Context
+    {
+        public Context(string label, Action<float> valueChanged)
+        {
+            Label = label;
+            ValueChanged = valueChanged;
+        }
+
+        public string Label { get; }
+        public Action<float> ValueChanged { get; }
+    }
+
     [SerializeField] private TextMeshProUGUI labelText;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI valueText;
@@ -14,6 +27,25 @@ public sealed class SettingsSliderRow : MonoBehaviour
     private bool suppressNotify;
 
     public Selectable DefaultSelectable => slider;
+
+    public override void Bind(object context)
+    {
+        if (context is not Context rowContext)
+        {
+            throw new ArgumentException($"{nameof(SettingsSliderRow)} '{name}' expects {nameof(Context)}.", nameof(context));
+        }
+
+        Initialize(rowContext.Label, rowContext.ValueChanged);
+    }
+
+    public override void Unbind()
+    {
+        valueChanged = null;
+        if (slider != null)
+        {
+            slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        }
+    }
 
     public void Initialize(string label, Action<float> onValueChanged)
     {
