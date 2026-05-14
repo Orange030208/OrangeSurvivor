@@ -508,6 +508,9 @@ public static class SettingsPanelStaticPrefabBuilder
         serializedObject.FindProperty("compositePartName").stringValue = entry.CompositePartName ?? string.Empty;
         serializedObject.FindProperty("label").stringValue = entry.Label;
         serializedObject.FindProperty("controlScheme").stringValue = entry.ControlScheme;
+        serializedObject.FindProperty("bindingGroup").stringValue = entry.BindingGroup;
+        serializedObject.FindProperty("requiredControlPath").stringValue = entry.RequiredControlPath;
+        SetStringArray(serializedObject.FindProperty("cancelControlPaths"), entry.CancelControlPaths);
         SetObject(serializedObject, "labelText", labelText);
         SetObject(serializedObject, "valueText", valueText);
         SetObject(serializedObject, "rebindButton", rebindButton);

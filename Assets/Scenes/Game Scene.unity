@@ -26121,6 +26121,8 @@ MonoBehaviour:
   moveActionPath: Gameplay/Move
   pauseActionPath: Gameplay/Pause
   uiCancelActionPath: UI/Cancel
+  gameplayContextId: Gameplay
+  uiContextId: UI
 --- !u!4 &842639264
 Transform:
   m_ObjectHideFlags: 0
@@ -26150,14 +26152,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 842639263}
   inputRuntime: {fileID: 842639266}
+  inputProfile: {fileID: 11400000, guid: 03c401a6204b4fe98c67a84b51467d31, type: 2}
   eventSystem: {fileID: 1432474700}
-  uiActionPaths:
-    pointActionPath: UI/Point
-    clickActionPath: UI/Click
-    scrollActionPath: UI/Scroll
-    navigationActionPath: UI/Navigate
-    submitActionPath: UI/Submit
-    cancelActionPath: UI/Cancel
 --- !u!114 &842639266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26170,7 +26166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56405d8805ae4253a52f0106b1133dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionsAsset: {fileID: -944628639613478452, guid: 3a8513d4e1e24f64bbd128f3efb74f5d, type: 3}
+  profile: {fileID: 11400000, guid: 03c401a6204b4fe98c67a84b51467d31, type: 2}
   dontDestroyOnLoad: 1
 --- !u!1 &885074028
 GameObject:

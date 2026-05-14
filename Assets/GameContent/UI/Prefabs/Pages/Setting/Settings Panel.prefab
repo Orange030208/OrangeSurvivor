@@ -643,6 +643,10 @@ MonoBehaviour:
   compositePartName: 
   label: Pause
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 1018811098118212866}
   valueText: {fileID: 7271366503634703757}
   rebindButton: {fileID: 2739420744438361660}
@@ -1900,6 +1904,11 @@ MonoBehaviour:
   compositePartName: 
   label: UI Submit
   controlScheme: Gamepad
+  bindingGroup: Gamepad
+  requiredControlPath: <Gamepad>
+  cancelControlPaths:
+  - <Gamepad>/buttonEast
+  - <Keyboard>/escape
   labelText: {fileID: 6013179595883197381}
   valueText: {fileID: 4427862148136642961}
   rebindButton: {fileID: 3790011270180198972}
@@ -2996,6 +3005,11 @@ MonoBehaviour:
   compositePartName: 
   label: Pause
   controlScheme: Gamepad
+  bindingGroup: Gamepad
+  requiredControlPath: <Gamepad>
+  cancelControlPaths:
+  - <Gamepad>/buttonEast
+  - <Keyboard>/escape
   labelText: {fileID: 1938846844985884208}
   valueText: {fileID: 721547640672461530}
   rebindButton: {fileID: 5609959789120984677}
@@ -4161,6 +4175,10 @@ MonoBehaviour:
   compositePartName: Down
   label: Move Down
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 1730385196509905932}
   valueText: {fileID: 4433259302298045560}
   rebindButton: {fileID: 1660619152889639998}
@@ -4422,6 +4440,11 @@ MonoBehaviour:
   compositePartName: 
   label: UI Cancel
   controlScheme: Gamepad
+  bindingGroup: Gamepad
+  requiredControlPath: <Gamepad>
+  cancelControlPaths:
+  - <Gamepad>/buttonEast
+  - <Keyboard>/escape
   labelText: {fileID: 4661475200214688432}
   valueText: {fileID: 306772052292402653}
   rebindButton: {fileID: 7151354894881458632}
@@ -6064,6 +6087,10 @@ MonoBehaviour:
   compositePartName: Left
   label: Move Left
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 7452712901704293140}
   valueText: {fileID: 5631373789965140741}
   rebindButton: {fileID: 1702387616281238498}
@@ -6773,6 +6800,10 @@ MonoBehaviour:
   compositePartName: Right
   label: Move Right
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 2774516008897374711}
   valueText: {fileID: 9168938243142231657}
   rebindButton: {fileID: 6370037346318847253}
@@ -7085,6 +7116,10 @@ MonoBehaviour:
   compositePartName: Up
   label: Move Up
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 5627088900083900206}
   valueText: {fileID: 2726165824254352866}
   rebindButton: {fileID: 5118715985724981292}
@@ -8108,6 +8143,10 @@ MonoBehaviour:
   compositePartName: 
   label: UI Submit
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 5251843136021051506}
   valueText: {fileID: 8177185017236782946}
   rebindButton: {fileID: 7429303480451036465}
@@ -13421,6 +13460,10 @@ MonoBehaviour:
   compositePartName: 
   label: UI Cancel
   controlScheme: Keyboard
+  bindingGroup: Keyboard&Mouse
+  requiredControlPath: <Keyboard>
+  cancelControlPaths:
+  - <Keyboard>/escape
   labelText: {fileID: 1033722081438631786}
   valueText: {fileID: 8534937849527889511}
   rebindButton: {fileID: 7181832779031635550}

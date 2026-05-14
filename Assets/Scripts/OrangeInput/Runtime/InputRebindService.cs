@@ -35,17 +35,46 @@ namespace Orange.Input
     public readonly struct InputRebindEntry
     {
         public InputRebindEntry(string actionPath, string compositePartName, string label, string controlScheme)
+            : this(actionPath, compositePartName, label, controlScheme, null, null, null)
+        {
+        }
+
+        public InputRebindEntry(
+            string actionPath,
+            string compositePartName,
+            string label,
+            string controlScheme,
+            string bindingGroup,
+            string requiredControlPath)
+            : this(actionPath, compositePartName, label, controlScheme, bindingGroup, requiredControlPath, null)
+        {
+        }
+
+        public InputRebindEntry(
+            string actionPath,
+            string compositePartName,
+            string label,
+            string controlScheme,
+            string bindingGroup,
+            string requiredControlPath,
+            string[] cancelControlPaths)
         {
             ActionPath = actionPath;
             CompositePartName = compositePartName;
             Label = label;
             ControlScheme = controlScheme;
+            BindingGroup = bindingGroup;
+            RequiredControlPath = requiredControlPath;
+            CancelControlPaths = cancelControlPaths ?? Array.Empty<string>();
         }
 
         public string ActionPath { get; }
         public string CompositePartName { get; }
         public string Label { get; }
         public string ControlScheme { get; }
+        public string BindingGroup { get; }
+        public string RequiredControlPath { get; }
+        public string[] CancelControlPaths { get; }
         public string DisplayLabel => $"{Label} ({ControlScheme})";
     }
 
@@ -75,12 +104,23 @@ namespace Orange.Input
                 action.Disable();
             }
 
-            string requiredControlPath = entry.ControlScheme == "Gamepad" ? "<Gamepad>" : "<Keyboard>";
-            InputActionRebindingExtensions.RebindingOperation operation = action.PerformInteractiveRebinding(bindingIndex)
-                .WithControlsHavingToMatchPath(requiredControlPath)
-                .WithCancelingThrough("<Keyboard>/escape")
-                .WithCancelingThrough("<Gamepad>/buttonEast")
-                .OnCancel(rebindOperation =>
+            InputActionRebindingExtensions.RebindingOperation operation = action.PerformInteractiveRebinding(bindingIndex);
+            string requiredControlPath = ResolveRequiredControlPath(entry);
+            if (!string.IsNullOrWhiteSpace(requiredControlPath))
+            {
+                operation.WithControlsHavingToMatchPath(requiredControlPath);
+            }
+
+            string[] cancelControlPaths = entry.CancelControlPaths;
+            for (int i = 0; i < cancelControlPaths.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(cancelControlPaths[i]))
+                {
+                    operation.WithCancelingThrough(cancelControlPaths[i]);
+                }
+            }
+
+            operation = operation.OnCancel(rebindOperation =>
                 {
                     if (wasEnabled)
                     {
@@ -191,7 +231,7 @@ namespace Orange.Input
                 return -1;
             }
 
-            string group = entry.ControlScheme == "Gamepad" ? "Gamepad" : "Keyboard&Mouse";
+            string group = ResolveBindingGroup(entry);
             for (int i = 0; i < action.bindings.Count; i++)
             {
                 InputBinding binding = action.bindings[i];
@@ -222,6 +262,11 @@ namespace Orange.Input
 
         private static bool BindingMatchesGroup(InputBinding binding, string group)
         {
+            if (string.IsNullOrWhiteSpace(group))
+            {
+                return true;
+            }
+
             return !string.IsNullOrWhiteSpace(binding.groups) &&
                    binding.groups.IndexOf(group, StringComparison.OrdinalIgnoreCase) >= 0;
         }
@@ -233,9 +278,47 @@ namespace Orange.Input
                 return false;
             }
 
-            return entry.ControlScheme == "Gamepad"
-                ? controlPath.IndexOf("Gamepad", StringComparison.OrdinalIgnoreCase) >= 0
-                : controlPath.IndexOf("Keyboard", StringComparison.OrdinalIgnoreCase) >= 0;
+            string deviceName = ResolveRequiredDeviceName(ResolveRequiredControlPath(entry));
+            return string.IsNullOrWhiteSpace(deviceName) ||
+                   controlPath.IndexOf(deviceName, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static string ResolveBindingGroup(InputRebindEntry entry)
+        {
+            if (!string.IsNullOrWhiteSpace(entry.BindingGroup))
+            {
+                return entry.BindingGroup;
+            }
+
+            return string.Empty;
+        }
+
+        private static string ResolveRequiredControlPath(InputRebindEntry entry)
+        {
+            if (!string.IsNullOrWhiteSpace(entry.RequiredControlPath))
+            {
+                return entry.RequiredControlPath;
+            }
+
+            return string.Empty;
+        }
+
+        private static string ResolveRequiredDeviceName(string requiredControlPath)
+        {
+            if (string.IsNullOrWhiteSpace(requiredControlPath))
+            {
+                return string.Empty;
+            }
+
+            string trimmed = requiredControlPath.Trim();
+            if (trimmed[0] == '<')
+            {
+                int closeIndex = trimmed.IndexOf('>');
+                return closeIndex > 1 ? trimmed.Substring(1, closeIndex - 1) : string.Empty;
+            }
+
+            int slashIndex = trimmed.IndexOf('/');
+            return slashIndex > 0 ? trimmed.Substring(0, slashIndex) : trimmed;
         }
     }
 }

@@ -8,14 +8,14 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
 {
     private static GameInput instance;
 
-    [SerializeField] private InputActionRuntime inputRuntime;
+    [SerializeField] private InputModuleRuntime inputRuntime;
     [SerializeField] private bool dontDestroyOnLoad = true;
     [SerializeField] private string moveActionPath = "Gameplay/Move";
     [SerializeField] private string pauseActionPath = "Gameplay/Pause";
     [SerializeField] private string uiCancelActionPath = "UI/Cancel";
+    [SerializeField] private string gameplayContextId = "Gameplay";
+    [SerializeField] private string uiContextId = "UI";
 
-    private InputActionMap gameplayMap;
-    private InputActionMap uiMap;
     private InputAction moveAction;
     private InputAction pauseAction;
     private InputAction uiCancelAction;
@@ -23,7 +23,7 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
     public static GameInput Instance => instance;
 
     public InputActionAsset ActionsAsset => inputRuntime != null ? inputRuntime.ActionsAsset : null;
-    public InputActionRuntime InputRuntime => inputRuntime;
+    public InputModuleRuntime InputRuntime => inputRuntime;
     public InputAction MoveAction => moveAction;
     public InputAction PauseAction => pauseAction;
     public InputAction UiCancelAction => uiCancelAction;
@@ -88,7 +88,7 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
         UnregisterSceneInstance(this);
     }
 
-    public void SetInputRuntime(InputActionRuntime runtime)
+    public void SetInputRuntime(InputModuleRuntime runtime)
     {
         inputRuntime = runtime;
     }
@@ -97,18 +97,20 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
     {
         if (inputRuntime == null)
         {
-            Debug.LogError($"{nameof(GameInput)} on '{name}' requires an explicit {nameof(InputActionRuntime)} reference.", this);
+            Debug.LogError($"{nameof(GameInput)} on '{name}' requires an explicit {nameof(InputModuleRuntime)} reference.", this);
             return false;
         }
 
-        inputRuntime.Initialize();
+        if (!inputRuntime.Initialize())
+        {
+            return false;
+        }
+
         if (ActionsAsset == null)
         {
             return false;
         }
 
-        gameplayMap = ResolveActionMap(moveActionPath) ?? ResolveActionMap(pauseActionPath);
-        uiMap = ResolveActionMap(uiCancelActionPath);
         moveAction = ResolveRequiredAction(moveActionPath);
         BindPerformedAction(ref pauseAction, ResolveRequiredAction(pauseActionPath), OnPausePerformed);
         BindPerformedAction(ref uiCancelAction, ResolveRequiredAction(uiCancelActionPath), OnUiCancelPerformed);
@@ -122,8 +124,7 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
             return;
         }
 
-        uiMap?.Disable();
-        gameplayMap?.Enable();
+        inputRuntime.SetContext(gameplayContextId);
     }
 
     public void EnableUI()
@@ -133,8 +134,7 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
             return;
         }
 
-        gameplayMap?.Disable();
-        uiMap?.Enable();
+        inputRuntime.SetContext(uiContextId);
     }
 
     public void EnableDefaultMaps()
@@ -144,8 +144,11 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
             return;
         }
 
-        gameplayMap?.Enable();
-        uiMap?.Enable();
+        string defaultContextId = inputRuntime.Profile != null ? inputRuntime.Profile.DefaultContextId : null;
+        if (!string.IsNullOrWhiteSpace(defaultContextId))
+        {
+            inputRuntime.SetContext(defaultContextId);
+        }
     }
 
     public string SaveBindingOverrides()
@@ -153,11 +156,37 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
         return inputRuntime != null ? inputRuntime.SaveBindingOverrides() : string.Empty;
     }
 
+    public bool SaveBindingOverridesToStore()
+    {
+        return inputRuntime != null && inputRuntime.SaveBindingOverridesToStore();
+    }
+
+    public bool LoadBindingOverridesFromStore()
+    {
+        if (inputRuntime == null)
+        {
+            return false;
+        }
+
+        bool loaded = inputRuntime.LoadBindingOverridesFromStore();
+        if (loaded)
+        {
+            Initialize();
+        }
+
+        return loaded;
+    }
+
+    public bool ClearBindingOverrideStore()
+    {
+        return inputRuntime != null && inputRuntime.ClearBindingOverrideStore();
+    }
+
     public void LoadBindingOverrides(string overridesJson)
     {
         if (inputRuntime == null)
         {
-            Debug.LogError($"{nameof(GameInput)} on '{name}' cannot load binding overrides without {nameof(InputActionRuntime)}.", this);
+            Debug.LogError($"{nameof(GameInput)} on '{name}' cannot load binding overrides without {nameof(InputModuleRuntime)}.", this);
             return;
         }
 
@@ -200,25 +229,6 @@ public sealed class GameInput : MonoBehaviour, IInputActionProvider
 
         Debug.LogError($"{nameof(GameInput)} on '{name}' cannot find required action '{actionPath}'.", this);
         return null;
-    }
-
-    private InputActionMap ResolveActionMap(string actionPath)
-    {
-        InputActionAsset asset = ActionsAsset;
-        if (asset == null || string.IsNullOrWhiteSpace(actionPath))
-        {
-            return null;
-        }
-
-        int separatorIndex = actionPath.IndexOf('/');
-        if (separatorIndex <= 0)
-        {
-            Debug.LogError($"{nameof(GameInput)} on '{name}' has invalid action path '{actionPath}'. Expected 'Map/Action'.", this);
-            return null;
-        }
-
-        string mapName = actionPath.Substring(0, separatorIndex);
-        return asset.FindActionMap(mapName, throwIfNotFound: false);
     }
 
     private static void BindPerformedAction(

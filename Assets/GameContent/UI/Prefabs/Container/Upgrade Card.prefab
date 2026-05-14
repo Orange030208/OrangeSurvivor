@@ -721,7 +721,7 @@ MonoBehaviour:
   iconImage: {fileID: 0}
   glowImage: {fileID: 3384547312911755051}
   shadowImage: {fileID: 4970988003369397942}
-  titleText: {fileID: 0}
+  titleText: {fileID: 8294777454420629685}
   backgroundColorStrength: 0.992
   iconTintStrength: 1
 --- !u!1 &7919045028222055534

@@ -157,11 +157,12 @@ public class GameSettingsAndInputTests
     {
         GameObject gameObject = new("explicit_input_service");
         InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
         try
         {
             GameInput service = gameObject.AddComponent<GameInput>();
-            InputActionRuntime runtime = gameObject.AddComponent<InputActionRuntime>();
-            SetPrivateField(runtime, "actionsAsset", asset);
+            InputModuleRuntime runtime = gameObject.AddComponent<InputModuleRuntime>();
+            runtime.Initialize(profile);
             SetPrivateField(service, "inputRuntime", runtime);
 
             service.Initialize();
@@ -175,6 +176,7 @@ public class GameSettingsAndInputTests
         {
             GameInput.UnregisterSceneInstance(GameInput.Instance);
             Object.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(profile);
             Object.DestroyImmediate(asset);
         }
     }
@@ -185,7 +187,7 @@ public class GameSettingsAndInputTests
         GameObject gameObject = new("missing_input_asset_service");
         try
         {
-            LogAssert.Expect(LogType.Error, "GameInput on 'missing_input_asset_service' requires an explicit InputActionRuntime reference.");
+            LogAssert.Expect(LogType.Error, "GameInput on 'missing_input_asset_service' requires an explicit InputModuleRuntime reference.");
             GameInput service = gameObject.AddComponent<GameInput>();
 
             service.Initialize();
@@ -201,15 +203,15 @@ public class GameSettingsAndInputTests
     }
 
     [Test]
-    public void InputActionRuntimeRequiresExplicitInputActions()
+    public void InputModuleRuntimeRequiresExplicitProfile()
     {
-        GameObject gameObject = new("missing_input_action_runtime");
+        GameObject gameObject = new("missing_input_module_runtime");
         try
         {
-            LogAssert.Expect(LogType.Error, "InputActionRuntime on 'missing_input_action_runtime' requires an explicit InputActionAsset reference.");
-            InputActionRuntime runtime = gameObject.AddComponent<InputActionRuntime>();
+            LogAssert.Expect(LogType.Error, "InputModuleRuntime on 'missing_input_module_runtime' requires an explicit InputModuleProfile reference.");
+            InputModuleRuntime runtime = gameObject.AddComponent<InputModuleRuntime>();
 
-            runtime.Initialize();
+            Assert.IsFalse(runtime.Initialize());
 
             Assert.IsNull(runtime.ActionsAsset);
             Assert.IsFalse(runtime.TryFindAction("Gameplay/Move", out InputAction action));
@@ -227,11 +229,11 @@ public class GameSettingsAndInputTests
         GameObject inputObject = new("input_runtime");
         GameObject eventSystemObject = new("event_system", typeof(EventSystem), typeof(StandaloneInputModule));
         InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
         try
         {
-            InputActionRuntime runtime = inputObject.AddComponent<InputActionRuntime>();
-            SetPrivateField(runtime, "actionsAsset", asset);
-            runtime.Initialize();
+            InputModuleRuntime runtime = inputObject.AddComponent<InputModuleRuntime>();
+            runtime.Initialize(profile);
 
             InputSystemUiActionPaths paths = InputSystemUiActionPaths.Default;
             InputSystemUiBinder.Configure(eventSystemObject.GetComponent<EventSystem>(), runtime, paths);
@@ -252,6 +254,138 @@ public class GameSettingsAndInputTests
         {
             Object.DestroyImmediate(eventSystemObject);
             Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(profile);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void InputModuleRuntimeUsesExclusiveContextStack()
+    {
+        GameObject inputObject = new("input_module_runtime");
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
+        try
+        {
+            InputModuleRuntime runtime = inputObject.AddComponent<InputModuleRuntime>();
+
+            Assert.IsTrue(runtime.Initialize(profile));
+            Assert.AreEqual("Gameplay", runtime.ActiveContextId);
+            Assert.IsTrue(asset.FindActionMap("Gameplay").enabled);
+            Assert.IsTrue(asset.FindActionMap("UI").enabled);
+
+            InputContextHandle handle = runtime.PushContext("UI");
+
+            Assert.NotNull(handle);
+            Assert.AreEqual("UI", runtime.ActiveContextId);
+            Assert.IsFalse(asset.FindActionMap("Gameplay").enabled);
+            Assert.IsTrue(asset.FindActionMap("UI").enabled);
+
+            handle.Dispose();
+
+            Assert.AreEqual("Gameplay", runtime.ActiveContextId);
+            Assert.IsTrue(asset.FindActionMap("Gameplay").enabled);
+            Assert.IsTrue(asset.FindActionMap("UI").enabled);
+        }
+        finally
+        {
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(profile);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void InputModuleRuntimeReappliesActiveContextAfterDisable()
+    {
+        GameObject inputObject = new("input_module_runtime");
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
+        try
+        {
+            InputModuleRuntime runtime = inputObject.AddComponent<InputModuleRuntime>();
+            Assert.IsTrue(runtime.Initialize(profile));
+
+            asset.Disable();
+            Assert.IsFalse(asset.FindActionMap("Gameplay").enabled);
+            Assert.IsFalse(asset.FindActionMap("UI").enabled);
+
+            Assert.IsTrue(runtime.Initialize(profile));
+            Assert.AreEqual("Gameplay", runtime.ActiveContextId);
+            Assert.IsTrue(asset.FindActionMap("Gameplay").enabled);
+            Assert.IsTrue(asset.FindActionMap("UI").enabled);
+        }
+        finally
+        {
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(profile);
+            Object.DestroyImmediate(asset);
+        }
+    }
+
+    [Test]
+    public void InputModuleRuntimeCanSwitchProfiles()
+    {
+        GameObject inputObject = new("input_module_runtime");
+        InputActionAsset firstAsset = CreateTestInputActions(includeUi: true);
+        InputActionAsset secondAsset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile firstProfile = CreateTestInputProfile(firstAsset);
+        InputModuleProfile secondProfile = CreateTestInputProfile(secondAsset, defaultContextId: "UI");
+        try
+        {
+            InputModuleRuntime runtime = inputObject.AddComponent<InputModuleRuntime>();
+            Assert.IsTrue(runtime.Initialize(firstProfile));
+            Assert.IsTrue(firstAsset.FindActionMap("Gameplay").enabled);
+
+            Assert.IsTrue(runtime.Initialize(secondProfile));
+            Assert.AreSame(secondAsset, runtime.ActionsAsset);
+            Assert.AreEqual("UI", runtime.ActiveContextId);
+            Assert.IsFalse(firstAsset.FindActionMap("Gameplay").enabled);
+            Assert.IsFalse(secondAsset.FindActionMap("Gameplay").enabled);
+            Assert.IsTrue(secondAsset.FindActionMap("UI").enabled);
+        }
+        finally
+        {
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(firstProfile);
+            Object.DestroyImmediate(secondProfile);
+            Object.DestroyImmediate(firstAsset);
+            Object.DestroyImmediate(secondAsset);
+        }
+    }
+
+    [Test]
+    public void PlayerPrefsBindingOverrideStoreRoundTripsRuntimeOverrides()
+    {
+        const string key = "Tests.Input.BindingOverrides";
+        PlayerPrefs.DeleteKey(key);
+        GameObject inputObject = new("input_module_runtime");
+        InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        PlayerPrefsInputBindingOverrideStore store = CreateTestBindingStore(key);
+        InputModuleProfile profile = CreateTestInputProfile(asset, store);
+        try
+        {
+            InputModuleRuntime runtime = inputObject.AddComponent<InputModuleRuntime>();
+            runtime.Initialize(profile);
+            InputAction pause = asset.FindAction("Gameplay/Pause", throwIfNotFound: true);
+            pause.ApplyBindingOverride(0, "<Keyboard>/p");
+
+            Assert.IsTrue(runtime.SaveBindingOverridesToStore());
+            asset.RemoveAllBindingOverrides();
+            Assert.AreEqual("<Keyboard>/escape", pause.bindings[0].effectivePath);
+
+            Assert.IsTrue(runtime.LoadBindingOverridesFromStore());
+            Assert.AreEqual("<Keyboard>/p", pause.bindings[0].effectivePath);
+
+            Assert.IsTrue(runtime.ClearBindingOverrideStore());
+            Assert.IsFalse(PlayerPrefs.HasKey(key));
+        }
+        finally
+        {
+            PlayerPrefs.DeleteKey(key);
+            Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(profile);
+            Object.DestroyImmediate(store);
             Object.DestroyImmediate(asset);
         }
     }
@@ -259,18 +393,20 @@ public class GameSettingsAndInputTests
     [Test]
     public void GameInputSceneBinderRegistersInputAndConfiguresEventSystem()
     {
-        GameObject inputObject = new("scene_input", typeof(GameInput), typeof(InputActionRuntime));
+        GameObject inputObject = new("scene_input", typeof(GameInput), typeof(InputModuleRuntime));
         GameObject eventSystemObject = new("event_system", typeof(EventSystem), typeof(StandaloneInputModule));
         InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
         try
         {
             GameInput input = inputObject.GetComponent<GameInput>();
-            InputActionRuntime runtime = inputObject.GetComponent<InputActionRuntime>();
-            SetPrivateField(runtime, "actionsAsset", asset);
+            InputModuleRuntime runtime = inputObject.GetComponent<InputModuleRuntime>();
+            runtime.Initialize(profile);
             SetPrivateField(input, "inputRuntime", runtime);
             GameInputSceneBinder binder = inputObject.AddComponent<GameInputSceneBinder>();
             SetPrivateField(binder, "input", input);
             SetPrivateField(binder, "inputRuntime", runtime);
+            SetPrivateField(binder, "inputProfile", profile);
             SetPrivateField(binder, "eventSystem", eventSystemObject.GetComponent<EventSystem>());
 
             binder.Bind();
@@ -285,6 +421,7 @@ public class GameSettingsAndInputTests
             GameInput.UnregisterSceneInstance(GameInput.Instance);
             Object.DestroyImmediate(eventSystemObject);
             Object.DestroyImmediate(inputObject);
+            Object.DestroyImmediate(profile);
             Object.DestroyImmediate(asset);
         }
     }
@@ -292,19 +429,20 @@ public class GameSettingsAndInputTests
     [Test]
     public void GameInputRejectsDuplicateSceneRegistration()
     {
-        GameObject firstObject = new("first_scene_input", typeof(GameInput), typeof(InputActionRuntime));
-        GameObject secondObject = new("second_scene_input", typeof(GameInput), typeof(InputActionRuntime));
+        GameObject firstObject = new("first_scene_input", typeof(GameInput), typeof(InputModuleRuntime));
+        GameObject secondObject = new("second_scene_input", typeof(GameInput), typeof(InputModuleRuntime));
         InputActionAsset asset = CreateTestInputActions(includeUi: true);
+        InputModuleProfile profile = CreateTestInputProfile(asset);
         try
         {
             GameInput firstInput = firstObject.GetComponent<GameInput>();
-            InputActionRuntime firstRuntime = firstObject.GetComponent<InputActionRuntime>();
-            SetPrivateField(firstRuntime, "actionsAsset", asset);
+            InputModuleRuntime firstRuntime = firstObject.GetComponent<InputModuleRuntime>();
+            firstRuntime.Initialize(profile);
             SetPrivateField(firstInput, "inputRuntime", firstRuntime);
 
             GameInput secondInput = secondObject.GetComponent<GameInput>();
-            InputActionRuntime secondRuntime = secondObject.GetComponent<InputActionRuntime>();
-            SetPrivateField(secondRuntime, "actionsAsset", asset);
+            InputModuleRuntime secondRuntime = secondObject.GetComponent<InputModuleRuntime>();
+            secondRuntime.Initialize(profile);
             SetPrivateField(secondInput, "inputRuntime", secondRuntime);
 
             Assert.IsTrue(GameInput.TryRegisterSceneInstance(firstInput));
@@ -317,6 +455,7 @@ public class GameSettingsAndInputTests
             GameInput.UnregisterSceneInstance(GameInput.Instance);
             Object.DestroyImmediate(secondObject);
             Object.DestroyImmediate(firstObject);
+            Object.DestroyImmediate(profile);
             Object.DestroyImmediate(asset);
         }
     }
@@ -333,6 +472,43 @@ public class GameSettingsAndInputTests
         Assert.IsTrue(InputRebindService.HasConflict(move, upIndex, move.bindings[upIndex].effectivePath));
         Assert.IsFalse(InputRebindService.HasConflict(move, leftIndex, move.bindings[leftIndex].effectivePath));
         Assert.AreEqual(10, GameInputRebindCatalog.Entries.Count);
+    }
+
+    [Test]
+    public void InputRebindEntriesResolveBindingsFromCallerConfiguration()
+    {
+        InputActionAsset asset = CreateTestInputActions();
+        TestInputProvider input = new(asset);
+        InputRebindEntry keyboardEntry = new(
+            "Gameplay/Move",
+            "Up",
+            "Move Up",
+            "Keyboard",
+            "Keyboard&Mouse",
+            "<Keyboard>",
+            new[] { "<Keyboard>/escape" });
+        InputRebindEntry gamepadEntry = new(
+            "Gameplay/Pause",
+            null,
+            "Pause",
+            "Controller",
+            "Gamepad",
+            "<Gamepad>",
+            new[] { "<Gamepad>/buttonEast" });
+
+        try
+        {
+            string keyboardDisplay = InputRebindService.GetDisplayString(input, keyboardEntry);
+            string gamepadDisplay = InputRebindService.GetDisplayString(input, gamepadEntry);
+
+            Assert.AreNotEqual("-", keyboardDisplay);
+            Assert.AreNotEqual("-", gamepadDisplay);
+            Assert.AreNotEqual(keyboardDisplay, gamepadDisplay);
+        }
+        finally
+        {
+            Object.DestroyImmediate(asset);
+        }
     }
 
     [Test]
@@ -523,8 +699,9 @@ public class GameSettingsAndInputTests
             .With("Down", "<Keyboard>/s", groups: "Keyboard&Mouse")
             .With("Left", "<Keyboard>/a", groups: "Keyboard&Mouse")
             .With("Right", "<Keyboard>/d", groups: "Keyboard&Mouse");
-        gameplay.AddAction("Pause", InputActionType.Button)
-            .AddBinding("<Keyboard>/escape", groups: "Keyboard&Mouse");
+        InputAction pause = gameplay.AddAction("Pause", InputActionType.Button);
+        pause.AddBinding("<Keyboard>/escape", groups: "Keyboard&Mouse");
+        pause.AddBinding("<Gamepad>/buttonSouth", groups: "Gamepad");
         if (includeUi)
         {
             InputActionMap ui = asset.AddActionMap("UI");
@@ -541,6 +718,64 @@ public class GameSettingsAndInputTests
         }
 
         return asset;
+    }
+
+    private static InputModuleProfile CreateTestInputProfile(
+        InputActionAsset asset,
+        InputBindingOverrideStore store = null,
+        string defaultContextId = "Gameplay")
+    {
+        InputModuleProfile profile = ScriptableObject.CreateInstance<InputModuleProfile>();
+        profile.name = "Test Input Module Profile";
+        SetPrivateField(profile, "actionsAsset", asset);
+        SetPrivateField(profile, "defaultContextId", defaultContextId);
+        SetPrivateField(profile, "contexts", new[]
+        {
+            new InputContextDefinition("Gameplay", new[] { "Gameplay", "UI" }),
+            new InputContextDefinition("UI", new[] { "UI" })
+        });
+        SetPrivateField(profile, "uiActionPaths", InputSystemUiActionPaths.Default);
+        SetPrivateField(profile, "bindingOverrideStore", store);
+        return profile;
+    }
+
+    private static PlayerPrefsInputBindingOverrideStore CreateTestBindingStore(string playerPrefsKey)
+    {
+        PlayerPrefsInputBindingOverrideStore store = ScriptableObject.CreateInstance<PlayerPrefsInputBindingOverrideStore>();
+        store.name = "Test Binding Override Store";
+        SetPrivateField(store, "playerPrefsKey", playerPrefsKey);
+        return store;
+    }
+
+    private sealed class TestInputProvider : IInputActionProvider
+    {
+        public TestInputProvider(InputActionAsset actionsAsset)
+        {
+            ActionsAsset = actionsAsset;
+        }
+
+        public InputActionAsset ActionsAsset { get; }
+
+        public bool TryFindAction(string actionPath, out InputAction action)
+        {
+            action = ActionsAsset.FindAction(actionPath, throwIfNotFound: false);
+            return action != null;
+        }
+
+        public string SaveBindingOverrides()
+        {
+            return ActionsAsset.SaveBindingOverridesAsJson();
+        }
+
+        public void LoadBindingOverrides(string overridesJson)
+        {
+            ActionsAsset.LoadBindingOverridesFromJson(overridesJson);
+        }
+
+        public void ClearBindingOverrides()
+        {
+            ActionsAsset.RemoveAllBindingOverrides();
+        }
     }
 
     private static void SetPrivateField<TTarget>(TTarget target, string fieldName, object value)

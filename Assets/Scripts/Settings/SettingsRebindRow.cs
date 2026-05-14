@@ -11,6 +11,9 @@ public sealed class SettingsRebindRow : MonoBehaviour
     [SerializeField] private string compositePartName;
     [SerializeField] private string label;
     [SerializeField] private string controlScheme = "Keyboard";
+    [SerializeField] private string bindingGroup;
+    [SerializeField] private string requiredControlPath;
+    [SerializeField] private string[] cancelControlPaths = Array.Empty<string>();
     [SerializeField] private TextMeshProUGUI labelText;
     [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private Button rebindButton;
@@ -18,7 +21,14 @@ public sealed class SettingsRebindRow : MonoBehaviour
     private Action<SettingsRebindRow> rebindRequested;
 
     public InputRebindEntry Entry =>
-        new(actionPath, string.IsNullOrWhiteSpace(compositePartName) ? null : compositePartName, label, controlScheme);
+        new(
+            actionPath,
+            string.IsNullOrWhiteSpace(compositePartName) ? null : compositePartName,
+            label,
+            controlScheme,
+            bindingGroup,
+            requiredControlPath,
+            cancelControlPaths);
 
     public string ControlScheme => controlScheme;
     public Selectable DefaultSelectable => rebindButton;
@@ -29,6 +39,9 @@ public sealed class SettingsRebindRow : MonoBehaviour
         compositePartName = entry.CompositePartName;
         label = entry.Label;
         controlScheme = entry.ControlScheme;
+        bindingGroup = entry.BindingGroup;
+        requiredControlPath = entry.RequiredControlPath;
+        cancelControlPaths = entry.CancelControlPaths;
         RefreshLabel();
     }
 

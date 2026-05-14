@@ -6,9 +6,9 @@ using UnityEngine.EventSystems;
 public sealed class GameInputSceneBinder : MonoBehaviour
 {
     [SerializeField] private GameInput input;
-    [SerializeField] private InputActionRuntime inputRuntime;
+    [SerializeField] private InputModuleRuntime inputRuntime;
+    [SerializeField] private InputModuleProfile inputProfile;
     [SerializeField] private EventSystem eventSystem;
-    [SerializeField] private InputSystemUiActionPaths uiActionPaths = InputSystemUiActionPaths.Default;
 
     private GameInput registeredInput;
 
@@ -44,18 +44,29 @@ public sealed class GameInputSceneBinder : MonoBehaviour
 
         if (inputRuntime == null)
         {
-            Debug.LogError($"{nameof(GameInputSceneBinder)} on '{name}' requires an explicit {nameof(InputActionRuntime)} reference.", this);
+            Debug.LogError($"{nameof(GameInputSceneBinder)} on '{name}' requires an explicit {nameof(InputModuleRuntime)} reference.", this);
             return false;
         }
 
+        if (inputProfile == null)
+        {
+            Debug.LogError($"{nameof(GameInputSceneBinder)} on '{name}' requires an explicit {nameof(InputModuleProfile)} reference.", this);
+            return false;
+        }
+
+        if (!inputRuntime.Initialize(inputProfile))
+        {
+            return false;
+        }
+
+        inputRuntime.LoadBindingOverridesFromStore();
         input.SetInputRuntime(inputRuntime);
         if (!GameInput.TryRegisterSceneInstance(input))
         {
             return false;
         }
 
-        input.EnableDefaultMaps();
-        if (!InputSystemUiBinder.Configure(eventSystem, inputRuntime, uiActionPaths))
+        if (!inputRuntime.ConfigureUi(eventSystem))
         {
             GameInput.UnregisterSceneInstance(input);
             inputRuntime.ActionsAsset?.Disable();

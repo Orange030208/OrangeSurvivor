@@ -165,6 +165,7 @@ public class SettingsPanelManager : ViewPartBase
 
         savedState = targetState.Clone();
         GameSettingsService.Save(savedState);
+        input?.SaveBindingOverridesToStore();
         GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
 
         bool displayChanged = !previousState.ToDisplaySnapshot().Equals(targetState.ToDisplaySnapshot());
@@ -187,6 +188,7 @@ public class SettingsPanelManager : ViewPartBase
         savedState = editingState.Clone();
         GameInput input = GameInput.Instance;
         input?.ClearBindingOverrides();
+        input?.ClearBindingOverrideStore();
         editingState.InputRebindsJson = string.Empty;
         savedState.InputRebindsJson = string.Empty;
         GameSettingsService.Save(savedState);

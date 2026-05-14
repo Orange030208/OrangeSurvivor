@@ -70,6 +70,9 @@ public static class GameSettingsService
         GameSettingsState state = Load();
         state.InputRebindsJson = rebindsJson ?? string.Empty;
         Save(state);
+        GameInput input = GameInput.Instance;
+        input?.LoadBindingOverrides(state.InputRebindsJson);
+        input?.SaveBindingOverridesToStore();
         ApplyInput(state.InputRebindsJson);
     }
 
@@ -137,7 +140,10 @@ public static class GameSettingsService
         GameInput input = GameInput.Instance;
         if (input != null)
         {
-            input.LoadBindingOverrides(rebindsJson);
+            if (!input.LoadBindingOverridesFromStore())
+            {
+                input.LoadBindingOverrides(rebindsJson);
+            }
         }
     }
 }
