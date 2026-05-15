@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class GameContentCatalogBuildUtility
 {
+    private const float LuckWeightDivisor = 250f;
     private const string CatalogPath = GameContentAssetPaths.GameContentCatalog;
     private const string DamageTextVisualConfigPath = GameContentAssetPaths.DamageTextVisualConfig;
     private const string MainScenePath = "Assets/Scenes/Game Scene.unity";
@@ -195,6 +196,9 @@ public static class GameContentCatalogBuildUtility
             {
                 new QualityMetadata(accessory.Rarity)
             });
+            entry.ConfigureRuntimeRules(
+                new ContentCondition[] { new AccessoryOwnedLimitCondition() },
+                new[] { CreateLuckWeightRule(GetAccessoryLuckCoefficient(accessory.RarityGrade), 0.5f) });
             entries.Add(entry);
         }
 
@@ -211,13 +215,19 @@ public static class GameContentCatalogBuildUtility
                 continue;
             }
 
-            ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, weapon.ItemName);
-            entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+            for (int level = WeaponLevelHelper.MinLevel; level <= WeaponLevelHelper.MaxLevel; level++)
             {
-                new WeaponLevelRollMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel),
-                new ShopPricingMetadata(1f)
-            });
-            entries.Add(entry);
+                ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, $"{weapon.ItemName}_Lv{level}");
+                entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+                {
+                    new WeaponLevelRollMetadata(level, level),
+                    new ShopPricingMetadata(1f)
+                });
+                entry.ConfigureRuntimeRules(
+                    null,
+                    new[] { CreateLuckWeightRule(GetWeaponLevelLuckCoefficient(level), 0.5f) });
+                entries.Add(entry);
+            }
         }
 
         return entries;
@@ -241,7 +251,7 @@ public static class GameContentCatalogBuildUtility
             {
                 entry.ConfigureRuntimeRules(
                     null,
-                    new[] { new PlayerPropertyScaleWeightRule(PropType.Luck, 0.02f, 0f, 5f) });
+                    new[] { CreateLuckWeightRule(0.8f, 0.5f) });
             }
 
             entries.Add(entry);
@@ -269,6 +279,39 @@ public static class GameContentCatalogBuildUtility
         }
 
         return entries;
+    }
+
+    private static ContentWeightRule CreateLuckWeightRule(float coefficient, float minMultiplier)
+    {
+        return new PlayerPropertyScaleWeightRule(
+            PropType.Luck,
+            coefficient / LuckWeightDivisor,
+            minMultiplier,
+            0f);
+    }
+
+    private static float GetAccessoryLuckCoefficient(AccessoryRarity rarity)
+    {
+        return rarity switch
+        {
+            AccessoryRarity.Common => -0.4f,
+            AccessoryRarity.Rare => 0.4f,
+            AccessoryRarity.Epic => 0.9f,
+            AccessoryRarity.Legendary => 1.4f,
+            _ => 0f
+        };
+    }
+
+    private static float GetWeaponLevelLuckCoefficient(int level)
+    {
+        return WeaponLevelHelper.ClampLevel(level) switch
+        {
+            1 => -0.3f,
+            2 => 0.3f,
+            3 => 0.8f,
+            4 => 1.2f,
+            _ => 0f
+        };
     }
 
     private static IReadOnlyList<T> LoadAssets<T>(params string[] folders) where T : UnityEngine.Object

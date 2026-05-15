@@ -219,8 +219,14 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                         return false;
                     }
 
-                    context.AccessoryManager?.EquipAccessory(selectedOption.AccessoryData);
-                    return true;
+                    if (context.AccessoryManager != null &&
+                        context.AccessoryManager.EquipAccessory(selectedOption.AccessoryData))
+                    {
+                        return true;
+                    }
+
+                    Debug.LogWarning($"[EquipmentRewardSelectionHandler] Failed to add accessory {selectedOption.AccessoryData?.name}.", context.LogContext);
+                    return false;
                 },
                 option => option is AccessoryRewardSelectionOption selectedOption
                     ? selectedOption.RollItem

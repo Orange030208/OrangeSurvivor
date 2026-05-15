@@ -13,7 +13,6 @@ public enum PropType
     Dodge = 10,
     LifeSteal = 11,
     PickupRadius = 12,
-    ProjectileCount = 13,
     ProjectileSpeed = 14,
     AttackRange = 15,
     ProjectilePierceCount = 16,

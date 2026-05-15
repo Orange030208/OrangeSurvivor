@@ -25,7 +25,7 @@ public sealed class WeaponRuntimeRefactorTests
     }
 
     [Test]
-    public void RuntimeStatsResolverMatchesLegacyWeaponFormulaInputs()
+    public void RuntimeStatsResolverMatchesWeaponFormulaInputs()
     {
         PropertiesManager manager = CreatePropertiesManager(new[]
         {
@@ -103,7 +103,6 @@ public sealed class WeaponRuntimeRefactorTests
             new ProjectilePatternConfig(3, 30f, 3, 4, 0f));
 
         emitter.Emit(config, CreateProjectileEmissionContext(
-            (_, _, _) => CreateProjectile(),
             (IProjectile _, in ProjectileLaunchContext context) => directions.Add(context.Direction)));
 
         Assert.That(directions, Has.Count.EqualTo(expectedCount));
@@ -124,7 +123,6 @@ public sealed class WeaponRuntimeRefactorTests
             new ProjectilePatternConfig(1, 0f, 3, 1, 0.05f),
             burstId: 7);
         ProjectilePatternEmissionContext context = CreateProjectileEmissionContext(
-            (_, _, _) => CreateProjectile(),
             (IProjectile _, in ProjectileLaunchContext _) => { },
             routine =>
             {
@@ -143,15 +141,22 @@ public sealed class WeaponRuntimeRefactorTests
     {
         ProjectilePatternEmitter emitter = new();
         int launchCount = 0;
+        IEnumerator capturedRoutine = null;
         WeaponSequenceProjectileDefinition config = CreateProjectileConfig(
             ProjectileFiringMode.Burst,
             new ProjectilePatternConfig(1, 0f, 3, 1, 0f));
         ProjectilePatternEmissionContext context = CreateProjectileEmissionContext(
-            (_, _, _) => CreateProjectile(),
-            (IProjectile _, in ProjectileLaunchContext _) => launchCount++);
+            (IProjectile _, in ProjectileLaunchContext _) => launchCount++,
+            routine =>
+            {
+                capturedRoutine = routine;
+                return null;
+            });
 
-        IEnumerator routine = emitter.CreateBurstRoutine(config, context);
-        while (routine.MoveNext())
+        emitter.Emit(config, context);
+
+        Assert.IsNotNull(capturedRoutine);
+        while (capturedRoutine.MoveNext())
         {
         }
 
@@ -197,7 +202,6 @@ public sealed class WeaponRuntimeRefactorTests
     }
 
     private ProjectilePatternEmissionContext CreateProjectileEmissionContext(
-        ProjectileFactoryHandler createProjectile,
         ProjectileLaunchHandler launchProjectile,
         Func<IEnumerator, Coroutine> startCoroutine = null)
     {
@@ -210,9 +214,8 @@ public sealed class WeaponRuntimeRefactorTests
             () => 0,
             () => Physics2D.DefaultRaycastLayers,
             () => 5f,
-            launchProjectile,
-            startCoroutine ?? (_ => null),
-            createProjectile);
+            TrackProjectileAndLaunch(launchProjectile),
+            startCoroutine ?? (_ => null));
     }
 
     private WeaponSequenceProjectileDefinition CreateProjectileConfig(
@@ -232,15 +235,29 @@ public sealed class WeaponRuntimeRefactorTests
     {
         ProjectileDefinitionSO projectileDefinition = ScriptableObject.CreateInstance<ProjectileDefinitionSO>();
         createdObjects.Add(projectileDefinition);
+        SetPrivateField(projectileDefinition, "projectilePrefab", CreateProjectilePrefab());
         return projectileDefinition;
     }
 
-    private Projectile CreateProjectile()
+    private Projectile CreateProjectilePrefab()
     {
-        GameObject gameObject = CreateGameObject("projectile");
+        GameObject gameObject = CreateGameObject("projectile_prefab");
         gameObject.AddComponent<Rigidbody2D>();
         gameObject.AddComponent<BoxCollider2D>();
         return gameObject.AddComponent<Projectile>();
+    }
+
+    private ProjectileLaunchHandler TrackProjectileAndLaunch(ProjectileLaunchHandler launchProjectile)
+    {
+        return (IProjectile projectile, in ProjectileLaunchContext context) =>
+        {
+            if (projectile is Object projectileObject)
+            {
+                createdObjects.Add(projectileObject);
+            }
+
+            launchProjectile(projectile, context);
+        };
     }
 
     private PropertiesManager CreatePropertiesManager(IReadOnlyList<BasePropData> baseProps)

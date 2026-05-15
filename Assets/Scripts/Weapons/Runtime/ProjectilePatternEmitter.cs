@@ -4,11 +4,6 @@ using UnityEngine;
 
 public delegate void ProjectileLaunchHandler(IProjectile projectile, in ProjectileLaunchContext context);
 
-public delegate Projectile ProjectileFactoryHandler(
-    ProjectileDefinitionSO projectileDefinition,
-    Vector3 position,
-    Quaternion rotation);
-
 public readonly struct ProjectilePatternEmissionContext
 {
     public IProjectileLauncher Launcher { get; }
@@ -21,7 +16,6 @@ public readonly struct ProjectilePatternEmissionContext
     public Func<float> ResolveMaxTravelDistance { get; }
     public ProjectileLaunchHandler LaunchProjectile { get; }
     public Func<IEnumerator, Coroutine> StartCoroutine { get; }
-    public ProjectileFactoryHandler CreateProjectile { get; }
 
     public ProjectilePatternEmissionContext(
         IProjectileLauncher launcher,
@@ -33,8 +27,7 @@ public readonly struct ProjectilePatternEmissionContext
         Func<LayerMask> resolveTargetLayerMask,
         Func<float> resolveMaxTravelDistance,
         ProjectileLaunchHandler launchProjectile,
-        Func<IEnumerator, Coroutine> startCoroutine,
-        ProjectileFactoryHandler createProjectile = null)
+        Func<IEnumerator, Coroutine> startCoroutine)
     {
         Launcher = launcher;
         ResolveSourceEntity = resolveSourceEntity;
@@ -46,9 +39,6 @@ public readonly struct ProjectilePatternEmissionContext
         ResolveMaxTravelDistance = resolveMaxTravelDistance;
         LaunchProjectile = launchProjectile;
         StartCoroutine = startCoroutine;
-        CreateProjectile = createProjectile ??
-                           ((projectileDefinition, position, rotation) =>
-                               ProjectileFactory.CreateProjectile(projectileDefinition, position, rotation));
     }
 
     public void Validate()
@@ -102,11 +92,6 @@ public readonly struct ProjectilePatternEmissionContext
         {
             throw new ArgumentNullException(nameof(StartCoroutine));
         }
-
-        if (CreateProjectile == null)
-        {
-            throw new ArgumentNullException(nameof(CreateProjectile));
-        }
     }
 }
 
@@ -140,7 +125,7 @@ public sealed class ProjectilePatternEmitter
         }
     }
 
-    public IEnumerator CreateBurstRoutine(
+    private IEnumerator CreateBurstRoutine(
         WeaponSequenceProjectileDefinition projectileConfig,
         ProjectilePatternEmissionContext context)
     {
@@ -231,7 +216,7 @@ public sealed class ProjectilePatternEmitter
         WeaponSequenceProjectileDefinition projectileConfig,
         ProjectilePatternEmissionContext context)
     {
-        Projectile projectile = context.CreateProjectile(
+        Projectile projectile = ProjectileFactory.CreateProjectile(
             projectileConfig.ProjectileDefinition,
             origin.Position,
             Quaternion.identity);

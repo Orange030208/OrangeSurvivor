@@ -91,9 +91,15 @@ public class SkeletonBrain : EnemyBrain
 
     protected void ExecuteMeleeAreaAttack(float rangeMultiplier)
     {
+        ExecuteMeleeAreaAttack(rangeMultiplier, 1f);
+    }
+
+    protected void ExecuteMeleeAreaAttack(float rangeMultiplier, float damageMultiplier)
+    {
         Vector2 attackCenter = ResolveMeleeAttackCenter();
         float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
             propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, rangeMultiplier);
+        float damage = ResolveDamage(damageMultiplier);
 
         int hitCount = AreaHitQueryUtility.OverlapFacingSemicircleNonAlloc(
             attackCenter,
@@ -115,7 +121,7 @@ public class SkeletonBrain : EnemyBrain
             HitService.Apply(new HitRequest(
                 owner,
                 hitEntity,
-                HitSpec.EnemyHitSpec(ResolveDamage()),
+                HitSpec.EnemyHitSpec(damage),
                 hitPoint,
                 knockbackDirection,
                 HitSourceKind.Direct,
@@ -160,7 +166,7 @@ public class SkeletonBrain : EnemyBrain
         return attackStrategy.CanUse(target);
     }
 
-    private Vector2 ResolveMeleeAttackCenter()
+    protected Vector2 ResolveMeleeAttackCenter()
     {
         if (meleePointTransform != null)
         {
@@ -192,14 +198,15 @@ public class SkeletonBrain : EnemyBrain
         facingController?.FaceDirection(lockedAttackDirection);
     }
 
-    private Vector2 ResolveLockedAttackDirection()
+    protected Vector2 ResolveLockedAttackDirection()
     {
         return lockedAttackDirection;
     }
 
-    private float ResolveDamage()
+    protected float ResolveDamage(float damageMultiplier = 1f)
     {
-        return PropValueUtility.ClampNonNegative(propertiesManager.GetPropValue(PropType.Attack));
+        return PropValueUtility.ClampNonNegative(
+            propertiesManager.GetPropValue(PropType.Attack) * Mathf.Max(0f, damageMultiplier));
     }
 
     private void RequestIdleOrChaseAfterAttack()
@@ -215,7 +222,7 @@ public class SkeletonBrain : EnemyBrain
             : SkeletonAIState.Chase);
     }
 
-    private static Entity ResolveEntity(Collider2D hitCollider)
+    protected static Entity ResolveEntity(Collider2D hitCollider)
     {
         if (hitCollider == null)
         {

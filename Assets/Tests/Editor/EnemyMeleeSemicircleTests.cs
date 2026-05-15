@@ -8,7 +8,11 @@ using Object = UnityEngine.Object;
 public sealed class EnemyMeleeSemicircleTests
 {
     private const string SKELETON_PREFAB_PATH = "Assets/GameContent/Enemies/Prefabs/Skeleton.prefab";
+    private const string EVIL_SLIME_PREFAB_PATH = "Assets/GameContent/Enemies/Prefabs/Evil Slime.prefab";
     private const string SKELETON_METEORHAMMER_PREFAB_PATH = "Assets/GameContent/Enemies/Prefabs/Skeleton Meteorhammer.prefab";
+    private const string SKELETON_METEORHAMMER2_PREFAB_PATH = "Assets/GameContent/Enemies/Prefabs/Skeleton Meteorhammer2.prefab";
+    private const string SKELETON_METEORHAMMER2_ENEMY_PATH = "Assets/GameContent/Enemies/Data/Skeleton Meteorhammer2/SkeletonMeteorhammer2Enemy.asset";
+    private const string SKELETON_METEORHAMMER2_CONTROLLER_PATH = "Assets/GameContent/Enemies/Animations/Skeleton Meteorhammer2/Skeleton Meteorhammer2.controller";
     private const int TEST_LAYER = 30;
     private const int TEST_LAYER_MASK = 1 << TEST_LAYER;
 
@@ -104,8 +108,84 @@ public sealed class EnemyMeleeSemicircleTests
         Assert.IsFalse(strategy.IsTargetInRange(behindAttackPointTarget));
     }
 
+    [Test]
+    public void ForwardBoxIncludesFrontTarget()
+    {
+        Collider2D[] results = new Collider2D[4];
+        TestEntity target = CreateTarget("front_target", new Vector2(1f, 0f));
+        Physics2D.SyncTransforms();
+
+        int hitCount = AreaHitQueryUtility.OverlapForwardBoxNonAlloc(
+            Vector2.zero,
+            2f,
+            0.4f,
+            Vector2.right,
+            results,
+            TEST_LAYER_MASK);
+
+        Assert.AreEqual(1, hitCount);
+        Assert.AreSame(target.EntityCollider, results[0]);
+    }
+
+    [Test]
+    public void ForwardBoxExcludesBehindTarget()
+    {
+        Collider2D[] results = new Collider2D[4];
+        CreateTarget("behind_target", new Vector2(-0.2f, 0f));
+        Physics2D.SyncTransforms();
+
+        int hitCount = AreaHitQueryUtility.OverlapForwardBoxNonAlloc(
+            Vector2.zero,
+            2f,
+            0.4f,
+            Vector2.right,
+            results,
+            TEST_LAYER_MASK);
+
+        Assert.AreEqual(0, hitCount);
+    }
+
+    [Test]
+    public void ForwardBoxExcludesTargetOutsideWidth()
+    {
+        Collider2D[] results = new Collider2D[4];
+        CreateTarget("wide_target", new Vector2(1f, 0.35f));
+        Physics2D.SyncTransforms();
+
+        int hitCount = AreaHitQueryUtility.OverlapForwardBoxNonAlloc(
+            Vector2.zero,
+            2f,
+            0.4f,
+            Vector2.right,
+            results,
+            TEST_LAYER_MASK);
+
+        Assert.AreEqual(0, hitCount);
+    }
+
+    [Test]
+    public void ForwardBoxIncludesTargetOverlappingAttackPoint()
+    {
+        Collider2D[] results = new Collider2D[4];
+        TestEntity target = CreateTarget("overlap_target", Vector2.zero);
+        Physics2D.SyncTransforms();
+
+        int hitCount = AreaHitQueryUtility.OverlapForwardBoxNonAlloc(
+            Vector2.zero,
+            2f,
+            0.4f,
+            Vector2.right,
+            results,
+            TEST_LAYER_MASK);
+
+        Assert.AreEqual(1, hitCount);
+        Assert.AreSame(target.EntityCollider, results[0]);
+    }
+
     [TestCase(SKELETON_PREFAB_PATH, typeof(SkeletonBrain))]
+    [TestCase(EVIL_SLIME_PREFAB_PATH, typeof(SkeletonBrain))]
     [TestCase(SKELETON_METEORHAMMER_PREFAB_PATH, typeof(SkeletonMeteorhammerBrain))]
+    [TestCase(SKELETON_METEORHAMMER2_PREFAB_PATH, typeof(SkeletonMeteorhammer2Brain))]
     public void SkeletonPrefabsBindForwardMeleePoint(string prefabPath, System.Type brainType)
     {
         GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
@@ -126,6 +206,19 @@ public sealed class EnemyMeleeSemicircleTests
         {
             PrefabUtility.UnloadPrefabContents(root);
         }
+    }
+
+    [Test]
+    public void SkeletonMeteorhammer2EnemyAssetReferencesMeteorhammer2PrefabAndController()
+    {
+        SkeletonMeteorhammer2EnemySO enemyData = AssetDatabase.LoadAssetAtPath<SkeletonMeteorhammer2EnemySO>(SKELETON_METEORHAMMER2_ENEMY_PATH);
+        Assert.NotNull(enemyData);
+        Assert.NotNull(enemyData.prefab);
+        Assert.NotNull(enemyData.AnimConfig);
+        Assert.NotNull(enemyData.AnimConfig.AnimatorController);
+
+        Assert.AreEqual(SKELETON_METEORHAMMER2_PREFAB_PATH, AssetDatabase.GetAssetPath(enemyData.prefab));
+        Assert.AreEqual(SKELETON_METEORHAMMER2_CONTROLLER_PATH, AssetDatabase.GetAssetPath(enemyData.AnimConfig.AnimatorController));
     }
 
     private TestEntity CreateTarget(string name, Vector2 position)

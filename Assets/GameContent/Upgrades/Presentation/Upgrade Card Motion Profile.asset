@@ -18,6 +18,8 @@ MonoBehaviour:
   pressClipId: Press
   releaseClipId: Release
   selectClipId: ClickPulse
+  selectedClaimClipId: SelectedClaim
+  rejectedSubmitClipId: RejectedRipFall
   restClipId: Visible
   refreshDefaultsOnConfigure: 1
   resetToRestClipWhenInterrupted: 1

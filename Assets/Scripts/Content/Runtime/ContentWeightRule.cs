@@ -100,9 +100,14 @@ public sealed class PlayerPropertyScaleWeightRule : ContentWeightRule
     {
         float propertyValue = context != null ? context.GetPropertyValue(propType) : 0f;
         float multiplier = 1f + propertyValue * weightPerPoint;
-        if (maxMultiplier > minMultiplier)
+        float resolvedMinMultiplier = Mathf.Max(0f, minMultiplier);
+        if (maxMultiplier > resolvedMinMultiplier)
         {
-            multiplier = Mathf.Clamp(multiplier, minMultiplier, maxMultiplier);
+            multiplier = Mathf.Clamp(multiplier, resolvedMinMultiplier, maxMultiplier);
+        }
+        else
+        {
+            multiplier = Mathf.Max(resolvedMinMultiplier, multiplier);
         }
 
         return currentWeight * Mathf.Max(0f, multiplier);

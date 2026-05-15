@@ -102,6 +102,14 @@ public sealed class GameContentNumericAssetTests
             new ExpectedProp(PropType.MoveSpeed, 380f),
             new ExpectedProp(PropType.AttackRange, 160f));
         AssertEnemyProps(
+            "Assets/GameContent/Enemies/Data/Evil Slime/EvilSlimePropGroup.asset",
+            new ExpectedProp(PropType.Attack, 12f),
+            new ExpectedProp(PropType.AttackSpeed, 85f),
+            new ExpectedProp(PropType.MaxHealth, 28f),
+            new ExpectedProp(PropType.DetectionRange, 500f),
+            new ExpectedProp(PropType.MoveSpeed, 430f),
+            new ExpectedProp(PropType.AttackRange, 130f));
+        AssertEnemyProps(
             "Assets/GameContent/Enemies/Data/Skeleton Meteorhammer/SkeletonMeteorhammerPropGroup.asset",
             new ExpectedProp(PropType.Attack, 20f),
             new ExpectedProp(PropType.AttackSpeed, 60f),
@@ -238,7 +246,7 @@ public sealed class GameContentNumericAssetTests
         for (int i = 0; i < modifiers.Count; i++)
         {
             PropType propType = modifiers[i].propType;
-            if (propType is PropType.WeaponSlotCount or PropType.ProjectileCount or PropType.ProjectilePierceCount)
+            if (propType is PropType.WeaponSlotCount or PropType.ProjectilePierceCount)
             {
                 return true;
             }
@@ -268,7 +276,6 @@ public sealed class GameContentNumericAssetTests
             PropType.Dodge => 33f,
             PropType.LifeSteal => 40f,
             PropType.PickupRadius => 8f,
-            PropType.ProjectileCount => 300f,
             PropType.ProjectileSpeed => 5f,
             PropType.AttackRange => 10f,
             PropType.ProjectilePierceCount => 200f,

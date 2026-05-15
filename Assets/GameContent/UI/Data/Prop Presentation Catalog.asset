@@ -65,10 +65,6 @@ MonoBehaviour:
     chineseName: "\u62FE\u53D6\u534A\u5F84"
     description: 
     icon: {fileID: 21300000, guid: bbe0b02a1d61ce14c895d55d1e0c7194, type: 3}
-  - propType: 13
-    chineseName: "\u5F39\u4F53\u6570\u91CF"
-    description: 
-    icon: {fileID: 21300000, guid: 343f01de37975e848a260f5c0943e49f, type: 3}
   - propType: 14
     chineseName: "\u5F39\u4F53\u901F\u5EA6"
     description: 

@@ -35,20 +35,4 @@ MonoBehaviour:
     value: 1000
   specialFeatures:
   - rid: 7274045950615355394
-  initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 4
-  - weaponData: {fileID: 11400000, guid: 64adce1de1ee2f74ba9c6d80f871c170, type: 2}
-    level: 4
-  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 4
-  - weaponData: {fileID: 11400000, guid: 0b9e96c5ed712084ab9f198567ffc886, type: 2}
-    level: 4
-  initialAccessories: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 7274045950615355394
-      type: {class: ForceCriticalFeature, ns: , asm: Assembly-CSharp}
-      data:
-        hitModifierTiming: 0
+  initialWeapons: []

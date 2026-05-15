@@ -32,8 +32,7 @@ public class HitStartModifier : IHitModifier
                 PropType.Dodge,
                 propertiesManager.GetPropValue(PropType.Dodge));
             float armorReduction = PropValueUtility.ResolveArmorDamageReductionRatio(
-                propertiesManager.GetPropValue(PropType.Armor),
-                hitContext.ArmorPenetrationPercent);
+                propertiesManager.GetPropValue(PropType.Armor));
             float damageReduction = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.DamageReduction,
                 propertiesManager.GetPropValue(PropType.DamageReduction));

@@ -38,26 +38,4 @@ MonoBehaviour:
     value: 5
   specialFeatures:
   - rid: 451546934818111488
-  - rid: 451546934818111493
-  initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
-    level: 2
-  initialAccessories: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 451546934818111488
-      type: {class: ForceCriticalFeature, ns: , asm: Assembly-CSharp}
-      data:
-        hitModifierTiming: 0
-    - rid: 451546934818111493
-      type: {class: LowHealthExplosionFeature, ns: , asm: Assembly-CSharp}
-      data:
-        hitModifierTiming: 1
-        healthThreshold: 1
-        cooldown: 10
-        explosionRadius: 10
-        explosionDamage: 10
-        enemyLayerMask:
-          serializedVersion: 2
-          m_Bits: 64
+  initialWeapons: []

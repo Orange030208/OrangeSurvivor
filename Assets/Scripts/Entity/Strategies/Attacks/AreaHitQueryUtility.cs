@@ -83,4 +83,33 @@ public static class AreaHitQueryUtility
 
         return Vector2.Dot(normalizedFacingDirection, centerToTarget) >= 0f;
     }
+
+    public static int OverlapForwardBoxNonAlloc(
+        Vector2 nearCenter,
+        float length,
+        float width,
+        Vector2 facingDirection,
+        Collider2D[] results,
+        LayerMask layerMask)
+    {
+        if (results == null || length <= 0f || width <= 0f)
+        {
+            return 0;
+        }
+
+        Vector2 direction = ResolveHorizontalDirection(facingDirection);
+        Vector2 boxCenter = nearCenter + direction * (length * 0.5f);
+        Vector2 size = new(length, width);
+        return Physics2D.OverlapBoxNonAlloc(boxCenter, size, 0f, results, layerMask);
+    }
+
+    private static Vector2 ResolveHorizontalDirection(Vector2 facingDirection)
+    {
+        if (facingDirection.sqrMagnitude <= MIN_DIRECTION_SQR_MAGNITUDE)
+        {
+            return Vector2.right;
+        }
+
+        return facingDirection.x < 0f ? Vector2.left : Vector2.right;
+    }
 }

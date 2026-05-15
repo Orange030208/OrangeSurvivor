@@ -52,10 +52,16 @@ public class AccessoryManager : EntityComponentBase
             return false;
         }
 
-        if (!equippedAccessoryDict.TryGetValue(accessoryData.AccessoryId, out var dictList))
+        if (!CanEquipAccessory(accessoryData))
+        {
+            return false;
+        }
+
+        string accessoryKey = GetAccessoryKey(accessoryData);
+        if (!equippedAccessoryDict.TryGetValue(accessoryKey, out var dictList))
         {
             dictList = new List<RuntimeAccessoryData>();
-            equippedAccessoryDict[accessoryData.AccessoryId] = dictList;
+            equippedAccessoryDict[accessoryKey] = dictList;
         }
 
         var newAccessoryData = new RuntimeAccessoryData(accessoryData);
@@ -74,6 +80,47 @@ public class AccessoryManager : EntityComponentBase
         return true;
     }
 
+    public int GetEquippedCount(AccessoryDataSO accessoryData)
+    {
+        if (accessoryData == null)
+        {
+            return 0;
+        }
+
+        if (!string.IsNullOrWhiteSpace(accessoryData.AccessoryId))
+        {
+            return GetEquippedCount(accessoryData.AccessoryId);
+        }
+
+        int count = 0;
+        for (int i = 0; i < equippedAccessoryList.Count; i++)
+        {
+            if (equippedAccessoryList[i].AccessoryData == accessoryData)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int GetEquippedCount(string accessoryId)
+    {
+        if (string.IsNullOrWhiteSpace(accessoryId))
+        {
+            return 0;
+        }
+
+        return equippedAccessoryDict.TryGetValue(accessoryId, out List<RuntimeAccessoryData> dictList)
+            ? dictList.Count
+            : 0;
+    }
+
+    public bool CanEquipAccessory(AccessoryDataSO accessoryData)
+    {
+        return accessoryData != null && accessoryData.CanOwnMore(GetEquippedCount(accessoryData));
+    }
+
     public bool UnequipAccessory(AccessoryDataSO accessoryData)
     {
         if (accessoryData == null || featureHost == null || propertiesManager == null)
@@ -81,10 +128,11 @@ public class AccessoryManager : EntityComponentBase
             return false;
         }
 
-        if (!equippedAccessoryDict.TryGetValue(accessoryData.AccessoryId, out var dictList)) return false;
+        string accessoryKey = GetAccessoryKey(accessoryData);
+        if (!equippedAccessoryDict.TryGetValue(accessoryKey, out var dictList)) return false;
         if (dictList.Count == 0)
         {
-            equippedAccessoryDict.Remove(accessoryData.AccessoryId);
+            equippedAccessoryDict.Remove(accessoryKey);
             return false;
         }
 
@@ -93,7 +141,7 @@ public class AccessoryManager : EntityComponentBase
         dictList.RemoveAt(dictList.Count - 1);
         if (dictList.Count == 0)
         {
-            equippedAccessoryDict.Remove(accessoryData.AccessoryId);
+            equippedAccessoryDict.Remove(accessoryKey);
         }
 
         featureHost.RemoveFeature(equipped.RuntimeId);
@@ -104,6 +152,13 @@ public class AccessoryManager : EntityComponentBase
 
         OnAccessoryUnequipped?.Invoke(equipped.AccessoryData);
         return true;
+    }
+
+    private static string GetAccessoryKey(AccessoryDataSO accessoryData)
+    {
+        return !string.IsNullOrWhiteSpace(accessoryData.AccessoryId)
+            ? accessoryData.AccessoryId
+            : accessoryData.GetInstanceID().ToString();
     }
 
     private void ClearEquippedAccessories()

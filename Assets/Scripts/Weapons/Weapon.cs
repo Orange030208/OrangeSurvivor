@@ -510,7 +510,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
                 WeaponTargetingMode.StableLock);
         }
 
-        // 远程武器沿用旧的动态最近目标逻辑，保持既有手感。
+        // 远程武器使用动态最近目标逻辑，保持既有手感。
         return this.FindClosestTargetInRange(Range, targetLayerMask);
     }
 

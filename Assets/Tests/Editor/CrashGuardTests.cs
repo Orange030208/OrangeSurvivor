@@ -33,7 +33,7 @@ public sealed class CrashGuardTests
         PropertiesManager propertiesManager = gameObject.AddComponent<PropertiesManager>();
 
         Assert.DoesNotThrow(() => propertiesManager.Initialize(entity));
-        Assert.AreEqual(1f, propertiesManager.GetPropValue(PropType.ProjectileCount));
+        Assert.AreEqual(1f, propertiesManager.GetPropValue(PropType.ProjectileSpeed));
     }
 
     [Test]
@@ -48,7 +48,7 @@ public sealed class CrashGuardTests
             new Regex(".*no BasePropsGroup.*default base properties.*"));
 
         Assert.DoesNotThrow(() => propertiesManager.Initialize(entity));
-        Assert.AreEqual(1f, propertiesManager.GetPropValue(PropType.ProjectileCount));
+        Assert.AreEqual(1f, propertiesManager.GetPropValue(PropType.ProjectileSpeed));
     }
 
     [Test]

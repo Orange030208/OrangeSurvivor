@@ -145,7 +145,6 @@ public struct PropPresentationEntry
             PropType.Dodge => "闪避",
             PropType.LifeSteal => "生命偷取",
             PropType.PickupRadius => "拾取半径",
-            PropType.ProjectileCount => "弹体数量",
             PropType.ProjectileSpeed => "弹体速度",
             PropType.ProjectilePierceCount => "弹射物穿透数量",
             PropType.WeaponSlotCount => "武器槽位数量",

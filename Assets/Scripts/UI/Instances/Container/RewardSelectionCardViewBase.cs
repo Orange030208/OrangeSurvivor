@@ -39,6 +39,8 @@ public abstract class RewardSelectionCardViewBase :
     private bool isPointerPressed;
     private bool currentOptionInteractable;
     private bool wasRaycastBlockingBeforeSubmit = true;
+    private bool hasCurrentPresentationProfile;
+    private CardQualityPresentationProfile currentPresentationProfile;
 
     protected abstract RewardOptionKind ExpectedKind { get; }
     protected virtual string ExpectedKindDescription => ExpectedKind.ToString();
@@ -55,6 +57,8 @@ public abstract class RewardSelectionCardViewBase :
     public void Configure(RewardSelectionCardBinding resource)
     {
         containerIndex = resource.Index;
+        hasCurrentPresentationProfile = false;
+        currentPresentationProfile = default;
         IRewardCardPresentation option = resource.Card;
         if (option == null)
         {
@@ -74,6 +78,8 @@ public abstract class RewardSelectionCardViewBase :
             out presentationProfile);
         if (hasPresentationProfile)
         {
+            hasCurrentPresentationProfile = true;
+            currentPresentationProfile = presentationProfile;
             ApplyQualityVisual(presentationProfile);
         }
 
@@ -86,16 +92,7 @@ public abstract class RewardSelectionCardViewBase :
         CleanClickEvent();
         OnClicked += _ =>
         {
-            if (!currentOptionInteractable)
-            {
-                return;
-            }
-
-            if (hasPresentationProfile)
-            {
-                PlaySelectSfx(presentationProfile);
-            }
-
+            PlayCurrentSelectionFeedback();
             resource.OptionSelected?.Invoke(resource.Index, option.OptionId);
         };
     }
@@ -192,7 +189,11 @@ public abstract class RewardSelectionCardViewBase :
     public void OnPointerClick(PointerEventData eventData)
     {
         CardMotionController motionController = GetMotion();
-        if (isSubmitting || interactionLocked || !CanReceivePointerInteraction(motionController) || !IsLeftButton(eventData))
+        if (!currentOptionInteractable ||
+            isSubmitting ||
+            interactionLocked ||
+            !CanReceivePointerInteraction(motionController) ||
+            !IsLeftButton(eventData))
         {
             return;
         }
@@ -204,6 +205,7 @@ public abstract class RewardSelectionCardViewBase :
 
         if (submitRequested != null)
         {
+            PlayCurrentSelectionFeedback();
             submitRequested.Invoke(containerIndex, optionId);
             return;
         }
@@ -303,6 +305,14 @@ public abstract class RewardSelectionCardViewBase :
     private void RaiseClicked(PointerEventData eventData)
     {
         OnClicked?.Invoke(eventData);
+    }
+
+    private void PlayCurrentSelectionFeedback()
+    {
+        if (hasCurrentPresentationProfile)
+        {
+            PlaySelectSfx(currentPresentationProfile);
+        }
     }
 
     private void OnDisable()

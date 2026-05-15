@@ -91,12 +91,15 @@ public sealed class RunProgressionTests
     [Test]
     public void WeaponPriceUsesConfiguredLevelMultiplierTable()
     {
+        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(1), Is.EqualTo(1f).Within(0.0001f));
+        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(2), Is.EqualTo(1.6f).Within(0.0001f));
+        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(3), Is.EqualTo(3.6f).Within(0.0001f));
+        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(4), Is.EqualTo(7.2f).Within(0.0001f));
         Assert.AreEqual(20, WeaponPriceHelper.GetPrice(20, 1));
         Assert.AreEqual(32, WeaponPriceHelper.GetPrice(20, 2));
         Assert.AreEqual(72, WeaponPriceHelper.GetPrice(20, 3));
         Assert.AreEqual(144, WeaponPriceHelper.GetPrice(20, 4));
         Assert.AreEqual(180, WeaponPriceHelper.GetPrice(25, 4));
-        Assert.That(WeaponPriceHelper.GetLevelPriceMultiplier(4), Is.EqualTo(7.2f).Within(0.0001f));
     }
 
     [Test]
@@ -107,6 +110,71 @@ public sealed class RunProgressionTests
         int price = ShopPricingService.GetPrice(weapon, 3, 1.5f, 2f, 1f);
 
         Assert.AreEqual(216, price);
+    }
+
+    [Test]
+    public void DropSourceRulesFallbackToOneExperienceAndNoDropWithoutRule()
+    {
+        DropSourceInfo sourceInfo = new("Normal", "Enemy_Test");
+
+        Assert.AreEqual(1, DropManager.ResolveKillExperience(sourceInfo, null));
+
+        DropManager dropManager = CreateGameObject("Drop Manager").AddComponent<DropManager>();
+
+        Assert.IsNull(dropManager.RollDropForSource(sourceInfo, null, 1));
+    }
+
+    [Test]
+    public void DropSourceRuleSelectsMostSpecificRuleAndAppliesLuckChanceCap()
+    {
+        DropSourceInfo sourceInfo = new("Normal", "Enemy_Test");
+        DropSourceRuleData genericRule = new("Normal", string.Empty, 2, 0.1f, 0.5f, null);
+        DropSourceRuleData specificRule = new("Normal", "Enemy_Test", 3, 0.5f, 0.75f, null);
+
+        DropSourceRuleData resolvedRule = DropManager.ResolveSourceRule(
+            sourceInfo,
+            new[] { genericRule, specificRule });
+
+        Assert.AreSame(specificRule, resolvedRule);
+        Assert.AreEqual(3, DropManager.ResolveKillExperience(sourceInfo, new[] { genericRule, specificRule }));
+        Assert.That(specificRule.EvaluateDropChance(0f), Is.EqualTo(0.5f).Within(0.0001f));
+        Assert.That(specificRule.EvaluateDropChance(1000f), Is.EqualTo(0.75f).Within(0.0001f));
+        Assert.That(specificRule.EvaluateDropChance(-1000f), Is.EqualTo(0f).Within(0.0001f));
+    }
+
+    [Test]
+    public void DropManagerRollsConfiguredProductAndUsesLuckWeightedProducts()
+    {
+        DropManager dropManager = CreateGameObject("Drop Manager").AddComponent<DropManager>();
+        TestEntity source = CreateGameObject("Drop Source").AddComponent<TestEntity>();
+        PropertiesManager propertiesManager = source.gameObject.AddComponent<PropertiesManager>();
+        propertiesManager.Initialize(source);
+        CollectionSO commonDrop = ScriptableObject.CreateInstance<CollectionSO>();
+        CollectionSO luckyDrop = ScriptableObject.CreateInstance<CollectionSO>();
+        createdObjects.Add(commonDrop);
+        createdObjects.Add(luckyDrop);
+        DropSourceInfo sourceInfo = new("Normal", "Enemy_Test");
+        DropSourceRuleData rule = new(
+            "Normal",
+            "Enemy_Test",
+            1,
+            1f,
+            1f,
+            new[]
+            {
+                new DropProductRuleData(commonDrop, 100f, 0f),
+                new DropProductRuleData(luckyDrop, 1f, 250f)
+            });
+        SetPrivateField(dropManager, "dropRules", new List<DropSourceRuleData> { rule });
+        SetPrivateField(dropManager, "random", new FixedContentRandom(0f));
+
+        SetPrivateField(dropManager, "contentPoolRollService", new ContentPoolRollService(new FixedContentRandom(0.9f)));
+        Assert.AreSame(commonDrop, dropManager.RollDropForSource(sourceInfo, source, 1));
+
+        propertiesManager.AddModifier("luck", new PropModifierData(PropType.Luck, 100f));
+
+        SetPrivateField(dropManager, "contentPoolRollService", new ContentPoolRollService(new FixedContentRandom(0.9f)));
+        Assert.AreSame(luckyDrop, dropManager.RollDropForSource(sourceInfo, source, 1));
     }
 
     [Test]
@@ -253,5 +321,25 @@ public sealed class RunProgressionTests
 
     private sealed class TestEntity : Entity
     {
+    }
+
+    private sealed class FixedContentRandom : IContentRandom
+    {
+        private readonly float value;
+
+        public FixedContentRandom(float value)
+        {
+            this.value = value;
+        }
+
+        public float Value01()
+        {
+            return value;
+        }
+
+        public int Range(int minInclusive, int maxExclusive)
+        {
+            return minInclusive;
+        }
     }
 }

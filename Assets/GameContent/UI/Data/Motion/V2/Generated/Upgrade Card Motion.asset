@@ -91,6 +91,29 @@ MonoBehaviour:
     - rid: 590100000000000021
     - rid: 590100000000000022
     - rid: 590100000000000023
+  - clipId: SelectedClaim
+    channel: Submit
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 7274046004401012736
+    - rid: 7274046004401012737
+    - rid: 7274046004401012738
+  - clipId: RejectedRipFall
+    channel: Submit
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 7274046004401012739
+    - rid: 7274046004401012740
+    - rid: 7274046004401012741
+    - rid: 7274046004401012742
+    - rid: 7274046004401012743
+    - rid: 7274046004401012744
+    - rid: 7274046004401012745
+    - rid: 7274046004401012746
   references:
     version: 2
     RefIds:
@@ -347,3 +370,140 @@ MonoBehaviour:
         fromValue: 1
         toMode: 2
         toValue: 1
+    - rid: 7274046004401012736
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.34
+        ease: 9
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 72}
+    - rid: 7274046004401012737
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.34
+        ease: 27
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.18, y: 1.18, z: 1}
+    - rid: 7274046004401012738
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.34
+        ease: 9
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 1
+    - rid: 7274046004401012739
+      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: RipFx
+        startDelay: 0
+        duration: 0.34
+        ease: 1
+        frames:
+        - {fileID: 649980347, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -1154041280, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 1646878774, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 636103066, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -1652945887, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 1609269599, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 760062519, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -358124235, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -1859382131, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -1807282069, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: -149105842, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 1422107130, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        - {fileID: 1577984660, guid: cd5ef65fb4af50a46aa17f497f85e102, type: 3}
+        reverse: 0
+        keepLastFrameOnComplete: 1
+        setNativeSizeIfEmpty: 0
+        timingMode: 1
+        framesPerSecond: 24
+        frameEvents: []
+    - rid: 7274046004401012740
+      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: RipFx
+        startDelay: 0
+        duration: 0.1
+        ease: 9
+        fromMode: 2
+        fromValue: {r: 0, g: 0, b: 0, a: 0}
+        toMode: 2
+        toValue: {r: 1, g: 1, b: 1, a: 1}
+    - rid: 7274046004401012741
+      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: RipFx
+        startDelay: 0.42
+        duration: 0.14
+        ease: 8
+        fromMode: 2
+        fromValue: {r: 1, g: 1, b: 1, a: 1}
+        toMode: 2
+        toValue: {r: 0, g: 0, b: 0, a: 0}
+    - rid: 7274046004401012742
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: VisualRoot
+        startDelay: 0.08
+        duration: 0.18
+        ease: 9
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0.16
+    - rid: 7274046004401012743
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0.22
+        duration: 0.52
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: -820}
+    - rid: 7274046004401012744
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0.22
+        duration: 0.52
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: -8}
+    - rid: 7274046004401012745
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0.22
+        duration: 0.52
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.92, y: 0.92, z: 1}
+    - rid: 7274046004401012746
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0.5
+        duration: 0.22
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0

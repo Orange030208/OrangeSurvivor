@@ -1,13 +1,27 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class ContentPoolTests
 {
+    private readonly List<Object> createdObjects = new();
+
     [TearDown]
     public void TearDown()
     {
         ContentPoolModifierRegistry.ClearForTests();
+        for (int i = createdObjects.Count - 1; i >= 0; i--)
+        {
+            if (createdObjects[i] != null)
+            {
+                Object.DestroyImmediate(createdObjects[i]);
+            }
+        }
+
+        createdObjects.Clear();
     }
 
     [Test]
@@ -79,6 +93,58 @@ public class ContentPoolTests
         {
             Assert.AreEqual(first.Items[i].EntryId, second.Items[i].EntryId);
         }
+    }
+
+    [Test]
+    public void PlayerPropertyScaleWeightRuleCanUseLowerBoundWithoutUpperBound()
+    {
+        TestAccessoryEntity owner = CreateAccessoryOwner("luck_weight_owner");
+        PropertiesManager propertiesManager = owner.GetComponent<PropertiesManager>();
+        Object target = ScriptableObject.CreateInstance<ContentPoolSO>();
+        createdObjects.Add(target);
+        ContentPoolEntry entry = new(target, 10f, "target");
+        entry.ConfigureRuntimeRules(
+            null,
+            new ContentWeightRule[]
+            {
+                new PlayerPropertyScaleWeightRule(PropType.Luck, 0.01f, 0.5f, 0f)
+            });
+        ContentPoolSO pool = CreatePool(new[] { entry }, 1, false);
+
+        propertiesManager.AddModifier("positive_luck", new PropModifierData(PropType.Luck, 1000f));
+        ContentRollResult positiveResult = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic, source: owner), 1);
+
+        propertiesManager.RemoveModifiers("positive_luck");
+        propertiesManager.AddModifier("negative_luck", new PropModifierData(PropType.Luck, -1000f));
+        ContentRollResult negativeResult = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic, source: owner), 1);
+
+        Assert.AreEqual(110f, positiveResult.Items[0].FinalWeight);
+        Assert.AreEqual(5f, negativeResult.Items[0].FinalWeight);
+    }
+
+    [Test]
+    public void PlayerPropertyScaleWeightRuleCanReduceLowTierWeightToLowerBound()
+    {
+        TestAccessoryEntity owner = CreateAccessoryOwner("negative_luck_weight_owner");
+        PropertiesManager propertiesManager = owner.GetComponent<PropertiesManager>();
+        Object target = ScriptableObject.CreateInstance<ContentPoolSO>();
+        createdObjects.Add(target);
+        ContentPoolEntry entry = new(target, 10f, "target");
+        entry.ConfigureRuntimeRules(
+            null,
+            new ContentWeightRule[]
+            {
+                new PlayerPropertyScaleWeightRule(PropType.Luck, -0.4f / 250f, 0.5f, 0f)
+            });
+        ContentPoolSO pool = CreatePool(new[] { entry }, 1, false);
+
+        propertiesManager.AddModifier("high_luck", new PropModifierData(PropType.Luck, 1000f));
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, new ContentRollContext(ContentPoolScopeIds.Generic, source: owner), 1);
+
+        Assert.AreEqual(5f, result.Items[0].FinalWeight);
     }
 
     [Test]
@@ -279,6 +345,87 @@ public class ContentPoolTests
     }
 
     [Test]
+    public void AccessoryOwnedLimitConditionFiltersAlreadyOwnedAccessory()
+    {
+        TestAccessoryEntity owner = CreateAccessoryOwner("accessory_owner");
+        AccessoryManager accessoryManager = owner.GetComponent<AccessoryManager>();
+        AccessoryDataSO limitedAccessory = CreateAccessory("limited_accessory", 1);
+        AccessoryDataSO fallbackAccessory = CreateAccessory("fallback_accessory", 0);
+        ContentPoolEntry limitedEntry = CreateAccessoryEntry(limitedAccessory, 100f);
+        ContentPoolEntry fallbackEntry = CreateAccessoryEntry(fallbackAccessory, 1f);
+        ContentPoolSO pool = CreatePool(
+            new[] { limitedEntry, fallbackEntry },
+            1,
+            false);
+
+        Assert.IsTrue(accessoryManager.EquipAccessory(limitedAccessory, false));
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(
+                pool,
+                new ContentRollContext(ContentPoolScopeIds.ChestReward, source: owner),
+                1);
+
+        Assert.AreEqual(1, result.Items.Count);
+        Assert.AreSame(fallbackAccessory, result.Items[0].Content);
+    }
+
+    [Test]
+    public void AccessoryOwnedLimitConditionPreventsSameLimitedAccessoryInSingleRoll()
+    {
+        AccessoryDataSO accessory = CreateAccessory("single_roll_unique_accessory", 1);
+        ContentPoolEntry entry = CreateAccessoryEntry(accessory, 1f);
+        ContentPoolSO pool = CreatePool(new[] { entry }, 2, true);
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(
+                pool,
+                new ContentRollContext(ContentPoolScopeIds.ChestReward),
+                2);
+
+        Assert.AreEqual(1, result.Items.Count);
+    }
+
+    [Test]
+    public void AccessoryOwnedLimitConditionAllowsUnlimitedAccessoryDuplicates()
+    {
+        AccessoryDataSO accessory = CreateAccessory("unlimited_accessory", 0);
+        ContentPoolEntry entry = CreateAccessoryEntry(accessory, 1f);
+        ContentPoolSO pool = CreatePool(new[] { entry }, 2, true);
+
+        ContentRollResult result = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(
+                pool,
+                new ContentRollContext(ContentPoolScopeIds.ChestReward),
+                2);
+
+        Assert.AreEqual(2, result.Items.Count);
+    }
+
+    [Test]
+    public void AccessoryManagerRejectsEquipWhenOwnedLimitReached()
+    {
+        TestAccessoryEntity owner = CreateAccessoryOwner("accessory_limit_owner");
+        AccessoryManager accessoryManager = owner.GetComponent<AccessoryManager>();
+        PropertiesManager propertiesManager = owner.GetComponent<PropertiesManager>();
+        AccessoryDataSO accessory = CreateAccessory(
+            "limited_stat_accessory",
+            1,
+            new[] { new PropModifierData(PropType.MaxHealth, 10f) });
+
+        Assert.IsTrue(accessoryManager.EquipAccessory(accessory, false));
+        Assert.AreEqual(1, accessoryManager.GetEquippedCount(accessory));
+        Assert.IsFalse(accessoryManager.CanEquipAccessory(accessory));
+        Assert.AreEqual(10f, propertiesManager.GetPropValue(PropType.MaxHealth));
+
+        Assert.IsFalse(accessoryManager.EquipAccessory(accessory, false));
+
+        Assert.AreEqual(1, accessoryManager.GetEquippedCount(accessory));
+        Assert.AreEqual(1, accessoryManager.EquippedAccessoryList.Count);
+        Assert.AreEqual(10f, propertiesManager.GetPropValue(PropType.MaxHealth));
+    }
+
+    [Test]
     public void WaveSpawnScopeUsesContentPoolModifiers()
     {
         Object target = ScriptableObject.CreateInstance<ContentPoolSO>();
@@ -370,6 +517,60 @@ public class ContentPoolTests
         return card;
     }
 
+    private AccessoryDataSO CreateAccessory(
+        string accessoryId,
+        int maxOwnedCount,
+        IReadOnlyList<PropModifierData> propertyModifiers = null)
+    {
+        AccessoryDataSO accessory = ScriptableObject.CreateInstance<AccessoryDataSO>();
+        accessory.name = accessoryId;
+        createdObjects.Add(accessory);
+        SetPrivateField(accessory, "accessoryId", accessoryId);
+        SetPrivateField(accessory, "itemName", accessoryId);
+        SetPrivateField(accessory, "itemType", ItemType.Accessory);
+        SetPrivateField(accessory, "maxOwnedCount", maxOwnedCount);
+        if (propertyModifiers != null)
+        {
+            SetPrivateField(accessory, "propertyModifiers", new List<PropModifierData>(propertyModifiers));
+        }
+
+        return accessory;
+    }
+
+    private static ContentPoolEntry CreateAccessoryEntry(AccessoryDataSO accessory, float weight)
+    {
+        ContentPoolEntry entry = new(accessory, weight, accessory.AccessoryId);
+        entry.ConfigureRuntimeRules(new ContentCondition[] { new AccessoryOwnedLimitCondition() }, null);
+        return entry;
+    }
+
+    private TestAccessoryEntity CreateAccessoryOwner(string name)
+    {
+        GameObject gameObject = new(name);
+        createdObjects.Add(gameObject);
+        TestAccessoryEntity entity = gameObject.AddComponent<TestAccessoryEntity>();
+        PropertiesManager propertiesManager = gameObject.AddComponent<PropertiesManager>();
+        FeatureHost featureHost = gameObject.AddComponent<FeatureHost>();
+        AccessoryManager accessoryManager = gameObject.AddComponent<AccessoryManager>();
+
+        propertiesManager.Initialize(entity);
+        featureHost.Initialize(entity);
+        accessoryManager.Initialize(entity);
+        return entity;
+    }
+
+    private static void SetPrivateField(object target, string fieldName, object value)
+    {
+        FieldInfo field = null;
+        for (Type type = target.GetType(); type != null && field == null; type = type.BaseType)
+        {
+            field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+        }
+
+        Assert.IsNotNull(field, $"Missing private field '{fieldName}' on {target.GetType().Name}.");
+        field.SetValue(target, value);
+    }
+
     private static ContentPoolSO CreatePool(
         IReadOnlyList<ContentPoolEntry> entries,
         int rollCount,
@@ -378,6 +579,11 @@ public class ContentPoolTests
         ContentPoolSO pool = ScriptableObject.CreateInstance<ContentPoolSO>();
         pool.Initialize(entries, rollCount, allowDuplicateResults);
         return pool;
+    }
+
+    private sealed class TestAccessoryEntity : Entity, IFeatureEffectsProvider
+    {
+        public IReadOnlyList<FeatureEffectBase> FeatureEffects => Array.Empty<FeatureEffectBase>();
     }
 
     private sealed class TestAssetWeightModifier : IContentPoolModifier

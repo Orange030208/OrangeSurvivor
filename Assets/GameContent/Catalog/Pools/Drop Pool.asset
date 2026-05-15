@@ -39,6 +39,6 @@ MonoBehaviour:
       type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
       data:
         propType: 9
-        weightPerPoint: 0.01
-        minMultiplier: 0
-        maxMultiplier: 100
+        weightPerPoint: 0.0032
+        minMultiplier: 0.5
+        maxMultiplier: 0

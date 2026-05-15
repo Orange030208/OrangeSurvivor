@@ -194,7 +194,8 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
             bossData.ShootAttackSpeedBenefitRatio,
             shootDetectionStrategy,
             shootPointTransform,
-            bossData.ShootProjectileDefinition);
+            bossData.ShootProjectileDefinition,
+            bossData.ShootRangeMultiplier);
     }
 
     private void BindSharedVariables()

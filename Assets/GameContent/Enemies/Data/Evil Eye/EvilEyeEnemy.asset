@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 591c33237c92d23438fa02b3ad9b72cb, type: 3}
+  m_Name: EvilEyeEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6918986240475316294, guid: 0238205bc331a344f99a18732d3719a3, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 406e33a07266fc44ea5845e9461a8b79, type: 2}
+  animConfig: {fileID: 11400000, guid: ae493bda5bce91a42a4eeaddc5bde3ae, type: 2}
+  damagedSfxKey: 400
+  retreatTriggerDistance: 4
+  retreatCompleteDistance: 6
+  attackAction:
+    actionId: Worm_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.58
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  retreatAttackAction:
+    actionId: Worm_RetreatAttack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.58
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  attackCommitNormalizedTime: 0.58
+  attackSpeedBenefitRatio: 0.55
+  attackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  retreatAttackSpeedBenefitRatio: 0.55
+  retreatAttackProjectileDefinition: {fileID: 11400000, guid: 46dc791f3b7c9974bba6d74b2ced2627, type: 2}
+  retreatMovement:
+    safeDistanceRatio: 1
+    retreatStepDistanceRatio: 0.42857143

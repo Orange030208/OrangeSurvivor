@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GolemMechaStoneArmProjectile
       objectReference: {fileID: 0}
+    - target: {fileID: 6368522929002085402, guid: c6bd5914f8cc08249b86a9dee2d596e3, type: 3}
+      propertyPath: m_Name
+      value: Render
+      objectReference: {fileID: 0}
     - target: {fileID: 8159730140199281861, guid: c6bd5914f8cc08249b86a9dee2d596e3, type: 3}
       propertyPath: m_Sprite
       value: 

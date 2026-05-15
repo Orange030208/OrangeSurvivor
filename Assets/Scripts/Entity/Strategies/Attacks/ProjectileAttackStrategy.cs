@@ -4,6 +4,7 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
 {
     private readonly Transform firePointTransform;
     private readonly ProjectileDefinitionSO projectileDefinition;
+    private readonly float attackRangeMultiplier;
     private bool hasWarnedMissingFirePoint;
 
     public ProjectileAttackStrategy(
@@ -14,11 +15,13 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
         float attackSpeedBenefitRatio,
         IRangeDetectionStrategy detectionStrategy,
         Transform firePointTransform,
-        ProjectileDefinitionSO projectileDefinition)
+        ProjectileDefinitionSO projectileDefinition,
+        float attackRangeMultiplier = 1f)
         : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio, detectionStrategy)
     {
         this.firePointTransform = firePointTransform;
         this.projectileDefinition = projectileDefinition;
+        this.attackRangeMultiplier = Mathf.Max(0f, attackRangeMultiplier);
     }
 
     protected override bool ExecuteCore(Entity target)
@@ -62,7 +65,7 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
     private float ResolveAttackRange()
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange));
+            propertiesManager.GetPropValue(PropType.AttackRange)) * attackRangeMultiplier;
     }
 
     private Vector3 ResolveFirePointPosition()

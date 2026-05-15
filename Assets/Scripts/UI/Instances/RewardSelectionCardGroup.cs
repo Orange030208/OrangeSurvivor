@@ -180,7 +180,6 @@ public class RewardSelectionCardGroup : ViewPartBase
 
                 if (i == selectedIndex)
                 {
-                    container.transform.SetAsLastSibling();
                     runningTasks.Add(container.PlaySelectedSubmitAsync(cancellationToken));
                     continue;
                 }

@@ -176,8 +176,13 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
+        if (!playerAccessoryManager.EquipAccessory(accessoryData, false))
+        {
+            NotifyPurchaseFailed("Accessory owned limit reached.");
+            return;
+        }
+
         currencyWallet?.ChangeAmount(-price);
-        playerAccessoryManager.EquipAccessory(accessoryData, false);
         RecordShopPick(itemData);
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);

@@ -28,10 +28,4 @@ MonoBehaviour:
     modifierType: 0
     value: 4
   specialFeatures: []
-  initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 043a46c3a048f654a8313bc5063c32d7, type: 2}
-    level: 1
-  initialAccessories: []
-  references:
-    version: 2
-    RefIds: []
+  initialWeapons: []

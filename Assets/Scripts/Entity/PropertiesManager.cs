@@ -354,7 +354,6 @@ public class PropertiesManager : EntityComponentBase, IDescribable
         return propType switch
         {
             PropType.CriticalPercent => 0f,
-            PropType.ProjectileCount => 1f,
             PropType.ProjectileSpeed => 1f,
             PropType.ProjectilePierceCount => 0f,
             PropType.WeaponSlotCount => 0,

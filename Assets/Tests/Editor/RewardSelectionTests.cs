@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public sealed class RewardSelectionTests
 {
@@ -15,6 +16,7 @@ public sealed class RewardSelectionTests
     [TearDown]
     public void TearDown()
     {
+        GameEventBus.Clear();
         for (int i = createdObjects.Count - 1; i >= 0; i--)
         {
             UnityEngine.Object createdObject = createdObjects[i];
@@ -105,6 +107,7 @@ public sealed class RewardSelectionTests
         Assert.AreEqual(1, selected.SelectedSubmitCount);
         Assert.AreEqual(1, first.RejectedSubmitCount);
         Assert.AreEqual(1, third.RejectedSubmitCount);
+        Assert.AreEqual(1, selected.transform.GetSiblingIndex());
         Assert.AreEqual(0, callbackCount);
 
         selected.CompleteSelectedSubmit();
@@ -228,6 +231,82 @@ public sealed class RewardSelectionTests
         Assert.IsNull(selectedOption);
     }
 
+    [Test]
+    public void AccessoryRewardSelectionFailsWithoutRecordingPickWhenOwnedLimitReached()
+    {
+        IRewardSelectionHandler accessoryHandler = EquipmentRewardSelectionHandler.CreateAccessory();
+        TestEntity entity = CreateAccessoryOwner("Accessory Reward Owner");
+        AccessoryManager accessoryManager = entity.GetComponent<AccessoryManager>();
+        AccessoryDataSO accessory = CreateAccessory("limited_reward_accessory", 1);
+        ContentPoolEntry entry = new(accessory, 1f, accessory.AccessoryId);
+        ContentRollItem rollItem = new(entry, accessory, 1f);
+        RewardSelectionHandlerContext context = new(
+            null,
+            null,
+            accessoryManager,
+            null,
+            new ContentHistoryState(),
+            1,
+            null,
+            CreateContentPool("Chest Reward Test Pool"),
+            null,
+            null);
+        AccessoryRewardSelectionOption option = new(
+            accessory.AccessoryId,
+            accessory,
+            rollItem,
+            CreateAccessoryPresentation(accessory.AccessoryId));
+
+        Assert.IsTrue(accessoryManager.EquipAccessory(accessory, false));
+        LogAssert.Expect(LogType.Warning, "[EquipmentRewardSelectionHandler] Failed to add accessory limited_reward_accessory.");
+
+        bool applied = accessoryHandler.ApplySelection(option, context);
+
+        Assert.IsFalse(applied);
+        Assert.AreEqual(0, context.ContentHistoryState.GetPickCount(
+            context.CreateHistoryScope(context.ChestRewardPool, ContentPoolScopeIds.ChestReward),
+            accessory.AccessoryId));
+        Assert.AreEqual(1, accessoryManager.GetEquippedCount(accessory));
+    }
+
+    [Test]
+    public void ShopAccessoryPurchaseAtOwnedLimitDoesNotChargeOrRemoveItem()
+    {
+        TestEntity entity = CreateAccessoryOwner("Shop Accessory Owner");
+        AccessoryManager accessoryManager = entity.GetComponent<AccessoryManager>();
+        CurrencyWallet wallet = entity.gameObject.AddComponent<CurrencyWallet>();
+        wallet.Initialize(entity);
+        wallet.SetAmount(100);
+        AccessoryDataSO accessory = CreateAccessory("limited_shop_accessory", 1, 30);
+        ContentPoolEntry entry = new(accessory, 1f, accessory.AccessoryId);
+        ShopItemData shopItem = new()
+        {
+            ItemData = accessory,
+            Level = WeaponLevelHelper.MinLevel,
+            ContentPriceMultiplier = 1f,
+            RunPriceMultiplier = 1f,
+            PlayerDiscountMultiplier = 1f,
+            RollItem = new ContentRollItem(entry, accessory, 1f)
+        };
+        ShopManager shopManager = CreateGameObject("Shop Manager").AddComponent<ShopManager>();
+        SetPrivateField(shopManager, "currencyWallet", wallet);
+        SetPrivateField(shopManager, "currentCurrency", wallet.CurrentAmount);
+        SetPrivateField(shopManager, "currentItems", new[] { shopItem });
+        string failureMessage = null;
+        shopManager.PurchaseFailed += failure => failureMessage = failure.Message;
+
+        Assert.IsTrue(accessoryManager.EquipAccessory(accessory, false));
+
+        shopManager.RequestBuyItem(0);
+
+        Assert.AreEqual("Accessory owned limit reached.", failureMessage);
+        Assert.AreEqual(100, wallet.CurrentAmount);
+        ShopItemData[] currentItems = GetPrivateField<ShopItemData[]>(shopManager, "currentItems");
+        Assert.AreEqual(1, currentItems.Length);
+        Assert.AreSame(accessory, currentItems[0].ItemData);
+        Assert.AreEqual(1, accessoryManager.GetEquippedCount(accessory));
+    }
+
     private GameObject CreateGameObject(string name)
     {
         GameObject gameObject = new(name);
@@ -248,9 +327,30 @@ public sealed class RewardSelectionTests
 
     private static void SetPrivateField(object target, string fieldName, object value)
     {
-        FieldInfo field = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+        FieldInfo field = FindPrivateField(target.GetType(), fieldName);
         Assert.NotNull(field, $"Missing field '{fieldName}' on {target.GetType().Name}.");
         field.SetValue(target, value);
+    }
+
+    private static T GetPrivateField<T>(object target, string fieldName)
+    {
+        FieldInfo field = FindPrivateField(target.GetType(), fieldName);
+        Assert.NotNull(field, $"Missing field '{fieldName}' on {target.GetType().Name}.");
+        return (T)field.GetValue(target);
+    }
+
+    private static FieldInfo FindPrivateField(Type targetType, string fieldName)
+    {
+        for (Type type = targetType; type != null; type = type.BaseType)
+        {
+            FieldInfo field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field != null)
+            {
+                return field;
+            }
+        }
+
+        return null;
     }
 
     private static bool TryResolveSelectedOptionForTests(
@@ -282,6 +382,42 @@ public sealed class RewardSelectionTests
             null,
             null,
             null);
+    }
+
+    private TestEntity CreateAccessoryOwner(string name)
+    {
+        GameObject gameObject = CreateGameObject(name);
+        TestEntity entity = gameObject.AddComponent<TestEntity>();
+        PropertiesManager propertiesManager = gameObject.AddComponent<PropertiesManager>();
+        FeatureHost featureHost = gameObject.AddComponent<FeatureHost>();
+        AccessoryManager accessoryManager = gameObject.AddComponent<AccessoryManager>();
+
+        propertiesManager.Initialize(entity);
+        featureHost.Initialize(entity);
+        accessoryManager.Initialize(entity);
+        return entity;
+    }
+
+    private AccessoryDataSO CreateAccessory(string accessoryId, int maxOwnedCount, int price = 0)
+    {
+        AccessoryDataSO accessory = ScriptableObject.CreateInstance<AccessoryDataSO>();
+        accessory.name = accessoryId;
+        createdObjects.Add(accessory);
+        SetPrivateField(accessory, "accessoryId", accessoryId);
+        SetPrivateField(accessory, "itemName", accessoryId);
+        SetPrivateField(accessory, "itemType", ItemType.Accessory);
+        SetPrivateField(accessory, "itemPrice", price);
+        SetPrivateField(accessory, "maxOwnedCount", maxOwnedCount);
+        return accessory;
+    }
+
+    private ContentPoolSO CreateContentPool(string name)
+    {
+        ContentPoolSO pool = ScriptableObject.CreateInstance<ContentPoolSO>();
+        pool.name = name;
+        createdObjects.Add(pool);
+        pool.Initialize(Array.Empty<ContentPoolEntry>(), 1, false);
+        return pool;
     }
 
     private static UpgradeRewardCardPresentation CreateUpgradePresentation(string optionId)
@@ -346,6 +482,11 @@ public sealed class RewardSelectionTests
         {
             return Enumerable.Empty<DescriptorInfo>();
         }
+    }
+
+    private sealed class TestEntity : Entity, IFeatureEffectsProvider
+    {
+        public IReadOnlyList<FeatureEffectBase> FeatureEffects => Array.Empty<FeatureEffectBase>();
     }
 
     private sealed class TestRewardSelectionCardView : RewardSelectionCardViewBase

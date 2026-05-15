@@ -106,15 +106,9 @@ public static class PropValueUtility
         return Mathf.Max(0f, HealthRecoveryPointsToHealthPerSecond(value));
     }
 
-    public static float ResolveArmorDamageReductionRatio(float armor, float armorPenetrationPercent)
+    public static float ResolveArmorDamageReductionRatio(float armor)
     {
         float effectiveArmor = Mathf.Max(MIN_EFFECTIVE_ARMOR, armor);
-        if (effectiveArmor > 0f && armorPenetrationPercent > 0f)
-        {
-            float armorPenetrationRatio = Mathf.Clamp01(PercentPointsToRatio(armorPenetrationPercent));
-            effectiveArmor *= 1f - armorPenetrationRatio;
-        }
-
         return effectiveArmor / (Mathf.Abs(effectiveArmor) + ARMOR_REDUCTION_SCALE);
     }
 

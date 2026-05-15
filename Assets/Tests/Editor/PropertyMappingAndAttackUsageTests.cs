@@ -127,8 +127,7 @@ public sealed class PropertyMappingAndAttackUsageTests
         Assert.That(PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(-10f), Is.EqualTo(0.1f).Within(0.0001f));
         Assert.That(PropValueUtility.ClampEffectiveCriticalMultiplier(0.5f), Is.EqualTo(1f).Within(0.0001f));
         Assert.That(PropValueUtility.ClampNonNegative(-1f), Is.EqualTo(0f).Within(0.0001f));
-        Assert.That(PropValueUtility.ResolveArmorDamageReductionRatio(25f, 0f), Is.EqualTo(0.5f).Within(0.0001f));
-        Assert.That(PropValueUtility.ResolveArmorDamageReductionRatio(25f, 100f), Is.EqualTo(0f).Within(0.0001f));
+        Assert.That(PropValueUtility.ResolveArmorDamageReductionRatio(25f), Is.EqualTo(0.5f).Within(0.0001f));
         Assert.That(PropValueUtility.CombineDamageReductionRatios(0.8f, 0.8f), Is.EqualTo(0.95f).Within(0.0001f));
         Assert.That(PropValueUtility.FloatPointsToNonNegativeRoundedInt(2.6f), Is.EqualTo(3));
         Assert.That(PropValueUtility.FloatPointsToNonNegativeFlooredInt(2.9f), Is.EqualTo(2));
@@ -427,12 +426,12 @@ public sealed class PropertyMappingAndAttackUsageTests
     }
 
     [Test]
-    public void WeaponBenefitModifierFeatureInstallsAndUninstallsHolderBonus()
+    public void WeaponBenefitBonusModifierFeatureInstallsAndUninstallsHolderBonus()
     {
         GameObject gameObject = CreateGameObject("weapon_usage_feature");
         TestPropertyEntity entity = gameObject.AddComponent<TestPropertyEntity>();
         WeaponsHolder holder = gameObject.AddComponent<WeaponsHolder>();
-        WeaponBenefitModifierFeature feature = new(new WeaponBenefitData(
+        WeaponBenefitBonusModifierFeature feature = new(new WeaponBenefitData(
             attackSpeedBenefitPercent: 50f,
             criticalChanceBenefitPercent: 0f,
             criticalPercentBenefitPercent: 0f,

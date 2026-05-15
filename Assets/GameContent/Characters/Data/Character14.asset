@@ -29,14 +29,4 @@ MonoBehaviour:
     value: 5
   specialFeatures:
   - rid: 451546934818111489
-  initialWeapons:
-  - weaponData: {fileID: 11400000, guid: 39d7087e034941c4fbc7c1a0210a94df, type: 2}
-    level: 1
-  initialAccessories: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 451546934818111489
-      type: {class: ForceCriticalFeature, ns: , asm: Assembly-CSharp}
-      data:
-        hitModifierTiming: 0
+  initialWeapons: []

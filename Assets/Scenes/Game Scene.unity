@@ -25619,9 +25619,6 @@ MonoBehaviour:
   inventoryOperateManager: {fileID: 1941351701}
   shopManager: {fileID: 59292223}
   stageCompleteSummaryManager: {fileID: 1566269878}
-  waveEndSettings:
-    enemyDeathInterval: 0.08
-    projectileReleaseInterval: 0.04
   initialGameState: 1
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
@@ -28698,6 +28695,7 @@ MonoBehaviour:
   player: {fileID: 0}
   upgradeCardPool: {fileID: 0}
   chestRewardPool: {fileID: 0}
+  weaponRewardPool: {fileID: 0}
 --- !u!1 &1566269876
 GameObject:
   m_ObjectHideFlags: 0

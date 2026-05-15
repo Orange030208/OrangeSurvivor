@@ -64,6 +64,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
 
     [Header("射击攻击")]
     [SerializeField, Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] private float shootAttackSpeedBenefitRatio = 0.5f;
+    [Tooltip("射击的释放入场距离和投射物最大飞行距离倍率。近战使用近战倍率，激光使用激光长度配置。")]
     [SerializeField, Min(0f)] private float shootRangeMultiplier = 1f;
     [SerializeField] private ProjectileDefinitionSO shootProjectileDefinition;
 

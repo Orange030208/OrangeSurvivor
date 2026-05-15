@@ -10,6 +10,10 @@ public class AccessoryDataSO : ItemDataSO
 
     [SerializeField] private AccessoryRarity rarity;
 
+    [Header("持有规则")]
+    [Tooltip("0 表示不限持有；1 表示唯一；大于 1 表示最多可同时持有的数量。")]
+    [SerializeField, Min(0)] private int maxOwnedCount;
+
     [Header("属性修饰")]
     [Tooltip("按照属性语义填写。百分比属性与所有乘区统一使用百分比点：1 表示 1%，10 表示 10%。点数属性仍按属性单位填写。")]
     [SerializeField] private List<PropModifierData> propertyModifiers = new();
@@ -21,6 +25,8 @@ public class AccessoryDataSO : ItemDataSO
     public int RecyclePrice => recyclePrice;
     public AccessoryRarity RarityGrade => rarity;
     public int Rarity => (int)rarity;
+    public int MaxOwnedCount => Mathf.Max(0, maxOwnedCount);
+    public bool HasOwnedLimit => MaxOwnedCount > 0;
     public override string Description => BuildDescription();
     
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
@@ -35,6 +41,12 @@ public class AccessoryDataSO : ItemDataSO
         }
 
         itemType = ItemType.Accessory;
+        maxOwnedCount = Mathf.Max(0, maxOwnedCount);
+    }
+
+    public bool CanOwnMore(int currentCount)
+    {
+        return !HasOwnedLimit || Mathf.Max(0, currentCount) < MaxOwnedCount;
     }
 
     public Dictionary<PropType, float> GetProps()
@@ -82,6 +94,10 @@ public class AccessoryDataSO : ItemDataSO
     private IEnumerable<DescriptorInfo> BuildMetaInfos()
     {
         yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
+        if (HasOwnedLimit)
+        {
+            yield return new DescriptorInfo("持有上限", MaxOwnedCount.ToString());
+        }
     }
 
     private IEnumerable<ItemDescriptionLine> BuildMetaLines()
@@ -90,5 +106,12 @@ public class AccessoryDataSO : ItemDataSO
             "品质",
             ItemDescriptionUtility.FormatRarity(rarity),
             ItemDescriptionLineKind.Meta);
+        if (HasOwnedLimit)
+        {
+            yield return new ItemDescriptionLine(
+                "持有上限",
+                MaxOwnedCount.ToString(),
+                ItemDescriptionLineKind.Meta);
+        }
     }
 }

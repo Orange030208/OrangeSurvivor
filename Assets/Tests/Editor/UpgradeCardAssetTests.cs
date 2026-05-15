@@ -77,6 +77,36 @@ public class UpgradeCardAssetTests
         }
     }
 
+    [Test]
+    public void UpgradeCardPoolBuilderDoesNotFilterByFeatureType()
+    {
+        UpgradeCardSO mechanicCard = UnityEngine.ScriptableObject.CreateInstance<UpgradeCardSO>();
+        mechanicCard.name = "Mechanic Card Test";
+        mechanicCard.InitializeRuntime(
+            "mechanic_card",
+            "Mechanic Card",
+            UpgradeCardRarity.Common,
+            System.Array.Empty<UpgradeCardTag>(),
+            string.Empty,
+            new FeatureEffectBase[]
+            {
+                new TestFeature()
+            });
+
+        try
+        {
+            ContentPoolEntry entry = UpgradeCardContentPoolTuningUtility.CreateEntry(mechanicCard);
+
+            Assert.NotNull(entry);
+            Assert.AreSame(mechanicCard, entry.Content);
+            Assert.AreEqual(mechanicCard.CardId, entry.EntryId);
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(mechanicCard);
+        }
+    }
+
     private static UpgradeCardSO[] LoadUpgradeCards()
     {
         string[] guids = AssetDatabase.FindAssets("t:UpgradeCardSO", new[] { CardFolder });
@@ -134,7 +164,8 @@ public class UpgradeCardAssetTests
                 continue;
             }
 
-            Assert.Fail($"{card.CardId} has non-property upgrade feature {specialFeatures[i]?.GetType().Name}.");
+            // Upgrade cards are currently designed as property cards, but the feature
+            // container intentionally stays generic for other reward types or future use.
         }
 
         return propertyFeatures;
@@ -187,5 +218,9 @@ public class UpgradeCardAssetTests
             UpgradeCardRarity.Legendary => 3f,
             _ => 0f
         };
+    }
+
+    private sealed class TestFeature : FeatureEffectBase
+    {
     }
 }

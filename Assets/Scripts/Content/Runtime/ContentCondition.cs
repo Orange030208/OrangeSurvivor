@@ -398,6 +398,78 @@ public sealed class OwnedWeaponCondition : ContentCondition
 }
 
 [Serializable]
+public sealed class AccessoryOwnedLimitCondition : ContentCondition
+{
+    public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
+    {
+        if (entry?.Content is not AccessoryDataSO accessory || !accessory.HasOwnedLimit)
+        {
+            return true;
+        }
+
+        AccessoryManager accessoryManager = ResolveAccessoryManager(context);
+        int ownedCount = accessoryManager != null ? accessoryManager.GetEquippedCount(accessory) : 0;
+        int selectedCount = CountSelectedAccessories(context, accessory);
+        return accessory.CanOwnMore(ownedCount + selectedCount);
+    }
+
+    private static AccessoryManager ResolveAccessoryManager(ContentRollContext context)
+    {
+        // 饰品持有限制属于饰品领域规则，推导逻辑留在条件内部，避免污染 ContentRollContext。
+        if (context == null)
+        {
+            return null;
+        }
+
+        if (context.Player != null && context.Player.TryGetComponent(out AccessoryManager playerAccessoryManager))
+        {
+            return playerAccessoryManager;
+        }
+
+        return context.Source != null && context.Source.TryGetComponent(out AccessoryManager sourceAccessoryManager)
+            ? sourceAccessoryManager
+            : null;
+    }
+
+    private static int CountSelectedAccessories(ContentRollContext context, AccessoryDataSO candidate)
+    {
+        if (context?.SelectedEntries == null || candidate == null)
+        {
+            return 0;
+        }
+
+        int count = 0;
+        for (int i = 0; i < context.SelectedEntries.Count; i++)
+        {
+            if (context.SelectedEntries[i]?.Content is AccessoryDataSO selectedAccessory &&
+                IsSameAccessory(candidate, selectedAccessory))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private static bool IsSameAccessory(AccessoryDataSO left, AccessoryDataSO right)
+    {
+        if (left == null || right == null)
+        {
+            return false;
+        }
+
+        string leftId = left.AccessoryId;
+        string rightId = right.AccessoryId;
+        if (!string.IsNullOrWhiteSpace(leftId) && !string.IsNullOrWhiteSpace(rightId))
+        {
+            return string.Equals(leftId, rightId, StringComparison.Ordinal);
+        }
+
+        return left == right;
+    }
+}
+
+[Serializable]
 public sealed class UpgradeCardTagCondition : ContentCondition
 {
     [SerializeField] private UpgradeCardTag requiredTags;
