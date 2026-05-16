@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public sealed class PropertyModifierFeature : FeatureEffectBase
+public sealed class PropertyModifierFeature : FeatureBase
 {
     [SerializeField] private PropModifierData modifier;
     private string runtimeSourceId;

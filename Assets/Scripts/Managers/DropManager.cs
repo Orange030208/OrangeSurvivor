@@ -5,8 +5,6 @@ public class DropManager : MonoBehaviour
 {
     private const int BASE_KILL_EXPERIENCE = 1;
 
-    private static readonly CoinRewardData FixedCoinReward = new(1);
-
     [SerializeField] private ContentPoolSO dropPool;
     [SerializeField] private List<DropSourceRuleData> dropRules = new();
 
@@ -42,7 +40,8 @@ public class DropManager : MonoBehaviour
         TryGrantKillExperience(deadEvent.Source, ResolveKillExperience(dropSource, dropRules));
 
         RunProgressionSnapshot progressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
-        CollectionSO dropSO = RollDropForSource(dropSource, deadEvent.Source, progressionSnapshot.WaveNumber);
+        DropRollResult dropResult = RollDropForSource(dropSource, deadEvent.Source, progressionSnapshot.WaveNumber);
+        CollectionSO dropSO = dropResult.Collection;
 
         if (dropSO == null)
         {
@@ -59,7 +58,7 @@ public class DropManager : MonoBehaviour
         instance.Configure(dropSO);
         if (dropSO.prefab is Coin && instance is Coin coin)
         {
-            coin.ConfigureReward(FixedCoinReward);
+            coin.ConfigureReward(new CoinRewardData(dropResult.Quantity));
         }
     }
 
@@ -139,24 +138,24 @@ public class DropManager : MonoBehaviour
         return null;
     }
 
-    public CollectionSO RollDropForSource(DropSourceInfo dropSource, Entity source, int waveNumber)
+    public DropRollResult RollDropForSource(DropSourceInfo dropSource, Entity source, int waveNumber)
     {
         DropSourceRuleData rule = ResolveSourceRule(dropSource, dropRules);
         if (rule == null)
         {
-            return null;
+            return DropRollResult.None;
         }
 
         float chance = rule.EvaluateDropChance(ResolveLuck(source));
         if (chance <= 0f || random.Value01() > chance)
         {
-            return null;
+            return DropRollResult.None;
         }
 
         return RollDropProduct(rule, source, waveNumber);
     }
 
-    private CollectionSO RollDropProduct(DropSourceRuleData rule, Entity source, int waveNumber)
+    private DropRollResult RollDropProduct(DropSourceRuleData rule, Entity source, int waveNumber)
     {
         ContentPoolSO configuredPool = ResolveConfiguredDropPool();
         ContentRollContext context = CreateDropRollContext(configuredPool, source, waveNumber);
@@ -178,7 +177,7 @@ public class DropManager : MonoBehaviour
 
         if (productEntryBuffer.Count == 0)
         {
-            return null;
+            return DropRollResult.None;
         }
 
         ContentRollResult productResult = contentPoolRollService.Roll(
@@ -190,24 +189,25 @@ public class DropManager : MonoBehaviour
             entry => entry.Content is CollectionSO or ContentPoolSO);
         if (!productResult.HasAny)
         {
-            return null;
+            return DropRollResult.None;
         }
 
         if (productResult.Items[0].Content is CollectionSO collection)
         {
-            return collection;
+            int quantity = ResolveDropQuantity(productResult.Items[0]);
+            return new DropRollResult(collection, quantity);
         }
 
         return productResult.Items[0].Content is ContentPoolSO nestedPool
             ? RollCollectionFromPool(nestedPool, context)
-            : null;
+            : DropRollResult.None;
     }
 
-    private CollectionSO RollCollectionFromPool(ContentPoolSO pool, ContentRollContext context)
+    private DropRollResult RollCollectionFromPool(ContentPoolSO pool, ContentRollContext context)
     {
         if (pool == null)
         {
-            return null;
+            return DropRollResult.None;
         }
 
         ContentRollResult configuredResult = contentPoolRollService.Roll(
@@ -215,7 +215,16 @@ public class DropManager : MonoBehaviour
             context,
             1,
             entry => entry.Content is CollectionSO);
-        return configuredResult.HasAny ? configuredResult.Items[0].Content as CollectionSO : null;
+        return configuredResult.HasAny
+            ? new DropRollResult(configuredResult.Items[0].Content as CollectionSO, ResolveDropQuantity(configuredResult.Items[0]))
+            : DropRollResult.None;
+    }
+
+    private static int ResolveDropQuantity(ContentRollItem rollItem)
+    {
+        return rollItem.TryGetMetadata(out DropQuantityMetadata quantityMetadata)
+            ? quantityMetadata.Quantity
+            : 1;
     }
 
     private ContentPoolSO ResolveConfiguredDropPool()

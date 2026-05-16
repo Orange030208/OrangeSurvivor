@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: Accessory_E_PiercingDrill
+  m_EditorClassIdentifier: 
+  itemName: "\u7A7F\u900F\u94BB\u5934"
+  itemIcon: {fileID: 21300000, guid: bd20b27e538e7d5418e62aabc8df7b77, type: 3}
+  itemPrice: 50
+  itemType: 1
+  itemDescription: "\u673A\u5236\u5165\u53E3\uFF0C\u4E0D\u8FDB\u5165\u4F4E\u54C1\u8D28\u3002"
+  accessoryId: Accessory_E_PiercingDrill
+  recyclePrice: 15
+  rarity: 2
+  maxOwnedCount: 2
+  propertyModifiers:
+  - propType: 16
+    modifierType: 0
+    value: 1
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

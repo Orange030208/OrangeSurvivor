@@ -88,7 +88,7 @@ public sealed class EnemyMeleeSemicircleTests
     [Test]
     public void SkeletonRangeDetectionUsesAttackRangeFacingSemicircle()
     {
-        TestEnemy owner = CreateEnemy("skeleton_owner", Vector2.zero, new[]
+        TestEntity owner = CreateEnemy("skeleton_owner", Vector2.zero, new[]
         {
             new BasePropData(PropType.AttackRange, 100f),
             new BasePropData(PropType.DetectionRange, 500f)
@@ -230,11 +230,11 @@ public sealed class EnemyMeleeSemicircleTests
         return gameObject.AddComponent<TestEntity>();
     }
 
-    private TestEnemy CreateEnemy(string name, Vector2 position, IReadOnlyList<BasePropData> baseProps)
+    private TestEntity CreateEnemy(string name, Vector2 position, IReadOnlyList<BasePropData> baseProps)
     {
         GameObject gameObject = CreateGameObject(name);
         gameObject.transform.position = position;
-        TestEnemy enemy = gameObject.AddComponent<TestEnemy>();
+        TestEntity enemy = gameObject.AddComponent<TestEntity>();
         PropertiesManager propertiesManager = gameObject.GetComponent<PropertiesManager>() ?? gameObject.AddComponent<PropertiesManager>();
         enemy.Configure(propertiesManager);
         SetCalculatedProps(propertiesManager, baseProps);
@@ -270,10 +270,6 @@ public sealed class EnemyMeleeSemicircleTests
     }
 
     private sealed class TestEntity : Entity
-    {
-    }
-
-    private sealed class TestEnemy : Enemy
     {
         private PropertiesManager properties;
 

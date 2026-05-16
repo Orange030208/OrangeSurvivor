@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
@@ -96,6 +97,45 @@ public sealed class CrashGuardTests
 
         Assert.IsFalse(catalog.ValidateCatalog(errors));
         Assert.IsTrue(errors.Exists(error => error.Contains("waveSpawnPool")));
+    }
+
+    [Test]
+    public void CharacterDataExtraInfosSkipsMissingSerializedEntries()
+    {
+        CharacterDataSO characterData = ScriptableObject.CreateInstance<CharacterDataSO>();
+        createdObjects.Add(characterData);
+
+        SetPrivateField(characterData, "extraProps", null);
+        SetPrivateField(
+            characterData,
+            "initialWeapons",
+            new List<WeaponEntry> { new WeaponEntry(null, WeaponLevelHelper.MinLevel) });
+        SetPrivateField(characterData, "initialAccessories", new List<AccessoryDataSO> { null });
+        SetPrivateField(characterData, "specialFeatures", new List<FeatureBase> { null });
+
+        List<DescriptorInfo> infos = null;
+        Assert.DoesNotThrow(() => infos = new List<DescriptorInfo>(characterData.GetExtraInfos()));
+        Assert.IsNotNull(infos);
+        Assert.IsEmpty(infos);
+        Assert.DoesNotThrow(() => characterData.GetCharacterModifiers());
+    }
+
+    [Test]
+    public void CharacterDataAssetsCanBuildExtraInfos()
+    {
+        string[] characterGuids = AssetDatabase.FindAssets("t:CharacterDataSO", new[] { GameContentAssetPaths.CharactersData });
+        Assert.IsNotEmpty(characterGuids, $"No CharacterDataSO assets found under {GameContentAssetPaths.CharactersData}.");
+
+        foreach (string guid in characterGuids)
+        {
+            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            CharacterDataSO characterData = AssetDatabase.LoadAssetAtPath<CharacterDataSO>(assetPath);
+
+            Assert.IsNotNull(characterData, assetPath);
+            Assert.DoesNotThrow(
+                () => _ = new List<DescriptorInfo>(characterData.GetExtraInfos()),
+                assetPath);
+        }
     }
 
     private GameObject CreateGameObject(string name)

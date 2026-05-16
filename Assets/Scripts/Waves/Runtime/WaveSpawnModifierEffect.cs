@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public abstract class WaveSpawnModifierEffect : FeatureEffectBase, IWaveSpawnModifier
+public abstract class WaveSpawnModifier : FeatureBase, IWaveSpawnModifier
 {
     [SerializeField] private int priority;
     [SerializeField] private int minWaveNumber = 1;

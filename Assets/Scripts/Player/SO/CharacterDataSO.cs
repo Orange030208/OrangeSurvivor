@@ -14,7 +14,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
     private List<PropModifierData> extraProps = new();
 
     [Header("角色特殊能力")] [SerializeReference]
-    private List<FeatureEffectBase> specialFeatures = new();
+    private List<FeatureBase> specialFeatures = new();
 
     [Space(8)] [Header("初始装备")] [SerializeField]
     private List<WeaponEntry> initialWeapons = new();
@@ -26,17 +26,17 @@ public class CharacterDataSO : ScriptableObject, IDescribable
     public string Description => CharacterDescription;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
     
-    public IReadOnlyList<PropModifierData> ExtraProps => extraProps;
-    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
-    public IReadOnlyList<WeaponEntry> InitialWeapons => initialWeapons;
-    public IReadOnlyList<AccessoryDataSO> InitialAccessories => initialAccessories;
+    public IReadOnlyList<PropModifierData> ExtraProps => GetReadOnlyListOrEmpty(extraProps);
+    public IReadOnlyList<FeatureBase> SpecialFeatures => GetReadOnlyListOrEmpty(specialFeatures);
+    public IReadOnlyList<WeaponEntry> InitialWeapons => GetReadOnlyListOrEmpty(initialWeapons);
+    public IReadOnlyList<AccessoryDataSO> InitialAccessories => GetReadOnlyListOrEmpty(initialAccessories);
 
     private void OnValidate()
     {
-        if (initialWeapons == null)
-        {
-            return;
-        }
+        extraProps ??= new List<PropModifierData>();
+        specialFeatures ??= new List<FeatureBase>();
+        initialWeapons ??= new List<WeaponEntry>();
+        initialAccessories ??= new List<AccessoryDataSO>();
 
         for (int i = 0; i < initialWeapons.Count; i++)
         {
@@ -47,25 +47,41 @@ public class CharacterDataSO : ScriptableObject, IDescribable
     public IEnumerable<DescriptorInfo> GetExtraInfos()
     {
         List<DescriptorInfo> infos = new();
-        foreach (PropModifierData modifier in extraProps)
+        foreach (PropModifierData modifier in ExtraProps)
         {
             infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
         }
 
-        foreach (WeaponEntry weapon in initialWeapons)
+        foreach (WeaponEntry weapon in InitialWeapons)
         {
-            infos.Add(new DescriptorInfo(weapon.weaponData.ItemName,
-                $"初始有{ColorHelper.WrapRichTextColor(weapon.weaponData.ItemName, ColorHelper.GetColorByLevel(weapon.level))}"));
+            WeaponDataSO weaponData = weapon.weaponData;
+            if (weaponData == null)
+            {
+                continue;
+            }
+
+            infos.Add(new DescriptorInfo(weaponData.ItemName,
+                $"初始有{ColorHelper.WrapRichTextColor(weaponData.ItemName, ColorHelper.GetColorByLevel(weapon.level))}"));
         }
 
-        foreach (AccessoryDataSO accessory in initialAccessories)
+        foreach (AccessoryDataSO accessory in InitialAccessories)
         {
+            if (accessory == null)
+            {
+                continue;
+            }
+
             infos.Add(new DescriptorInfo(accessory.ItemName,
                 $"初始有{ColorHelper.WrapRichTextColor(accessory.ItemName, ColorHelper.GetColorByRarity(accessory.Rarity))}"));
         }
 
-        foreach (FeatureEffectBase feature in specialFeatures)
+        foreach (FeatureBase feature in SpecialFeatures)
         {
+            if (feature == null)
+            {
+                continue;
+            }
+
             infos.Add(new DescriptorInfo(feature.Title, feature.Description));
         }
 
@@ -74,6 +90,16 @@ public class CharacterDataSO : ScriptableObject, IDescribable
 
     public List<PropModifierData> GetCharacterModifiers()
     {
-        return new List<PropModifierData>(extraProps);
+        return new List<PropModifierData>(ExtraProps);
+    }
+
+    private static IReadOnlyList<T> GetReadOnlyListOrEmpty<T>(List<T> source)
+    {
+        if (source != null)
+        {
+            return source;
+        }
+
+        return System.Array.Empty<T>();
     }
 }

@@ -293,7 +293,6 @@ public sealed class PropertyMappingAndAttackUsageTests
         WeaponsHolder holder = gameObject.AddComponent<WeaponsHolder>();
         Weapon weapon = gameObject.AddComponent<Weapon>();
         WeaponDataSO weaponData = CreateWeaponData(
-            WeaponBenefitData.Full,
             new WeaponLevelStatData(
                 level: 1,
                 attack: 10f,
@@ -304,7 +303,6 @@ public sealed class PropertyMappingAndAttackUsageTests
                 knockbackStrength: 0f));
 
         SetPrivateField(weapon, "propertiesManager", manager);
-        SetPrivateField(weapon, "weaponsHolder", holder);
         SetPrivateField(weapon, "<WeaponData>k__BackingField", weaponData);
 
         holder.AddWeaponBenefitModifier(
@@ -319,6 +317,7 @@ public sealed class PropertyMappingAndAttackUsageTests
                 rangedAttackUsagePercent: 0f,
                 magicAttackUsagePercent: 0f,
                 summonAttackUsagePercent: 0f));
+        weapon.SetBenefits(holder.CurrentWeaponBenefitBonus);
 
         weapon.RefreshRuntimeStats();
 
@@ -339,7 +338,6 @@ public sealed class PropertyMappingAndAttackUsageTests
         GameObject gameObject = CreateGameObject("weapon_level_attack_usage_runtime");
         Weapon weapon = gameObject.AddComponent<Weapon>();
         WeaponDataSO weaponData = CreateWeaponData(
-            WeaponBenefitData.Full,
             new WeaponLevelStatData(
                 level: 1,
                 attack: 10f,
@@ -348,8 +346,16 @@ public sealed class PropertyMappingAndAttackUsageTests
                 criticalPercent: 100f,
                 range: 0f,
                 knockbackStrength: 0f,
-                meleeAttackUsagePercent: 50f,
-                rangedAttackUsagePercent: 20f));
+                statBenefits: new WeaponBenefitData(
+                    attackSpeedBenefitPercent: 0f,
+                    criticalChanceBenefitPercent: 0f,
+                    criticalPercentBenefitPercent: 0f,
+                    rangeBenefitPercent: 0f,
+                    knockbackStrengthBenefitPercent: 0f,
+                    meleeAttackUsagePercent: 50f,
+                    rangedAttackUsagePercent: 20f,
+                    magicAttackUsagePercent: 0f,
+                    summonAttackUsagePercent: 0f)));
 
         SetPrivateField(weapon, "propertiesManager", manager);
         SetPrivateField(weapon, "<WeaponData>k__BackingField", weaponData);
@@ -368,7 +374,6 @@ public sealed class PropertyMappingAndAttackUsageTests
         Weapon weapon = gameObject.AddComponent<Weapon>();
         SetPrivateField(weapon, "propertiesManager", manager);
         SetPrivateField(weapon, "<WeaponData>k__BackingField", CreateWeaponData(
-            WeaponBenefitData.Full,
             new WeaponLevelStatData(
                 level: 1,
                 attack: 10f,
@@ -400,7 +405,6 @@ public sealed class PropertyMappingAndAttackUsageTests
         Weapon weapon = gameObject.AddComponent<Weapon>();
         SetPrivateField(weapon, "propertiesManager", manager);
         SetPrivateField(weapon, "<WeaponData>k__BackingField", CreateWeaponData(
-            WeaponBenefitData.Full,
             new WeaponLevelStatData(
                 level: 1,
                 attack: 10f,
@@ -484,11 +488,10 @@ public sealed class PropertyMappingAndAttackUsageTests
         return group;
     }
 
-    private WeaponDataSO CreateWeaponData(WeaponBenefitData benefits, WeaponLevelStatData levelStats)
+    private WeaponDataSO CreateWeaponData(WeaponLevelStatData levelStats)
     {
         WeaponDataSO weaponData = ScriptableObject.CreateInstance<WeaponDataSO>();
         createdObjects.Add(weaponData);
-        SetPrivateField(weaponData, "benefits", benefits);
         SetPrivateField(weaponData, "levelStats", new List<WeaponLevelStatData> { levelStats });
         return weaponData;
     }

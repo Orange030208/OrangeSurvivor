@@ -33,6 +33,11 @@ MonoBehaviour:
   - propType: 9
     modifierType: 0
     value: 1000
-  specialFeatures:
-  - rid: 7274045950615355394
-  initialWeapons: []
+  specialFeatures: []
+  initialWeapons:
+  - weaponData: {fileID: 11400000, guid: 592e4626375d8a646b52a53dfa5a5257, type: 2}
+    level: 1
+  initialAccessories: []
+  references:
+    version: 2
+    RefIds: []

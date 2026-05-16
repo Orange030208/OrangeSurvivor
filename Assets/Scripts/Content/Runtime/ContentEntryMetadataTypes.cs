@@ -93,3 +93,25 @@ public sealed class QualityMetadata : ContentEntryMetadata
         this.qualityValue = qualityValue;
     }
 }
+
+[Serializable]
+public sealed class DropQuantityMetadata : ContentEntryMetadata
+{
+    [SerializeField, Min(1)] private int quantity = 1;
+
+    public DropQuantityMetadata()
+    {
+    }
+
+    public DropQuantityMetadata(int quantity)
+    {
+        ConfigureQuantity(quantity);
+    }
+
+    public int Quantity => Mathf.Max(1, quantity);
+
+    public void ConfigureQuantity(int quantity)
+    {
+        this.quantity = Mathf.Max(1, quantity);
+    }
+}

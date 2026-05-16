@@ -40,7 +40,7 @@ internal static class ItemDescriptionUtility
     public static string BuildDetailedDescription(
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureEffectBase> specialFeatures,
+        IReadOnlyList<FeatureBase> specialFeatures,
         string fallbackText)
     {
         return BuildDetailedDescription(
@@ -54,7 +54,7 @@ internal static class ItemDescriptionUtility
     public static string BuildDetailedDescription(
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureEffectBase> specialFeatures,
+        IReadOnlyList<FeatureBase> specialFeatures,
         IEnumerable<ItemDescriptionLine> extraLines,
         string fallbackText)
     {
@@ -75,7 +75,7 @@ internal static class ItemDescriptionUtility
     public static List<DescriptorInfo> BuildDescriptorInfos(
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureEffectBase> specialFeatures)
+        IReadOnlyList<FeatureBase> specialFeatures)
     {
         return BuildDescriptorInfos(
             description,
@@ -87,7 +87,7 @@ internal static class ItemDescriptionUtility
     public static List<DescriptorInfo> BuildDescriptorInfos(
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureEffectBase> specialFeatures,
+        IReadOnlyList<FeatureBase> specialFeatures,
         IEnumerable<DescriptorInfo> extraInfos)
     {
         List<DescriptorInfo> infos = new List<DescriptorInfo>();
@@ -267,7 +267,7 @@ internal static class ItemDescriptionUtility
         }
     }
 
-    private static void AddFeatureLines(List<ItemDescriptionLine> lines, IReadOnlyList<FeatureEffectBase> specialFeatures)
+    private static void AddFeatureLines(List<ItemDescriptionLine> lines, IReadOnlyList<FeatureBase> specialFeatures)
     {
         if (specialFeatures == null)
         {
@@ -276,7 +276,7 @@ internal static class ItemDescriptionUtility
 
         for (int i = 0; i < specialFeatures.Count; i++)
         {
-            FeatureEffectBase feature = specialFeatures[i];
+            FeatureBase feature = specialFeatures[i];
             if (feature == null || string.IsNullOrWhiteSpace(feature.Description))
             {
                 continue;
@@ -375,7 +375,7 @@ internal static class ItemDescriptionUtility
         }
     }
 
-    private static void AddFeatureInfos(List<DescriptorInfo> infos, IReadOnlyList<FeatureEffectBase> specialFeatures)
+    private static void AddFeatureInfos(List<DescriptorInfo> infos, IReadOnlyList<FeatureBase> specialFeatures)
     {
         if (specialFeatures == null)
         {
@@ -384,7 +384,7 @@ internal static class ItemDescriptionUtility
 
         for (int i = 0; i < specialFeatures.Count; i++)
         {
-            FeatureEffectBase feature = specialFeatures[i];
+            FeatureBase feature = specialFeatures[i];
             if (feature == null || string.IsNullOrWhiteSpace(feature.Description))
             {
                 continue;

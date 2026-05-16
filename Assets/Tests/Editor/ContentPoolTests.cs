@@ -583,7 +583,7 @@ public class ContentPoolTests
 
     private sealed class TestAccessoryEntity : Entity, IFeatureEffectsProvider
     {
-        public IReadOnlyList<FeatureEffectBase> FeatureEffects => Array.Empty<FeatureEffectBase>();
+        public IReadOnlyList<FeatureBase> FeatureEffects => Array.Empty<FeatureBase>();
     }
 
     private sealed class TestAssetWeightModifier : IContentPoolModifier

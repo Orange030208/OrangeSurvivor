@@ -10,7 +10,6 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     [Header("基础")]
     [SerializeField] private string cardId;
     [SerializeField] private string title;
-    [SerializeField] private Sprite icon;
     [SerializeField] private UpgradeCardRarity rarity = UpgradeCardRarity.Common;
     [SerializeField] private UpgradeCardTag tags = UpgradeCardTag.None;
 
@@ -19,16 +18,16 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     [SerializeField] private string description;
 
     [Header("特殊能力")]
-    [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
+    [SerializeReference] private List<FeatureBase> specialFeatures = new();
 
     public string CardId => cardId;
     public string Title => title;
-    public Sprite Icon => icon;
+    public Sprite Icon => null;
     public string Description => BuildDescription();
     public UpgradeCardRarity Rarity => rarity;
     public UpgradeCardTag Tags => tags;
     public UpgradeCardTag[] TagList => ToTagArray(tags);
-    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+    public IReadOnlyList<FeatureBase> SpecialFeatures => specialFeatures;
 
     private void OnValidate()
     {
@@ -37,7 +36,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             cardId = Guid.NewGuid().ToString("N")[..8];
         }
 
-        specialFeatures ??= new List<FeatureEffectBase>();
+        specialFeatures ??= new List<FeatureBase>();
     }
 
     public bool HasAnyEffect()
@@ -51,7 +50,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         UpgradeCardRarity runtimeRarity,
         IReadOnlyList<UpgradeCardTag> runtimeTags,
         string runtimeDescription,
-        IReadOnlyList<FeatureEffectBase> runtimeSpecialFeatures = null)
+        IReadOnlyList<FeatureBase> runtimeSpecialFeatures = null)
     {
         cardId = string.IsNullOrWhiteSpace(runtimeCardId) ? Guid.NewGuid().ToString("N")[..8] : runtimeCardId;
         title = runtimeTitle;
@@ -59,8 +58,8 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         tags = ToTagMask(runtimeTags);
         description = runtimeDescription;
         specialFeatures = runtimeSpecialFeatures != null
-            ? new List<FeatureEffectBase>(runtimeSpecialFeatures)
-            : new List<FeatureEffectBase>();
+            ? new List<FeatureBase>(runtimeSpecialFeatures)
+            : new List<FeatureBase>();
     }
 
     public bool HasTag(UpgradeCardTag tag)
@@ -74,7 +73,7 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         return new UpgradeCardOptionViewData(
             CardId,
             Title,
-            ResolveDisplayIcon(),
+            null,
             BuildDescription(),
             Rarity,
             TagList,
@@ -116,40 +115,6 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
         {
             yield return new DescriptorInfo("标签", tagText);
         }
-    }
-
-    private Sprite ResolveDisplayIcon()
-    {
-        if (icon != null)
-        {
-            return icon;
-        }
-
-        PropertyModifierFeature firstPropertyFeature = ResolveFirstPropertyFeature();
-        if (firstPropertyFeature != null)
-        {
-            return GameContentRuntime.GetPropIcon(firstPropertyFeature.Modifier.propType);
-        }
-
-        return null;
-    }
-
-    private PropertyModifierFeature ResolveFirstPropertyFeature()
-    {
-        if (specialFeatures == null)
-        {
-            return null;
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            if (specialFeatures[i] is PropertyModifierFeature propertyFeature)
-            {
-                return propertyFeature;
-            }
-        }
-
-        return null;
     }
 
     private static UpgradeCardTag ToTagMask(IReadOnlyList<UpgradeCardTag> source)

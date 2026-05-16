@@ -1,10 +1,8 @@
 using UnityEngine;
 
 [System.Serializable]
-public sealed class ForceCriticalFeature : FeatureEffectBase
+public sealed class ForceCriticalFeature : HitModifierFeatureBase
 {
-    private FeatureContext installedContext;
-    public override bool CanModifyHit => true;
     public override int HitPriority => HitModifierPriority.Override;
     public override string Description => "该实体造成的命中强制视为暴击。";
 

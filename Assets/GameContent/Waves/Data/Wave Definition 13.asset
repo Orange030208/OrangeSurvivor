@@ -14,18 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_013
   displayName: Wave 13
-  duration: 30
+  duration: 50
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Elite Weighted Mix
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 1.45
-    spawnCountPerBatch: 4
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Elite Pairs
-    triggerMode: 0
-    spawnFrequency: 0.05
-    spawnCountPerBatch: 2
-    maxSpawnBatches: 3
-    normalizedTimeRange: {x: 35, y: 100}
+    spawnFrequency: 0.4
+    spawnCountPerBatch: 8
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 0, y: 20}

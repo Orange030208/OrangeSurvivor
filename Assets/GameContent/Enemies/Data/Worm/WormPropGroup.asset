@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: WormPropGroup
   m_EditorClassIdentifier: 
   values:
-  - propType: 0
-    value: 14
-  - propType: 1
-    value: 35
-  - propType: 4
-    value: 260
   - propType: 5
-    value: 35
+    value: 32
+  - propType: 0
+    value: 12
+  - propType: 1
+    value: 36
+  - propType: 4
+    value: 270
   - propType: 6
     value: 900
   - propType: 15
-    value: 750
+    value: 760
+  - propType: 8
+    value: 0
+  - propType: 19
+    value: 0

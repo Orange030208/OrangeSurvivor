@@ -12,5 +12,7 @@ public enum WaveEnemyTag
     Ranged = 1 << 2,
     Fast = 1 << 3,
     BossLike = 1 << 4,
-    Special = 1 << 5
+    Special = 1 << 5,
+    Heavy = 1 << 6,
+    Boss = 1 << 7
 }

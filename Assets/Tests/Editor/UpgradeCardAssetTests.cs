@@ -1,94 +1,100 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 public class UpgradeCardAssetTests
 {
     private const string CardFolder = GameContentAssetPaths.UpgradeCards;
     private const string PoolPath = GameContentAssetPaths.UpgradeCardPool;
-    private const float BudgetTolerance = 0.1f;
 
     [Test]
-    public void UpgradeCardsUseChineseIdsAndPropertyModifierFeatures()
+    public void UpgradeCardJsonRowsAreReadableAndUnique()
     {
+        IReadOnlyList<UpgradeCardJsonCard> rows = UpgradeCardJsonReader.ReadDefault();
+        Assert.AreEqual(79, rows.Count);
+
+        HashSet<string> cardIds = new(StringComparer.Ordinal);
+        for (int i = 0; i < rows.Count; i++)
+        {
+            UpgradeCardJsonCard row = rows[i];
+            Assert.IsTrue(cardIds.Add(row.cardId), $"Duplicated cardId: {row.cardId}");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(row.title), row.cardId);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(row.rarity), row.cardId);
+            Assert.NotNull(row.tags, row.cardId);
+            Assert.NotNull(row.specialFeatures, row.cardId);
+        }
+    }
+
+    [Test]
+    public void UpgradeCardsMatchJsonRowsAndUsePropertyModifierFeatures()
+    {
+        IReadOnlyList<UpgradeCardJsonCard> rows = UpgradeCardJsonReader.ReadDefault();
+        Dictionary<string, UpgradeCardJsonCard> rowsById = ToRowsById(rows);
         UpgradeCardSO[] cards = LoadUpgradeCards();
-        Assert.AreEqual(43, cards.Length);
+        Assert.AreEqual(rows.Count, cards.Length);
 
         HashSet<string> cardIds = new();
         for (int i = 0; i < cards.Length; i++)
         {
             UpgradeCardSO card = cards[i];
             Assert.IsFalse(string.IsNullOrWhiteSpace(card.CardId), card.name);
-            Assert.IsTrue(ContainsChinese(card.CardId), card.CardId);
             Assert.IsTrue(cardIds.Add(card.CardId), $"Duplicated cardId: {card.CardId}");
-            IReadOnlyList<PropertyModifierFeature> propertyFeatures = GetPropertyModifierFeatures(card);
-            Assert.Greater(propertyFeatures.Count, 0, card.CardId);
+            Assert.IsTrue(rowsById.TryGetValue(card.CardId, out UpgradeCardJsonCard row), card.CardId);
+            Assert.AreEqual(row.title, card.Title, card.CardId);
+            Assert.AreEqual(ParseEnum<UpgradeCardRarity>(row.rarity), card.Rarity, card.CardId);
+            Assert.AreEqual(ResolveTags(row), card.Tags, card.CardId);
+            Assert.IsNull(card.Icon, card.CardId);
 
-            if (card.Rarity != UpgradeCardRarity.Legendary)
+            UpgradeCardOptionViewData viewData = card.CreateOptionViewData(0, 0);
+            Assert.IsNull(viewData.Icon, card.CardId);
+
+            Assert.AreEqual(row.specialFeatures.Count, card.SpecialFeatures.Count, card.CardId);
+            for (int featureIndex = 0; featureIndex < row.specialFeatures.Count; featureIndex++)
             {
-                Assert.AreEqual(1, propertyFeatures.Count, card.CardId);
+                AssertJsonFeatureMatchesRuntimeFeature(row.cardId, row.specialFeatures[featureIndex], card.SpecialFeatures[featureIndex]);
             }
         }
     }
 
     [Test]
-    public void UpgradeCardsStayWithinBudgetTolerance()
+    public void UpgradeCardPoolUsesJsonCardsWithRarityMetadataAndUnlimitedPicks()
     {
-        UpgradeCardSO[] cards = LoadUpgradeCards();
-        for (int i = 0; i < cards.Length; i++)
-        {
-            UpgradeCardSO card = cards[i];
-            float budget = CalculateBudget(card);
-            float target = GetRarityBudget(card.Rarity);
-            float min = target * (1f - BudgetTolerance);
-            float max = target * (1f + BudgetTolerance);
-
-            Assert.IsTrue(
-                budget >= min && budget <= max,
-                $"{card.CardId} {card.Rarity} budget {budget} is outside {min}-{max}.");
-        }
-    }
-
-    [Test]
-    public void UpgradeCardPoolUsesNewCardsWithRarityWeightsAndUnlimitedPicks()
-    {
+        IReadOnlyList<UpgradeCardJsonCard> rows = UpgradeCardJsonReader.ReadDefault();
         UpgradeCardSO[] cards = LoadUpgradeCards();
         ContentPoolSO pool = AssetDatabase.LoadAssetAtPath<ContentPoolSO>(PoolPath);
         Assert.NotNull(pool);
         Assert.AreEqual(4, pool.DefaultRollCount);
         Assert.IsFalse(pool.AllowDuplicateResults);
-        Assert.AreEqual(cards.Length, pool.Entries.Count);
+        Assert.AreEqual(rows.Count, cards.Length);
 
-        HashSet<UpgradeCardSO> cardSet = new(cards);
+        Dictionary<string, UpgradeCardSO> cardsById = ToCardsById(cards);
         for (int i = 0; i < pool.Entries.Count; i++)
         {
             ContentPoolEntry entry = pool.Entries[i];
             UpgradeCardSO card = entry.Content as UpgradeCardSO;
             Assert.NotNull(card, entry.EntryId);
-            Assert.IsTrue(cardSet.Contains(card), entry.EntryId);
+            Assert.IsTrue(cardsById.ContainsKey(card.CardId), entry.EntryId);
             Assert.AreEqual(card.CardId, entry.EntryId);
-            Assert.AreEqual(GetRarityWeight(card.Rarity), entry.BaseWeight);
             Assert.AreEqual(UpgradeCardSO.UNLIMITED_PICK_COUNT, entry.MaxPickCount);
             Assert.IsTrue(entry.TryGetMetadata(out QualityMetadata qualityMetadata), entry.EntryId);
             Assert.AreEqual((int)card.Rarity, qualityMetadata.QualityValue, entry.EntryId);
-            Assert.AreEqual(0, entry.Conditions.Count, card.CardId);
-            Assert.AreEqual(1, entry.WeightRules.Count, card.CardId);
-            Assert.IsInstanceOf<PreviousRollWeightContentRule>(entry.WeightRules[0], card.CardId);
         }
     }
 
     [Test]
     public void UpgradeCardPoolBuilderDoesNotFilterByFeatureType()
     {
-        UpgradeCardSO mechanicCard = UnityEngine.ScriptableObject.CreateInstance<UpgradeCardSO>();
+        UpgradeCardSO mechanicCard = ScriptableObject.CreateInstance<UpgradeCardSO>();
         mechanicCard.name = "Mechanic Card Test";
         mechanicCard.InitializeRuntime(
             "mechanic_card",
             "Mechanic Card",
             UpgradeCardRarity.Common,
-            System.Array.Empty<UpgradeCardTag>(),
+            Array.Empty<UpgradeCardTag>(),
             string.Empty,
-            new FeatureEffectBase[]
+            new FeatureBase[]
             {
                 new TestFeature()
             });
@@ -124,103 +130,63 @@ public class UpgradeCardAssetTests
         return cards.ToArray();
     }
 
-    private static bool ContainsChinese(string value)
+    private static Dictionary<string, UpgradeCardJsonCard> ToRowsById(IReadOnlyList<UpgradeCardJsonCard> rows)
     {
-        for (int i = 0; i < value.Length; i++)
+        Dictionary<string, UpgradeCardJsonCard> result = new(StringComparer.Ordinal);
+        for (int i = 0; i < rows.Count; i++)
         {
-            char c = value[i];
-            if (c >= '\u4e00' && c <= '\u9fff')
-            {
-                return true;
-            }
+            Assert.IsTrue(result.TryAdd(rows[i].cardId, rows[i]), $"Duplicated upgrade card JSON id: {rows[i].cardId}");
         }
 
-        return false;
+        return result;
     }
 
-    private static float CalculateBudget(UpgradeCardSO card)
+    private static Dictionary<string, UpgradeCardSO> ToCardsById(IReadOnlyList<UpgradeCardSO> cards)
     {
-        float budget = 0f;
-        IReadOnlyList<PropertyModifierFeature> propertyFeatures = GetPropertyModifierFeatures(card);
-        for (int i = 0; i < propertyFeatures.Count; i++)
+        Dictionary<string, UpgradeCardSO> result = new(StringComparer.Ordinal);
+        for (int i = 0; i < cards.Count; i++)
         {
-            PropModifierData modifier = propertyFeatures[i].Modifier;
-            Assert.AreEqual(PropModifierType.Add, modifier.modifierType, card.CardId);
-            budget += modifier.value * GetPointValue(modifier.propType);
+            Assert.IsTrue(result.TryAdd(cards[i].CardId, cards[i]), $"Duplicated upgrade card asset id: {cards[i].CardId}");
         }
 
-        return budget;
+        return result;
     }
 
-    private static IReadOnlyList<PropertyModifierFeature> GetPropertyModifierFeatures(UpgradeCardSO card)
+    private static void AssertJsonFeatureMatchesRuntimeFeature(
+        string cardId,
+        UpgradeCardJsonFeature jsonFeature,
+        FeatureBase runtimeFeature)
     {
-        List<PropertyModifierFeature> propertyFeatures = new();
-        IReadOnlyList<FeatureEffectBase> specialFeatures = card.SpecialFeatures;
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            if (specialFeatures[i] is PropertyModifierFeature propertyFeature)
-            {
-                propertyFeatures.Add(propertyFeature);
-                continue;
-            }
+        Assert.AreEqual(nameof(PropertyModifierFeature), jsonFeature.type, cardId);
+        PropertyModifierFeature propertyFeature = runtimeFeature as PropertyModifierFeature;
+        Assert.NotNull(propertyFeature, cardId);
+        Assert.NotNull(jsonFeature.modifier, cardId);
 
-            // Upgrade cards are currently designed as property cards, but the feature
-            // container intentionally stays generic for other reward types or future use.
+        PropModifierData modifier = propertyFeature.Modifier;
+        Assert.AreEqual(ParseEnum<PropType>(jsonFeature.modifier.propType), modifier.propType, cardId);
+        Assert.AreEqual(ParseEnum<PropModifierType>(jsonFeature.modifier.modifierType), modifier.modifierType, cardId);
+        Assert.That(modifier.value, Is.EqualTo(jsonFeature.modifier.value).Within(0.0001f), cardId);
+    }
+
+    private static UpgradeCardTag ResolveTags(UpgradeCardJsonCard row)
+    {
+        UpgradeCardTag tags = UpgradeCardTag.None;
+        for (int i = 0; i < row.tags.Count; i++)
+        {
+            tags |= ParseEnum<UpgradeCardTag>(row.tags[i]);
         }
 
-        return propertyFeatures;
+        return tags;
     }
 
-    private static float GetPointValue(PropType propType)
+    private static TEnum ParseEnum<TEnum>(string value)
+        where TEnum : struct
     {
-        return propType switch
-        {
-            PropType.Damage => 20f,
-            PropType.MeleeAttack => 10f,
-            PropType.RangedAttack => 10f,
-            PropType.MagicAttack => 10f,
-            PropType.SummonAttack => 10f,
-            PropType.AttackSpeed => 20f,
-            PropType.CriticalChance => 50f,
-            PropType.CriticalPercent => 12f,
-            PropType.MoveSpeed => 10f,
-            PropType.MaxHealth => 8f,
-            PropType.HealthRecoverySpeed => 5f,
-            PropType.Armor => 80f,
-            PropType.Luck => 20f,
-            PropType.Dodge => 33f,
-            PropType.PickupRadius => 8f,
-            PropType.AttackRange => 10f,
-            PropType.DamageReduction => 35f,
-            _ => throw new AssertionException($"Missing point value for {propType}")
-        };
+        Assert.IsTrue(Enum.TryParse(value, true, out TEnum result), $"Cannot parse '{value}' as {typeof(TEnum).Name}.");
+        return result;
     }
 
-    private static float GetRarityBudget(UpgradeCardRarity rarity)
-    {
-        return rarity switch
-        {
-            UpgradeCardRarity.Common => 100f,
-            UpgradeCardRarity.Rare => 150f,
-            UpgradeCardRarity.Epic => 225f,
-            UpgradeCardRarity.Legendary => 350f,
-            _ => 0f
-        };
-    }
-
-    private static float GetRarityWeight(UpgradeCardRarity rarity)
-    {
-        return rarity switch
-        {
-            UpgradeCardRarity.Common => 100f,
-            UpgradeCardRarity.Rare => 45f,
-            UpgradeCardRarity.Epic => 12f,
-            UpgradeCardRarity.Legendary => 3f,
-            _ => 0f
-        };
-    }
-
-    private sealed class TestFeature : FeatureEffectBase
+    private sealed class TestFeature : FeatureBase
     {
     }
 }

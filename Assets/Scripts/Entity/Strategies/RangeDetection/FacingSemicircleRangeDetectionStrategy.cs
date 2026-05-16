@@ -14,6 +14,15 @@ public sealed class FacingSemicircleRangeDetectionStrategy : RangeDetectionStrat
         PropertiesManager propertiesManager,
         Transform attackPointTransform,
         float rangeMultiplier = 1f)
+        : this((Entity)owner, propertiesManager, attackPointTransform, rangeMultiplier)
+    {
+    }
+
+    public FacingSemicircleRangeDetectionStrategy(
+        Entity owner,
+        PropertiesManager propertiesManager,
+        Transform attackPointTransform,
+        float rangeMultiplier = 1f)
         : base(owner, propertiesManager)
     {
         this.attackPointTransform = attackPointTransform;

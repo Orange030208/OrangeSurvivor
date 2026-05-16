@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 8435561060129702110, guid: db71062b0ecdb22438413ca6330f93ac, type: 3}
   role: 0
-  basePropsAsset: {fileID: 11400000, guid: 6b56984a23fd4d068add1e584df43f49, type: 2}
+  basePropsAsset: {fileID: 11400000, guid: 5a41ab6615c9fa149ada2f4b2325930e, type: 2}
   animConfig: {fileID: 11400000, guid: d099a14b03c84102910e341539684d70, type: 2}
   damagedSfxKey: 401
   attackAction:

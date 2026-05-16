@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: MechaStoneBossPropGroup
   m_EditorClassIdentifier: 
   values:
+  - propType: 5
+    value: 3500
   - propType: 0
-    value: 45
+    value: 42
   - propType: 1
     value: 35
-  - propType: 5
-    value: 900
-  - propType: 6
-    value: 700
   - propType: 4
-    value: 180
+    value: 200
+  - propType: 6
+    value: 420
   - propType: 15
-    value: 300
+    value: 320
   - propType: 8
-    value: 10
+    value: 6
   - propType: 19
     value: 100

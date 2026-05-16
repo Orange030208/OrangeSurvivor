@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: BlueGolemPropGroup
   m_EditorClassIdentifier: 
   values:
-  - propType: 0
-    value: 30
-  - propType: 1
-    value: 45
   - propType: 5
-    value: 100
-  - propType: 6
-    value: 500
+    value: 110
+  - propType: 0
+    value: 26
+  - propType: 1
+    value: 42
   - propType: 4
     value: 250
+  - propType: 6
+    value: 260
   - propType: 15
-    value: 210
+    value: 220
   - propType: 8
-    value: 4
+    value: 2
   - propType: 19
     value: 40

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public sealed class WeaponBenefitBonusModifierFeature : FeatureEffectBase
+public sealed class WeaponBenefitBonusModifierFeature : FeatureBase
 {
     [SerializeField] private WeaponBenefitData benefitBonus;
     private string runtimeSourceId;

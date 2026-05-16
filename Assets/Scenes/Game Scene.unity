@@ -26190,7 +26190,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 885074028}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -26243,7 +26243,113 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc602abbb2e045e7aa2962a05bd9bb8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropPool: {fileID: 0}
+  dropPool: {fileID: 11400000, guid: 86ea0096fa653e64ab92a4527d6d936f, type: 2}
+  dropRules:
+  - sourceType: Normal
+    sourceId: SkeletonEnemy
+    killExperience: 1
+    dropChance: 0.18
+    dropChanceCap: 0.35
+    products:
+    - productPool: {fileID: 11400000, guid: e0e78938c898ace428f9de17fb27572a, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.3
+      quantity: 1
+  - sourceType: Normal
+    sourceId: EvilSlimeEnemy
+    killExperience: 1
+    dropChance: 0.12
+    dropChanceCap: 0.25
+    products:
+    - productPool: {fileID: 11400000, guid: e0e78938c898ace428f9de17fb27572a, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.3
+      quantity: 1
+  - sourceType: Normal
+    sourceId: WormEnemy
+    killExperience: 1
+    dropChance: 0.18
+    dropChanceCap: 0.35
+    products:
+    - productPool: {fileID: 11400000, guid: e0e78938c898ace428f9de17fb27572a, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.3
+      quantity: 1
+  - sourceType: Normal
+    sourceId: FlyForestEnemy
+    killExperience: 1
+    dropChance: 0.18
+    dropChanceCap: 0.35
+    products:
+    - productPool: {fileID: 11400000, guid: e0e78938c898ace428f9de17fb27572a, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.3
+      quantity: 1
+  - sourceType: Normal
+    sourceId: EvilEyeEnemy
+    killExperience: 1
+    dropChance: 0.18
+    dropChanceCap: 0.35
+    products:
+    - productPool: {fileID: 11400000, guid: e0e78938c898ace428f9de17fb27572a, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.3
+      quantity: 1
+  - sourceType: Normal
+    sourceId: SkeletonMeteorhammerEnemy
+    killExperience: 2
+    dropChance: 0.3
+    dropChanceCap: 0.6
+    products:
+    - productPool: {fileID: 11400000, guid: cd4481d1217887346b89d929aad87804, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.5
+      quantity: 1
+  - sourceType: Normal
+    sourceId: SkeletonMeteorhammer2Enemy
+    killExperience: 2
+    dropChance: 0.32
+    dropChanceCap: 0.6
+    products:
+    - productPool: {fileID: 11400000, guid: cd4481d1217887346b89d929aad87804, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.5
+      quantity: 1
+  - sourceType: Normal
+    sourceId: BlueGolemEnemy
+    killExperience: 2
+    dropChance: 0.35
+    dropChanceCap: 0.6
+    products:
+    - productPool: {fileID: 11400000, guid: cd4481d1217887346b89d929aad87804, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.5
+      quantity: 1
+  - sourceType: Normal
+    sourceId: OrangeGolemEnemy
+    killExperience: 4
+    dropChance: 1
+    dropChanceCap: 1
+    products:
+    - productPool: {fileID: 11400000, guid: 17a58a7a90d980d46b377b5d372d5966, type: 2}
+      product: {fileID: 0}
+      baseWeight: 100
+      luckCoefficient: 0.8
+      quantity: 1
+  - sourceType: Boss
+    sourceId: MechaStoneBossEnemy
+    killExperience: 12
+    dropChance: 0
+    dropChanceCap: 0
+    products: []
 --- !u!4 &889382728
 Transform:
   m_ObjectHideFlags: 0

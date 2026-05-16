@@ -14,25 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_015
   displayName: Wave 15
-  duration: 30
-  completionMode: 1
+  duration: 65
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Boss Gate
-    triggerMode: 1
-    spawnFrequency: 1
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: High Density Mix
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 1.6
-    spawnCountPerBatch: 4
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Double Orange Check
-    triggerMode: 1
-    spawnFrequency: 0.01
-    spawnCountPerBatch: 2
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 70, y: 71}
+    spawnFrequency: 0.41025642
+    spawnCountPerBatch: 7
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 0, y: 15}

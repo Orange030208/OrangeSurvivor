@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: EvilSlimePropGroup
   m_EditorClassIdentifier: 
   values:
-  - propType: 0
-    value: 12
-  - propType: 1
-    value: 85
   - propType: 5
-    value: 28
-  - propType: 6
-    value: 500
+    value: 24
+  - propType: 0
+    value: 10
+  - propType: 1
+    value: 100
   - propType: 4
-    value: 430
+    value: 540
+  - propType: 6
+    value: 150
   - propType: 15
-    value: 130
+    value: 135
+  - propType: 8
+    value: 0
+  - propType: 19
+    value: 0

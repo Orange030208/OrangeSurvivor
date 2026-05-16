@@ -16,23 +16,10 @@ MonoBehaviour:
   accessoryDataList: {fileID: 11400000, guid: 6400ac5497a581e4c85acfb9a8c1f6b4, type: 2}
   characters:
   - {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
-  - {fileID: 11400000, guid: 5c39112dc0ec47ab97a88fd54e7cc044, type: 2}
-  - {fileID: 11400000, guid: 27b8ad3d487a4537b1dc6fc4579c55da, type: 2}
-  - {fileID: 11400000, guid: a44ee41531c74a118d4f589b00861c37, type: 2}
-  - {fileID: 11400000, guid: 485f1b46985b4de797c4ed7a9cb846cc, type: 2}
-  - {fileID: 11400000, guid: 274dbf8f382948528677a4b0ad5a1929, type: 2}
-  - {fileID: 11400000, guid: a9f7674d0baa4ce5a74b987fc129052d, type: 2}
-  - {fileID: 11400000, guid: a97e60e921fb4046a387cdb277d74f76, type: 2}
-  - {fileID: 11400000, guid: a01dc4142ed94b139a3a24ca012cbb57, type: 2}
-  - {fileID: 11400000, guid: caf8c092ffa84758abd61c03ecebd4a5, type: 2}
   - {fileID: 11400000, guid: 3b0f6b6eac555f5488aab965c25e198f, type: 2}
   - {fileID: 11400000, guid: 779feb7f8e664875ac8106fe82665d12, type: 2}
   - {fileID: 11400000, guid: d0775b4e05db4d8aa9934a7b11c3a409, type: 2}
   - {fileID: 11400000, guid: 861864ed7a9d49b0a70337c384fb154c, type: 2}
-  - {fileID: 11400000, guid: 1c1a5b8f0eae4f50a9da4dd4bc39eab7, type: 2}
-  - {fileID: 11400000, guid: 2741b479c1244e678d5cf51d21481e07, type: 2}
-  - {fileID: 11400000, guid: da6c3a5aee3c4dd1b2e27b82dedd7913, type: 2}
-  - {fileID: 11400000, guid: b9cd45e5335f439da776bace7ac9fe4a, type: 2}
   - {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
   playerLevelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
   runProgressionProfile: {fileID: 11400000, guid: 4cd17ac9c4b5df14fb25d788d036682f, type: 2}

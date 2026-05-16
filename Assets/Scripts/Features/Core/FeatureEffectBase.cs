@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IFeatureEffect
+public interface IFeature
 {
     FeatureContext Context { get; set; }
     string SourceId { get; set; }
@@ -12,7 +12,7 @@ public interface IFeatureEffect
 }
 
 [Serializable]
-public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribable
+public abstract class FeatureBase : IFeature, IDescribable
 {
     public FeatureContext Context { get; set; }
     public string SourceId { get; set; }
@@ -24,20 +24,6 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
     {
     }
 
-    //命中管线参与能力默认关闭，仅需要影响命中结算的 feature 重写以下成员
-    // 待办：后续添加编辑器条件渲染。
-    public virtual bool CanModifyHit => false;
-    
-    [SerializeField] protected HitModifierTiming hitModifierTiming = HitModifierTiming.Deal;
-    
-    public virtual int HitPriority => HitModifierPriority.Parameter;
-
-    public HitModifierTiming HitModifierTiming => hitModifierTiming;
-
-    public virtual void ModifyHit(HitContext hitContext)
-    {
-    }
-
     public virtual string Title { get; set; }
     public virtual Sprite Icon { get; set; }
     public virtual string Description { get; set; }
@@ -46,10 +32,10 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
         return new List<DescriptorInfo>();
     }
 
-    public virtual FeatureEffectBase CreateRuntimeCopy()
+    public virtual FeatureBase CreateRuntimeCopy()
     {
         Type type = GetType();
-        FeatureEffectBase copy = Activator.CreateInstance(type) as FeatureEffectBase;
+        FeatureBase copy = Activator.CreateInstance(type) as FeatureBase;
         if (copy == null)
         {
             return this;
@@ -59,7 +45,7 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
         return copy;
     }
 
-    private static void CopySerializableFields(FeatureEffectBase source, FeatureEffectBase target, Type type)
+    private static void CopySerializableFields(FeatureBase source, FeatureBase target, Type type)
     {
         while (type != null && type != typeof(object))
         {
@@ -89,5 +75,17 @@ public abstract class FeatureEffectBase : IFeatureEffect,IHitModifier,IDescribab
             type = type.BaseType;
         }
     }
+}
+
+[Serializable]
+public abstract class HitModifierFeatureBase : FeatureBase, IHitModifier
+{
+    [SerializeField] protected HitModifierTiming hitModifierTiming = HitModifierTiming.Deal;
+
+    public virtual int HitPriority => HitModifierPriority.Parameter;
+
+    public HitModifierTiming HitModifierTiming => hitModifierTiming;
+
+    public abstract void ModifyHit(HitContext hitContext);
 }
 

@@ -192,7 +192,7 @@ public abstract class FeatureSourceSOEditorBase : Editor
     private static List<Type> GetConcreteFeatureTypes()
     {
         List<Type> types = new();
-        foreach (Type type in TypeCache.GetTypesDerivedFrom<FeatureEffectBase>())
+        foreach (Type type in TypeCache.GetTypesDerivedFrom<FeatureBase>())
         {
             if (type.IsAbstract || type.IsGenericType)
             {

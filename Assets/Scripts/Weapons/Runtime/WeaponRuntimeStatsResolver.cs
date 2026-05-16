@@ -5,18 +5,18 @@ public readonly struct WeaponRuntimeStatsRequest
     public WeaponDataSO WeaponData { get; }
     public int Level { get; }
     public PropertiesManager PropertiesManager { get; }
-    public WeaponsHolder WeaponsHolder { get; }
+    public WeaponBenefitData WeaponBenefits { get; }
 
     public WeaponRuntimeStatsRequest(
         WeaponDataSO weaponData,
         int level,
         PropertiesManager propertiesManager,
-        WeaponsHolder weaponsHolder)
+        WeaponBenefitData weaponBenefits)
     {
         WeaponData = weaponData;
         Level = level;
         PropertiesManager = propertiesManager;
-        WeaponsHolder = weaponsHolder;
+        WeaponBenefits = weaponBenefits;
     }
 }
 
@@ -68,7 +68,7 @@ public sealed class WeaponRuntimeStatsResolver
         float weaponCriticalMultiplier = PropValueUtility.PercentPointsToRatio(weaponStats.CriticalPercent);
         float weaponRange = weaponStats.Range;
         float weaponKnockbackStrength = weaponStats.KnockbackStrength;
-        WeaponBenefitData benefits = ResolveWeaponBenefits(request.WeaponData, weaponStats, request.WeaponsHolder);
+        WeaponBenefitData benefits = ResolveWeaponBenefits(weaponStats, request.WeaponBenefits);
 
         float playerCriticalChance = benefits.ApplyToExternalValue(
             PropType.CriticalChance,
@@ -118,14 +118,10 @@ public sealed class WeaponRuntimeStatsResolver
     }
 
     private static WeaponBenefitData ResolveWeaponBenefits(
-        WeaponDataSO weaponData,
         WeaponLevelStatData weaponStats,
-        WeaponsHolder weaponsHolder)
+        WeaponBenefitData weaponBenefits)
     {
-        WeaponBenefitData benefits = weaponData.Benefits + weaponStats.GetAttackUsageBenefits();
-        return weaponsHolder != null
-            ? benefits + weaponsHolder.CurrentWeaponBenefitBonus
-            : benefits;
+        return weaponBenefits + weaponStats.StatBenefits;
     }
 
     private static float ResolveAttackTypeContribution(PropertiesManager propertiesManager, WeaponBenefitData benefits)

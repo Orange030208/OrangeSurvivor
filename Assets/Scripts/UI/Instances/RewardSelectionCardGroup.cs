@@ -69,7 +69,7 @@ public class RewardSelectionCardGroup : ViewPartBase
             container.Configure(new RewardSelectionCardBinding(
                 options[i],
                 i,
-                optionSelected,
+                null,
                 OnCardSubmitRequested));
         }
     }

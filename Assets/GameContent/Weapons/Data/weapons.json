@@ -1,0 +1,999 @@
+[
+  {
+    "weaponId": "Weapon_ArcaneBolt",
+    "itemName": "奥术弹",
+    "itemPrice": 26,
+    "itemDescription": "魔法精准单体，介于猎枪和法杖之间。",
+    "tags": [
+      "Precision"
+    ],
+    "openWave": 1,
+    "closeWave": 0,
+    "baseWeight": 70,
+    "visualForwardAngle": 0,
+    "holdAimWhenAttackReady": true,
+    "attackSequenceOccupancy": 0.85,
+    "attackTimingMode": "CompressedIntoAttackInterval",
+    "targetingMode": "DynamicClosest",
+    "spawnPoints": [
+      {
+        "id": "muzzle",
+        "localPosition": {
+          "x": 0,
+          "y": 0.15
+        },
+        "localRotationOffset": 0
+      }
+    ],
+    "enableHitBox": false,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 24,
+        "attackSpeed": 90,
+        "criticalChance": 6,
+        "criticalPercent": 175,
+        "range": 760,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 75,
+          "criticalPercentBenefitPercent": 80,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 100,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 33,
+        "attackSpeed": 96,
+        "criticalChance": 8,
+        "criticalPercent": 180,
+        "range": 800,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 78,
+          "criticalChanceBenefitPercent": 80,
+          "criticalPercentBenefitPercent": 85,
+          "rangeBenefitPercent": 95,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 112,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 46,
+        "attackSpeed": 104,
+        "criticalChance": 11,
+        "criticalPercent": 190,
+        "range": 840,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 82,
+          "criticalChanceBenefitPercent": 85,
+          "criticalPercentBenefitPercent": 90,
+          "rangeBenefitPercent": 100,
+          "knockbackStrengthBenefitPercent": 40,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 128,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 64,
+        "attackSpeed": 114,
+        "criticalChance": 15,
+        "criticalPercent": 205,
+        "range": 900,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 85,
+          "criticalChanceBenefitPercent": 90,
+          "criticalPercentBenefitPercent": 100,
+          "rangeBenefitPercent": 105,
+          "knockbackStrengthBenefitPercent": 40,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 150,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_DaggerRing",
+    "itemName": "匕首环",
+    "itemPrice": 24,
+    "itemDescription": "近战快速精准混合，范围短，安全性低。",
+    "tags": [
+      "Fast"
+    ],
+    "openWave": 2,
+    "closeWave": 0,
+    "baseWeight": 65,
+    "visualForwardAngle": 45,
+    "holdAimWhenAttackReady": false,
+    "attackSequenceOccupancy": 0.95,
+    "attackTimingMode": "FixedSequenceThenCooldown",
+    "targetingMode": "StableLock",
+    "spawnPoints": [],
+    "enableHitBox": true,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 12,
+        "attackSpeed": 160,
+        "criticalChance": 8,
+        "criticalPercent": 170,
+        "range": 130,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 70,
+          "criticalPercentBenefitPercent": 75,
+          "rangeBenefitPercent": 60,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 100,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 15,
+        "attackSpeed": 190,
+        "criticalChance": 10,
+        "criticalPercent": 175,
+        "range": 140,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 78,
+          "criticalChanceBenefitPercent": 75,
+          "criticalPercentBenefitPercent": 80,
+          "rangeBenefitPercent": 62,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 110,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 19,
+        "attackSpeed": 230,
+        "criticalChance": 13,
+        "criticalPercent": 185,
+        "range": 150,
+        "knockbackStrength": 5,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 80,
+          "criticalChanceBenefitPercent": 80,
+          "criticalPercentBenefitPercent": 85,
+          "rangeBenefitPercent": 65,
+          "knockbackStrengthBenefitPercent": 40,
+          "meleeAttackUsagePercent": 125,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 25,
+        "attackSpeed": 280,
+        "criticalChance": 17,
+        "criticalPercent": 200,
+        "range": 165,
+        "knockbackStrength": 5,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 82,
+          "criticalChanceBenefitPercent": 85,
+          "criticalPercentBenefitPercent": 95,
+          "rangeBenefitPercent": 70,
+          "knockbackStrengthBenefitPercent": 40,
+          "meleeAttackUsagePercent": 145,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_FireWand",
+    "itemName": "火焰法杖",
+    "itemPrice": 38,
+    "itemDescription": "强力武器，范围和魔法收益潜力高。成长标签暂按魔法构筑承载处理。",
+    "tags": [
+      "Growth"
+    ],
+    "openWave": 3,
+    "closeWave": 0,
+    "baseWeight": 45,
+    "visualForwardAngle": 0,
+    "holdAimWhenAttackReady": true,
+    "attackSequenceOccupancy": 0.85,
+    "attackTimingMode": "CompressedIntoAttackInterval",
+    "targetingMode": "DynamicClosest",
+    "spawnPoints": [
+      {
+        "id": "muzzle",
+        "localPosition": {
+          "x": 0,
+          "y": 0.15
+        },
+        "localRotationOffset": 0
+      }
+    ],
+    "enableHitBox": false,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 20,
+        "attackSpeed": 95,
+        "criticalChance": 4,
+        "criticalPercent": 170,
+        "range": 620,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 70,
+          "criticalChanceBenefitPercent": 60,
+          "criticalPercentBenefitPercent": 70,
+          "rangeBenefitPercent": 80,
+          "knockbackStrengthBenefitPercent": 30,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 110,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": [
+          {
+            "propType": "Damage",
+            "modifierType": "Add",
+            "value": 1
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "attack": 28,
+        "attackSpeed": 105,
+        "criticalChance": 5,
+        "criticalPercent": 175,
+        "range": 660,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 65,
+          "criticalPercentBenefitPercent": 75,
+          "rangeBenefitPercent": 85,
+          "knockbackStrengthBenefitPercent": 30,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 125,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": [
+          {
+            "propType": "Damage",
+            "modifierType": "Add",
+            "value": 1
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "attack": 40,
+        "attackSpeed": 115,
+        "criticalChance": 6,
+        "criticalPercent": 180,
+        "range": 700,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 80,
+          "criticalChanceBenefitPercent": 70,
+          "criticalPercentBenefitPercent": 80,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 145,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": [
+          {
+            "propType": "Damage",
+            "modifierType": "Add",
+            "value": 2
+          }
+        ]
+      },
+      {
+        "level": 4,
+        "attack": 58,
+        "attackSpeed": 130,
+        "criticalChance": 8,
+        "criticalPercent": 190,
+        "range": 760,
+        "knockbackStrength": 4,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 85,
+          "criticalChanceBenefitPercent": 75,
+          "criticalPercentBenefitPercent": 90,
+          "rangeBenefitPercent": 100,
+          "knockbackStrengthBenefitPercent": 35,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 170,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": [
+          {
+            "propType": "Damage",
+            "modifierType": "Add",
+            "value": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_GreatAxe",
+    "itemName": "巨斧",
+    "itemPrice": 42,
+    "itemDescription": "强力重型，范围和单次伤害高，攻速短板明显。",
+    "tags": [
+      "Heavy"
+    ],
+    "openWave": 5,
+    "closeWave": 0,
+    "baseWeight": 35,
+    "visualForwardAngle": 45,
+    "holdAimWhenAttackReady": false,
+    "attackSequenceOccupancy": 0.95,
+    "attackTimingMode": "FixedSequenceThenCooldown",
+    "targetingMode": "StableLock",
+    "spawnPoints": [],
+    "enableHitBox": true,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 52,
+        "attackSpeed": 45,
+        "criticalChance": 0,
+        "criticalPercent": 170,
+        "range": 190,
+        "knockbackStrength": 28,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 50,
+          "criticalChanceBenefitPercent": 55,
+          "criticalPercentBenefitPercent": 75,
+          "rangeBenefitPercent": 85,
+          "knockbackStrengthBenefitPercent": 80,
+          "meleeAttackUsagePercent": 110,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 76,
+        "attackSpeed": 48,
+        "criticalChance": 1,
+        "criticalPercent": 175,
+        "range": 210,
+        "knockbackStrength": 34,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 52,
+          "criticalChanceBenefitPercent": 60,
+          "criticalPercentBenefitPercent": 80,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 85,
+          "meleeAttackUsagePercent": 125,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 110,
+        "attackSpeed": 52,
+        "criticalChance": 3,
+        "criticalPercent": 185,
+        "range": 235,
+        "knockbackStrength": 42,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 55,
+          "criticalChanceBenefitPercent": 65,
+          "criticalPercentBenefitPercent": 85,
+          "rangeBenefitPercent": 95,
+          "knockbackStrengthBenefitPercent": 90,
+          "meleeAttackUsagePercent": 145,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 160,
+        "attackSpeed": 56,
+        "criticalChance": 5,
+        "criticalPercent": 200,
+        "range": 270,
+        "knockbackStrength": 52,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 58,
+          "criticalChanceBenefitPercent": 70,
+          "criticalPercentBenefitPercent": 95,
+          "rangeBenefitPercent": 100,
+          "knockbackStrengthBenefitPercent": 95,
+          "meleeAttackUsagePercent": 170,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_HuntingRifle",
+    "itemName": "猎枪",
+    "itemPrice": 28,
+    "itemDescription": "精准远程，暴击成长明显但攻速保守。",
+    "tags": [
+      "Precision"
+    ],
+    "openWave": 1,
+    "closeWave": 0,
+    "baseWeight": 70,
+    "visualForwardAngle": 0,
+    "holdAimWhenAttackReady": true,
+    "attackSequenceOccupancy": 0.85,
+    "attackTimingMode": "CompressedIntoAttackInterval",
+    "targetingMode": "DynamicClosest",
+    "spawnPoints": [
+      {
+        "id": "muzzle",
+        "localPosition": {
+          "x": 0,
+          "y": 0.15
+        },
+        "localRotationOffset": 0
+      }
+    ],
+    "enableHitBox": false,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 28,
+        "attackSpeed": 80,
+        "criticalChance": 10,
+        "criticalPercent": 180,
+        "range": 850,
+        "knockbackStrength": 6,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 70,
+          "criticalChanceBenefitPercent": 80,
+          "criticalPercentBenefitPercent": 90,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 55,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 100,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 38,
+        "attackSpeed": 84,
+        "criticalChance": 14,
+        "criticalPercent": 190,
+        "range": 900,
+        "knockbackStrength": 7,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 70,
+          "criticalChanceBenefitPercent": 85,
+          "criticalPercentBenefitPercent": 95,
+          "rangeBenefitPercent": 95,
+          "knockbackStrengthBenefitPercent": 60,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 110,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 52,
+        "attackSpeed": 88,
+        "criticalChance": 18,
+        "criticalPercent": 205,
+        "range": 950,
+        "knockbackStrength": 8,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 90,
+          "criticalPercentBenefitPercent": 100,
+          "rangeBenefitPercent": 100,
+          "knockbackStrengthBenefitPercent": 65,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 120,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 70,
+        "attackSpeed": 94,
+        "criticalChance": 24,
+        "criticalPercent": 225,
+        "range": 1020,
+        "knockbackStrength": 9,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 95,
+          "criticalPercentBenefitPercent": 110,
+          "rangeBenefitPercent": 105,
+          "knockbackStrengthBenefitPercent": 70,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 135,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_IronHammer",
+    "itemName": "铁锤",
+    "itemPrice": 25,
+    "itemDescription": "重型近战基准，单次命中强，攻速成长保守。",
+    "tags": [
+      "Heavy"
+    ],
+    "openWave": 1,
+    "closeWave": 0,
+    "baseWeight": 80,
+    "visualForwardAngle": 45,
+    "holdAimWhenAttackReady": false,
+    "attackSequenceOccupancy": 0.95,
+    "attackTimingMode": "FixedSequenceThenCooldown",
+    "targetingMode": "StableLock",
+    "spawnPoints": [],
+    "enableHitBox": true,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 36,
+        "attackSpeed": 55,
+        "criticalChance": 0,
+        "criticalPercent": 160,
+        "range": 150,
+        "knockbackStrength": 18,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 60,
+          "criticalChanceBenefitPercent": 60,
+          "criticalPercentBenefitPercent": 70,
+          "rangeBenefitPercent": 80,
+          "knockbackStrengthBenefitPercent": 70,
+          "meleeAttackUsagePercent": 80,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 52,
+        "attackSpeed": 58,
+        "criticalChance": 0,
+        "criticalPercent": 165,
+        "range": 165,
+        "knockbackStrength": 22,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 60,
+          "criticalChanceBenefitPercent": 60,
+          "criticalPercentBenefitPercent": 75,
+          "rangeBenefitPercent": 85,
+          "knockbackStrengthBenefitPercent": 75,
+          "meleeAttackUsagePercent": 90,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 72,
+        "attackSpeed": 62,
+        "criticalChance": 2,
+        "criticalPercent": 170,
+        "range": 180,
+        "knockbackStrength": 26,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 65,
+          "criticalChanceBenefitPercent": 65,
+          "criticalPercentBenefitPercent": 80,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 80,
+          "meleeAttackUsagePercent": 100,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 102,
+        "attackSpeed": 66,
+        "criticalChance": 4,
+        "criticalPercent": 180,
+        "range": 205,
+        "knockbackStrength": 32,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 65,
+          "criticalChanceBenefitPercent": 70,
+          "criticalPercentBenefitPercent": 85,
+          "rangeBenefitPercent": 95,
+          "knockbackStrengthBenefitPercent": 85,
+          "meleeAttackUsagePercent": 110,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_RapidSMG",
+    "itemName": "冲锋枪",
+    "itemPrice": 25,
+    "itemDescription": "快速武器，击退和暴击收益率保守。",
+    "tags": [
+      "Fast"
+    ],
+    "openWave": 1,
+    "closeWave": 0,
+    "baseWeight": 85,
+    "visualForwardAngle": 0,
+    "holdAimWhenAttackReady": true,
+    "attackSequenceOccupancy": 0.85,
+    "attackTimingMode": "CompressedIntoAttackInterval",
+    "targetingMode": "DynamicClosest",
+    "spawnPoints": [
+      {
+        "id": "muzzle",
+        "localPosition": {
+          "x": 0,
+          "y": 0.15
+        },
+        "localRotationOffset": 0
+      }
+    ],
+    "enableHitBox": false,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 9,
+        "attackSpeed": 210,
+        "criticalChance": 2,
+        "criticalPercent": 150,
+        "range": 650,
+        "knockbackStrength": 2,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 80,
+          "criticalChanceBenefitPercent": 40,
+          "criticalPercentBenefitPercent": 40,
+          "rangeBenefitPercent": 70,
+          "knockbackStrengthBenefitPercent": 25,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 100,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 2,
+        "attack": 11,
+        "attackSpeed": 250,
+        "criticalChance": 2,
+        "criticalPercent": 150,
+        "range": 680,
+        "knockbackStrength": 2,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 82,
+          "criticalChanceBenefitPercent": 40,
+          "criticalPercentBenefitPercent": 40,
+          "rangeBenefitPercent": 75,
+          "knockbackStrengthBenefitPercent": 25,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 110,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 3,
+        "attack": 14,
+        "attackSpeed": 295,
+        "criticalChance": 3,
+        "criticalPercent": 155,
+        "range": 710,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 84,
+          "criticalChanceBenefitPercent": 45,
+          "criticalPercentBenefitPercent": 45,
+          "rangeBenefitPercent": 80,
+          "knockbackStrengthBenefitPercent": 30,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 120,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      },
+      {
+        "level": 4,
+        "attack": 18,
+        "attackSpeed": 350,
+        "criticalChance": 4,
+        "criticalPercent": 160,
+        "range": 750,
+        "knockbackStrength": 3,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 85,
+          "criticalChanceBenefitPercent": 45,
+          "criticalPercentBenefitPercent": 45,
+          "rangeBenefitPercent": 85,
+          "knockbackStrengthBenefitPercent": 30,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 135,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 0
+        },
+        "holderModifiers": []
+      }
+    ]
+  },
+  {
+    "weaponId": "Weapon_SummonOrb",
+    "itemName": "召唤法球",
+    "itemPrice": 40,
+    "itemDescription": "召唤构筑入口，基础较慢但收益率高。",
+    "tags": [
+      "Growth"
+    ],
+    "openWave": 4,
+    "closeWave": 0,
+    "baseWeight": 35,
+    "visualForwardAngle": 0,
+    "holdAimWhenAttackReady": true,
+    "attackSequenceOccupancy": 0.85,
+    "attackTimingMode": "CompressedIntoAttackInterval",
+    "targetingMode": "DynamicClosest",
+    "spawnPoints": [
+      {
+        "id": "muzzle",
+        "localPosition": {
+          "x": 0,
+          "y": 0.15
+        },
+        "localRotationOffset": 0
+      }
+    ],
+    "enableHitBox": false,
+    "hitBoxSize": {
+      "x": 1,
+      "y": 1
+    },
+    "hitBoxOffset": {
+      "x": 0,
+      "y": 0
+    },
+    "levelStats": [
+      {
+        "level": 1,
+        "attack": 16,
+        "attackSpeed": 75,
+        "criticalChance": 0,
+        "criticalPercent": 160,
+        "range": 700,
+        "knockbackStrength": 0,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 60,
+          "criticalChanceBenefitPercent": 40,
+          "criticalPercentBenefitPercent": 50,
+          "rangeBenefitPercent": 80,
+          "knockbackStrengthBenefitPercent": 20,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 120
+        },
+        "holderModifiers": [
+          {
+            "propType": "SummonAttack",
+            "modifierType": "Add",
+            "value": 1
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "attack": 22,
+        "attackSpeed": 82,
+        "criticalChance": 0,
+        "criticalPercent": 160,
+        "range": 730,
+        "knockbackStrength": 0,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 65,
+          "criticalChanceBenefitPercent": 45,
+          "criticalPercentBenefitPercent": 55,
+          "rangeBenefitPercent": 85,
+          "knockbackStrengthBenefitPercent": 20,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 140
+        },
+        "holderModifiers": [
+          {
+            "propType": "SummonAttack",
+            "modifierType": "Add",
+            "value": 2
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "attack": 32,
+        "attackSpeed": 90,
+        "criticalChance": 2,
+        "criticalPercent": 165,
+        "range": 760,
+        "knockbackStrength": 1,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 70,
+          "criticalChanceBenefitPercent": 50,
+          "criticalPercentBenefitPercent": 60,
+          "rangeBenefitPercent": 90,
+          "knockbackStrengthBenefitPercent": 25,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 165
+        },
+        "holderModifiers": [
+          {
+            "propType": "SummonAttack",
+            "modifierType": "Add",
+            "value": 3
+          }
+        ]
+      },
+      {
+        "level": 4,
+        "attack": 46,
+        "attackSpeed": 100,
+        "criticalChance": 4,
+        "criticalPercent": 170,
+        "range": 820,
+        "knockbackStrength": 1,
+        "statBenefits": {
+          "attackSpeedBenefitPercent": 75,
+          "criticalChanceBenefitPercent": 55,
+          "criticalPercentBenefitPercent": 65,
+          "rangeBenefitPercent": 100,
+          "knockbackStrengthBenefitPercent": 25,
+          "meleeAttackUsagePercent": 0,
+          "rangedAttackUsagePercent": 0,
+          "magicAttackUsagePercent": 0,
+          "summonAttackUsagePercent": 195
+        },
+        "holderModifiers": [
+          {
+            "propType": "SummonAttack",
+            "modifierType": "Add",
+            "value": 4
+          }
+        ]
+      }
+    ]
+  }
+]

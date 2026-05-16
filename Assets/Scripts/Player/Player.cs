@@ -37,7 +37,7 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     
     public IReadOnlyList<PropModifierData> PropModifierDataList => characterData.ExtraProps;
 
-    public IReadOnlyList<FeatureEffectBase> FeatureEffects => characterData.SpecialFeatures;
+    public IReadOnlyList<FeatureBase> FeatureEffects => characterData.SpecialFeatures;
 
     private void Awake()
     {

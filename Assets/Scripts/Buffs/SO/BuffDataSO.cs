@@ -33,7 +33,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
     [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]
-    [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
+    [SerializeReference] private List<FeatureBase> specialFeatures = new();
 
     public string BuffId => buffId;
     public string DisplayName => displayName;
@@ -56,7 +56,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
     public BuffOverflowMode OverflowMode => overflowMode;
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
-    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+    public IReadOnlyList<FeatureBase> SpecialFeatures => specialFeatures;
 
     private string BuildDescription()
     {
@@ -92,6 +92,6 @@ public class BuffDataSO : ScriptableObject, IDescribable
         durationSeconds = Mathf.Max(MIN_DURATION_SECONDS, durationSeconds);
         maxStackCount = Mathf.Max(MIN_STACK_COUNT, maxStackCount);
         propertyModifiers ??= new List<PropModifierData>();
-        specialFeatures ??= new List<FeatureEffectBase>();
+        specialFeatures ??= new List<FeatureBase>();
     }
 }

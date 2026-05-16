@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: OrangeGolemPropGroup
   m_EditorClassIdentifier: 
   values:
-  - propType: 0
-    value: 36
-  - propType: 1
-    value: 40
   - propType: 5
-    value: 115
-  - propType: 6
-    value: 500
+    value: 150
+  - propType: 0
+    value: 34
+  - propType: 1
+    value: 38
   - propType: 4
-    value: 220
+    value: 230
+  - propType: 6
+    value: 280
   - propType: 15
-    value: 220
+    value: 235
   - propType: 8
-    value: 6
+    value: 4
   - propType: 19
-    value: 50
+    value: 55

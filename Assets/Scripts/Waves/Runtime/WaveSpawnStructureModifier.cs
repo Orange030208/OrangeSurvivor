@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 只调整刷怪轨道节奏；敌人类型、标签和权重必须配置在 WaveSpawn ContentPool 中。
 /// </summary>
-public sealed class WaveSpawnStructureModifier : WaveSpawnModifierEffect
+public sealed class WaveSpawnStructureModifier : WaveSpawnModifier
 {
     [SerializeField] private string targetTrackId;
     [SerializeField] private float frequencyMultiplier = 1f;

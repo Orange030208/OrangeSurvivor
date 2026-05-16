@@ -23,7 +23,6 @@ public static class GameContentCatalogBuildUtility
     private const string WaveSpawnPoolPath = GameContentAssetPaths.WaveSpawnPool;
     private const string WeaponRewardPoolPath = GameContentAssetPaths.WeaponRewardPool;
     private const float DefaultAccessoryWeight = 2f;
-    private const float DefaultWeaponWeight = 1f;
 
     [MenuItem("Survivors/Content/Rebuild Runtime Content Catalog")]
     public static void RebuildRuntimeContentCatalog()
@@ -161,26 +160,6 @@ public static class GameContentCatalogBuildUtility
         weaponDataList.RefreshWeapons();
     }
 
-    private static List<ContentPoolEntry> BuildUpgradeCardEntries()
-    {
-        List<ContentPoolEntry> entries = new();
-        foreach (UpgradeCardSO card in LoadAssets<UpgradeCardSO>(GameContentAssetPaths.UpgradeCards))
-        {
-            if (card == null)
-            {
-                continue;
-            }
-
-            ContentPoolEntry entry = UpgradeCardContentPoolTuningUtility.CreateEntry(card);
-            if (entry != null)
-            {
-                entries.Add(entry);
-            }
-        }
-
-        return entries;
-    }
-
     private static List<ContentPoolEntry> BuildChestRewardEntries()
     {
         List<ContentPoolEntry> entries = new();
@@ -217,15 +196,57 @@ public static class GameContentCatalogBuildUtility
 
             for (int level = WeaponLevelHelper.MinLevel; level <= WeaponLevelHelper.MaxLevel; level++)
             {
-                ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, $"{weapon.ItemName}_Lv{level}");
-                entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+                ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateShopEntry(weapon, level);
+                if (entry == null)
                 {
-                    new WeaponLevelRollMetadata(level, level),
-                    new ShopPricingMetadata(1f)
-                });
+                    continue;
+                }
+
                 entry.ConfigureRuntimeRules(
-                    null,
+                    WeaponContentPoolTuningUtility.BuildAvailabilityConditions(weapon),
                     new[] { CreateLuckWeightRule(GetWeaponLevelLuckCoefficient(level), 0.5f) });
+                entries.Add(entry);
+            }
+        }
+
+        return entries;
+    }
+
+    private static List<ContentPoolEntry> BuildWeaponRewardEntries()
+    {
+        List<ContentPoolEntry> entries = new();
+        foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
+        {
+            if (weapon == null)
+            {
+                continue;
+            }
+
+            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(weapon);
+            if (entry == null)
+            {
+                continue;
+            }
+
+            entries.Add(entry);
+        }
+
+        return entries;
+    }
+
+    private static List<ContentPoolEntry> BuildUpgradeCardEntries()
+    {
+        List<ContentPoolEntry> entries = new();
+        foreach (UpgradeCardSO card in LoadAssets<UpgradeCardSO>(GameContentAssetPaths.UpgradeCards))
+        {
+            if (card == null)
+            {
+                continue;
+            }
+
+            ContentPoolEntry entry = UpgradeCardContentPoolTuningUtility.CreateEntry(card);
+            if (entry != null)
+            {
                 entries.Add(entry);
             }
         }
@@ -254,27 +275,6 @@ public static class GameContentCatalogBuildUtility
                     new[] { CreateLuckWeightRule(0.8f, 0.5f) });
             }
 
-            entries.Add(entry);
-        }
-
-        return entries;
-    }
-
-    private static List<ContentPoolEntry> BuildWeaponRewardEntries()
-    {
-        List<ContentPoolEntry> entries = new();
-        foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
-        {
-            if (weapon == null)
-            {
-                continue;
-            }
-
-            ContentPoolEntry entry = new(weapon, DefaultWeaponWeight, weapon.ItemName);
-            entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
-            {
-                new WeaponLevelRollMetadata(WeaponLevelHelper.MinLevel, WeaponLevelHelper.MaxLevel)
-            });
             entries.Add(entry);
         }
 

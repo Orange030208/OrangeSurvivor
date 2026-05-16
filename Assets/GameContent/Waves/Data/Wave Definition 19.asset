@@ -14,24 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_019
   displayName: Wave 19
-  duration: 30
+  duration: 55
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Final Pressure Mix
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 2
-    spawnCountPerBatch: 5
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Orange March
-    triggerMode: 0
-    spawnFrequency: 0.04
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 4
-    normalizedTimeRange: {x: 20, y: 100}
-  - trackId: Final Swarm Surge
-    triggerMode: 1
-    spawnFrequency: 0.01
-    spawnCountPerBatch: 14
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 75, y: 76}
+    spawnFrequency: 0.6363636
+    spawnCountPerBatch: 8
+    maxSpawnBatches: 7
+    normalizedTimeRange: {x: 0, y: 20}

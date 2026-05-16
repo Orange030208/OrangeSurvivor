@@ -14,24 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_012
   displayName: Wave 12
-  duration: 30
+  duration: 50
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Split Pressure
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 1.35
-    spawnCountPerBatch: 4
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Mid Raid
-    triggerMode: 1
-    spawnFrequency: 0.01
+    spawnFrequency: 0.4
     spawnCountPerBatch: 8
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 45, y: 46}
-  - trackId: Orange Golem Late
-    triggerMode: 1
-    spawnFrequency: 0.01
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 78, y: 79}
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 0, y: 20}

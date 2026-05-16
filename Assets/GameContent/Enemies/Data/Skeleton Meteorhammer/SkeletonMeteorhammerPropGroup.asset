@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: SkeletonMeteorhammerPropGroup
   m_EditorClassIdentifier: 
   values:
+  - propType: 5
+    value: 70
   - propType: 0
     value: 20
   - propType: 1
     value: 60
-  - propType: 5
-    value: 45
-  - propType: 6
-    value: 600
   - propType: 4
-    value: 360
+    value: 340
+  - propType: 6
+    value: 250
   - propType: 15
-    value: 220
+    value: 230
+  - propType: 8
+    value: 0
+  - propType: 19
+    value: 8

@@ -32,6 +32,20 @@ public readonly struct DropSourceInfo
     }
 }
 
+public readonly struct DropRollResult
+{
+    public DropRollResult(CollectionSO collection, int quantity = 1)
+    {
+        Collection = collection;
+        Quantity = Mathf.Max(1, quantity);
+    }
+
+    public static DropRollResult None => new(null, 1);
+
+    public CollectionSO Collection { get; }
+    public int Quantity { get; }
+}
+
 [Serializable]
 public sealed class DropSourceRuleData
 {
@@ -130,6 +144,7 @@ public sealed class DropProductRuleData
     [SerializeField] private CollectionSO product;
     [SerializeField, Min(0f)] private float baseWeight = 1f;
     [SerializeField] private float luckCoefficient;
+    [SerializeField, Min(1)] private int quantity = 1;
 
     public DropProductRuleData()
     {
@@ -138,27 +153,32 @@ public sealed class DropProductRuleData
     public DropProductRuleData(
         CollectionSO product,
         float baseWeight,
-        float luckCoefficient = 0f)
+        float luckCoefficient = 0f,
+        int quantity = 1)
     {
         this.product = product;
         this.baseWeight = Mathf.Max(0f, baseWeight);
         this.luckCoefficient = luckCoefficient;
+        this.quantity = Mathf.Max(1, quantity);
     }
 
     public DropProductRuleData(
         ContentPoolSO productPool,
         float baseWeight,
-        float luckCoefficient = 0f)
+        float luckCoefficient = 0f,
+        int quantity = 1)
     {
         this.productPool = productPool;
         this.baseWeight = Mathf.Max(0f, baseWeight);
         this.luckCoefficient = luckCoefficient;
+        this.quantity = Mathf.Max(1, quantity);
     }
 
     public ContentPoolSO ProductPool => productPool;
     public CollectionSO Product => product;
     public float BaseWeight => Mathf.Max(0f, baseWeight);
     public float LuckCoefficient => luckCoefficient;
+    public int Quantity => Mathf.Max(1, quantity);
 
     public ContentPoolEntry CreateEntry(ContentPoolSO fallbackPool, int index)
     {
@@ -169,6 +189,10 @@ public sealed class DropProductRuleData
         }
 
         ContentPoolEntry entry = new(content, BaseWeight, ResolveEntryId(content, index));
+        entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
+        {
+            new DropQuantityMetadata(Quantity)
+        });
         if (!Mathf.Approximately(luckCoefficient, 0f))
         {
             entry.ConfigureRuntimeRules(

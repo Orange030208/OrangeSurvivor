@@ -1,0 +1,1539 @@
+[
+  {
+    "cardId": "Upgrade_Damage_Common",
+    "title": "伤害强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack"
+    ],
+    "description": "最通用输出卡，作为输出预算锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Damage_Rare",
+    "title": "伤害强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack"
+    ],
+    "description": "最通用输出卡，作为输出预算锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Damage_Epic",
+    "title": "伤害强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack"
+    ],
+    "description": "最通用输出卡，作为输出预算锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Damage_Legendary",
+    "title": "伤害强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack"
+    ],
+    "description": "最通用输出卡，作为输出预算锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackSpeed_Common",
+    "title": "攻速强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "AttackSpeed"
+    ],
+    "description": "高频触发武器会放大该属性，依赖武器收益率限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackSpeed_Rare",
+    "title": "攻速强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "AttackSpeed"
+    ],
+    "description": "高频触发武器会放大该属性，依赖武器收益率限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackSpeed_Epic",
+    "title": "攻速强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "AttackSpeed"
+    ],
+    "description": "高频触发武器会放大该属性，依赖武器收益率限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackSpeed_Legendary",
+    "title": "攻速强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "AttackSpeed"
+    ],
+    "description": "高频触发武器会放大该属性，依赖武器收益率限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MeleeAttack_Common",
+    "title": "近战训练-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Melee"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MeleeAttack_Rare",
+    "title": "近战训练-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Melee"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MeleeAttack_Epic",
+    "title": "近战训练-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Melee"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MeleeAttack_Legendary",
+    "title": "近战训练-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Melee"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_RangedAttack_Common",
+    "title": "远程训练-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Ranged"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_RangedAttack_Rare",
+    "title": "远程训练-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Ranged"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_RangedAttack_Epic",
+    "title": "远程训练-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Ranged"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_RangedAttack_Legendary",
+    "title": "远程训练-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Weapon",
+      "Ranged"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MagicAttack_Common",
+    "title": "魔法训练-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MagicAttack_Rare",
+    "title": "魔法训练-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MagicAttack_Epic",
+    "title": "魔法训练-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MagicAttack_Legendary",
+    "title": "魔法训练-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_SummonAttack_Common",
+    "title": "召唤训练-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_SummonAttack_Rare",
+    "title": "召唤训练-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_SummonAttack_Epic",
+    "title": "召唤训练-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_SummonAttack_Legendary",
+    "title": "召唤训练-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Weapon"
+    ],
+    "description": "四类攻击卡权重略低于通用输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalChance_Common",
+    "title": "暴击率强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "暴击率是乘法入口，权重低于普通输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalChance_Rare",
+    "title": "暴击率强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "暴击率是乘法入口，权重低于普通输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalChance_Epic",
+    "title": "暴击率强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "暴击率是乘法入口，权重低于普通输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 4.5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalChance_Legendary",
+    "title": "暴击率强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "暴击率是乘法入口，权重低于普通输出卡。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 7
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalPercent_Common",
+    "title": "暴击伤害强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "后期属性；低暴击率构筑拿到时实际收益偏低。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalPercent_Rare",
+    "title": "暴击伤害强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "后期属性；低暴击率构筑拿到时实际收益偏低。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 13
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalPercent_Epic",
+    "title": "暴击伤害强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "后期属性；低暴击率构筑拿到时实际收益偏低。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 19
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_CriticalPercent_Legendary",
+    "title": "暴击伤害强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Attack",
+      "Critical"
+    ],
+    "description": "后期属性；低暴击率构筑拿到时实际收益偏低。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 29
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MaxHealth_Common",
+    "title": "生命强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Defense"
+    ],
+    "description": "生存基础锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 20
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MaxHealth_Rare",
+    "title": "生命强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Defense"
+    ],
+    "description": "生存基础锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 30
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MaxHealth_Epic",
+    "title": "生命强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Defense"
+    ],
+    "description": "生存基础锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 45
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MaxHealth_Legendary",
+    "title": "生命强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Defense"
+    ],
+    "description": "生存基础锚点。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 70
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_HealthRecovery_Common",
+    "title": "生命恢复强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Defense"
+    ],
+    "description": "当前实战中稳定性高，不能和多条生存链路无脑叠满。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 10
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_HealthRecovery_Rare",
+    "title": "生命恢复强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Defense"
+    ],
+    "description": "当前实战中稳定性高，不能和多条生存链路无脑叠满。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 15
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_HealthRecovery_Epic",
+    "title": "生命恢复强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Defense"
+    ],
+    "description": "当前实战中稳定性高，不能和多条生存链路无脑叠满。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 22
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_HealthRecovery_Legendary",
+    "title": "生命恢复强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Defense"
+    ],
+    "description": "当前实战中稳定性高，不能和多条生存链路无脑叠满。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 35
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Armor_Rare",
+    "title": "护甲强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Defense"
+    ],
+    "description": "单点价值高，不提供 Common 档。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Armor",
+          "modifierType": "Add",
+          "value": 2
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Armor_Epic",
+    "title": "护甲强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Defense"
+    ],
+    "description": "单点价值高，不提供 Common 档。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Armor",
+          "modifierType": "Add",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Armor_Legendary",
+    "title": "护甲强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Defense"
+    ],
+    "description": "单点价值高，不提供 Common 档。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Armor",
+          "modifierType": "Add",
+          "value": 4
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_DamageReduction_Common",
+    "title": "减伤强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Defense"
+    ],
+    "description": "与护甲、闪避、回复复合放大，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 4
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_DamageReduction_Rare",
+    "title": "减伤强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Defense"
+    ],
+    "description": "与护甲、闪避、回复复合放大，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 6
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_DamageReduction_Epic",
+    "title": "减伤强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Defense"
+    ],
+    "description": "与护甲、闪避、回复复合放大，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 9
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_DamageReduction_Legendary",
+    "title": "减伤强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Defense"
+    ],
+    "description": "与护甲、闪避、回复复合放大，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 14
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Dodge_Common",
+    "title": "闪避强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Defense"
+    ],
+    "description": "有效闪避上限为 50%，重复选择后实际收益受上限限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 3
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Dodge_Rare",
+    "title": "闪避强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Defense"
+    ],
+    "description": "有效闪避上限为 50%，重复选择后实际收益受上限限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Dodge_Epic",
+    "title": "闪避强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Defense"
+    ],
+    "description": "有效闪避上限为 50%，重复选择后实际收益受上限限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 7
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Dodge_Legendary",
+    "title": "闪避强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Defense"
+    ],
+    "description": "有效闪避上限为 50%，重复选择后实际收益受上限限制。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 10
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MoveSpeed_Common",
+    "title": "移速强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "手感属性，数值过高会降低怪物压力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 10
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MoveSpeed_Rare",
+    "title": "移速强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "手感属性，数值过高会降低怪物压力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 15
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MoveSpeed_Epic",
+    "title": "移速强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "手感属性，数值过高会降低怪物压力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 22
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_MoveSpeed_Legendary",
+    "title": "移速强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "手感属性，数值过高会降低怪物压力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 35
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackRange_Common",
+    "title": "攻击范围强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "远程和近战命中覆盖都会受益。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 12
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackRange_Rare",
+    "title": "攻击范围强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "远程和近战命中覆盖都会受益。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 19
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackRange_Epic",
+    "title": "攻击范围强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "远程和近战命中覆盖都会受益。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 28
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_AttackRange_Legendary",
+    "title": "攻击范围强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "MoveSpeed"
+    ],
+    "description": "远程和近战命中覆盖都会受益。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 44
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_PickupRadius_Common",
+    "title": "拾取范围强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Pickup"
+    ],
+    "description": "主要改善拾取效率，不直接提高战斗力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "PickupRadius",
+          "modifierType": "Add",
+          "value": 20
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_PickupRadius_Rare",
+    "title": "拾取范围强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Pickup"
+    ],
+    "description": "主要改善拾取效率，不直接提高战斗力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "PickupRadius",
+          "modifierType": "Add",
+          "value": 30
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_PickupRadius_Epic",
+    "title": "拾取范围强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Pickup"
+    ],
+    "description": "主要改善拾取效率，不直接提高战斗力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "PickupRadius",
+          "modifierType": "Add",
+          "value": 45
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_PickupRadius_Legendary",
+    "title": "拾取范围强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Pickup"
+    ],
+    "description": "主要改善拾取效率，不直接提高战斗力。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "PickupRadius",
+          "modifierType": "Add",
+          "value": 70
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Luck_Common",
+    "title": "幸运强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Economy"
+    ],
+    "description": "同时影响商店和奖励入口，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 5
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Luck_Rare",
+    "title": "幸运强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Economy"
+    ],
+    "description": "同时影响商店和奖励入口，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Luck_Epic",
+    "title": "幸运强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Economy"
+    ],
+    "description": "同时影响商店和奖励入口，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 11
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_Luck_Legendary",
+    "title": "幸运强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Economy"
+    ],
+    "description": "同时影响商店和奖励入口，权重保守。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 17
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ExperienceGain_Common",
+    "title": "经验强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Economy"
+    ],
+    "description": "早拿强、晚拿弱；12 波后不再进入普通升级池。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ExperienceGain",
+          "modifierType": "Add",
+          "value": 7
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ExperienceGain_Rare",
+    "title": "经验强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Economy"
+    ],
+    "description": "早拿强、晚拿弱；12 波后不再进入普通升级池。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ExperienceGain",
+          "modifierType": "Add",
+          "value": 10
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ExperienceGain_Epic",
+    "title": "经验强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Economy"
+    ],
+    "description": "早拿强、晚拿弱；12 波后不再进入普通升级池。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ExperienceGain",
+          "modifierType": "Add",
+          "value": 15
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ExperienceGain_Legendary",
+    "title": "经验强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Economy"
+    ],
+    "description": "早拿强、晚拿弱；12 波后不再进入普通升级池。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ExperienceGain",
+          "modifierType": "Add",
+          "value": 23
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ShopDiscount_Common",
+    "title": "商店折扣强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Economy"
+    ],
+    "description": "受 50% 有效折扣上限限制，重复后边际下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ShopPriceDiscount",
+          "modifierType": "Add",
+          "value": 7
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ShopDiscount_Rare",
+    "title": "商店折扣强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Economy"
+    ],
+    "description": "受 50% 有效折扣上限限制，重复后边际下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ShopPriceDiscount",
+          "modifierType": "Add",
+          "value": 10
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ShopDiscount_Epic",
+    "title": "商店折扣强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Economy"
+    ],
+    "description": "受 50% 有效折扣上限限制，重复后边际下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ShopPriceDiscount",
+          "modifierType": "Add",
+          "value": 15
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_ShopDiscount_Legendary",
+    "title": "商店折扣强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Economy"
+    ],
+    "description": "受 50% 有效折扣上限限制，重复后边际下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "ShopPriceDiscount",
+          "modifierType": "Add",
+          "value": 23
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_WaveGoldBonus_Common",
+    "title": "波次金币强化-普通",
+    "rarity": "Common",
+    "tags": [
+      "Economy"
+    ],
+    "description": "只适合前中期；10 波后价值明显下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "WaveGoldRewardBonus",
+          "modifierType": "Add",
+          "value": 8
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_WaveGoldBonus_Rare",
+    "title": "波次金币强化-稀有",
+    "rarity": "Rare",
+    "tags": [
+      "Economy"
+    ],
+    "description": "只适合前中期；10 波后价值明显下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "WaveGoldRewardBonus",
+          "modifierType": "Add",
+          "value": 12
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_WaveGoldBonus_Epic",
+    "title": "波次金币强化-史诗",
+    "rarity": "Epic",
+    "tags": [
+      "Economy"
+    ],
+    "description": "只适合前中期；10 波后价值明显下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "WaveGoldRewardBonus",
+          "modifierType": "Add",
+          "value": 18
+        }
+      }
+    ]
+  },
+  {
+    "cardId": "Upgrade_WaveGoldBonus_Legendary",
+    "title": "波次金币强化-传说",
+    "rarity": "Legendary",
+    "tags": [
+      "Economy"
+    ],
+    "description": "只适合前中期；10 波后价值明显下降。",
+    "specialFeatures": [
+      {
+        "type": "PropertyModifierFeature",
+        "modifier": {
+          "propType": "WaveGoldRewardBonus",
+          "modifierType": "Add",
+          "value": 28
+        }
+      }
+    ]
+  }
+]

@@ -14,18 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_006
   displayName: Wave 6
-  duration: 30
+  duration: 45
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Mixed Swarm
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 0.9
-    spawnCountPerBatch: 3
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Fast Pressure
-    triggerMode: 0
-    spawnFrequency: 0.45
-    spawnCountPerBatch: 2
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 35, y: 100}
+    spawnFrequency: 0.44444445
+    spawnCountPerBatch: 4
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 0, y: 20}

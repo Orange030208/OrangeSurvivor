@@ -3,34 +3,28 @@ using System.Collections.Generic;
 
 public static class UpgradeCardContentPoolTuningUtility
 {
-    private const float DefaultPreviousOfferMultiplier = 0.5f;
-
-    public static ContentPoolEntry CreateEntry(UpgradeCardSO card)
+    public static ContentPoolEntry CreateEntry(UpgradeCardSO card, float baseWeight = 1f)
     {
         if (card == null)
         {
             return null;
         }
 
-        ContentPoolEntry entry = new(card, GetBaseWeight(card.Rarity), card.CardId);
+        ContentPoolEntry entry = new(card, baseWeight, card.CardId);
         entry.ConfigureRuntimeLimits(0, UpgradeCardSO.UNLIMITED_PICK_COUNT);
         entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
         {
             new QualityMetadata((int)card.Rarity)
         });
-        entry.ConfigureRuntimeRules(null, BuildUpgradeCardWeightRules());
+        entry.ConfigureRuntimeRules(BuildUpgradeCardConditions(), BuildUpgradeCardWeightRules());
         return entry;
     }
 
-    private static float GetBaseWeight(UpgradeCardRarity rarity)
+    private static List<ContentCondition> BuildUpgradeCardConditions()
     {
-        return rarity switch
+        return new List<ContentCondition>
         {
-            UpgradeCardRarity.Common => 100f,
-            UpgradeCardRarity.Rare => 45f,
-            UpgradeCardRarity.Epic => 12f,
-            UpgradeCardRarity.Legendary => 3f,
-            _ => 0f
+            new CurrentWaveCondition(ContentComparisonOperator.GreaterOrEqual, 1)
         };
     }
 
@@ -38,7 +32,7 @@ public static class UpgradeCardContentPoolTuningUtility
     {
         return new List<ContentWeightRule>
         {
-            new PreviousRollWeightContentRule(DefaultPreviousOfferMultiplier)
+            new PreviousRollWeightContentRule(1f)
         };
     }
 }

@@ -14,24 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_016
   displayName: Wave 16
-  duration: 30
+  duration: 55
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Late Game Mix
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 1.7
-    spawnCountPerBatch: 4
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Fast Raid
-    triggerMode: 1
-    spawnFrequency: 0.01
-    spawnCountPerBatch: 10
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 35, y: 36}
-  - trackId: Elite March
-    triggerMode: 0
-    spawnFrequency: 0.08
-    spawnCountPerBatch: 1
+    spawnFrequency: 0.54545456
+    spawnCountPerBatch: 8
     maxSpawnBatches: 6
-    normalizedTimeRange: {x: 25, y: 100}
+    normalizedTimeRange: {x: 0, y: 20}

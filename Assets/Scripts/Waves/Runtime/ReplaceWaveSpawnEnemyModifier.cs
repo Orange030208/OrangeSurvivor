@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class ReplaceWaveSpawnEnemyModifier : WaveSpawnModifierEffect
+public sealed class ReplaceWaveSpawnEnemyModifier : WaveSpawnModifier
 {
     [SerializeField] private EnemySO sourceEnemyDefinition;
     [SerializeField] private WaveEnemyTag sourceTags = WaveEnemyTag.Normal;

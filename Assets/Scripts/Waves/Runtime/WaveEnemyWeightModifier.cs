@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 刷怪权重 Modifier 直接作用于 WaveSpawn ContentPool 候选，不再维护旧的波次敌人候选列表。
 /// </summary>
-public sealed class WaveEnemyWeightModifier : FeatureEffectBase, IContentPoolModifier
+public sealed class WaveEnemyWeightModifier : FeatureBase, IContentPoolModifier
 {
     [SerializeField] private int priority;
     [SerializeField] private int minWaveNumber = 1;

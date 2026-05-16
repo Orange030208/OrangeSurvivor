@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
@@ -12,6 +12,7 @@ using UnityEngine.TestTools;
 public sealed class RewardSelectionTests
 {
     private readonly List<UnityEngine.Object> createdObjects = new();
+    private CardQualityPresentationCatalogSO testQualityCatalog;
 
     [TearDown]
     public void TearDown()
@@ -36,6 +37,8 @@ public sealed class RewardSelectionTests
         RewardSelectionCardGroup group = groupObject.AddComponent<RewardSelectionCardGroup>();
         UpgradeRewardCardView upgradePrefab = CreateViewPrefab<UpgradeRewardCardView>("Upgrade Prefab");
         EquipmentRewardCardView equipmentPrefab = CreateViewPrefab<EquipmentRewardCardView>("Equipment Prefab");
+        AssignTestQualityCatalog(upgradePrefab);
+        AssignTestQualityCatalog(equipmentPrefab);
         SetPrefabMappings(
             group,
             new RewardCardPrefabEntry(RewardCardStyle.UpgradeCard, upgradePrefab),
@@ -72,12 +75,18 @@ public sealed class RewardSelectionTests
         StringAssert.Contains(nameof(RewardCardStyle.EquipmentReward), exception.Message);
     }
 
-    [Test]
-    public async Task RewardSelectionCardGroupDefersSelectionCallbackUntilSubmitAnimationsComplete()
+    [UnityTest]
+    public IEnumerator RewardSelectionCardGroupDefersSelectionCallbackUntilSubmitAnimationsComplete()
+    {
+        return RewardSelectionCardGroupDefersSelectionCallbackUntilSubmitAnimationsCompleteAsync().ToCoroutine();
+    }
+
+    private async UniTask RewardSelectionCardGroupDefersSelectionCallbackUntilSubmitAnimationsCompleteAsync()
     {
         GameObject groupObject = CreateGameObject("Reward Card Group");
         RewardSelectionCardGroup group = groupObject.AddComponent<RewardSelectionCardGroup>();
         TestRewardSelectionCardView upgradePrefab = CreateViewPrefab<TestRewardSelectionCardView>("Test Upgrade Prefab");
+        AssignTestQualityCatalog(upgradePrefab);
         SetPrefabMappings(group, new RewardCardPrefabEntry(RewardCardStyle.UpgradeCard, upgradePrefab));
 
         int callbackCount = 0;
@@ -116,7 +125,7 @@ public sealed class RewardSelectionTests
         Assert.AreEqual(0, callbackCount);
 
         third.CompleteRejectedSubmit();
-        await UniTask.Yield();
+        await UniTask.WaitUntil(() => callbackCount == 1);
 
         Assert.AreEqual(1, callbackCount);
         Assert.AreEqual(1, selectedIndex);
@@ -325,6 +334,31 @@ public sealed class RewardSelectionTests
         SetPrivateField(group, "cardPrefabs", entries);
     }
 
+    private void AssignTestQualityCatalog(RewardSelectionCardViewBase view)
+    {
+        SetPrivateField(view, "qualityPresentationCatalogOverride", GetOrCreateTestQualityCatalog());
+    }
+
+    private CardQualityPresentationCatalogSO GetOrCreateTestQualityCatalog()
+    {
+        if (testQualityCatalog != null)
+        {
+            return testQualityCatalog;
+        }
+
+        testQualityCatalog = ScriptableObject.CreateInstance<CardQualityPresentationCatalogSO>();
+        testQualityCatalog.name = "Test Card Quality Presentation Catalog";
+        testQualityCatalog.InitializeRuntime(new[]
+        {
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Common),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Rare),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Epic),
+            CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQuality.Legendary)
+        });
+        createdObjects.Add(testQualityCatalog);
+        return testQualityCatalog;
+    }
+
     private static void SetPrivateField(object target, string fieldName, object value)
     {
         FieldInfo field = FindPrivateField(target.GetType(), fieldName);
@@ -486,7 +520,7 @@ public sealed class RewardSelectionTests
 
     private sealed class TestEntity : Entity, IFeatureEffectsProvider
     {
-        public IReadOnlyList<FeatureEffectBase> FeatureEffects => Array.Empty<FeatureEffectBase>();
+        public IReadOnlyList<FeatureBase> FeatureEffects => Array.Empty<FeatureBase>();
     }
 
     private sealed class TestRewardSelectionCardView : RewardSelectionCardViewBase

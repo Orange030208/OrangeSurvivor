@@ -13,4532 +13,910 @@ MonoBehaviour:
   m_Name: Wave Spawn Pool
   m_EditorClassIdentifier: 
   defaultRollCount: 1
-  allowDuplicateResults: 1
+  allowDuplicateResults: 0
   entries:
-  - entryId: "\u7B2C001\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 100
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775906
-    conditions:
-    - rid: 7274045879173775360
-    - rid: 7274045879173775361
-    - rid: 7274045879173775362
-    - rid: 7274045879173775363
-    weightRules: []
-  - entryId: "\u7B2C002\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 90
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775907
-    conditions:
-    - rid: 7274045879173775368
-    - rid: 7274045879173775369
-    - rid: 7274045879173775370
-    - rid: 7274045879173775371
-    weightRules: []
-  - entryId: "\u7B2C002\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
+  - entryId: SkeletonEnemy_1-4
     content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 10
+    baseWeight: 70
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775908
+    - rid: 7274046033389684112
     conditions:
-    - rid: 7274045879173775372
-    - rid: 7274045879173775373
-    - rid: 7274045879173775374
-    - rid: 7274045879173775375
+    - rid: 7274046033389684113
+    - rid: 7274046033389684114
     weightRules: []
-  - entryId: "\u7B2C002\u6CE2_\u540E\u6BB5\u8815\u866B\u8BD5\u63A2_1_\u8815\u866B_0"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775909
-    conditions:
-    - rid: 7274045879173775376
-    - rid: 7274045879173775377
-    - rid: 7274045879173775378
-    - rid: 7274045879173775379
-    weightRules: []
-  - entryId: "\u7B2C003\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 80
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775910
-    conditions:
-    - rid: 7274045879173775380
-    - rid: 7274045879173775381
-    - rid: 7274045879173775382
-    - rid: 7274045879173775383
-    weightRules: []
-  - entryId: "\u7B2C003\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775911
-    conditions:
-    - rid: 7274045879173775384
-    - rid: 7274045879173775385
-    - rid: 7274045879173775386
-    - rid: 7274045879173775387
-    weightRules: []
-  - entryId: "\u7B2C003\u6CE2_\u4E2D\u6BB5\u8815\u866B_1_\u8815\u866B_0"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775912
-    conditions:
-    - rid: 7274045879173775388
-    - rid: 7274045879173775389
-    - rid: 7274045879173775390
-    - rid: 7274045879173775391
-    weightRules: []
-  - entryId: "\u7B2C004\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 65
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775913
-    conditions:
-    - rid: 7274045879173775392
-    - rid: 7274045879173775393
-    - rid: 7274045879173775394
-    - rid: 7274045879173775395
-    weightRules: []
-  - entryId: "\u7B2C004\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775914
-    conditions:
-    - rid: 7274045879173775396
-    - rid: 7274045879173775397
-    - rid: 7274045879173775398
-    - rid: 7274045879173775399
-    weightRules: []
-  - entryId: "\u7B2C004\u6CE2_\u4E3B\u529B\u96C6\u7FA4_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775915
-    conditions:
-    - rid: 7274045879173775400
-    - rid: 7274045879173775401
-    - rid: 7274045879173775402
-    - rid: 7274045879173775403
-    weightRules: []
-  - entryId: "\u7B2C004\u6CE2_\u9AB7\u9AC5\u538B\u8FEB_1_\u9AB7\u9AC5_0"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775916
-    conditions:
-    - rid: 7274045879173775404
-    - rid: 7274045879173775405
-    - rid: 7274045879173775406
-    - rid: 7274045879173775407
-    weightRules: []
-  - entryId: "\u7B2C005\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 55
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775917
-    conditions:
-    - rid: 7274045879173775408
-    - rid: 7274045879173775409
-    - rid: 7274045879173775410
-    - rid: 7274045879173775411
-    weightRules: []
-  - entryId: "\u7B2C005\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+  - entryId: EvilSlimeEnemy_1-4
+    content: {fileID: 11400000, guid: 63661be432dff2b4dae5cfed1a83c49b, type: 2}
     baseWeight: 30
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775918
+    - rid: 7274046033389684115
     conditions:
-    - rid: 7274045879173775412
-    - rid: 7274045879173775413
-    - rid: 7274045879173775414
-    - rid: 7274045879173775415
+    - rid: 7274046033389684116
+    - rid: 7274046033389684117
     weightRules: []
-  - entryId: "\u7B2C005\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 15
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775919
-    conditions:
-    - rid: 7274045879173775416
-    - rid: 7274045879173775417
-    - rid: 7274045879173775418
-    - rid: 7274045879173775419
-    weightRules: []
-  - entryId: "\u7B2C005\u6CE2_\u9996\u4E2A\u7CBE\u82F1_1_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775920
-    conditions:
-    - rid: 7274045879173775420
-    - rid: 7274045879173775421
-    - rid: 7274045879173775422
-    - rid: 7274045879173775423
-    weightRules: []
-  - entryId: "\u7B2C006\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 50
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775921
-    conditions:
-    - rid: 7274045879173775424
-    - rid: 7274045879173775425
-    - rid: 7274045879173775426
-    - rid: 7274045879173775427
-    weightRules: []
-  - entryId: "\u7B2C006\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
+  - entryId: SkeletonEnemy_5-9
     content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 30
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775922
-    conditions:
-    - rid: 7274045879173775428
-    - rid: 7274045879173775429
-    - rid: 7274045879173775430
-    - rid: 7274045879173775431
-    weightRules: []
-  - entryId: "\u7B2C006\u6CE2_\u6DF7\u5408\u96C6\u7FA4_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775923
-    conditions:
-    - rid: 7274045879173775432
-    - rid: 7274045879173775433
-    - rid: 7274045879173775434
-    - rid: 7274045879173775435
-    weightRules: []
-  - entryId: "\u7B2C006\u6CE2_\u5FEB\u901F\u538B\u8FEB_1_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775924
-    conditions:
-    - rid: 7274045879173775436
-    - rid: 7274045879173775437
-    - rid: 7274045879173775438
-    - rid: 7274045879173775439
-    weightRules: []
-  - entryId: "\u7B2C007\u6CE2_\u524D\u7EBF\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 45
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775925
-    conditions:
-    - rid: 7274045879173775440
-    - rid: 7274045879173775441
-    - rid: 7274045879173775442
-    - rid: 7274045879173775443
-    weightRules: []
-  - entryId: "\u7B2C007\u6CE2_\u524D\u7EBF\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 30
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775926
-    conditions:
-    - rid: 7274045879173775444
-    - rid: 7274045879173775445
-    - rid: 7274045879173775446
-    - rid: 7274045879173775447
-    weightRules: []
-  - entryId: "\u7B2C007\u6CE2_\u524D\u7EBF\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775927
-    conditions:
-    - rid: 7274045879173775448
-    - rid: 7274045879173775449
-    - rid: 7274045879173775450
-    - rid: 7274045879173775451
-    weightRules: []
-  - entryId: "\u7B2C007\u6CE2_\u7CBE\u82F1\u53CC\u4EBA\u7EC4_1_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775928
-    conditions:
-    - rid: 7274045879173775452
-    - rid: 7274045879173775453
-    - rid: 7274045879173775454
-    - rid: 7274045879173775455
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u8FDC\u7A0B\u6E38\u51FB_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 40
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775929
-    conditions:
-    - rid: 7274045879173775456
-    - rid: 7274045879173775457
-    - rid: 7274045879173775458
-    - rid: 7274045879173775459
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u8FDC\u7A0B\u6E38\u51FB_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 32
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775930
-    conditions:
-    - rid: 7274045879173775460
-    - rid: 7274045879173775461
-    - rid: 7274045879173775462
-    - rid: 7274045879173775463
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u8FDC\u7A0B\u6E38\u51FB_0_\u6D41\u661F\u9524\u9AB7\u9AC5_3"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775931
-    conditions:
-    - rid: 7274045879173775772
-    - rid: 7274045879173775773
-    - rid: 7274045879173775774
-    - rid: 7274045879173775775
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u8FDC\u7A0B\u6E38\u51FB_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775932
-    conditions:
-    - rid: 7274045879173775464
-    - rid: 7274045879173775465
-    - rid: 7274045879173775466
-    - rid: 7274045879173775467
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u8FDC\u7A0B\u5C42_1_\u9AB7\u9AC5_0"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775933
-    conditions:
-    - rid: 7274045879173775468
-    - rid: 7274045879173775469
-    - rid: 7274045879173775470
-    - rid: 7274045879173775471
-    weightRules: []
-  - entryId: "\u7B2C008\u6CE2_\u540E\u6BB5\u7CBE\u82F1_2_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775934
-    conditions:
-    - rid: 7274045879173775472
-    - rid: 7274045879173775473
-    - rid: 7274045879173775474
-    - rid: 7274045879173775475
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u5BC6\u96C6\u96C6\u7FA4_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 45
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775935
-    conditions:
-    - rid: 7274045879173775476
-    - rid: 7274045879173775477
-    - rid: 7274045879173775478
-    - rid: 7274045879173775479
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u5BC6\u96C6\u96C6\u7FA4_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 24
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775936
-    conditions:
-    - rid: 7274045879173775480
-    - rid: 7274045879173775481
-    - rid: 7274045879173775482
-    - rid: 7274045879173775483
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u5BC6\u96C6\u96C6\u7FA4_0_\u6D41\u661F\u9524\u9AB7\u9AC5_3"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 6
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775937
-    conditions:
-    - rid: 7274045879173775776
-    - rid: 7274045879173775777
-    - rid: 7274045879173775778
-    - rid: 7274045879173775779
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u5BC6\u96C6\u96C6\u7FA4_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775938
-    conditions:
-    - rid: 7274045879173775484
-    - rid: 7274045879173775485
-    - rid: 7274045879173775486
-    - rid: 7274045879173775487
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u8815\u866B\u62D6\u5C3E_1_\u8815\u866B_0"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775939
-    conditions:
-    - rid: 7274045879173775488
-    - rid: 7274045879173775489
-    - rid: 7274045879173775490
-    - rid: 7274045879173775491
-    weightRules: []
-  - entryId: "\u7B2C009\u6CE2_\u7CBE\u82F1\u95F4\u9694_2_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775940
-    conditions:
-    - rid: 7274045879173775492
-    - rid: 7274045879173775493
-    - rid: 7274045879173775494
-    - rid: 7274045879173775495
-    weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u8001\u7EC3\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
     baseWeight: 35
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775941
+    - rid: 7274046033389684118
     conditions:
-    - rid: 7274045879173775496
-    - rid: 7274045879173775497
-    - rid: 7274045879173775498
-    - rid: 7274045879173775499
+    - rid: 7274046033389684119
+    - rid: 7274046033389684120
     weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u8001\u7EC3\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 28
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775942
-    conditions:
-    - rid: 7274045879173775500
-    - rid: 7274045879173775501
-    - rid: 7274045879173775502
-    - rid: 7274045879173775503
-    weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u8001\u7EC3\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 7
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775943
-    conditions:
-    - rid: 7274045879173775780
-    - rid: 7274045879173775781
-    - rid: 7274045879173775782
-    - rid: 7274045879173775783
-    weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u8001\u7EC3\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+  - entryId: EvilSlimeEnemy_5-9
+    content: {fileID: 11400000, guid: 63661be432dff2b4dae5cfed1a83c49b, type: 2}
     baseWeight: 25
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775944
+    - rid: 7274046033389684121
     conditions:
-    - rid: 7274045879173775504
-    - rid: 7274045879173775505
-    - rid: 7274045879173775506
-    - rid: 7274045879173775507
+    - rid: 7274046033389684122
+    - rid: 7274046033389684123
     weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u8001\u7EC3\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 5
+  - entryId: WormEnemy_5-9
+    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+    baseWeight: 13
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775945
+    - rid: 7274046033389684124
     conditions:
-    - rid: 7274045879173775508
-    - rid: 7274045879173775509
-    - rid: 7274045879173775510
-    - rid: 7274045879173775511
+    - rid: 7274046033389684125
+    - rid: 7274046033389684126
     weightRules: []
-  - entryId: "\u7B2C010\u6CE2_\u6A59\u8272\u9B54\u50CF\u767B\u573A_1_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775946
-    conditions:
-    - rid: 7274045879173775512
-    - rid: 7274045879173775513
-    - rid: 7274045879173775514
-    - rid: 7274045879173775515
-    weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u91CD\u578B\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
+  - entryId: FlyForestEnemy_5-9
     content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 35
+    baseWeight: 10
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775947
+    - rid: 7274046033389684127
     conditions:
-    - rid: 7274045879173775516
-    - rid: 7274045879173775517
-    - rid: 7274045879173775518
-    - rid: 7274045879173775519
+    - rid: 7274046033389684128
+    - rid: 7274046033389684129
     weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u91CD\u578B\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
+  - entryId: SkeletonMeteorhammerEnemy_5-9
+    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
+    baseWeight: 15
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684130
+    conditions:
+    - rid: 7274046033389684131
+    - rid: 7274046033389684132
+    weightRules: []
+  - entryId: EvilEyeEnemy_5-9
+    content: {fileID: 11400000, guid: 058f83c0cd371a94abfada39ab9555a7, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684133
+    conditions:
+    - rid: 7274046033389684134
+    - rid: 7274046033389684135
+    weightRules: []
+  - entryId: SkeletonEnemy_10-14
     content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
     baseWeight: 24
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775948
+    - rid: 7274046033389684136
     conditions:
-    - rid: 7274045879173775520
-    - rid: 7274045879173775521
-    - rid: 7274045879173775522
-    - rid: 7274045879173775523
+    - rid: 7274046033389684137
+    - rid: 7274046033389684138
     weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u91CD\u578B\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 6
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775949
-    conditions:
-    - rid: 7274045879173775784
-    - rid: 7274045879173775785
-    - rid: 7274045879173775786
-    - rid: 7274045879173775787
-    weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u91CD\u578B\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775950
-    conditions:
-    - rid: 7274045879173775524
-    - rid: 7274045879173775525
-    - rid: 7274045879173775526
-    - rid: 7274045879173775527
-    weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u91CD\u578B\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775951
-    conditions:
-    - rid: 7274045879173775528
-    - rid: 7274045879173775529
-    - rid: 7274045879173775530
-    - rid: 7274045879173775531
-    weightRules: []
-  - entryId: "\u7B2C011\u6CE2_\u84DD\u8272\u9B54\u50CF\u5DE1\u903B_1_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775952
-    conditions:
-    - rid: 7274045879173775532
-    - rid: 7274045879173775533
-    - rid: 7274045879173775534
-    - rid: 7274045879173775535
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u5206\u8DEF\u538B\u8FEB_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 30
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775953
-    conditions:
-    - rid: 7274045879173775536
-    - rid: 7274045879173775537
-    - rid: 7274045879173775538
-    - rid: 7274045879173775539
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u5206\u8DEF\u538B\u8FEB_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 28
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775954
-    conditions:
-    - rid: 7274045879173775540
-    - rid: 7274045879173775541
-    - rid: 7274045879173775542
-    - rid: 7274045879173775543
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u5206\u8DEF\u538B\u8FEB_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 7
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775955
-    conditions:
-    - rid: 7274045879173775788
-    - rid: 7274045879173775789
-    - rid: 7274045879173775790
-    - rid: 7274045879173775791
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u5206\u8DEF\u538B\u8FEB_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775956
-    conditions:
-    - rid: 7274045879173775544
-    - rid: 7274045879173775545
-    - rid: 7274045879173775546
-    - rid: 7274045879173775547
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u5206\u8DEF\u538B\u8FEB_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775957
-    conditions:
-    - rid: 7274045879173775548
-    - rid: 7274045879173775549
-    - rid: 7274045879173775550
-    - rid: 7274045879173775551
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u4E2D\u6BB5\u7A81\u88AD_1_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775958
-    conditions:
-    - rid: 7274045879173775552
-    - rid: 7274045879173775553
-    - rid: 7274045879173775554
-    - rid: 7274045879173775555
-    weightRules: []
-  - entryId: "\u7B2C012\u6CE2_\u540E\u6BB5\u6A59\u8272\u9B54\u50CF_2_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775959
-    conditions:
-    - rid: 7274045879173775556
-    - rid: 7274045879173775557
-    - rid: 7274045879173775558
-    - rid: 7274045879173775559
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u52A0\u6743\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 28
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775960
-    conditions:
-    - rid: 7274045879173775560
-    - rid: 7274045879173775561
-    - rid: 7274045879173775562
-    - rid: 7274045879173775563
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u52A0\u6743\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 24
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775961
-    conditions:
-    - rid: 7274045879173775564
-    - rid: 7274045879173775565
-    - rid: 7274045879173775566
-    - rid: 7274045879173775567
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u52A0\u6743\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775962
-    conditions:
-    - rid: 7274045879173775792
-    - rid: 7274045879173775793
-    - rid: 7274045879173775794
-    - rid: 7274045879173775795
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u52A0\u6743\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775963
-    conditions:
-    - rid: 7274045879173775568
-    - rid: 7274045879173775569
-    - rid: 7274045879173775570
-    - rid: 7274045879173775571
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u52A0\u6743\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 15
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775964
-    conditions:
-    - rid: 7274045879173775572
-    - rid: 7274045879173775573
-    - rid: 7274045879173775574
-    - rid: 7274045879173775575
-    weightRules: []
-  - entryId: "\u7B2C013\u6CE2_\u7CBE\u82F1\u6210\u5BF9_1_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775965
-    conditions:
-    - rid: 7274045879173775576
-    - rid: 7274045879173775577
-    - rid: 7274045879173775578
-    - rid: 7274045879173775579
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u8FDC\u7A0B\u7CBE\u82F1\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775966
-    conditions:
-    - rid: 7274045879173775580
-    - rid: 7274045879173775581
-    - rid: 7274045879173775582
-    - rid: 7274045879173775583
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u8FDC\u7A0B\u7CBE\u82F1\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775967
-    conditions:
-    - rid: 7274045879173775584
-    - rid: 7274045879173775585
-    - rid: 7274045879173775586
-    - rid: 7274045879173775587
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u8FDC\u7A0B\u7CBE\u82F1\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775968
-    conditions:
-    - rid: 7274045879173775796
-    - rid: 7274045879173775797
-    - rid: 7274045879173775798
-    - rid: 7274045879173775799
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u8FDC\u7A0B\u7CBE\u82F1\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775969
-    conditions:
-    - rid: 7274045879173775588
-    - rid: 7274045879173775589
-    - rid: 7274045879173775590
-    - rid: 7274045879173775591
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u8FDC\u7A0B\u7CBE\u82F1\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 15
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775970
-    conditions:
-    - rid: 7274045879173775592
-    - rid: 7274045879173775593
-    - rid: 7274045879173775594
-    - rid: 7274045879173775595
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u9AB7\u9AC5\u5899_1_\u9AB7\u9AC5_0"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 7
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775971
-    conditions:
-    - rid: 7274045879173775596
-    - rid: 7274045879173775597
-    - rid: 7274045879173775598
-    - rid: 7274045879173775599
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u9AB7\u9AC5\u5899_1_\u6D41\u661F\u9524\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 3
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775972
-    conditions:
-    - rid: 7274045879173775800
-    - rid: 7274045879173775801
-    - rid: 7274045879173775802
-    - rid: 7274045879173775803
-    weightRules: []
-  - entryId: "\u7B2C014\u6CE2_\u6A59\u8272\u9B54\u50CF\u6253\u51FB_2_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775973
-    conditions:
-    - rid: 7274045879173775600
-    - rid: 7274045879173775601
-    - rid: 7274045879173775602
-    - rid: 7274045879173775603
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775974
-    conditions:
-    - rid: 7274045879173775604
-    - rid: 7274045879173775605
-    - rid: 7274045879173775606
-    - rid: 7274045879173775607
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 22
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775975
-    conditions:
-    - rid: 7274045879173775608
-    - rid: 7274045879173775609
-    - rid: 7274045879173775610
-    - rid: 7274045879173775611
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775976
-    conditions:
-    - rid: 7274045879173775804
-    - rid: 7274045879173775805
-    - rid: 7274045879173775806
-    - rid: 7274045879173775807
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775977
-    conditions:
-    - rid: 7274045879173775612
-    - rid: 7274045879173775613
-    - rid: 7274045879173775614
-    - rid: 7274045879173775615
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 15
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775978
-    conditions:
-    - rid: 7274045879173775616
-    - rid: 7274045879173775617
-    - rid: 7274045879173775618
-    - rid: 7274045879173775619
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u9AD8\u5BC6\u5EA6\u6DF7\u7F16_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 5
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775979
-    conditions:
-    - rid: 7274045879173775620
-    - rid: 7274045879173775621
-    - rid: 7274045879173775622
-    - rid: 7274045879173775623
-    weightRules: []
-  - entryId: "\u7B2C015\u6CE2_\u53CC\u6A59\u8272\u9B54\u50CF\u68C0\u9A8C_1_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775980
-    conditions:
-    - rid: 7274045879173775624
-    - rid: 7274045879173775625
-    - rid: 7274045879173775626
-    - rid: 7274045879173775627
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 22
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775981
-    conditions:
-    - rid: 7274045879173775628
-    - rid: 7274045879173775629
-    - rid: 7274045879173775630
-    - rid: 7274045879173775631
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 22
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775982
-    conditions:
-    - rid: 7274045879173775632
-    - rid: 7274045879173775633
-    - rid: 7274045879173775634
-    - rid: 7274045879173775635
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775983
-    conditions:
-    - rid: 7274045879173775808
-    - rid: 7274045879173775809
-    - rid: 7274045879173775810
-    - rid: 7274045879173775811
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775984
-    conditions:
-    - rid: 7274045879173775636
-    - rid: 7274045879173775637
-    - rid: 7274045879173775638
-    - rid: 7274045879173775639
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
+  - entryId: EvilSlimeEnemy_10-14
+    content: {fileID: 11400000, guid: 63661be432dff2b4dae5cfed1a83c49b, type: 2}
     baseWeight: 18
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775985
+    - rid: 7274046033389684139
     conditions:
-    - rid: 7274045879173775640
-    - rid: 7274045879173775641
-    - rid: 7274045879173775642
-    - rid: 7274045879173775643
+    - rid: 7274046033389684140
+    - rid: 7274046033389684141
     weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u540E\u671F\u6DF7\u7F16_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 5
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775986
-    conditions:
-    - rid: 7274045879173775644
-    - rid: 7274045879173775645
-    - rid: 7274045879173775646
-    - rid: 7274045879173775647
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u5FEB\u901F\u7A81\u88AD_1_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775987
-    conditions:
-    - rid: 7274045879173775648
-    - rid: 7274045879173775649
-    - rid: 7274045879173775650
-    - rid: 7274045879173775651
-    weightRules: []
-  - entryId: "\u7B2C016\u6CE2_\u7CBE\u82F1\u63A8\u8FDB_2_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775988
-    conditions:
-    - rid: 7274045879173775652
-    - rid: 7274045879173775653
-    - rid: 7274045879173775654
-    - rid: 7274045879173775655
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775989
-    conditions:
-    - rid: 7274045879173775656
-    - rid: 7274045879173775657
-    - rid: 7274045879173775658
-    - rid: 7274045879173775659
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 22
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775990
-    conditions:
-    - rid: 7274045879173775660
-    - rid: 7274045879173775661
-    - rid: 7274045879173775662
-    - rid: 7274045879173775663
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775991
-    conditions:
-    - rid: 7274045879173775812
-    - rid: 7274045879173775813
-    - rid: 7274045879173775814
-    - rid: 7274045879173775815
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u8815\u866B_2"
+  - entryId: WormEnemy_10-14
     content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 25
+    baseWeight: 11
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173775992
+    - rid: 7274046033389684142
     conditions:
-    - rid: 7274045879173775664
-    - rid: 7274045879173775665
-    - rid: 7274045879173775666
-    - rid: 7274045879173775667
+    - rid: 7274046033389684143
+    - rid: 7274046033389684144
     weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 18
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775993
-    conditions:
-    - rid: 7274045879173775668
-    - rid: 7274045879173775669
-    - rid: 7274045879173775670
-    - rid: 7274045879173775671
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u78BE\u538B\u6DF7\u7F16_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 7
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775994
-    conditions:
-    - rid: 7274045879173775672
-    - rid: 7274045879173775673
-    - rid: 7274045879173775674
-    - rid: 7274045879173775675
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u6A59\u8272\u9B54\u50CF\u95F4\u9694_1_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775995
-    conditions:
-    - rid: 7274045879173775676
-    - rid: 7274045879173775677
-    - rid: 7274045879173775678
-    - rid: 7274045879173775679
-    weightRules: []
-  - entryId: "\u7B2C017\u6CE2_\u8815\u866B\u6D8C\u5165_2_\u8815\u866B_0"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775996
-    conditions:
-    - rid: 7274045879173775680
-    - rid: 7274045879173775681
-    - rid: 7274045879173775682
-    - rid: 7274045879173775683
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
+  - entryId: FlyForestEnemy_10-14
     content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 18
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775997
-    conditions:
-    - rid: 7274045879173775684
-    - rid: 7274045879173775685
-    - rid: 7274045879173775686
-    - rid: 7274045879173775687
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 22
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775998
-    conditions:
-    - rid: 7274045879173775688
-    - rid: 7274045879173775689
-    - rid: 7274045879173775690
-    - rid: 7274045879173775691
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173775999
-    conditions:
-    - rid: 7274045879173775816
-    - rid: 7274045879173775817
-    - rid: 7274045879173775818
-    - rid: 7274045879173775819
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 27
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776000
-    conditions:
-    - rid: 7274045879173775692
-    - rid: 7274045879173775693
-    - rid: 7274045879173775694
-    - rid: 7274045879173775695
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 17
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776001
-    conditions:
-    - rid: 7274045879173775696
-    - rid: 7274045879173775697
-    - rid: 7274045879173775698
-    - rid: 7274045879173775699
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u6301\u4E45\u6DF7\u7F16_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776002
-    conditions:
-    - rid: 7274045879173775700
-    - rid: 7274045879173775701
-    - rid: 7274045879173775702
-    - rid: 7274045879173775703
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u8FDC\u7A0B\u56F4\u653B_1_\u9AB7\u9AC5_0"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 6
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776003
-    conditions:
-    - rid: 7274045879173775704
-    - rid: 7274045879173775705
-    - rid: 7274045879173775706
-    - rid: 7274045879173775707
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u8FDC\u7A0B\u56F4\u653B_1_\u6D41\u661F\u9524\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 4
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776004
-    conditions:
-    - rid: 7274045879173775820
-    - rid: 7274045879173775821
-    - rid: 7274045879173775822
-    - rid: 7274045879173775823
-    weightRules: []
-  - entryId: "\u7B2C018\u6CE2_\u7CBE\u82F1\u7A81\u88AD_2_\u84DD\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776005
-    conditions:
-    - rid: 7274045879173775708
-    - rid: 7274045879173775709
-    - rid: 7274045879173775710
-    - rid: 7274045879173775711
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 18
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776006
-    conditions:
-    - rid: 7274045879173775712
-    - rid: 7274045879173775713
-    - rid: 7274045879173775714
-    - rid: 7274045879173775715
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776007
-    conditions:
-    - rid: 7274045879173775716
-    - rid: 7274045879173775717
-    - rid: 7274045879173775718
-    - rid: 7274045879173775719
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776008
-    conditions:
-    - rid: 7274045879173775824
-    - rid: 7274045879173775825
-    - rid: 7274045879173775826
-    - rid: 7274045879173775827
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 27
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776009
-    conditions:
-    - rid: 7274045879173775720
-    - rid: 7274045879173775721
-    - rid: 7274045879173775722
-    - rid: 7274045879173775723
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 17
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776010
-    conditions:
-    - rid: 7274045879173775724
-    - rid: 7274045879173775725
-    - rid: 7274045879173775726
-    - rid: 7274045879173775727
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u538B\u8FEB\u6DF7\u7F16_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776011
-    conditions:
-    - rid: 7274045879173775728
-    - rid: 7274045879173775729
-    - rid: 7274045879173775730
-    - rid: 7274045879173775731
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6A59\u8272\u9B54\u50CF\u63A8\u8FDB_1_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776012
-    conditions:
-    - rid: 7274045879173775732
-    - rid: 7274045879173775733
-    - rid: 7274045879173775734
-    - rid: 7274045879173775735
-    weightRules: []
-  - entryId: "\u7B2C019\u6CE2_\u6700\u7EC8\u96C6\u7FA4\u6D8C\u5165_2_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 1
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776013
-    conditions:
-    - rid: 7274045879173775736
-    - rid: 7274045879173775737
-    - rid: 7274045879173775738
-    - rid: 7274045879173775739
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u98DE\u6797\u602A_0"
-    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 15
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776014
-    conditions:
-    - rid: 7274045879173775740
-    - rid: 7274045879173775741
-    - rid: 7274045879173775742
-    - rid: 7274045879173775743
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u9AB7\u9AC5_1"
-    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
-    baseWeight: 20
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776015
-    conditions:
-    - rid: 7274045879173775744
-    - rid: 7274045879173775745
-    - rid: 7274045879173775746
-    - rid: 7274045879173775747
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u6D41\u661F\u9524\u9AB7\u9AC5_5"
-    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776016
-    conditions:
-    - rid: 7274045879173775828
-    - rid: 7274045879173775829
-    - rid: 7274045879173775830
-    - rid: 7274045879173775831
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u8815\u866B_2"
-    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
-    baseWeight: 27
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776017
-    conditions:
-    - rid: 7274045879173775748
-    - rid: 7274045879173775749
-    - rid: 7274045879173775750
-    - rid: 7274045879173775751
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u84DD\u8272\u9B54\u50CF_3"
-    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 18
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274045879173776018
-    conditions:
-    - rid: 7274045879173775752
-    - rid: 7274045879173775753
-    - rid: 7274045879173775754
-    - rid: 7274045879173775755
-    weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u7EC8\u5C40\u6838\u5FC3_0_\u6A59\u8272\u9B54\u50CF_4"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
     baseWeight: 12
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776019
+    - rid: 7274046033389684145
     conditions:
-    - rid: 7274045879173775756
-    - rid: 7274045879173775757
-    - rid: 7274045879173775758
-    - rid: 7274045879173775759
+    - rid: 7274046033389684146
+    - rid: 7274046033389684147
     weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u6700\u7EC8\u7CBE\u82F1\u8109\u51B2_1_\u84DD\u8272\u9B54\u50CF_0"
+  - entryId: EvilEyeEnemy_10-14
+    content: {fileID: 11400000, guid: 058f83c0cd371a94abfada39ab9555a7, type: 2}
+    baseWeight: 6
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684148
+    conditions:
+    - rid: 7274046033389684149
+    - rid: 7274046033389684150
+    weightRules: []
+  - entryId: SkeletonMeteorhammerEnemy_10-14
+    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
+    baseWeight: 14
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684151
+    conditions:
+    - rid: 7274046033389684152
+    - rid: 7274046033389684153
+    weightRules: []
+  - entryId: SkeletonMeteorhammer2Enemy_10-14
+    content: {fileID: 11400000, guid: 2ba25a1b8f994b7496b9d5941aec00a1, type: 2}
+    baseWeight: 9
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684154
+    conditions:
+    - rid: 7274046033389684155
+    - rid: 7274046033389684156
+    weightRules: []
+  - entryId: BlueGolemEnemy_10-14
     content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
-    baseWeight: 1
+    baseWeight: 5
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776020
+    - rid: 7274046033389684157
     conditions:
-    - rid: 7274045879173775760
-    - rid: 7274045879173775761
-    - rid: 7274045879173775762
-    - rid: 7274045879173775763
+    - rid: 7274046033389684158
+    - rid: 7274046033389684159
     weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u6700\u7EC8\u6A59\u8272\u8109\u51B2_2_\u6A59\u8272\u9B54\u50CF_0"
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 1
+  - entryId: MechaStoneBossEnemy_10-14
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 0
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776021
+    - rid: 7274046033389684160
     conditions:
-    - rid: 7274045879173775764
-    - rid: 7274045879173775765
-    - rid: 7274045879173775766
-    - rid: 7274045879173775767
+    - rid: 7274046033389684161
+    - rid: 7274046033389684162
     weightRules: []
-  - entryId: "\u7B2C020\u6CE2_\u6700\u540E\u96C6\u7FA4_3_\u98DE\u6797\u602A_0"
+  - entryId: SkeletonEnemy_15-19
+    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+    baseWeight: 18
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684163
+    conditions:
+    - rid: 7274046033389684164
+    - rid: 7274046033389684165
+    weightRules: []
+  - entryId: EvilSlimeEnemy_15-19
+    content: {fileID: 11400000, guid: 63661be432dff2b4dae5cfed1a83c49b, type: 2}
+    baseWeight: 14
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684166
+    conditions:
+    - rid: 7274046033389684167
+    - rid: 7274046033389684168
+    weightRules: []
+  - entryId: WormEnemy_15-19
+    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+    baseWeight: 8
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684169
+    conditions:
+    - rid: 7274046033389684170
+    - rid: 7274046033389684171
+    weightRules: []
+  - entryId: FlyForestEnemy_15-19
     content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
-    baseWeight: 1
+    baseWeight: 12
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776022
+    - rid: 7274046033389684172
     conditions:
-    - rid: 7274045879173775768
-    - rid: 7274045879173775769
-    - rid: 7274045879173775770
-    - rid: 7274045879173775771
+    - rid: 7274046033389684173
+    - rid: 7274046033389684174
     weightRules: []
-  - entryId: Wave010_Boss_MechaStone
-    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-    baseWeight: 1
+  - entryId: EvilEyeEnemy_15-19
+    content: {fileID: 11400000, guid: 058f83c0cd371a94abfada39ab9555a7, type: 2}
+    baseWeight: 8
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776023
+    - rid: 7274046033389684175
     conditions:
-    - rid: 7274045879173775900
-    - rid: 7274045879173775901
+    - rid: 7274046033389684176
+    - rid: 7274046033389684177
     weightRules: []
-  - entryId: Wave015_Boss_MechaStone
-    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-    baseWeight: 1
+  - entryId: SkeletonMeteorhammerEnemy_15-19
+    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
+    baseWeight: 10
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776024
+    - rid: 7274046033389684178
     conditions:
-    - rid: 7274045879173775902
-    - rid: 7274045879173775903
+    - rid: 7274046033389684179
+    - rid: 7274046033389684180
     weightRules: []
-  - entryId: Wave020_Boss_MechaStone
-    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
-    baseWeight: 1
+  - entryId: SkeletonMeteorhammer2Enemy_15-19
+    content: {fileID: 11400000, guid: 2ba25a1b8f994b7496b9d5941aec00a1, type: 2}
+    baseWeight: 14
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
     metadata:
-    - rid: 7274045879173776025
+    - rid: 7274046033389684181
     conditions:
-    - rid: 7274045879173775904
-    - rid: 7274045879173775905
+    - rid: 7274046033389684182
+    - rid: 7274046033389684183
+    weightRules: []
+  - entryId: BlueGolemEnemy_15-19
+    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
+    baseWeight: 10
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684184
+    conditions:
+    - rid: 7274046033389684185
+    - rid: 7274046033389684186
+    weightRules: []
+  - entryId: OrangeGolemEnemy_15-19
+    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
+    baseWeight: 6
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684187
+    conditions:
+    - rid: 7274046033389684188
+    - rid: 7274046033389684189
+    weightRules: []
+  - entryId: MechaStoneBossEnemy_15-19
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 0
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684190
+    conditions:
+    - rid: 7274046033389684191
+    - rid: 7274046033389684192
+    weightRules: []
+  - entryId: SkeletonEnemy_20+
+    content: {fileID: 11400000, guid: 0702c0d51491029499a3cf042886deef, type: 2}
+    baseWeight: 15
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684193
+    conditions:
+    - rid: 7274046033389684194
+    weightRules: []
+  - entryId: EvilSlimeEnemy_20+
+    content: {fileID: 11400000, guid: 63661be432dff2b4dae5cfed1a83c49b, type: 2}
+    baseWeight: 11
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684195
+    conditions:
+    - rid: 7274046033389684196
+    weightRules: []
+  - entryId: WormEnemy_20+
+    content: {fileID: 11400000, guid: dc08da15887172a4e82defef6311974a, type: 2}
+    baseWeight: 6
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684197
+    conditions:
+    - rid: 7274046033389684198
+    weightRules: []
+  - entryId: FlyForestEnemy_20+
+    content: {fileID: 11400000, guid: e414ed88424de4b49af675a1b6dcf573, type: 2}
+    baseWeight: 10
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684199
+    conditions:
+    - rid: 7274046033389684200
+    weightRules: []
+  - entryId: EvilEyeEnemy_20+
+    content: {fileID: 11400000, guid: 058f83c0cd371a94abfada39ab9555a7, type: 2}
+    baseWeight: 8
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684201
+    conditions:
+    - rid: 7274046033389684202
+    weightRules: []
+  - entryId: SkeletonMeteorhammerEnemy_20+
+    content: {fileID: 11400000, guid: 507190f8fc664eb1a9e2e4190d43ab6c, type: 2}
+    baseWeight: 7
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684203
+    conditions:
+    - rid: 7274046033389684204
+    weightRules: []
+  - entryId: SkeletonMeteorhammer2Enemy_20+
+    content: {fileID: 11400000, guid: 2ba25a1b8f994b7496b9d5941aec00a1, type: 2}
+    baseWeight: 15
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684205
+    conditions:
+    - rid: 7274046033389684206
+    weightRules: []
+  - entryId: BlueGolemEnemy_20+
+    content: {fileID: 11400000, guid: a980cf62ba984544ca9c1097d68a7e45, type: 2}
+    baseWeight: 13
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684207
+    conditions:
+    - rid: 7274046033389684208
+    weightRules: []
+  - entryId: OrangeGolemEnemy_20+
+    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
+    baseWeight: 8
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684209
+    conditions:
+    - rid: 7274046033389684210
+    weightRules: []
+  - entryId: MechaStoneBossEnemy_20+
+    content: {fileID: 11400000, guid: 872771265cb54bd7adc643281e1aa8de, type: 2}
+    baseWeight: 0
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046033389684211
+    conditions:
+    - rid: 7274046033389684212
     weightRules: []
   references:
     version: 2
     RefIds:
-    - rid: 7274045879173775360
+    - rid: 7274046033389684112
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 1
+    - rid: 7274046033389684113
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 3
         compareValue: 1
-    - rid: 7274045879173775361
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775362
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775363
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775368
+    - rid: 7274046033389684114
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 2
-    - rid: 7274045879173775369
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775370
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775371
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775372
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 2
-    - rid: 7274045879173775373
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775374
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775375
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775376
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 2
-    - rid: 7274045879173775377
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Worm Tease
-        required: 1
-    - rid: 7274045879173775378
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 65
-    - rid: 7274045879173775379
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775380
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 3
-    - rid: 7274045879173775381
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775382
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775383
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775384
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 3
-    - rid: 7274045879173775385
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775386
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775387
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775388
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 3
-    - rid: 7274045879173775389
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mid Worms
-        required: 1
-    - rid: 7274045879173775390
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 40
-    - rid: 7274045879173775391
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775392
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 4
-    - rid: 7274045879173775393
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684115
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775394
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775395
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775396
+        tags: 8
+    - rid: 7274046033389684116
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046033389684117
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
         compareValue: 4
-    - rid: 7274045879173775397
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684118
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775398
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775399
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775400
+        tags: 1
+    - rid: 7274046033389684119
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 4
-    - rid: 7274045879173775401
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Main Swarm
-        required: 1
-    - rid: 7274045879173775402
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775403
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775404
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 4
-    - rid: 7274045879173775405
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Skeleton Pressure
-        required: 1
-    - rid: 7274045879173775406
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 20
-    - rid: 7274045879173775407
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 85
-    - rid: 7274045879173775408
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 5
-    - rid: 7274045879173775409
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775410
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775411
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775412
+    - rid: 7274046033389684120
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 9
+    - rid: 7274046033389684121
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 8
+    - rid: 7274046033389684122
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 5
-    - rid: 7274045879173775413
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775414
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775415
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775416
+    - rid: 7274046033389684123
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 9
+    - rid: 7274046033389684124
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684125
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 5
-    - rid: 7274045879173775417
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775418
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775419
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775420
+    - rid: 7274046033389684126
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 9
+    - rid: 7274046033389684127
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684128
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 5
-    - rid: 7274045879173775421
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: First Elite
-        required: 1
-    - rid: 7274045879173775422
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 55
-    - rid: 7274045879173775423
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 56
-    - rid: 7274045879173775424
+    - rid: 7274046033389684129
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 6
-    - rid: 7274045879173775425
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775426
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775427
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775428
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 6
-    - rid: 7274045879173775429
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775430
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775431
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775432
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 6
-    - rid: 7274045879173775433
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mixed Swarm
-        required: 1
-    - rid: 7274045879173775434
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775435
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775436
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 6
-    - rid: 7274045879173775437
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Fast Pressure
-        required: 1
-    - rid: 7274045879173775438
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 35
-    - rid: 7274045879173775439
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775440
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 7
-    - rid: 7274045879173775441
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Frontline Mix
-        required: 1
-    - rid: 7274045879173775442
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775443
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775444
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 7
-    - rid: 7274045879173775445
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Frontline Mix
-        required: 1
-    - rid: 7274045879173775446
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775447
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775448
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 7
-    - rid: 7274045879173775449
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Frontline Mix
-        required: 1
-    - rid: 7274045879173775450
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775451
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775452
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 7
-    - rid: 7274045879173775453
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Pair
-        required: 1
-    - rid: 7274045879173775454
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 50
-    - rid: 7274045879173775455
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 51
-    - rid: 7274045879173775456
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775457
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Skirmish
-        required: 1
-    - rid: 7274045879173775458
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775459
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775460
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775461
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Skirmish
-        required: 1
-    - rid: 7274045879173775462
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775463
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775464
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775465
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Skirmish
-        required: 1
-    - rid: 7274045879173775466
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775467
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775468
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775469
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Layer
-        required: 1
-    - rid: 7274045879173775470
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 15
-    - rid: 7274045879173775471
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 90
-    - rid: 7274045879173775472
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775473
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Late
-        required: 1
-    - rid: 7274045879173775474
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 70
-    - rid: 7274045879173775475
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 71
-    - rid: 7274045879173775476
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 9
-    - rid: 7274045879173775477
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684130
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Dense Swarm
-        required: 1
-    - rid: 7274045879173775478
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775479
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775480
+        tags: 96
+    - rid: 7274046033389684131
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 3
+        compareValue: 5
+    - rid: 7274046033389684132
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
         compareValue: 9
-    - rid: 7274045879173775481
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684133
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Dense Swarm
-        required: 1
-    - rid: 7274045879173775482
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775483
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775484
+        tags: 36
+    - rid: 7274046033389684134
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 3
+        compareValue: 5
+    - rid: 7274046033389684135
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
         compareValue: 9
-    - rid: 7274045879173775485
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684136
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Dense Swarm
-        required: 1
-    - rid: 7274045879173775486
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775487
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775488
+        tags: 1
+    - rid: 7274046033389684137
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 9
-    - rid: 7274045879173775489
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Worm Trail
-        required: 1
-    - rid: 7274045879173775490
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 3
-        compareValue: 25
-    - rid: 7274045879173775491
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775492
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 9
-    - rid: 7274045879173775493
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Interval
-        required: 1
-    - rid: 7274045879173775494
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 35
-    - rid: 7274045879173775495
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 95
-    - rid: 7274045879173775496
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 10
-    - rid: 7274045879173775497
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Veteran Mix
-        required: 1
-    - rid: 7274045879173775498
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775499
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775500
+    - rid: 7274046033389684138
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684139
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 8
+    - rid: 7274046033389684140
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 10
-    - rid: 7274045879173775501
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Veteran Mix
-        required: 1
-    - rid: 7274045879173775502
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775503
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775504
+    - rid: 7274046033389684141
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684142
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684143
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 10
-    - rid: 7274045879173775505
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Veteran Mix
-        required: 1
-    - rid: 7274045879173775506
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775507
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775508
+    - rid: 7274046033389684144
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684145
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684146
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 10
-    - rid: 7274045879173775509
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Veteran Mix
-        required: 1
-    - rid: 7274045879173775510
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775511
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775512
+    - rid: 7274046033389684147
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684148
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 36
+    - rid: 7274046033389684149
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
         compareValue: 10
-    - rid: 7274045879173775513
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Orange Golem Intro
-        required: 1
-    - rid: 7274045879173775514
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 62
-    - rid: 7274045879173775515
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 63
-    - rid: 7274045879173775516
+    - rid: 7274046033389684150
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775517
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Heavy Mix
-        required: 1
-    - rid: 7274045879173775518
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775519
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775520
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775521
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Heavy Mix
-        required: 1
-    - rid: 7274045879173775522
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775523
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775524
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775525
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Heavy Mix
-        required: 1
-    - rid: 7274045879173775526
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775527
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775528
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775529
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Heavy Mix
-        required: 1
-    - rid: 7274045879173775530
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775531
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775532
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775533
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Blue Golem Patrol
-        required: 1
-    - rid: 7274045879173775534
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 20
-    - rid: 7274045879173775535
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775536
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775537
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Split Pressure
-        required: 1
-    - rid: 7274045879173775538
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775539
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775540
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775541
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Split Pressure
-        required: 1
-    - rid: 7274045879173775542
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775543
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775544
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775545
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Split Pressure
-        required: 1
-    - rid: 7274045879173775546
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775547
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775548
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775549
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Split Pressure
-        required: 1
-    - rid: 7274045879173775550
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775551
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775552
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775553
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Mid Raid
-        required: 1
-    - rid: 7274045879173775554
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 45
-    - rid: 7274045879173775555
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 46
-    - rid: 7274045879173775556
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775557
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Orange Golem Late
-        required: 1
-    - rid: 7274045879173775558
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 78
-    - rid: 7274045879173775559
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 79
-    - rid: 7274045879173775560
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775561
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Weighted Mix
-        required: 1
-    - rid: 7274045879173775562
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775563
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775564
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775565
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Weighted Mix
-        required: 1
-    - rid: 7274045879173775566
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775567
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775568
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775569
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Weighted Mix
-        required: 1
-    - rid: 7274045879173775570
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775571
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775572
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775573
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Weighted Mix
-        required: 1
-    - rid: 7274045879173775574
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775575
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775576
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775577
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Pairs
-        required: 1
-    - rid: 7274045879173775578
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 35
-    - rid: 7274045879173775579
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775580
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 14
-    - rid: 7274045879173775581
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684151
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Ranged Elite Mix
-        required: 1
-    - rid: 7274045879173775582
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775583
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775584
+        tags: 96
+    - rid: 7274046033389684152
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775585
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Elite Mix
-        required: 1
-    - rid: 7274045879173775586
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775587
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775588
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775589
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Elite Mix
-        required: 1
-    - rid: 7274045879173775590
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775591
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775592
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775593
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Elite Mix
-        required: 1
-    - rid: 7274045879173775594
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775595
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775596
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775597
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Skeleton Wall
-        required: 1
-    - rid: 7274045879173775598
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 20
-    - rid: 7274045879173775599
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 85
-    - rid: 7274045879173775600
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775601
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Orange Golem Strike
-        required: 1
-    - rid: 7274045879173775602
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 60
-    - rid: 7274045879173775603
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 61
-    - rid: 7274045879173775604
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775605
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775606
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775607
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775608
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775609
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775610
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775611
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775612
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775613
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775614
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775615
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775616
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775617
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775618
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775619
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775620
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775621
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775622
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775623
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775624
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775625
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Double Orange Check
-        required: 1
-    - rid: 7274045879173775626
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 70
-    - rid: 7274045879173775627
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 71
-    - rid: 7274045879173775628
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775629
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775630
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775631
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775632
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775633
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775634
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775635
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775636
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775637
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775638
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775639
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775640
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775641
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775642
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775643
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775644
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775645
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775646
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775647
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775648
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775649
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Fast Raid
-        required: 1
-    - rid: 7274045879173775650
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 35
-    - rid: 7274045879173775651
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 36
-    - rid: 7274045879173775652
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775653
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite March
-        required: 1
-    - rid: 7274045879173775654
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 25
-    - rid: 7274045879173775655
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775656
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775657
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775658
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775659
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775660
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775661
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775662
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775663
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775664
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775665
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775666
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775667
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775668
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775669
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775670
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775671
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775672
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775673
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775674
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775675
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775676
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775677
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Orange Intervals
-        required: 1
-    - rid: 7274045879173775678
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 30
-    - rid: 7274045879173775679
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775680
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775681
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Worm Surge
-        required: 1
-    - rid: 7274045879173775682
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 55
-    - rid: 7274045879173775683
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775684
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775685
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775686
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775687
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775688
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775689
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775690
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775691
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775692
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775693
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775694
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775695
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775696
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775697
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775698
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775699
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775700
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775701
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775702
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775703
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775704
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775705
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Siege
-        required: 1
-    - rid: 7274045879173775706
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 15
-    - rid: 7274045879173775707
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 95
-    - rid: 7274045879173775708
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775709
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Raid
-        required: 1
-    - rid: 7274045879173775710
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 65
-    - rid: 7274045879173775711
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 95
-    - rid: 7274045879173775712
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775713
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775714
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775715
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775716
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775717
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775718
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775719
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775720
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775721
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775722
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775723
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775724
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775725
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775726
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775727
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775728
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775729
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775730
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775731
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775732
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775733
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Orange March
-        required: 1
-    - rid: 7274045879173775734
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 20
-    - rid: 7274045879173775735
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775736
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775737
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Swarm Surge
-        required: 1
-    - rid: 7274045879173775738
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 75
-    - rid: 7274045879173775739
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 76
-    - rid: 7274045879173775740
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775741
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775742
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775743
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775744
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775745
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775746
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775747
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775748
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775749
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775750
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775751
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775752
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775753
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775754
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775755
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775756
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775757
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775758
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775759
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775760
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775761
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Elite Pulse
-        required: 1
-    - rid: 7274045879173775762
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 25
-    - rid: 7274045879173775763
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775764
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775765
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Orange Pulse
-        required: 1
-    - rid: 7274045879173775766
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 45
-    - rid: 7274045879173775767
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775768
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775769
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Last Minute Swarm
-        required: 1
-    - rid: 7274045879173775770
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 82
-    - rid: 7274045879173775771
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 83
-    - rid: 7274045879173775772
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 8
-    - rid: 7274045879173775773
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Skirmish
-        required: 1
-    - rid: 7274045879173775774
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775775
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775776
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 9
-    - rid: 7274045879173775777
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Dense Swarm
-        required: 1
-    - rid: 7274045879173775778
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775779
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775780
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 10
-    - rid: 7274045879173775781
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Veteran Mix
-        required: 1
-    - rid: 7274045879173775782
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775783
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775784
+    - rid: 7274046033389684153
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 11
-    - rid: 7274045879173775785
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Heavy Mix
-        required: 1
-    - rid: 7274045879173775786
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775787
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775788
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 12
-    - rid: 7274045879173775789
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Split Pressure
-        required: 1
-    - rid: 7274045879173775790
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775791
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775792
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 13
-    - rid: 7274045879173775793
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Elite Weighted Mix
-        required: 1
-    - rid: 7274045879173775794
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775795
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775796
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 14
-    - rid: 7274045879173775797
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+    - rid: 7274046033389684154
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Ranged Elite Mix
-        required: 1
-    - rid: 7274045879173775798
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775799
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775800
+        tags: 96
+    - rid: 7274046033389684155
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 14
-    - rid: 7274045879173775801
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Skeleton Wall
-        required: 1
-    - rid: 7274045879173775802
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
         comparisonOperator: 3
-        compareValue: 20
-    - rid: 7274045879173775803
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 85
-    - rid: 7274045879173775804
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775805
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: High Density Mix
-        required: 1
-    - rid: 7274045879173775806
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775807
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775808
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 16
-    - rid: 7274045879173775809
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Late Game Mix
-        required: 1
-    - rid: 7274045879173775810
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775811
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775812
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 17
-    - rid: 7274045879173775813
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Crusher Mix
-        required: 1
-    - rid: 7274045879173775814
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775815
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775816
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775817
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Endurance Mix
-        required: 1
-    - rid: 7274045879173775818
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775819
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775820
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 18
-    - rid: 7274045879173775821
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Ranged Siege
-        required: 1
-    - rid: 7274045879173775822
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 15
-    - rid: 7274045879173775823
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 95
-    - rid: 7274045879173775824
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 19
-    - rid: 7274045879173775825
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Final Pressure Mix
-        required: 1
-    - rid: 7274045879173775826
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775827
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775828
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775829
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Finale Core
-        required: 1
-    - rid: 7274045879173775830
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 0
-    - rid: 7274045879173775831
-      type: {class: WaveProgressCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 100
-    - rid: 7274045879173775900
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 0
         compareValue: 10
-    - rid: 7274045879173775901
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Boss Gate
-        required: 1
-    - rid: 7274045879173775902
+    - rid: 7274046033389684156
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 15
-    - rid: 7274045879173775903
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684157
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        requiredTrackId: Boss Gate
-        required: 1
-    - rid: 7274045879173775904
+        tags: 96
+    - rid: 7274046033389684158
       type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
       data:
-        comparisonOperator: 0
-        compareValue: 20
-    - rid: 7274045879173775905
-      type: {class: WaveTrackCondition, ns: , asm: Assembly-CSharp}
-      data:
-        requiredTrackId: Boss Gate
-        required: 1
-    - rid: 7274045879173775906
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775907
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775908
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775909
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775910
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775911
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775912
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775913
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775914
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775915
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775916
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775917
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775918
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775919
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775920
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775921
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775922
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775923
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775924
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775925
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775926
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775927
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775928
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775929
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775930
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775931
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775932
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775933
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775934
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775935
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775936
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775937
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775938
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775939
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775940
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775941
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775942
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775943
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775944
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775945
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775946
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775947
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775948
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775949
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775950
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775951
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775952
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775953
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775954
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775955
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775956
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775957
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775958
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775959
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775960
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775961
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775962
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775963
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775964
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775965
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775966
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775967
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775968
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775969
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775970
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775971
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775972
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775973
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775974
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775975
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775976
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775977
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775978
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775979
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775980
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775981
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775982
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775983
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775984
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775985
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775986
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775987
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775988
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775989
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775990
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775991
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775992
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775993
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173775994
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775995
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173775996
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173775997
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173775998
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173775999
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776000
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173776001
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173776002
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173776003
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776004
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776005
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173776006
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173776007
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776008
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776009
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173776010
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173776011
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173776012
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173776013
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173776014
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173776015
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776016
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 5
-    - rid: 7274045879173776017
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 33
-    - rid: 7274045879173776018
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173776019
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173776020
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 2
-    - rid: 7274045879173776021
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 18
-    - rid: 7274045879173776022
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 9
-    - rid: 7274045879173776023
+        comparisonOperator: 3
+        compareValue: 10
+    - rid: 7274046033389684159
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684160
       type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
         tags: 16
-    - rid: 7274045879173776024
+    - rid: 7274046033389684161
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 10
+    - rid: 7274046033389684162
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 14
+    - rid: 7274046033389684163
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 1
+    - rid: 7274046033389684164
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684165
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684166
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 8
+    - rid: 7274046033389684167
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684168
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684169
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684170
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684171
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684172
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684173
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684174
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684175
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 36
+    - rid: 7274046033389684176
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684177
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684178
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684179
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684180
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684181
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684182
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684183
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684184
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684185
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684186
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684187
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 66
+    - rid: 7274046033389684188
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684189
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684190
       type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
         tags: 16
-    - rid: 7274045879173776025
+    - rid: 7274046033389684191
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 15
+    - rid: 7274046033389684192
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 5
+        compareValue: 19
+    - rid: 7274046033389684193
       type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
       data:
-        tags: 16
+        tags: 1
+    - rid: 7274046033389684194
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684195
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 8
+    - rid: 7274046033389684196
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684197
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684198
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684199
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 4
+    - rid: 7274046033389684200
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684201
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 36
+    - rid: 7274046033389684202
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684203
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684204
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684205
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684206
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684207
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 96
+    - rid: 7274046033389684208
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684209
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 66
+    - rid: 7274046033389684210
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20
+    - rid: 7274046033389684211
+      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        tags: 144
+    - rid: 7274046033389684212
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 20

@@ -14,7 +14,1982 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultRollCount: 4
   allowDuplicateResults: 0
-  entries: []
+  entries:
+  - entryId: Upgrade_Armor_Epic
+    content: {fileID: 11400000, guid: 39820104848ac224d91bf0e0d6216806, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865442
+    conditions:
+    - rid: 7274046045303865443
+    weightRules:
+    - rid: 7274046045303865444
+  - entryId: Upgrade_Armor_Legendary
+    content: {fileID: 11400000, guid: 25955178e0a4bed428e1f26c687f353c, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865445
+    conditions:
+    - rid: 7274046045303865446
+    weightRules:
+    - rid: 7274046045303865447
+  - entryId: Upgrade_Armor_Rare
+    content: {fileID: 11400000, guid: 21e2c06cb29d123469eccd6a35ae7f5f, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865448
+    conditions:
+    - rid: 7274046045303865449
+    weightRules:
+    - rid: 7274046045303865450
+  - entryId: Upgrade_AttackRange_Common
+    content: {fileID: 11400000, guid: 33af78d2cec3b9a478ab7c6b9ddea3a0, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865451
+    conditions:
+    - rid: 7274046045303865452
+    weightRules:
+    - rid: 7274046045303865453
+  - entryId: Upgrade_AttackRange_Epic
+    content: {fileID: 11400000, guid: a9f1a531033a30d418eef3839c278324, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865454
+    conditions:
+    - rid: 7274046045303865455
+    weightRules:
+    - rid: 7274046045303865456
+  - entryId: Upgrade_AttackRange_Legendary
+    content: {fileID: 11400000, guid: 9fb71a8563649534cb877eba19b76d50, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865457
+    conditions:
+    - rid: 7274046045303865458
+    weightRules:
+    - rid: 7274046045303865459
+  - entryId: Upgrade_AttackRange_Rare
+    content: {fileID: 11400000, guid: 50e0ec67ffc7a574aaf90b7793807a46, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865460
+    conditions:
+    - rid: 7274046045303865461
+    weightRules:
+    - rid: 7274046045303865462
+  - entryId: Upgrade_AttackSpeed_Common
+    content: {fileID: 11400000, guid: c74b28dfabca48e47847e209174ccbbe, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865463
+    conditions:
+    - rid: 7274046045303865464
+    weightRules:
+    - rid: 7274046045303865465
+  - entryId: Upgrade_AttackSpeed_Epic
+    content: {fileID: 11400000, guid: 67d8f92edb353b649a3e3f9fd3e19497, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865466
+    conditions:
+    - rid: 7274046045303865467
+    weightRules:
+    - rid: 7274046045303865468
+  - entryId: Upgrade_AttackSpeed_Legendary
+    content: {fileID: 11400000, guid: f3f8bd075958c2f48a9955c972771f5e, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865469
+    conditions:
+    - rid: 7274046045303865470
+    weightRules:
+    - rid: 7274046045303865471
+  - entryId: Upgrade_AttackSpeed_Rare
+    content: {fileID: 11400000, guid: 544f7b2721a953a49a7567d5d03d1062, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865472
+    conditions:
+    - rid: 7274046045303865473
+    weightRules:
+    - rid: 7274046045303865474
+  - entryId: Upgrade_CriticalChance_Common
+    content: {fileID: 11400000, guid: 7431e7b46b182d84abbce838b85f91a4, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865475
+    conditions:
+    - rid: 7274046045303865476
+    weightRules:
+    - rid: 7274046045303865477
+  - entryId: Upgrade_CriticalChance_Epic
+    content: {fileID: 11400000, guid: 0fe7cc060b9077847bf1a606182e3af5, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865478
+    conditions:
+    - rid: 7274046045303865479
+    weightRules:
+    - rid: 7274046045303865480
+  - entryId: Upgrade_CriticalChance_Legendary
+    content: {fileID: 11400000, guid: 925695c822b46ce4cbf179100d06f114, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865481
+    conditions:
+    - rid: 7274046045303865482
+    weightRules:
+    - rid: 7274046045303865483
+  - entryId: Upgrade_CriticalChance_Rare
+    content: {fileID: 11400000, guid: 646d2cf4e56d3c345b8956e90f488d07, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865484
+    conditions:
+    - rid: 7274046045303865485
+    weightRules:
+    - rid: 7274046045303865486
+  - entryId: Upgrade_CriticalPercent_Common
+    content: {fileID: 11400000, guid: 258f84a5071f24f4b836ad523642034f, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865487
+    conditions:
+    - rid: 7274046045303865488
+    weightRules:
+    - rid: 7274046045303865489
+  - entryId: Upgrade_CriticalPercent_Epic
+    content: {fileID: 11400000, guid: 6d3ed65314cfdd34d9a9a275570c193f, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865490
+    conditions:
+    - rid: 7274046045303865491
+    weightRules:
+    - rid: 7274046045303865492
+  - entryId: Upgrade_CriticalPercent_Legendary
+    content: {fileID: 11400000, guid: 890180f911be2454480eaddc140727e4, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865493
+    conditions:
+    - rid: 7274046045303865494
+    weightRules:
+    - rid: 7274046045303865495
+  - entryId: Upgrade_CriticalPercent_Rare
+    content: {fileID: 11400000, guid: 548fb607c1e7a1945a2c88257cbc6729, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865496
+    conditions:
+    - rid: 7274046045303865497
+    weightRules:
+    - rid: 7274046045303865498
+  - entryId: Upgrade_Damage_Common
+    content: {fileID: 11400000, guid: 027eeae3025d25a4bb4e652bd9598ec3, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865499
+    conditions:
+    - rid: 7274046045303865500
+    weightRules:
+    - rid: 7274046045303865501
+  - entryId: Upgrade_Damage_Epic
+    content: {fileID: 11400000, guid: baeaa528e802270489a2d93ec2c60d81, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865502
+    conditions:
+    - rid: 7274046045303865503
+    weightRules:
+    - rid: 7274046045303865504
+  - entryId: Upgrade_Damage_Legendary
+    content: {fileID: 11400000, guid: cce95609c1e9c8b4d966d25ca76b794c, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865505
+    conditions:
+    - rid: 7274046045303865506
+    weightRules:
+    - rid: 7274046045303865507
+  - entryId: Upgrade_Damage_Rare
+    content: {fileID: 11400000, guid: eb707210c2c67e145a78a67368b00604, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865508
+    conditions:
+    - rid: 7274046045303865509
+    weightRules:
+    - rid: 7274046045303865510
+  - entryId: Upgrade_DamageReduction_Common
+    content: {fileID: 11400000, guid: b8798c2e36ef1d94bbfd3f4e3893cbd1, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865511
+    conditions:
+    - rid: 7274046045303865512
+    weightRules:
+    - rid: 7274046045303865513
+  - entryId: Upgrade_DamageReduction_Epic
+    content: {fileID: 11400000, guid: 52678aae09cfcbf43833cade11315eaf, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865514
+    conditions:
+    - rid: 7274046045303865515
+    weightRules:
+    - rid: 7274046045303865516
+  - entryId: Upgrade_DamageReduction_Legendary
+    content: {fileID: 11400000, guid: 1ad05114a399b834e850aae40c4b72c9, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865517
+    conditions:
+    - rid: 7274046045303865518
+    weightRules:
+    - rid: 7274046045303865519
+  - entryId: Upgrade_DamageReduction_Rare
+    content: {fileID: 11400000, guid: 08ad41bf92a45e04cacf1c708dc55605, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865520
+    conditions:
+    - rid: 7274046045303865521
+    weightRules:
+    - rid: 7274046045303865522
+  - entryId: Upgrade_Dodge_Common
+    content: {fileID: 11400000, guid: fa5462d77ccc7a5489c9c12dd5634b1b, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865523
+    conditions:
+    - rid: 7274046045303865524
+    weightRules:
+    - rid: 7274046045303865525
+  - entryId: Upgrade_Dodge_Epic
+    content: {fileID: 11400000, guid: 3a2cd16d578ce5b4bb08389b46609e7e, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865526
+    conditions:
+    - rid: 7274046045303865527
+    weightRules:
+    - rid: 7274046045303865528
+  - entryId: Upgrade_Dodge_Legendary
+    content: {fileID: 11400000, guid: fb8c632e7e8cc8a4684cfe0bb8d4f038, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865529
+    conditions:
+    - rid: 7274046045303865530
+    weightRules:
+    - rid: 7274046045303865531
+  - entryId: Upgrade_Dodge_Rare
+    content: {fileID: 11400000, guid: 6d394f5af059736489926e231798e020, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865532
+    conditions:
+    - rid: 7274046045303865533
+    weightRules:
+    - rid: 7274046045303865534
+  - entryId: Upgrade_ExperienceGain_Common
+    content: {fileID: 11400000, guid: f8f87e4076299f5429d70be0db662932, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865535
+    conditions:
+    - rid: 7274046045303865536
+    weightRules:
+    - rid: 7274046045303865537
+  - entryId: Upgrade_ExperienceGain_Epic
+    content: {fileID: 11400000, guid: ff34993d0dcdea740b6a3aad69ca7b63, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865538
+    conditions:
+    - rid: 7274046045303865539
+    weightRules:
+    - rid: 7274046045303865540
+  - entryId: Upgrade_ExperienceGain_Legendary
+    content: {fileID: 11400000, guid: 0be4a8470e9309249a12db601bc90204, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865541
+    conditions:
+    - rid: 7274046045303865542
+    weightRules:
+    - rid: 7274046045303865543
+  - entryId: Upgrade_ExperienceGain_Rare
+    content: {fileID: 11400000, guid: 377094af98e2fcc4b8903143dfeddfde, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865544
+    conditions:
+    - rid: 7274046045303865545
+    weightRules:
+    - rid: 7274046045303865546
+  - entryId: Upgrade_HealthRecovery_Common
+    content: {fileID: 11400000, guid: 9f31860ce6e54544c96a2445ef2499b9, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865547
+    conditions:
+    - rid: 7274046045303865548
+    weightRules:
+    - rid: 7274046045303865549
+  - entryId: Upgrade_HealthRecovery_Epic
+    content: {fileID: 11400000, guid: d4f4d7479e902114ea990d0e871c3ea4, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865550
+    conditions:
+    - rid: 7274046045303865551
+    weightRules:
+    - rid: 7274046045303865552
+  - entryId: Upgrade_HealthRecovery_Legendary
+    content: {fileID: 11400000, guid: 28eeb0ea1ac47944ba1f1ddb41ec762a, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865553
+    conditions:
+    - rid: 7274046045303865554
+    weightRules:
+    - rid: 7274046045303865555
+  - entryId: Upgrade_HealthRecovery_Rare
+    content: {fileID: 11400000, guid: 603e2411f68acf449b53aeecb88c6703, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865556
+    conditions:
+    - rid: 7274046045303865557
+    weightRules:
+    - rid: 7274046045303865558
+  - entryId: Upgrade_Luck_Common
+    content: {fileID: 11400000, guid: b585c36cae26fb349a187a22c123a1de, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865559
+    conditions:
+    - rid: 7274046045303865560
+    weightRules:
+    - rid: 7274046045303865561
+  - entryId: Upgrade_Luck_Epic
+    content: {fileID: 11400000, guid: f6d989511a6026346bfeb0b986c68dae, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865562
+    conditions:
+    - rid: 7274046045303865563
+    weightRules:
+    - rid: 7274046045303865564
+  - entryId: Upgrade_Luck_Legendary
+    content: {fileID: 11400000, guid: ce80d0456f261bf4a93fa10af3e1678c, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865565
+    conditions:
+    - rid: 7274046045303865566
+    weightRules:
+    - rid: 7274046045303865567
+  - entryId: Upgrade_Luck_Rare
+    content: {fileID: 11400000, guid: 8860f2124a8146d44a6f2f51a53d9a76, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865568
+    conditions:
+    - rid: 7274046045303865569
+    weightRules:
+    - rid: 7274046045303865570
+  - entryId: Upgrade_MagicAttack_Common
+    content: {fileID: 11400000, guid: c350bcbeb8075f0449b315789533661a, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865571
+    conditions:
+    - rid: 7274046045303865572
+    weightRules:
+    - rid: 7274046045303865573
+  - entryId: Upgrade_MagicAttack_Epic
+    content: {fileID: 11400000, guid: 6610d43e2736d3b4e897a644d3c75adb, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865574
+    conditions:
+    - rid: 7274046045303865575
+    weightRules:
+    - rid: 7274046045303865576
+  - entryId: Upgrade_MagicAttack_Legendary
+    content: {fileID: 11400000, guid: 53537f975e884534bb0746839f670b99, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865577
+    conditions:
+    - rid: 7274046045303865578
+    weightRules:
+    - rid: 7274046045303865579
+  - entryId: Upgrade_MagicAttack_Rare
+    content: {fileID: 11400000, guid: 30d6060d126e298498c55d39ff16bdd9, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865580
+    conditions:
+    - rid: 7274046045303865581
+    weightRules:
+    - rid: 7274046045303865582
+  - entryId: Upgrade_MaxHealth_Common
+    content: {fileID: 11400000, guid: 1bb4450abfe96134abc58311d9955a07, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865583
+    conditions:
+    - rid: 7274046045303865584
+    weightRules:
+    - rid: 7274046045303865585
+  - entryId: Upgrade_MaxHealth_Epic
+    content: {fileID: 11400000, guid: 467f193d26d5c8a4e93663c8b5633869, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865586
+    conditions:
+    - rid: 7274046045303865587
+    weightRules:
+    - rid: 7274046045303865588
+  - entryId: Upgrade_MaxHealth_Legendary
+    content: {fileID: 11400000, guid: 5bf9feb43c47246428d22017dfe34ba1, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865589
+    conditions:
+    - rid: 7274046045303865590
+    weightRules:
+    - rid: 7274046045303865591
+  - entryId: Upgrade_MaxHealth_Rare
+    content: {fileID: 11400000, guid: 328de2d53c4b7a742b90def0b0770b68, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865592
+    conditions:
+    - rid: 7274046045303865593
+    weightRules:
+    - rid: 7274046045303865594
+  - entryId: Upgrade_MeleeAttack_Common
+    content: {fileID: 11400000, guid: 2e2992bd9a0eb8241aa7b5f2d2925c29, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865595
+    conditions:
+    - rid: 7274046045303865596
+    weightRules:
+    - rid: 7274046045303865597
+  - entryId: Upgrade_MeleeAttack_Epic
+    content: {fileID: 11400000, guid: e7e6d5162a7ca2347af4bacb5bd879b6, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865598
+    conditions:
+    - rid: 7274046045303865599
+    weightRules:
+    - rid: 7274046045303865600
+  - entryId: Upgrade_MeleeAttack_Legendary
+    content: {fileID: 11400000, guid: e0e646d7a7dd0f049bc343a8791a0b5e, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865601
+    conditions:
+    - rid: 7274046045303865602
+    weightRules:
+    - rid: 7274046045303865603
+  - entryId: Upgrade_MeleeAttack_Rare
+    content: {fileID: 11400000, guid: ea8ff3b98960dfc41a589d9fcfa78101, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865604
+    conditions:
+    - rid: 7274046045303865605
+    weightRules:
+    - rid: 7274046045303865606
+  - entryId: Upgrade_MoveSpeed_Common
+    content: {fileID: 11400000, guid: d56627b7db7093548beeebabe386547e, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865607
+    conditions:
+    - rid: 7274046045303865608
+    weightRules:
+    - rid: 7274046045303865609
+  - entryId: Upgrade_MoveSpeed_Epic
+    content: {fileID: 11400000, guid: 144777dd0066a2a4c87bf986e7045de9, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865610
+    conditions:
+    - rid: 7274046045303865611
+    weightRules:
+    - rid: 7274046045303865612
+  - entryId: Upgrade_MoveSpeed_Legendary
+    content: {fileID: 11400000, guid: 3bdc4fb2ab387d449bc1bbd0b3e16fe6, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865613
+    conditions:
+    - rid: 7274046045303865614
+    weightRules:
+    - rid: 7274046045303865615
+  - entryId: Upgrade_MoveSpeed_Rare
+    content: {fileID: 11400000, guid: 8b5f6af2149760d408e62d3c114816ff, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865616
+    conditions:
+    - rid: 7274046045303865617
+    weightRules:
+    - rid: 7274046045303865618
+  - entryId: Upgrade_PickupRadius_Common
+    content: {fileID: 11400000, guid: 894c9d9456211d541bd79a2ca1ee5594, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865619
+    conditions:
+    - rid: 7274046045303865620
+    weightRules:
+    - rid: 7274046045303865621
+  - entryId: Upgrade_PickupRadius_Epic
+    content: {fileID: 11400000, guid: b7d79bd2dd15fbd49b11ea4f3cc97afd, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865622
+    conditions:
+    - rid: 7274046045303865623
+    weightRules:
+    - rid: 7274046045303865624
+  - entryId: Upgrade_PickupRadius_Legendary
+    content: {fileID: 11400000, guid: 114a4dde50c7d644193a04540a8f903a, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865625
+    conditions:
+    - rid: 7274046045303865626
+    weightRules:
+    - rid: 7274046045303865627
+  - entryId: Upgrade_PickupRadius_Rare
+    content: {fileID: 11400000, guid: 85d43dae367c638458500a93783df3b6, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865628
+    conditions:
+    - rid: 7274046045303865629
+    weightRules:
+    - rid: 7274046045303865630
+  - entryId: Upgrade_RangedAttack_Common
+    content: {fileID: 11400000, guid: c58bd016668ff474192ac5dd03e7e378, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865631
+    conditions:
+    - rid: 7274046045303865632
+    weightRules:
+    - rid: 7274046045303865633
+  - entryId: Upgrade_RangedAttack_Epic
+    content: {fileID: 11400000, guid: 3316973328a4c5143ac9d51dc75b22b4, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865634
+    conditions:
+    - rid: 7274046045303865635
+    weightRules:
+    - rid: 7274046045303865636
+  - entryId: Upgrade_RangedAttack_Legendary
+    content: {fileID: 11400000, guid: 703a9cca795e082468204476ffe3ecf3, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865637
+    conditions:
+    - rid: 7274046045303865638
+    weightRules:
+    - rid: 7274046045303865639
+  - entryId: Upgrade_RangedAttack_Rare
+    content: {fileID: 11400000, guid: 5af93cdac8643474186d8f1383037013, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865640
+    conditions:
+    - rid: 7274046045303865641
+    weightRules:
+    - rid: 7274046045303865642
+  - entryId: Upgrade_ShopDiscount_Common
+    content: {fileID: 11400000, guid: d0d293f0ad3fbab4cb9a37a07fe12d00, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865643
+    conditions:
+    - rid: 7274046045303865644
+    weightRules:
+    - rid: 7274046045303865645
+  - entryId: Upgrade_ShopDiscount_Epic
+    content: {fileID: 11400000, guid: 1f6e0f4bca6454146a4bee83b86655bb, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865646
+    conditions:
+    - rid: 7274046045303865647
+    weightRules:
+    - rid: 7274046045303865648
+  - entryId: Upgrade_ShopDiscount_Legendary
+    content: {fileID: 11400000, guid: 59da6c65fc140a04196b056c9155c8b0, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865649
+    conditions:
+    - rid: 7274046045303865650
+    weightRules:
+    - rid: 7274046045303865651
+  - entryId: Upgrade_ShopDiscount_Rare
+    content: {fileID: 11400000, guid: 0d1d880090c1e2a40913c366a1825d92, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865652
+    conditions:
+    - rid: 7274046045303865653
+    weightRules:
+    - rid: 7274046045303865654
+  - entryId: Upgrade_SummonAttack_Common
+    content: {fileID: 11400000, guid: 8282ffd093f10e144affa56eef6e3a38, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865655
+    conditions:
+    - rid: 7274046045303865656
+    weightRules:
+    - rid: 7274046045303865657
+  - entryId: Upgrade_SummonAttack_Epic
+    content: {fileID: 11400000, guid: 6f7507f88622bb942bb5d9b1d5af5ad1, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865658
+    conditions:
+    - rid: 7274046045303865659
+    weightRules:
+    - rid: 7274046045303865660
+  - entryId: Upgrade_SummonAttack_Legendary
+    content: {fileID: 11400000, guid: 3dc43a7fc3636d34aad2393e76356643, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865661
+    conditions:
+    - rid: 7274046045303865662
+    weightRules:
+    - rid: 7274046045303865663
+  - entryId: Upgrade_SummonAttack_Rare
+    content: {fileID: 11400000, guid: d0d82db19520b3d45ae021ef9a298750, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865664
+    conditions:
+    - rid: 7274046045303865665
+    weightRules:
+    - rid: 7274046045303865666
+  - entryId: Upgrade_WaveGoldBonus_Common
+    content: {fileID: 11400000, guid: 2211b2a3cb15cde4c93e94f75a9f49a2, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865667
+    conditions:
+    - rid: 7274046045303865668
+    weightRules:
+    - rid: 7274046045303865669
+  - entryId: Upgrade_WaveGoldBonus_Epic
+    content: {fileID: 11400000, guid: a1836d0c46d4c5449bdce6716fe383b7, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865670
+    conditions:
+    - rid: 7274046045303865671
+    weightRules:
+    - rid: 7274046045303865672
+  - entryId: Upgrade_WaveGoldBonus_Legendary
+    content: {fileID: 11400000, guid: b26ec788212d04c4abd5ed30e4b8182e, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865673
+    conditions:
+    - rid: 7274046045303865674
+    weightRules:
+    - rid: 7274046045303865675
+  - entryId: Upgrade_WaveGoldBonus_Rare
+    content: {fileID: 11400000, guid: 7b8abfdbf2823cd439dc099f049fc431, type: 2}
+    baseWeight: 1
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865676
+    conditions:
+    - rid: 7274046045303865677
+    weightRules:
+    - rid: 7274046045303865678
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274046045303865442
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865443
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865444
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865445
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865446
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865447
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865448
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865449
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865450
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865451
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865452
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865453
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865454
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865455
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865456
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865457
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865458
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865459
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865460
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865461
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865462
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865463
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865464
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865465
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865466
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865467
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865468
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865469
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865470
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865471
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865472
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865473
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865474
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865475
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865476
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865477
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865478
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865479
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865480
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865481
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865482
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865483
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865484
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865485
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865486
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865487
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865488
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865489
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865490
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865491
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865492
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865493
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865494
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865495
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865496
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865497
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865498
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865499
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865500
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865501
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865502
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865503
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865504
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865505
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865506
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865507
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865508
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865509
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865510
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865511
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865512
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865513
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865514
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865515
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865516
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865517
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865518
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865519
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865520
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865521
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865522
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865523
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865524
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865525
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865526
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865527
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865528
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865529
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865530
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865531
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865532
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865533
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865534
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865535
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865536
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865537
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865538
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865539
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865540
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865541
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865542
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865543
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865544
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865545
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865546
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865547
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865548
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865549
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865550
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865551
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865552
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865553
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865554
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865555
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865556
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865557
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865558
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865559
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865560
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865561
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865562
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865563
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865564
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865565
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865566
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865567
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865568
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865569
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865570
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865571
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865572
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865573
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865574
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865575
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865576
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865577
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865578
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865579
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865580
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865581
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865582
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865583
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865584
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865585
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865586
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865587
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865588
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865589
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865590
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865591
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865592
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865593
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865594
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865595
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865596
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865597
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865598
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865599
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865600
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865601
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865602
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865603
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865604
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865605
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865606
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865607
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865608
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865609
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865610
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865611
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865612
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865613
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865614
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865615
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865616
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865617
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865618
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865619
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865620
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865621
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865622
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865623
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865624
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865625
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865626
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865627
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865628
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865629
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865630
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865631
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865632
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865633
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865634
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865635
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865636
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865637
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865638
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865639
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865640
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865641
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865642
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865643
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865644
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865645
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865646
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865647
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865648
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865649
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865650
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865651
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865652
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865653
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865654
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865655
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865656
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865657
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865658
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865659
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865660
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865661
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865662
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865663
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865664
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865665
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865666
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865667
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046045303865668
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865669
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865670
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046045303865671
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865672
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865673
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046045303865674
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865675
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1
+    - rid: 7274046045303865676
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046045303865677
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865678
+      type: {class: PreviousRollWeightContentRule, ns: , asm: Assembly-CSharp}
+      data:
+        multiplier: 1

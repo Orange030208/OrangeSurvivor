@@ -490,7 +490,6 @@ public sealed class AttackSequenceStudioWindow : EditorWindow
         }
 
         DrawWeaponDataProperty("levelStats", "Level Stats", true);
-        DrawWeaponDataProperty("attackUsage", "Attack Usage", true);
         EditorGUILayout.EndVertical();
     }
 

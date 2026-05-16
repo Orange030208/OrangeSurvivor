@@ -19,7 +19,7 @@ public class AccessoryDataSO : ItemDataSO
     [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]
-    [SerializeReference] private List<FeatureEffectBase> specialFeatures = new();
+    [SerializeReference] private List<FeatureBase> specialFeatures = new();
 
     public string AccessoryId => accessoryId;
     public int RecyclePrice => recyclePrice;
@@ -31,7 +31,7 @@ public class AccessoryDataSO : ItemDataSO
     
     public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
-    public IReadOnlyList<FeatureEffectBase> SpecialFeatures => specialFeatures;
+    public IReadOnlyList<FeatureBase> SpecialFeatures => specialFeatures;
 
     private void OnValidate()
     {

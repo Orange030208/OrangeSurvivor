@@ -14,7 +14,1047 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultRollCount: 3
   allowDuplicateResults: 0
-  entries: []
+  entries:
+  - entryId: Accessory_C_DamageCharm
+    content: {fileID: 11400000, guid: d8d4d9ba9e10c0942a2d31ce1cf55184, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448188
+    conditions:
+    - rid: 7274046034566448189
+    weightRules:
+    - rid: 7274046034566448190
+  - entryId: Accessory_C_FirstAidKit
+    content: {fileID: 11400000, guid: a0e1fcf3a661c114e908b1d3d4e047df, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448191
+    conditions:
+    - rid: 7274046034566448192
+    weightRules:
+    - rid: 7274046034566448193
+  - entryId: Accessory_C_LightTrigger
+    content: {fileID: 11400000, guid: 140496a0bdd80d042a9d0f8b816494b8, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448194
+    conditions:
+    - rid: 7274046034566448195
+    weightRules:
+    - rid: 7274046034566448196
+  - entryId: Accessory_C_LuckyCoin
+    content: {fileID: 11400000, guid: 7060f17450201cd4d92021d79f08115b, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448197
+    conditions:
+    - rid: 7274046034566448198
+    weightRules:
+    - rid: 7274046034566448199
+  - entryId: Accessory_C_MagnetRing
+    content: {fileID: 11400000, guid: c2505db676b15e342b3c29b8419c6c9c, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448200
+    conditions:
+    - rid: 7274046034566448201
+    weightRules:
+    - rid: 7274046034566448202
+  - entryId: Accessory_C_MinorCritLens
+    content: {fileID: 11400000, guid: 4ed0f19ec8d18d64f831bfbcef097a53, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448203
+    conditions:
+    - rid: 7274046034566448204
+    weightRules:
+    - rid: 7274046034566448205
+  - entryId: Accessory_C_PaddedVest
+    content: {fileID: 11400000, guid: cf3f594a49642b34791e9493ee3425dc, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448206
+    conditions:
+    - rid: 7274046034566448207
+    weightRules:
+    - rid: 7274046034566448208
+  - entryId: Accessory_C_ShortScope
+    content: {fileID: 11400000, guid: f9e6235b87d805e4cb20085ad22f52a9, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448209
+    conditions:
+    - rid: 7274046034566448210
+    weightRules:
+    - rid: 7274046034566448211
+  - entryId: Accessory_C_SpringLace
+    content: {fileID: 11400000, guid: 4c912ed3606934a4f8dd10af02bb7ba2, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448212
+    conditions:
+    - rid: 7274046034566448213
+    weightRules:
+    - rid: 7274046034566448214
+  - entryId: Accessory_E_BalancedCore
+    content: {fileID: 11400000, guid: c62fac41cc02d674d8f98d3b3b83a5bb, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448215
+    conditions:
+    - rid: 7274046034566448216
+    weightRules:
+    - rid: 7274046034566448217
+  - entryId: Accessory_E_CompositePlate
+    content: {fileID: 11400000, guid: f26a5bcb6f93c954ebeafc306b45ccfa, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448218
+    conditions:
+    - rid: 7274046034566448219
+    weightRules:
+    - rid: 7274046034566448220
+  - entryId: Accessory_E_CritScope
+    content: {fileID: 11400000, guid: bc2c863ba287ccf4aa48d77e28d4e342, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448221
+    conditions:
+    - rid: 7274046034566448222
+    weightRules:
+    - rid: 7274046034566448223
+  - entryId: Accessory_E_FieldInstructor
+    content: {fileID: 11400000, guid: 26d096e813fe1254bb24f470de28a232, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448224
+    conditions:
+    - rid: 7274046034566448225
+    weightRules:
+    - rid: 7274046034566448226
+  - entryId: Accessory_E_GrowthLedger
+    content: {fileID: 11400000, guid: 02e8f2ac5b8c88242a4acad725b8548d, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448227
+    conditions:
+    - rid: 7274046034566448228
+    weightRules:
+    - rid: 7274046034566448229
+  - entryId: Accessory_E_GuardianMantle
+    content: {fileID: 11400000, guid: f6bdc0114a60a7c43a73412de42457e4, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448230
+    conditions:
+    - rid: 7274046034566448231
+    weightRules:
+    - rid: 7274046034566448232
+  - entryId: Accessory_E_KnockbackCoil
+    content: {fileID: 11400000, guid: 1b832675cf98ad8479a7c8f08710368a, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448233
+    conditions:
+    - rid: 7274046034566448234
+    weightRules:
+    - rid: 7274046034566448235
+  - entryId: Accessory_E_LongRangeStabilizer
+    content: {fileID: 11400000, guid: 930caf2e521886d47a1a01e3a59e924a, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448236
+    conditions:
+    - rid: 7274046034566448237
+    weightRules:
+    - rid: 7274046034566448238
+  - entryId: Accessory_E_PiercingDrill
+    content: {fileID: 11400000, guid: 84b4ccece4e7f6a4d90bda90741ae340, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448239
+    conditions:
+    - rid: 7274046034566448240
+    weightRules:
+    - rid: 7274046034566448241
+  - entryId: Accessory_E_RegenCore
+    content: {fileID: 11400000, guid: 1c0ff2b25916cff42b2481f0d82a2c80, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448242
+    conditions:
+    - rid: 7274046034566448243
+    weightRules:
+    - rid: 7274046034566448244
+  - entryId: Accessory_L_AlloyTactics
+    content: {fileID: 11400000, guid: 0a4e622a186a8fd4c8cfc7295130ec65, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448245
+    conditions:
+    - rid: 7274046034566448246
+    weightRules:
+    - rid: 7274046034566448247
+  - entryId: Accessory_L_BenefitCoupler
+    content: {fileID: 11400000, guid: 5805015125e841849a4f79e515b73185, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448248
+    conditions:
+    - rid: 7274046034566448249
+    weightRules:
+    - rid: 7274046034566448250
+  - entryId: Accessory_L_CritCrown
+    content: {fileID: 11400000, guid: 3013656f209ec3f4aa42b7ed9b425228, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448251
+    conditions:
+    - rid: 7274046034566448252
+    weightRules:
+    - rid: 7274046034566448253
+  - entryId: Accessory_L_ExtraHolster
+    content: {fileID: 11400000, guid: fbfffc09c38c9b748b05218f6c61d0c4, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448254
+    conditions:
+    - rid: 7274046034566448255
+    weightRules:
+    - rid: 7274046034566448256
+  - entryId: Accessory_L_OverdriveCore
+    content: {fileID: 11400000, guid: a55d374be4c34164ab90ef0de8922fbe, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448257
+    conditions:
+    - rid: 7274046034566448258
+    weightRules:
+    - rid: 7274046034566448259
+  - entryId: Accessory_L_SurvivalMatrix
+    content: {fileID: 11400000, guid: 3652a172f9265d74cbc504ce4e6a51cf, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448260
+    conditions:
+    - rid: 7274046034566448261
+    weightRules:
+    - rid: 7274046034566448262
+  - entryId: Accessory_R_BloodNeedle
+    content: {fileID: 11400000, guid: 9c8413cc54236f643927a8eba1047a3f, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448263
+    conditions:
+    - rid: 7274046034566448264
+    weightRules:
+    - rid: 7274046034566448265
+  - entryId: Accessory_R_CritPrimer
+    content: {fileID: 11400000, guid: 941ce9502f1951941b5c0b84718bc349, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448266
+    conditions:
+    - rid: 7274046034566448267
+    weightRules:
+    - rid: 7274046034566448268
+  - entryId: Accessory_R_DamageManual
+    content: {fileID: 11400000, guid: 3b4273c5b6a76f146b15a38da85e8355, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448269
+    conditions:
+    - rid: 7274046034566448270
+    weightRules:
+    - rid: 7274046034566448271
+  - entryId: Accessory_R_EvasionCloth
+    content: {fileID: 11400000, guid: c69984e1ac4acd848842b48b2f4f51f5, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448272
+    conditions:
+    - rid: 7274046034566448273
+    weightRules:
+    - rid: 7274046034566448274
+  - entryId: Accessory_R_FieldBandage
+    content: {fileID: 11400000, guid: 9882273d6c2ef254faf4f0df46359e62, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448275
+    conditions:
+    - rid: 7274046034566448276
+    weightRules:
+    - rid: 7274046034566448277
+  - entryId: Accessory_R_LongBoots
+    content: {fileID: 11400000, guid: af64dff14160fe948922dda859cbdd4a, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448278
+    conditions:
+    - rid: 7274046034566448279
+    weightRules:
+    - rid: 7274046034566448280
+  - entryId: Accessory_R_MagicEmblem
+    content: {fileID: 11400000, guid: bdef494fe0017204189007e2fc4895a9, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448281
+    conditions:
+    - rid: 7274046034566448282
+    weightRules:
+    - rid: 7274046034566448283
+  - entryId: Accessory_R_MeleeEmblem
+    content: {fileID: 11400000, guid: d8b8f979b71586441afdebec925ce638, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448284
+    conditions:
+    - rid: 7274046034566448285
+    weightRules:
+    - rid: 7274046034566448286
+  - entryId: Accessory_R_RangedEmblem
+    content: {fileID: 11400000, guid: bf5eb68dac304ac429e9d6921c197366, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448287
+    conditions:
+    - rid: 7274046034566448288
+    weightRules:
+    - rid: 7274046034566448289
+  - entryId: Accessory_R_RapidGear
+    content: {fileID: 11400000, guid: 63286077217669a4a8879bb4abf9cb6d, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448290
+    conditions:
+    - rid: 7274046034566448291
+    weightRules:
+    - rid: 7274046034566448292
+  - entryId: Accessory_R_SteelGuard
+    content: {fileID: 11400000, guid: 9d663f2e99afc0a47aac6f9b9014bbe8, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448293
+    conditions:
+    - rid: 7274046034566448294
+    weightRules:
+    - rid: 7274046034566448295
+  - entryId: Accessory_R_SummonEmblem
+    content: {fileID: 11400000, guid: a78a1f2b852926b4584f9b62e965d454, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448296
+    conditions:
+    - rid: 7274046034566448297
+    weightRules:
+    - rid: 7274046034566448298
+  - entryId: Accessory_R_TacticalCore
+    content: {fileID: 11400000, guid: cc381195206425a4a9a4fb58bbad6f89, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448299
+    conditions:
+    - rid: 7274046034566448300
+    weightRules:
+    - rid: 7274046034566448301
+  - entryId: Accessory_R_TradeStamp
+    content: {fileID: 11400000, guid: 6425bd932b15bd643905bcef489eff96, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448302
+    conditions:
+    - rid: 7274046034566448303
+    weightRules:
+    - rid: 7274046034566448304
+  - entryId: Accessory_R_WavePurse
+    content: {fileID: 11400000, guid: b54491c3dc5202841a351df3d713c744, type: 2}
+    baseWeight: 2
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046034566448305
+    conditions:
+    - rid: 7274046034566448306
+    weightRules:
+    - rid: 7274046034566448307
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274046034566448188
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448189
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448190
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448191
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448192
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448193
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448194
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448195
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448196
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448197
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448198
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448199
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448200
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448201
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448202
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448203
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448204
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448205
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448206
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448207
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448208
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448209
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448210
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448211
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448212
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 0
+    - rid: 7274046034566448213
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448214
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: -0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448215
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448216
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448217
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448218
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448219
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448220
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448221
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448222
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448223
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448224
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448225
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448226
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448227
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448228
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448229
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448230
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448231
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448232
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448233
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448234
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448235
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448236
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448237
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448238
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448239
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448240
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448241
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448242
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 2
+    - rid: 7274046034566448243
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448244
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0036
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448245
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448246
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448247
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448248
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448249
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448250
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448251
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448252
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448253
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448254
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448255
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448256
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448257
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448258
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448259
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448260
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 3
+    - rid: 7274046034566448261
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448262
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0056
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448263
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448264
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448265
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448266
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448267
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448268
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448269
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448270
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448271
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448272
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448273
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448274
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448275
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448276
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448277
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448278
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448279
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448280
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448281
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448282
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448283
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448284
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448285
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448286
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448287
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448288
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448289
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448290
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448291
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448292
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448293
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448294
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448295
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448296
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448297
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448298
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448299
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448300
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448301
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448302
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448303
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448304
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0
+    - rid: 7274046034566448305
+      type: {class: QualityMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        qualityValue: 1
+    - rid: 7274046034566448306
+      type: {class: AccessoryOwnedLimitCondition, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 7274046034566448307
+      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
+      data:
+        propType: 9
+        weightPerPoint: 0.0016000001
+        minMultiplier: 0.5
+        maxMultiplier: 0

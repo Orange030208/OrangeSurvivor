@@ -121,7 +121,7 @@ public sealed class RunProgressionTests
 
         DropManager dropManager = CreateGameObject("Drop Manager").AddComponent<DropManager>();
 
-        Assert.IsNull(dropManager.RollDropForSource(sourceInfo, null, 1));
+        Assert.IsNull(dropManager.RollDropForSource(sourceInfo, null, 1).Collection);
     }
 
     [Test]
@@ -169,12 +169,12 @@ public sealed class RunProgressionTests
         SetPrivateField(dropManager, "random", new FixedContentRandom(0f));
 
         SetPrivateField(dropManager, "contentPoolRollService", new ContentPoolRollService(new FixedContentRandom(0.9f)));
-        Assert.AreSame(commonDrop, dropManager.RollDropForSource(sourceInfo, source, 1));
+        Assert.AreSame(commonDrop, dropManager.RollDropForSource(sourceInfo, source, 1).Collection);
 
         propertiesManager.AddModifier("luck", new PropModifierData(PropType.Luck, 100f));
 
         SetPrivateField(dropManager, "contentPoolRollService", new ContentPoolRollService(new FixedContentRandom(0.9f)));
-        Assert.AreSame(luckyDrop, dropManager.RollDropForSource(sourceInfo, source, 1));
+        Assert.AreSame(luckyDrop, dropManager.RollDropForSource(sourceInfo, source, 1).Collection);
     }
 
     [Test]

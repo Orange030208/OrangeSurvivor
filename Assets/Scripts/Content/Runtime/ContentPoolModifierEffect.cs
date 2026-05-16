@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public abstract class ContentPoolModifierEffect : FeatureEffectBase, IContentPoolModifier
+public abstract class ContentPoolModifier : FeatureBase, IContentPoolModifier
 {
     [SerializeField] private int priority;
     [SerializeField] private string targetScopeId;
@@ -38,7 +38,7 @@ public abstract class ContentPoolModifierEffect : FeatureEffectBase, IContentPoo
 }
 
 [Serializable]
-public sealed class UpgradeCardTagContentPoolWeightModifierEffect : ContentPoolModifierEffect
+public sealed class UpgradeCardTagContentPoolWeightModifier : ContentPoolModifier
 {
     [SerializeField] private UpgradeCardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
@@ -69,7 +69,7 @@ public sealed class UpgradeCardTagContentPoolWeightModifierEffect : ContentPoolM
 }
 
 [Serializable]
-public sealed class AssetContentPoolWeightModifierEffect : ContentPoolModifierEffect
+public sealed class AssetContentPoolWeightModifier : ContentPoolModifier
 {
     [SerializeField] private UnityEngine.Object targetAsset;
     [SerializeField] private float weightMultiplier = 1f;
@@ -98,7 +98,7 @@ public sealed class AssetContentPoolWeightModifierEffect : ContentPoolModifierEf
 }
 
 [Serializable]
-public sealed class UpgradeCardTagContentPoolMetadataModifierEffect : ContentPoolModifierEffect
+public sealed class UpgradeCardTagContentPoolMetadataModifier : ContentPoolModifier
 {
     [SerializeField] private UpgradeCardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
@@ -152,7 +152,7 @@ public sealed class UpgradeCardTagContentPoolMetadataModifierEffect : ContentPoo
 }
 
 [Serializable]
-public sealed class AssetContentPoolMetadataModifierEffect : ContentPoolModifierEffect
+public sealed class AssetContentPoolMetadataModifier : ContentPoolModifier
 {
     [SerializeField] private UnityEngine.Object targetAsset;
     [SerializeField] private bool overrideLevelRange;

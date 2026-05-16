@@ -14,18 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_004
   displayName: Wave 4
-  duration: 30
+  duration: 40
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Main Swarm
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 0.75
-    spawnCountPerBatch: 2
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Skeleton Pressure
-    triggerMode: 0
-    spawnFrequency: 0.3
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 20, y: 85}
+    spawnFrequency: 0.375
+    spawnCountPerBatch: 4
+    maxSpawnBatches: 3
+    normalizedTimeRange: {x: 0, y: 20}

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: Accessory_E_GrowthLedger
+  m_EditorClassIdentifier: 
+  itemName: "\u6210\u957F\u8D26\u672C"
+  itemIcon: {fileID: 21300000, guid: bb183ef5047057a4facb995f593d3dd6, type: 3}
+  itemPrice: 65
+  itemType: 1
+  itemDescription: "\u65E9\u671F\u7ECF\u6D4E\u6784\u7B51\u4EF6\uFF0C\u6743\u91CD\u5F88\u4F4E\u3002"
+  accessoryId: Accessory_E_GrowthLedger
+  recyclePrice: 20
+  rarity: 2
+  maxOwnedCount: 0
+  propertyModifiers:
+  - propType: 20
+    modifierType: 0
+    value: 12
+  - propType: 9
+    modifierType: 0
+    value: 4
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

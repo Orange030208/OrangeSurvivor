@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: FlyForestPropGroup
   m_EditorClassIdentifier: 
   values:
-  - propType: 0
-    value: 12
-  - propType: 1
-    value: 45
   - propType: 5
     value: 30
+  - propType: 0
+    value: 11
+  - propType: 1
+    value: 48
+  - propType: 4
+    value: 320
   - propType: 6
     value: 900
-  - propType: 4
-    value: 300
   - propType: 15
-    value: 800
+    value: 820
+  - propType: 8
+    value: 0
+  - propType: 19
+    value: 0

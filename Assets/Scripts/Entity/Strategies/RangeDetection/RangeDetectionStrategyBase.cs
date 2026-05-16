@@ -2,11 +2,11 @@ using System;
 
 public abstract class RangeDetectionStrategyBase : IRangeDetectionStrategy
 {
-    protected readonly Enemy owner;
+    protected readonly Entity owner;
     protected readonly PropertiesManager propertiesManager;
 
     protected RangeDetectionStrategyBase(
-        Enemy owner,
+        Entity owner,
         PropertiesManager propertiesManager)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));

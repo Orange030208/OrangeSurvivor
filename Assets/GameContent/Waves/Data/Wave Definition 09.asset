@@ -14,24 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_009
   displayName: Wave 9
-  duration: 30
+  duration: 45
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Dense Swarm
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 1.15
-    spawnCountPerBatch: 3
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Worm Trail
-    triggerMode: 0
-    spawnFrequency: 0.5
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 25, y: 100}
-  - trackId: Elite Interval
-    triggerMode: 0
-    spawnFrequency: 0.05
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 3
-    normalizedTimeRange: {x: 35, y: 95}
+    spawnFrequency: 0.44444445
+    spawnCountPerBatch: 5
+    maxSpawnBatches: 4
+    normalizedTimeRange: {x: 0, y: 20}

@@ -4,7 +4,11 @@ public class WeaponPosition : MonoBehaviour
 {
     public Weapon Weapon { get; private set; }
 
-    public Weapon AssignWeapon(Entity owner,WeaponDataSO weaponData, int level)
+    public Weapon AssignWeapon(
+        Entity owner,
+        WeaponDataSO weaponData,
+        int level,
+        WeaponBenefitData runtimeBenefits = default)
     {
         if (weaponData == null)
         {
@@ -26,6 +30,7 @@ public class WeaponPosition : MonoBehaviour
         Weapon.transform.localRotation = Quaternion.identity;
         Weapon.Initialize(owner);
         Weapon.SetWeaponData(weaponData);
+        Weapon.SetBenefits(runtimeBenefits.Validated());
         Weapon.OnEnableComponent();
         Weapon.SetLevel(level);
         return Weapon;

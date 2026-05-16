@@ -14,7 +14,175 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultRollCount: 1
   allowDuplicateResults: 0
-  entries: []
+  entries:
+  - entryId: Weapon_ArcaneBolt
+    content: {fileID: 11400000, guid: b7deec74312189147b52dcc31afd21a4, type: 2}
+    baseWeight: 70
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865679
+    conditions:
+    - rid: 7274046045303865680
+    weightRules: []
+  - entryId: Weapon_DaggerRing
+    content: {fileID: 11400000, guid: b593a42a86f900f4588dd39649000d25, type: 2}
+    baseWeight: 65
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865681
+    conditions:
+    - rid: 7274046045303865682
+    weightRules: []
+  - entryId: Weapon_FireWand
+    content: {fileID: 11400000, guid: e55bad4405582f04292382e113ec87ad, type: 2}
+    baseWeight: 45
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865683
+    conditions:
+    - rid: 7274046045303865684
+    weightRules: []
+  - entryId: Weapon_GreatAxe
+    content: {fileID: 11400000, guid: 592e4626375d8a646b52a53dfa5a5257, type: 2}
+    baseWeight: 35
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865685
+    conditions:
+    - rid: 7274046045303865686
+    weightRules: []
+  - entryId: Weapon_HuntingRifle
+    content: {fileID: 11400000, guid: 01020b2d0535e7f42b0dea7178e83189, type: 2}
+    baseWeight: 70
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865687
+    conditions:
+    - rid: 7274046045303865688
+    weightRules: []
+  - entryId: Weapon_IronHammer
+    content: {fileID: 11400000, guid: 887a273db2c45fb448bbe50d4c0ea89a, type: 2}
+    baseWeight: 80
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865689
+    conditions:
+    - rid: 7274046045303865690
+    weightRules: []
+  - entryId: Weapon_RapidSMG
+    content: {fileID: 11400000, guid: fcf3203ac318a5549aeb67d84dcfac7a, type: 2}
+    baseWeight: 85
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865691
+    conditions:
+    - rid: 7274046045303865692
+    weightRules: []
+  - entryId: Weapon_SummonOrb
+    content: {fileID: 11400000, guid: f4fdac5ac43bae1419d1bdede22a999f, type: 2}
+    baseWeight: 35
+    maxRollCount: 0
+    maxPickCount: 0
+    mutuallyExclusiveEntryIds: []
+    metadata:
+    - rid: 7274046045303865693
+    conditions:
+    - rid: 7274046045303865694
+    weightRules: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7274046045303865679
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865680
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865681
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865682
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 2
+    - rid: 7274046045303865683
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865684
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 3
+    - rid: 7274046045303865685
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865686
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 5
+    - rid: 7274046045303865687
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865688
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865689
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865690
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865691
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865692
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 1
+    - rid: 7274046045303865693
+      type: {class: WeaponLevelRollMetadata, ns: , asm: Assembly-CSharp}
+      data:
+        minLevel: 1
+        maxLevel: 4
+    - rid: 7274046045303865694
+      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
+      data:
+        comparisonOperator: 3
+        compareValue: 4

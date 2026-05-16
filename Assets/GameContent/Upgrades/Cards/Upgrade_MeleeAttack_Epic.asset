@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: Upgrade_MeleeAttack_Epic
+  m_EditorClassIdentifier: 
+  cardId: Upgrade_MeleeAttack_Epic
+  title: "\u8FD1\u6218\u8BAD\u7EC3-\u53F2\u8BD7"
+  rarity: 2
+  tags: 385
+  description: "\u56DB\u7C7B\u653B\u51FB\u5361\u6743\u91CD\u7565\u4F4E\u4E8E\u901A\u7528\u8F93\u51FA\u5361\u3002"
+  specialFeatures:
+  - rid: 7274046045303865373
+  references:
+    version: 2
+    RefIds:
+    - rid: 7274046045303865373
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        modifier:
+          propType: 29
+          modifierType: 0
+          value: 11

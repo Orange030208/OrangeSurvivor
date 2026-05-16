@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: EvilEyePropGroup
   m_EditorClassIdentifier: 
   values:
+  - propType: 5
+    value: 22
   - propType: 0
     value: 16
   - propType: 1
-    value: 45
+    value: 42
   - propType: 4
     value: 300
-  - propType: 5
-    value: 12
   - propType: 6
-    value: 900
+    value: 920
   - propType: 15
-    value: 750
+    value: 780
+  - propType: 8
+    value: 0
+  - propType: 19
+    value: 0

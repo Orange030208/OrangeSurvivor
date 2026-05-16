@@ -169,7 +169,11 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon runtimeWeapon = emptyPosition.AssignWeapon(owner, weaponData, WeaponLevelHelper.ClampLevel(level));
+        Weapon runtimeWeapon = emptyPosition.AssignWeapon(
+            owner,
+            weaponData,
+            WeaponLevelHelper.ClampLevel(level),
+            currentWeaponBenefitBonus);
 
         if (runtimeWeapon == null)
         {
@@ -289,7 +293,7 @@ public class WeaponsHolder : EntityComponentBase
 
         if (!targetPosition.RemoveWeapon(targetWeapon))
         {
-            sourcePosition.AssignWeapon(owner, weaponData, sourceWeapon.Level);
+            sourcePosition.AssignWeapon(owner, weaponData, sourceWeapon.Level, currentWeaponBenefitBonus);
             if (sourcePosition.Weapon != null)
             {
                 sourcePosition.Weapon.SetTargetLayerMask(targetLayerMask);
@@ -299,7 +303,7 @@ public class WeaponsHolder : EntityComponentBase
             return false;
         }
 
-        Weapon mergedWeapon = targetPosition.AssignWeapon(owner, weaponData, mergedLevel);
+        Weapon mergedWeapon = targetPosition.AssignWeapon(owner, weaponData, mergedLevel, currentWeaponBenefitBonus);
         if (mergedWeapon != null)
         {
             mergedWeapon.SetTargetLayerMask(targetLayerMask);
@@ -604,7 +608,11 @@ public class WeaponsHolder : EntityComponentBase
 
         for (int i = 0; i < weaponPositions.Length; i++)
         {
-            weaponPositions[i]?.Weapon?.RefreshRuntimeStats();
+            Weapon weapon = weaponPositions[i]?.Weapon;
+            if (weapon != null)
+            {
+                weapon.SetBenefits(currentWeaponBenefitBonus);
+            }
         }
     }
 

@@ -44,7 +44,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
         {
             for (int i = 0; i < handle.RuntimeEffects.Count; i++)
             {
-                FeatureEffectBase effect = handle.RuntimeEffects[i];
+                FeatureBase effect = handle.RuntimeEffects[i];
                 if (effect == null)
                 {
                     continue;
@@ -55,7 +55,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
         }
     }
 
-    public bool InstallFeature(string sourceId,IReadOnlyList<FeatureEffectBase> featureEffects)
+    public bool InstallFeature(string sourceId,IReadOnlyList<FeatureBase> featureEffects)
     {
         if (string.IsNullOrWhiteSpace(sourceId) || featureContext == null)
         {
@@ -64,19 +64,19 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
         RemoveFeature(sourceId);
 
-        var runtimeEffects = new List<FeatureEffectBase>();
+        var runtimeEffects = new List<FeatureBase>();
         if (featureEffects != null)
         {
             for (int i = 0; i < featureEffects.Count; i++)
             {
-                FeatureEffectBase sourceEffect = featureEffects[i];
-                runtimeEffects.Add(sourceEffect != null ? sourceEffect.CreateRuntimeCopy() : null);
+                FeatureBase source = featureEffects[i];
+                runtimeEffects.Add(source != null ? source.CreateRuntimeCopy() : null);
             }
         }
 
         for (int i = 0; i < runtimeEffects.Count; i++)
         {
-            FeatureEffectBase effect = runtimeEffects[i];
+            FeatureBase effect = runtimeEffects[i];
             if (effect == null)
             {
                 continue;
@@ -101,7 +101,7 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
         for (int i = 0; i < handle.RuntimeEffects.Count; i++)
         {
-            FeatureEffectBase effect = handle.RuntimeEffects[i];
+            FeatureBase effect = handle.RuntimeEffects[i];
             if (effect == null)
             {
                 continue;
@@ -128,18 +128,18 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 
     public IEnumerable<IHitModifier> GetHitModifiers(HitModifierTiming modifierTiming)
     {
-        List<IHitModifier> results = new List<IHitModifier>();
+        List<IHitModifier> results = new();
         foreach (FeatureHostSourceHandle handle in installedSources.Values)
         {
             for (int i = 0; i < handle.RuntimeEffects.Count; i++)
             {
-                FeatureEffectBase effect = handle.RuntimeEffects[i];
-                if (effect == null || !effect.CanModifyHit || effect.HitModifierTiming != modifierTiming)
+                FeatureBase effect = handle.RuntimeEffects[i];
+                if (effect is not IHitModifier modifier || modifier.HitModifierTiming != modifierTiming)
                 {
                     continue;
                 }
 
-                results.Add(effect);
+                results.Add(modifier);
             }
         }
         return results;
@@ -150,9 +150,9 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
 public sealed class FeatureHostSourceHandle
 {
     public string SourceId { get; }
-    public List<FeatureEffectBase> RuntimeEffects { get; }
+    public List<FeatureBase> RuntimeEffects { get; }
 
-    public FeatureHostSourceHandle(string sourceId, List<FeatureEffectBase> runtimeEffects)
+    public FeatureHostSourceHandle(string sourceId, List<FeatureBase> runtimeEffects)
     {
         SourceId = sourceId;
         RuntimeEffects = runtimeEffects;

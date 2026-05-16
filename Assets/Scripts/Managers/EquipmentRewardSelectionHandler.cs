@@ -150,7 +150,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                 (context, pool) => new ContentRollContext(
                     ContentPoolScopeIds.WeaponReward,
                     context.Player,
-                    progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
+                    progressionSnapshot: context.CreateWaveProgressionSnapshot(),
                     historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.WeaponReward),
                     history: context.ContentHistoryState,
                     weaponsHolder: context.WeaponsHolder),

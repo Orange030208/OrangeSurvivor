@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public sealed class BonusWaveSpawnModifier : WaveSpawnModifierEffect
+public sealed class BonusWaveSpawnModifier : WaveSpawnModifier
 {
     private const float MIN_FREQUENCY = 0.01f;
     private const int MIN_SPAWN_COUNT = 1;

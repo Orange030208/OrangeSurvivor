@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: Upgrade_Dodge_Epic
+  m_EditorClassIdentifier: 
+  cardId: Upgrade_Dodge_Epic
+  title: "\u95EA\u907F\u5F3A\u5316-\u53F2\u8BD7"
+  rarity: 2
+  tags: 2
+  description: "\u6709\u6548\u95EA\u907F\u4E0A\u9650\u4E3A 50%\uFF0C\u91CD\u590D\u9009\u62E9\u540E\u5B9E\u9645\u6536\u76CA\u53D7\u4E0A\u9650\u9650\u5236\u3002"
+  specialFeatures:
+  - rid: 7274046045303865412
+  references:
+    version: 2
+    RefIds:
+    - rid: 7274046045303865412
+      type: {class: PropertyModifierFeature, ns: , asm: Assembly-CSharp}
+      data:
+        modifier:
+          propType: 10
+          modifierType: 0
+          value: 7

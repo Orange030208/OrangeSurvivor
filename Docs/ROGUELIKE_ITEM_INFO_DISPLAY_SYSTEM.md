@@ -647,11 +647,12 @@ public sealed class StatIconCatalog : ScriptableObject
 ```text
 FeatureEffectBase.Icon
 BuffDataSO.Icon
-UpgradeCardSO.Icon
 AccessoryDataSO.Icon
 WeaponDataSO.Icon
 默认特殊效果图标
 ```
+
+升级卡当前不提供独立图标，展示层应直接容忍空值。
 
 如果没有图标，使用默认特殊效果图标，不能让 UI 因缺图标而错位。
 

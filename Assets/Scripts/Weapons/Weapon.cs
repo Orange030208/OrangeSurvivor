@@ -52,6 +52,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     [Header("运行时")]
     [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")]
     [SerializeField] protected LayerMask targetLayerMask;
+    [Tooltip("运行时可变的武器总收益。配置好的等级收益会在结算时叠加到这份值上。")]
+    [SerializeField] private WeaponBenefitData benefits = WeaponBenefitData.Zero;
 
     private readonly Dictionary<int, HashSet<HealthComponent>> hitWindowTargets = new();
     private readonly Dictionary<int, HitBoxDetectionPose> hitWindowLastPoses = new();
@@ -75,10 +77,10 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     public float CriticalMultiplier { get; private set; } = 1f;
     public float KnockbackStrength { get; private set; }
     public bool IsAttacking { get; protected set; }
+    public WeaponBenefitData Benefits => benefits.Validated();
     protected PropertiesManager propertiesManager;
     protected Entity owner;
     protected Entity currentTarget;
-    private WeaponsHolder weaponsHolder;
     private string activeHolderLevelModifierSourceId;
     private float cooldownRemaining = 1f;
     private int cooldownStartedFrame = -1;
@@ -106,7 +108,6 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     {
         this.owner = owner;
         propertiesManager = GetComponentInParent<PropertiesManager>();
-        weaponsHolder = GetComponentInParent<WeaponsHolder>();
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
         hitBoxAttackExecutor = new HitBoxAttackExecutor(SpawnHitVfx);
     }
@@ -189,6 +190,15 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     public void SetTargetLayerMask(LayerMask layerMask)
     {
         targetLayerMask = layerMask;
+    }
+
+    public void SetBenefits(WeaponBenefitData value)
+    {
+        benefits = value.Validated();
+        if (WeaponData != null && propertiesManager != null)
+        {
+            RefreshRuntimeStats();
+        }
     }
 
     protected virtual void OnConfiguredFromData()
@@ -856,17 +866,12 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
                 $"Ensure the weapon is a child of an entity with a {nameof(PropertiesManager)} component.");
         }
 
-        if (weaponsHolder == null)
-        {
-            weaponsHolder = GetComponentInParent<WeaponsHolder>();
-        }
-
         float previousAttackInterval = AttackInterval;
         WeaponRuntimeStats runtimeStats = runtimeStatsResolver.Resolve(new WeaponRuntimeStatsRequest(
             WeaponData,
             Level,
             propertiesManager,
-            weaponsHolder));
+            Benefits));
 
         Damage = runtimeStats.Damage;
         AttackInterval = runtimeStats.AttackInterval;

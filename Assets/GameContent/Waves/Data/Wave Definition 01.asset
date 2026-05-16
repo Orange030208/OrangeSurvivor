@@ -14,19 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_001
   displayName: Wave 1
-  duration: 30
+  duration: 40
   completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Main Swarm
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 0.45
+    spawnFrequency: 0.375
     spawnCountPerBatch: 2
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Main Swarm
-    triggerMode: 0
-    spawnFrequency: 1
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 0, y: 100}
+    maxSpawnBatches: 3
+    normalizedTimeRange: {x: 0, y: 20}

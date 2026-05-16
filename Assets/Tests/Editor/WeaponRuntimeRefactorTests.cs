@@ -38,30 +38,17 @@ public sealed class WeaponRuntimeRefactorTests
             new BasePropData(PropType.MeleeAttack, 30f),
             new BasePropData(PropType.RangedAttack, 10f)
         });
-        WeaponsHolder holder = CreateGameObject("weapon_holder_bonus").AddComponent<WeaponsHolder>();
-        holder.AddWeaponBenefitModifier(
-            "bonus",
-            new WeaponBenefitData(
-                attackSpeedBenefitPercent: 25f,
-                criticalChanceBenefitPercent: 0f,
-                criticalPercentBenefitPercent: 0f,
-                rangeBenefitPercent: 0f,
-                knockbackStrengthBenefitPercent: 50f,
-                meleeAttackUsagePercent: 5f,
-                rangedAttackUsagePercent: 10f,
-                magicAttackUsagePercent: 0f,
-                summonAttackUsagePercent: 0f));
+        WeaponBenefitData runtimeBenefits = new(
+            attackSpeedBenefitPercent: 75f,
+            criticalChanceBenefitPercent: 25f,
+            criticalPercentBenefitPercent: 50f,
+            rangeBenefitPercent: 100f,
+            knockbackStrengthBenefitPercent: 75f,
+            meleeAttackUsagePercent: 25f,
+            rangedAttackUsagePercent: 10f,
+            magicAttackUsagePercent: 0f,
+            summonAttackUsagePercent: 0f);
         WeaponDataSO weaponData = CreateWeaponData(
-            new WeaponBenefitData(
-                attackSpeedBenefitPercent: 50f,
-                criticalChanceBenefitPercent: 25f,
-                criticalPercentBenefitPercent: 50f,
-                rangeBenefitPercent: 100f,
-                knockbackStrengthBenefitPercent: 25f,
-                meleeAttackUsagePercent: 20f,
-                rangedAttackUsagePercent: 0f,
-                magicAttackUsagePercent: 0f,
-                summonAttackUsagePercent: 0f),
             new WeaponLevelStatData(
                 level: 1,
                 attack: 10f,
@@ -70,11 +57,19 @@ public sealed class WeaponRuntimeRefactorTests
                 criticalPercent: 150f,
                 range: 6f,
                 knockbackStrength: 2f,
-                meleeAttackUsagePercent: 10f,
-                rangedAttackUsagePercent: 20f));
+                statBenefits: new WeaponBenefitData(
+                    attackSpeedBenefitPercent: 0f,
+                    criticalChanceBenefitPercent: 0f,
+                    criticalPercentBenefitPercent: 0f,
+                    rangeBenefitPercent: 0f,
+                    knockbackStrengthBenefitPercent: 0f,
+                    meleeAttackUsagePercent: 10f,
+                    rangedAttackUsagePercent: 20f,
+                    magicAttackUsagePercent: 0f,
+                    summonAttackUsagePercent: 0f)));
         WeaponRuntimeStatsResolver resolver = new();
 
-        WeaponRuntimeStats stats = resolver.Resolve(new WeaponRuntimeStatsRequest(weaponData, 1, manager, holder));
+        WeaponRuntimeStats stats = resolver.Resolve(new WeaponRuntimeStatsRequest(weaponData, 1, manager, runtimeBenefits));
 
         Assert.That(stats.Damage, Is.EqualTo(29.375f).Within(0.0001f));
         Assert.That(
@@ -287,11 +282,10 @@ public sealed class WeaponRuntimeRefactorTests
         return group;
     }
 
-    private WeaponDataSO CreateWeaponData(WeaponBenefitData benefits, WeaponLevelStatData levelStats)
+    private WeaponDataSO CreateWeaponData(WeaponLevelStatData levelStats)
     {
         WeaponDataSO weaponData = ScriptableObject.CreateInstance<WeaponDataSO>();
         createdObjects.Add(weaponData);
-        SetPrivateField(weaponData, "benefits", benefits);
         SetPrivateField(weaponData, "levelStats", new List<WeaponLevelStatData> { levelStats });
         return weaponData;
     }

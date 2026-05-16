@@ -14,37 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_020
   displayName: Wave 20
-  duration: 30
-  completionMode: 1
+  duration: 75
+  completionMode: 0
   spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
   spawnPlans:
-  - trackId: Boss Gate
-    triggerMode: 1
-    spawnFrequency: 1
-    spawnCountPerBatch: 1
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Finale Core
+  - trackId: Track_01
     triggerMode: 0
-    spawnFrequency: 2.15
-    spawnCountPerBatch: 5
-    maxSpawnBatches: 0
-    normalizedTimeRange: {x: 0, y: 100}
-  - trackId: Final Elite Pulse
-    triggerMode: 0
-    spawnFrequency: 0.05
-    spawnCountPerBatch: 3
-    maxSpawnBatches: 4
-    normalizedTimeRange: {x: 25, y: 100}
-  - trackId: Final Orange Pulse
-    triggerMode: 0
-    spawnFrequency: 0.03
-    spawnCountPerBatch: 2
-    maxSpawnBatches: 3
-    normalizedTimeRange: {x: 45, y: 100}
-  - trackId: Last Minute Swarm
-    triggerMode: 1
-    spawnFrequency: 0.01
-    spawnCountPerBatch: 18
-    maxSpawnBatches: 1
-    normalizedTimeRange: {x: 82, y: 83}
+    spawnFrequency: 0.53333336
+    spawnCountPerBatch: 8
+    maxSpawnBatches: 6
+    normalizedTimeRange: {x: 0, y: 15}

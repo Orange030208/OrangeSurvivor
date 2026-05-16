@@ -347,7 +347,7 @@ public class BuffController : EntityComponentBase
                 continue;
             }
 
-            List<FeatureEffectBase> effects = sourceHandle.RuntimeEffects;
+            List<FeatureBase> effects = sourceHandle.RuntimeEffects;
             for (int j = 0; j < effects.Count; j++)
             {
                 if (effects[j] is IBuffStackAwareFeatureEffect stackAwareEffect)
