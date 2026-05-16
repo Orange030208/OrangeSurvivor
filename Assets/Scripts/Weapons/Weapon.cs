@@ -52,8 +52,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     [Header("运行时")]
     [Tooltip("武器攻击会命中的目标层。由武器持有器在初始化时设置；这里只作为运行时查询使用。")]
     [SerializeField] protected LayerMask targetLayerMask;
-    [Tooltip("运行时可变的武器总收益。配置好的等级收益会在结算时叠加到这份值上。")]
-    [SerializeField] private WeaponBenefitData benefits = WeaponBenefitData.Zero;
+    private WeaponBenefitData runtimeBenefits = WeaponBenefitData.Zero;
 
     private readonly Dictionary<int, HashSet<HealthComponent>> hitWindowTargets = new();
     private readonly Dictionary<int, HitBoxDetectionPose> hitWindowLastPoses = new();
@@ -77,7 +76,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     public float CriticalMultiplier { get; private set; } = 1f;
     public float KnockbackStrength { get; private set; }
     public bool IsAttacking { get; protected set; }
-    public WeaponBenefitData Benefits => benefits.Validated();
+    public WeaponBenefitData Benefits => runtimeBenefits.Validated();
     protected PropertiesManager propertiesManager;
     protected Entity owner;
     protected Entity currentTarget;
@@ -194,7 +193,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
 
     public void SetBenefits(WeaponBenefitData value)
     {
-        benefits = value.Validated();
+        runtimeBenefits = value.Validated();
         if (WeaponData != null && propertiesManager != null)
         {
             RefreshRuntimeStats();
