@@ -9,7 +9,6 @@ public class BuffController : EntityComponentBase
     private const int SINGLE_STACK_CHANGE_COUNT = 1;
 
     private FeatureHost featureHost;
-    private PropertiesManager propertiesManager;
     private Entity owner;
     private readonly Dictionary<string, List<BuffRuntimeHandle>> buffStacksById = new();
     private readonly List<BuffApplyRequest> waveStartBuffRequests = new();
@@ -22,7 +21,6 @@ public class BuffController : EntityComponentBase
     {
         this.owner = owner;
         featureHost = GetComponent<FeatureHost>();
-        propertiesManager = GetComponent<PropertiesManager>();
     }
 
     public override void OnEnableComponent()
@@ -237,7 +235,6 @@ public class BuffController : EntityComponentBase
             return false;
         }
 
-        propertiesManager?.AddModifiers(runtimeSourceId, buffData.PropertyModifiers);
         stacks.Add(new BuffRuntimeHandle(runtimeSourceId, buffData, durationPolicy, durationSeconds));
         NotifyStackAwareEffects(stacks);
         return true;
@@ -297,7 +294,6 @@ public class BuffController : EntityComponentBase
         int previousStackCount = stacks.Count;
 
         featureHost.RemoveFeature(handle.RuntimeSourceId);
-        propertiesManager?.RemoveModifiers(handle.RuntimeSourceId);
         stacks.RemoveAt(stackIndex);
 
         if (stacks.Count > 0)

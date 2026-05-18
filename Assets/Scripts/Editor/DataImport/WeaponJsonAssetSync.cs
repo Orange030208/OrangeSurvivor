@@ -72,19 +72,26 @@ public static class WeaponJsonAssetSync
         }
 
         RefreshWeaponDataList();
-        RebuildWeaponRewardPool();
+        RebuildWeaponRewardPool(weapons);
         AssetDatabase.SaveAssets();
         return report;
     }
 
-    public static void RebuildWeaponRewardPool()
+    public static void RebuildWeaponRewardPool(IReadOnlyList<WeaponJsonWeapon> weaponRows = null)
     {
         DataImportAssetUtility.EnsureFolder(GameContentAssetPaths.CatalogPools);
         List<ContentPoolEntry> entries = new();
+        Dictionary<string, WeaponJsonWeapon> rowsById = BuildRowsById(weaponRows);
         IReadOnlyList<WeaponDataSO> weapons = DataImportAssetUtility.LoadAssets<WeaponDataSO>(WeaponFolder);
         for (int i = 0; i < weapons.Count; i++)
         {
-            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(weapons[i]);
+            WeaponDataSO weapon = weapons[i];
+            WeaponJsonWeapon row = ResolveWeaponRow(rowsById, weapon);
+            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(
+                weapon,
+                ResolveBaseWeight(row),
+                ResolveOpenWave(row),
+                ResolveCloseWave(row));
             if (entry != null)
             {
                 entries.Add(entry);
@@ -143,9 +150,6 @@ public static class WeaponJsonAssetSync
         DataImportAssetUtility.SetEnum(serializedObject, "itemType", ItemType.Weapon);
         DataImportAssetUtility.SetString(serializedObject, "itemDescription", data.itemDescription);
         WriteTags(serializedObject, data);
-        DataImportAssetUtility.FindRequiredProperty(serializedObject, "openWave").intValue = Mathf.Max(1, data.openWave);
-        DataImportAssetUtility.FindRequiredProperty(serializedObject, "closeWave").intValue = Mathf.Max(0, data.closeWave);
-        DataImportAssetUtility.FindRequiredProperty(serializedObject, "baseWeight").floatValue = Mathf.Max(0f, data.baseWeight);
         DataImportAssetUtility.FindRequiredProperty(serializedObject, "visualForwardAngle").floatValue = data.visualForwardAngle;
         DataImportAssetUtility.FindRequiredProperty(serializedObject, "holdAimWhenAttackReady").boolValue = data.holdAimWhenAttackReady;
         DataImportAssetUtility.FindRequiredProperty(serializedObject, "attackSequenceOccupancy").floatValue = Mathf.Clamp(data.attackSequenceOccupancy, 0.1f, 1f);
@@ -347,6 +351,63 @@ public static class WeaponJsonAssetSync
         }
 
         weaponDataList.RefreshWeapons();
+    }
+
+    private static Dictionary<string, WeaponJsonWeapon> BuildRowsById(IReadOnlyList<WeaponJsonWeapon> rows)
+    {
+        Dictionary<string, WeaponJsonWeapon> result = new(StringComparer.Ordinal);
+        if (rows == null)
+        {
+            return result;
+        }
+
+        for (int i = 0; i < rows.Count; i++)
+        {
+            WeaponJsonWeapon row = rows[i];
+            if (row == null || string.IsNullOrWhiteSpace(row.weaponId))
+            {
+                continue;
+            }
+
+            result[row.weaponId] = row;
+        }
+
+        return result;
+    }
+
+    private static WeaponJsonWeapon ResolveWeaponRow(
+        IReadOnlyDictionary<string, WeaponJsonWeapon> rowsById,
+        WeaponDataSO weapon)
+    {
+        if (weapon == null || rowsById == null)
+        {
+            return null;
+        }
+
+        return rowsById.TryGetValue(weapon.WeaponId, out WeaponJsonWeapon row)
+            ? row
+            : null;
+    }
+
+    private static float ResolveBaseWeight(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(0f, row.baseWeight)
+            : WeaponContentPoolTuningUtility.DefaultRewardWeaponWeight;
+    }
+
+    private static int ResolveOpenWave(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultOpenWave, row.openWave)
+            : WeaponContentPoolTuningUtility.DefaultOpenWave;
+    }
+
+    private static int ResolveCloseWave(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultCloseWave, row.closeWave)
+            : WeaponContentPoolTuningUtility.DefaultCloseWave;
     }
 
     private static string BuildWeaponPath(string weaponId)

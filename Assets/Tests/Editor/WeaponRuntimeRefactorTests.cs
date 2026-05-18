@@ -67,9 +67,9 @@ public sealed class WeaponRuntimeRefactorTests
                     rangedAttackUsagePercent: 20f,
                     magicAttackUsagePercent: 0f,
                     summonAttackUsagePercent: 0f)));
-        WeaponRuntimeStatsResolver resolver = new();
+        WeaponStatsResolver resolver = new();
 
-        WeaponRuntimeStats stats = resolver.Resolve(new WeaponRuntimeStatsRequest(weaponData, 1, manager, runtimeBenefits));
+        WeaponStats stats = resolver.Resolve(new WeaponStatsRequest(weaponData, 1, manager, runtimeBenefits));
 
         Assert.That(stats.Damage, Is.EqualTo(29.375f).Within(0.0001f));
         Assert.That(

@@ -43,6 +43,7 @@ public static class WaveDefinitionMapper
             waveName,
             waveDefinition.Duration,
             waveDefinition.CompletionMode,
+            waveDefinition.SpawnLocation,
             segments);
     }
 

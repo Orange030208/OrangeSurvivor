@@ -1,0 +1,542 @@
+[
+  {
+    "waveId": "Wave_001",
+    "displayName": "Wave 1",
+    "durationSeconds": 40,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_002",
+    "displayName": "Wave 2",
+    "durationSeconds": 40,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_003",
+    "displayName": "Wave 3",
+    "durationSeconds": 40,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_004",
+    "displayName": "Wave 4",
+    "durationSeconds": 40,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_005",
+    "displayName": "Wave 5",
+    "durationSeconds": 50,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_006",
+    "displayName": "Wave 6",
+    "durationSeconds": 45,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_007",
+    "displayName": "Wave 7",
+    "durationSeconds": 45,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_008",
+    "displayName": "Wave 8",
+    "durationSeconds": 45,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_009",
+    "displayName": "Wave 9",
+    "durationSeconds": 45,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_010",
+    "displayName": "Wave 10",
+    "durationSeconds": 60,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_011",
+    "displayName": "Wave 11",
+    "durationSeconds": 50,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_012",
+    "displayName": "Wave 12",
+    "durationSeconds": 50,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_013",
+    "displayName": "Wave 13",
+    "durationSeconds": 50,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_014",
+    "displayName": "Wave 14",
+    "durationSeconds": 50,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_015",
+    "displayName": "Wave 15",
+    "durationSeconds": 65,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_016",
+    "displayName": "Wave 16",
+    "durationSeconds": 55,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_017",
+    "displayName": "Wave 17",
+    "durationSeconds": 55,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_018",
+    "displayName": "Wave 18",
+    "durationSeconds": 55,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_019",
+    "displayName": "Wave 19",
+    "durationSeconds": 55,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  },
+  {
+    "waveId": "Wave_020",
+    "displayName": "Wave 20",
+    "durationSeconds": 75,
+    "completionMode": "TimerOnly",
+    "spawnLocation": {
+      "resolverSettings": {
+        "boundsPadding": 1,
+        "resolveAttempts": 16,
+        "spawnClearance": 0.1,
+        "minBounds": {
+          "x": -12,
+          "y": -12
+        },
+        "maxBounds": {
+          "x": 12,
+          "y": 12
+        },
+        "obstacleLayerNames": [
+          "Wall"
+        ]
+      },
+      "strategy": {
+        "type": "RandomInsideMapSpawnLocationStrategy"
+      }
+    }
+  }
+]

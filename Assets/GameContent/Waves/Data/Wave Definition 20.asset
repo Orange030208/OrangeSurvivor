@@ -16,7 +16,17 @@ MonoBehaviour:
   displayName: Wave 20
   duration: 75
   completionMode: 0
-  spawnLocationPolicy: {fileID: 11400000, guid: 6f159fe8656c4f58ace3b3dca0a0f449, type: 2}
+  spawnLocation:
+    resolverSettings:
+      boundsPadding: 1
+      resolveAttempts: 16
+      spawnClearance: 0.1
+      minBounds: {x: -12, y: -12}
+      maxBounds: {x: 12, y: 12}
+      obstacleLayerNames:
+      - Wall
+    strategy:
+      rid: 7274046045303865773
   spawnPlans:
   - trackId: Track_01
     triggerMode: 0
@@ -24,3 +34,10 @@ MonoBehaviour:
     spawnCountPerBatch: 8
     maxSpawnBatches: 6
     normalizedTimeRange: {x: 0, y: 15}
+  references:
+    version: 2
+    RefIds:
+    - rid: 7274046045303865773
+      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
+      data: 
+

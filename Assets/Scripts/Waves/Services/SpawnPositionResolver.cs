@@ -1,5 +1,4 @@
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class SpawnPositionResolver
 {
@@ -9,56 +8,26 @@ public class SpawnPositionResolver
     private static bool hasLoggedMissingObstacleLayer;
     private static bool hasLoggedFallbackCollider;
 
-    private readonly SpawnLocationPolicyType policyType;
-    private readonly float minDistance;
-    private readonly float maxDistance;
-    private readonly float boundsPadding;
-    private readonly int resolveAttempts;
-    private readonly LayerMask obstacleLayerMask;
-    private readonly float spawnClearance;
-    private readonly Vector2 minBounds;
-    private readonly Vector2 maxBounds;
+    private readonly SpawnLocationResolverSettings settings;
+    private readonly ISpawnLocationStrategy strategy;
     private readonly Collider2D[] obstacleHitBuffer = new Collider2D[OBSTACLE_HIT_BUFFER_SIZE];
 
-    private SpawnPositionResolver(
-        SpawnLocationPolicyType policyType,
-        float minDistance,
-        float maxDistance,
-        float boundsPadding,
-        int resolveAttempts,
-        LayerMask obstacleLayerMask,
-        float spawnClearance,
-        Vector2 minBounds,
-        Vector2 maxBounds)
+    private SpawnPositionResolver(SpawnLocationDefinition definition)
     {
-        this.policyType = policyType;
-        this.minDistance = minDistance;
-        this.maxDistance = maxDistance;
-        this.boundsPadding = boundsPadding;
-        this.resolveAttempts = resolveAttempts;
-        this.obstacleLayerMask = obstacleLayerMask;
-        this.spawnClearance = spawnClearance;
-        this.minBounds = minBounds;
-        this.maxBounds = maxBounds;
+        SpawnLocationDefinition resolvedDefinition = definition ?? SpawnLocationDefinition.CreateDefault();
+        resolvedDefinition.Validate();
+        settings = resolvedDefinition.ResolverSettings;
+        strategy = resolvedDefinition.Strategy;
     }
 
-    public static SpawnPositionResolver FromPolicy(SpawnLocationPolicySO policy)
+    public static SpawnPositionResolver FromDefinition(SpawnLocationDefinition definition)
     {
-        if (policy == null)
+        if (definition == null)
         {
-            throw new MissingReferenceException($"{nameof(SpawnLocationPolicySO)} is required for wave spawning.");
+            throw new MissingReferenceException($"{nameof(SpawnLocationDefinition)} is required for wave spawning.");
         }
 
-        return new SpawnPositionResolver(
-            policy.PolicyType,
-            policy.MinDistance,
-            policy.MaxDistance,
-            policy.BoundsPadding,
-            policy.ResolveAttempts,
-            policy.ObstacleLayerMask,
-            policy.SpawnClearance,
-            policy.MinBounds,
-            policy.MaxBounds);
+        return new SpawnPositionResolver(definition);
     }
 
     public Vector3 Resolve(SpawnContext context)
@@ -78,8 +47,8 @@ public class SpawnPositionResolver
             throw new MissingReferenceException($"{nameof(SpawnContext)} is missing anchor entity.");
         }
 
-        Vector2 resolvedMinBounds = minBounds;
-        Vector2 resolvedMaxBounds = maxBounds;
+        Vector2 resolvedMinBounds = settings.MinBounds;
+        Vector2 resolvedMaxBounds = settings.MaxBounds;
         if (MapGenerator.TryGetRuntimeBounds(out Bounds runtimeBounds))
         {
             Vector3 extents = runtimeBounds.extents;
@@ -90,7 +59,7 @@ public class SpawnPositionResolver
         ApplyBoundsPadding(ref resolvedMinBounds, ref resolvedMaxBounds);
 
         float occupancyRadius = ResolveOccupancyRadius(enemyDefinition);
-        for (int i = 0; i < resolveAttempts; i++)
+        for (int i = 0; i < settings.ResolveAttempts; i++)
         {
             Vector2 candidate = CreateCandidatePosition(context.AnchorEntity.Center, resolvedMinBounds, resolvedMaxBounds);
             if (IsSafeSpawnPosition(candidate, occupancyRadius, resolvedMinBounds, resolvedMaxBounds))
@@ -106,54 +75,14 @@ public class SpawnPositionResolver
 
     private Vector2 CreateCandidatePosition(Vector2 anchorPosition, Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
     {
-        return policyType switch
-        {
-            SpawnLocationPolicyType.RandomInsideMap => CreateRandomInsideMapPosition(resolvedMinBounds, resolvedMaxBounds),
-            SpawnLocationPolicyType.RandomMapEdge => CreateRandomMapEdgePosition(resolvedMinBounds, resolvedMaxBounds),
-            _ => CreateBoundedRingPosition(anchorPosition, resolvedMinBounds, resolvedMaxBounds)
-        };
-    }
-
-    private Vector2 CreateBoundedRingPosition(Vector2 anchorPosition, Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
-    {
-        return ClampInsideBounds(CreateRingPosition(anchorPosition), resolvedMinBounds, resolvedMaxBounds);
-    }
-
-    private static Vector2 CreateRandomInsideMapPosition(Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
-    {
-        return new Vector2(
-            Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x),
-            Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y));
-    }
-
-    private static Vector2 CreateRandomMapEdgePosition(Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
-    {
-        int edgeIndex = Random.Range(0, 4);
-        return edgeIndex switch
-        {
-            0 => new Vector2(Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x), resolvedMaxBounds.y),
-            1 => new Vector2(Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x), resolvedMinBounds.y),
-            2 => new Vector2(resolvedMinBounds.x, Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y)),
-            _ => new Vector2(resolvedMaxBounds.x, Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y))
-        };
-    }
-
-    private Vector2 CreateRingPosition(Vector2 anchorPosition)
-    {
-        Vector2 direction = Random.insideUnitCircle.normalized;
-        if (direction == Vector2.zero)
-        {
-            direction = Vector2.up;
-        }
-
-        float spawnDistance = Random.Range(minDistance, maxDistance);
-        return anchorPosition + direction * spawnDistance;
+        SpawnLocationStrategyContext strategyContext = new(anchorPosition, resolvedMinBounds, resolvedMaxBounds);
+        return strategy.CreateCandidatePosition(strategyContext);
     }
 
     private void ApplyBoundsPadding(ref Vector2 resolvedMinBounds, ref Vector2 resolvedMaxBounds)
     {
-        float safePaddingX = Mathf.Min(boundsPadding, Mathf.Max(0f, (resolvedMaxBounds.x - resolvedMinBounds.x) * 0.5f));
-        float safePaddingY = Mathf.Min(boundsPadding, Mathf.Max(0f, (resolvedMaxBounds.y - resolvedMinBounds.y) * 0.5f));
+        float safePaddingX = Mathf.Min(settings.BoundsPadding, Mathf.Max(0f, (resolvedMaxBounds.x - resolvedMinBounds.x) * 0.5f));
+        float safePaddingY = Mathf.Min(settings.BoundsPadding, Mathf.Max(0f, (resolvedMaxBounds.y - resolvedMinBounds.y) * 0.5f));
         resolvedMinBounds += new Vector2(safePaddingX, safePaddingY);
         resolvedMaxBounds -= new Vector2(safePaddingX, safePaddingY);
     }
@@ -169,7 +98,7 @@ public class SpawnPositionResolver
             return false;
         }
 
-        int obstacleMask = obstacleLayerMask.value;
+        int obstacleMask = settings.ObstacleLayerMask;
         if (obstacleMask == 0)
         {
             if (!hasLoggedMissingObstacleLayer)
@@ -196,7 +125,7 @@ public class SpawnPositionResolver
             Collider2D entityCollider = enemyDefinition.prefab.EntityCollider;
             if (TryResolveColliderRadius(entityCollider, out float colliderRadius))
             {
-                return colliderRadius + spawnClearance;
+                return colliderRadius + settings.SpawnClearance;
             }
         }
 
@@ -207,7 +136,7 @@ public class SpawnPositionResolver
             hasLoggedFallbackCollider = true;
         }
 
-        return FALLBACK_OCCUPANCY_RADIUS + spawnClearance;
+        return FALLBACK_OCCUPANCY_RADIUS + settings.SpawnClearance;
     }
 
     private static bool TryResolveColliderRadius(Collider2D entityCollider, out float radius)
@@ -247,10 +176,4 @@ public class SpawnPositionResolver
             && position.y <= resolvedMaxBounds.y;
     }
 
-    private static Vector2 ClampInsideBounds(Vector2 position, Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
-    {
-        position.x = Mathf.Clamp(position.x, resolvedMinBounds.x, resolvedMaxBounds.x);
-        position.y = Mathf.Clamp(position.y, resolvedMinBounds.y, resolvedMaxBounds.y);
-        return position;
-    }
 }

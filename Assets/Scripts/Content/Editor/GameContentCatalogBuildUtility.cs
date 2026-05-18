@@ -187,6 +187,7 @@ public static class GameContentCatalogBuildUtility
     private static List<ContentPoolEntry> BuildShopEntries()
     {
         List<ContentPoolEntry> entries = BuildChestRewardEntries();
+        IReadOnlyDictionary<string, WeaponJsonWeapon> weaponRowsById = LoadWeaponRowsById();
         foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
         {
             if (weapon == null)
@@ -194,16 +195,23 @@ public static class GameContentCatalogBuildUtility
                 continue;
             }
 
+            WeaponJsonWeapon row = ResolveWeaponRow(weaponRowsById, weapon);
             for (int level = WeaponLevelHelper.MinLevel; level <= WeaponLevelHelper.MaxLevel; level++)
             {
-                ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateShopEntry(weapon, level);
+                ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateShopEntry(
+                    weapon,
+                    level,
+                    ResolveWeaponOpenWave(row),
+                    ResolveWeaponCloseWave(row));
                 if (entry == null)
                 {
                     continue;
                 }
 
                 entry.ConfigureRuntimeRules(
-                    WeaponContentPoolTuningUtility.BuildAvailabilityConditions(weapon),
+                    WeaponContentPoolTuningUtility.BuildAvailabilityConditions(
+                        ResolveWeaponOpenWave(row),
+                        ResolveWeaponCloseWave(row)),
                     new[] { CreateLuckWeightRule(GetWeaponLevelLuckCoefficient(level), 0.5f) });
                 entries.Add(entry);
             }
@@ -215,6 +223,7 @@ public static class GameContentCatalogBuildUtility
     private static List<ContentPoolEntry> BuildWeaponRewardEntries()
     {
         List<ContentPoolEntry> entries = new();
+        IReadOnlyDictionary<string, WeaponJsonWeapon> weaponRowsById = LoadWeaponRowsById();
         foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
         {
             if (weapon == null)
@@ -222,7 +231,12 @@ public static class GameContentCatalogBuildUtility
                 continue;
             }
 
-            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(weapon);
+            WeaponJsonWeapon row = ResolveWeaponRow(weaponRowsById, weapon);
+            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(
+                weapon,
+                ResolveWeaponBaseWeight(row),
+                ResolveWeaponOpenWave(row),
+                ResolveWeaponCloseWave(row));
             if (entry == null)
             {
                 continue;
@@ -232,6 +246,68 @@ public static class GameContentCatalogBuildUtility
         }
 
         return entries;
+    }
+
+    private static IReadOnlyDictionary<string, WeaponJsonWeapon> LoadWeaponRowsById()
+    {
+        Dictionary<string, WeaponJsonWeapon> weaponRowsById = new(System.StringComparer.Ordinal);
+        try
+        {
+            IReadOnlyList<WeaponJsonWeapon> rows = WeaponJsonReader.ReadDefault();
+            for (int i = 0; i < rows.Count; i++)
+            {
+                WeaponJsonWeapon row = rows[i];
+                if (row == null || string.IsNullOrWhiteSpace(row.weaponId))
+                {
+                    continue;
+                }
+
+                weaponRowsById[row.weaponId] = row;
+            }
+        }
+        catch (DataImportException exception)
+        {
+            Debug.LogWarning(
+                $"Weapon JSON tuning could not be loaded for content pool generation. " +
+                $"Using default weapon pool tuning. {exception.Message}");
+        }
+
+        return weaponRowsById;
+    }
+
+    private static WeaponJsonWeapon ResolveWeaponRow(
+        IReadOnlyDictionary<string, WeaponJsonWeapon> rowsById,
+        WeaponDataSO weapon)
+    {
+        if (rowsById == null || weapon == null)
+        {
+            return null;
+        }
+
+        return rowsById.TryGetValue(weapon.WeaponId, out WeaponJsonWeapon row)
+            ? row
+            : null;
+    }
+
+    private static float ResolveWeaponBaseWeight(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(0f, row.baseWeight)
+            : WeaponContentPoolTuningUtility.DefaultRewardWeaponWeight;
+    }
+
+    private static int ResolveWeaponOpenWave(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultOpenWave, row.openWave)
+            : WeaponContentPoolTuningUtility.DefaultOpenWave;
+    }
+
+    private static int ResolveWeaponCloseWave(WeaponJsonWeapon row)
+    {
+        return row != null
+            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultCloseWave, row.closeWave)
+            : WeaponContentPoolTuningUtility.DefaultCloseWave;
     }
 
     private static List<ContentPoolEntry> BuildUpgradeCardEntries()

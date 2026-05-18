@@ -315,11 +315,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     [Header("分类")]
     [SerializeField] private WeaponTag[] tags = System.Array.Empty<WeaponTag>();
 
-    [Header("数值投放")]
-    [SerializeField, Min(1)] private int openWave = 1;
-    [SerializeField, Min(0)] private int closeWave;
-    [SerializeField, Min(0f)] private float baseWeight = 1f;
-
     [Header("运行时")]
     [SerializeField] private AttackSequenceDefinitionSO attackSequence;
 
@@ -363,10 +358,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public GameObject HitVfxPrefab => hitVfxPrefab;
     public Vector2 HitBoxSize => hitBoxSize;
     public Vector2 HitBoxOffset => hitBoxOffset;
-    public int OpenWave => Mathf.Max(1, openWave);
-    public int CloseWave => Mathf.Max(0, closeWave);
-    public bool HasCloseWave => CloseWave > 0;
-    public float BaseWeight => Mathf.Max(0f, baseWeight);
     public override string Description => BuildDescriptionForLevel(WeaponLevelHelper.MinLevel);
 
     private void OnValidate()
@@ -374,9 +365,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         itemType = ItemType.Weapon;
         NormalizeTags();
         spawnPoints ??= System.Array.Empty<WeaponSpawnPointDefinition>();
-        openWave = Mathf.Max(1, openWave);
-        closeWave = Mathf.Max(0, closeWave);
-        baseWeight = Mathf.Max(0f, baseWeight);
         EnsureLevelStatsTable();
         attackSequenceOccupancy = Mathf.Clamp(attackSequenceOccupancy, 0.1f, 1f);
         hitBoxSize.x = Mathf.Max(0.01f, hitBoxSize.x);

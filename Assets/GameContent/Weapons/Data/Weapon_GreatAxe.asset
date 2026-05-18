@@ -35,6 +35,78 @@ MonoBehaviour:
   sequenceVfxList: []
   enableHitBox: 1
   hitVfxPrefab: {fileID: 0}
-  hitBoxSize: {x: 1, y: 1}
+  hitBoxSize: {x: 0.68, y: 1}
   hitBoxOffset: {x: 0, y: 0}
-
+  levelStats:
+  - level: 1
+    attack: 0
+    attackSpeed: 100
+    criticalChance: 0
+    criticalPercent: 100
+    range: 200
+    knockbackStrength: 0
+    statBenefits:
+      attackSpeedBenefitPercent: 0
+      criticalChanceBenefitPercent: 0
+      criticalPercentBenefitPercent: 0
+      rangeBenefitPercent: 0
+      knockbackStrengthBenefitPercent: 0
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 2
+    attack: 0
+    attackSpeed: 100
+    criticalChance: 0
+    criticalPercent: 100
+    range: 200
+    knockbackStrength: 0
+    statBenefits:
+      attackSpeedBenefitPercent: 0
+      criticalChanceBenefitPercent: 0
+      criticalPercentBenefitPercent: 0
+      rangeBenefitPercent: 0
+      knockbackStrengthBenefitPercent: 0
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 3
+    attack: 0
+    attackSpeed: 100
+    criticalChance: 0
+    criticalPercent: 100
+    range: 200
+    knockbackStrength: 0
+    statBenefits:
+      attackSpeedBenefitPercent: 0
+      criticalChanceBenefitPercent: 0
+      criticalPercentBenefitPercent: 0
+      rangeBenefitPercent: 0
+      knockbackStrengthBenefitPercent: 0
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 4
+    attack: 0
+    attackSpeed: 100
+    criticalChance: 0
+    criticalPercent: 100
+    range: 200
+    knockbackStrength: 0
+    statBenefits:
+      attackSpeedBenefitPercent: 0
+      criticalChanceBenefitPercent: 0
+      criticalPercentBenefitPercent: 0
+      rangeBenefitPercent: 0
+      knockbackStrengthBenefitPercent: 0
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []

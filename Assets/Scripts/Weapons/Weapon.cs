@@ -59,7 +59,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     private readonly HashSet<int> activeHitWindows = new();
     private readonly List<HitBoxDebugSample> hitBoxDebugSamples = new();
     private readonly WeaponTargetSelector targetSelector = new();
-    private readonly WeaponRuntimeStatsResolver runtimeStatsResolver = new();
+    private readonly WeaponStatsResolver statsResolver = new();
     private readonly ProjectilePatternEmitter projectilePatternEmitter = new();
     private HitBoxAttackExecutor hitBoxAttackExecutor;
     private AttackSequenceDefinitionSO attackSequence;
@@ -866,19 +866,19 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
         }
 
         float previousAttackInterval = AttackInterval;
-        WeaponRuntimeStats runtimeStats = runtimeStatsResolver.Resolve(new WeaponRuntimeStatsRequest(
+        WeaponStats stats = statsResolver.Resolve(new WeaponStatsRequest(
             WeaponData,
             Level,
             propertiesManager,
             Benefits));
 
-        Damage = runtimeStats.Damage;
-        AttackInterval = runtimeStats.AttackInterval;
+        Damage = stats.Damage;
+        AttackInterval = stats.AttackInterval;
         RefreshCooldownForAttackIntervalChange(previousAttackInterval);
-        CriticalChance = runtimeStats.CriticalChance;
-        CriticalMultiplier = runtimeStats.CriticalMultiplier;
-        Range = runtimeStats.Range;
-        KnockbackStrength = runtimeStats.KnockbackStrength;
+        CriticalChance = stats.CriticalChance;
+        CriticalMultiplier = stats.CriticalMultiplier;
+        Range = stats.Range;
+        KnockbackStrength = stats.KnockbackStrength;
     }
 
     private void RefreshCooldownForAttackIntervalChange(float previousAttackInterval)

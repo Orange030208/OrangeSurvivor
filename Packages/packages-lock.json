@@ -31,6 +31,13 @@
       "source": "local",
       "dependencies": {}
     },
+    "com.framedoctor.profiler": {
+      "version": "https://github.com/oliashford/framedoctor-unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "211e8b88b0d95c1dfc88c2fae1216d5d6d4ba1fe"
+    },
     "com.unity.2d.animation": {
       "version": "9.2.0",
       "depth": 1,

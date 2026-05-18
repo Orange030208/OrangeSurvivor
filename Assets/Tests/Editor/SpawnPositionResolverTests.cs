@@ -31,16 +31,16 @@ public class SpawnPositionResolverTests
         SetMapGeneratorRuntimeBoundsState(false);
     }
 
-    [TestCase(SpawnLocationPolicyType.AroundPlayerRing)]
-    [TestCase(SpawnLocationPolicyType.RandomInsideMap)]
-    [TestCase(SpawnLocationPolicyType.RandomMapEdge)]
-    public void TryResolveRejectsPositionsOverlappingObstacleLayer(SpawnLocationPolicyType policyType)
+    [TestCase(nameof(AroundPlayerRingSpawnLocationStrategy))]
+    [TestCase(nameof(RandomInsideMapSpawnLocationStrategy))]
+    [TestCase(nameof(RandomMapEdgeSpawnLocationStrategy))]
+    public void TryResolveRejectsPositionsOverlappingObstacleLayer(string strategyType)
     {
         int wallLayer = LayerMask.NameToLayer("Wall");
         Assert.GreaterOrEqual(wallLayer, 0, "Project must define the Wall layer for spawn obstacle checks.");
 
-        SpawnLocationPolicySO policy = CreatePolicy(policyType, LayerMask.GetMask("Wall"));
-        SpawnPositionResolver resolver = SpawnPositionResolver.FromPolicy(policy);
+        SpawnLocationDefinition spawnLocation = CreateSpawnLocation(strategyType);
+        SpawnPositionResolver resolver = SpawnPositionResolver.FromDefinition(spawnLocation);
         FakeEntity anchor = CreateAnchor();
         CreateBlockingWall(wallLayer);
 
@@ -53,8 +53,8 @@ public class SpawnPositionResolverTests
     [Test]
     public void TryResolveSucceedsWhenNoObstacleOverlapsCandidate()
     {
-        SpawnLocationPolicySO policy = CreatePolicy(SpawnLocationPolicyType.RandomInsideMap, LayerMask.GetMask("Wall"));
-        SpawnPositionResolver resolver = SpawnPositionResolver.FromPolicy(policy);
+        SpawnLocationDefinition spawnLocation = CreateSpawnLocation(nameof(RandomInsideMapSpawnLocationStrategy));
+        SpawnPositionResolver resolver = SpawnPositionResolver.FromDefinition(spawnLocation);
         FakeEntity anchor = CreateAnchor();
 
         ExpectFallbackColliderWarning();
@@ -81,28 +81,29 @@ public class SpawnPositionResolverTests
         Physics2D.SyncTransforms();
     }
 
-    private static SpawnLocationPolicySO CreatePolicy(SpawnLocationPolicyType policyType, int obstacleMask)
+    private static SpawnLocationDefinition CreateSpawnLocation(string strategyType)
     {
-        SpawnLocationPolicySO policy = ScriptableObject.CreateInstance<SpawnLocationPolicySO>();
-        SetField(policy, "policyType", policyType);
-        SetField(policy, "minDistance", 0.1f);
-        SetField(policy, "maxDistance", 0.2f);
-        SetField(policy, "boundsPadding", 0f);
-        SetField(policy, "resolveAttempts", 4);
-        SetField(policy, "obstacleLayerMask", (LayerMask)obstacleMask);
-        SetField(policy, "spawnClearance", 0f);
-        SetField(policy, "minBounds", new Vector2(-1f, -1f));
-        SetField(policy, "maxBounds", new Vector2(1f, 1f));
-        return policy;
-    }
+        string[] obstacleLayerNames = { "Wall" };
+        Vector2 minBounds = new(-1f, -1f);
+        Vector2 maxBounds = new(1f, 1f);
+        SpawnLocationResolverSettings settings = new(
+            0f,
+            4,
+            0f,
+            minBounds,
+            maxBounds,
+            obstacleLayerNames);
+        SpawnLocationStrategyModel strategy = strategyType switch
+        {
+            nameof(AroundPlayerRingSpawnLocationStrategy) => new AroundPlayerRingSpawnLocationStrategy(
+                0.1f,
+                0.2f),
+            nameof(RandomInsideMapSpawnLocationStrategy) => new RandomInsideMapSpawnLocationStrategy(),
+            nameof(RandomMapEdgeSpawnLocationStrategy) => new RandomMapEdgeSpawnLocationStrategy(),
+            _ => throw new AssertionException($"Unsupported spawn location strategy type '{strategyType}'.")
+        };
 
-    private static void SetField<T>(SpawnLocationPolicySO policy, string fieldName, T value)
-    {
-        FieldInfo field = typeof(SpawnLocationPolicySO).GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(field, $"Missing field {fieldName} on {nameof(SpawnLocationPolicySO)}.");
-        field.SetValue(policy, value);
+        return new SpawnLocationDefinition(settings, strategy);
     }
 
     private static void SetMapGeneratorRuntimeBoundsState(bool hasRuntimeBounds)

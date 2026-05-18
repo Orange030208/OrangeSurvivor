@@ -46,9 +46,6 @@ public sealed class WeaponAssetTests
             Assert.AreEqual(row.itemPrice, weapon.ItemPrice, weapon.WeaponId);
             Assert.AreEqual(row.itemDescription, weapon.Description, weapon.WeaponId);
             Assert.AreEqual(ItemType.Weapon, weapon.ItemType, weapon.WeaponId);
-            Assert.AreEqual(Math.Max(1, row.openWave), weapon.OpenWave, weapon.WeaponId);
-            Assert.AreEqual(Math.Max(0, row.closeWave), weapon.CloseWave, weapon.WeaponId);
-            Assert.That(weapon.BaseWeight, Is.EqualTo(Math.Max(0f, row.baseWeight)).Within(0.0001f), weapon.WeaponId);
             Assert.That(weapon.VisualForwardAngle, Is.EqualTo(row.visualForwardAngle).Within(0.0001f), weapon.WeaponId);
             Assert.AreEqual(row.holdAimWhenAttackReady, weapon.HoldAimWhenAttackReady, weapon.WeaponId);
             Assert.That(weapon.AttackSequenceOccupancy, Is.EqualTo(UnityEngine.Mathf.Clamp(row.attackSequenceOccupancy, 0.1f, 1f)).Within(0.0001f), weapon.WeaponId);

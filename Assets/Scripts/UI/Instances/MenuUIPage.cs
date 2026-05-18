@@ -8,9 +8,13 @@ using UnityEngine.UI;
 public class MenuUIPage : PageBase
 {
     [SerializeField] private Button startButton;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button codexButton;
+    [SerializeField] private Button quitButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private SettingsPanelManager settingsPanel;
 
+    private UIMotionPlayer[] menuEntryMotions;
     private bool settingsVisible;
 
     protected override void Awake()
@@ -24,24 +28,33 @@ public class MenuUIPage : PageBase
     {
         settingsPanel.Bind(new SettingsPanelManager.Context(OwnerUIManager));
         startButton.onClick.AddListener(OnStartButtonOnClicked);
+        AddOptionalButtonListener(continueButton, OnContinueButtonClicked);
+        AddOptionalButtonListener(codexButton, OnCodexButtonClicked);
+        AddOptionalButtonListener(quitButton, OnQuitButtonClicked);
         if (settingsButton != null)
         {
             settingsButton.onClick.AddListener(OnSettingsButtonClicked);
         }
 
         HideSettingsImmediate();
-        SelectDefaultControl();
+        ResetMenuEntryMotions();
+        EventSystem.current?.SetSelectedGameObject(null);
         return UniTask.CompletedTask;
     }
 
     protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
     {
+        ResetMenuEntryMotions();
+        EventSystem.current?.SetSelectedGameObject(null);
         return settingsPanel.HideAsync(cancellationToken);
     }
 
     protected override void OnClosed(CloseReason reason)
     {
         startButton.onClick.RemoveListener(OnStartButtonOnClicked);
+        RemoveOptionalButtonListener(continueButton, OnContinueButtonClicked);
+        RemoveOptionalButtonListener(codexButton, OnCodexButtonClicked);
+        RemoveOptionalButtonListener(quitButton, OnQuitButtonClicked);
         if (settingsButton != null)
         {
             settingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
@@ -49,12 +62,36 @@ public class MenuUIPage : PageBase
 
         settingsPanel.Unbind();
         HideSettingsImmediate();
+        ResetMenuEntryMotions();
     }
 
     private void OnStartButtonOnClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish<MenuStartClickedEvent>();
+    }
+
+    private void OnContinueButtonClicked()
+    {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+        Debug.Log($"{nameof(MenuUIPage)} continue entry is visible but save loading is not connected yet.");
+    }
+
+    private void OnCodexButtonClicked()
+    {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+        Debug.Log($"{nameof(MenuUIPage)} codex entry is visible but the codex page is not connected yet.");
+    }
+
+    private void OnQuitButtonClicked()
+    {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void OnSettingsButtonClicked()
@@ -75,14 +112,57 @@ public class MenuUIPage : PageBase
         settingsPanel.SetHiddenImmediate();
     }
 
-    private void SelectDefaultControl()
+    private void ResetMenuEntryMotions()
     {
-        if (startButton == null)
+        ResolveMenuEntryMotions();
+        for (int i = 0; i < menuEntryMotions.Length; i++)
+        {
+            UIMotionPlayer motion = menuEntryMotions[i];
+            if (motion == null)
+            {
+                continue;
+            }
+
+            motion.Kill();
+            motion.SetImmediate(UIMotionClipIds.HOVER_OUT);
+        }
+    }
+
+    private void ResolveMenuEntryMotions()
+    {
+        if (menuEntryMotions != null)
         {
             return;
         }
 
-        EventSystem.current?.SetSelectedGameObject(startButton.gameObject);
+        menuEntryMotions = new[]
+        {
+            ResolveButtonMotion(startButton),
+            ResolveButtonMotion(continueButton),
+            ResolveButtonMotion(codexButton),
+            ResolveButtonMotion(quitButton)
+        };
+    }
+
+    private static UIMotionPlayer ResolveButtonMotion(Button button)
+    {
+        return button != null ? button.GetComponent<UIMotionPlayer>() : null;
+    }
+
+    private static void AddOptionalButtonListener(Button button, UnityEngine.Events.UnityAction listener)
+    {
+        if (button != null)
+        {
+            button.onClick.AddListener(listener);
+        }
+    }
+
+    private static void RemoveOptionalButtonListener(Button button, UnityEngine.Events.UnityAction listener)
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(listener);
+        }
     }
 
     private void ResolveViewParts()

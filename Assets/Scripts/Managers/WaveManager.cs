@@ -73,7 +73,6 @@ public class WaveManager : MonoBehaviour, IWaveController
         runProgressionService.Reset(runtimeWaves.Length);
         RunProgressionRuntime.SetProvider(runProgressionService);
         waveSpawnExecutor = new WaveSpawnExecutor(enemyFactory, waveSpawnPool);
-        ApplySpawnPositionPolicy(0);
     }
 
     private void OnEnable()
@@ -253,7 +252,7 @@ public class WaveManager : MonoBehaviour, IWaveController
         }
 
         TryBindSpawnAnchor();
-        ApplySpawnPositionPolicy(waveIndex);
+        ApplySpawnPositionResolver(waveIndex);
         Wave wave = runtimeWaves[waveIndex];
         currentCompletionRule = WaveCompletionRuleFactory.Create(wave.CompletionMode);
         runtimeState = new WaveRuntimeState(
@@ -489,31 +488,25 @@ public class WaveManager : MonoBehaviour, IWaveController
             viewData.CurrentWaveDuration));
     }
 
-    private void ApplySpawnPositionPolicy(int waveIndex)
+    private void ApplySpawnPositionResolver(int waveIndex)
     {
-        SpawnLocationPolicySO policy = GetRequiredSpawnLocationPolicy(waveIndex);
-        spawnPositionResolver = SpawnPositionResolver.FromPolicy(policy);
+        SpawnLocationDefinition spawnLocation = GetRequiredSpawnLocation(waveIndex);
+        spawnPositionResolver = SpawnPositionResolver.FromDefinition(spawnLocation);
     }
 
-    private SpawnLocationPolicySO GetRequiredSpawnLocationPolicy(int waveIndex)
+    private SpawnLocationDefinition GetRequiredSpawnLocation(int waveIndex)
     {
-        WaveDefinitionSO[] definitionWaves = stageDefinition.Waves;
-        if (definitionWaves == null || waveIndex < 0 || waveIndex >= definitionWaves.Length)
+        if (runtimeWaves == null || waveIndex < 0 || waveIndex >= runtimeWaves.Length)
         {
-            throw new MissingReferenceException($"{nameof(StageDefinitionSO)} does not contain a valid wave at index {waveIndex}.");
+            throw new MissingReferenceException($"{nameof(WaveManager)} does not contain a valid runtime wave at index {waveIndex}.");
         }
 
-        WaveDefinitionSO waveDefinition = definitionWaves[waveIndex];
-        if (waveDefinition == null)
+        SpawnLocationDefinition spawnLocation = runtimeWaves[waveIndex].SpawnLocation;
+        if (spawnLocation == null)
         {
-            throw new MissingReferenceException($"Wave definition at index {waveIndex} is missing.");
+            throw new MissingReferenceException($"{runtimeWaves[waveIndex].WaveId} is missing {nameof(SpawnLocationDefinition)}.");
         }
 
-        if (waveDefinition.SpawnLocationPolicy == null)
-        {
-            throw new MissingReferenceException($"{waveDefinition.name} is missing {nameof(SpawnLocationPolicySO)}.");
-        }
-
-        return waveDefinition.SpawnLocationPolicy;
+        return spawnLocation;
     }
 }

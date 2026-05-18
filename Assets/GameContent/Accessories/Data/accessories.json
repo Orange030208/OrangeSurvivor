@@ -1,0 +1,815 @@
+{
+  "accessories": [
+    {
+      "accessoryId": "Accessory_C_DamageCharm",
+      "itemName": "磨损力量护符",
+      "itemPrice": 25,
+      "itemDescription": "最基础输出饰品。",
+      "recyclePrice": 8,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 5.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_FirstAidKit",
+      "itemName": "简易药包",
+      "itemPrice": 20,
+      "itemDescription": "回复体感强，Common 档不取满预算。",
+      "recyclePrice": 6,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_LightTrigger",
+      "itemName": "轻型扳机",
+      "itemPrice": 25,
+      "itemDescription": "高频武器收益受武器收益率限制。",
+      "recyclePrice": 8,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 5.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_LuckyCoin",
+      "itemName": "旧幸运币",
+      "itemPrice": 25,
+      "itemDescription": "经济入口，权重保守。",
+      "recyclePrice": 8,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 5.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_MagnetRing",
+      "itemName": "拾取磁环",
+      "itemPrice": 23,
+      "itemDescription": "不直接提高战斗力，价格略低。",
+      "recyclePrice": 7,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "PickupRadius",
+          "modifierType": "Add",
+          "value": 18.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_MinorCritLens",
+      "itemName": "裂纹准镜",
+      "itemPrice": 25,
+      "itemDescription": "低阶精准入口，前期暴击率低时实际收益偏弱。",
+      "recyclePrice": 8,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 1.0
+        },
+        {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_PaddedVest",
+      "itemName": "厚实护垫",
+      "itemPrice": 23,
+      "itemDescription": "低价生存入口。",
+      "recyclePrice": 7,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 18.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_ShortScope",
+      "itemName": "短距瞄具",
+      "itemPrice": 24,
+      "itemDescription": "影响安全距离和命中覆盖。",
+      "recyclePrice": 7,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 12.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_C_SpringLace",
+      "itemName": "弹簧鞋带",
+      "itemPrice": 20,
+      "itemDescription": "手感属性，低档投放。",
+      "recyclePrice": 6,
+      "rarity": "Common",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_BalancedCore",
+      "itemName": "均衡核心",
+      "itemPrice": 55,
+      "itemDescription": "稳定输出复合件，不额外附带乘区。",
+      "recyclePrice": 17,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 6.0
+        },
+        {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 5.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_CompositePlate",
+      "itemName": "复合护板",
+      "itemPrice": 55,
+      "itemDescription": "两条生存链路，已按保守值控制。",
+      "recyclePrice": 17,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 24.0
+        },
+        {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_CritScope",
+      "itemName": "暴击瞄准镜",
+      "itemPrice": 56,
+      "itemDescription": "精准构筑件，前期低暴击率时收益偏弱。",
+      "recyclePrice": 17,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 3.0
+        },
+        {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 6.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_FieldInstructor",
+      "itemName": "战场教官",
+      "itemPrice": 60,
+      "itemDescription": "全局基础攻击，高价值输出件。",
+      "recyclePrice": 18,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Attack",
+          "modifierType": "Add",
+          "value": 6.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_GrowthLedger",
+      "itemName": "成长账本",
+      "itemPrice": 65,
+      "itemDescription": "早期经济构筑件，权重很低。",
+      "recyclePrice": 20,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "ExperienceGain",
+          "modifierType": "Add",
+          "value": 12.0
+        },
+        {
+          "propType": "Luck",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_GuardianMantle",
+      "itemName": "守护披肩",
+      "itemPrice": 52,
+      "itemDescription": "闪避和减伤复合，按生存复合风险降低投放权重。",
+      "recyclePrice": 16,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 4.0
+        },
+        {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 3.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_KnockbackCoil",
+      "itemName": "击退线圈",
+      "itemPrice": 50,
+      "itemDescription": "控场手感件，高频武器仍由武器收益率限制。",
+      "recyclePrice": 15,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "KnockbackStrength",
+          "modifierType": "Add",
+          "value": 40.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_LongRangeStabilizer",
+      "itemName": "远距稳定器",
+      "itemPrice": 56,
+      "itemDescription": "范围构筑件。",
+      "recyclePrice": 17,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 28.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_PiercingDrill",
+      "itemName": "穿透钻头",
+      "itemPrice": 50,
+      "itemDescription": "机制入口，不进入低品质。",
+      "recyclePrice": 15,
+      "rarity": "Epic",
+      "maxOwnedCount": 2,
+      "propertyModifiers": [
+        {
+          "propType": "ProjectilePierceCount",
+          "modifierType": "Add",
+          "value": 1.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_E_RegenCore",
+      "itemName": "再生核心",
+      "itemPrice": 55,
+      "itemDescription": "强回复件，避免同件再叠高生命或高减伤。",
+      "recyclePrice": 17,
+      "rarity": "Epic",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 22.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_L_AlloyTactics",
+      "itemName": "合金战术板",
+      "itemPrice": 80,
+      "itemDescription": "多武器混合构筑件。",
+      "recyclePrice": 24,
+      "rarity": "Legendary",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 4.0
+        },
+        {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 4.0
+        },
+        {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 4.0
+        },
+        {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_L_BenefitCoupler",
+      "itemName": "收益耦合器",
+      "itemPrice": 100,
+      "itemDescription": "放大外部属性，按全武器收益保守投放。",
+      "recyclePrice": 30,
+      "rarity": "Legendary",
+      "maxOwnedCount": 1,
+      "propertyModifiers": [],
+      "specialFeatures": [
+        {
+          "type": "WeaponBenefitBonusModifierFeature",
+          "benefitBonus": {
+            "attackSpeedBenefitPercent": 5.0,
+            "criticalChanceBenefitPercent": 0.0,
+            "criticalPercentBenefitPercent": 0.0,
+            "rangeBenefitPercent": 0.0,
+            "knockbackStrengthBenefitPercent": 0.0,
+            "meleeAttackUsagePercent": 0.0,
+            "rangedAttackUsagePercent": 0.0,
+            "magicAttackUsagePercent": 0.0,
+            "summonAttackUsagePercent": 0.0
+          }
+        },
+        {
+          "type": "WeaponBenefitBonusModifierFeature",
+          "benefitBonus": {
+            "attackSpeedBenefitPercent": 0.0,
+            "criticalChanceBenefitPercent": 2.0,
+            "criticalPercentBenefitPercent": 0.0,
+            "rangeBenefitPercent": 0.0,
+            "knockbackStrengthBenefitPercent": 0.0,
+            "meleeAttackUsagePercent": 0.0,
+            "rangedAttackUsagePercent": 0.0,
+            "magicAttackUsagePercent": 0.0,
+            "summonAttackUsagePercent": 0.0
+          }
+        },
+        {
+          "type": "WeaponBenefitBonusModifierFeature",
+          "benefitBonus": {
+            "attackSpeedBenefitPercent": 0.0,
+            "criticalChanceBenefitPercent": 0.0,
+            "criticalPercentBenefitPercent": 0.0,
+            "rangeBenefitPercent": 5.0,
+            "knockbackStrengthBenefitPercent": 0.0,
+            "meleeAttackUsagePercent": 0.0,
+            "rangedAttackUsagePercent": 0.0,
+            "magicAttackUsagePercent": 0.0,
+            "summonAttackUsagePercent": 0.0
+          }
+        },
+        {
+          "type": "WeaponBenefitBonusModifierFeature",
+          "benefitBonus": {
+            "attackSpeedBenefitPercent": 0.0,
+            "criticalChanceBenefitPercent": 0.0,
+            "criticalPercentBenefitPercent": 0.0,
+            "rangeBenefitPercent": 0.0,
+            "knockbackStrengthBenefitPercent": 0.0,
+            "meleeAttackUsagePercent": 2.0,
+            "rangedAttackUsagePercent": 2.0,
+            "magicAttackUsagePercent": 2.0,
+            "summonAttackUsagePercent": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "accessoryId": "Accessory_L_CritCrown",
+      "itemName": "暴击王冠",
+      "itemPrice": 99,
+      "itemDescription": "后期精准构筑核心。",
+      "recyclePrice": 30,
+      "rarity": "Legendary",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 5.0
+        },
+        {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 12.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_L_ExtraHolster",
+      "itemName": "额外枪套",
+      "itemPrice": 100,
+      "itemDescription": "终局构筑容量入口。",
+      "recyclePrice": 30,
+      "rarity": "Legendary",
+      "maxOwnedCount": 1,
+      "propertyModifiers": [
+        {
+          "propType": "WeaponSlotCount",
+          "modifierType": "Add",
+          "value": 1.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_L_OverdriveCore",
+      "itemName": "过载核心",
+      "itemPrice": 95,
+      "itemDescription": "高输出复合件，不能再附带生存。",
+      "recyclePrice": 29,
+      "rarity": "Legendary",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 15.0
+        },
+        {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_L_SurvivalMatrix",
+      "itemName": "生存矩阵",
+      "itemPrice": 111,
+      "itemDescription": "高价值生存核心，靠传说品质和低权重限制可见性。",
+      "recyclePrice": 33,
+      "rarity": "Legendary",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 34.0
+        },
+        {
+          "propType": "DamageReduction",
+          "modifierType": "Add",
+          "value": 7.0
+        },
+        {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 10.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_BloodNeedle",
+      "itemName": "吸血针管",
+      "itemPrice": 40,
+      "itemDescription": "当前实战低稳定性，权重保守。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "LifeSteal",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_CritPrimer",
+      "itemName": "精密镜片",
+      "itemPrice": 37,
+      "itemDescription": "承接 Common 暴击件和 Epic 暴击构筑。",
+      "recyclePrice": 11,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "CriticalChance",
+          "modifierType": "Add",
+          "value": 2.0
+        },
+        {
+          "propType": "CriticalPercent",
+          "modifierType": "Add",
+          "value": 4.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_DamageManual",
+      "itemName": "伤害手册",
+      "itemPrice": 40,
+      "itemDescription": "Rare 标准输出件。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Damage",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_EvasionCloth",
+      "itemName": "闪避披布",
+      "itemPrice": 41,
+      "itemDescription": "受有效闪避上限限制。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Dodge",
+          "modifierType": "Add",
+          "value": 5.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_FieldBandage",
+      "itemName": "战地绷带",
+      "itemPrice": 33,
+      "itemDescription": "生命和回复的过渡件，避免早期纯回复过强。",
+      "recyclePrice": 10,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MaxHealth",
+          "modifierType": "Add",
+          "value": 10.0
+        },
+        {
+          "propType": "HealthRecoverySpeed",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_LongBoots",
+      "itemName": "长行军靴",
+      "itemPrice": 36,
+      "itemDescription": "兼顾走位和命中覆盖，不直接提高单次伤害。",
+      "recyclePrice": 11,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MoveSpeed",
+          "modifierType": "Add",
+          "value": 8.0
+        },
+        {
+          "propType": "AttackRange",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_MagicEmblem",
+      "itemName": "魔法徽记",
+      "itemPrice": 40,
+      "itemDescription": "流派徽记变体。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MagicAttack",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_MeleeEmblem",
+      "itemName": "近战徽记",
+      "itemPrice": 40,
+      "itemDescription": "流派徽记变体。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "MeleeAttack",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_RangedEmblem",
+      "itemName": "远程徽记",
+      "itemPrice": 40,
+      "itemDescription": "流派徽记变体。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "RangedAttack",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_RapidGear",
+      "itemName": "快速齿轮",
+      "itemPrice": 40,
+      "itemDescription": "快速构筑入口。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "AttackSpeed",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_SteelGuard",
+      "itemName": "钢制护符",
+      "itemPrice": 40,
+      "itemDescription": "护甲单点价值高，权重较低。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Armor",
+          "modifierType": "Add",
+          "value": 2.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_SummonEmblem",
+      "itemName": "召唤徽记",
+      "itemPrice": 40,
+      "itemDescription": "流派徽记变体。",
+      "recyclePrice": 12,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "SummonAttack",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_TacticalCore",
+      "itemName": "战术核心",
+      "itemPrice": 30,
+      "itemDescription": "全局基础攻击，投放比四类攻击更谨慎。",
+      "recyclePrice": 9,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "Attack",
+          "modifierType": "Add",
+          "value": 3.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_TradeStamp",
+      "itemName": "商会印章",
+      "itemPrice": 30,
+      "itemDescription": "经济滚雪球，后期不投放。",
+      "recyclePrice": 9,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "ShopPriceDiscount",
+          "modifierType": "Add",
+          "value": 8.0
+        }
+      ],
+      "specialFeatures": []
+    },
+    {
+      "accessoryId": "Accessory_R_WavePurse",
+      "itemName": "波次钱袋",
+      "itemPrice": 38,
+      "itemDescription": "越早越强，10 波后关闭。",
+      "recyclePrice": 11,
+      "rarity": "Rare",
+      "maxOwnedCount": 0,
+      "propertyModifiers": [
+        {
+          "propType": "WaveGoldRewardBonus",
+          "modifierType": "Add",
+          "value": 12.0
+        }
+      ],
+      "specialFeatures": []
+    }
+  ]
+}

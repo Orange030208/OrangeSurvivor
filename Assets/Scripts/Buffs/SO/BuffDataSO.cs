@@ -28,10 +28,6 @@ public class BuffDataSO : ScriptableObject, IDescribable
     [SerializeField] private BuffRefreshMode refreshMode = BuffRefreshMode.RefreshNewestStack;
     [SerializeField] private BuffOverflowMode overflowMode = BuffOverflowMode.RefreshDurationOnly;
 
-    [Header("属性修饰")]
-    [Tooltip("按照属性语义填写。百分比属性与所有乘区统一使用百分比点：1 表示 1%，10 表示 10%。点数属性仍按属性单位填写。")]
-    [SerializeField] private List<PropModifierData> propertyModifiers = new();
-
     [Header("特殊能力")]
     [SerializeReference] private List<FeatureBase> specialFeatures = new();
 
@@ -44,7 +40,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
     {
         return ItemDescriptionUtility.BuildDescriptorInfos(
             ShouldUseManualDescription() ? description : null,
-            propertyModifiers,
+            null,
             specialFeatures);
     }
 
@@ -54,7 +50,6 @@ public class BuffDataSO : ScriptableObject, IDescribable
     public int MaxStackCount => maxStackCount;
     public BuffRefreshMode RefreshMode => refreshMode;
     public BuffOverflowMode OverflowMode => overflowMode;
-    public IReadOnlyList<PropModifierData> PropertyModifiers => propertyModifiers;
     
     public IReadOnlyList<FeatureBase> SpecialFeatures => specialFeatures;
 
@@ -62,7 +57,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
     {
         return ItemDescriptionUtility.BuildDetailedDescription(
             ShouldUseManualDescription() ? description : null,
-            propertyModifiers,
+            null,
             specialFeatures,
             string.Empty);
     }
@@ -74,8 +69,7 @@ public class BuffDataSO : ScriptableObject, IDescribable
 
     private bool HasAnyEffect()
     {
-        return (propertyModifiers != null && propertyModifiers.Count > 0) ||
-               (specialFeatures != null && specialFeatures.Count > 0);
+        return specialFeatures != null && specialFeatures.Count > 0;
     }
 
     private void OnValidate()
@@ -91,7 +85,6 @@ public class BuffDataSO : ScriptableObject, IDescribable
 
         durationSeconds = Mathf.Max(MIN_DURATION_SECONDS, durationSeconds);
         maxStackCount = Mathf.Max(MIN_STACK_COUNT, maxStackCount);
-        propertyModifiers ??= new List<PropModifierData>();
         specialFeatures ??= new List<FeatureBase>();
     }
 }
