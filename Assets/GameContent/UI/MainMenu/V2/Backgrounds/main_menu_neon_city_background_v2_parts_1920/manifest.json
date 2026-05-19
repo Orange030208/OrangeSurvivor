@@ -1,0 +1,232 @@
+{
+  "originalCanvasSize": [
+    1920,
+    1080
+  ],
+  "coordinateSystem": "top-left origin, positions are sprite pivot centers in the 1920x1080 recomposition canvas",
+  "unityPlacement": "For a centered RectTransform under the background prefab, anchoredPosition = [position.x - 960, 540 - position.y] and sizeDelta = size.",
+  "generationMode": "AI regenerated assets; source image used only as style and composition reference, not pixel cutout extraction.",
+  "layers": [
+    {
+      "id": "background",
+      "file": "layers/00_background_1920x1080.png",
+      "sourceFile": "source/00_background_source.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        960,
+        540
+      ],
+      "sortingOrder": 0,
+      "alpha": false,
+      "sourceCrop": [
+        0,
+        0,
+        1672,
+        940
+      ],
+      "notes": "Opaque 1920x1080 base generated from AI source; city, moon, sky and broad rooftop environment included."
+    },
+    {
+      "id": "rooftop_structure",
+      "file": "layers/01_rooftop_structure.png",
+      "sourceFile": "source_chroma/01_rooftop_structure_alpha.png",
+      "size": [
+        1840,
+        560
+      ],
+      "contentSize": [
+        1824,
+        560
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        960,
+        840
+      ],
+      "unityAnchoredPosition": [
+        0.0,
+        -300.0
+      ],
+      "sortingOrder": 10,
+      "alpha": true,
+      "alphaCrop": [
+        60,
+        287,
+        1620,
+        766
+      ],
+      "contentOffset": [
+        8,
+        0
+      ],
+      "scaleFromCroppedAlpha": 1.1691022964509394,
+      "notes": "Wide rooftop railing, cables and low utility structure; generated separately and scaled to span the bottom of the 16:9 scene."
+    },
+    {
+      "id": "cat_pedestal_base",
+      "file": "layers/03_cat_pedestal_base.png",
+      "sourceFile": "source_chroma/03_cat_pedestal_base_alpha.png",
+      "size": [
+        640,
+        300
+      ],
+      "contentSize": [
+        640,
+        261
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        1350,
+        850
+      ],
+      "unityAnchoredPosition": [
+        390.0,
+        -310.0
+      ],
+      "sortingOrder": 20,
+      "alpha": true,
+      "alphaCrop": [
+        114,
+        239,
+        1546,
+        823
+      ],
+      "contentOffset": [
+        0,
+        19
+      ],
+      "scaleFromCroppedAlpha": 0.44692737430167595,
+      "notes": "Standalone pedestal base sized for the foreground cat."
+    },
+    {
+      "id": "right_cat",
+      "file": "layers/02_right_cat.png",
+      "sourceFile": "source_chroma/02_right_cat_alpha.png",
+      "size": [
+        550,
+        620
+      ],
+      "contentSize": [
+        544,
+        620
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        1350,
+        600
+      ],
+      "unityAnchoredPosition": [
+        390.0,
+        -60.0
+      ],
+      "sortingOrder": 30,
+      "alpha": true,
+      "alphaCrop": [
+        236,
+        55,
+        1159,
+        1106
+      ],
+      "contentOffset": [
+        3,
+        0
+      ],
+      "scaleFromCroppedAlpha": 0.5899143672692674,
+      "notes": "Large foreground cat generated as independent asset, no pedestal baked in."
+    },
+    {
+      "id": "foreground_buckets_pipes",
+      "file": "layers/04_foreground_buckets_pipes.png",
+      "sourceFile": "source_chroma/04_foreground_buckets_pipes_alpha.png",
+      "size": [
+        520,
+        270
+      ],
+      "contentSize": [
+        520,
+        254
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        1580,
+        905
+      ],
+      "unityAnchoredPosition": [
+        620.0,
+        -365.0
+      ],
+      "sortingOrder": 40,
+      "alpha": true,
+      "alphaCrop": [
+        169,
+        147,
+        1503,
+        798
+      ],
+      "contentOffset": [
+        0,
+        8
+      ],
+      "scaleFromCroppedAlpha": 0.38980509745127434,
+      "notes": "Compact bottom-right bucket, cable and pipe prop cluster."
+    },
+    {
+      "id": "right_foreground_sign",
+      "file": "layers/05_right_foreground_sign.png",
+      "sourceFile": "source_chroma/05_right_foreground_sign_alpha.png",
+      "size": [
+        420,
+        780
+      ],
+      "contentSize": [
+        340,
+        780
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "positionInCanvas": [
+        1745,
+        470
+      ],
+      "unityAnchoredPosition": [
+        785.0,
+        70.0
+      ],
+      "sortingOrder": 50,
+      "alpha": true,
+      "alphaCrop": [
+        176,
+        96,
+        814,
+        1559
+      ],
+      "contentOffset": [
+        40,
+        0
+      ],
+      "scaleFromCroppedAlpha": 0.5331510594668489,
+      "notes": "Right-edge neon cat billboard sign and support frame."
+    }
+  ]
+}
