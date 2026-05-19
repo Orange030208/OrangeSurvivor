@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -80,6 +81,24 @@ public sealed class RetreatMoveStrategyTests
         Assert.AreEqual(0, movable.StopMovingCallCount);
         Assert.That(movable.LastMoveTarget.x, Is.EqualTo(7f).Within(0.0001f));
         Assert.That(movable.LastMoveTarget.y, Is.EqualTo(0f).Within(0.0001f));
+    }
+
+    [Test]
+    public void WormRetreatRangeRatiosClampToOrderedValues()
+    {
+        WormEnemySO enemyData = ScriptableObject.CreateInstance<WormEnemySO>();
+        createdObjects.Add(enemyData);
+
+        SerializedObject serializedObject = new(enemyData);
+        serializedObject.FindProperty("retreatTriggerRangeRatio").floatValue = 1.2f;
+        serializedObject.FindProperty("retreatCompleteRangeRatio").floatValue = 0.8f;
+        serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        typeof(WormEnemySO)
+            .GetMethod("OnValidate", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?.Invoke(enemyData, null);
+
+        Assert.That(enemyData.RetreatTriggerRangeRatio, Is.EqualTo(1.2f).Within(0.0001f));
+        Assert.That(enemyData.RetreatCompleteRangeRatio, Is.EqualTo(1.2f).Within(0.0001f));
     }
 
     private TestEnemy CreateEnemy(string name, Vector2 position, float attackRangePoints)

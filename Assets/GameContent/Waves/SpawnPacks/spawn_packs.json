@@ -1,111 +1,18 @@
 [
   {
     "packId": "wave_pack.fast_pincer",
-    "entries": [
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/FlyForest/FlyForestEnemy.asset",
-        "spawnCount": 4,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Fast"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Worm/WormEnemy.asset",
-        "spawnCount": 2,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Special"
-        ]
-      }
-    ]
+    "entries": []
   },
   {
     "packId": "wave_pack.ranged_ambush",
-    "entries": [
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/FlyForest/FlyForestEnemy.asset",
-        "spawnCount": 2,
-        "overrideTags": true,
-        "enemyTags": [
-          "Ranged",
-          "Fast"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Skeleton/SkeletonEnemy.asset",
-        "spawnCount": 2,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Ranged"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Worm/WormEnemy.asset",
-        "spawnCount": 1,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Special"
-        ]
-      }
-    ]
+    "entries": []
   },
   {
     "packId": "wave_pack.ranged_siege_escort",
-    "entries": [
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Skeleton/SkeletonEnemy.asset",
-        "spawnCount": 3,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Ranged"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Skeleton Meteorhammer/SkeletonMeteorhammerEnemy.asset",
-        "spawnCount": 2,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Ranged"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Golem Blue/BlueGolemEnemy.asset",
-        "spawnCount": 1,
-        "overrideTags": true,
-        "enemyTags": [
-          "Elite"
-        ]
-      }
-    ]
+    "entries": []
   },
   {
     "packId": "wave_pack.skeleton_wall",
-    "entries": [
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Skeleton/SkeletonEnemy.asset",
-        "spawnCount": 4,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Ranged"
-        ]
-      },
-      {
-        "enemyAssetPath": "Assets/GameContent/Enemies/Data/Skeleton Meteorhammer/SkeletonMeteorhammerEnemy.asset",
-        "spawnCount": 1,
-        "overrideTags": true,
-        "enemyTags": [
-          "Normal",
-          "Ranged"
-        ]
-      }
-    ]
+    "entries": []
   }
 ]

@@ -4,22 +4,18 @@ using UnityEngine;
 public class WormEnemySO : EnemySO
 {
     public const string ATTACK_ACTION_ID = "Worm_Attack";
-    public const string RETREAT_ATTACK_ACTION_ID = "Worm_RetreatAttack";
 
     [Header("距离")]
-    [Min(0f)] public float retreatTriggerDistance = 4f;
-    [Min(0f)] public float retreatCompleteDistance = 7f;
+    [SerializeField, Min(0f)] private float retreatTriggerRangeRatio = 0.8f;
+    [SerializeField, Min(0f)] private float retreatCompleteRangeRatio = 1.4f;
     
     [Header("攻击时机")]
     [SerializeField] private EnemyActionDefinition attackAction = new();
-    [SerializeField] private EnemyActionDefinition retreatAttackAction = new();
     [HideInInspector, Range(0f, 1f)] public float attackCommitNormalizedTime = 0.5f;
 
     [Header("攻击")]
     [Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] public float attackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO attackProjectileDefinition;
-    [Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] public float retreatAttackSpeedBenefitRatio = 1f;
-    public ProjectileDefinitionSO retreatAttackProjectileDefinition;
 
     [Header("移动")]
     public RetreatMoveData retreatMovement = new()
@@ -30,18 +26,11 @@ public class WormEnemySO : EnemySO
 
     private void OnValidate()
     {
-        retreatTriggerDistance = Mathf.Max(0f, retreatTriggerDistance);
-        retreatCompleteDistance = Mathf.Max(retreatTriggerDistance, retreatCompleteDistance);
+        retreatTriggerRangeRatio = Mathf.Max(0f, retreatTriggerRangeRatio);
+        retreatCompleteRangeRatio = Mathf.Max(retreatTriggerRangeRatio, retreatCompleteRangeRatio);
         attackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
-        retreatAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(retreatAttackSpeedBenefitRatio);
         ValidateRetreatMoveData(ref retreatMovement);
-        float baseAttackRange = ResolveBaseAttackRangeWorldUnits();
-        if (baseAttackRange > Mathf.Epsilon)
-        {
-            retreatMovement.safeDistanceRatio = Mathf.Max(
-                retreatTriggerDistance / baseAttackRange,
-                retreatMovement.safeDistanceRatio);
-        }
+        retreatMovement.safeDistanceRatio = Mathf.Max(retreatCompleteRangeRatio, retreatMovement.safeDistanceRatio);
         EnsureActionDefaults();
     }
 
@@ -54,14 +43,8 @@ public class WormEnemySO : EnemySO
         }
     }
 
-    public EnemyActionDefinition RetreatAttackAction
-    {
-        get
-        {
-            EnsureActionDefaults();
-            return retreatAttackAction;
-        }
-    }
+    public float RetreatTriggerRangeRatio => Mathf.Max(0f, retreatTriggerRangeRatio);
+    public float RetreatCompleteRangeRatio => Mathf.Max(RetreatTriggerRangeRatio, retreatCompleteRangeRatio);
 
     private static void ValidateRetreatMoveData(ref RetreatMoveData config)
     {
@@ -69,31 +52,10 @@ public class WormEnemySO : EnemySO
         config.retreatStepDistanceRatio = Mathf.Max(0f, config.retreatStepDistanceRatio);
     }
 
-    private float ResolveBaseAttackRangeWorldUnits()
-    {
-        if (BasePropsAsset == null)
-        {
-            return 0f;
-        }
-
-        var values = BasePropsAsset.Values;
-        for (int i = 0; i < values.Count; i++)
-        {
-            if (values[i].propType == PropType.AttackRange)
-            {
-                return PropValueUtility.DistancePointsToWorldUnits(values[i].value);
-            }
-        }
-
-        return 0f;
-    }
-
     private void EnsureActionDefaults()
     {
         attackAction ??= new EnemyActionDefinition();
-        retreatAttackAction ??= new EnemyActionDefinition();
         string attackStateName = AnimConfig != null ? AnimConfig.Attack : "Attack";
         attackAction.ConfigureDefaults(ATTACK_ACTION_ID, attackStateName, attackCommitNormalizedTime);
-        retreatAttackAction.ConfigureDefaults(RETREAT_ATTACK_ACTION_ID, attackStateName, attackCommitNormalizedTime);
     }
 }

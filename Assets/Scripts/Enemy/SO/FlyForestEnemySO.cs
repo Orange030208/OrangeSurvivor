@@ -11,19 +11,10 @@ public class FlyForestEnemySO : EnemySO
     [Min(PropValueUtility.MIN_ATTACK_SPEED_BENEFIT_RATIO)] public float normalAttackSpeedBenefitRatio = 1f;
     public ProjectileDefinitionSO normalAttackProjectileDefinition;
 
-    [Header("移动")]
-    public CircleKiteMoveData normalMovement = new()
-    {
-        circleSpeedRatio = 0.5f,
-        idealRangeRatio = 0.95f,
-    };
-
     private void OnValidate()
     {
         normalAttackCommitNormalizedTime = Mathf.Clamp01(normalAttackCommitNormalizedTime);
         normalAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(normalAttackSpeedBenefitRatio);
-        normalMovement.circleSpeedRatio = Mathf.Max(0f, normalMovement.circleSpeedRatio);
-        normalMovement.idealRangeRatio = Mathf.Max(0f, normalMovement.idealRangeRatio);
         EnsureActionDefaults();
     }
 
