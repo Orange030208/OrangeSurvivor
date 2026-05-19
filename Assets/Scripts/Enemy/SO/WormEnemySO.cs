@@ -35,11 +35,11 @@ public class WormEnemySO : EnemySO
         attackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(attackSpeedBenefitRatio);
         retreatAttackSpeedBenefitRatio = PropValueUtility.ClampAttackSpeedBenefitRatio(retreatAttackSpeedBenefitRatio);
         ValidateRetreatMoveData(ref retreatMovement);
-        float baseDetectionRange = ResolveBaseDetectionRangeWorldUnits();
-        if (baseDetectionRange > Mathf.Epsilon)
+        float baseAttackRange = ResolveBaseAttackRangeWorldUnits();
+        if (baseAttackRange > Mathf.Epsilon)
         {
             retreatMovement.safeDistanceRatio = Mathf.Max(
-                retreatTriggerDistance / baseDetectionRange,
+                retreatTriggerDistance / baseAttackRange,
                 retreatMovement.safeDistanceRatio);
         }
         EnsureActionDefaults();
@@ -69,7 +69,7 @@ public class WormEnemySO : EnemySO
         config.retreatStepDistanceRatio = Mathf.Max(0f, config.retreatStepDistanceRatio);
     }
 
-    private float ResolveBaseDetectionRangeWorldUnits()
+    private float ResolveBaseAttackRangeWorldUnits()
     {
         if (BasePropsAsset == null)
         {
@@ -79,7 +79,7 @@ public class WormEnemySO : EnemySO
         var values = BasePropsAsset.Values;
         for (int i = 0; i < values.Count; i++)
         {
-            if (values[i].propType == PropType.DetectionRange)
+            if (values[i].propType == PropType.AttackRange)
             {
                 return PropValueUtility.DistancePointsToWorldUnits(values[i].value);
             }

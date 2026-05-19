@@ -145,7 +145,7 @@ public struct WeaponLevelStatData
         this.criticalPercent = Mathf.Max(100f, criticalPercent);
         this.range = Mathf.Max(0f, range);
         this.knockbackStrength = Mathf.Max(0f, knockbackStrength);
-        this.statBenefits = statBenefits.HasValue ? statBenefits.Value.Validated() : WeaponBenefitData.Zero;
+        this.statBenefits = statBenefits.HasValue ? statBenefits.Value.Validated() : WeaponBenefitData.Full;
         this.holderModifiers = holderModifiers != null
             ? new List<PropModifierData>(holderModifiers)
             : new List<PropModifierData>();
@@ -809,7 +809,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             0f,
             0f,
             Array.Empty<PropModifierData>(),
-            WeaponBenefitData.Zero);
+            WeaponBenefitData.Full);
     }
 }
 

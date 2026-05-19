@@ -11,6 +11,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private readonly GameObject hitVfxPrefab;
     private readonly DirectDamageHitShape hitShape;
     private readonly Func<Vector2> attackDirectionProvider;
+    private readonly Func<Entity, Vector2> rangeDirectionProvider;
     private bool hasWarnedMissingAttackPoint;
 
     public DirectDamageAttackStrategy(
@@ -19,19 +20,41 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
         PropertiesManager propertiesManager,
         string actionId,
         float attackSpeedBenefitRatio,
-        IRangeDetectionStrategy detectionStrategy,
         Transform attackPointTransform = null,
         float rangeMultiplier = 1f,
         GameObject hitVfxPrefab = null,
         DirectDamageHitShape hitShape = DirectDamageHitShape.Circle,
-        Func<Vector2> attackDirectionProvider = null)
-        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio, detectionStrategy)
+        Func<Vector2> attackDirectionProvider = null,
+        Func<Entity, Vector2> rangeDirectionProvider = null)
+        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio)
     {
         this.attackPointTransform = attackPointTransform;
         this.rangeMultiplier = Mathf.Max(0f, rangeMultiplier);
         this.hitVfxPrefab = hitVfxPrefab;
         this.hitShape = hitShape;
         this.attackDirectionProvider = attackDirectionProvider;
+        this.rangeDirectionProvider = rangeDirectionProvider;
+    }
+
+    public override bool IsTargetInRange(Entity target)
+    {
+        if (target == null)
+        {
+            return false;
+        }
+
+        Vector2 attackCenter = ResolveAttackCenter();
+        float attackRadius = ResolveAttackRadius();
+        if (!target.IsColliderWithinRange(attackCenter, attackRadius))
+        {
+            return false;
+        }
+
+        return hitShape != DirectDamageHitShape.FacingSemicircle ||
+               AreaHitQueryUtility.IsColliderInFacingSemicircle(
+                   target.EntityCollider,
+                   attackCenter,
+                   ResolveRangeDirection(target));
     }
 
     protected override bool ExecuteCore(Entity target)
@@ -43,8 +66,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private void ExecuteCommittedAreaAttack()
     {
         Vector2 attackCenter = ResolveAttackCenter();
-        float attackRadius = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
+        float attackRadius = ResolveAttackRadius();
         RuntimeVfx.Spawn(hitVfxPrefab, attackCenter, Quaternion.identity);
 
         int hitCount = QueryAreaHits(attackCenter, attackRadius);
@@ -89,6 +111,17 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private Vector2 ResolveAttackDirection()
     {
         return attackDirectionProvider != null ? attackDirectionProvider.Invoke() : Vector2.right;
+    }
+
+    private Vector2 ResolveRangeDirection(Entity target)
+    {
+        return rangeDirectionProvider != null ? rangeDirectionProvider.Invoke(target) : ResolveAttackDirection();
+    }
+
+    private float ResolveAttackRadius()
+    {
+        return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
     }
 
     private Vector2 ResolveAttackCenter()

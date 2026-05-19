@@ -4,13 +4,7 @@ using Object = UnityEngine.Object;
 
 public sealed class EnemyFactory
 {
-    private readonly SpawnIndicator spawnIndicatorPrefab;
     private static RunProgressionProfileSO fallbackProgressionProfile;
-
-    public EnemyFactory(SpawnIndicator spawnIndicatorPrefab = null)
-    {
-        this.spawnIndicatorPrefab = spawnIndicatorPrefab;
-    }
 
     public void Spawn(
         EnemySO enemyData,
@@ -34,21 +28,6 @@ public sealed class EnemyFactory
         if (template == null)
         {
             throw new MissingReferenceException($"{nameof(EnemyFactory)} cannot resolve prefab from {enemyData.name}.");
-        }
-
-        if (spawnIndicatorPrefab != null)
-        {
-            SpawnIndicator indicator = Object.Instantiate(spawnIndicatorPrefab, spawnPosition, Quaternion.identity, parent);
-            indicator.PlayAndSpawn(template.gameObject, spawnPosition, Quaternion.identity, parent, spawnedObject =>
-            {
-                if (!spawnedObject.TryGetComponent(out Enemy spawnedEnemy))
-                {
-                    throw new MissingReferenceException($"{nameof(EnemyFactory)} expected spawned object to contain {nameof(Enemy)}.");
-                }
-
-                ApplyEnemyData(spawnedEnemy, enemyData, target, progressionSnapshot, enemyTags);
-            });
-            return;
         }
 
         Enemy enemy = Object.Instantiate(template, spawnPosition, Quaternion.identity, parent);

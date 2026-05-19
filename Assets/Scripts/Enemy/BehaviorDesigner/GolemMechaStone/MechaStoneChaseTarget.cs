@@ -58,8 +58,8 @@ public sealed class MechaStoneChaseTarget : MechaStoneTaskBase
 
     private bool IsTargetInMeleeRange()
     {
-        return BossBrain?.MeleeDetectionStrategy != null &&
+        return BossBrain != null &&
                HasTarget &&
-               BossBrain.MeleeDetectionStrategy.IsTargetInRange(TargetEntity);
+               BossBrain.IsTargetInMeleeRange(TargetEntity);
     }
 }

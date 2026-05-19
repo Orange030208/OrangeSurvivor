@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 256a1ecac525435cb87bd4082541543c, type: 3}
+  m_Name: CyberOrangeEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2859848195627263458, guid: c3654be017104cb788a6dad9c08673dc, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: c4b0df4ca7414587ab048fd17a520079, type: 2}
+  animConfig: {fileID: 11400000, guid: 11d7279f6920491c9aec0ee9f69d7741, type: 2}
+  damagedSfxKey: 401
+  attackAction:
+    actionId: CyberOrange_BodySlam
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.55
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  attackCommitNormalizedTime: 0.55
+  attackSpeedBenefitRatio: 1.3333334

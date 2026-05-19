@@ -1,0 +1,699 @@
+[
+  {
+    "name": "border_only_01.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_01.png",
+    "size": [
+      828,
+      212
+    ],
+    "sourceRect": [
+      26,
+      34,
+      854,
+      246
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 96,
+      "bottom": 33,
+      "right": 96,
+      "top": 33
+    }
+  },
+  {
+    "name": "border_only_02.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_02.png",
+    "size": [
+      348,
+      204
+    ],
+    "sourceRect": [
+      882,
+      34,
+      1230,
+      238
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 41,
+      "bottom": 32,
+      "right": 41,
+      "top": 32
+    }
+  },
+  {
+    "name": "border_only_03.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_03.png",
+    "size": [
+      460,
+      188
+    ],
+    "sourceRect": [
+      34,
+      250,
+      494,
+      438
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 55,
+      "bottom": 30,
+      "right": 55,
+      "top": 30
+    }
+  },
+  {
+    "name": "border_only_04.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_04.png",
+    "size": [
+      252,
+      188
+    ],
+    "sourceRect": [
+      922,
+      250,
+      1174,
+      438
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_05.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_05.png",
+    "size": [
+      340,
+      140
+    ],
+    "sourceRect": [
+      530,
+      274,
+      870,
+      414
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 40,
+      "bottom": 22,
+      "right": 40,
+      "top": 22
+    }
+  },
+  {
+    "name": "border_only_06.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_06.png",
+    "size": [
+      220,
+      220
+    ],
+    "sourceRect": [
+      706,
+      434,
+      926,
+      654
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_07.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_07.png",
+    "size": [
+      236,
+      220
+    ],
+    "sourceRect": [
+      946,
+      434,
+      1182,
+      654
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_08.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_08.png",
+    "size": [
+      660,
+      220
+    ],
+    "sourceRect": [
+      34,
+      442,
+      694,
+      662
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 79,
+      "bottom": 35,
+      "right": 79,
+      "top": 35
+    }
+  },
+  {
+    "name": "border_only_09.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_09.png",
+    "size": [
+      476,
+      156
+    ],
+    "sourceRect": [
+      42,
+      666,
+      518,
+      822
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 57,
+      "bottom": 24,
+      "right": 57,
+      "top": 24
+    }
+  },
+  {
+    "name": "border_only_10.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_10.png",
+    "size": [
+      364,
+      148
+    ],
+    "sourceRect": [
+      538,
+      666,
+      902,
+      814
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 43,
+      "bottom": 23,
+      "right": 43,
+      "top": 23
+    }
+  },
+  {
+    "name": "border_only_11.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_11.png",
+    "size": [
+      236,
+      204
+    ],
+    "sourceRect": [
+      946,
+      666,
+      1182,
+      870
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_12.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_12.png",
+    "size": [
+      140,
+      172
+    ],
+    "sourceRect": [
+      42,
+      834,
+      182,
+      1006
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_13.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_13.png",
+    "size": [
+      140,
+      172
+    ],
+    "sourceRect": [
+      250,
+      834,
+      390,
+      1006
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_14.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_14.png",
+    "size": [
+      108,
+      164
+    ],
+    "sourceRect": [
+      418,
+      842,
+      526,
+      1006
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_15.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_15.png",
+    "size": [
+      108,
+      164
+    ],
+    "sourceRect": [
+      522,
+      842,
+      630,
+      1006
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_16.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_16.png",
+    "size": [
+      276,
+      164
+    ],
+    "sourceRect": [
+      674,
+      850,
+      950,
+      1014
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 33,
+      "bottom": 26,
+      "right": 33,
+      "top": 26
+    }
+  },
+  {
+    "name": "border_only_17.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_17.png",
+    "size": [
+      60,
+      332
+    ],
+    "sourceRect": [
+      1018,
+      890,
+      1078,
+      1222
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "border_only_18.png",
+    "category": "border_only",
+    "source": "ui_sheet_11_border_only_layers.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BorderOnly/border_only_18.png",
+    "size": [
+      76,
+      324
+    ],
+    "sourceRect": [
+      1106,
+      890,
+      1182,
+      1214
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_01.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_01.png",
+    "size": [
+      212,
+      340
+    ],
+    "sourceRect": [
+      34,
+      18,
+      246,
+      358
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_02.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_02.png",
+    "size": [
+      636,
+      324
+    ],
+    "sourceRect": [
+      274,
+      26,
+      910,
+      350
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 76,
+      "bottom": 51,
+      "right": 76,
+      "top": 51
+    }
+  },
+  {
+    "name": "background_plate_03.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_03.png",
+    "size": [
+      308,
+      180
+    ],
+    "sourceRect": [
+      930,
+      146,
+      1238,
+      326
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 36,
+      "bottom": 28,
+      "right": 36,
+      "top": 28
+    }
+  },
+  {
+    "name": "background_plate_04.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_04.png",
+    "size": [
+      284,
+      284
+    ],
+    "sourceRect": [
+      362,
+      354,
+      646,
+      638
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 34,
+      "bottom": 45,
+      "right": 34,
+      "top": 45
+    }
+  },
+  {
+    "name": "background_plate_05.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_05.png",
+    "size": [
+      284,
+      276
+    ],
+    "sourceRect": [
+      682,
+      362,
+      966,
+      638
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 34,
+      "bottom": 44,
+      "right": 34,
+      "top": 44
+    }
+  },
+  {
+    "name": "background_plate_06.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_06.png",
+    "size": [
+      164,
+      284
+    ],
+    "sourceRect": [
+      1018,
+      362,
+      1182,
+      646
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_07.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_07.png",
+    "size": [
+      284,
+      252
+    ],
+    "sourceRect": [
+      34,
+      370,
+      318,
+      622
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 34,
+      "bottom": 40,
+      "right": 34,
+      "top": 40
+    }
+  },
+  {
+    "name": "background_plate_08.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_08.png",
+    "size": [
+      212,
+      188
+    ],
+    "sourceRect": [
+      914,
+      626,
+      1126,
+      814
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_09.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_09.png",
+    "size": [
+      548,
+      172
+    ],
+    "sourceRect": [
+      42,
+      634,
+      590,
+      806
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 65,
+      "bottom": 27,
+      "right": 65,
+      "top": 27
+    }
+  },
+  {
+    "name": "background_plate_10.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_10.png",
+    "size": [
+      252,
+      124
+    ],
+    "sourceRect": [
+      618,
+      674,
+      870,
+      798
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_11.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_11.png",
+    "size": [
+      164,
+      188
+    ],
+    "sourceRect": [
+      34,
+      802,
+      198,
+      990
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_12.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_12.png",
+    "size": [
+      172,
+      188
+    ],
+    "sourceRect": [
+      234,
+      802,
+      406,
+      990
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_13.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_13.png",
+    "size": [
+      180,
+      180
+    ],
+    "sourceRect": [
+      442,
+      810,
+      622,
+      990
+    ],
+    "nineSliceRecommended": false,
+    "border": null
+  },
+  {
+    "name": "background_plate_14.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_14.png",
+    "size": [
+      580,
+      164
+    ],
+    "sourceRect": [
+      650,
+      826,
+      1230,
+      990
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 69,
+      "bottom": 26,
+      "right": 69,
+      "top": 26
+    }
+  },
+  {
+    "name": "background_plate_15.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_15.png",
+    "size": [
+      1084,
+      252
+    ],
+    "sourceRect": [
+      26,
+      986,
+      1110,
+      1238
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 96,
+      "bottom": 40,
+      "right": 96,
+      "top": 40
+    }
+  },
+  {
+    "name": "background_plate_16.png",
+    "category": "background_plate",
+    "source": "ui_sheet_12_background_plates.png",
+    "path": "Assets/Art/UI/CyberpunkNeonComic/Layered/BackgroundPlates/background_plate_16.png",
+    "size": [
+      284,
+      116
+    ],
+    "sourceRect": [
+      914,
+      1106,
+      1198,
+      1222
+    ],
+    "nineSliceRecommended": true,
+    "border": {
+      "left": 34,
+      "bottom": 18,
+      "right": 34,
+      "top": 18
+    }
+  }
+]

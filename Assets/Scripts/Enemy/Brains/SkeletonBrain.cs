@@ -145,20 +145,16 @@ public class SkeletonBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        IRangeDetectionStrategy detectionStrategy = new FacingSemicircleRangeDetectionStrategy(
-            owner,
-            propertiesManager,
-            meleePointTransform);
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
             propertiesManager,
             enemyData.AttackAction.ActionId,
             enemyData.AttackSpeedBenefitRatio,
-            detectionStrategy,
             meleePointTransform,
             hitShape: DirectDamageHitShape.FacingSemicircle,
-            attackDirectionProvider: ResolveLockedAttackDirection);
+            attackDirectionProvider: ResolveLockedAttackDirection,
+            rangeDirectionProvider: ResolveTargetAttackDirection);
     }
 
     private bool CanUseAttack(Entity target)
@@ -217,9 +213,20 @@ public class SkeletonBrain : EnemyBrain
             return;
         }
 
-        stateMachine.RequestState(attackStrategy.DetectionStrategy.IsTargetInRange(target)
+        stateMachine.RequestState(attackStrategy.IsTargetInRange(target)
             ? SkeletonAIState.Idle
             : SkeletonAIState.Chase);
+    }
+
+    private Vector2 ResolveTargetAttackDirection(Entity target)
+    {
+        Vector2 direction = target != null ? target.Center - owner.Center : lockedAttackDirection;
+        if (Mathf.Abs(direction.x) <= Mathf.Epsilon)
+        {
+            direction = owner.transform.localScale.x < 0f ? Vector2.left : Vector2.right;
+        }
+
+        return direction.x < 0f ? Vector2.left : Vector2.right;
     }
 
     protected static Entity ResolveEntity(Collider2D hitCollider)
@@ -257,7 +264,7 @@ public class SkeletonBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
+            bool isTargetInRange = brain.attackStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(SkeletonAIState.Chase);

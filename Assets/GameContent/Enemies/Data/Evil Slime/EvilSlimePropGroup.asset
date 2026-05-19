@@ -21,8 +21,6 @@ MonoBehaviour:
     value: 100
   - propType: 4
     value: 540
-  - propType: 6
-    value: 150
   - propType: 15
     value: 135
   - propType: 8

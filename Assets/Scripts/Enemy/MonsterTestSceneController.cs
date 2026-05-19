@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// 怪物测试场景的最小启动入口。
 /// 让怪物测试脱离完整菜单、UI 和波次流程，同时继续使用正式敌人配置。
 /// </summary>
+[DefaultExecutionOrder(-100)]
 public sealed class MonsterTestSceneController : MonoBehaviour
 {
     [Header("目标")]
@@ -31,13 +32,15 @@ public sealed class MonsterTestSceneController : MonoBehaviour
         EnsureRuntimeRegistry();
         EnsureEnemyParent();
         enemyFactory = new EnemyFactory();
+        EnsureConfiguredTestPlayer();
     }
 
     private void Start()
     {
-        EnsureTestPlayer();
+        EnsureConfiguredTestPlayer();
         SelectTestCharacter();
         PublishTestGameState();
+        PublishTestPlayerSpawned();
 
         if (spawnOnStart)
         {
@@ -48,7 +51,7 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     [ContextMenu("Spawn Configured Enemies")]
     public void SpawnConfiguredEnemies()
     {
-        EnsureTestPlayer();
+        EnsureConfiguredTestPlayer();
         EnemySO resolvedEnemyData = ResolveEnemyData();
         if (resolvedEnemyData == null || testPlayer == null)
         {
@@ -127,8 +130,12 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             testPlayer = Instantiate(playerPrefab, playerSpawnPosition, Quaternion.identity);
             testPlayer.name = "Monster Test Player";
         }
+    }
 
-        GameEventBus.Publish(new PlayerSpawnedEvent(testPlayer));
+    private void EnsureConfiguredTestPlayer()
+    {
+        EnsureTestPlayer();
+        ConfigureTestPlayerCharacter();
     }
 
     private CharacterDataSO ResolveCharacterData()
@@ -138,19 +145,57 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             return testCharacterData;
         }
 
+        if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            IReadOnlyList<CharacterDataSO> characters = provider.Characters;
+            if (characters != null && characters.Count > 0)
+            {
+                return characters[0];
+            }
+        }
+
         return null;
+    }
+
+    private void ConfigureTestPlayerCharacter()
+    {
+        if (testPlayer == null)
+        {
+            return;
+        }
+
+        CharacterDataSO characterData = ResolveCharacterData();
+        if (characterData == null)
+        {
+            Debug.LogError($"{nameof(MonsterTestSceneController)} requires a test character data asset or at least one character in {nameof(GameContentCatalogSO)}.", this);
+            return;
+        }
+
+        FieldInfo characterDataField = typeof(Player).GetField("characterData", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (characterDataField == null)
+        {
+            Debug.LogError($"{nameof(MonsterTestSceneController)} cannot configure test player because {nameof(Player)} is missing private field 'characterData'.", this);
+            return;
+        }
+
+        characterDataField.SetValue(testPlayer, characterData);
     }
 
     private void SelectTestCharacter()
     {
-        CharacterDataSO characterData = ResolveCharacterData();
-        IReadOnlyList<CharacterDataSO> characters = GameContentRuntime.Provider.Characters;
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            return;
+        }
+
+        IReadOnlyList<CharacterDataSO> characters = provider.Characters;
         if (characters == null || characters.Count == 0)
         {
             Debug.LogWarning($"{nameof(MonsterTestSceneController)} cannot select a test character because no character data was loaded.");
             return;
         }
 
+        CharacterDataSO characterData = ResolveCharacterData();
         int selectedIndex = 0;
         if (characterData != null)
         {
@@ -182,6 +227,14 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     private static void PublishTestGameState()
     {
         GameEventBus.Publish(new GameStateChangedEvent(GameState.None, GameState.Game));
+    }
+
+    private void PublishTestPlayerSpawned()
+    {
+        if (testPlayer != null)
+        {
+            GameEventBus.Publish(new PlayerSpawnedEvent(testPlayer));
+        }
     }
 
     private void OnValidate()

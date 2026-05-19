@@ -137,7 +137,6 @@ public struct PropPresentationEntry
             PropType.CriticalPercent => "暴击伤害",
             PropType.MoveSpeed => "移动速度",
             PropType.MaxHealth => "最大生命值",
-            PropType.DetectionRange => "检测范围",
             PropType.AttackRange => "攻击范围",
             PropType.HealthRecoverySpeed => "生命恢复速度",
             PropType.Armor => "护甲",

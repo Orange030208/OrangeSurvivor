@@ -73,12 +73,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cb59eb8b9c441c39b93273befdacdf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponData>k__BackingField: {fileID: 0}
+  <WeaponData>k__BackingField: {fileID: 11400000, guid: b7deec74312189147b52dcc31afd21a4, type: 2}
   sequenceBridge: {fileID: 1614708916331346369}
   visualForwardTransform: {fileID: 7280237146038987481}
   animationTransform: {fileID: 8142188886591454919}
   hitBoxAnchorTransform: {fileID: 5635347390330181877}
   drawHitBoxDebugGizmos: 1
+  logSequenceSfxDebug: 0
   aimLerp: 20
   attackStartAimToleranceDegrees: 8
   targetLayerMask:
@@ -186,7 +187,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2002517321
-  m_SortingLayer: 1
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0a2388bf826964142aec65ef8694ce1e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -196,7 +197,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8704008478489292038

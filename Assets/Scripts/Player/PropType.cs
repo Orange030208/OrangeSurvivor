@@ -6,7 +6,6 @@ public enum PropType
     CriticalPercent = 3,
     MoveSpeed = 4,
     MaxHealth = 5,
-    DetectionRange = 6,
     HealthRecoverySpeed = 7,
     Armor = 8,
     Luck = 9,

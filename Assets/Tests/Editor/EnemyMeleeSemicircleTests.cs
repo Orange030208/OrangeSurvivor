@@ -86,18 +86,23 @@ public sealed class EnemyMeleeSemicircleTests
     }
 
     [Test]
-    public void SkeletonRangeDetectionUsesAttackRangeFacingSemicircle()
+    public void DirectDamageAttackStrategyUsesAttackRangeFacingSemicircle()
     {
-        TestEntity owner = CreateEnemy("skeleton_owner", Vector2.zero, new[]
+        TestEnemy owner = CreateEnemy("skeleton_owner", Vector2.zero, new[]
         {
-            new BasePropData(PropType.AttackRange, 100f),
-            new BasePropData(PropType.DetectionRange, 500f)
+            new BasePropData(PropType.AttackRange, 100f)
         });
+        EnemyAttackController attackController = owner.gameObject.AddComponent<EnemyAttackController>();
         Transform attackPoint = CreateAttackPoint(owner.transform, new Vector2(0.5f, 0f));
-        FacingSemicircleRangeDetectionStrategy strategy = new(
+        DirectDamageAttackStrategy strategy = new(
             owner,
+            attackController,
             owner.Properties,
-            attackPoint);
+            "test_attack",
+            1f,
+            attackPoint,
+            hitShape: DirectDamageHitShape.FacingSemicircle,
+            rangeDirectionProvider: ResolveHorizontalDirectionToTarget);
         TestEntity frontTarget = CreateTarget("front_target", new Vector2(1.2f, 0f));
         TestEntity farTarget = CreateTarget("far_target", new Vector2(2.0f, 0f));
         TestEntity behindAttackPointTarget = CreateTarget("behind_attack_point_target", new Vector2(0.2f, 0f));
@@ -230,11 +235,11 @@ public sealed class EnemyMeleeSemicircleTests
         return gameObject.AddComponent<TestEntity>();
     }
 
-    private TestEntity CreateEnemy(string name, Vector2 position, IReadOnlyList<BasePropData> baseProps)
+    private TestEnemy CreateEnemy(string name, Vector2 position, IReadOnlyList<BasePropData> baseProps)
     {
         GameObject gameObject = CreateGameObject(name);
         gameObject.transform.position = position;
-        TestEntity enemy = gameObject.AddComponent<TestEntity>();
+        TestEnemy enemy = gameObject.AddComponent<TestEnemy>();
         PropertiesManager propertiesManager = gameObject.GetComponent<PropertiesManager>() ?? gameObject.AddComponent<PropertiesManager>();
         enemy.Configure(propertiesManager);
         SetCalculatedProps(propertiesManager, baseProps);
@@ -269,7 +274,16 @@ public sealed class EnemyMeleeSemicircleTests
         }
     }
 
+    private static Vector2 ResolveHorizontalDirectionToTarget(Entity target)
+    {
+        return target != null && target.Center.x < 0f ? Vector2.left : Vector2.right;
+    }
+
     private sealed class TestEntity : Entity
+    {
+    }
+
+    private sealed class TestEnemy : Enemy
     {
         private PropertiesManager properties;
 

@@ -19,6 +19,10 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
     private EnemyBrain brain;
     private Rigidbody2D rb;
     private bool isRuntimeRegistered;
+    private bool isSpawnSequenceActive;
+    private bool isSpawnSequenceStarted;
+    private bool isPendingRuntimeEnable;
+    private bool areComponentsInitialized;
     private IReadOnlyList<PropModifierData> initialProgressionModifiers = Array.Empty<PropModifierData>();
 
     public override IMovable MoveComponent => activeMovement;
@@ -44,6 +48,8 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
     {
         InitializeComponent();
         EnableAllComponents();
+        areComponentsInitialized = true;
+        BeginSpawnSequenceIfNeeded();
     }
 
     private void Update()
@@ -96,7 +102,12 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
         this.enemyData = enemyData;
         targetEntity = target;
         initialProgressionModifiers = progressionModifiers ?? Array.Empty<PropModifierData>();
+        ResetSpawnSequenceState();
         RegisterRuntime();
+        if (areComponentsInitialized)
+        {
+            BeginSpawnSequenceIfNeeded();
+        }
     }
 
     public void ApplyInitialProgressionModifiers(PropertiesManager targetPropertiesManager)
@@ -111,6 +122,12 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
 
     public override void EnableRuntime()
     {
+        if (isSpawnSequenceActive)
+        {
+            isPendingRuntimeEnable = true;
+            return;
+        }
+
         base.EnableRuntime();
         brain?.StartBrain();
         activeMovement?.EnableMovement();
@@ -120,6 +137,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
 
     public override void DisableRuntime()
     {
+        isPendingRuntimeEnable = false;
         base.DisableRuntime();
         brain?.StopBrain();
         activeMovement?.StopMoving();
@@ -209,6 +227,65 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
 
         isRuntimeRegistered = true;
         GameEventBus.Publish(new EnemyRegisteredEvent(this, Role));
+    }
+
+    private void BeginSpawnSequenceIfNeeded()
+    {
+        if (isSpawnSequenceStarted || enemyData == null)
+        {
+            return;
+        }
+
+        isSpawnSequenceStarted = true;
+        if (brain == null || animComponent is not ProceduralEntityAnimationComponent proceduralAnim)
+        {
+            EnableRuntime();
+            return;
+        }
+
+        if (!proceduralAnim.HasSpawnState)
+        {
+            EnableRuntime();
+            return;
+        }
+
+        isSpawnSequenceActive = true;
+        brain.LockSpawn();
+        activeMovement?.StopMoving();
+        if (EntityCollider != null)
+        {
+            EntityCollider.enabled = false;
+        }
+
+        proceduralAnim.PlaySpawnSequence(OnSpawnSequenceCompleted);
+    }
+
+    private void ResetSpawnSequenceState()
+    {
+        isSpawnSequenceActive = false;
+        isSpawnSequenceStarted = false;
+        isPendingRuntimeEnable = false;
+    }
+
+    private void OnSpawnSequenceCompleted()
+    {
+        isSpawnSequenceActive = false;
+        if (EntityCollider != null)
+        {
+            EntityCollider.enabled = true;
+        }
+
+        brain?.UnlockSpawn();
+
+        if (!isPendingRuntimeEnable && !IsRuntimeEnabled)
+        {
+            return;
+        }
+
+        isPendingRuntimeEnable = false;
+        base.EnableRuntime();
+        brain?.StartBrain();
+        activeMovement?.EnableMovement();
     }
 
     private void UnregisterRuntime()

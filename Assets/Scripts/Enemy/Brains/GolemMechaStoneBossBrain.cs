@@ -19,18 +19,12 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     [SerializeField] private Transform laserOriginTransform;
     [SerializeField, Min(1)] private int initialPhase = 1;
     private IMoveStrategy chaseMovementStrategy;
-    private IRangeDetectionStrategy laserDetectionStrategy;
-    private IRangeDetectionStrategy meleeDetectionStrategy;
-    private IRangeDetectionStrategy shootDetectionStrategy;
     private IAttackStrategy meleeAttackStrategy;
     private IAttackStrategy shootAttackStrategy;
     private int currentPhase;
     private int runningActionCount;
 
     public IMoveStrategy ChaseMovementStrategy => chaseMovementStrategy;
-    public IRangeDetectionStrategy LaserDetectionStrategy => laserDetectionStrategy;
-    public IRangeDetectionStrategy MeleeDetectionStrategy => meleeDetectionStrategy;
-    public IRangeDetectionStrategy ShootDetectionStrategy => shootDetectionStrategy;
     public IAttackStrategy MeleeAttackStrategy => meleeAttackStrategy;
     public IAttackStrategy ShootAttackStrategy => shootAttackStrategy;
     public Transform LaserOriginTransform => laserOriginTransform != null ? laserOriginTransform : owner != null ? owner.transform : null;
@@ -161,28 +155,28 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
         runningActionCount = Mathf.Max(0, runningActionCount - 1);
     }
 
+    public bool IsTargetInLaserRange(Entity target)
+    {
+        return target != null &&
+               target.IsColliderWithinRange(
+                   ResolveLaserOrigin(),
+                   ResolveAttackRangeWorldUnits(bossData != null ? bossData.LaserRangeMultiplier : 1f));
+    }
+
+    public bool IsTargetInMeleeRange(Entity target)
+    {
+        return meleeAttackStrategy != null && meleeAttackStrategy.IsTargetInRange(target);
+    }
+
     private void BuildStrategies()
     {
         chaseMovementStrategy = new DirectChaseMoveStrategy(currentMovable);
-        laserDetectionStrategy = new DistanceRangeDetectionStrategy(
-            this.owner,
-            propertiesManager,
-            bossData.LaserRangeMultiplier);
-        meleeDetectionStrategy = new DistanceRangeDetectionStrategy(
-            this.owner,
-            propertiesManager,
-            bossData.MeleeRangeMultiplier);
-        shootDetectionStrategy = new DistanceRangeDetectionStrategy(
-            this.owner,
-            propertiesManager,
-            bossData.ShootRangeMultiplier);
         meleeAttackStrategy = new DirectDamageAttackStrategy(
             this.owner,
             attackController,
             propertiesManager,
             GolemMechaStoneBossSO.MELEE_ACTION_ID,
             bossData.MeleeAttackSpeedBenefitRatio,
-            meleeDetectionStrategy,
             meleePointTransform,
             bossData.MeleeRangeMultiplier,
             bossData.MeleeHitVfxPrefab);
@@ -192,7 +186,6 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
             propertiesManager,
             GolemMechaStoneBossSO.SHOOT_ACTION_ID,
             bossData.ShootAttackSpeedBenefitRatio,
-            shootDetectionStrategy,
             shootPointTransform,
             bossData.ShootProjectileDefinition,
             bossData.ShootRangeMultiplier);
@@ -218,6 +211,18 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private void ClearActionLocks()
     {
         runningActionCount = 0;
+    }
+
+    private Vector2 ResolveLaserOrigin()
+    {
+        Transform laserOrigin = LaserOriginTransform;
+        return laserOrigin != null ? laserOrigin.position : owner.Center;
+    }
+
+    private float ResolveAttackRangeWorldUnits(float multiplier)
+    {
+        return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
+            propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, multiplier);
     }
 
     private float ResolveHealthRatio()

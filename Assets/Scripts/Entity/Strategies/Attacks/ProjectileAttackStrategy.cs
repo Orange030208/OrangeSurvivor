@@ -13,15 +13,20 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
         PropertiesManager propertiesManager,
         string actionId,
         float attackSpeedBenefitRatio,
-        IRangeDetectionStrategy detectionStrategy,
         Transform firePointTransform,
         ProjectileDefinitionSO projectileDefinition,
         float attackRangeMultiplier = 1f)
-        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio, detectionStrategy)
+        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio)
     {
         this.firePointTransform = firePointTransform;
         this.projectileDefinition = projectileDefinition;
         this.attackRangeMultiplier = Mathf.Max(0f, attackRangeMultiplier);
+    }
+
+    public override bool IsTargetInRange(Entity target)
+    {
+        return target != null &&
+               target.IsColliderWithinRange(ResolveFirePointPosition(), ResolveAttackRange());
     }
 
     protected override bool ExecuteCore(Entity target)

@@ -13,15 +13,12 @@ MonoBehaviour:
   m_Name: Weapon_GreatAxe
   m_EditorClassIdentifier: 
   itemName: "\u5DE8\u65A7"
-  itemIcon: {fileID: 21300000, guid: 2270052cd4dadbf42a269a9b02cd5690, type: 3}
+  itemIcon: {fileID: -2051961552, guid: d442e1d457a43c8418347dbc8dc058cb, type: 3}
   itemPrice: 42
   itemType: 0
   itemDescription: "\u5F3A\u529B\u91CD\u578B\uFF0C\u8303\u56F4\u548C\u5355\u6B21\u4F24\u5BB3\u9AD8\uFF0C\u653B\u901F\u77ED\u677F\u660E\u663E\u3002"
   weaponId: Weapon_GreatAxe
   tags: 02000000
-  openWave: 5
-  closeWave: 0
-  baseWeight: 35
   attackSequence: {fileID: 11400000, guid: 45eb0daa646e4ef49bf345486cc5d48a, type: 2}
   visualForwardAngle: 45
   holdAimWhenAttackReady: 0
@@ -35,78 +32,78 @@ MonoBehaviour:
   sequenceVfxList: []
   enableHitBox: 1
   hitVfxPrefab: {fileID: 0}
-  hitBoxSize: {x: 0.68, y: 1}
-  hitBoxOffset: {x: 0, y: 0}
+  hitBoxSize: {x: 0.78, y: 0.68}
+  hitBoxOffset: {x: -0.03, y: 1.19}
   levelStats:
   - level: 1
-    attack: 0
-    attackSpeed: 100
+    attack: 20
+    attackSpeed: 50
     criticalChance: 0
     criticalPercent: 100
-    range: 200
-    knockbackStrength: 0
+    range: 300
+    knockbackStrength: 10
     statBenefits:
-      attackSpeedBenefitPercent: 0
-      criticalChanceBenefitPercent: 0
-      criticalPercentBenefitPercent: 0
-      rangeBenefitPercent: 0
-      knockbackStrengthBenefitPercent: 0
-      meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 0
-      magicAttackUsagePercent: 0
-      summonAttackUsagePercent: 0
+      attackSpeedBenefitPercent: 100
+      criticalChanceBenefitPercent: 100
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 100
+      meleeAttackUsagePercent: 100
+      rangedAttackUsagePercent: 100
+      magicAttackUsagePercent: 100
+      summonAttackUsagePercent: 100
     holderModifiers: []
   - level: 2
-    attack: 0
-    attackSpeed: 100
+    attack: 30
+    attackSpeed: 50
     criticalChance: 0
     criticalPercent: 100
-    range: 200
-    knockbackStrength: 0
+    range: 300
+    knockbackStrength: 10
     statBenefits:
-      attackSpeedBenefitPercent: 0
-      criticalChanceBenefitPercent: 0
-      criticalPercentBenefitPercent: 0
-      rangeBenefitPercent: 0
-      knockbackStrengthBenefitPercent: 0
-      meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 0
-      magicAttackUsagePercent: 0
-      summonAttackUsagePercent: 0
+      attackSpeedBenefitPercent: 100
+      criticalChanceBenefitPercent: 100
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 100
+      meleeAttackUsagePercent: 100
+      rangedAttackUsagePercent: 100
+      magicAttackUsagePercent: 100
+      summonAttackUsagePercent: 100
     holderModifiers: []
   - level: 3
-    attack: 0
-    attackSpeed: 100
+    attack: 40
+    attackSpeed: 50
     criticalChance: 0
     criticalPercent: 100
-    range: 200
-    knockbackStrength: 0
+    range: 300
+    knockbackStrength: 10
     statBenefits:
-      attackSpeedBenefitPercent: 0
-      criticalChanceBenefitPercent: 0
-      criticalPercentBenefitPercent: 0
-      rangeBenefitPercent: 0
-      knockbackStrengthBenefitPercent: 0
-      meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 0
-      magicAttackUsagePercent: 0
-      summonAttackUsagePercent: 0
+      attackSpeedBenefitPercent: 100
+      criticalChanceBenefitPercent: 100
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 100
+      meleeAttackUsagePercent: 100
+      rangedAttackUsagePercent: 100
+      magicAttackUsagePercent: 100
+      summonAttackUsagePercent: 100
     holderModifiers: []
   - level: 4
-    attack: 0
+    attack: 50
     attackSpeed: 100
     criticalChance: 0
     criticalPercent: 100
     range: 200
-    knockbackStrength: 0
+    knockbackStrength: 10
     statBenefits:
-      attackSpeedBenefitPercent: 0
-      criticalChanceBenefitPercent: 0
-      criticalPercentBenefitPercent: 0
-      rangeBenefitPercent: 0
-      knockbackStrengthBenefitPercent: 0
-      meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 0
-      magicAttackUsagePercent: 0
-      summonAttackUsagePercent: 0
+      attackSpeedBenefitPercent: 100
+      criticalChanceBenefitPercent: 100
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 100
+      meleeAttackUsagePercent: 100
+      rangedAttackUsagePercent: 100
+      magicAttackUsagePercent: 100
+      summonAttackUsagePercent: 100
     holderModifiers: []

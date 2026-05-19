@@ -13,6 +13,7 @@ public static class ScriptableObjectMenuPaths
     public const string WORM_ENEMY = GAMEPLAY_ROOT + "Enemies/Worm Enemy";
     public const string FLY_FOREST = GAMEPLAY_ROOT + "Enemies/Fly Forest Enemy";
     public const string SKELETON_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Enemy";
+    public const string CYBER_ORANGE_ENEMY = GAMEPLAY_ROOT + "Enemies/Cyber Orange Enemy";
     public const string SKELETON_METEORHAMMER_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Meteorhammer Enemy";
     public const string SKELETON_METEORHAMMER2_ENEMY = GAMEPLAY_ROOT + "Enemies/Skeleton Meteorhammer2 Enemy";
     public const string GOLEM_ENEMY = GAMEPLAY_ROOT + "Enemies/Golem Enemy";
@@ -40,6 +41,7 @@ public static class ScriptableObjectMenuPaths
     public const string CONTENT_FACT_DEFINITION = GAMEPLAY_ROOT + "Content/Fact Definition";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
+    public const string PROCEDURAL_ANIMATION_PROFILE = ENTITY_ROOT + "Animation/Procedural Animation Profile";
     public const string GOLEM_MECHA_STONE_BOSS_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Golem Mecha Stone Boss Animation Config";
     public const string KNOCKBACK_RECEIVER_CONFIG = ENTITY_ROOT + "Combat/Knockback Receiver Config";
     public const string ENEMY_ATTACK_DEFINITION = ENTITY_ROOT + "Combat/Enemy Attack Definition";

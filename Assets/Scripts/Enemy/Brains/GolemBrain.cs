@@ -117,14 +117,12 @@ public class GolemBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         chaseMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(owner, propertiesManager);
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
             propertiesManager,
             GolemEnemySO.ATTACK_ACTION_ID,
             enemyData.AttackSpeedBenefitRatio,
-            attackDetectionStrategy,
             meleePointTransform);
     }
 
@@ -304,7 +302,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
+            bool isTargetInRange = brain.attackStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(GolemAIState.Chase);
@@ -425,7 +423,7 @@ public class GolemBrain : EnemyBrain
                 return;
             }
 
-            brain.stateMachine.RequestState(brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target)
+            brain.stateMachine.RequestState(brain.attackStrategy.IsTargetInRange(brain.target)
                 ? GolemAIState.Idle
                 : GolemAIState.Chase);
         }

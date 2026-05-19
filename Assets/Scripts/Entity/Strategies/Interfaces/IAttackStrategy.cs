@@ -1,7 +1,7 @@
 public interface IAttackStrategy
 {
     string ActionId { get; }
-    IRangeDetectionStrategy DetectionStrategy { get; }
+    bool IsTargetInRange(Entity target);
     bool CanUse(Entity target);
     /// <summary>
     /// 即时尝试发起攻击，会完整检查冷却与入场范围。

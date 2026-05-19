@@ -121,7 +121,6 @@ public static class PropDescriptionUtility
     private static bool IsDistancePointProp(PropType propType)
     {
         return propType == PropType.MoveSpeed ||
-               propType == PropType.DetectionRange ||
                propType == PropType.AttackRange ||
                propType == PropType.PickupRadius;
     }

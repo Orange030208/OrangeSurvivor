@@ -22,7 +22,6 @@ public sealed class CanUseMechaStoneShoot : MechaStoneConditionBase
 
     private bool IsTargetInMeleeRange()
     {
-        return BossBrain.MeleeDetectionStrategy != null &&
-               BossBrain.MeleeDetectionStrategy.IsTargetInRange(TargetEntity);
+        return BossBrain.IsTargetInMeleeRange(TargetEntity);
     }
 }

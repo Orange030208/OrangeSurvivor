@@ -16,8 +16,11 @@ public abstract class EnemyBrain : EntityBrain
 
     protected bool isDead;
     protected bool isBrainActive;
+    protected bool isSpawnLocked;
 
     public override Entity Owner => owner;
+
+    protected override bool ShouldStartOnInitialize => false;
 
     protected override void OnInitialize(Entity owner)
     {
@@ -34,7 +37,7 @@ public abstract class EnemyBrain : EntityBrain
         currentAnimatable = this.owner.AnimComponent;
         facingController = this.owner.GetComponent<IEntityFacingController>();
 
-        isBrainActive = true;
+        isBrainActive = false;
     }
 
     public override void OnTick(float deltaTime)
@@ -59,7 +62,7 @@ public abstract class EnemyBrain : EntityBrain
 
     protected virtual bool ShouldUpdateBrain()
     {
-        return isBrainActive && !isDead;
+        return isBrainActive && !isDead && !isSpawnLocked;
     }
 
     protected virtual void OnBrainUpdate()
@@ -80,7 +83,23 @@ public abstract class EnemyBrain : EntityBrain
     {
         isDead = false;
         isBrainActive = true;
+        EnsureBrainStarted();
         enabled = true;
+    }
+
+    public void LockSpawn()
+    {
+        isSpawnLocked = true;
+        currentMovable?.StopMoving();
+    }
+
+    public void UnlockSpawn()
+    {
+        isSpawnLocked = false;
+        if (isBrainActive)
+        {
+            enabled = true;
+        }
     }
 
     public virtual void SetTarget(Entity newTarget)

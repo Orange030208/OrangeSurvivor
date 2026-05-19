@@ -75,20 +75,12 @@ public class WormBrain : EnemyBrain
         approachMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
         retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
 
-        IRangeDetectionStrategy attackDetectionStrategy = new DistanceRangeDetectionStrategy(
-            owner,
-            propertiesManager);
-        IRangeDetectionStrategy retreatAttackDetectionStrategy = new DistanceRangeDetectionStrategy(
-            owner,
-            propertiesManager);
-
         attackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
             WormEnemySO.ATTACK_ACTION_ID,
             enemyData.attackSpeedBenefitRatio,
-            attackDetectionStrategy,
             attackPointTransform,
             enemyData.attackProjectileDefinition);
         retreatAttackStrategy = new ProjectileAttackStrategy(
@@ -97,7 +89,6 @@ public class WormBrain : EnemyBrain
             propertiesManager,
             WormEnemySO.RETREAT_ATTACK_ACTION_ID,
             enemyData.retreatAttackSpeedBenefitRatio,
-            retreatAttackDetectionStrategy,
             retreatAttackPointTransform,
             enemyData.retreatAttackProjectileDefinition);
         currentAttackStrategy = attackStrategy;
@@ -151,7 +142,7 @@ public class WormBrain : EnemyBrain
                 return;
             }
 
-            bool isTargetInRange = brain.attackStrategy.DetectionStrategy.IsTargetInRange(brain.target);
+            bool isTargetInRange = brain.attackStrategy.IsTargetInRange(brain.target);
             if (!isTargetInRange)
             {
                 brain.stateMachine.ChangeState(WormAIState.Approach);
@@ -325,7 +316,7 @@ public class WormBrain : EnemyBrain
             {
                 brain.stateMachine.RequestState(WormAIState.Retreat);
             }
-            else if (!brain.currentAttackStrategy.DetectionStrategy.IsTargetInRange(brain.target))
+            else if (!brain.currentAttackStrategy.IsTargetInRange(brain.target))
             {
                 brain.stateMachine.RequestState(WormAIState.Approach);
             }

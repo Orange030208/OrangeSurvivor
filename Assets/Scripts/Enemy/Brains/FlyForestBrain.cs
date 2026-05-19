@@ -94,16 +94,12 @@ public class FlyForestBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         normalMovementStrategy = new CircleKiteMoveStrategy(owner, currentMovable, propertiesManager, enemyData.normalMovement);
-        IRangeDetectionStrategy detectionStrategy = new DistanceRangeDetectionStrategy(
-            owner,
-            propertiesManager);
         normalAttackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
             propertiesManager,
             FlyForestEnemySO.NORMAL_ATTACK_ACTION_ID,
             enemyData.normalAttackSpeedBenefitRatio,
-            detectionStrategy,
             shootPointTransform,
             enemyData.normalAttackProjectileDefinition);
     }

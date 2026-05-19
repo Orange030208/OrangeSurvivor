@@ -25841,7 +25841,6 @@ MonoBehaviour:
   stageDefinition: {fileID: 0}
   waveSpawnPool: {fileID: 0}
   spawnAroundEntity: {fileID: 0}
-  enemySpawnIndicatorPrefab: {fileID: 8304110548121217275, guid: 02041b3d4fc6ab64ea52447cced50e3e, type: 3}
 --- !u!114 &542457227
 MonoBehaviour:
   m_ObjectHideFlags: 0

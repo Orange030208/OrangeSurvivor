@@ -23,7 +23,7 @@ public sealed class RetreatMoveStrategyTests
     }
 
     [Test]
-    public void ExecuteMoveScalesRetreatTargetDistanceByDetectionRange()
+    public void ExecuteMoveScalesRetreatTargetDistanceByAttackRange()
     {
         TestEnemy owner = CreateEnemy("owner", Vector2.zero, 500f);
         TestEntity target = CreateEntity("target", new Vector2(2f, 0f));
@@ -43,7 +43,7 @@ public sealed class RetreatMoveStrategyTests
     }
 
     [Test]
-    public void ExecuteMoveScalesSafeDistanceByDetectionRange()
+    public void ExecuteMoveScalesSafeDistanceByAttackRange()
     {
         TestEnemy owner = CreateEnemy("owner", Vector2.zero, 500f);
         TestEntity target = CreateEntity("target", new Vector2(1.5f, 0f));
@@ -62,7 +62,27 @@ public sealed class RetreatMoveStrategyTests
         Assert.That(movable.LastMoveTarget.y, Is.EqualTo(0f).Within(0.0001f));
     }
 
-    private TestEnemy CreateEnemy(string name, Vector2 position, float detectionRangePoints)
+    [Test]
+    public void CircleKiteMoveScalesIdealPositionByAttackRange()
+    {
+        TestEnemy owner = CreateEnemy("owner", Vector2.zero, 500f);
+        TestEntity target = CreateEntity("target", new Vector2(10f, 0f));
+        TestMovable movable = new(owner.PropertiesManager);
+        CircleKiteMoveStrategy strategy = new(owner, movable, owner.PropertiesManager, new CircleKiteMoveData
+        {
+            circleSpeedRatio = 0f,
+            idealRangeRatio = 0.6f
+        });
+
+        strategy.ExecuteMove(target);
+
+        Assert.AreEqual(1, movable.MoveToCallCount);
+        Assert.AreEqual(0, movable.StopMovingCallCount);
+        Assert.That(movable.LastMoveTarget.x, Is.EqualTo(7f).Within(0.0001f));
+        Assert.That(movable.LastMoveTarget.y, Is.EqualTo(0f).Within(0.0001f));
+    }
+
+    private TestEnemy CreateEnemy(string name, Vector2 position, float attackRangePoints)
     {
         GameObject gameObject = CreateGameObject(name);
         gameObject.transform.position = position;
@@ -71,7 +91,7 @@ public sealed class RetreatMoveStrategyTests
         enemy.Configure(propertiesManager);
         SetCalculatedProps(propertiesManager, new[]
         {
-            new BasePropData(PropType.DetectionRange, detectionRangePoints)
+            new BasePropData(PropType.AttackRange, attackRangePoints)
         });
         return enemy;
     }
@@ -108,11 +128,11 @@ public sealed class RetreatMoveStrategyTests
 
     private sealed class TestEnemy : Enemy
     {
-        public PropertiesManager PropertiesManager { get; private set; }
-
         public void Configure(PropertiesManager propertiesManager)
         {
-            PropertiesManager = propertiesManager;
+            FieldInfo field = typeof(Enemy).GetField("propertiesManager", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(field, $"Missing private field 'propertiesManager' on {nameof(Enemy)}.");
+            field.SetValue(this, propertiesManager);
         }
     }
 

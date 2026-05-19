@@ -21,7 +21,6 @@ public class WaveManager : MonoBehaviour, IWaveController
 
     [SerializeField]
     private Entity spawnAroundEntity;
-    [SerializeField] private SpawnIndicator enemySpawnIndicatorPrefab;
 
     private int CurrentWaveIndex => runtimeState.CurrentWaveIndex;
     private float CurrentTimer => runtimeState.Timer;
@@ -67,7 +66,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(ContentPoolSO)} for wave spawn candidates from the scene or {nameof(GameContentCatalogSO)}.");
         }
 
-        enemyFactory = new EnemyFactory(enemySpawnIndicatorPrefab);
+        enemyFactory = new EnemyFactory();
         RunProgressionProfileSO progressionProfile = GameContentRuntime.Provider.RunProgressionProfile;
         runProgressionService = new RunProgressionService(progressionProfile);
         runProgressionService.Reset(runtimeWaves.Length);

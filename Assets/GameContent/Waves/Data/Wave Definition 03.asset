@@ -34,10 +34,27 @@ MonoBehaviour:
     spawnCountPerBatch: 3
     maxSpawnBatches: 3
     normalizedTimeRange: {x: 0, y: 20}
+  - trackId: Track_02
+    triggerMode: 0
+    spawnFrequency: 0.666667
+    spawnCountPerBatch: 3
+    maxSpawnBatches: 12
+    normalizedTimeRange: {x: 20, y: 65}
+  - trackId: Track_03
+    triggerMode: 0
+    spawnFrequency: 1.25
+    spawnCountPerBatch: 2
+    maxSpawnBatches: 10
+    normalizedTimeRange: {x: 65, y: 85}
+  - trackId: Track_04
+    triggerMode: 0
+    spawnFrequency: 1.166667
+    spawnCountPerBatch: 1
+    maxSpawnBatches: 7
+    normalizedTimeRange: {x: 85, y: 100}
   references:
     version: 2
     RefIds:
     - rid: 7274046045303865756
       type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
       data: 
-

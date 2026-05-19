@@ -12,13 +12,11 @@ public abstract class AttackStrategyBase : IAttackStrategy
         EnemyAttackController attackController,
         PropertiesManager propertiesManager,
         string actionId,
-        float attackSpeedBenefitRatio,
-        IRangeDetectionStrategy detectionStrategy)
+        float attackSpeedBenefitRatio)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.attackController = attackController ?? throw new ArgumentNullException(nameof(attackController));
         this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
-        DetectionStrategy = detectionStrategy ?? throw new ArgumentNullException(nameof(detectionStrategy));
         ActionId = string.IsNullOrWhiteSpace(actionId)
             ? throw new ArgumentException("Action id cannot be null or whitespace.", nameof(actionId))
             : actionId;
@@ -26,13 +24,12 @@ public abstract class AttackStrategyBase : IAttackStrategy
     }
 
     public string ActionId { get; }
-    public IRangeDetectionStrategy DetectionStrategy { get; }
 
     public bool CanUse(Entity target)
     {
         return target != null &&
                attackController.CanUseBasicAttack(ActionId) &&
-               DetectionStrategy.IsTargetInRange(target);
+               IsTargetInRange(target);
     }
 
     public bool TryExecute(Entity target)
@@ -64,6 +61,8 @@ public abstract class AttackStrategyBase : IAttackStrategy
     {
         return PropValueUtility.ClampNonNegative(propertiesManager.GetPropValue(PropType.Attack));
     }
+
+    public abstract bool IsTargetInRange(Entity target);
 
     protected abstract bool ExecuteCore(Entity target);
 
