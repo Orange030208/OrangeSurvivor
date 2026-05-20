@@ -17,9 +17,18 @@ public static class SettingsPanelStaticPrefabBuilder
     private const string PROFILE_FOLDER = "Assets/GameContent/UI/Data/Settings";
     private const string VIEW_CATALOG_PATH = "Assets/GameContent/UI/Data/OrangeUIViewCatalog.asset";
     private const string UI_FONT_PATH = "Assets/GameContent/UI/Fonts/HYPixel11pxU-2 SDF.asset";
+    private const string SETTING_BORDER_PATH = "Assets/GameContent/UI/Cyber/Setting/setting_border.png";
+    private const string SETTING_TITLE_PATH = "Assets/GameContent/UI/Cyber/Setting/setting_title.png";
+    private const string SETTING_CLOSE_BUTTON_PATH = "Assets/GameContent/UI/Cyber/Setting/settings_close_button.png";
+    private const string SETTING_ICONS_PATH = "Assets/GameContent/UI/Cyber/Setting/settings_icons.png";
+    private const string TAB_FRAME_PATH = "Assets/GameContent/UI/Cyber/Setting/tab_frame.png";
+    private const string NEON_SLIDER_PATH = "Assets/GameContent/UI/Cyber/Setting/neon_slider.png";
     private const string SETTINGS_POPUP_VIEW_ID = "popup.settings";
     private const string DISPLAY_CONFIRM_MODAL_VIEW_ID = "modal.displayConfirm";
     private const int UI_LAYER = 5;
+
+    private static readonly Color TabDefaultColor = new(0.13f, 0.68f, 1f, 1f);
+    private static readonly Color TabSelectedColor = new(1f, 0.22f, 0.68f, 1f);
 
     private static TMP_FontAsset cachedUiFont;
 
@@ -131,86 +140,88 @@ public static class SettingsPanelStaticPrefabBuilder
 
         ClearChildren(root.transform);
 
-        Image shellImage = root.GetComponent<Image>();
-        if (shellImage == null)
+        Image rootImage = root.GetComponent<Image>();
+        if (rootImage != null)
         {
-            shellImage = root.AddComponent<Image>();
+            UnityEngine.Object.DestroyImmediate(rootImage);
         }
 
-        shellImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_main_neon.png");
-        shellImage.type = Image.Type.Sliced;
-        shellImage.color = new Color(0.02f, 0.02f, 0.08f, 0.96f);
-        shellImage.raycastTarget = true;
+        CanvasRenderer rootRenderer = root.GetComponent<CanvasRenderer>();
+        if (rootRenderer != null)
+        {
+            UnityEngine.Object.DestroyImmediate(rootRenderer);
+        }
 
-        TextMeshProUGUI title = CreateText("Title", root.transform, "SETTINGS", 54, FontStyles.Bold, TextAlignmentOptions.Left);
-        title.color = new Color(1f, 0.22f, 0.68f, 1f);
+        Sprite tabSelectedSprite = ResolveRequiredSprite(TAB_FRAME_PATH, "tab_frame_0");
+        Sprite tabDefaultSprite = ResolveRequiredSprite(TAB_FRAME_PATH, "tab_frame_1");
+        Sprite audioIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_0");
+        Sprite displayIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_3");
+        Sprite controlIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_4");
+        Sprite gameplayIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_7");
+        Sprite languageIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_10");
+        Sprite arrowIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_11");
+
+        RectTransform visualRoot = CreateVisualRoot(root.transform);
+
+        Image shellImage = CreateImage("Border", visualRoot, ResolveRequiredSprite(SETTING_BORDER_PATH), raycastTarget: true);
+        RectTransform shellRect = shellImage.rectTransform;
+        shellRect.anchorMin = Vector2.zero;
+        shellRect.anchorMax = Vector2.one;
+        shellRect.offsetMin = Vector2.zero;
+        shellRect.offsetMax = Vector2.zero;
+
+        Image title = CreateImage("Title", visualRoot, ResolveRequiredSprite(SETTING_TITLE_PATH));
+        title.preserveAspect = true;
         RectTransform titleRect = title.rectTransform;
         titleRect.anchorMin = new Vector2(0f, 1f);
         titleRect.anchorMax = new Vector2(0f, 1f);
         titleRect.pivot = new Vector2(0f, 1f);
-        titleRect.anchoredPosition = new Vector2(80f, -42f);
-        titleRect.sizeDelta = new Vector2(430f, 72f);
+        titleRect.anchoredPosition = new Vector2(78f, -36f);
+        titleRect.sizeDelta = new Vector2(360f, 112f);
 
-        Button closeButton = CreateButton(root.transform, "CloseButton", "X", 58f, 58f);
+        Button closeButton = CreateSpriteButton(visualRoot, "CloseButton", ResolveRequiredSprite(SETTING_CLOSE_BUTTON_PATH), 54f, 54f);
         RectTransform closeRect = closeButton.GetComponent<RectTransform>();
         closeRect.anchorMin = new Vector2(1f, 1f);
         closeRect.anchorMax = new Vector2(1f, 1f);
         closeRect.pivot = new Vector2(1f, 1f);
-        closeRect.anchoredPosition = new Vector2(-34f, -30f);
+        closeRect.anchoredPosition = new Vector2(-37f, -34f);
 
-        RectTransform nav = CreateRect("Navigation", root.transform);
+        RectTransform nav = CreateRect("Navigation", visualRoot);
         nav.anchorMin = new Vector2(0f, 0f);
         nav.anchorMax = new Vector2(0f, 1f);
         nav.pivot = new Vector2(0f, 1f);
-        nav.anchoredPosition = new Vector2(46f, -138f);
-        nav.sizeDelta = new Vector2(315f, -210f);
+        nav.anchoredPosition = new Vector2(49f, -150f);
+        nav.sizeDelta = new Vector2(320f, -188f);
         VerticalLayoutGroup navLayout = nav.gameObject.AddComponent<VerticalLayoutGroup>();
-        navLayout.spacing = 12f;
+        navLayout.spacing = 6f;
         navLayout.padding = new RectOffset(0, 0, 0, 0);
         navLayout.childControlWidth = true;
         navLayout.childControlHeight = false;
         navLayout.childForceExpandWidth = true;
         navLayout.childForceExpandHeight = false;
 
-        Button audioTab = CreateTabButton(nav, "AudioTabButton", "音频设置", ">");
-        Button displayTab = CreateTabButton(nav, "DisplayTabButton", "画面设置", ">");
-        Button controlTab = CreateTabButton(nav, "ControlTabButton", "控制设置", ">");
-        Button gameplayTab = CreateTabButton(nav, "GameplayTabButton", "游戏设置", ">");
-        Button languageTab = CreateTabButton(nav, "LanguageTabButton", "语言设置", ">");
+        Button audioTab = CreateTabButton(nav, "AudioTabButton", "音频设置", audioIcon, arrowIcon, tabDefaultSprite);
+        Button displayTab = CreateTabButton(nav, "DisplayTabButton", "画面设置", displayIcon, arrowIcon, tabDefaultSprite);
+        Button controlTab = CreateTabButton(nav, "ControlTabButton", "控制设置", controlIcon, arrowIcon, tabDefaultSprite);
+        Button gameplayTab = CreateTabButton(nav, "GameplayTabButton", "游戏设置", gameplayIcon, arrowIcon, tabDefaultSprite);
+        Button languageTab = CreateTabButton(nav, "LanguageTabButton", "语言设置", languageIcon, arrowIcon, tabDefaultSprite);
 
-        RectTransform contentPanel = CreateRect("ContentPanel", root.transform);
+        RectTransform contentPanel = CreateRect("ContentPanel", visualRoot);
         contentPanel.anchorMin = new Vector2(0f, 0f);
         contentPanel.anchorMax = new Vector2(1f, 1f);
-        contentPanel.offsetMin = new Vector2(395f, 70f);
-        contentPanel.offsetMax = new Vector2(-54f, -142f);
+        contentPanel.offsetMin = new Vector2(410f, 86f);
+        contentPanel.offsetMax = new Vector2(-60f, -158f);
         Image contentImage = contentPanel.gameObject.AddComponent<Image>();
-        contentImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_content_neon.png");
+        contentImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
         contentImage.type = Image.Type.Sliced;
-        contentImage.color = new Color(0.02f, 0.03f, 0.10f, 0.86f);
-
-        TextMeshProUGUI sectionTitle = CreateText("SectionTitle", contentPanel, "音频设置", 26, FontStyles.Bold, TextAlignmentOptions.Left);
-        sectionTitle.color = new Color(1f, 0.22f, 0.68f, 1f);
-        RectTransform sectionTitleRect = sectionTitle.rectTransform;
-        sectionTitleRect.anchorMin = new Vector2(0f, 1f);
-        sectionTitleRect.anchorMax = new Vector2(1f, 1f);
-        sectionTitleRect.pivot = new Vector2(0f, 1f);
-        sectionTitleRect.offsetMin = new Vector2(34f, -72f);
-        sectionTitleRect.offsetMax = new Vector2(-34f, -22f);
-
-        RectTransform divider = CreateRect("TitleDivider", contentPanel);
-        divider.anchorMin = new Vector2(0f, 1f);
-        divider.anchorMax = new Vector2(1f, 1f);
-        divider.pivot = new Vector2(0.5f, 1f);
-        divider.offsetMin = new Vector2(34f, -86f);
-        divider.offsetMax = new Vector2(-34f, -83f);
-        Image dividerImage = divider.gameObject.AddComponent<Image>();
-        dividerImage.color = new Color(1f, 0.13f, 0.74f, 0.75f);
+        contentImage.color = new Color(0.02f, 0.03f, 0.10f, 0.22f);
+        contentImage.raycastTarget = false;
 
         RectTransform sectionRoot = CreateRect("SectionRoot", contentPanel);
         sectionRoot.anchorMin = Vector2.zero;
         sectionRoot.anchorMax = Vector2.one;
-        sectionRoot.offsetMin = new Vector2(34f, 28f);
-        sectionRoot.offsetMax = new Vector2(-34f, -108f);
+        sectionRoot.offsetMin = new Vector2(28f, 30f);
+        sectionRoot.offsetMax = new Vector2(-28f, -30f);
 
         GameObject audioSection = CreateContentSection(sectionRoot, "AudioSection");
         SettingsSliderRow masterRow = CreateSliderRow(audioSection.transform, "MasterVolumeRow", "主音量");
@@ -238,11 +249,11 @@ public static class SettingsPanelStaticPrefabBuilder
         GameObject languageSection = CreateContentSection(sectionRoot, "LanguageSection");
         SettingsOptionRow languageRow = CreateOptionRow(languageSection.transform, "LanguageRow", "语言");
 
-        RectTransform actionBar = CreateRect("ActionBar", root.transform);
+        RectTransform actionBar = CreateRect("ActionBar", visualRoot);
         actionBar.anchorMin = new Vector2(1f, 0f);
         actionBar.anchorMax = new Vector2(1f, 0f);
         actionBar.pivot = new Vector2(1f, 0f);
-        actionBar.anchoredPosition = new Vector2(-58f, 28f);
+        actionBar.anchoredPosition = new Vector2(-66f, 36f);
         actionBar.sizeDelta = new Vector2(190f, 44f);
         HorizontalLayoutGroup actionLayout = actionBar.gameObject.AddComponent<HorizontalLayoutGroup>();
         actionLayout.childAlignment = TextAnchor.MiddleRight;
@@ -257,7 +268,11 @@ public static class SettingsPanelStaticPrefabBuilder
         SetObject(managerObject, "canvasGroup", canvasGroup);
         SetObjectArray(managerObject, "platformProfiles", profiles);
         SetObject(managerObject, "defaultSelectable", audioTab);
-        SetObject(managerObject, "sectionTitle", sectionTitle);
+        SetObject(managerObject, "sectionTitle", null);
+        SetObject(managerObject, "tabDefaultSprite", tabDefaultSprite);
+        SetObject(managerObject, "tabSelectedSprite", tabSelectedSprite);
+        managerObject.FindProperty("tabDefaultContentColor").colorValue = TabDefaultColor;
+        managerObject.FindProperty("tabSelectedContentColor").colorValue = TabSelectedColor;
         SetObject(managerObject, "audioTabButton", audioTab);
         SetObject(managerObject, "displayTabButton", displayTab);
         SetObject(managerObject, "controlTabButton", controlTab);
@@ -287,13 +302,20 @@ public static class SettingsPanelStaticPrefabBuilder
 
     private static void BuildVolumeRowPrefab()
     {
-        GameObject root = new("VolumeRow", typeof(RectTransform));
+        GameObject root = new("VolumeRow", typeof(RectTransform), typeof(SettingsSliderRow));
         RectTransform rectTransform = root.GetComponent<RectTransform>();
         rectTransform.sizeDelta = new Vector2(620f, 54f);
-        CreateSliderRow(root.transform, "VolumeRow", "音量");
+        SetLayout(root, preferredWidth: 620f, preferredHeight: 62f);
+        RectTransform visualRoot = CreateVisualRoot(root.transform);
+        RectTransform row = CreateSliderRowBody(visualRoot, "VisualRow", "音量", out TextMeshProUGUI labelText, out Slider slider, out TextMeshProUGUI valueText);
+        row.anchorMin = Vector2.zero;
+        row.anchorMax = Vector2.one;
+        row.offsetMin = Vector2.zero;
+        row.offsetMax = Vector2.zero;
+        ConfigureSliderRow(root.GetComponent<SettingsSliderRow>(), labelText, slider, valueText);
         ApplyUiFontRecursively(root);
         SetLayerRecursively(root, UI_LAYER);
-        PrefabUtility.SaveAsPrefabAsset(root.transform.GetChild(0).gameObject, VOLUME_ROW_PREFAB_PATH);
+        PrefabUtility.SaveAsPrefabAsset(root, VOLUME_ROW_PREFAB_PATH);
         UnityEngine.Object.DestroyImmediate(root);
     }
 
@@ -504,66 +526,94 @@ public static class SettingsPanelStaticPrefabBuilder
         return section.gameObject;
     }
 
-    private static Button CreateTabButton(Transform parent, string objectName, string label, string icon)
+    private static Button CreateTabButton(Transform parent, string objectName, string label, Sprite iconSprite, Sprite arrowSprite, Sprite frameSprite)
     {
-        Button button = CreateButton(parent, objectName, string.Empty, 300f, 72f);
-        Image image = button.targetGraphic as Image;
-        if (image != null)
-        {
-            image.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Tabs/tab_default.png");
-            image.type = Image.Type.Sliced;
-            image.color = new Color(0.03f, 0.06f, 0.16f, 0.82f);
-        }
+        RectTransform rectTransform = CreateRect(objectName, parent);
+        rectTransform.sizeDelta = new Vector2(320f, 76f);
+        Image frameImage = rectTransform.gameObject.AddComponent<Image>();
+        frameImage.sprite = frameSprite;
+        frameImage.type = Image.Type.Simple;
+        frameImage.color = Color.white;
+        frameImage.raycastTarget = true;
+        Button button = rectTransform.gameObject.AddComponent<Button>();
+        button.targetGraphic = frameImage;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.92f, 1f, 1f);
+        colors.selectedColor = Color.white;
+        colors.pressedColor = new Color(0.86f, 0.72f, 0.92f, 1f);
+        colors.disabledColor = new Color(0.34f, 0.34f, 0.40f, 0.45f);
+        button.colors = colors;
 
         HorizontalLayoutGroup layout = button.gameObject.AddComponent<HorizontalLayoutGroup>();
-        layout.padding = new RectOffset(24, 18, 0, 0);
-        layout.spacing = 14f;
+        layout.padding = new RectOffset(26, 18, 0, 0);
+        layout.spacing = 16f;
         layout.childAlignment = TextAnchor.MiddleLeft;
         layout.childControlWidth = false;
         layout.childControlHeight = true;
         layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
 
-        TextMeshProUGUI iconText = CreateText("Icon", button.transform, icon, 28, FontStyles.Bold, TextAlignmentOptions.Center);
-        iconText.color = new Color(0.13f, 0.68f, 1f, 1f);
-        SetLayout(iconText.gameObject, preferredWidth: 42f, preferredHeight: 56f);
+        Image iconImage = CreateImage("Icon", button.transform, iconSprite);
+        iconImage.preserveAspect = true;
+        iconImage.color = TabDefaultColor;
+        SetLayout(iconImage.gameObject, preferredWidth: 46f, preferredHeight: 54f);
 
         TextMeshProUGUI labelText = CreateText("Label", button.transform, label, 24, FontStyles.Bold, TextAlignmentOptions.Left);
-        labelText.color = new Color(0.13f, 0.68f, 1f, 1f);
-        SetLayout(labelText.gameObject, preferredWidth: 178f, preferredHeight: 56f);
+        labelText.color = TabDefaultColor;
+        SetLayout(labelText.gameObject, preferredWidth: 178f, preferredHeight: 54f);
 
-        TextMeshProUGUI arrowText = CreateText("Arrow", button.transform, ">", 28, FontStyles.Bold, TextAlignmentOptions.Center);
-        arrowText.color = new Color(0.13f, 0.68f, 1f, 1f);
-        SetLayout(arrowText.gameObject, preferredWidth: 32f, preferredHeight: 56f);
+        Image arrowImage = CreateImage("Arrow", button.transform, arrowSprite);
+        arrowImage.preserveAspect = true;
+        arrowImage.color = TabDefaultColor;
+        SetLayout(arrowImage.gameObject, preferredWidth: 24f, preferredHeight: 54f);
+        SetLayout(button.gameObject, preferredWidth: 320f, preferredHeight: 76f);
         return button;
     }
 
     private static SettingsSliderRow CreateSliderRow(Transform parent, string objectName, string label)
     {
+        RectTransform row = CreateSliderRowBody(parent, objectName, label, out TextMeshProUGUI labelText, out Slider slider, out TextMeshProUGUI valueText);
+        SettingsSliderRow component = row.gameObject.AddComponent<SettingsSliderRow>();
+        ConfigureSliderRow(component, labelText, slider, valueText);
+        return component;
+    }
+
+    private static RectTransform CreateSliderRowBody(
+        Transform parent,
+        string objectName,
+        string label,
+        out TextMeshProUGUI labelText,
+        out Slider slider,
+        out TextMeshProUGUI valueText)
+    {
         RectTransform row = CreateRow(parent, objectName, 62f);
         Image rowImage = row.gameObject.AddComponent<Image>();
-        rowImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_row_neon.png");
+        rowImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
         rowImage.type = Image.Type.Sliced;
-        rowImage.color = new Color(0.02f, 0.03f, 0.09f, 0.38f);
+        rowImage.color = new Color(0.02f, 0.03f, 0.09f, 0.16f);
+        rowImage.raycastTarget = false;
 
-        TextMeshProUGUI labelText = CreateText("Label", row, label, 21, FontStyles.Normal, TextAlignmentOptions.Left);
+        labelText = CreateText("Label", row, label, 21, FontStyles.Normal, TextAlignmentOptions.Left);
         labelText.color = new Color(0.90f, 0.92f, 1f, 1f);
         SetLayout(labelText.gameObject, preferredWidth: 150f, preferredHeight: 46f);
 
-        Slider slider = CreateSlider(row);
+        slider = CreateSlider(row);
         SetLayout(slider.gameObject, preferredWidth: 360f, flexibleWidth: 1f, preferredHeight: 42f);
 
-        TextMeshProUGUI valueText = CreateText("Value", row, "100%", 21, FontStyles.Bold, TextAlignmentOptions.Right);
+        valueText = CreateText("Value", row, "100%", 21, FontStyles.Bold, TextAlignmentOptions.Right);
         valueText.color = new Color(0.95f, 0.95f, 1f, 1f);
         SetLayout(valueText.gameObject, preferredWidth: 82f, preferredHeight: 46f);
+        return row;
+    }
 
-        SettingsSliderRow component = row.gameObject.AddComponent<SettingsSliderRow>();
+    private static void ConfigureSliderRow(SettingsSliderRow component, TextMeshProUGUI labelText, Slider slider, TextMeshProUGUI valueText)
+    {
         SerializedObject serializedObject = new(component);
         SetObject(serializedObject, "labelText", labelText);
         SetObject(serializedObject, "slider", slider);
         SetObject(serializedObject, "valueText", valueText);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
-        return component;
     }
 
     private static SettingsOptionRow CreateOptionRow(Transform parent, string objectName, string label)
@@ -640,7 +690,9 @@ public static class SettingsPanelStaticPrefabBuilder
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        RectTransform panel = CreateRect("Panel", root.transform);
+        RectTransform visualRoot = CreateVisualRoot(root.transform);
+
+        RectTransform panel = CreateRect("Panel", visualRoot);
         panel.anchorMin = new Vector2(0.5f, 0.5f);
         panel.anchorMax = new Vector2(0.5f, 0.5f);
         panel.pivot = new Vector2(0.5f, 0.5f);
@@ -710,6 +762,10 @@ public static class SettingsPanelStaticPrefabBuilder
 
     private static Slider CreateSlider(Transform parent)
     {
+        Sprite sliderFrameSprite = ResolveRequiredSprite(NEON_SLIDER_PATH, "NeonSlider_0");
+        Sprite sliderFillSprite = ResolveRequiredSprite(NEON_SLIDER_PATH, "NeonSlider_1");
+        Sprite sliderHandleSprite = ResolveRequiredSprite(NEON_SLIDER_PATH, "NeonSlider_2");
+
         RectTransform root = CreateRect("Slider", parent);
         Slider slider = root.gameObject.AddComponent<Slider>();
         slider.minValue = 0f;
@@ -717,45 +773,88 @@ public static class SettingsPanelStaticPrefabBuilder
         slider.value = 1f;
 
         RectTransform background = CreateRect("Background", root);
-        background.anchorMin = new Vector2(0f, 0.42f);
-        background.anchorMax = new Vector2(1f, 0.58f);
+        background.anchorMin = new Vector2(0f, 0.22f);
+        background.anchorMax = new Vector2(1f, 0.78f);
         background.offsetMin = Vector2.zero;
         background.offsetMax = Vector2.zero;
         Image backgroundImage = background.gameObject.AddComponent<Image>();
-        backgroundImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Controls/slider_track.png");
-        backgroundImage.type = Image.Type.Sliced;
-        backgroundImage.color = new Color(0.10f, 0.02f, 0.18f, 0.95f);
+        backgroundImage.sprite = sliderFrameSprite;
+        backgroundImage.type = Image.Type.Simple;
+        backgroundImage.color = Color.white;
+        backgroundImage.raycastTarget = false;
 
         RectTransform fillArea = CreateRect("Fill Area", root);
-        fillArea.anchorMin = new Vector2(0f, 0.42f);
-        fillArea.anchorMax = new Vector2(1f, 0.58f);
-        fillArea.offsetMin = new Vector2(8f, 0f);
-        fillArea.offsetMax = new Vector2(-8f, 0f);
+        fillArea.anchorMin = new Vector2(0f, 0.27f);
+        fillArea.anchorMax = new Vector2(1f, 0.73f);
+        fillArea.offsetMin = new Vector2(15f, 0f);
+        fillArea.offsetMax = new Vector2(-15f, 0f);
         RectTransform fill = CreateRect("Fill", fillArea);
         fill.anchorMin = Vector2.zero;
         fill.anchorMax = Vector2.one;
         fill.offsetMin = Vector2.zero;
         fill.offsetMax = Vector2.zero;
         Image fillImage = fill.gameObject.AddComponent<Image>();
-        fillImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Controls/slider_fill.png");
+        fillImage.sprite = sliderFillSprite;
         fillImage.type = Image.Type.Sliced;
-        fillImage.color = new Color(1f, 0.18f, 0.68f, 1f);
+        fillImage.color = Color.white;
+        fillImage.raycastTarget = false;
 
         RectTransform handleArea = CreateRect("Handle Slide Area", root);
         handleArea.anchorMin = Vector2.zero;
         handleArea.anchorMax = Vector2.one;
-        handleArea.offsetMin = new Vector2(8f, 0f);
-        handleArea.offsetMax = new Vector2(-8f, 0f);
+        handleArea.offsetMin = new Vector2(13f, 0f);
+        handleArea.offsetMax = new Vector2(-13f, 0f);
         RectTransform handle = CreateRect("Handle", handleArea);
-        handle.sizeDelta = new Vector2(24f, 24f);
+        handle.sizeDelta = new Vector2(30f, 30f);
         Image handleImage = handle.gameObject.AddComponent<Image>();
-        handleImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-        handleImage.color = new Color(1f, 0.22f, 0.68f, 1f);
+        handleImage.sprite = sliderHandleSprite;
+        handleImage.type = Image.Type.Simple;
+        handleImage.preserveAspect = true;
+        handleImage.color = Color.white;
 
         slider.targetGraphic = handleImage;
         slider.fillRect = fill;
         slider.handleRect = handle;
         return slider;
+    }
+
+    private static RectTransform CreateVisualRoot(Transform parent)
+    {
+        RectTransform visualRoot = CreateRect("VisualRoot", parent);
+        visualRoot.anchorMin = Vector2.zero;
+        visualRoot.anchorMax = Vector2.one;
+        visualRoot.offsetMin = Vector2.zero;
+        visualRoot.offsetMax = Vector2.zero;
+        return visualRoot;
+    }
+
+    private static Image CreateImage(string objectName, Transform parent, Sprite sprite, bool raycastTarget = false)
+    {
+        RectTransform rectTransform = CreateRect(objectName, parent);
+        Image image = rectTransform.gameObject.AddComponent<Image>();
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.color = Color.white;
+        image.raycastTarget = raycastTarget;
+        return image;
+    }
+
+    private static Button CreateSpriteButton(Transform parent, string objectName, Sprite sprite, float width, float height)
+    {
+        Image image = CreateImage(objectName, parent, sprite, raycastTarget: true);
+        RectTransform rectTransform = image.rectTransform;
+        rectTransform.sizeDelta = new Vector2(width, height);
+        Button button = rectTransform.gameObject.AddComponent<Button>();
+        button.targetGraphic = image;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.82f, 0.96f, 1f);
+        colors.selectedColor = Color.white;
+        colors.pressedColor = new Color(0.86f, 0.62f, 0.80f, 1f);
+        colors.disabledColor = new Color(0.32f, 0.32f, 0.36f, 0.45f);
+        button.colors = colors;
+        SetLayout(rectTransform.gameObject, preferredWidth: width, preferredHeight: height);
+        return button;
     }
 
     private static Button CreateButton(Transform parent, string objectName, string label, float width, float height)
@@ -820,10 +919,41 @@ public static class SettingsPanelStaticPrefabBuilder
         }
     }
 
-    private static Sprite ResolveSprite(string assetPath)
+    private static Sprite ResolveRequiredSprite(string assetPath, string spriteName = null)
     {
-        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        Sprite sprite = LoadSprite(assetPath, spriteName);
+        if (sprite == null)
+        {
+            string suffix = string.IsNullOrWhiteSpace(spriteName) ? string.Empty : $" ({spriteName})";
+            throw new MissingReferenceException($"Missing required settings UI sprite '{assetPath}'{suffix}.");
+        }
+
+        return sprite;
+    }
+
+    private static Sprite ResolveSprite(string assetPath, string spriteName = null)
+    {
+        Sprite sprite = LoadSprite(assetPath, spriteName);
         return sprite != null ? sprite : AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+    }
+
+    private static Sprite LoadSprite(string assetPath, string spriteName)
+    {
+        if (string.IsNullOrWhiteSpace(spriteName))
+        {
+            return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        }
+
+        UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] is Sprite sprite && string.Equals(sprite.name, spriteName, StringComparison.Ordinal))
+            {
+                return sprite;
+            }
+        }
+
+        return null;
     }
 
     private static void ApplyUiFontRecursively(GameObject root)

@@ -42,6 +42,10 @@ public class SettingsPanelManager : PopupBase
 
     [Header("导航")]
     [SerializeField] private TextMeshProUGUI sectionTitle;
+    [SerializeField] private Sprite tabDefaultSprite;
+    [SerializeField] private Sprite tabSelectedSprite;
+    [SerializeField] private Color tabDefaultContentColor = new(0.13f, 0.68f, 1f, 1f);
+    [SerializeField] private Color tabSelectedContentColor = new(1f, 0.22f, 0.68f, 1f);
     [SerializeField] private Button audioTabButton;
     [SerializeField] private Button displayTabButton;
     [SerializeField] private Button controlTabButton;
@@ -953,7 +957,7 @@ public class SettingsPanelManager : PopupBase
         button.interactable = available;
     }
 
-    private static void SetTabSelected(Button button, bool selected)
+    private void SetTabSelected(Button button, bool selected)
     {
         if (button == null)
         {
@@ -963,9 +967,40 @@ public class SettingsPanelManager : PopupBase
         Image image = button.targetGraphic as Image;
         if (image != null)
         {
-            image.color = selected
-                ? new Color(1f, 0.17f, 0.68f, 0.92f)
-                : new Color(0.03f, 0.06f, 0.16f, 0.82f);
+            Sprite sprite = selected ? tabSelectedSprite : tabDefaultSprite;
+            if (sprite != null)
+            {
+                image.sprite = sprite;
+                image.color = Color.white;
+            }
+            else
+            {
+                image.color = selected
+                    ? new Color(1f, 0.17f, 0.68f, 0.92f)
+                    : new Color(0.03f, 0.06f, 0.16f, 0.82f);
+            }
+        }
+
+        ApplyTabContentColor(button, selected ? tabSelectedContentColor : tabDefaultContentColor);
+    }
+
+    private static void ApplyTabContentColor(Button button, Color color)
+    {
+        TextMeshProUGUI[] texts = button.GetComponentsInChildren<TextMeshProUGUI>(true);
+        for (int i = 0; i < texts.Length; i++)
+        {
+            texts[i].color = color;
+        }
+
+        Image[] images = button.GetComponentsInChildren<Image>(true);
+        for (int i = 0; i < images.Length; i++)
+        {
+            if (button.targetGraphic != null && ReferenceEquals(images[i], button.targetGraphic))
+            {
+                continue;
+            }
+
+            images[i].color = color;
         }
     }
 
