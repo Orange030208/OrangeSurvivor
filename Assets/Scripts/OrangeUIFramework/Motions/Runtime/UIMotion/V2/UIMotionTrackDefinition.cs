@@ -80,14 +80,16 @@ public abstract class UIMotionTrackDefinition
             return null;
         }
 
-        // 用外层 Sequence 统一处理 Track 自身延迟和 Ease，让具体 Track 只生成属性 Tween。
-        Sequence wrapper = DOTween.Sequence();
-        if (StartDelay > 0f)
+        tween.SetEase(Ease);
+        if (StartDelay <= 0f)
         {
-            wrapper.AppendInterval(StartDelay);
+            return tween;
         }
 
-        wrapper.Append(tween.SetEase(Ease));
+        // 只有配置了 Track 自身延迟时才需要 wrapper，避免零延迟采样/播放额外占用 Sequence 容量。
+        Sequence wrapper = DOTween.Sequence();
+        wrapper.AppendInterval(StartDelay);
+        wrapper.Append(tween);
         return wrapper;
     }
 

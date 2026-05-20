@@ -213,8 +213,18 @@ namespace Orange.UIFramework
                 return null;
             }
 
+            if (context.IsImmediate)
+            {
+                for (int i = 0; i < tracks.Count; i++)
+                {
+                    tracks[i]?.CreateTween(targets, context);
+                }
+
+                return null;
+            }
+
             Sequence sequence = DOTween.Sequence();
-            if (context.Delay > 0f && context.PlaybackMode == UIMotionPlaybackMode.PlayToEnd)
+            if (context.Delay > 0f)
             {
                 sequence.AppendInterval(context.Delay);
             }
@@ -229,12 +239,6 @@ namespace Orange.UIFramework
                 }
 
                 Tween trackTween = track.CreateTween(targets, context);
-                // Immediate 模式下 Track 已经在 CreateTween 内完成采样写值，不需要加入 DOTween Sequence。
-                if (context.IsImmediate)
-                {
-                    continue;
-                }
-
                 if (trackTween == null)
                 {
                     continue;
@@ -252,7 +256,7 @@ namespace Orange.UIFramework
                 }
             }
 
-            if (context.IsImmediate || !hasTween)
+            if (!hasTween)
             {
                 sequence.Kill();
                 return null;
