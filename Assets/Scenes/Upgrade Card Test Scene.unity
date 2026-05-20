@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 76cf6f97e1b841d8a2dcb758aebcdb3b, type: 2}
   catalog: {fileID: 11400000, guid: 0cb15e6d9ea54f2c98b2b58fb1e8d81b, type: 2}
+  uiCamera: {fileID: 943654513}
   existingRootCanvas: {fileID: 0}
 --- !u!4 &450740443
 Transform:

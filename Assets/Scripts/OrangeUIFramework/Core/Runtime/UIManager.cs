@@ -16,6 +16,7 @@ namespace Orange.UIFramework
         [Header("配置")]
         [SerializeField] private UIFrameworkSettings settings;
         [SerializeField] private ViewCatalog catalog;
+        [SerializeField] private Camera uiCamera;
         [SerializeField] private Canvas existingRootCanvas;
 
         private readonly Dictionary<ViewLayer, LayerRuntime> layersByType = new Dictionary<ViewLayer, LayerRuntime>();
@@ -1535,7 +1536,7 @@ namespace Orange.UIFramework
                 rootGraphicRaycaster = rootCanvas.gameObject.AddComponent<GraphicRaycaster>();
             }
 
-            ApplyCanvasProfile(rootCanvas, rootCanvasScaler, canvasProfile);
+            ApplyCanvasProfile(rootCanvas, rootCanvasScaler, canvasProfile, ResolveUICamera(canvasProfile));
             rootCanvas.gameObject.name = settings.RootName;
 
             layersRoot = EnsureChildRect(rootCanvas.transform, "Layers");
@@ -1553,14 +1554,39 @@ namespace Orange.UIFramework
             return root.AddComponent<Canvas>();
         }
 
-        private static void ApplyCanvasProfile(Canvas canvas, CanvasScaler scaler, CanvasProfile profile)
+        private Camera ResolveUICamera(CanvasProfile profile)
+        {
+            if (profile.RenderMode != RenderMode.ScreenSpaceCamera)
+            {
+                return null;
+            }
+
+            if (uiCamera != null)
+            {
+                return uiCamera;
+            }
+
+            if (rootCanvas != null && rootCanvas.worldCamera != null)
+            {
+                return rootCanvas.worldCamera;
+            }
+
+            if (profile.UICamera != null)
+            {
+                return profile.UICamera;
+            }
+
+            throw new MissingReferenceException($"UIManager '{name}' uses ScreenSpaceCamera but has no UI Camera assigned. Assign uiCamera on the scene UIManager, or bind worldCamera on the existing root Canvas.");
+        }
+
+        private static void ApplyCanvasProfile(Canvas canvas, CanvasScaler scaler, CanvasProfile profile, Camera resolvedUICamera)
         {
             canvas.renderMode = profile.RenderMode;
             canvas.sortingOrder = profile.RootSortingOrder;
 
             if (profile.RenderMode == RenderMode.ScreenSpaceCamera)
             {
-                canvas.worldCamera = profile.UICamera;
+                canvas.worldCamera = resolvedUICamera;
                 canvas.planeDistance = profile.PlaneDistance;
             }
             else

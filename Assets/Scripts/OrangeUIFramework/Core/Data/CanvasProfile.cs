@@ -27,11 +27,6 @@ namespace Orange.UIFramework
         public ValidationReport Validate()
         {
             ValidationReport report = new ValidationReport();
-            if (renderMode == RenderMode.ScreenSpaceCamera && uiCamera == null)
-            {
-                report.AddError($"CanvasProfile '{name}' uses ScreenSpaceCamera but uiCamera is not assigned.");
-            }
-
             if (renderMode == RenderMode.WorldSpace)
             {
                 report.AddError($"CanvasProfile '{name}' uses WorldSpace, but OrangeUIFramework only supports ScreenSpaceOverlay and ScreenSpaceCamera.");

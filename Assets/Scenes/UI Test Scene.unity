@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 76cf6f97e1b841d8a2dcb758aebcdb3b, type: 2}
   catalog: {fileID: 11400000, guid: 0cb15e6d9ea54f2c98b2b58fb1e8d81b, type: 2}
+  uiCamera: {fileID: 1760944589}
   existingRootCanvas: {fileID: 459962035}
 --- !u!4 &138867724
 Transform:
@@ -237,8 +238,8 @@ Canvas:
   m_GameObject: {fileID: 459962032}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1760944589}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
