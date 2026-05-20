@@ -11,7 +11,8 @@ public class GamingUIPage : PageBase
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI currencyText;
-    [SerializeField] private CharacterStatusPanel characterStatusPanel;
+    [SerializeField] private PlayerHealthPanel playerHealthPanel;
+    [SerializeField] private PlayerExperiencePanel playerExperiencePanel;
     [SerializeField] private Button menuButton;
     [SerializeField] private MobileJoystick moveJoystick;
     [SerializeField] private BuffBarUI buffBarUI;
@@ -125,14 +126,15 @@ public class GamingUIPage : PageBase
         }
 
         UnbindPlayerLevel();
-        characterStatusPanel.Unbind();
+        playerHealthPanel.Unbind();
+        playerExperiencePanel.Unbind();
         buffBarUI.EndSession();
     }
 
     private void BindPlayerHud(Player player)
     {
         UnbindPlayerLevel();
-        characterStatusPanel.BindPlayer(player);
+        playerHealthPanel.BindPlayer(player);
         buffBarUI.BeginSession(player, OwnerUIManager);
 
         playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
@@ -168,9 +170,8 @@ public class GamingUIPage : PageBase
 
     private void OnPlayerLevelSnapshotChanged(PlayerLevelSnapshot snapshot)
     {
-        characterStatusPanel.SetLevel(snapshot.CurrentLevel);
-        characterStatusPanel.SetXp(snapshot.CurrentXP, snapshot.RequiredXP);
-        characterStatusPanel.SetUpgradePoint(snapshot.UnspentUpgradePoints);
+        playerExperiencePanel.SetLevel(snapshot.CurrentLevel);
+        playerExperiencePanel.SetExperience(snapshot.CurrentXP, snapshot.RequiredXP);
     }
 
     private void OnWaveStarted(WaveStartedEvent eventData)
@@ -221,9 +222,14 @@ public class GamingUIPage : PageBase
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing timer text.");
         }
 
-        if (characterStatusPanel == null)
+        if (playerHealthPanel == null)
         {
-            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing character status panel.");
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing player health panel.");
+        }
+
+        if (playerExperiencePanel == null)
+        {
+            throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing player experience panel.");
         }
 
         if (currencyText == null)
