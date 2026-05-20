@@ -16,7 +16,8 @@ public sealed class GameContentCatalogSO : ScriptableObject
     [Header("玩法列表")]
     [SerializeField] private WeaponDataListSO weaponDataList;
     [SerializeField] private AccessoryDataListSO accessoryDataList;
-    [SerializeField] private CharacterDataSO[] characters = System.Array.Empty<CharacterDataSO>();
+    [SerializeField] private CharacterDataSO defaultCharacter;
+    [SerializeField] private UpgradeCardSO[] starterCards = System.Array.Empty<UpgradeCardSO>();
 
     [Header("玩法配置")]
     [SerializeField] private PlayerLevelConfigSO playerLevelConfig;
@@ -51,7 +52,8 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ? accessoryDataList.Accessories
         : System.Array.Empty<AccessoryDataSO>();
 
-    public IReadOnlyList<CharacterDataSO> Characters => characters ?? System.Array.Empty<CharacterDataSO>();
+    public CharacterDataSO DefaultCharacter => defaultCharacter;
+    public IReadOnlyList<UpgradeCardSO> StarterCards => starterCards ?? System.Array.Empty<UpgradeCardSO>();
     public Player DefaultPlayerPrefab => defaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => defaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => playerLevelConfig;
@@ -115,22 +117,22 @@ public sealed class GameContentCatalogSO : ScriptableObject
             errors.Add($"{nameof(GameContentCatalogSO)} '{name}' has no accessories.");
         }
 
-        if (Characters.Count == 0)
+        if (DefaultCharacter == null)
         {
-            errors.Add($"{nameof(GameContentCatalogSO)} '{name}' has no characters.");
+            errors.Add($"{nameof(GameContentCatalogSO)} '{name}' is missing default character.");
         }
 
         ValidateNoDuplicates(Weapons, "weapon", errors);
         ValidateNoDuplicates(Accessories, "accessory", errors);
-        ValidateNoDuplicates(Characters, "character", errors);
+        ValidateNoDuplicates(StarterCards, "starter card", errors);
         return errors.Count == initialCount;
     }
 
     private void OnValidate()
     {
-        if (characters == null)
+        if (starterCards == null)
         {
-            characters = System.Array.Empty<CharacterDataSO>();
+            starterCards = System.Array.Empty<UpgradeCardSO>();
         }
 
         // OnValidate 只打 warning，避免编辑资产时打断流程；真正进入运行时由 Bootstrap 打 error。

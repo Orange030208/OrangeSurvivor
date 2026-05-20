@@ -13,9 +13,10 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    private const string STARTER_CARD_SELECTION_PAUSE_SOURCE_ID = "starterCardSelection";
+
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
-    [SerializeField] private CharacterSelectionManager characterSelectionManager;
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private WaveManager waveManager;
     [SerializeField] private EnemyRegistry enemyRegistry;
@@ -34,6 +35,9 @@ public class GameManager : MonoBehaviour
     private bool isSceneReloading;
     private bool isWaveEndFlowRunning;
     private bool isEnteringPostWaveStateAfterCleanup;
+    private bool hasShownStarterCardSelection;
+    private bool shouldRunStarterCardSelectionAfterGamePageOpened;
+    private bool shouldStartFirstWaveAfterGamePageOpened;
 
     public GameState CurrentGameState => currentGameState;
 
@@ -42,8 +46,6 @@ public class GameManager : MonoBehaviour
         ResolveSceneReferences();
 
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Subscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
-        GameEventBus.Subscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Subscribe<MenuStartClickedEvent>(OnMenuStartClicked);
         GameEventBus.Subscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
         GameEventBus.Subscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
@@ -62,8 +64,6 @@ public class GameManager : MonoBehaviour
     {
         stateTransitionVersion++;
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Unsubscribe<CharacterSelectionCompletedEvent>(OnCharacterSelectionCompleted);
-        GameEventBus.Unsubscribe<CharacterSelectionBackClickedEvent>(OnCharacterSelectionBackClicked);
         GameEventBus.Unsubscribe<MenuStartClickedEvent>(OnMenuStartClicked);
         GameEventBus.Unsubscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
         GameEventBus.Unsubscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
@@ -111,26 +111,6 @@ public class GameManager : MonoBehaviour
         StartWaveEndFlowAsync(eventData).Forget();
     }
 
-    private void OnCharacterSelectionCompleted()
-    {
-        if (currentGameState != GameState.CharacterSelection)
-        {
-            return;
-        }
-
-        TransitionToState(GameState.Game);
-    }
-
-    private void OnCharacterSelectionBackClicked()
-    {
-        if (currentGameState != GameState.CharacterSelection)
-        {
-            return;
-        }
-
-        TransitionToState(GameState.Menu);
-    }
-
     private void OnMenuStartClicked()
     {
         if (currentGameState != GameState.Menu)
@@ -138,7 +118,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        TransitionToState(GameState.CharacterSelection);
+        TransitionToState(GameState.Game);
     }
 
     private void OnShopContinueClicked()
@@ -200,12 +180,20 @@ public class GameManager : MonoBehaviour
             }
 
             await OpenStatePageAsync(currentGameState, cancellationToken);
+            if (!IsCurrentTransition(transitionVersion))
+            {
+                return;
+            }
+
+            await RunPostStatePageOpenedAsync(currentGameState, transitionVersion, cancellationToken);
         }
         catch (OperationCanceledException)
         {
+            ResetStarterCardSelectionTransitionState();
         }
         catch (Exception exception)
         {
+            ResetStarterCardSelectionTransitionState();
             Debug.LogException(exception, this);
         }
     }
@@ -309,6 +297,13 @@ public class GameManager : MonoBehaviour
             StopCurrentWave();
         }
 
+        if (newState != GameState.Game)
+        {
+            shouldRunStarterCardSelectionAfterGamePageOpened = false;
+            shouldStartFirstWaveAfterGamePageOpened = false;
+            ReleaseSimulationPause(STARTER_CARD_SELECTION_PAUSE_SOURCE_ID);
+        }
+
         if (newState == GameState.Shop && !isEnteringPostWaveStateAfterCleanup)
         {
             DefeatAllTrackedEnemies();
@@ -352,9 +347,6 @@ public class GameManager : MonoBehaviour
             case GameState.Menu:
                 AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Menu);
                 break;
-            case GameState.CharacterSelection:
-                AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.CharacterSelection);
-                break;
             case GameState.Game:
                 AudioPlaybackBridge.RequestPlayMusic(AudioBgmKey.Gameplay);
                 break;
@@ -390,7 +382,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        StartFirstWave();
+        if (!hasShownStarterCardSelection)
+        {
+            hasShownStarterCardSelection = true;
+            shouldRunStarterCardSelectionAfterGamePageOpened = true;
+            return;
+        }
+
+        shouldStartFirstWaveAfterGamePageOpened = true;
     }
 
     private async UniTaskVoid StartWaveEndFlowAsync(WaveCompletedEvent completedEvent)
@@ -496,9 +495,6 @@ public class GameManager : MonoBehaviour
             case GameState.Menu:
                 await ClosePageAsync<MenuUIPage>(cancellationToken);
                 break;
-            case GameState.CharacterSelection:
-                await ClosePageAsync<CharacterSelectUIPage>(cancellationToken);
-                break;
             case GameState.Game:
                 await ClosePageAsync<GamingUIPage>(cancellationToken);
                 break;
@@ -520,11 +516,6 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Menu:
                 await uiManager.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
-                break;
-            case GameState.CharacterSelection:
-                await uiManager.OpenPageAsync<CharacterSelectUIPage>(
-                    characterSelectionManager,
-                    cancellationToken);
                 break;
             case GameState.Game:
                 await uiManager.OpenPageAsync<GamingUIPage>(
@@ -674,11 +665,6 @@ public class GameManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
         }
 
-        if (characterSelectionManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(CharacterSelectionManager)} reference.");
-        }
-
         if (waveManager == null)
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(WaveManager)} reference.");
@@ -696,6 +682,63 @@ public class GameManager : MonoBehaviour
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
         }
+    }
+
+    private async UniTask RunPostStatePageOpenedAsync(
+        GameState openedState,
+        int transitionVersion,
+        CancellationToken cancellationToken)
+    {
+        if (openedState != GameState.Game)
+        {
+            return;
+        }
+
+        if (shouldRunStarterCardSelectionAfterGamePageOpened)
+        {
+            shouldRunStarterCardSelectionAfterGamePageOpened = false;
+            RequestSimulationPause(STARTER_CARD_SELECTION_PAUSE_SOURCE_ID);
+            try
+            {
+                await RunStarterCardSelectionAsync(cancellationToken);
+            }
+            finally
+            {
+                ReleaseSimulationPause(STARTER_CARD_SELECTION_PAUSE_SOURCE_ID);
+            }
+
+            if (IsCurrentTransition(transitionVersion) && currentGameState == GameState.Game)
+            {
+                StartFirstWave();
+            }
+
+            return;
+        }
+
+        if (shouldStartFirstWaveAfterGamePageOpened)
+        {
+            shouldStartFirstWaveAfterGamePageOpened = false;
+            StartFirstWave();
+        }
+    }
+
+    private void ResetStarterCardSelectionTransitionState()
+    {
+        shouldRunStarterCardSelectionAfterGamePageOpened = false;
+        shouldStartFirstWaveAfterGamePageOpened = false;
+        ReleaseSimulationPause(STARTER_CARD_SELECTION_PAUSE_SOURCE_ID);
+    }
+
+    private async UniTask RunStarterCardSelectionAsync(CancellationToken cancellationToken)
+    {
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            Debug.LogWarning($"{nameof(GameManager)} could not resolve starter cards because GameContentRuntime is unavailable.", this);
+            return;
+        }
+
+        StarterCardSelectionFlow flow = new StarterCardSelectionFlow(uiManager, player, this);
+        await flow.RunAsync(provider.StarterCards, cancellationToken);
     }
 
     private void EnsureMapGenerated()
@@ -866,7 +909,6 @@ public enum GameState
 {
     None,
     Menu,
-    CharacterSelection,
     Game,
     GameOver,
     StageComplete,

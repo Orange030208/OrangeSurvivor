@@ -434,6 +434,8 @@ public static class GameContentCatalogBuildUtility
         StageDefinitionSO stageDefinition = LoadRequired<StageDefinitionSO>(GameContentAssetPaths.StageDefinition);
         SetObject(serializedObject, "weaponDataList", LoadRequired<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList));
         SetObject(serializedObject, "accessoryDataList", LoadRequired<AccessoryDataListSO>(GameContentAssetPaths.AccessoryDataList));
+        SetDefaultCharacter(serializedObject);
+        SetStarterCards(serializedObject);
         SetObject(serializedObject, "playerLevelConfig", LoadRequired<PlayerLevelConfigSO>(GameContentAssetPaths.PlayerLevelConfig));
         SetObject(serializedObject, "runProgressionProfile", GetOrCreateRunProgressionProfile());
         SetObject(serializedObject, "upgradeCardPool", LoadRequired<ContentPoolSO>(UpgradeCardPoolPath));
@@ -451,13 +453,18 @@ public static class GameContentCatalogBuildUtility
         SetObject(serializedObject, "itemQualityVisualConfig", LoadRequired<ItemQualityVisualConfigSO>(GameContentAssetPaths.ItemQualityVisualConfig));
         SetObject(serializedObject, "damageTextVisualConfig", GetOrCreateDamageTextVisualConfig());
         SetObject(serializedObject, "itemQualityIconEffectMaterial", LoadRequired<Material>(GameContentAssetPaths.ItemQualityIconEffectMaterial));
-        SetCharacters(serializedObject);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(catalog);
     }
 
-    private static void SetCharacters(SerializedObject serializedObject)
+    private static void SetDefaultCharacter(SerializedObject serializedObject)
     {
+        SerializedProperty defaultCharacterProperty = serializedObject.FindProperty("defaultCharacter");
+        if (defaultCharacterProperty != null && defaultCharacterProperty.objectReferenceValue != null)
+        {
+            return;
+        }
+
         string[] searchFolders = GetExistingFolders(
             GameContentAssetPaths.CharactersData);
         string[] guids = AssetDatabase.FindAssets(
@@ -475,11 +482,44 @@ public static class GameContentCatalogBuildUtility
         }
 
         characters.Sort((left, right) => string.Compare(left.name, right.name, System.StringComparison.Ordinal));
-        SerializedProperty property = serializedObject.FindProperty("characters");
-        property.arraySize = characters.Count;
-        for (int i = 0; i < characters.Count; i++)
+        if (defaultCharacterProperty != null && characters.Count > 0)
         {
-            property.GetArrayElementAtIndex(i).objectReferenceValue = characters[i];
+            defaultCharacterProperty.objectReferenceValue = characters[0];
+        }
+    }
+
+    private static void SetStarterCards(SerializedObject serializedObject)
+    {
+        SerializedProperty property = serializedObject.FindProperty("starterCards");
+        if (property == null || property.arraySize > 0)
+        {
+            return;
+        }
+
+        string[] starterCardNames =
+        {
+            "Upgrade_Damage_Common",
+            "Upgrade_MaxHealth_Common",
+            "Upgrade_MoveSpeed_Common",
+            "Upgrade_AttackSpeed_Common"
+        };
+
+        List<UpgradeCardSO> starterCards = new();
+        for (int i = 0; i < starterCardNames.Length; i++)
+        {
+            UpgradeCardSO card = LoadFirstAsset<UpgradeCardSO>(
+                GameContentAssetPaths.UpgradeCards,
+                starterCardNames[i]);
+            if (card != null)
+            {
+                starterCards.Add(card);
+            }
+        }
+
+        property.arraySize = starterCards.Count;
+        for (int i = 0; i < starterCards.Count; i++)
+        {
+            property.GetArrayElementAtIndex(i).objectReferenceValue = starterCards[i];
         }
     }
 
@@ -512,6 +552,28 @@ public static class GameContentCatalogBuildUtility
         }
 
         return asset;
+    }
+
+    private static T LoadFirstAsset<T>(string folderPath, string assetName) where T : UnityEngine.Object
+    {
+        if (string.IsNullOrWhiteSpace(folderPath) || string.IsNullOrWhiteSpace(assetName))
+        {
+            return null;
+        }
+
+        string[] searchFolders = GetExistingFolders(folderPath);
+        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name} {assetName}", searchFolders);
+        for (int i = 0; i < guids.Length; i++)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+            if (Path.GetFileNameWithoutExtension(path) == assetName)
+            {
+                return AssetDatabase.LoadAssetAtPath<T>(path);
+            }
+        }
+
+        Debug.LogWarning($"Could not find asset '{assetName}' of type {typeof(T).Name} in {folderPath}.");
+        return null;
     }
 
     private static T LoadRequiredPrefabComponent<T>(string path) where T : Component

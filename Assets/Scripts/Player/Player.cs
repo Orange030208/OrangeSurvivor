@@ -16,41 +16,41 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
 {
     [Header("组件")]
     private Rigidbody2D rb;
-    private PlayerLevel playerLevel;
     private PlayerController playerController;
-    private FeatureHost featureHost;
-    private WeaponsHolder weaponsHolder;
-    private AccessoryManager accessoryManager;
-    private PlayerAnimationController playerAnimationController;
     private PropertiesManager propertiesManager;
-    [SerializeField]private CharacterDataSO characterData;
+    [SerializeField] private CharacterDataSO characterData;
 
     public override IMovable MoveComponent => playerController;
     public Rigidbody2D Rb => rb;
     public PropertiesManager PropertiesManager => propertiesManager;
 
     public CharacterDataSO CharacterData => characterData;
-    public BasePropGroupSO BasePropsGroup => characterData.BasePropsAsset;
-    public IReadOnlyList<WeaponEntry> InitialWeapons => characterData.InitialWeapons;
+    public BasePropGroupSO BasePropsGroup => characterData != null ? characterData.BasePropsAsset : null;
+    public IReadOnlyList<WeaponEntry> InitialWeapons => characterData != null
+        ? characterData.InitialWeapons
+        : System.Array.Empty<WeaponEntry>();
 
-    public IReadOnlyList<AccessoryDataSO> InitialAccessories => characterData.InitialAccessories;
+    public IReadOnlyList<AccessoryDataSO> InitialAccessories => characterData != null
+        ? characterData.InitialAccessories
+        : System.Array.Empty<AccessoryDataSO>();
     
-    public IReadOnlyList<PropModifierData> PropModifierDataList => characterData.ExtraProps;
+    public IReadOnlyList<PropModifierData> PropModifierDataList => characterData != null
+        ? characterData.ExtraProps
+        : System.Array.Empty<PropModifierData>();
 
-    public IReadOnlyList<FeatureBase> FeatureEffects => characterData.SpecialFeatures;
+    public IReadOnlyList<FeatureBase> FeatureEffects => characterData != null
+        ? characterData.SpecialFeatures
+        : System.Array.Empty<FeatureBase>();
 
     private void Awake()
     {
+        ResolveDefaultCharacter();
         InitComponentReferences();
-    }
-
-    private void OnEnable()
-    {
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void Start()
     {
+        ResolveDefaultCharacter();
         InitializeComponent();
         EnableAllComponents();
     }
@@ -67,39 +67,32 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         DisableAllComponents();
     }
 
     private void InitComponentReferences()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerLevel = GetComponent<PlayerLevel>();
         propertiesManager = GetComponent<PropertiesManager>();
         playerController = GetComponent<PlayerController>();
-        featureHost = GetComponent<FeatureHost>();
-        weaponsHolder = GetComponent<WeaponsHolder>();
-        accessoryManager = GetComponent<AccessoryManager>();
-        playerAnimationController = GetComponent<PlayerAnimationController>();
     }
 
-    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    private void ResolveDefaultCharacter()
     {
-        if (eventData.NewState != GameState.Game)
+        if (characterData != null)
         {
             return;
         }
 
-        CharacterSelectionManager characterSelectionManager = CharacterSelectionManager.Instance;
-        if (characterSelectionManager == null)
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
             return;
         }
 
-        CharacterDataSO selectedCharacter = characterSelectionManager.SelectedCharacter;
-        if (selectedCharacter != null)
+        characterData = provider.DefaultCharacter;
+        if (characterData == null)
         {
-            characterData = selectedCharacter;
+            Debug.LogError($"{nameof(Player)} '{name}' requires {nameof(GameContentCatalogSO)} default character.", this);
         }
     }
 }

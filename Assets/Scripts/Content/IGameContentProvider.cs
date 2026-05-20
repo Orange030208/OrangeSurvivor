@@ -9,7 +9,8 @@ public interface IGameContentProvider
 {
     IReadOnlyList<WeaponDataSO> Weapons { get; }
     IReadOnlyList<AccessoryDataSO> Accessories { get; }
-    IReadOnlyList<CharacterDataSO> Characters { get; }
+    CharacterDataSO DefaultCharacter { get; }
+    IReadOnlyList<UpgradeCardSO> StarterCards { get; }
     Player DefaultPlayerPrefab { get; }
     Weapon DefaultWeaponPrefab { get; }
     PlayerLevelConfigSO PlayerLevelConfig { get; }

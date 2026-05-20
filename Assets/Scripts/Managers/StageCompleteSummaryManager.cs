@@ -120,12 +120,15 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void CaptureLoadoutSummary()
     {
-        CharacterDataSO selectedCharacter = CharacterSelectionManager.Instance != null
-            ? CharacterSelectionManager.Instance.SelectedCharacter
-            : null;
-        characterName = selectedCharacter != null ? selectedCharacter.CharacterName : string.Empty;
-
         Player player = FindFirstObjectByType<Player>();
+        CharacterDataSO characterData = player != null ? player.CharacterData : null;
+        if (characterData == null && GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            characterData = provider.DefaultCharacter;
+        }
+
+        characterName = characterData != null ? characterData.CharacterName : string.Empty;
+
         if (player == null)
         {
             return;

@@ -7,7 +7,6 @@ public enum AudioBgmKey
 {
     None = 0,
     Menu = 1,
-    CharacterSelection = 2,
     Gameplay = 3,
     GameOver = 4,
     StageComplete = 5,

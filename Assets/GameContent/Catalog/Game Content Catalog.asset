@@ -14,13 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponDataList: {fileID: 11400000, guid: 0bda4080a3c62b641bf417ee6ca2543c, type: 2}
   accessoryDataList: {fileID: 11400000, guid: 6400ac5497a581e4c85acfb9a8c1f6b4, type: 2}
-  characters:
-  - {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
-  - {fileID: 11400000, guid: 3b0f6b6eac555f5488aab965c25e198f, type: 2}
-  - {fileID: 11400000, guid: 779feb7f8e664875ac8106fe82665d12, type: 2}
-  - {fileID: 11400000, guid: d0775b4e05db4d8aa9934a7b11c3a409, type: 2}
-  - {fileID: 11400000, guid: 861864ed7a9d49b0a70337c384fb154c, type: 2}
-  - {fileID: 11400000, guid: e0233e2cc11d60443b3a36c67fa669d6, type: 2}
+  defaultCharacter: {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
+  starterCards:
+  - {fileID: 11400000, guid: 027eeae3025d25a4bb4e652bd9598ec3, type: 2}
+  - {fileID: 11400000, guid: 1bb4450abfe96134abc58311d9955a07, type: 2}
+  - {fileID: 11400000, guid: d56627b7db7093548beeebabe386547e, type: 2}
+  - {fileID: 11400000, guid: c74b28dfabca48e47847e209174ccbbe, type: 2}
   playerLevelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
   runProgressionProfile: {fileID: 11400000, guid: 4cd17ac9c4b5df14fb25d788d036682f, type: 2}
   upgradeCardPool: {fileID: 11400000, guid: 91899d46f59ffe341b884ff6f41757bb, type: 2}

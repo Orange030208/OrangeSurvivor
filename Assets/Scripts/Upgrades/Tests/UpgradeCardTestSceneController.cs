@@ -9,7 +9,6 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private Player playerPrefab;
-    [SerializeField] private CharacterDataSO testCharacterData;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
     [SerializeField] private int initialUpgradePoints = 3;
     [SerializeField] private int testWaveNumber = 3;
@@ -66,11 +65,20 @@ public class UpgradeCardTestSceneController : MonoBehaviour
 
     private void ConfigurePlayerForUpgradeTest(Player targetPlayer)
     {
+        CharacterDataSO characterData = GameContentRuntime.Provider.DefaultCharacter;
+        if (characterData == null)
+        {
+            Debug.LogError(
+                $"[{nameof(UpgradeCardTestSceneController)}] Missing default character in {nameof(GameContentCatalogSO)}.",
+                this);
+            return;
+        }
+
         System.Type type = typeof(Player);
         FieldInfo field = type.GetField(
             "characterData",
             BindingFlags.Instance | BindingFlags.NonPublic);
-        field.SetValue(targetPlayer, testCharacterData);
+        field.SetValue(targetPlayer, characterData);
     }
 
     private void EnsureManagers()

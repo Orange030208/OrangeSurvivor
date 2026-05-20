@@ -331,7 +331,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1363638961}
   playerPrefab: {fileID: 5359458450767791847, guid: ea5c772f6af54a94da3a5db03f238ad2, type: 3}
-  testCharacterData: {fileID: 11400000, guid: 3636e87700f1697498fd9243ec6a594d, type: 2}
   playerSpawnPosition: {x: 0, y: 0, z: 0}
   initialUpgradePoints: 272
   testWaveNumber: 15
@@ -398,7 +397,7 @@ MonoBehaviour:
   uiManager: {fileID: 450740442}
   player: {fileID: 0}
   mapGenerator: {fileID: 0}
-  initialGameState: 3
+  initialGameState: 2
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1553790860
 GameObject:

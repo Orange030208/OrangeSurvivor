@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -12,7 +11,6 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 {
     [Header("目标")]
     [SerializeField] public Player testPlayer;
-    [SerializeField] public CharacterDataSO testCharacterData;
     [SerializeField] public Vector3 playerSpawnPosition = Vector3.zero;
 
     [Header("敌人")]
@@ -38,7 +36,6 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     private void Start()
     {
         EnsureConfiguredTestPlayer();
-        SelectTestCharacter();
         PublishTestGameState();
         PublishTestPlayerSpawned();
 
@@ -140,18 +137,9 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 
     private CharacterDataSO ResolveCharacterData()
     {
-        if (testCharacterData != null)
-        {
-            return testCharacterData;
-        }
-
         if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
-            IReadOnlyList<CharacterDataSO> characters = provider.Characters;
-            if (characters != null && characters.Count > 0)
-            {
-                return characters[0];
-            }
+            return provider.DefaultCharacter;
         }
 
         return null;
@@ -167,7 +155,7 @@ public sealed class MonsterTestSceneController : MonoBehaviour
         CharacterDataSO characterData = ResolveCharacterData();
         if (characterData == null)
         {
-            Debug.LogError($"{nameof(MonsterTestSceneController)} requires a test character data asset or at least one character in {nameof(GameContentCatalogSO)}.", this);
+            Debug.LogError($"{nameof(MonsterTestSceneController)} requires a default character in {nameof(GameContentCatalogSO)}.", this);
             return;
         }
 
@@ -180,38 +168,6 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 
         characterDataField.SetValue(testPlayer, characterData);
     }
-
-    private void SelectTestCharacter()
-    {
-        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
-        {
-            return;
-        }
-
-        IReadOnlyList<CharacterDataSO> characters = provider.Characters;
-        if (characters == null || characters.Count == 0)
-        {
-            Debug.LogWarning($"{nameof(MonsterTestSceneController)} cannot select a test character because no character data was loaded.");
-            return;
-        }
-
-        CharacterDataSO characterData = ResolveCharacterData();
-        int selectedIndex = 0;
-        if (characterData != null)
-        {
-            for (int i = 0; i < characters.Count; i++)
-            {
-                if (characters[i] == characterData)
-                {
-                    selectedIndex = i;
-                    break;
-                }
-            }
-        }
-
-        CharacterSelectionManager.Instance?.SelectCharacter(selectedIndex);
-    }
-
 
     private EnemySO ResolveEnemyData()
     {

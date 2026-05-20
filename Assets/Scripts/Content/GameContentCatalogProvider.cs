@@ -22,7 +22,8 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
 
     public IReadOnlyList<WeaponDataSO> Weapons => catalog.Weapons;
     public IReadOnlyList<AccessoryDataSO> Accessories => catalog.Accessories;
-    public IReadOnlyList<CharacterDataSO> Characters => catalog.Characters;
+    public CharacterDataSO DefaultCharacter => catalog.DefaultCharacter;
+    public IReadOnlyList<UpgradeCardSO> StarterCards => catalog.StarterCards;
     public Player DefaultPlayerPrefab => catalog.DefaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => catalog.DefaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => catalog.PlayerLevelConfig;

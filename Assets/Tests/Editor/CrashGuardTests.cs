@@ -100,6 +100,29 @@ public sealed class CrashGuardTests
     }
 
     [Test]
+    public void CatalogValidationRequiresDefaultCharacter()
+    {
+        GameContentCatalogSO catalog = ScriptableObject.CreateInstance<GameContentCatalogSO>();
+        createdObjects.Add(catalog);
+        List<string> errors = new();
+
+        Assert.IsFalse(catalog.ValidateCatalog(errors));
+        Assert.IsTrue(errors.Exists(error => error.Contains("default character")));
+    }
+
+    [Test]
+    public void CatalogValidationAllowsEmptyStarterCards()
+    {
+        GameContentCatalogSO catalog = ScriptableObject.CreateInstance<GameContentCatalogSO>();
+        createdObjects.Add(catalog);
+        List<string> errors = new();
+
+        catalog.ValidateCatalog(errors);
+
+        Assert.IsFalse(errors.Exists(error => error.Contains("starter card")));
+    }
+
+    [Test]
     public void CharacterDataExtraInfosSkipsMissingSerializedEntries()
     {
         CharacterDataSO characterData = ScriptableObject.CreateInstance<CharacterDataSO>();
