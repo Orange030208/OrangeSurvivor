@@ -24,7 +24,15 @@ public static class HitService
 
         if (request.Target != null && request.Target.TryGetComponent(out HealthComponent healthComponent))
         {
-            healthComponent.ApplyHitResult(result);
+            if (healthComponent.TryApplyHitResult(result, out HitResult appliedResult))
+            {
+                if (appliedResult.DamageSource is IDamageDealtNotifier notifier)
+                {
+                    notifier.NotifyDamageDealt(appliedResult);
+                }
+
+                return appliedResult;
+            }
         }
 
         return result;

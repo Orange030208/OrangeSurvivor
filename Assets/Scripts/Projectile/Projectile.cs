@@ -207,7 +207,7 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
             launchContext.Direction,
             HitSourceKind.Projectile,
             sourcePosition: launchContext.SpawnPosition,
-            sourceWeapon: launchContext.SourceWeapon);
+            damageSource: launchContext.DamageSource);
 
         HitService.Apply(request);
         SpawnImpactEffect(transform.position, launchContext.ProjectileDefinition);

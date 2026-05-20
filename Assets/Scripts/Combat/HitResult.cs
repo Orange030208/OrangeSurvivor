@@ -20,15 +20,15 @@ public readonly struct HitResult
     public bool IsBlocked { get; }
     public bool IsCancelled { get; }
     public HitSourceKind SourceKind { get; }
-    public Weapon SourceWeapon { get; }
+    public IDamageSource DamageSource { get; }
 
-    public HitResult(Entity source, Entity target, float finalDamage, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, Vector2 sourcePosition, Weapon sourceWeapon = null)
-        : this(source, target, finalDamage, 0f, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourcePosition, sourceWeapon)
+    public HitResult(Entity source, Entity target, float finalDamage, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, Vector2 sourcePosition, IDamageSource damageSource = null)
+        : this(source, target, finalDamage, 0f, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourcePosition, damageSource)
     {
     }
 
-    public HitResult(Entity source, Entity target, float finalDamage, float knockbackStrength, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, Vector2 sourcePosition, Weapon sourceWeapon = null)
-        : this(source, target, finalDamage, knockbackStrength, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourcePosition, sourceWeapon)
+    public HitResult(Entity source, Entity target, float finalDamage, float knockbackStrength, Vector2 hitPoint, bool isCritical, bool isDodged, bool isBlocked, bool isCancelled, HitSourceKind sourceKind, Vector2 sourcePosition, IDamageSource damageSource = null)
+        : this(source, target, finalDamage, knockbackStrength, hitPoint, false, Vector2.zero, isCritical, isDodged, isBlocked, isCancelled, sourceKind, sourcePosition, damageSource)
     {
     }
 
@@ -46,7 +46,7 @@ public readonly struct HitResult
         bool isCancelled,
         HitSourceKind sourceKind,
         Vector2 sourcePosition,
-        Weapon sourceWeapon = null)
+        IDamageSource damageSource = null)
     {
         Source = source;
         Target = target;
@@ -62,7 +62,7 @@ public readonly struct HitResult
         IsBlocked = isBlocked;
         IsCancelled = isCancelled;
         SourceKind = sourceKind;
-        SourceWeapon = sourceWeapon;
+        DamageSource = damageSource;
     }
 
     public HitResult WithFinalDamage(float finalDamage)
@@ -81,6 +81,6 @@ public readonly struct HitResult
             IsCancelled,
             SourceKind,
             SourcePosition,
-            SourceWeapon);
+            DamageSource);
     }
 }

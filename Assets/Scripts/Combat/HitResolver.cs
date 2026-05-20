@@ -36,7 +36,7 @@ public sealed class HitResolver
             context.IsCancelled,
             request.SourceKind,
             request.SourcePosition,
-            request.SourceWeapon);
+            request.DamageSource);
     }
 
     private void ApplyModifiers(HitContext context)

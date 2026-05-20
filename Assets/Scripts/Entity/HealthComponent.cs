@@ -96,37 +96,47 @@ public class HealthComponent : EntityComponentBase
 
     public void ApplyHitResult(HitResult result)
     {
+        TryApplyHitResult(result, out _);
+    }
+
+    public bool TryApplyHitResult(HitResult result, out HitResult appliedResult)
+    {
         if (health <= 0f || result.Target != owner)
         {
-            return;
+            appliedResult = default;
+            return false;
         }
 
         if (result.IsCancelled)
         {
-            return;
+            appliedResult = default;
+            return false;
         }
 
         if (result.IsDodged)
         {
             OnDamageDodged?.Invoke(result.HitPoint);
-            return;
+            appliedResult = default;
+            return false;
         }
 
         if (result.IsBlocked)
         {
-            return;
+            appliedResult = default;
+            return false;
         }
 
         //暂时不屏蔽超出伤害了，后续有需要再修改
         float realDamage = result.FinalDamage;
         if (realDamage <= 0f)
         {
-            return;
+            appliedResult = default;
+            return false;
         }
 
         health -= realDamage;
 
-        HitResult appliedResult = result.WithFinalDamage(realDamage);
+        appliedResult = result.WithFinalDamage(realDamage);
         lastDamageSource = appliedResult.Source;
         OnDamaged?.Invoke(appliedResult);
         GameEventBus.Publish(new EntityDamagedEvent(owner, appliedResult));
@@ -138,6 +148,8 @@ public class HealthComponent : EntityComponentBase
         {
             HandleDeath(EntityDeathReason.Combat);
         }
+
+        return true;
     }
 
     public bool ForceDeath(Entity source, EntityDeathReason deathReason)

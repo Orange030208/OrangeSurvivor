@@ -117,7 +117,7 @@ public sealed class HitBoxAttackExecutor
                 knockbackDirection,
                 HitSourceKind.Weapon,
                 sourcePosition: sourcePosition,
-                sourceWeapon: weapon);
+                damageSource: weapon);
             HitResult hitResult = weapon.ApplyHit(request);
             if (!hitResult.IsCancelled && !hitResult.IsDodged && !hitResult.IsBlocked && hitResult.FinalDamage > 0f)
             {

@@ -11,7 +11,7 @@ using UnityEngine;
 /// 3. 通过 WeaponDataSO 的 Spawn Points 统一描述子弹和表现生成点。
 /// </summary>
 [RequireComponent(typeof(WeaponSequenceBridge))]
-public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
+public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDamageDealtNotifier
 {
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
@@ -97,6 +97,8 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     private Vector2 HitBoxSize => WeaponData != null ? WeaponData.HitBoxSize : Vector2.one;
 
     public LayerMask TargetLayerMask => targetLayerMask;
+    public Entity SourceEntity => ResolveAttackSourceEntity();
+    public event Action<HitResult> DamageDealt;
 
 
     public virtual void OnFixedTick(float deltaTime)
@@ -354,6 +356,11 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep
     public HitResult ApplyHit(HitRequest request)
     {
         return HitService.Apply(request);
+    }
+
+    public void NotifyDamageDealt(HitResult result)
+    {
+        DamageDealt?.Invoke(result);
     }
 
     protected float ResolveAttackSequenceDuration(AttackSequenceDefinitionSO sequence)
