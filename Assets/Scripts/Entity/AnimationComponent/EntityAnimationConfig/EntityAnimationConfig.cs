@@ -21,6 +21,7 @@ public class EntityAnimationConfig : ScriptableObject
     [Header("通用基础状态")] 
     public string Idle = "Idle";
     public string Move = "Move";
+    public string Charge = "Charge";
 
     [Header("收集动画状态")]
     public string Float = "Float";
@@ -45,6 +46,7 @@ public class EntityAnimationConfig : ScriptableObject
     
     [NonSerialized] public int IdleHash;
     [NonSerialized] public int MoveHash;
+    [NonSerialized] public int ChargeHash;
     [NonSerialized] public int FloatHash;
     [NonSerialized] public int OpenHash;
     [NonSerialized] public int AttackHash;
@@ -78,6 +80,7 @@ public class EntityAnimationConfig : ScriptableObject
     {
         IdleHash = Animator.StringToHash(Idle);
         MoveHash = Animator.StringToHash(Move);
+        ChargeHash = Animator.StringToHash(Charge);
         FloatHash = Animator.StringToHash(Float);
         OpenHash = Animator.StringToHash(Open);
         AttackHash = Animator.StringToHash(Attack);

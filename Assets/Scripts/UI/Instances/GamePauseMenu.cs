@@ -17,38 +17,31 @@ public class GamePauseMenu : PageBase
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button menuButton;
 
-    [Header("页面子部件")]
-    [SerializeField] private SettingsPanelManager settingsPanel;
-
     private bool buttonEventsBound;
-    private bool settingsVisible;
+    private ViewHandle<SettingsPanelManager> settingsPanelHandle;
 
     protected override void Awake()
     {
         base.Awake();
-        ResolveViewParts();
         ValidateConfiguration();
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        settingsPanel.Bind(new SettingsPanelManager.Context(OwnerUIManager));
         BindButtonEvents();
-        HideSettingsImmediate();
         SelectDefaultControl();
         return UniTask.CompletedTask;
     }
 
     protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
     {
-        return settingsPanel.HideAsync(cancellationToken);
+        return CloseSettingsPanelAsync(CloseReason.Cancel, cancellationToken);
     }
 
     protected override void OnClosed(CloseReason reason)
     {
         UnbindButtonEvents();
-        settingsPanel.Unbind();
-        HideSettingsImmediate();
+        settingsPanelHandle = default;
     }
 
     private void BindButtonEvents()
@@ -102,25 +95,65 @@ public class GamePauseMenu : PageBase
     private void OnStatusClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        SetSettingsVisible(false);
+        CloseSettingsPanelAsync(CloseReason.Normal, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
     private void OnSettingsClicked()
     {
-        AudioSfxBridge.RequestPlay(settingsVisible ? AudioSfxKey.UiCancel : AudioSfxKey.UiConfirm);
-        SetSettingsVisible(!settingsVisible);
+        ToggleSettingsPanelAsync().Forget();
     }
 
-    private void SetSettingsVisible(bool visible)
+    private async UniTask ToggleSettingsPanelAsync()
     {
-        settingsVisible = visible;
-        settingsPanel.SetVisible(visible);
+        if (IsSettingsPanelOpen())
+        {
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+            await CloseSettingsPanelAsync(CloseReason.Normal, this.GetCancellationTokenOnDestroy());
+            return;
+        }
+
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+        settingsPanelHandle = await OwnerUIManager.ShowPopupAsync<SettingsPanelManager>(
+            new SettingsPanelManager.Context(OwnerUIManager),
+            CreateSettingsPopupOptions(),
+            this.GetCancellationTokenOnDestroy());
+        ClearSettingsHandleWhenClosedAsync(settingsPanelHandle).Forget();
     }
 
-    private void HideSettingsImmediate()
+    private async UniTask CloseSettingsPanelAsync(CloseReason reason, CancellationToken cancellationToken)
     {
-        settingsVisible = false;
-        settingsPanel.SetHiddenImmediate();
+        if (!IsSettingsPanelOpen())
+        {
+            settingsPanelHandle = default;
+            return;
+        }
+
+        ViewHandle<SettingsPanelManager> handle = settingsPanelHandle;
+        settingsPanelHandle = default;
+        await handle.CloseAsync(reason, cancellationToken);
+    }
+
+    private bool IsSettingsPanelOpen()
+    {
+        return settingsPanelHandle.IsValid && settingsPanelHandle.View != null && settingsPanelHandle.View.IsOpen;
+    }
+
+    private async UniTaskVoid ClearSettingsHandleWhenClosedAsync(ViewHandle<SettingsPanelManager> handle)
+    {
+        await handle.ClosedTask;
+        if (settingsPanelHandle.IsValid && settingsPanelHandle.InstanceId == handle.InstanceId)
+        {
+            settingsPanelHandle = default;
+        }
+    }
+
+    private static PopupOptions CreateSettingsPopupOptions()
+    {
+        return new PopupOptions(
+            closeOnOutsideClick: false,
+            groupId: "settings",
+            replaceSameGroup: true,
+            trackInStack: true);
     }
 
     private void SelectDefaultControl()
@@ -135,8 +168,6 @@ public class GamePauseMenu : PageBase
 
     private void ValidateConfiguration()
     {
-        ResolveViewParts();
-
         if (continueButton == null)
         {
             throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing continue button.");
@@ -150,19 +181,6 @@ public class GamePauseMenu : PageBase
         if (settingsButton == null)
         {
             throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing settings button.");
-        }
-
-        if (settingsPanel == null)
-        {
-            throw new MissingReferenceException($"{nameof(GamePauseMenu)} '{name}' is missing settings panel.");
-        }
-    }
-
-    private void ResolveViewParts()
-    {
-        if (settingsPanel == null)
-        {
-            settingsPanel = GetComponentInChildren<SettingsPanelManager>(true);
         }
     }
 }

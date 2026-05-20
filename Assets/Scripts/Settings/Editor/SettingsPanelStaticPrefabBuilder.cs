@@ -10,17 +10,16 @@ using UnityEngine.UI;
 
 public static class SettingsPanelStaticPrefabBuilder
 {
-    private const string PREFAB_PATH = "Assets/GameContent/UI/Prefabs/Pages/Setting/Settings Panel.prefab";
+    private const string PREFAB_FOLDER = "Assets/GameContent/UI/Prefabs/Setting";
+    private const string PREFAB_PATH = PREFAB_FOLDER + "/Settings Panel.prefab";
+    private const string VOLUME_ROW_PREFAB_PATH = PREFAB_FOLDER + "/VolumeRow.prefab";
     private const string MODAL_PREFAB_PATH = "Assets/GameContent/UI/Prefabs/Modals/DisplayConfirm Modal.prefab";
     private const string PROFILE_FOLDER = "Assets/GameContent/UI/Data/Settings";
     private const string VIEW_CATALOG_PATH = "Assets/GameContent/UI/Data/OrangeUIViewCatalog.asset";
     private const string UI_FONT_PATH = "Assets/GameContent/UI/Fonts/HYPixel11pxU-2 SDF.asset";
+    private const string SETTINGS_POPUP_VIEW_ID = "popup.settings";
     private const string DISPLAY_CONFIRM_MODAL_VIEW_ID = "modal.displayConfirm";
-    private static readonly string[] HOST_PREFAB_PATHS =
-    {
-        "Assets/GameContent/UI/Prefabs/Pages/UI Menu.prefab",
-        "Assets/GameContent/UI/Prefabs/Pages/UI Pause.prefab"
-    };
+    private const int UI_LAYER = 5;
 
     private static TMP_FontAsset cachedUiFont;
 
@@ -28,58 +27,62 @@ public static class SettingsPanelStaticPrefabBuilder
     public static void Rebuild()
     {
         EnsureFolder(PROFILE_FOLDER);
+        EnsureFolder(PREFAB_FOLDER);
         EnsureFolder("Assets/GameContent/UI/Prefabs/Modals");
-        PlatformSettingsProfileSO pcProfile = CreateOrUpdateProfile(
-            "PC Settings Profile",
-            "PC",
-            new[]
-            {
-                RuntimePlatform.WindowsEditor,
-                RuntimePlatform.WindowsPlayer,
-                RuntimePlatform.OSXEditor,
-                RuntimePlatform.OSXPlayer,
-                RuntimePlatform.LinuxEditor,
-                RuntimePlatform.LinuxPlayer
-            },
-            new[]
-            {
-                SettingsFeature.Audio,
-                SettingsFeature.DisplayResolution,
-                SettingsFeature.WindowMode,
-                SettingsFeature.Language,
-                SettingsFeature.KeyboardRebind,
-                SettingsFeature.GamepadRebind
-            },
-            new[] { FullScreenMode.FullScreenWindow, FullScreenMode.ExclusiveFullScreen, FullScreenMode.Windowed },
-            new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
-            requireDisplayConfirmation: true,
-            defaultProfile: true);
 
-        PlatformSettingsProfileSO mobileProfile = CreateOrUpdateProfile(
-            "Mobile Settings Profile",
-            "Mobile",
-            new[] { RuntimePlatform.Android, RuntimePlatform.IPhonePlayer },
-            new[] { SettingsFeature.Audio, SettingsFeature.Language, SettingsFeature.TouchControls },
-            new[] { FullScreenMode.FullScreenWindow },
-            new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
-            requireDisplayConfirmation: false,
-            defaultProfile: false);
+        PlatformSettingsProfileSO[] profiles =
+        {
+            CreateOrUpdateProfile(
+                "PC Settings Profile",
+                "PC",
+                new[]
+                {
+                    RuntimePlatform.WindowsEditor,
+                    RuntimePlatform.WindowsPlayer,
+                    RuntimePlatform.OSXEditor,
+                    RuntimePlatform.OSXPlayer,
+                    RuntimePlatform.LinuxEditor,
+                    RuntimePlatform.LinuxPlayer
+                },
+                new[]
+                {
+                    SettingsFeature.Audio,
+                    SettingsFeature.DisplayResolution,
+                    SettingsFeature.WindowMode,
+                    SettingsFeature.Language,
+                    SettingsFeature.KeyboardRebind,
+                    SettingsFeature.GamepadRebind
+                },
+                new[] { FullScreenMode.FullScreenWindow, FullScreenMode.ExclusiveFullScreen, FullScreenMode.Windowed },
+                new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
+                requireDisplayConfirmation: true,
+                defaultProfile: true),
+            CreateOrUpdateProfile(
+                "Mobile Settings Profile",
+                "Mobile",
+                new[] { RuntimePlatform.Android, RuntimePlatform.IPhonePlayer },
+                new[] { SettingsFeature.Audio, SettingsFeature.Language, SettingsFeature.TouchControls },
+                new[] { FullScreenMode.FullScreenWindow },
+                new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
+                requireDisplayConfirmation: false,
+                defaultProfile: false),
+            CreateOrUpdateProfile(
+                "Console Settings Profile",
+                "Console",
+                ResolveConsolePlatforms(),
+                new[] { SettingsFeature.Audio, SettingsFeature.Language, SettingsFeature.GamepadRebind },
+                new[] { FullScreenMode.FullScreenWindow },
+                new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
+                requireDisplayConfirmation: false,
+                defaultProfile: false)
+        };
 
-        PlatformSettingsProfileSO consoleProfile = CreateOrUpdateProfile(
-            "Console Settings Profile",
-            "Console",
-            ResolveConsolePlatforms(),
-            new[] { SettingsFeature.Audio, SettingsFeature.Language, SettingsFeature.GamepadRebind },
-            new[] { FullScreenMode.FullScreenWindow },
-            new[] { GameSettingsService.DEFAULT_LANGUAGE_CODE, GameSettingsService.ENGLISH_LANGUAGE_CODE },
-            requireDisplayConfirmation: false,
-            defaultProfile: false);
-
+        BuildVolumeRowPrefab();
         GameObject displayConfirmModalPrefab = BuildDisplayConfirmModalPrefab();
-        GameObject root = PrefabUtility.LoadPrefabContents(PREFAB_PATH);
+        GameObject root = LoadOrCreatePanelPrefabContents();
         try
         {
-            RebuildPrefab(root, new[] { pcProfile, mobileProfile, consoleProfile });
+            RebuildPrefab(root, profiles);
             ApplyUiFontRecursively(root);
             PrefabUtility.SaveAsPrefabAsset(root, PREFAB_PATH);
         }
@@ -88,110 +91,35 @@ public static class SettingsPanelStaticPrefabBuilder
             PrefabUtility.UnloadPrefabContents(root);
         }
 
-        UpdateViewCatalog(displayConfirmModalPrefab);
-        RefreshSettingsPanelHostPrefabs();
+        GameObject settingsPanelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
+        UpdateViewCatalog(settingsPanelPrefab, displayConfirmModalPrefab);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log($"Rebuilt static settings panel prefab: {PREFAB_PATH}");
     }
 
-    private static void RefreshSettingsPanelHostPrefabs()
+    private static GameObject LoadOrCreatePanelPrefabContents()
     {
-        for (int i = 0; i < HOST_PREFAB_PATHS.Length; i++)
+        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
+        if (existing != null)
         {
-            string hostPath = HOST_PREFAB_PATHS[i];
-            GameObject hostPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(hostPath);
-            if (hostPrefab == null)
-            {
-                continue;
-            }
-
-            GameObject hostRoot = PrefabUtility.LoadPrefabContents(hostPath);
-            try
-            {
-                if (ReplaceNestedSettingsPanelInstance(hostRoot, hostPath))
-                {
-                    PrefabUtility.SaveAsPrefabAsset(hostRoot, hostPath);
-                }
-            }
-            finally
-            {
-                PrefabUtility.UnloadPrefabContents(hostRoot);
-            }
-        }
-    }
-
-    private static bool ReplaceNestedSettingsPanelInstance(GameObject hostRoot, string hostPath)
-    {
-        SettingsPanelManager existingPanel = hostRoot.GetComponentInChildren<SettingsPanelManager>(true);
-        if (existingPanel == null)
-        {
-            Debug.LogWarning($"Host prefab '{hostPath}' does not contain a {nameof(SettingsPanelManager)} instance.");
-            return false;
+            return PrefabUtility.LoadPrefabContents(PREFAB_PATH);
         }
 
-        GameObject panelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB_PATH);
-        if (panelPrefab == null)
-        {
-            throw new MissingReferenceException($"Missing settings panel prefab at '{PREFAB_PATH}'.");
-        }
-
-        Transform parent = existingPanel.transform.parent;
-        int siblingIndex = existingPanel.transform.GetSiblingIndex();
-        string instanceName = existingPanel.gameObject.name;
-        bool activeSelf = existingPanel.gameObject.activeSelf;
-        int layer = existingPanel.gameObject.layer;
-        RectTransformSnapshot rectTransformSnapshot = RectTransformSnapshot.Capture(existingPanel.GetComponent<RectTransform>());
-
-        UnityEngine.Object.DestroyImmediate(existingPanel.gameObject);
-
-        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(panelPrefab, parent);
-        PrefabUtility.RevertPrefabInstance(instance, InteractionMode.AutomatedAction);
-        instance.name = instanceName;
-        instance.transform.SetSiblingIndex(siblingIndex);
-        instance.SetActive(activeSelf);
-        instance.layer = layer;
-        rectTransformSnapshot.Apply(instance.GetComponent<RectTransform>());
-        KeepOnlyRootPrefabOverrides(instance);
-
-        SettingsPanelManager replacementPanel = instance.GetComponent<SettingsPanelManager>();
-        RebindHostSettingsPanelReference(hostRoot, replacementPanel);
-        return true;
-    }
-
-    private static void RebindHostSettingsPanelReference(GameObject hostRoot, SettingsPanelManager panel)
-    {
-        MenuUIPage[] menuPages = hostRoot.GetComponentsInChildren<MenuUIPage>(true);
-        for (int i = 0; i < menuPages.Length; i++)
-        {
-            SetSettingsPanelReference(menuPages[i], panel);
-        }
-
-        GamePauseMenu[] pauseMenus = hostRoot.GetComponentsInChildren<GamePauseMenu>(true);
-        for (int i = 0; i < pauseMenus.Length; i++)
-        {
-            SetSettingsPanelReference(pauseMenus[i], panel);
-        }
-    }
-
-    private static void SetSettingsPanelReference(MonoBehaviour owner, SettingsPanelManager panel)
-    {
-        SerializedObject serializedObject = new(owner);
-        SerializedProperty property = serializedObject.FindProperty("settingsPanel");
-        if (property == null)
-        {
-            return;
-        }
-
-        property.objectReferenceValue = panel;
-        serializedObject.ApplyModifiedPropertiesWithoutUndo();
-        EditorUtility.SetDirty(owner);
+        GameObject root = new("Settings Panel", typeof(RectTransform), typeof(CanvasGroup), typeof(UIMotionPlayer), typeof(SettingsPanelManager));
+        PrefabUtility.SaveAsPrefabAsset(root, PREFAB_PATH);
+        UnityEngine.Object.DestroyImmediate(root);
+        AssetDatabase.ImportAsset(PREFAB_PATH);
+        return PrefabUtility.LoadPrefabContents(PREFAB_PATH);
     }
 
     private static void RebuildPrefab(GameObject root, PlatformSettingsProfileSO[] profiles)
     {
         RectTransform rootRect = root.GetComponent<RectTransform>();
-        rootRect.sizeDelta = new Vector2(560f, 680f);
+        rootRect.anchorMin = new Vector2(0.5f, 0.5f);
+        rootRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rootRect.pivot = new Vector2(0.5f, 0.5f);
+        rootRect.sizeDelta = new Vector2(1160f, 650f);
 
         CanvasGroup canvasGroup = root.GetComponent<CanvasGroup>();
         UIMotionPlayer motionPlayer = root.GetComponent<UIMotionPlayer>();
@@ -201,72 +129,147 @@ public static class SettingsPanelStaticPrefabBuilder
             throw new MissingReferenceException("Settings Panel prefab must keep CanvasGroup, UIMotionPlayer, and SettingsPanelManager on root.");
         }
 
-        for (int i = root.transform.childCount - 1; i >= 0; i--)
+        ClearChildren(root.transform);
+
+        Image shellImage = root.GetComponent<Image>();
+        if (shellImage == null)
         {
-            UnityEngine.Object.DestroyImmediate(root.transform.GetChild(i).gameObject);
+            shellImage = root.AddComponent<Image>();
         }
 
-        TextMeshProUGUI title = CreateText("Title", root.transform, "设置", 40, FontStyles.Normal, TextAlignmentOptions.Center);
+        shellImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_main_neon.png");
+        shellImage.type = Image.Type.Sliced;
+        shellImage.color = new Color(0.02f, 0.02f, 0.08f, 0.96f);
+        shellImage.raycastTarget = true;
+
+        TextMeshProUGUI title = CreateText("Title", root.transform, "SETTINGS", 54, FontStyles.Bold, TextAlignmentOptions.Left);
+        title.color = new Color(1f, 0.22f, 0.68f, 1f);
         RectTransform titleRect = title.rectTransform;
-        titleRect.anchorMin = new Vector2(0.5f, 1f);
-        titleRect.anchorMax = new Vector2(0.5f, 1f);
-        titleRect.pivot = new Vector2(0.5f, 0.5f);
-        titleRect.anchoredPosition = new Vector2(0f, -36f);
-        titleRect.sizeDelta = new Vector2(220f, 52f);
+        titleRect.anchorMin = new Vector2(0f, 1f);
+        titleRect.anchorMax = new Vector2(0f, 1f);
+        titleRect.pivot = new Vector2(0f, 1f);
+        titleRect.anchoredPosition = new Vector2(80f, -42f);
+        titleRect.sizeDelta = new Vector2(430f, 72f);
 
-        ScrollRect scrollRect = CreateScrollView(root.transform, out RectTransform content);
+        Button closeButton = CreateButton(root.transform, "CloseButton", "X", 58f, 58f);
+        RectTransform closeRect = closeButton.GetComponent<RectTransform>();
+        closeRect.anchorMin = new Vector2(1f, 1f);
+        closeRect.anchorMax = new Vector2(1f, 1f);
+        closeRect.pivot = new Vector2(1f, 1f);
+        closeRect.anchoredPosition = new Vector2(-34f, -30f);
 
-        GameObject audioSection = CreateSection(content, "AudioSection", "音量");
-        SettingsSliderRow masterRow = CreateSliderRow(audioSection.transform, "MasterVolumeRow", "总音量");
-        SettingsSliderRow sfxRow = CreateSliderRow(audioSection.transform, "SfxVolumeRow", "音效");
-        SettingsSliderRow musicRow = CreateSliderRow(audioSection.transform, "MusicVolumeRow", "音乐");
+        RectTransform nav = CreateRect("Navigation", root.transform);
+        nav.anchorMin = new Vector2(0f, 0f);
+        nav.anchorMax = new Vector2(0f, 1f);
+        nav.pivot = new Vector2(0f, 1f);
+        nav.anchoredPosition = new Vector2(46f, -138f);
+        nav.sizeDelta = new Vector2(315f, -210f);
+        VerticalLayoutGroup navLayout = nav.gameObject.AddComponent<VerticalLayoutGroup>();
+        navLayout.spacing = 12f;
+        navLayout.padding = new RectOffset(0, 0, 0, 0);
+        navLayout.childControlWidth = true;
+        navLayout.childControlHeight = false;
+        navLayout.childForceExpandWidth = true;
+        navLayout.childForceExpandHeight = false;
 
-        GameObject displaySection = CreateSection(content, "DisplaySection", "显示");
+        Button audioTab = CreateTabButton(nav, "AudioTabButton", "音频设置", ">");
+        Button displayTab = CreateTabButton(nav, "DisplayTabButton", "画面设置", ">");
+        Button controlTab = CreateTabButton(nav, "ControlTabButton", "控制设置", ">");
+        Button gameplayTab = CreateTabButton(nav, "GameplayTabButton", "游戏设置", ">");
+        Button languageTab = CreateTabButton(nav, "LanguageTabButton", "语言设置", ">");
+
+        RectTransform contentPanel = CreateRect("ContentPanel", root.transform);
+        contentPanel.anchorMin = new Vector2(0f, 0f);
+        contentPanel.anchorMax = new Vector2(1f, 1f);
+        contentPanel.offsetMin = new Vector2(395f, 70f);
+        contentPanel.offsetMax = new Vector2(-54f, -142f);
+        Image contentImage = contentPanel.gameObject.AddComponent<Image>();
+        contentImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_content_neon.png");
+        contentImage.type = Image.Type.Sliced;
+        contentImage.color = new Color(0.02f, 0.03f, 0.10f, 0.86f);
+
+        TextMeshProUGUI sectionTitle = CreateText("SectionTitle", contentPanel, "音频设置", 26, FontStyles.Bold, TextAlignmentOptions.Left);
+        sectionTitle.color = new Color(1f, 0.22f, 0.68f, 1f);
+        RectTransform sectionTitleRect = sectionTitle.rectTransform;
+        sectionTitleRect.anchorMin = new Vector2(0f, 1f);
+        sectionTitleRect.anchorMax = new Vector2(1f, 1f);
+        sectionTitleRect.pivot = new Vector2(0f, 1f);
+        sectionTitleRect.offsetMin = new Vector2(34f, -72f);
+        sectionTitleRect.offsetMax = new Vector2(-34f, -22f);
+
+        RectTransform divider = CreateRect("TitleDivider", contentPanel);
+        divider.anchorMin = new Vector2(0f, 1f);
+        divider.anchorMax = new Vector2(1f, 1f);
+        divider.pivot = new Vector2(0.5f, 1f);
+        divider.offsetMin = new Vector2(34f, -86f);
+        divider.offsetMax = new Vector2(-34f, -83f);
+        Image dividerImage = divider.gameObject.AddComponent<Image>();
+        dividerImage.color = new Color(1f, 0.13f, 0.74f, 0.75f);
+
+        RectTransform sectionRoot = CreateRect("SectionRoot", contentPanel);
+        sectionRoot.anchorMin = Vector2.zero;
+        sectionRoot.anchorMax = Vector2.one;
+        sectionRoot.offsetMin = new Vector2(34f, 28f);
+        sectionRoot.offsetMax = new Vector2(-34f, -108f);
+
+        GameObject audioSection = CreateContentSection(sectionRoot, "AudioSection");
+        SettingsSliderRow masterRow = CreateSliderRow(audioSection.transform, "MasterVolumeRow", "主音量");
+        SettingsSliderRow musicRow = CreateSliderRow(audioSection.transform, "MusicVolumeRow", "音乐音量");
+        SettingsSliderRow sfxRow = CreateSliderRow(audioSection.transform, "SfxVolumeRow", "音效音量");
+
+        GameObject displaySection = CreateContentSection(sectionRoot, "DisplaySection");
         SettingsOptionRow resolutionRow = CreateOptionRow(displaySection.transform, "ResolutionRow", "分辨率");
         SettingsOptionRow windowModeRow = CreateOptionRow(displaySection.transform, "WindowModeRow", "窗口模式");
 
-        GameObject languageSection = CreateSection(content, "LanguageSection", "语言");
-        SettingsOptionRow languageRow = CreateOptionRow(languageSection.transform, "LanguageRow", "语言");
-
-        GameObject inputSection = CreateSection(content, "InputSection", "输入");
+        GameObject inputSection = CreateScrollableContentSection(sectionRoot, "InputSection", out Transform inputContent);
         List<SettingsRebindRow> rebindRows = new();
         IReadOnlyList<InputRebindEntry> entries = GameInputRebindCatalog.Entries;
         for (int i = 0; i < entries.Count; i++)
         {
-            rebindRows.Add(CreateRebindRow(inputSection.transform, entries[i]));
+            rebindRows.Add(CreateRebindRow(inputContent, entries[i]));
         }
 
-        Button resetBindingsButton = CreateButton(inputSection.transform, "ResetBindingsButton", "恢复默认绑定", 160f, 36f);
-        SetLayout(resetBindingsButton.gameObject, preferredHeight: 40f);
+        Button resetBindingsButton = CreateButton(inputContent, "ResetBindingsButton", "恢复默认绑定", 180f, 38f);
+        SetLayout(resetBindingsButton.gameObject, preferredHeight: 44f);
 
-        GameObject touchSection = CreateSection(content, "TouchSection", "触控");
+        GameObject gameplaySection = CreateContentSection(sectionRoot, "GameplaySection");
+        CreatePlaceholder(gameplaySection.transform, "GameplayPlaceholder", "游戏设置项待接入");
 
-        RectTransform actions = CreateRect("ActionBar", root.transform);
-        actions.anchorMin = new Vector2(0f, 0f);
-        actions.anchorMax = new Vector2(1f, 0f);
-        actions.pivot = new Vector2(0.5f, 0f);
-        actions.anchoredPosition = new Vector2(0f, 22f);
-        actions.sizeDelta = new Vector2(-56f, 48f);
-        HorizontalLayoutGroup actionLayout = actions.gameObject.AddComponent<HorizontalLayoutGroup>();
-        actionLayout.spacing = 18f;
-        actionLayout.childAlignment = TextAnchor.MiddleCenter;
+        GameObject languageSection = CreateContentSection(sectionRoot, "LanguageSection");
+        SettingsOptionRow languageRow = CreateOptionRow(languageSection.transform, "LanguageRow", "语言");
+
+        RectTransform actionBar = CreateRect("ActionBar", root.transform);
+        actionBar.anchorMin = new Vector2(1f, 0f);
+        actionBar.anchorMax = new Vector2(1f, 0f);
+        actionBar.pivot = new Vector2(1f, 0f);
+        actionBar.anchoredPosition = new Vector2(-58f, 28f);
+        actionBar.sizeDelta = new Vector2(190f, 44f);
+        HorizontalLayoutGroup actionLayout = actionBar.gameObject.AddComponent<HorizontalLayoutGroup>();
+        actionLayout.childAlignment = TextAnchor.MiddleRight;
         actionLayout.childControlWidth = false;
         actionLayout.childControlHeight = false;
         actionLayout.childForceExpandWidth = false;
         actionLayout.childForceExpandHeight = false;
-        Button saveButton = CreateButton(actions, "SaveButton", "保存", 128f, 40f);
-        Button resetButton = CreateButton(actions, "ResetButton", "重置", 128f, 40f);
+        Button resetButton = CreateButton(actionBar, "ResetButton", "恢复默认", 160f, 40f);
 
         SerializedObject managerObject = new(manager);
         SetObject(managerObject, "motionSource", motionPlayer);
         SetObject(managerObject, "canvasGroup", canvasGroup);
         SetObjectArray(managerObject, "platformProfiles", profiles);
-        SetObject(managerObject, "defaultSelectable", masterRow.DefaultSelectable);
+        SetObject(managerObject, "defaultSelectable", audioTab);
+        SetObject(managerObject, "sectionTitle", sectionTitle);
+        SetObject(managerObject, "audioTabButton", audioTab);
+        SetObject(managerObject, "displayTabButton", displayTab);
+        SetObject(managerObject, "controlTabButton", controlTab);
+        SetObject(managerObject, "gameplayTabButton", gameplayTab);
+        SetObject(managerObject, "languageTabButton", languageTab);
+        SetObject(managerObject, "closeButton", closeButton);
         SetObject(managerObject, "audioSection", audioSection);
         SetObject(managerObject, "displaySection", displaySection);
         SetObject(managerObject, "languageSection", languageSection);
         SetObject(managerObject, "inputSection", inputSection);
-        SetObject(managerObject, "touchSection", touchSection);
+        SetObject(managerObject, "gameplaySection", gameplaySection);
+        SetObject(managerObject, "touchSection", gameplaySection);
         SetObject(managerObject, "masterVolume", masterRow);
         SetObject(managerObject, "sfxVolume", sfxRow);
         SetObject(managerObject, "musicVolume", musicRow);
@@ -275,13 +278,23 @@ public static class SettingsPanelStaticPrefabBuilder
         SetObject(managerObject, "languageRow", languageRow);
         SetObjectArray(managerObject, "rebindRows", rebindRows.ToArray());
         SetObject(managerObject, "resetBindingsButton", resetBindingsButton);
-        SetObject(managerObject, "saveButton", saveButton);
         SetObject(managerObject, "resetButton", resetButton);
         managerObject.FindProperty("applyPreviewImmediately").boolValue = true;
         managerObject.ApplyModifiedPropertiesWithoutUndo();
 
-        scrollRect.verticalNormalizedPosition = 1f;
-        SetLayerRecursively(root, 5);
+        SetLayerRecursively(root, UI_LAYER);
+    }
+
+    private static void BuildVolumeRowPrefab()
+    {
+        GameObject root = new("VolumeRow", typeof(RectTransform));
+        RectTransform rectTransform = root.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = new Vector2(620f, 54f);
+        CreateSliderRow(root.transform, "VolumeRow", "音量");
+        ApplyUiFontRecursively(root);
+        SetLayerRecursively(root, UI_LAYER);
+        PrefabUtility.SaveAsPrefabAsset(root.transform.GetChild(0).gameObject, VOLUME_ROW_PREFAB_PATH);
+        UnityEngine.Object.DestroyImmediate(root);
     }
 
     private static PlatformSettingsProfileSO CreateOrUpdateProfile(
@@ -315,8 +328,13 @@ public static class SettingsPanelStaticPrefabBuilder
         return profile;
     }
 
-    private static void UpdateViewCatalog(GameObject displayConfirmModalPrefab)
+    private static void UpdateViewCatalog(GameObject settingsPanelPrefab, GameObject displayConfirmModalPrefab)
     {
+        if (settingsPanelPrefab == null)
+        {
+            throw new MissingReferenceException($"Missing settings panel prefab at '{PREFAB_PATH}'.");
+        }
+
         if (displayConfirmModalPrefab == null)
         {
             throw new MissingReferenceException($"Missing display confirmation modal prefab at '{MODAL_PREFAB_PATH}'.");
@@ -330,7 +348,42 @@ public static class SettingsPanelStaticPrefabBuilder
 
         SerializedObject catalogObject = new(catalog);
         SerializedProperty viewsProperty = catalogObject.FindProperty("views");
-        SerializedProperty definitionProperty = FindViewDefinition(viewsProperty, DISPLAY_CONFIRM_MODAL_VIEW_ID);
+        UpsertViewDefinition(
+            viewsProperty,
+            SETTINGS_POPUP_VIEW_ID,
+            ViewKind.Popup,
+            ViewLayer.Popup,
+            settingsPanelPrefab,
+            singleton: true,
+            cacheOnClose: true,
+            trackInBackStack: true,
+            closeOnBackgroundClick: false);
+        UpsertViewDefinition(
+            viewsProperty,
+            DISPLAY_CONFIRM_MODAL_VIEW_ID,
+            ViewKind.Modal,
+            ViewLayer.Modal,
+            displayConfirmModalPrefab,
+            singleton: true,
+            cacheOnClose: true,
+            trackInBackStack: false,
+            closeOnBackgroundClick: false);
+        catalogObject.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(catalog);
+    }
+
+    private static void UpsertViewDefinition(
+        SerializedProperty viewsProperty,
+        string viewId,
+        ViewKind kind,
+        ViewLayer layer,
+        GameObject prefab,
+        bool singleton,
+        bool cacheOnClose,
+        bool trackInBackStack,
+        bool closeOnBackgroundClick)
+    {
+        SerializedProperty definitionProperty = FindViewDefinition(viewsProperty, viewId);
         if (definitionProperty == null)
         {
             int newIndex = viewsProperty.arraySize;
@@ -338,19 +391,17 @@ public static class SettingsPanelStaticPrefabBuilder
             definitionProperty = viewsProperty.GetArrayElementAtIndex(newIndex);
         }
 
-        definitionProperty.FindPropertyRelative("id").stringValue = DISPLAY_CONFIRM_MODAL_VIEW_ID;
-        definitionProperty.FindPropertyRelative("kind").intValue = (int)ViewKind.Modal;
-        definitionProperty.FindPropertyRelative("layer").intValue = (int)ViewLayer.Modal;
-        definitionProperty.FindPropertyRelative("prefab").objectReferenceValue = displayConfirmModalPrefab;
-        definitionProperty.FindPropertyRelative("singleton").boolValue = true;
-        definitionProperty.FindPropertyRelative("cacheOnClose").boolValue = true;
-        definitionProperty.FindPropertyRelative("trackInBackStack").boolValue = false;
-        definitionProperty.FindPropertyRelative("closeOnBackgroundClick").boolValue = false;
+        definitionProperty.FindPropertyRelative("id").stringValue = viewId;
+        definitionProperty.FindPropertyRelative("kind").intValue = (int)kind;
+        definitionProperty.FindPropertyRelative("layer").intValue = (int)layer;
+        definitionProperty.FindPropertyRelative("prefab").objectReferenceValue = prefab;
+        definitionProperty.FindPropertyRelative("singleton").boolValue = singleton;
+        definitionProperty.FindPropertyRelative("cacheOnClose").boolValue = cacheOnClose;
+        definitionProperty.FindPropertyRelative("trackInBackStack").boolValue = trackInBackStack;
+        definitionProperty.FindPropertyRelative("closeOnBackgroundClick").boolValue = closeOnBackgroundClick;
         definitionProperty.FindPropertyRelative("warmupCount").intValue = 0;
         definitionProperty.FindPropertyRelative("maxCachedInstancesOverride").intValue = -1;
         definitionProperty.FindPropertyRelative("allowDuplicateViewType").boolValue = false;
-        catalogObject.ApplyModifiedPropertiesWithoutUndo();
-        EditorUtility.SetDirty(catalog);
     }
 
     private static SerializedProperty FindViewDefinition(SerializedProperty viewsProperty, string viewId)
@@ -387,82 +438,124 @@ public static class SettingsPanelStaticPrefabBuilder
         return platforms.ToArray();
     }
 
-    private static ScrollRect CreateScrollView(Transform parent, out RectTransform content)
+    private static GameObject CreateContentSection(Transform parent, string objectName)
     {
-        RectTransform scrollView = CreateRect("Scroll View", parent);
-        scrollView.anchorMin = new Vector2(0f, 0f);
-        scrollView.anchorMax = new Vector2(1f, 1f);
-        scrollView.offsetMin = new Vector2(28f, 82f);
-        scrollView.offsetMax = new Vector2(-28f, -82f);
+        RectTransform section = CreateRect(objectName, parent);
+        section.anchorMin = Vector2.zero;
+        section.anchorMax = Vector2.one;
+        section.offsetMin = Vector2.zero;
+        section.offsetMax = Vector2.zero;
+        VerticalLayoutGroup layout = section.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 12f;
+        layout.padding = new RectOffset(0, 0, 8, 8);
+        layout.childAlignment = TextAnchor.UpperCenter;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+        return section.gameObject;
+    }
 
-        ScrollRect scrollRect = scrollView.gameObject.AddComponent<ScrollRect>();
+    private static GameObject CreateScrollableContentSection(Transform parent, string objectName, out Transform content)
+    {
+        RectTransform section = CreateRect(objectName, parent);
+        section.anchorMin = Vector2.zero;
+        section.anchorMax = Vector2.one;
+        section.offsetMin = Vector2.zero;
+        section.offsetMax = Vector2.zero;
+
+        ScrollRect scrollRect = section.gameObject.AddComponent<ScrollRect>();
         scrollRect.horizontal = false;
         scrollRect.vertical = true;
         scrollRect.movementType = ScrollRect.MovementType.Clamped;
-        scrollRect.scrollSensitivity = 32f;
+        scrollRect.scrollSensitivity = 28f;
 
-        RectTransform viewport = CreateRect("Viewport", scrollView);
+        RectTransform viewport = CreateRect("Viewport", section);
         viewport.anchorMin = Vector2.zero;
         viewport.anchorMax = Vector2.one;
         viewport.offsetMin = Vector2.zero;
         viewport.offsetMax = Vector2.zero;
         Image viewportImage = viewport.gameObject.AddComponent<Image>();
-        viewportImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
         viewportImage.color = new Color(1f, 1f, 1f, 0f);
         viewportImage.raycastTarget = true;
         viewport.gameObject.AddComponent<RectMask2D>();
 
-        content = CreateRect("Content", viewport);
-        content.anchorMin = new Vector2(0f, 1f);
-        content.anchorMax = new Vector2(1f, 1f);
-        content.pivot = new Vector2(0.5f, 1f);
-        content.anchoredPosition = Vector2.zero;
-        content.sizeDelta = Vector2.zero;
-        VerticalLayoutGroup layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.padding = new RectOffset(18, 18, 8, 8);
-        layout.spacing = 12f;
+        RectTransform contentRect = CreateRect("Content", viewport);
+        contentRect.anchorMin = new Vector2(0f, 1f);
+        contentRect.anchorMax = new Vector2(1f, 1f);
+        contentRect.pivot = new Vector2(0.5f, 1f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = Vector2.zero;
+        VerticalLayoutGroup layout = contentRect.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 10f;
+        layout.padding = new RectOffset(0, 0, 8, 8);
         layout.childAlignment = TextAnchor.UpperCenter;
         layout.childControlWidth = true;
         layout.childControlHeight = true;
         layout.childForceExpandWidth = true;
         layout.childForceExpandHeight = false;
-        ContentSizeFitter fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+        ContentSizeFitter fitter = contentRect.gameObject.AddComponent<ContentSizeFitter>();
         fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         scrollRect.viewport = viewport;
-        scrollRect.content = content;
-        return scrollRect;
+        scrollRect.content = contentRect;
+        content = contentRect;
+        return section.gameObject;
     }
 
-    private static GameObject CreateSection(Transform parent, string objectName, string title)
+    private static Button CreateTabButton(Transform parent, string objectName, string label, string icon)
     {
-        RectTransform section = CreateRect(objectName, parent);
-        VerticalLayoutGroup layout = section.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 8f;
-        layout.padding = new RectOffset(4, 4, 0, 8);
-        layout.childAlignment = TextAnchor.UpperCenter;
-        layout.childControlWidth = true;
+        Button button = CreateButton(parent, objectName, string.Empty, 300f, 72f);
+        Image image = button.targetGraphic as Image;
+        if (image != null)
+        {
+            image.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Tabs/tab_default.png");
+            image.type = Image.Type.Sliced;
+            image.color = new Color(0.03f, 0.06f, 0.16f, 0.82f);
+        }
+
+        HorizontalLayoutGroup layout = button.gameObject.AddComponent<HorizontalLayoutGroup>();
+        layout.padding = new RectOffset(24, 18, 0, 0);
+        layout.spacing = 14f;
+        layout.childAlignment = TextAnchor.MiddleLeft;
+        layout.childControlWidth = false;
         layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
+        layout.childForceExpandWidth = false;
         layout.childForceExpandHeight = false;
 
-        TextMeshProUGUI header = CreateText($"{objectName}Header", section, title, 18, FontStyles.Bold, TextAlignmentOptions.Left);
-        SetLayout(header.gameObject, preferredHeight: 30f);
-        return section.gameObject;
+        TextMeshProUGUI iconText = CreateText("Icon", button.transform, icon, 28, FontStyles.Bold, TextAlignmentOptions.Center);
+        iconText.color = new Color(0.13f, 0.68f, 1f, 1f);
+        SetLayout(iconText.gameObject, preferredWidth: 42f, preferredHeight: 56f);
+
+        TextMeshProUGUI labelText = CreateText("Label", button.transform, label, 24, FontStyles.Bold, TextAlignmentOptions.Left);
+        labelText.color = new Color(0.13f, 0.68f, 1f, 1f);
+        SetLayout(labelText.gameObject, preferredWidth: 178f, preferredHeight: 56f);
+
+        TextMeshProUGUI arrowText = CreateText("Arrow", button.transform, ">", 28, FontStyles.Bold, TextAlignmentOptions.Center);
+        arrowText.color = new Color(0.13f, 0.68f, 1f, 1f);
+        SetLayout(arrowText.gameObject, preferredWidth: 32f, preferredHeight: 56f);
+        return button;
     }
 
     private static SettingsSliderRow CreateSliderRow(Transform parent, string objectName, string label)
     {
-        RectTransform row = CreateRow(parent, objectName, 46f);
-        TextMeshProUGUI labelText = CreateText("Label", row, label, 16, FontStyles.Normal, TextAlignmentOptions.Left);
-        SetLayout(labelText.gameObject, preferredWidth: 88f, preferredHeight: 36f);
+        RectTransform row = CreateRow(parent, objectName, 62f);
+        Image rowImage = row.gameObject.AddComponent<Image>();
+        rowImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_row_neon.png");
+        rowImage.type = Image.Type.Sliced;
+        rowImage.color = new Color(0.02f, 0.03f, 0.09f, 0.38f);
+
+        TextMeshProUGUI labelText = CreateText("Label", row, label, 21, FontStyles.Normal, TextAlignmentOptions.Left);
+        labelText.color = new Color(0.90f, 0.92f, 1f, 1f);
+        SetLayout(labelText.gameObject, preferredWidth: 150f, preferredHeight: 46f);
 
         Slider slider = CreateSlider(row);
-        SetLayout(slider.gameObject, preferredWidth: 280f, flexibleWidth: 1f, preferredHeight: 28f);
+        SetLayout(slider.gameObject, preferredWidth: 360f, flexibleWidth: 1f, preferredHeight: 42f);
 
-        TextMeshProUGUI valueText = CreateText("Value", row, "100%", 16, FontStyles.Bold, TextAlignmentOptions.Right);
-        SetLayout(valueText.gameObject, preferredWidth: 68f, preferredHeight: 36f);
+        TextMeshProUGUI valueText = CreateText("Value", row, "100%", 21, FontStyles.Bold, TextAlignmentOptions.Right);
+        valueText.color = new Color(0.95f, 0.95f, 1f, 1f);
+        SetLayout(valueText.gameObject, preferredWidth: 82f, preferredHeight: 46f);
 
         SettingsSliderRow component = row.gameObject.AddComponent<SettingsSliderRow>();
         SerializedObject serializedObject = new(component);
@@ -475,13 +568,20 @@ public static class SettingsPanelStaticPrefabBuilder
 
     private static SettingsOptionRow CreateOptionRow(Transform parent, string objectName, string label)
     {
-        RectTransform row = CreateRow(parent, objectName, 44f);
-        TextMeshProUGUI labelText = CreateText("Label", row, label, 16, FontStyles.Normal, TextAlignmentOptions.Left);
-        SetLayout(labelText.gameObject, preferredWidth: 104f, preferredHeight: 36f);
-        Button previousButton = CreateButton(row, "PreviousButton", "<", 42f, 34f);
-        TextMeshProUGUI valueText = CreateText("Value", row, "-", 16, FontStyles.Bold, TextAlignmentOptions.Center);
-        SetLayout(valueText.gameObject, preferredWidth: 220f, flexibleWidth: 1f, preferredHeight: 36f);
-        Button nextButton = CreateButton(row, "NextButton", ">", 42f, 34f);
+        RectTransform row = CreateRow(parent, objectName, 58f);
+        Image rowImage = row.gameObject.AddComponent<Image>();
+        rowImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Panels/panel_settings_row_neon.png");
+        rowImage.type = Image.Type.Sliced;
+        rowImage.color = new Color(0.02f, 0.03f, 0.09f, 0.38f);
+
+        TextMeshProUGUI labelText = CreateText("Label", row, label, 21, FontStyles.Normal, TextAlignmentOptions.Left);
+        labelText.color = new Color(0.90f, 0.92f, 1f, 1f);
+        SetLayout(labelText.gameObject, preferredWidth: 150f, preferredHeight: 42f);
+        Button previousButton = CreateButton(row, "PreviousButton", "<", 48f, 38f);
+        TextMeshProUGUI valueText = CreateText("Value", row, "-", 21, FontStyles.Bold, TextAlignmentOptions.Center);
+        valueText.color = new Color(0.95f, 0.95f, 1f, 1f);
+        SetLayout(valueText.gameObject, preferredWidth: 280f, flexibleWidth: 1f, preferredHeight: 42f);
+        Button nextButton = CreateButton(row, "NextButton", ">", 48f, 38f);
 
         SettingsOptionRow component = row.gameObject.AddComponent<SettingsOptionRow>();
         SerializedObject serializedObject = new(component);
@@ -495,12 +595,12 @@ public static class SettingsPanelStaticPrefabBuilder
 
     private static SettingsRebindRow CreateRebindRow(Transform parent, InputRebindEntry entry)
     {
-        RectTransform row = CreateRow(parent, $"RebindRow_{SanitizeName(entry.DisplayLabel)}", 44f);
-        TextMeshProUGUI labelText = CreateText("Label", row, entry.DisplayLabel, 15, FontStyles.Normal, TextAlignmentOptions.Left);
-        SetLayout(labelText.gameObject, preferredWidth: 210f, preferredHeight: 36f);
-        TextMeshProUGUI valueText = CreateText("Value", row, "-", 15, FontStyles.Bold, TextAlignmentOptions.Center);
-        SetLayout(valueText.gameObject, preferredWidth: 130f, flexibleWidth: 1f, preferredHeight: 36f);
-        Button rebindButton = CreateButton(row, "RebindButton", "重绑", 72f, 34f);
+        RectTransform row = CreateRow(parent, $"RebindRow_{SanitizeName(entry.DisplayLabel)}", 54f);
+        TextMeshProUGUI labelText = CreateText("Label", row, entry.DisplayLabel, 18, FontStyles.Normal, TextAlignmentOptions.Left);
+        SetLayout(labelText.gameObject, preferredWidth: 230f, preferredHeight: 38f);
+        TextMeshProUGUI valueText = CreateText("Value", row, "-", 18, FontStyles.Bold, TextAlignmentOptions.Center);
+        SetLayout(valueText.gameObject, preferredWidth: 170f, flexibleWidth: 1f, preferredHeight: 38f);
+        Button rebindButton = CreateButton(row, "RebindButton", "重绑", 82f, 36f);
 
         SettingsRebindRow component = row.gameObject.AddComponent<SettingsRebindRow>();
         SerializedObject serializedObject = new(component);
@@ -516,6 +616,14 @@ public static class SettingsPanelStaticPrefabBuilder
         SetObject(serializedObject, "rebindButton", rebindButton);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
         return component;
+    }
+
+    private static void CreatePlaceholder(Transform parent, string objectName, string message)
+    {
+        RectTransform row = CreateRow(parent, objectName, 64f);
+        TextMeshProUGUI labelText = CreateText("Text", row, message, 20, FontStyles.Normal, TextAlignmentOptions.Center);
+        labelText.color = new Color(0.58f, 0.72f, 0.92f, 0.82f);
+        SetLayout(labelText.gameObject, flexibleWidth: 1f, preferredHeight: 48f);
     }
 
     private static GameObject BuildDisplayConfirmModalPrefab()
@@ -577,7 +685,7 @@ public static class SettingsPanelStaticPrefabBuilder
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
         ApplyUiFontRecursively(root);
-        SetLayerRecursively(root, 5);
+        SetLayerRecursively(root, UI_LAYER);
         root.SetActive(true);
         GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(root, MODAL_PREFAB_PATH);
         UnityEngine.Object.DestroyImmediate(root);
@@ -589,8 +697,8 @@ public static class SettingsPanelStaticPrefabBuilder
     {
         RectTransform row = CreateRect(objectName, parent);
         HorizontalLayoutGroup layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-        layout.spacing = 10f;
-        layout.padding = new RectOffset(0, 0, 0, 0);
+        layout.spacing = 12f;
+        layout.padding = new RectOffset(14, 14, 0, 0);
         layout.childAlignment = TextAnchor.MiddleCenter;
         layout.childControlWidth = true;
         layout.childControlHeight = true;
@@ -609,42 +717,40 @@ public static class SettingsPanelStaticPrefabBuilder
         slider.value = 1f;
 
         RectTransform background = CreateRect("Background", root);
-        background.anchorMin = new Vector2(0f, 0.35f);
-        background.anchorMax = new Vector2(1f, 0.65f);
+        background.anchorMin = new Vector2(0f, 0.42f);
+        background.anchorMax = new Vector2(1f, 0.58f);
         background.offsetMin = Vector2.zero;
         background.offsetMax = Vector2.zero;
         Image backgroundImage = background.gameObject.AddComponent<Image>();
-        backgroundImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-        backgroundImage.color = new Color(0.16f, 0.18f, 0.22f, 1f);
+        backgroundImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Controls/slider_track.png");
+        backgroundImage.type = Image.Type.Sliced;
+        backgroundImage.color = new Color(0.10f, 0.02f, 0.18f, 0.95f);
 
         RectTransform fillArea = CreateRect("Fill Area", root);
-        fillArea.anchorMin = new Vector2(0f, 0.35f);
-        fillArea.anchorMax = new Vector2(1f, 0.65f);
-        fillArea.offsetMin = new Vector2(7f, 0f);
-        fillArea.offsetMax = new Vector2(-7f, 0f);
-        Image fillAreaImage = fillArea.gameObject.AddComponent<Image>();
-        fillAreaImage.color = new Color(1f, 1f, 1f, 0f);
+        fillArea.anchorMin = new Vector2(0f, 0.42f);
+        fillArea.anchorMax = new Vector2(1f, 0.58f);
+        fillArea.offsetMin = new Vector2(8f, 0f);
+        fillArea.offsetMax = new Vector2(-8f, 0f);
         RectTransform fill = CreateRect("Fill", fillArea);
         fill.anchorMin = Vector2.zero;
         fill.anchorMax = Vector2.one;
         fill.offsetMin = Vector2.zero;
         fill.offsetMax = Vector2.zero;
         Image fillImage = fill.gameObject.AddComponent<Image>();
-        fillImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-        fillImage.color = new Color(0.55f, 0.72f, 0.95f, 1f);
+        fillImage.sprite = ResolveSprite("Assets/GameContent/UI/Sprites/SettingsNeonPunk/Controls/slider_fill.png");
+        fillImage.type = Image.Type.Sliced;
+        fillImage.color = new Color(1f, 0.18f, 0.68f, 1f);
 
         RectTransform handleArea = CreateRect("Handle Slide Area", root);
         handleArea.anchorMin = Vector2.zero;
         handleArea.anchorMax = Vector2.one;
-        handleArea.offsetMin = new Vector2(7f, 0f);
-        handleArea.offsetMax = new Vector2(-7f, 0f);
-        Image handleAreaImage = handleArea.gameObject.AddComponent<Image>();
-        handleAreaImage.color = new Color(1f, 1f, 1f, 0f);
+        handleArea.offsetMin = new Vector2(8f, 0f);
+        handleArea.offsetMax = new Vector2(-8f, 0f);
         RectTransform handle = CreateRect("Handle", handleArea);
-        handle.sizeDelta = new Vector2(18f, 18f);
+        handle.sizeDelta = new Vector2(24f, 24f);
         Image handleImage = handle.gameObject.AddComponent<Image>();
         handleImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-        handleImage.color = new Color(0.94f, 0.96f, 1f, 1f);
+        handleImage.color = new Color(1f, 0.22f, 0.68f, 1f);
 
         slider.targetGraphic = handleImage;
         slider.fillRect = fill;
@@ -658,23 +764,28 @@ public static class SettingsPanelStaticPrefabBuilder
         rectTransform.sizeDelta = new Vector2(width, height);
         Image image = rectTransform.gameObject.AddComponent<Image>();
         image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-        image.color = new Color(0.18f, 0.23f, 0.30f, 1f);
+        image.type = Image.Type.Sliced;
+        image.color = new Color(0.08f, 0.11f, 0.22f, 0.94f);
         Button button = rectTransform.gameObject.AddComponent<Button>();
         button.targetGraphic = image;
         ColorBlock colors = button.colors;
-        colors.normalColor = image.color;
-        colors.highlightedColor = new Color(0.28f, 0.36f, 0.46f, 1f);
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.28f, 0.72f, 1f);
         colors.selectedColor = colors.highlightedColor;
-        colors.pressedColor = new Color(0.12f, 0.16f, 0.20f, 1f);
-        colors.disabledColor = new Color(0.12f, 0.14f, 0.17f, 0.6f);
+        colors.pressedColor = new Color(0.70f, 0.10f, 0.45f, 1f);
+        colors.disabledColor = new Color(0.18f, 0.18f, 0.22f, 0.55f);
         button.colors = colors;
 
-        TextMeshProUGUI text = CreateText("Text", rectTransform, label, 16, FontStyles.Bold, TextAlignmentOptions.Center);
-        RectTransform textRect = text.rectTransform;
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
+        if (!string.IsNullOrEmpty(label))
+        {
+            TextMeshProUGUI text = CreateText("Text", rectTransform, label, 16, FontStyles.Bold, TextAlignmentOptions.Center);
+            RectTransform textRect = text.rectTransform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+        }
+
         SetLayout(rectTransform.gameObject, preferredWidth: width, preferredHeight: height);
         return button;
     }
@@ -698,8 +809,21 @@ public static class SettingsPanelStaticPrefabBuilder
         text.overflowMode = TextOverflowModes.Ellipsis;
         text.raycastTarget = false;
         ApplyUiFont(text, ResolveRequiredUiFont());
-
         return text;
+    }
+
+    private static void ClearChildren(Transform parent)
+    {
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            UnityEngine.Object.DestroyImmediate(parent.GetChild(i).gameObject);
+        }
+    }
+
+    private static Sprite ResolveSprite(string assetPath)
+    {
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        return sprite != null ? sprite : AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
     }
 
     private static void ApplyUiFontRecursively(GameObject root)
@@ -778,13 +902,24 @@ public static class SettingsPanelStaticPrefabBuilder
 
     private static void SetObject(SerializedObject serializedObject, string propertyName, UnityEngine.Object value)
     {
-        serializedObject.FindProperty(propertyName).objectReferenceValue = value;
+        SerializedProperty property = serializedObject.FindProperty(propertyName);
+        if (property == null)
+        {
+            throw new MissingReferenceException($"{serializedObject.targetObject.GetType().Name} is missing serialized field '{propertyName}'.");
+        }
+
+        property.objectReferenceValue = value;
     }
 
     private static void SetObjectArray<T>(SerializedObject serializedObject, string propertyName, T[] values)
         where T : UnityEngine.Object
     {
         SerializedProperty property = serializedObject.FindProperty(propertyName);
+        if (property == null)
+        {
+            throw new MissingReferenceException($"{serializedObject.targetObject.GetType().Name} is missing serialized field '{propertyName}'.");
+        }
+
         property.arraySize = values.Length;
         for (int i = 0; i < values.Length; i++)
         {

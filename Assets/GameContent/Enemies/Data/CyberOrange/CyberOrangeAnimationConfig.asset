@@ -16,6 +16,7 @@ MonoBehaviour:
   DefaultFacingDirection: 0
   Idle: Idle
   Move: Move
+  Charge: Charge
   Float: Float
   Open: Open
   Attack: Attack

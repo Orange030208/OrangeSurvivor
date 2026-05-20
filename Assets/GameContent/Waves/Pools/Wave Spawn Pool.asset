@@ -14,53 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   defaultRollCount: 1
   allowDuplicateResults: 0
-  entries:
-  - entryId: OrangeGolemEnemy_15-19
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 6
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046033389684187
-    conditions:
-    - rid: 7274046033389684188
-    - rid: 7274046033389684189
-    weightRules: []
-  - entryId: OrangeGolemEnemy_20+
-    content: {fileID: 11400000, guid: 91d3dbf0faba13c4b817cfef123fcfa1, type: 2}
-    baseWeight: 8
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046033389684209
-    conditions:
-    - rid: 7274046033389684210
-    weightRules: []
+  entries: []
   references:
     version: 2
-    RefIds:
-    - rid: 7274046033389684187
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 66
-    - rid: 7274046033389684188
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 15
-    - rid: 7274046033389684189
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 5
-        compareValue: 19
-    - rid: 7274046033389684209
-      type: {class: WaveSpawnMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        tags: 66
-    - rid: 7274046033389684210
-      type: {class: CurrentWaveCondition, ns: , asm: Assembly-CSharp}
-      data:
-        comparisonOperator: 3
-        compareValue: 20
+    RefIds: []

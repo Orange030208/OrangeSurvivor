@@ -36,9 +36,23 @@ Subject: A front-facing round orange slime monster made of glossy orange citrus 
 Avoid realistic fruit photography, horror monster design, arms, legs, full background scene, complex city backdrop, heavy shadows, floor plane, low-contrast outline, thin details that disappear at 256x256, text, watermark, logo, green subject details, or any background color variation.
 ```
 
+## 同系列区分规则
+
+```text
+When generating multiple enemy roles in the same cyber orange family, each role must be instantly distinguishable at 256x256. Prioritize a unique face language, eye shape, mouth shape, expression, and main silhouette before changing small equipment details. Do not reuse the same face across variants.
+
+Examples:
+- Fast melee: narrow diagonal neon visor eyes, sharp mischievous cat grin, lightning or speed-line cheek marks, slimmer forward-leaning silhouette.
+- Slow heavy melee: sleepy half-closed eye, thick heavy brow plates, tiny flat grumpy mouth, wide squat armored silhouette.
+- Ranged turret: single large target-lens eye, small focused mouth, compact top-mounted energy cannon integrated into the shell.
+- Ranged kiter: smug cat-mask face, crescent moon eyes, asymmetrical neon goggle, light hover-thruster or floating ring silhouette.
+- Melee charger: angry V-shaped neon eyes, clenched square mouth, clear front impact horn or conical bumper.
+```
+
 ## 批量生成建议
 
 - 统一生成大正方形源图，再裁切、补透明边距、缩放到 `256x256`。
 - 同一系列尽量固定：正面视角、无手脚、厚描边、橙色主体、青/粉/紫霓虹点缀。
 - 系列新怪主要改主题特征、表情、顶部装饰、涂鸦符号和夜城贴纸，不要改核心轮廓太多，方便后续共用程序动画。
+- 批量生成同一族怪物时，先锁定每个怪的脸部语言和主轮廓，再补机甲件、武器或涂鸦细节；小装备差异不能替代脸部差异。
 - 如果后续要接入当前程序动画 Shader，主体最好保持接近圆形，避免细长外扩件被挤压动画拉得过猛。

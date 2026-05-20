@@ -23,7 +23,7 @@ public class PlayerExperiencePanel : ViewPartBase
 
     public void SetLevel(int level)
     {
-        levelText.text = "lvl" + Mathf.Max(0, level);
+        levelText.text = Mathf.Max(0, level).ToString();
     }
 
     public void SetExperience(int currentXp, int maxXp)

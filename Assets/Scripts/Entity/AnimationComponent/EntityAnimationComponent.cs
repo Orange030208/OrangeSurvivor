@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public class EntityAnimationComponent : EntityComponentBase, IAnimatable, IEntityFacingController
 {
     private const float DEFAULT_SCALE_X = 1f;

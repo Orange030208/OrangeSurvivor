@@ -5,13 +5,23 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Orange.Input;
 using Orange.UIFramework;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public class SettingsPanelManager : ViewPartBase
+public class SettingsPanelManager : PopupBase
 {
+    private enum SettingsCategory
+    {
+        Audio,
+        Display,
+        Control,
+        Gameplay,
+        Language
+    }
+
     public readonly struct Context
     {
         public Context(UIManager ownerUIManager)
@@ -30,11 +40,21 @@ public class SettingsPanelManager : ViewPartBase
     [SerializeField] private PlatformSettingsProfileSO[] platformProfiles = Array.Empty<PlatformSettingsProfileSO>();
     [SerializeField] private Selectable defaultSelectable;
 
+    [Header("导航")]
+    [SerializeField] private TextMeshProUGUI sectionTitle;
+    [SerializeField] private Button audioTabButton;
+    [SerializeField] private Button displayTabButton;
+    [SerializeField] private Button controlTabButton;
+    [SerializeField] private Button gameplayTabButton;
+    [SerializeField] private Button languageTabButton;
+    [SerializeField] private Button closeButton;
+
     [Header("设置分区")]
     [SerializeField] private GameObject audioSection;
     [SerializeField] private GameObject displaySection;
     [SerializeField] private GameObject languageSection;
     [SerializeField] private GameObject inputSection;
+    [SerializeField] private GameObject gameplaySection;
     [SerializeField] private GameObject touchSection;
 
     [Header("音量")]
@@ -54,7 +74,6 @@ public class SettingsPanelManager : ViewPartBase
     [SerializeField] private Button resetBindingsButton;
 
     [Header("操作")]
-    [SerializeField] private Button saveButton;
     [SerializeField] private Button resetButton;
     [SerializeField] private bool applyPreviewImmediately = true;
 
@@ -67,12 +86,14 @@ public class SettingsPanelManager : ViewPartBase
     private IUIRuntimeMotion motion;
     private UIManager uiManager;
     private InputRebindOperation activeRebind;
+    private SettingsCategory currentCategory = SettingsCategory.Audio;
     private bool visible = true;
     private bool controlsBound;
     private bool displayConfirmationPending;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         ResolvePresentationReferences();
         ResolveActiveProfile();
         ValidateConfiguration();
@@ -80,7 +101,7 @@ public class SettingsPanelManager : ViewPartBase
         LoadSavedState();
         ApplyProfileToSections();
         ApplyEditingStateToView();
-        GameSettingsService.ApplyAudio(editingState);
+        ApplyAudioPreview();
         motion?.RefreshDefaults();
         SetHiddenImmediate();
     }
@@ -104,7 +125,7 @@ public class SettingsPanelManager : ViewPartBase
             LoadSavedState();
             ApplyProfileToSections();
             ApplyEditingStateToView();
-            GameSettingsService.ApplyAudio(editingState);
+            ApplyAudioPreview();
         }
     }
 
@@ -115,28 +136,48 @@ public class SettingsPanelManager : ViewPartBase
 
     public bool IsVisible => visible;
 
-    public override void Bind(object context)
+    protected override async UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
+        BindContext(context.Payload);
+        BindControls();
+        LoadSavedState();
+        ApplyProfileToSections();
+        ApplyEditingStateToView();
+        ApplyAudioPreview();
+
+        Tween tween = SetVisible(true);
+        await tween.WaitForCompletionAsync(cancellationToken);
+    }
+
+    protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
+    {
+        activeRebind?.Cancel();
+        activeRebind?.Dispose();
+        activeRebind = null;
+        return HideAsync(cancellationToken);
+    }
+
+    protected override void OnClosed(CloseReason reason)
+    {
+        UnbindControls();
+        ConfigureOwner(null);
+        SetHiddenImmediate();
+    }
+
+    private void BindContext(object context)
+    {
+        if (context == null)
+        {
+            ConfigureOwner(OwnerUIManager);
+            return;
+        }
+
         if (context is not Context panelContext)
         {
             throw new ArgumentException($"{nameof(SettingsPanelManager)} '{name}' expects {nameof(Context)}.", nameof(context));
         }
 
         ConfigureOwner(panelContext.OwnerUIManager);
-        BindControls();
-        LoadSavedState();
-        ApplyProfileToSections();
-        ApplyEditingStateToView();
-        GameSettingsService.ApplyAudio(editingState);
-    }
-
-    public override void Unbind()
-    {
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
-        activeRebind = null;
-        UnbindControls();
-        ConfigureOwner(null);
     }
 
     public void ConfigureOwner(UIManager ownerUIManager)
@@ -173,7 +214,7 @@ public class SettingsPanelManager : ViewPartBase
         SetVisibleImmediate(false);
     }
 
-    public override async UniTask HideAsync(CancellationToken cancellationToken)
+    public async UniTask HideAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (!visible)
@@ -251,9 +292,13 @@ public class SettingsPanelManager : ViewPartBase
 
         resetBindingsButton.onClick.RemoveListener(OnResetBindingsClicked);
         resetBindingsButton.onClick.AddListener(OnResetBindingsClicked);
-        saveButton.onClick.RemoveListener(Save);
+        AddTabListener(audioTabButton, SelectAudioCategory);
+        AddTabListener(displayTabButton, SelectDisplayCategory);
+        AddTabListener(controlTabButton, SelectControlCategory);
+        AddTabListener(gameplayTabButton, SelectGameplayCategory);
+        AddTabListener(languageTabButton, SelectLanguageCategory);
+        AddButtonListener(closeButton, OnCloseClicked);
         resetButton.onClick.RemoveListener(ResetToDefaults);
-        saveButton.onClick.AddListener(Save);
         resetButton.onClick.AddListener(ResetToDefaults);
         controlsBound = true;
     }
@@ -270,15 +315,17 @@ public class SettingsPanelManager : ViewPartBase
             resetBindingsButton.onClick.RemoveListener(OnResetBindingsClicked);
         }
 
-        if (saveButton != null)
-        {
-            saveButton.onClick.RemoveListener(Save);
-        }
-
         if (resetButton != null)
         {
             resetButton.onClick.RemoveListener(ResetToDefaults);
         }
+
+        RemoveTabListener(audioTabButton, SelectAudioCategory);
+        RemoveTabListener(displayTabButton, SelectDisplayCategory);
+        RemoveTabListener(controlTabButton, SelectControlCategory);
+        RemoveTabListener(gameplayTabButton, SelectGameplayCategory);
+        RemoveTabListener(languageTabButton, SelectLanguageCategory);
+        RemoveButtonListener(closeButton, OnCloseClicked);
 
         masterVolume?.Unbind();
         sfxVolume?.Unbind();
@@ -321,19 +368,19 @@ public class SettingsPanelManager : ViewPartBase
     private void OnMasterVolumeChanged(float value)
     {
         editingState.MasterVolume = value;
-        ApplyPreviewIfNeeded();
+        SaveAndApplyAudio();
     }
 
     private void OnSfxVolumeChanged(float value)
     {
         editingState.SfxVolume = value;
-        ApplyPreviewIfNeeded();
+        SaveAndApplyAudio();
     }
 
     private void OnMusicVolumeChanged(float value)
     {
         editingState.MusicVolume = value;
-        ApplyPreviewIfNeeded();
+        SaveAndApplyAudio();
     }
 
     private void OffsetResolution(int offset)
@@ -348,12 +395,18 @@ public class SettingsPanelManager : ViewPartBase
             ResolveResolutionOptions();
         }
 
+        if (resolutionOptions.Count == 0)
+        {
+            return;
+        }
+
         int index = FindResolutionIndex(editingState.ResolutionWidth, editingState.ResolutionHeight);
         int nextIndex = WrapIndex(index + offset, resolutionOptions.Count);
         DisplayResolutionOption option = resolutionOptions[nextIndex];
         editingState.ResolutionWidth = option.Width;
         editingState.ResolutionHeight = option.Height;
         RefreshSettingsView();
+        SaveAndApplyDisplay(previousState: savedState.Clone());
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -365,8 +418,10 @@ public class SettingsPanelManager : ViewPartBase
         }
 
         int index = activeProfile.IndexOfWindowMode(editingState.WindowMode);
+        GameSettingsState previousState = savedState.Clone();
         editingState.WindowMode = activeProfile.GetWindowModeAt(WrapIndex(index + offset, activeProfile.GetWindowModeCount()));
         RefreshSettingsView();
+        SaveAndApplyDisplay(previousState);
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -380,6 +435,7 @@ public class SettingsPanelManager : ViewPartBase
         int index = activeProfile.IndexOfLanguage(editingState.LanguageCode);
         editingState.LanguageCode = activeProfile.GetLanguageAt(WrapIndex(index + offset, activeProfile.GetLanguageCount()));
         RefreshSettingsView();
+        SaveAndApplyLanguage();
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -391,7 +447,11 @@ public class SettingsPanelManager : ViewPartBase
 
         GameInput input = GameInput.Instance;
         input?.ClearBindingOverrides();
+        input?.ClearBindingOverrideStore();
         editingState.InputRebindsJson = string.Empty;
+        savedState.InputRebindsJson = string.Empty;
+        GameSettingsService.Save(savedState);
+        GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
         RefreshRebindRows();
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
@@ -425,6 +485,10 @@ public class SettingsPanelManager : ViewPartBase
                     editingState.InputRebindsJson = input != null
                         ? input.SaveBindingOverrides()
                         : string.Empty;
+                    savedState.InputRebindsJson = editingState.InputRebindsJson;
+                    GameSettingsService.Save(savedState);
+                    input?.SaveBindingOverridesToStore();
+                    GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
                     RefreshRebindRows();
                     AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
                     return;
@@ -503,7 +567,17 @@ public class SettingsPanelManager : ViewPartBase
         return resetBindingsButton;
     }
 
-    private void ApplyPreviewIfNeeded()
+    private void SaveAndApplyAudio()
+    {
+        editingState.Sanitize();
+        savedState.MasterVolume = editingState.MasterVolume;
+        savedState.SfxVolume = editingState.SfxVolume;
+        savedState.MusicVolume = editingState.MusicVolume;
+        GameSettingsService.Save(savedState);
+        ApplyAudioPreview();
+    }
+
+    private void ApplyAudioPreview()
     {
         if (!applyPreviewImmediately)
         {
@@ -511,6 +585,27 @@ public class SettingsPanelManager : ViewPartBase
         }
 
         GameSettingsService.ApplyAudio(editingState);
+    }
+
+    private void SaveAndApplyDisplay(GameSettingsState previousState)
+    {
+        editingState.Sanitize();
+        savedState.SetDisplaySnapshot(editingState.ToDisplaySnapshot());
+        GameSettingsService.Save(savedState);
+
+        bool displayChanged = !previousState.ToDisplaySnapshot().Equals(savedState.ToDisplaySnapshot());
+        if (displayChanged)
+        {
+            RequestDisplayConfirmationAsync(previousState, savedState.Clone()).Forget();
+        }
+    }
+
+    private void SaveAndApplyLanguage()
+    {
+        editingState.Sanitize();
+        savedState.LanguageCode = editingState.LanguageCode;
+        GameSettingsService.Save(savedState);
+        GameSettingsService.ApplyLanguage(savedState.LanguageCode).Forget();
     }
 
     private void ApplyEditingStateToView()
@@ -570,14 +665,12 @@ public class SettingsPanelManager : ViewPartBase
         bool showDisplay = showResolution || showWindowMode;
         bool showLanguage = IsFeatureEnabled(SettingsFeature.Language);
         bool showInput = IsFeatureEnabled(SettingsFeature.KeyboardRebind) || IsFeatureEnabled(SettingsFeature.GamepadRebind);
-        bool showTouch = IsFeatureEnabled(SettingsFeature.TouchControls);
 
-        SetActive(audioSection, showAudio);
-        SetActive(displaySection, showDisplay);
-        SetActive(languageSection, showLanguage);
-        SetActive(inputSection, showInput);
-        SetActive(touchSection, showTouch);
-
+        SetTabAvailable(audioTabButton, showAudio);
+        SetTabAvailable(displayTabButton, showDisplay);
+        SetTabAvailable(controlTabButton, showInput);
+        SetTabAvailable(gameplayTabButton, true);
+        SetTabAvailable(languageTabButton, showLanguage);
         masterVolume.gameObject.SetActive(showAudio);
         sfxVolume.gameObject.SetActive(showAudio);
         musicVolume.gameObject.SetActive(showAudio);
@@ -586,6 +679,7 @@ public class SettingsPanelManager : ViewPartBase
         languageRow.gameObject.SetActive(showLanguage);
         resetBindingsButton.gameObject.SetActive(showInput);
         RefreshRebindRows();
+        SelectCategory(ResolveInitialCategory());
     }
 
     private void ClampEditingStateToProfile()
@@ -734,6 +828,182 @@ public class SettingsPanelManager : ViewPartBase
         }
     }
 
+    private void SelectAudioCategory()
+    {
+        SelectCategory(SettingsCategory.Audio);
+    }
+
+    private void SelectDisplayCategory()
+    {
+        SelectCategory(SettingsCategory.Display);
+    }
+
+    private void SelectControlCategory()
+    {
+        SelectCategory(SettingsCategory.Control);
+    }
+
+    private void SelectGameplayCategory()
+    {
+        SelectCategory(SettingsCategory.Gameplay);
+    }
+
+    private void SelectLanguageCategory()
+    {
+        SelectCategory(SettingsCategory.Language);
+    }
+
+    private void SelectCategory(SettingsCategory category)
+    {
+        if (!IsCategoryAvailable(category))
+        {
+            category = ResolveInitialCategory();
+        }
+
+        currentCategory = category;
+        SetActive(audioSection, category == SettingsCategory.Audio && IsCategoryAvailable(SettingsCategory.Audio));
+        SetActive(displaySection, category == SettingsCategory.Display && IsCategoryAvailable(SettingsCategory.Display));
+        SetActive(inputSection, category == SettingsCategory.Control && IsCategoryAvailable(SettingsCategory.Control));
+        SetActive(gameplaySection, category == SettingsCategory.Gameplay && IsCategoryAvailable(SettingsCategory.Gameplay));
+        SetActive(touchSection, category == SettingsCategory.Gameplay && IsCategoryAvailable(SettingsCategory.Gameplay));
+        SetActive(languageSection, category == SettingsCategory.Language && IsCategoryAvailable(SettingsCategory.Language));
+        RefreshTabSelection();
+        RefreshSectionTitle();
+        SelectDefaultControlIfVisible(visible);
+    }
+
+    private SettingsCategory ResolveInitialCategory()
+    {
+        if (IsCategoryAvailable(currentCategory))
+        {
+            return currentCategory;
+        }
+
+        if (IsCategoryAvailable(SettingsCategory.Audio))
+        {
+            return SettingsCategory.Audio;
+        }
+
+        if (IsCategoryAvailable(SettingsCategory.Display))
+        {
+            return SettingsCategory.Display;
+        }
+
+        if (IsCategoryAvailable(SettingsCategory.Control))
+        {
+            return SettingsCategory.Control;
+        }
+
+        if (IsCategoryAvailable(SettingsCategory.Gameplay))
+        {
+            return SettingsCategory.Gameplay;
+        }
+
+        return SettingsCategory.Language;
+    }
+
+    private bool IsCategoryAvailable(SettingsCategory category)
+    {
+        return category switch
+        {
+            SettingsCategory.Audio => IsFeatureEnabled(SettingsFeature.Audio),
+            SettingsCategory.Display => IsFeatureEnabled(SettingsFeature.DisplayResolution) || IsFeatureEnabled(SettingsFeature.WindowMode),
+            SettingsCategory.Control => IsFeatureEnabled(SettingsFeature.KeyboardRebind) || IsFeatureEnabled(SettingsFeature.GamepadRebind),
+            SettingsCategory.Gameplay => true,
+            SettingsCategory.Language => IsFeatureEnabled(SettingsFeature.Language),
+            _ => false
+        };
+    }
+
+    private void RefreshSectionTitle()
+    {
+        if (sectionTitle == null)
+        {
+            return;
+        }
+
+        sectionTitle.text = currentCategory switch
+        {
+            SettingsCategory.Audio => "音频设置",
+            SettingsCategory.Display => "画面设置",
+            SettingsCategory.Control => "控制设置",
+            SettingsCategory.Gameplay => "游戏设置",
+            SettingsCategory.Language => "语言设置",
+            _ => "设置"
+        };
+    }
+
+    private void RefreshTabSelection()
+    {
+        SetTabSelected(audioTabButton, currentCategory == SettingsCategory.Audio);
+        SetTabSelected(displayTabButton, currentCategory == SettingsCategory.Display);
+        SetTabSelected(controlTabButton, currentCategory == SettingsCategory.Control);
+        SetTabSelected(gameplayTabButton, currentCategory == SettingsCategory.Gameplay);
+        SetTabSelected(languageTabButton, currentCategory == SettingsCategory.Language);
+    }
+
+    private static void SetTabAvailable(Button button, bool available)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        button.gameObject.SetActive(available);
+        button.interactable = available;
+    }
+
+    private static void SetTabSelected(Button button, bool selected)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        Image image = button.targetGraphic as Image;
+        if (image != null)
+        {
+            image.color = selected
+                ? new Color(1f, 0.17f, 0.68f, 0.92f)
+                : new Color(0.03f, 0.06f, 0.16f, 0.82f);
+        }
+    }
+
+    private void OnCloseClicked()
+    {
+        AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+        Handle.CloseAsync(CloseReason.Normal, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private static void AddTabListener(Button button, UnityEngine.Events.UnityAction action)
+    {
+        AddButtonListener(button, action);
+    }
+
+    private static void RemoveTabListener(Button button, UnityEngine.Events.UnityAction action)
+    {
+        RemoveButtonListener(button, action);
+    }
+
+    private static void AddButtonListener(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        button.onClick.RemoveListener(action);
+        button.onClick.AddListener(action);
+    }
+
+    private static void RemoveButtonListener(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(action);
+        }
+    }
+
     private void ValidateConfiguration()
     {
         if (motionSource == null)
@@ -760,7 +1030,7 @@ public class SettingsPanelManager : ViewPartBase
         ValidateSection(displaySection, nameof(displaySection));
         ValidateSection(languageSection, nameof(languageSection));
         ValidateSection(inputSection, nameof(inputSection));
-        ValidateSection(touchSection, nameof(touchSection));
+        ValidateSection(gameplaySection, nameof(gameplaySection));
         ValidateObject(masterVolume, nameof(masterVolume));
         ValidateObject(sfxVolume, nameof(sfxVolume));
         ValidateObject(musicVolume, nameof(musicVolume));
@@ -793,11 +1063,6 @@ public class SettingsPanelManager : ViewPartBase
         if (resetBindingsButton == null)
         {
             throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing reset bindings button.");
-        }
-
-        if (saveButton == null)
-        {
-            throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing save button.");
         }
 
         if (resetButton == null)

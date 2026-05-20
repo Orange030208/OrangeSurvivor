@@ -220,6 +220,17 @@ public sealed class ProceduralAnimationProfileSO : ScriptableObject
             glowAmount: 0.05f));
 
         states.Add(new StateDefinition(
+            "Charge",
+            0.55f,
+            false,
+            new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.65f, 0.08f), new Keyframe(1f, 0.16f)),
+            new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.65f, -0.04f), new Keyframe(1f, -0.08f)),
+            AnimationCurve.Constant(0f, 1f, 0f),
+            AnimationCurve.Constant(0f, 1f, 0f),
+            AnimationCurve.Constant(0f, 1f, 0f),
+            glowAmount: 0.16f));
+
+        states.Add(new StateDefinition(
             "Attack",
             0.55f,
             false,
