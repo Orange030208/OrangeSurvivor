@@ -5,8 +5,11 @@ public class CharacterDataSO : ScriptableObject, IDescribable
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
+    [field: SerializeField] public Sprite CharacterSprite { get; private set; }
     [field: SerializeField] public string CharacterDescription { get; private set; }
     [field: SerializeField] public RuntimeAnimatorController CharacterAnimatorController { get; private set; }
+    [field: SerializeField] public EntityAnimationConfig ProceduralAnimationConfig { get; private set; }
+    [field: SerializeField] public ProceduralAnimationProfileSO ProceduralAnimationProfile { get; private set; }
 
     [Header("基础属性")] [SerializeField] private BasePropGroupSO basePropsAsset;
 
@@ -25,7 +28,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
     public Sprite Icon => CharacterIcon;
     public string Description => CharacterDescription;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
-    
+
     public IReadOnlyList<PropModifierData> ExtraProps => GetReadOnlyListOrEmpty(extraProps);
     public IReadOnlyList<FeatureBase> SpecialFeatures => GetReadOnlyListOrEmpty(specialFeatures);
     public IReadOnlyList<WeaponEntry> InitialWeapons => GetReadOnlyListOrEmpty(initialWeapons);

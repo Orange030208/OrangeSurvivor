@@ -9,10 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(FeatureHost))]
 [RequireComponent(typeof(AccessoryManager))]
 [RequireComponent(typeof(WeaponsHolder))]
-[RequireComponent(typeof(PlayerAnimationController))]
 [RequireComponent(typeof(CurrencyWallet))]
 [RequireComponent(typeof(PropertiesManager))]
 public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitialWeaponProvider, IInitialAccessoryProvider,IFeatureEffectsProvider
+    , IAnimationConfigProvider, IProceduralAnimationProfileProvider, ICharacterSpriteProvider
 {
     [Header("组件")]
     private Rigidbody2D rb;
@@ -25,6 +25,9 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     public PropertiesManager PropertiesManager => propertiesManager;
 
     public CharacterDataSO CharacterData => characterData;
+    public Sprite CharacterSprite => characterData != null ? characterData.CharacterSprite : null;
+    public EntityAnimationConfig AnimationConfig => characterData != null ? characterData.ProceduralAnimationConfig : null;
+    public ProceduralAnimationProfileSO ProceduralAnimationProfile => characterData != null ? characterData.ProceduralAnimationProfile : null;
     public BasePropGroupSO BasePropsGroup => characterData != null ? characterData.BasePropsAsset : null;
     public IReadOnlyList<WeaponEntry> InitialWeapons => characterData != null
         ? characterData.InitialWeapons
@@ -33,7 +36,7 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     public IReadOnlyList<AccessoryDataSO> InitialAccessories => characterData != null
         ? characterData.InitialAccessories
         : System.Array.Empty<AccessoryDataSO>();
-    
+
     public IReadOnlyList<PropModifierData> PropModifierDataList => characterData != null
         ? characterData.ExtraProps
         : System.Array.Empty<PropModifierData>();

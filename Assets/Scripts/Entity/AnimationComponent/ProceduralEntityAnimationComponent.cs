@@ -3,9 +3,6 @@ using UnityEngine;
 
 public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IAnimatable, IEntityFacingController
 {
-    private static readonly int SquashId = Shader.PropertyToID("_Squash");
-    private static readonly int StretchId = Shader.PropertyToID("_Stretch");
-    private static readonly int VerticalOffsetId = Shader.PropertyToID("_VerticalOffset");
     private static readonly int FlashAmountId = Shader.PropertyToID("_FlashAmount");
     private static readonly int DissolveAmountId = Shader.PropertyToID("_DissolveAmount");
     private static readonly int HueShiftId = Shader.PropertyToID("_HueShift");
@@ -16,19 +13,26 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
     private const float DEFAULT_SCALE_X = 1f;
     private const float DEFAULT_PLAYBACK_SPEED = 1f;
     private const float DEFAULT_DURATION = 0.8f;
+    private const float HORIZONTAL_SCALE_RESPONSE = 0.35f;
+    private const float VERTICAL_SCALE_RESPONSE = 0.7f;
+    private const float MIN_VISUAL_SCALE = 0.35f;
     private static readonly int SpawnStateHash = Animator.StringToHash("Spawn");
+    private static readonly int ChargeStateHash = Animator.StringToHash("Charge");
 
     [Header("程序动画")]
     [SerializeField] private ProceduralAnimationProfileSO profile;
+    [SerializeField] private Transform visualRoot;
     [SerializeField] private Color flashColor = new Color(1f, 0.92f, 0.72f, 1f);
     [SerializeField] private Color glowColor = new Color(0f, 0.55f, 0.8f, 1f);
-    [SerializeField] private bool recordAnimatorParameterDebug;
 
     private Entity owner;
     private HealthComponent healthComponent;
     private IAnimationConfigProvider animationConfigProvider;
+    private IProceduralAnimationProfileProvider proceduralAnimationProfileProvider;
+    private ICharacterSpriteProvider characterSpriteProvider;
     private EntityAnimationConfig animationConfig;
     private SpriteRenderer spriteRenderer;
+    private Transform visualTransform;
     private MaterialPropertyBlock propertyBlock;
     private ProceduralAnimationProfileSO.StateDefinition currentState;
     private int currentStateHash;
@@ -37,8 +41,23 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
     private float hurtOverlayElapsedTime;
     private bool hurtOverlayActive;
     private float baseScaleX = DEFAULT_SCALE_X;
+    private Vector3 baseVisualLocalScale = Vector3.one;
+    private Vector3 baseVisualLocalPosition;
+    private float baseVisualFacingSign = 1f;
+    private float currentVisualFacingSign = 1f;
     private System.Action spawnCompletedCallback;
     private bool isSpawnSequenceRunning;
+
+    private struct AnimationSample
+    {
+        public float Squash;
+        public float Stretch;
+        public float VerticalOffset;
+        public float Flash;
+        public float Dissolve;
+        public float HueShift;
+        public float GlowAmount;
+    }
 
     public override Entity Owner => owner;
     public override int Priority => PriorityPreset.NoRely - 10;
@@ -49,11 +68,19 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         this.owner = owner;
         healthComponent = owner.GetComponent<HealthComponent>();
         animationConfigProvider = owner.GetComponent<IAnimationConfigProvider>();
+        proceduralAnimationProfileProvider = owner.GetComponent<IProceduralAnimationProfileProvider>();
+        characterSpriteProvider = owner.GetComponent<ICharacterSpriteProvider>();
         animationConfig = animationConfigProvider?.AnimationConfig;
+        profile = profile != null ? profile : proceduralAnimationProfileProvider?.ProceduralAnimationProfile;
         spriteRenderer = owner.EntityRenderer != null ? owner.EntityRenderer.SpriteRenderer : GetComponentInChildren<SpriteRenderer>();
+        visualTransform = visualRoot != null
+            ? visualRoot
+            : spriteRenderer != null ? spriteRenderer.transform : null;
         propertyBlock = new MaterialPropertyBlock();
 
         CacheBaseScaleX();
+        CacheBaseVisualTransformState();
+        ApplyCharacterSprite();
         FaceDefault();
 
         if (animationConfig != null)
@@ -61,7 +88,7 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
             PlayState(animationConfig.IdleHash, 0f);
         }
 
-        ApplyShaderProperties(0f);
+        ApplyAnimationProperties(0f);
     }
 
     public override void OnEnableComponent()
@@ -85,6 +112,7 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
 
         isSpawnSequenceRunning = false;
         spawnCompletedCallback = null;
+        ResetVisualTransform();
         ResetShaderProperties();
     }
 
@@ -94,13 +122,13 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         TickPrimaryState(safeDeltaTime);
         TickHurtOverlay(safeDeltaTime);
         TickSpawnSequence();
-        ApplyShaderProperties(GetCurrentStateNormalizedTime());
+        ApplyAnimationProperties(GetCurrentStateNormalizedTime());
     }
 
-    public void SetBool(int id, bool value) => RecordParameterDebug(nameof(SetBool), id, value);
-    public void SetTrigger(int id) => RecordParameterDebug(nameof(SetTrigger), id, true);
-    public void SetFloat(int id, float value) => RecordParameterDebug(nameof(SetFloat), id, value);
-    public void SetInteger(int id, int value) => RecordParameterDebug(nameof(SetInteger), id, value);
+    public void SetBool(int id, bool value) { }
+    public void SetTrigger(int id) { }
+    public void SetFloat(int id, float value) { }
+    public void SetInteger(int id, int value) { }
 
     public void SetBool(string paramName, bool value) => SetBool(Animator.StringToHash(paramName), value);
     public void SetTrigger(string paramName) => SetTrigger(Animator.StringToHash(paramName));
@@ -132,7 +160,7 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         currentStateHash = stateHash;
         currentState = ResolveState(stateHash);
         currentStateElapsedTime = Mathf.Clamp01(normalizedTime) * ResolveDuration(currentState);
-        ApplyShaderProperties(GetCurrentStateNormalizedTime());
+        ApplyAnimationProperties(GetCurrentStateNormalizedTime());
     }
 
     public void PlaySpawnSequence(System.Action onCompleted = null)
@@ -294,41 +322,90 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         return state != null ? state.Duration : DEFAULT_DURATION;
     }
 
-    private void ApplyShaderProperties(float normalizedTime)
+    private void ApplyAnimationProperties(float normalizedTime)
+    {
+        AnimationSample sample = SampleAnimation(normalizedTime);
+        ApplyVisualTransform(sample);
+        ApplyShaderProperties(sample);
+    }
+
+    private AnimationSample SampleAnimation(float normalizedTime)
+    {
+        float sampleTime = currentState != null && currentState.Loop
+            ? Mathf.Repeat(normalizedTime, 1f)
+            : Mathf.Clamp01(normalizedTime);
+
+        AnimationSample sample = new()
+        {
+            Squash = currentState != null ? currentState.EvaluateSquash(sampleTime) : 0f,
+            Stretch = currentState != null ? currentState.EvaluateStretch(sampleTime) : 0f,
+            VerticalOffset = currentState != null ? currentState.EvaluateVerticalOffset(sampleTime) : 0f,
+            Flash = currentState != null ? currentState.EvaluateFlash(sampleTime) : 0f,
+            Dissolve = currentState != null ? currentState.EvaluateDissolve(sampleTime) : 0f,
+            HueShift = currentState != null ? currentState.HueShift : 0f,
+            GlowAmount = currentState != null ? currentState.GlowAmount : 0f
+        };
+
+        if (hurtOverlayActive && profile != null)
+        {
+            float hurtTime = Mathf.Clamp01(hurtOverlayElapsedTime / profile.HurtOverlayDuration);
+            sample.Squash += profile.EvaluateHurtSquash(hurtTime);
+            sample.Stretch += profile.EvaluateHurtStretch(hurtTime);
+            sample.Flash = Mathf.Max(sample.Flash, profile.EvaluateHurtFlash(hurtTime));
+        }
+
+        return sample;
+    }
+
+    private void ApplyVisualTransform(AnimationSample sample)
+    {
+        if (visualTransform == null)
+        {
+            return;
+        }
+
+        Vector3 targetScale = baseVisualLocalScale;
+        // Charge 只保留纵向拉伸，避免蓄力时出现横向“撑开”的感觉。
+        bool isChargeState = currentStateHash == ChargeStateHash;
+        ResolveVisualScale(sample.Squash, sample.Stretch, isChargeState, out float horizontalScale, out float verticalScale);
+        bool visualTransformIsOwner = IsVisualTransformOwner();
+        if (UsesExplicitVisualRoot())
+        {
+            targetScale.x = Mathf.Abs(baseVisualLocalScale.x) * horizontalScale * currentVisualFacingSign;
+        }
+        else if (visualTransformIsOwner)
+        {
+            float facingSign = visualTransform.localScale.x < 0f ? -1f : 1f;
+            targetScale.x = Mathf.Abs(baseVisualLocalScale.x) * horizontalScale * facingSign;
+        }
+        else
+        {
+            targetScale.x = baseVisualLocalScale.x * horizontalScale;
+        }
+
+        targetScale.y = baseVisualLocalScale.y * verticalScale;
+        visualTransform.localScale = targetScale;
+
+        if (!visualTransformIsOwner)
+        {
+            Vector3 targetPosition = baseVisualLocalPosition;
+            targetPosition.y += sample.VerticalOffset;
+            visualTransform.localPosition = targetPosition;
+        }
+    }
+
+    private void ApplyShaderProperties(AnimationSample sample)
     {
         if (spriteRenderer == null || propertyBlock == null)
         {
             return;
         }
 
-        float sampleTime = currentState != null && currentState.Loop
-            ? Mathf.Repeat(normalizedTime, 1f)
-            : Mathf.Clamp01(normalizedTime);
-
-        float squash = currentState != null ? currentState.EvaluateSquash(sampleTime) : 0f;
-        float stretch = currentState != null ? currentState.EvaluateStretch(sampleTime) : 0f;
-        float verticalOffset = currentState != null ? currentState.EvaluateVerticalOffset(sampleTime) : 0f;
-        float flash = currentState != null ? currentState.EvaluateFlash(sampleTime) : 0f;
-        float dissolve = currentState != null ? currentState.EvaluateDissolve(sampleTime) : 0f;
-        float hueShift = currentState != null ? currentState.HueShift : 0f;
-        float glowAmount = currentState != null ? currentState.GlowAmount : 0f;
-
-        if (hurtOverlayActive && profile != null)
-        {
-            float hurtTime = Mathf.Clamp01(hurtOverlayElapsedTime / profile.HurtOverlayDuration);
-            squash += profile.EvaluateHurtSquash(hurtTime);
-            stretch += profile.EvaluateHurtStretch(hurtTime);
-            flash = Mathf.Max(flash, profile.EvaluateHurtFlash(hurtTime));
-        }
-
         spriteRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetFloat(SquashId, squash);
-        propertyBlock.SetFloat(StretchId, stretch);
-        propertyBlock.SetFloat(VerticalOffsetId, verticalOffset);
-        propertyBlock.SetFloat(FlashAmountId, Mathf.Clamp01(flash));
-        propertyBlock.SetFloat(DissolveAmountId, Mathf.Clamp01(dissolve));
-        propertyBlock.SetFloat(HueShiftId, hueShift);
-        propertyBlock.SetFloat(GlowAmountId, glowAmount);
+        propertyBlock.SetFloat(FlashAmountId, Mathf.Clamp01(sample.Flash));
+        propertyBlock.SetFloat(DissolveAmountId, Mathf.Clamp01(sample.Dissolve));
+        propertyBlock.SetFloat(HueShiftId, sample.HueShift);
+        propertyBlock.SetFloat(GlowAmountId, sample.GlowAmount);
         propertyBlock.SetColor(GlowColorId, glowColor);
         propertyBlock.SetColor(FlashColorId, flashColor);
         spriteRenderer.SetPropertyBlock(propertyBlock);
@@ -342,9 +419,6 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         }
 
         spriteRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetFloat(SquashId, 0f);
-        propertyBlock.SetFloat(StretchId, 0f);
-        propertyBlock.SetFloat(VerticalOffsetId, 0f);
         propertyBlock.SetFloat(FlashAmountId, 0f);
         propertyBlock.SetFloat(DissolveAmountId, 0f);
         propertyBlock.SetFloat(HueShiftId, 0f);
@@ -352,6 +426,71 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         propertyBlock.SetColor(GlowColorId, glowColor);
         propertyBlock.SetColor(FlashColorId, flashColor);
         spriteRenderer.SetPropertyBlock(propertyBlock);
+    }
+
+    private static void ResolveVisualScale(float squash, float stretch, bool verticalOnly, out float horizontalScale, out float verticalScale)
+    {
+        if (verticalOnly)
+        {
+            horizontalScale = 1f;
+            verticalScale = Mathf.Max(MIN_VISUAL_SCALE, 1f + (squash - stretch) * VERTICAL_SCALE_RESPONSE);
+            return;
+        }
+
+        float horizontalInfluence = (-squash + stretch) * HORIZONTAL_SCALE_RESPONSE;
+        float verticalInfluence = (squash - stretch) * VERTICAL_SCALE_RESPONSE;
+        horizontalScale = Mathf.Max(MIN_VISUAL_SCALE, 1f + horizontalInfluence);
+        verticalScale = Mathf.Max(MIN_VISUAL_SCALE, 1f + verticalInfluence);
+    }
+
+    private void CacheBaseVisualTransformState()
+    {
+        if (visualTransform == null)
+        {
+            baseVisualLocalScale = Vector3.one;
+            baseVisualLocalPosition = Vector3.zero;
+            return;
+        }
+
+        baseVisualLocalScale = visualTransform.localScale;
+        baseVisualLocalPosition = visualTransform.localPosition;
+        baseVisualFacingSign = baseVisualLocalScale.x < 0f ? -1f : 1f;
+        currentVisualFacingSign = baseVisualFacingSign;
+    }
+
+    private void ResetVisualTransform()
+    {
+        if (visualTransform == null)
+        {
+            return;
+        }
+
+        Vector3 targetScale = baseVisualLocalScale;
+        if (UsesExplicitVisualRoot())
+        {
+            targetScale.x = Mathf.Abs(baseVisualLocalScale.x) * currentVisualFacingSign;
+        }
+        else if (IsVisualTransformOwner())
+        {
+            float facingSign = visualTransform.localScale.x < 0f ? -1f : 1f;
+            targetScale.x = Mathf.Abs(baseVisualLocalScale.x) * facingSign;
+        }
+
+        visualTransform.localScale = targetScale;
+        if (!IsVisualTransformOwner())
+        {
+            visualTransform.localPosition = baseVisualLocalPosition;
+        }
+    }
+
+    private bool IsVisualTransformOwner()
+    {
+        return owner != null && visualTransform == owner.transform;
+    }
+
+    private bool UsesExplicitVisualRoot()
+    {
+        return visualRoot != null && visualTransform == visualRoot;
     }
 
     private void OnDamaged(HitResult result)
@@ -393,11 +532,11 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
             float deltaTime = Mathf.Max(0f, Time.deltaTime);
             TickPrimaryState(deltaTime);
             TickHurtOverlay(deltaTime);
-            ApplyShaderProperties(GetCurrentStateNormalizedTime());
+            ApplyAnimationProperties(GetCurrentStateNormalizedTime());
             yield return null;
         }
 
-        ApplyShaderProperties(1f);
+        ApplyAnimationProperties(1f);
     }
 
     private void CacheBaseScaleX()
@@ -423,27 +562,40 @@ public sealed class ProceduralEntityAnimationComponent : EntityComponentBase, IA
         }
 
         bool shouldFlip = desiredDirection != animationConfig.DefaultFacingDirection;
-        Transform ownerTransform = owner.transform;
-        Vector3 scale = ownerTransform.localScale;
-        scale.x = shouldFlip ? -baseScaleX : baseScaleX;
-        ownerTransform.localScale = scale;
-    }
-
-    private void RecordParameterDebug(string operation, int id, object value)
-    {
-        if (!recordAnimatorParameterDebug)
+        if (UsesExplicitVisualRoot())
         {
-            return;
+            currentVisualFacingSign = shouldFlip ? -baseVisualFacingSign : baseVisualFacingSign;
+        }
+        else
+        {
+            Transform ownerTransform = owner.transform;
+            Vector3 scale = ownerTransform.localScale;
+            scale.x = shouldFlip ? -baseScaleX : baseScaleX;
+            ownerTransform.localScale = scale;
         }
 
-        Debug.Log($"[{nameof(ProceduralEntityAnimationComponent)}] Ignore Animator parameter {operation}({id}, {value}) on {name}.", this);
+        ApplyAnimationProperties(GetCurrentStateNormalizedTime());
     }
 
     private void OnValidate()
     {
         if (Application.isPlaying)
         {
-            ApplyShaderProperties(GetCurrentStateNormalizedTime());
+            ApplyAnimationProperties(GetCurrentStateNormalizedTime());
+        }
+    }
+
+    private void ApplyCharacterSprite()
+    {
+        if (spriteRenderer == null)
+        {
+            return;
+        }
+
+        Sprite characterSprite = characterSpriteProvider != null ? characterSpriteProvider.CharacterSprite : null;
+        if (characterSprite != null)
+        {
+            spriteRenderer.sprite = characterSprite;
         }
     }
 }

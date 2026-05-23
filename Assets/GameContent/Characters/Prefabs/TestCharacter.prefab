@@ -42,8 +42,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &1870975476276166357
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,8 +86,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &4370425158825366573
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,8 +130,40 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!1 &4839740752545301298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5941195631556576055}
+  m_Layer: 7
+  m_Name: VisualRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5941195631556576055
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4839740752545301298}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4594957713431820815}
+  m_Father: {fileID: 4148873388665774737}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5130470623537578436
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,8 +206,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &6622845515323099983
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,7 +220,7 @@ GameObject:
   - component: {fileID: 7522781403356734116}
   - component: {fileID: 4481535503126680268}
   m_Layer: 0
-  m_Name: Dave Render
+  m_Name: Render
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,7 +239,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4148873388665774737}
+  m_Father: {fileID: 5941195631556576055}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7522781403356734116
 SpriteRenderer:
@@ -277,7 +309,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -326,7 +358,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4594957713431820815}
+  - {fileID: 5941195631556576055}
   - {fileID: 3187044280391910348}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -340,9 +372,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06d669e316794633af379ed77ffe37bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  collider: {fileID: 6213491153152910195}
+  m_Name:
+  m_EditorClassIdentifier:
+  characterData: {fileID: 0}
 --- !u!114 &5855965168630381007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,8 +385,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4a005630851400ab686db52ae4e033e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &2112926617661376920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,8 +397,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1009fd4ff2f556e4db8c4e0ad3dde514, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animator: {fileID: 4481535503126680268}
   entityRenderer: {fileID: 0}
 --- !u!114 &5814369204727609031
@@ -379,8 +411,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8270629898711cf408104abaeaeaf2ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   defaultMaxHealth: 1
 --- !u!114 &6756405707632950160
 MonoBehaviour:
@@ -392,8 +424,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9076385a57fa45f59fa0f66e35227e29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToDetect: 0.1
   collectLayerMask: 0
 --- !u!114 &4623821330200326049
@@ -406,8 +438,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44205aa8461c81840917711321476dbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   levelConfig: {fileID: 11400000, guid: 60343b3717d725c43a1908d6b5768f49, type: 2}
 --- !u!114 &1599788479870389316
 MonoBehaviour:
@@ -419,8 +451,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd93cf85a5544a44bcd5e54362b37c3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   propMappings:
   - sourcePropType: 0
     targetPropType: 29
@@ -444,8 +476,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 307b4bfb990b4d32bc9a964b81c6db11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &3977488090093624418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,8 +488,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 062db910b01a17c4d9e14fc6472a5a7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &5780936605003846148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,8 +500,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58184e07f71b4c9499ee98420be334aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!50 &8093913012144903216
 Rigidbody2D:
   serializedVersion: 4
@@ -542,8 +574,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 199a0049218fd1943bed46887a775049, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   initialAmount: 0
 --- !u!114 &1703703632742644113
 MonoBehaviour:
@@ -555,8 +587,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0687f93c9c64c54a8d15fea614065dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   weaponPositions:
   - {fileID: 3264964080070106289}
   - {fileID: 6993567293891142406}
@@ -564,6 +596,8 @@ MonoBehaviour:
   - {fileID: 1434366043789330168}
   - {fileID: 7522434224087940827}
   - {fileID: 1290580664080994629}
+  weaponSlotRadius: 1.5
+  weaponSlotsRoot: {fileID: 0}
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -577,8 +611,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   spriteRenderer: {fileID: 7522781403356734116}
 --- !u!1 &8473914789015488600
 GameObject:
@@ -622,8 +656,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &8772805480389707454
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,5 +737,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56800b26195d497f90a74a53d7abcdcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:

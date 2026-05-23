@@ -35,7 +35,10 @@ public class PlayerAnimationController : EntityComponentBase
             entityRenderer = GetComponentInChildren<EntityRenderer>();
         }
 
-        animator.runtimeAnimatorController = this.owner.CharacterData.CharacterAnimatorController;
+        if (animator != null && this.owner != null && this.owner.CharacterData != null)
+        {
+            animator.runtimeAnimatorController = this.owner.CharacterData.CharacterAnimatorController;
+        }
     }
 
     public override void OnEnableComponent()
@@ -58,8 +61,12 @@ public class PlayerAnimationController : EntityComponentBase
     {
         if (isDead) return;
 
-        animator.SetBool(IS_MOVING_HASH, playerController.IsMoving);
-        UpdateFacing();
+        if (animator != null)
+        {
+            animator.SetBool(IS_MOVING_HASH, playerController.IsMoving);
+        }
+
+        UpdateAnimatorFacing();
     }
 
     private void OnDeathSequenceStarted()
@@ -67,11 +74,14 @@ public class PlayerAnimationController : EntityComponentBase
         if (isDead) return;
 
         isDead = true;
-        animator.SetBool(IS_MOVING_HASH, false);
-        animator.SetTrigger(DIE_HASH);
+        if (animator != null)
+        {
+            animator.SetBool(IS_MOVING_HASH, false);
+            animator.SetTrigger(DIE_HASH);
+        }
     }
 
-    private void UpdateFacing()
+    private void UpdateAnimatorFacing()
     {
         Vector2 moveDirection = playerController.MoveDirection;
         if (Mathf.Abs(moveDirection.x) <= 0.001f)

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876a4ee69e7045d0964ccf8663d40de8, type: 3}
+  m_Name: NeonRoundCat
+  m_EditorClassIdentifier:
+  <CharacterName>k__BackingField: "\u9713\u8679\u732B"
+  <CharacterIcon>k__BackingField: {fileID: 21300000, guid: 66b2d1dc35cef734b970b6b1d3386419, type: 3}
+  <CharacterSprite>k__BackingField: {fileID: 21300000, guid: 66b2d1dc35cef734b970b6b1d3386419, type: 3}
+  <CharacterDescription>k__BackingField:
+  <CharacterAnimatorController>k__BackingField: {fileID: 0}
+  <ProceduralAnimationConfig>k__BackingField: {fileID: 11400000, guid: 83876bdcfdb13cb4f9d728e647e2501a, type: 2}
+  <ProceduralAnimationProfile>k__BackingField: {fileID: 11400000, guid: b5ecea7793246724caa758fcb5a72e0d, type: 2}
+  basePropsAsset: {fileID: 11400000, guid: 26684d967bd04984ea973d7dd3921ed0, type: 2}
+  extraProps:
+  - propType: 11
+    modifierType: 0
+    value: 4
+  - propType: 1
+    modifierType: 0
+    value: 50
+  - propType: 8
+    modifierType: 0
+    value: 50
+  - propType: 15
+    modifierType: 0
+    value: 500
+  - propType: 9
+    modifierType: 0
+    value: 1000
+  specialFeatures: []
+  initialWeapons:
+  - weaponData: {fileID: 11400000, guid: aef8d7c2aa7c49e48cc7a37dc0cc52a1, type: 2}
+    level: 4
+  initialAccessories: []
+  references:
+    version: 2
+    RefIds: []

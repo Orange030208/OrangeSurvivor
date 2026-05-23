@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 53063c7241ad4a0ba38eda9361e560bd, type: 3}
-  m_Name: Game Content Catalog
+  m_Name: Test Game Content Catalog
   m_EditorClassIdentifier:
   weaponDataList: {fileID: 11400000, guid: 0bda4080a3c62b641bf417ee6ca2543c, type: 2}
   accessoryDataList: {fileID: 11400000, guid: 6400ac5497a581e4c85acfb9a8c1f6b4, type: 2}
