@@ -30,7 +30,6 @@ public static class ScriptableObjectMenuPaths
     public const string ACCESSORY_DATA_LIST = GAMEPLAY_ROOT + "Items/Accessories/Accessory Data List";
     public const string WEAPON_ATTACK_SEQUENCE = GAMEPLAY_ROOT + "Weapons/Attack Sequence";
     public const string WEAPON_DATA = GAMEPLAY_ROOT + "Weapons/Weapon Data";
-    public const string WEAPON_DATA_LIST = GAMEPLAY_ROOT + "Weapons/Weapon Data List";
     public const string STAGE_DEFINITION = GAMEPLAY_ROOT + "Waves/Stage Definition";
     public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
     public const string WAVE_SPAWN_PACK = GAMEPLAY_ROOT + "Waves/Wave Spawn Pack";
@@ -60,4 +59,8 @@ public static class ScriptableObjectMenuPaths
     public const string PROP_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Properties/Prop Presentation Catalog";
     public const string DAMAGE_TEXT_VISUAL_CONFIG = PRESENTATION_ROOT + "Combat/Damage Text Visual Config";
     public const string MAP_GROUND_THEME = WORLD_ROOT + "Map/Ground Theme";
+    public const string MAP_GENERATION_PROFILE = WORLD_ROOT + "Map/Generation Profile";
+    public const string MAP_TILE_SET = WORLD_ROOT + "Map/Tile Set";
+    public const string MAP_ADJACENCY_RULE_SET = WORLD_ROOT + "Map/Adjacency Rule Set";
+    public const string MAP_CONSTRAINT_PROFILE = WORLD_ROOT + "Map/Constraint Profile";
 }

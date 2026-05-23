@@ -32,7 +32,6 @@ public static class GameContentAssetPaths
     public const string WeaponsAnimations = Weapons + "/Animations";
     public const string WeaponProjectileAnimations = WeaponsAnimations + "/Projectiles";
     public const string WeaponsVfx = Weapons + "/VFX";
-    public const string WeaponDataList = WeaponsData + "/Weapon Data List.asset";
     public const string DefaultWeaponPrefab = WeaponsPrefabs + "/Weapon.prefab";
 
     public const string Accessories = Root + "/Accessories";
@@ -70,6 +69,7 @@ public static class GameContentAssetPaths
     public const string UI = Root + "/UI";
     public const string UIData = UI + "/Data";
     public const string UIPrefabs = UI + "/Prefabs";
+    public const string UIPrefabsProp = UIPrefabs + "/Prop";
     public const string UISprites = UI + "/Sprites";
     public const string UIIconSprites = UISprites + "/Icons";
     public const string UIFonts = UI + "/Fonts";
@@ -84,6 +84,10 @@ public static class GameContentAssetPaths
     public const string UIFrameworkSettings = UIData + "/OrangeUIFrameworkSettings.asset";
     public const string UIViewCatalog = UIData + "/OrangeUIViewCatalog.asset";
     public const string OrangeCanvasProfile = UIData + "/OrangeCanvasProfile.asset";
+    public const string PropertyShowFolder = UI + "/Cyber/PropertyShow";
+    public const string PropertyShowPropIconsAtlas = PropertyShowFolder + "/prop_icons.png";
+    public const string PropShowerPrefab = UIPrefabsProp + "/PropShower.prefab";
+    public const string CyberPropItemPrefab = UIPrefabsProp + "/CyberPropItem.prefab";
 
     public const string Audio = Root + "/Audio";
     public const string AudioData = Audio + "/Data";
@@ -110,5 +114,10 @@ public static class GameContentAssetPaths
     public const string MapPrefabs = Map + "/Prefabs";
     public const string MapTiles = Map + "/Tiles";
     public const string MapSprites = Map + "/Sprites";
+    public const string MapGeneration = MapData + "/Generation";
+    public const string MapGenerationProfiles = MapGeneration + "/Profiles";
+    public const string MapGenerationTileSets = MapGeneration + "/Tile Sets";
+    public const string MapGenerationRules = MapGeneration + "/Rules";
+    public const string MapGenerationConstraints = MapGeneration + "/Constraints";
     public const string TxGrassGroundTheme = MapData + "/TX Grass Ground Theme.asset";
 }

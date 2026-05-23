@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: Weapon_NeonChainsaw
+  m_EditorClassIdentifier: 
+  itemName: "霓虹链锯"
+  itemIcon: {fileID: 21300000, guid: 7df891a19c288a101e90d217cc10d592, type: 3}
+  itemPrice: 35
+  itemType: 0
+  itemDescription: "强力持续近战切割，攻速高但安全距离短。"
+  weaponId: Weapon_NeonChainsaw
+  tags: 0100000002000000
+  attackSequence: {fileID: 11400000, guid: 143599165d09493984f23099e5b05479, type: 2}
+  visualForwardAngle: 45
+  holdAimWhenAttackReady: 0
+  attackSequenceOccupancy: 0.9
+  attackTimingMode: 1
+  targetingMode: 1
+  spawnPoints: []
+  sequenceProjectileList: []
+  sequenceSfxList:
+  - sfxKey: 304
+  sequenceVfxList: []
+  enableHitBox: 1
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 0.36, y: 0.8}
+  hitBoxOffset: {x: 0.02, y: 0.22}
+  levelStats:
+  - level: 1
+    attack: 11
+    attackSpeed: 230
+    criticalChance: 6
+    criticalPercent: 165
+    range: 145
+    knockbackStrength: 6
+    statBenefits:
+      attackSpeedBenefitPercent: 78
+      criticalChanceBenefitPercent: 68
+      criticalPercentBenefitPercent: 76
+      rangeBenefitPercent: 60
+      knockbackStrengthBenefitPercent: 38
+      meleeAttackUsagePercent: 105
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 2
+    attack: 14
+    attackSpeed: 270
+    criticalChance: 7
+    criticalPercent: 170
+    range: 155
+    knockbackStrength: 7
+    statBenefits:
+      attackSpeedBenefitPercent: 80
+      criticalChanceBenefitPercent: 72
+      criticalPercentBenefitPercent: 80
+      rangeBenefitPercent: 62
+      knockbackStrengthBenefitPercent: 40
+      meleeAttackUsagePercent: 120
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 3
+    attack: 18
+    attackSpeed: 320
+    criticalChance: 9
+    criticalPercent: 175
+    range: 165
+    knockbackStrength: 8
+    statBenefits:
+      attackSpeedBenefitPercent: 83
+      criticalChanceBenefitPercent: 77
+      criticalPercentBenefitPercent: 85
+      rangeBenefitPercent: 65
+      knockbackStrengthBenefitPercent: 42
+      meleeAttackUsagePercent: 140
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 4
+    attack: 27
+    attackSpeed: 300
+    criticalChance: 12
+    criticalPercent: 185
+    range: 180
+    knockbackStrength: 10
+    statBenefits:
+      attackSpeedBenefitPercent: 85
+      criticalChanceBenefitPercent: 82
+      criticalPercentBenefitPercent: 92
+      rangeBenefitPercent: 68
+      knockbackStrengthBenefitPercent: 45
+      meleeAttackUsagePercent: 160
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []

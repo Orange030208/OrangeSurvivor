@@ -12,7 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53063c7241ad4a0ba38eda9361e560bd, type: 3}
   m_Name: Game Content Catalog
   m_EditorClassIdentifier:
-  weaponDataList: {fileID: 11400000, guid: 0bda4080a3c62b641bf417ee6ca2543c, type: 2}
+  weapons:
+  - {fileID: 11400000, guid: 9b4aabfb4c17bca48fef30b9af31f08b, type: 2}
+  - {fileID: 11400000, guid: 91c8d5353f59002fa7c69a635357a3f0, type: 2}
+  - {fileID: 11400000, guid: b23c10e0f9f2e3f13485fb4b9ee7fa49, type: 2}
+  - {fileID: 11400000, guid: 90b7a6dd02c953047183641b17a31a9e, type: 2}
+  - {fileID: 11400000, guid: c9262d704e16de4cd839f2b894d81053, type: 2}
+  - {fileID: 11400000, guid: d79a2edf3c02e08819e4f17af379a4bc, type: 2}
+  - {fileID: 11400000, guid: 3f15d30ccf8a4f75a73d4b6980ef27ad, type: 2}
+  - {fileID: 11400000, guid: 7527f453ec8fce2af3136ee92932321b, type: 2}
+  - {fileID: 11400000, guid: 9f199c3694388ad911e175a4dcee3ab5, type: 2}
+  - {fileID: 11400000, guid: 2e8891ee3b994c96aa1f33e418f2939b, type: 2}
+  - {fileID: 11400000, guid: ac03bd310f2587180c18b2cc6175878f, type: 2}
+  - {fileID: 11400000, guid: aef8d7c2aa7c49e48cc7a37dc0cc52a1, type: 2}
+  - {fileID: 11400000, guid: 90125ca414481df6c7ec8e7e0f885576, type: 2}
+  - {fileID: 11400000, guid: 9ac9a2b684197108d31946b1f7063ccc, type: 2}
+  - {fileID: 11400000, guid: 5d7e812870084c56f3c6955784ef1aa3, type: 2}
+  - {fileID: 11400000, guid: cc30c6b16f53b0ff8a6d9858ce5cce0e, type: 2}
   accessoryDataList: {fileID: 11400000, guid: 6400ac5497a581e4c85acfb9a8c1f6b4, type: 2}
   defaultCharacter: {fileID: 11400000, guid: cf38a44acaa84314eaa660b0b9baf1f1, type: 2}
   starterCards:

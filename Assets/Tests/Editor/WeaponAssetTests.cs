@@ -12,7 +12,7 @@ public sealed class WeaponAssetTests
     public void WeaponJsonRowsAreReadableAndUnique()
     {
         IReadOnlyList<WeaponJsonWeapon> rows = WeaponJsonReader.ReadDefault();
-        Assert.AreEqual(8, rows.Count);
+        Assert.AreEqual(16, rows.Count);
 
         HashSet<string> weaponIds = new(StringComparer.Ordinal);
         for (int i = 0; i < rows.Count; i++)
@@ -87,18 +87,22 @@ public sealed class WeaponAssetTests
         ContentRollResult waveOneRoll = new ContentPoolRollService(new SystemContentRandom(1))
             .Roll(pool, CreateWeaponRewardContext(1), rows.Count);
         HashSet<string> waveOneIds = ToRolledIds(waveOneRoll);
-        Assert.IsTrue(waveOneIds.Contains("Weapon_ArcaneBolt"));
-        Assert.IsTrue(waveOneIds.Contains("Weapon_HuntingRifle"));
-        Assert.IsTrue(waveOneIds.Contains("Weapon_IronHammer"));
-        Assert.IsTrue(waveOneIds.Contains("Weapon_RapidSMG"));
-        Assert.IsFalse(waveOneIds.Contains("Weapon_DaggerRing"));
-        Assert.IsFalse(waveOneIds.Contains("Weapon_FireWand"));
-        Assert.IsFalse(waveOneIds.Contains("Weapon_SummonOrb"));
-        Assert.IsFalse(waveOneIds.Contains("Weapon_GreatAxe"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonBaseballBat"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonCombatKnife"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonKatana"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonPistol"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonShield"));
+        Assert.IsTrue(waveOneIds.Contains("Weapon_NeonSMG"));
+        Assert.IsFalse(waveOneIds.Contains("Weapon_NeonBattleAxe"));
+        Assert.IsFalse(waveOneIds.Contains("Weapon_NeonRocketLauncher"));
 
         ContentRollResult waveFiveRoll = new ContentPoolRollService(new SystemContentRandom(1))
             .Roll(pool, CreateWeaponRewardContext(5), rows.Count);
-        Assert.AreEqual(rows.Count, ToRolledIds(waveFiveRoll).Count);
+        Assert.IsFalse(ToRolledIds(waveFiveRoll).Contains("Weapon_NeonRocketLauncher"));
+
+        ContentRollResult waveSixRoll = new ContentPoolRollService(new SystemContentRandom(1))
+            .Roll(pool, CreateWeaponRewardContext(6), rows.Count);
+        Assert.AreEqual(rows.Count, ToRolledIds(waveSixRoll).Count);
     }
 
     private static ContentRollContext CreateWeaponRewardContext(int waveNumber)
