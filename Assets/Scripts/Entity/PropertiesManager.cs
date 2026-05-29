@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PropertiesManager : EntityComponentBase, IDescribable
+public class PropertiesManager : EntityComponentBase
 {
     private Entity owner;
 
@@ -20,21 +20,6 @@ public class PropertiesManager : EntityComponentBase, IDescribable
     private readonly Dictionary<PropType, float> mappedAddProps = new();
     private readonly Dictionary<PropType, float> unmappedCalculatedProps = new();
     private readonly Dictionary<string, List<PropModifierData>> modifierSources = new();
-
-    public string Title => "属性";
-    public Sprite Icon => null;
-    public string Description => "属性管理器";
-
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        List<DescriptorInfo> infos = new();
-        foreach (KeyValuePair<PropType, float> info in calculatedProps)
-        {
-            infos.Add(new DescriptorInfo(info.Key.ToString(), info.Key.FormatDisplayValue(info.Value)));
-        }
-
-        return infos;
-    }
 
     public event Action<PropType, float> OnPropertyChanged;
     public event Action OnAllPropertiesChanged;

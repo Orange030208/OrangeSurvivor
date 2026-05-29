@@ -75,6 +75,9 @@ public sealed class ShopPricingMetadata : ContentEntryMetadata
 [Serializable]
 public sealed class QualityMetadata : ContentEntryMetadata
 {
+    private const int MinTierValue = (int)ContentTier.Common;
+    private const int MaxTierValue = (int)ContentTier.Legendary;
+
     [SerializeField] private int qualityValue;
 
     public QualityMetadata()
@@ -83,14 +86,30 @@ public sealed class QualityMetadata : ContentEntryMetadata
 
     public QualityMetadata(int qualityValue)
     {
-        this.qualityValue = qualityValue;
+        this.qualityValue = NormalizeQualityValue(qualityValue);
+    }
+
+    public QualityMetadata(ContentTier tier)
+    {
+        qualityValue = ContentTierResolver.ToQualityValue(tier);
     }
 
     public int QualityValue => qualityValue;
+    public ContentTier Tier => ContentTierResolver.FromQualityValue(qualityValue);
 
     public void ConfigureQualityValue(int qualityValue)
     {
-        this.qualityValue = qualityValue;
+        this.qualityValue = NormalizeQualityValue(qualityValue);
+    }
+
+    public void ConfigureTier(ContentTier tier)
+    {
+        qualityValue = ContentTierResolver.ToQualityValue(tier);
+    }
+
+    private static int NormalizeQualityValue(int qualityValue)
+    {
+        return Mathf.Clamp(qualityValue, MinTierValue, MaxTierValue);
     }
 }
 

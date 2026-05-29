@@ -71,8 +71,7 @@ public static class WeaponJsonAssetSync
             ApplyWeapon(weapon, weaponData);
         }
 
-        RefreshWeaponDataList();
-        RebuildWeaponRewardPool(weapons);
+        GameContentCatalogBuildUtility.RebuildRuntimeContentCatalog();
         AssetDatabase.SaveAssets();
         return report;
     }
@@ -339,18 +338,6 @@ public static class WeaponJsonAssetSync
         }
 
         return result;
-    }
-
-    private static void RefreshWeaponDataList()
-    {
-        WeaponDataListSO weaponDataList =
-            AssetDatabase.LoadAssetAtPath<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList);
-        if (weaponDataList == null)
-        {
-            return;
-        }
-
-        weaponDataList.RefreshWeapons();
     }
 
     private static Dictionary<string, WeaponJsonWeapon> BuildRowsById(IReadOnlyList<WeaponJsonWeapon> rows)

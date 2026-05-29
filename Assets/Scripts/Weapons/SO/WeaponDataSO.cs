@@ -307,7 +307,7 @@ public struct WeaponBenefitData
 }
 
 [CreateAssetMenu(fileName = "Weapon Data", menuName = ScriptableObjectMenuPaths.WEAPON_DATA, order = 0)]
-public class WeaponDataSO : ItemDataSO, IDescribable
+public class WeaponDataSO : ItemDataSO, IInfoDocumentSource
 {
     [Header("标识")]
     [SerializeField] private string weaponId;
@@ -359,6 +359,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     public Vector2 HitBoxSize => hitBoxSize;
     public Vector2 HitBoxOffset => hitBoxOffset;
     public override string Description => BuildDescriptionForLevel(WeaponLevelHelper.MinLevel);
+    public override string ManualDescription => itemDescription;
 
     private void OnValidate()
     {
@@ -481,37 +482,9 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             "一把可装备武器。");
     }
 
-    public IEnumerable<DescriptorInfo> GetExtraInfosForLevel(int level)
+    public InfoDocument BuildInfoDocument()
     {
-        WeaponLevelStatData stats = GetLevelStats(level);
-        WeaponBenefitData displayedBenefits = stats.StatBenefits;
-        List<DescriptorInfo> infos = new();
-        string description = ItemDescriptionUtility.NormalizeManualDescription(itemDescription);
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            infos.Add(new DescriptorInfo(string.Empty, description));
-        }
-
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.Attack), ItemDescriptionUtility.FormatWeaponStatValue(PropType.Attack, stats.Attack)));
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.AttackSpeed), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackSpeed, stats.AttackSpeed)));
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.CriticalChance), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalChance, stats.CriticalChance)));
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.CriticalPercent), ItemDescriptionUtility.FormatWeaponStatValue(PropType.CriticalPercent, stats.CriticalPercent)));
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.AttackRange), ItemDescriptionUtility.FormatWeaponStatValue(PropType.AttackRange, stats.Range)));
-        infos.Add(new DescriptorInfo(GameContentRuntime.GetPropDisplayName(PropType.KnockbackStrength), ItemDescriptionUtility.FormatWeaponStatValue(PropType.KnockbackStrength, stats.KnockbackStrength)));
-        AddAttackUsageInfos(infos, displayedBenefits);
-        AddHolderModifierInfos(infos, stats.HolderModifiers);
-        AddStatBenefitInfos(infos, displayedBenefits);
-        if (tags != null && tags.Length > 0)
-        {
-            infos.Add(new DescriptorInfo("标签", ItemDescriptionUtility.JoinWeaponTags(tags)));
-        }
-
-        return infos;
-    }
-
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        return GetExtraInfosForLevel(WeaponLevelHelper.MinLevel);
+        return new WeaponInfoBuilder().Build(WeaponInfoSource.FromData(this, WeaponLevelHelper.MinLevel));
     }
 
     private IEnumerable<ItemDescriptionLine> BuildWeaponDescriptionLines(WeaponLevelStatData stats)
@@ -566,58 +539,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
         }
     }
 
-    private static void AddStatBenefitInfos(List<DescriptorInfo> infos, WeaponBenefitData statBenefits)
-    {
-        if (infos == null)
-        {
-            return;
-        }
-
-        AddStatBenefitInfo(infos, statBenefits, PropType.AttackSpeed);
-        AddStatBenefitInfo(infos, statBenefits, PropType.CriticalChance);
-        AddStatBenefitInfo(infos, statBenefits, PropType.CriticalPercent);
-        AddStatBenefitInfo(infos, statBenefits, PropType.AttackRange);
-        AddStatBenefitInfo(infos, statBenefits, PropType.KnockbackStrength);
-    }
-
-    private static void AddStatBenefitInfo(List<DescriptorInfo> infos, WeaponBenefitData statBenefits, PropType propType)
-    {
-        float benefitPercent = statBenefits.GetBenefitPercent(propType);
-        if (Mathf.Approximately(benefitPercent, 100f))
-        {
-            return;
-        }
-
-        infos.Add(new DescriptorInfo(
-            $"{GameContentRuntime.GetPropDisplayName(propType)}收益率",
-            FormatBenefitPercent(benefitPercent)));
-    }
-
-    private static void AddAttackUsageInfos(List<DescriptorInfo> infos, WeaponBenefitData attackUsage)
-    {
-        if (infos == null || !attackUsage.HasAnyUsage)
-        {
-            return;
-        }
-
-        AddAttackUsageInfo(infos, PropType.MeleeAttack, attackUsage.MeleeAttackUsagePercent);
-        AddAttackUsageInfo(infos, PropType.RangedAttack, attackUsage.RangedAttackUsagePercent);
-        AddAttackUsageInfo(infos, PropType.MagicAttack, attackUsage.MagicAttackUsagePercent);
-        AddAttackUsageInfo(infos, PropType.SummonAttack, attackUsage.SummonAttackUsagePercent);
-    }
-
-    private static void AddAttackUsageInfo(List<DescriptorInfo> infos, PropType propType, float usagePercent)
-    {
-        if (usagePercent <= 0f)
-        {
-            return;
-        }
-
-        infos.Add(new DescriptorInfo(
-            $"{GameContentRuntime.GetPropDisplayName(propType)}收益率",
-            FormatAttackUsagePercent(usagePercent)));
-    }
-
     private static IEnumerable<ItemDescriptionLine> BuildStatBenefitDescriptionLines(WeaponBenefitData statBenefits)
     {
         foreach (ItemDescriptionLine line in BuildStatBenefitLine(statBenefits, PropType.AttackSpeed))
@@ -658,20 +579,6 @@ public class WeaponDataSO : ItemDataSO, IDescribable
             $"{GameContentRuntime.GetPropDisplayName(propType)}收益率",
             FormatBenefitPercent(benefitPercent),
             ItemDescriptionLineKind.Property);
-    }
-
-    private static void AddHolderModifierInfos(List<DescriptorInfo> infos, IReadOnlyList<PropModifierData> holderModifiers)
-    {
-        if (infos == null || holderModifiers == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < holderModifiers.Count; i++)
-        {
-            PropModifierData modifier = holderModifiers[i];
-            infos.Add(new DescriptorInfo($"持有者{modifier.GetDisplayName()}", modifier.GetDisplayValueText()));
-        }
     }
 
     private static IEnumerable<ItemDescriptionLine> BuildHolderModifierDescriptionLines(IReadOnlyList<PropModifierData> holderModifiers)
@@ -813,7 +720,7 @@ public class WeaponDataSO : ItemDataSO, IDescribable
     }
 }
 
-public sealed class WeaponLevelDescribable : IDescribable
+public sealed class WeaponLevelDescribable : IInfoDocumentSource
 {
     private readonly WeaponDataSO weaponData;
     private readonly int level;
@@ -824,14 +731,8 @@ public sealed class WeaponLevelDescribable : IDescribable
         this.level = WeaponLevelHelper.ClampLevel(level);
     }
 
-    public string Title => weaponData != null ? weaponData.Title : string.Empty;
-    public Sprite Icon => weaponData != null ? weaponData.Icon : null;
-    public string Description => weaponData != null ? weaponData.BuildDescriptionForLevel(level) : string.Empty;
-
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    public InfoDocument BuildInfoDocument()
     {
-        return weaponData != null
-            ? weaponData.GetExtraInfosForLevel(level)
-            : System.Array.Empty<DescriptorInfo>();
+        return new WeaponInfoBuilder().Build(WeaponInfoSource.FromData(weaponData, level));
     }
 }

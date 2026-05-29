@@ -23,6 +23,7 @@ public static class SettingsPanelStaticPrefabBuilder
     private const string SETTING_ICONS_PATH = "Assets/GameContent/UI/Cyber/Setting/settings_icons.png";
     private const string TAB_FRAME_PATH = "Assets/GameContent/UI/Cyber/Setting/tab_frame.png";
     private const string NEON_SLIDER_PATH = "Assets/GameContent/UI/Cyber/Setting/neon_slider.png";
+    private const string CYBER_ICON_BUTTON_MOTION_PATH = "Assets/GameContent/UI/Data/Motion/Cyber Icon Button Motion.asset";
     private const string SETTINGS_POPUP_VIEW_ID = "popup.settings";
     private const string DISPLAY_CONFIRM_MODAL_VIEW_ID = "modal.displayConfirm";
     private const int UI_LAYER = 5;
@@ -159,7 +160,6 @@ public static class SettingsPanelStaticPrefabBuilder
         Sprite controlIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_4");
         Sprite gameplayIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_7");
         Sprite languageIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_10");
-        Sprite arrowIcon = ResolveRequiredSprite(SETTING_ICONS_PATH, "settings_icons_11");
 
         RectTransform visualRoot = CreateVisualRoot(root.transform);
 
@@ -176,15 +176,23 @@ public static class SettingsPanelStaticPrefabBuilder
         titleRect.anchorMin = new Vector2(0f, 1f);
         titleRect.anchorMax = new Vector2(0f, 1f);
         titleRect.pivot = new Vector2(0f, 1f);
-        titleRect.anchoredPosition = new Vector2(78f, -36f);
+        titleRect.anchoredPosition = new Vector2(50f, -22f);
         titleRect.sizeDelta = new Vector2(360f, 112f);
+        titleRect.localEulerAngles = new Vector3(0f, 0f, -4f);
 
-        Button closeButton = CreateSpriteButton(visualRoot, "CloseButton", ResolveRequiredSprite(SETTING_CLOSE_BUTTON_PATH), 54f, 54f);
+        Button closeButton = CreateIconSpriteButton(
+            visualRoot,
+            "CloseButton",
+            ResolveRequiredSprite(SETTING_CLOSE_BUTTON_PATH),
+            54f,
+            54f,
+            out RectTransform closeIcon);
         RectTransform closeRect = closeButton.GetComponent<RectTransform>();
         closeRect.anchorMin = new Vector2(1f, 1f);
         closeRect.anchorMax = new Vector2(1f, 1f);
         closeRect.pivot = new Vector2(1f, 1f);
         closeRect.anchoredPosition = new Vector2(-37f, -34f);
+        ConfigureCyberIconButtonMotion(closeButton, closeIcon);
 
         RectTransform nav = CreateRect("Navigation", visualRoot);
         nav.anchorMin = new Vector2(0f, 0f);
@@ -200,11 +208,11 @@ public static class SettingsPanelStaticPrefabBuilder
         navLayout.childForceExpandWidth = true;
         navLayout.childForceExpandHeight = false;
 
-        Button audioTab = CreateTabButton(nav, "AudioTabButton", "音频设置", audioIcon, arrowIcon, tabDefaultSprite);
-        Button displayTab = CreateTabButton(nav, "DisplayTabButton", "画面设置", displayIcon, arrowIcon, tabDefaultSprite);
-        Button controlTab = CreateTabButton(nav, "ControlTabButton", "控制设置", controlIcon, arrowIcon, tabDefaultSprite);
-        Button gameplayTab = CreateTabButton(nav, "GameplayTabButton", "游戏设置", gameplayIcon, arrowIcon, tabDefaultSprite);
-        Button languageTab = CreateTabButton(nav, "LanguageTabButton", "语言设置", languageIcon, arrowIcon, tabDefaultSprite);
+        Button audioTab = CreateTabButton(nav, "AudioTabButton", "音频设置", audioIcon, tabDefaultSprite);
+        Button displayTab = CreateTabButton(nav, "DisplayTabButton", "画面设置", displayIcon, tabDefaultSprite);
+        Button controlTab = CreateTabButton(nav, "ControlTabButton", "控制设置", controlIcon, tabDefaultSprite);
+        Button gameplayTab = CreateTabButton(nav, "GameplayTabButton", "游戏设置", gameplayIcon, tabDefaultSprite);
+        Button languageTab = CreateTabButton(nav, "LanguageTabButton", "语言设置", languageIcon, tabDefaultSprite);
 
         RectTransform contentPanel = CreateRect("ContentPanel", visualRoot);
         contentPanel.anchorMin = new Vector2(0f, 0f);
@@ -266,6 +274,14 @@ public static class SettingsPanelStaticPrefabBuilder
         SerializedObject managerObject = new(manager);
         SetObject(managerObject, "motionSource", motionPlayer);
         SetObject(managerObject, "canvasGroup", canvasGroup);
+        SetObject(managerObject, "visualRoot", visualRoot);
+        managerObject.FindProperty("animateVisibility").boolValue = true;
+        managerObject.FindProperty("visibilityShowDuration").floatValue = 0.18f;
+        managerObject.FindProperty("visibilityHideDuration").floatValue = 0.12f;
+        managerObject.FindProperty("hiddenScaleMultiplier").floatValue = 0.96f;
+        managerObject.FindProperty("animateCategorySwitch").boolValue = true;
+        managerObject.FindProperty("categorySwitchDuration").floatValue = 0.14f;
+        managerObject.FindProperty("categorySwitchOffset").floatValue = 18f;
         SetObjectArray(managerObject, "platformProfiles", profiles);
         SetObject(managerObject, "defaultSelectable", audioTab);
         SetObject(managerObject, "sectionTitle", null);
@@ -467,6 +483,10 @@ public static class SettingsPanelStaticPrefabBuilder
         section.anchorMax = Vector2.one;
         section.offsetMin = Vector2.zero;
         section.offsetMax = Vector2.zero;
+        CanvasGroup canvasGroup = section.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
         VerticalLayoutGroup layout = section.gameObject.AddComponent<VerticalLayoutGroup>();
         layout.spacing = 12f;
         layout.padding = new RectOffset(0, 0, 8, 8);
@@ -485,6 +505,10 @@ public static class SettingsPanelStaticPrefabBuilder
         section.anchorMax = Vector2.one;
         section.offsetMin = Vector2.zero;
         section.offsetMax = Vector2.zero;
+        CanvasGroup canvasGroup = section.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
 
         ScrollRect scrollRect = section.gameObject.AddComponent<ScrollRect>();
         scrollRect.horizontal = false;
@@ -526,7 +550,7 @@ public static class SettingsPanelStaticPrefabBuilder
         return section.gameObject;
     }
 
-    private static Button CreateTabButton(Transform parent, string objectName, string label, Sprite iconSprite, Sprite arrowSprite, Sprite frameSprite)
+    private static Button CreateTabButton(Transform parent, string objectName, string label, Sprite iconSprite, Sprite frameSprite)
     {
         RectTransform rectTransform = CreateRect(objectName, parent);
         rectTransform.sizeDelta = new Vector2(320f, 76f);
@@ -546,8 +570,8 @@ public static class SettingsPanelStaticPrefabBuilder
         button.colors = colors;
 
         HorizontalLayoutGroup layout = button.gameObject.AddComponent<HorizontalLayoutGroup>();
-        layout.padding = new RectOffset(26, 18, 0, 0);
-        layout.spacing = 16f;
+        layout.padding = new RectOffset(28, 22, 0, 0);
+        layout.spacing = 18f;
         layout.childAlignment = TextAnchor.MiddleLeft;
         layout.childControlWidth = false;
         layout.childControlHeight = true;
@@ -561,12 +585,7 @@ public static class SettingsPanelStaticPrefabBuilder
 
         TextMeshProUGUI labelText = CreateText("Label", button.transform, label, 24, FontStyles.Bold, TextAlignmentOptions.Left);
         labelText.color = TabDefaultColor;
-        SetLayout(labelText.gameObject, preferredWidth: 178f, preferredHeight: 54f);
-
-        Image arrowImage = CreateImage("Arrow", button.transform, arrowSprite);
-        arrowImage.preserveAspect = true;
-        arrowImage.color = TabDefaultColor;
-        SetLayout(arrowImage.gameObject, preferredWidth: 24f, preferredHeight: 54f);
+        SetLayout(labelText.gameObject, preferredWidth: 206f, preferredHeight: 54f);
         SetLayout(button.gameObject, preferredWidth: 320f, preferredHeight: 76f);
         return button;
     }
@@ -855,6 +874,119 @@ public static class SettingsPanelStaticPrefabBuilder
         button.colors = colors;
         SetLayout(rectTransform.gameObject, preferredWidth: width, preferredHeight: height);
         return button;
+    }
+
+    private static Button CreateIconSpriteButton(
+        Transform parent,
+        string objectName,
+        Sprite sprite,
+        float width,
+        float height,
+        out RectTransform iconTransform)
+    {
+        RectTransform rectTransform = CreateRect(objectName, parent);
+        rectTransform.sizeDelta = new Vector2(width, height);
+
+        Button button = rectTransform.gameObject.AddComponent<Button>();
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.82f, 0.96f, 1f);
+        colors.selectedColor = Color.white;
+        colors.pressedColor = new Color(0.86f, 0.62f, 0.80f, 1f);
+        colors.disabledColor = new Color(0.32f, 0.32f, 0.36f, 0.45f);
+        button.colors = colors;
+
+        Image iconImage = CreateImage("Icon", rectTransform, sprite, raycastTarget: true);
+        iconImage.preserveAspect = true;
+        iconTransform = iconImage.rectTransform;
+        iconTransform.anchorMin = Vector2.zero;
+        iconTransform.anchorMax = Vector2.one;
+        iconTransform.offsetMin = Vector2.zero;
+        iconTransform.offsetMax = Vector2.zero;
+        iconTransform.pivot = new Vector2(0.5f, 0.5f);
+        button.targetGraphic = iconImage;
+
+        SetLayout(rectTransform.gameObject, preferredWidth: width, preferredHeight: height);
+        return button;
+    }
+
+    private static void ConfigureCyberIconButtonMotion(Button button, Transform iconTarget)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        UIMotionDefinition definition = AssetDatabase.LoadAssetAtPath<UIMotionDefinition>(CYBER_ICON_BUTTON_MOTION_PATH);
+        if (definition == null)
+        {
+            throw new MissingReferenceException($"Missing required UI motion definition at '{CYBER_ICON_BUTTON_MOTION_PATH}'.");
+        }
+
+        button.transition = Selectable.Transition.None;
+        RectTransform target = button.GetComponent<RectTransform>();
+        Transform resolvedIconTarget = iconTarget != null ? iconTarget : target;
+        CanvasGroup canvasGroup = button.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = button.gameObject.AddComponent<CanvasGroup>();
+        }
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        UIMotionPlayer player = button.GetComponent<UIMotionPlayer>();
+        if (player == null)
+        {
+            player = button.gameObject.AddComponent<UIMotionPlayer>();
+        }
+
+        SerializedObject playerObject = new(player);
+        SetObject(playerObject, "definition", definition);
+        SerializedProperty targetBindings = playerObject.FindProperty("targets").FindPropertyRelative("bindings");
+        targetBindings.arraySize = 2;
+        SetMotionTargetBinding(targetBindings.GetArrayElementAtIndex(0), UIMotionTargetKeys.SELF, target);
+        SetMotionTargetBinding(targetBindings.GetArrayElementAtIndex(1), "Icon", resolvedIconTarget);
+        playerObject.FindProperty("refreshDefaultsOnEnable").boolValue = false;
+        playerObject.FindProperty("stopAllChannelsOnDestroy").boolValue = true;
+        playerObject.ApplyModifiedPropertiesWithoutUndo();
+
+        UIMotionTrigger trigger = button.GetComponent<UIMotionTrigger>();
+        if (trigger == null)
+        {
+            trigger = button.gameObject.AddComponent<UIMotionTrigger>();
+        }
+
+        SerializedObject triggerObject = new(trigger);
+        SetObject(triggerObject, "player", player);
+        SerializedProperty bindings = triggerObject.FindProperty("bindings");
+        bindings.arraySize = 6;
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(0), UIMotionTriggerEvent.OnEnable, UIMotionClipIds.VISIBLE, false);
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(1), UIMotionTriggerEvent.PointerEnter, UIMotionClipIds.HOVER_IN, false);
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(2), UIMotionTriggerEvent.PointerExit, UIMotionClipIds.HOVER_OUT, false);
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(3), UIMotionTriggerEvent.PointerDown, UIMotionClipIds.PRESS, true);
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(4), UIMotionTriggerEvent.PointerUp, UIMotionClipIds.RELEASE, true);
+        SetMotionTriggerBinding(bindings.GetArrayElementAtIndex(5), UIMotionTriggerEvent.PointerClick, UIMotionClipIds.CLICK_PULSE, true);
+        triggerObject.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void SetMotionTargetBinding(SerializedProperty binding, string key, Transform target)
+    {
+        binding.FindPropertyRelative("key").stringValue = key;
+        binding.FindPropertyRelative("target").objectReferenceValue = target;
+    }
+
+    private static void SetMotionTriggerBinding(
+        SerializedProperty binding,
+        UIMotionTriggerEvent triggerEvent,
+        string clipId,
+        bool requireLeftButton)
+    {
+        binding.FindPropertyRelative("triggerEvent").enumValueIndex = (int)triggerEvent;
+        binding.FindPropertyRelative("clipId").stringValue = clipId;
+        binding.FindPropertyRelative("requireLeftButton").boolValue = requireLeftButton;
+        binding.FindPropertyRelative("delay").floatValue = 0f;
     }
 
     private static Button CreateButton(Transform parent, string objectName, string label, float width, float height)

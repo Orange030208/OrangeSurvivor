@@ -6,6 +6,7 @@ namespace Orange.UIFramework
         Popup,
         Modal,
         Tooltip,
-        Part
+        Part,
+        Toast
     }
 }

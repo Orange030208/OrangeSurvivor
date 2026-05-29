@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: Weapon_NeonHeartScepter
+  m_EditorClassIdentifier: 
+  itemName: "霓虹心能权杖"
+  itemIcon: {fileID: 21300000, guid: 7c9ee80eba75d0fb7c29d6aa8fcf253d, type: 3}
+  itemPrice: 35
+  itemType: 0
+  itemDescription: "成长魔法武器，射程和魔法收益稳定，裸输出偏保守。"
+  weaponId: Weapon_NeonHeartScepter
+  tags: 03000000
+  attackSequence: {fileID: 11400000, guid: fe4733ff985a4aacb45cc4c7eb26856c, type: 2}
+  visualForwardAngle: 45
+  holdAimWhenAttackReady: 1
+  attackSequenceOccupancy: 0.85
+  attackTimingMode: 0
+  targetingMode: 0
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: 0, y: 0.55}
+    localRotationOffset: 0
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 9a870dbd8e812784d8be51c9bca86ade, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList:
+  - sfxKey: 300
+  sequenceVfxList: []
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 20
+    attackSpeed: 100
+    criticalChance: 4
+    criticalPercent: 170
+    range: 650
+    knockbackStrength: 2
+    statBenefits:
+      attackSpeedBenefitPercent: 72
+      criticalChanceBenefitPercent: 62
+      criticalPercentBenefitPercent: 74
+      rangeBenefitPercent: 84
+      knockbackStrengthBenefitPercent: 30
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 105
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 2
+    attack: 28
+    attackSpeed: 110
+    criticalChance: 5
+    criticalPercent: 175
+    range: 690
+    knockbackStrength: 2
+    statBenefits:
+      attackSpeedBenefitPercent: 76
+      criticalChanceBenefitPercent: 66
+      criticalPercentBenefitPercent: 80
+      rangeBenefitPercent: 90
+      knockbackStrengthBenefitPercent: 30
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 122
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 3
+    attack: 39
+    attackSpeed: 120
+    criticalChance: 7
+    criticalPercent: 185
+    range: 740
+    knockbackStrength: 3
+    statBenefits:
+      attackSpeedBenefitPercent: 80
+      criticalChanceBenefitPercent: 72
+      criticalPercentBenefitPercent: 86
+      rangeBenefitPercent: 96
+      knockbackStrengthBenefitPercent: 33
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 145
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 4
+    attack: 55
+    attackSpeed: 132
+    criticalChance: 9
+    criticalPercent: 195
+    range: 800
+    knockbackStrength: 3
+    statBenefits:
+      attackSpeedBenefitPercent: 85
+      criticalChanceBenefitPercent: 78
+      criticalPercentBenefitPercent: 95
+      rangeBenefitPercent: 102
+      knockbackStrengthBenefitPercent: 35
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 0
+      magicAttackUsagePercent: 170
+      summonAttackUsagePercent: 0
+    holderModifiers: []

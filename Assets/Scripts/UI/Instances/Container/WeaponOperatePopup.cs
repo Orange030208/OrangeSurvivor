@@ -21,11 +21,11 @@ public class WeaponOperatePopup : InventoryOperatePopupBase
         }
 
         nameText.text = ItemDisplayHelper.GetWeaponDisplayName(resource.itemData.ItemName, resource.colorDependencyNumber);
-        iconImage.sprite = resource.itemData.Icon;
+        iconImage.sprite = resource.itemData.ItemIcon;
         sellPriceText.text = resource.sellPrice.ToString();
 
         RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
-        bottom.Display(resource.describable);
+        DisplayDocument(resource.infoSource);
 
         currentEntryId = resource.entryId;
 

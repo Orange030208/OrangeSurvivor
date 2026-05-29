@@ -31,7 +31,6 @@ public class CurrencyWallet : EntityComponentBase
 
         currentAmount += amount;
         OnAmountChanged?.Invoke(currentAmount, amount);
-        GameEventBus.Publish(new CurrencyChangedEvent(this, currentAmount, amount));
     }
 
     public void SetAmount(int amount)
@@ -44,6 +43,5 @@ public class CurrencyWallet : EntityComponentBase
 
         currentAmount = amount;
         OnAmountChanged?.Invoke(currentAmount, changeAmount);
-        GameEventBus.Publish(new CurrencyChangedEvent(this, currentAmount, changeAmount));
     }
 }

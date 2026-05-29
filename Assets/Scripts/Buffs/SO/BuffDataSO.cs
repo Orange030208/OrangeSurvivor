@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff Data", menuName = ScriptableObjectMenuPaths.BUFF, order = 0)]
-public class BuffDataSO : ScriptableObject, IDescribable
+public class BuffDataSO : ScriptableObject, IInfoDocumentSource
 {
     private const string BUFF_ID_PREFIX = "Buff_";
     private const float MIN_DURATION_SECONDS = 0.01f;
@@ -33,15 +33,12 @@ public class BuffDataSO : ScriptableObject, IDescribable
 
     public string BuffId => buffId;
     public string DisplayName => displayName;
-    public string Title => displayName;
     public Sprite Icon => icon;
     public string Description => BuildDescription();
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
+
+    public InfoDocument BuildInfoDocument()
     {
-        return ItemDescriptionUtility.BuildDescriptorInfos(
-            ShouldUseManualDescription() ? description : null,
-            null,
-            specialFeatures);
+        return new BuffInfoBuilder().Build(this);
     }
 
     public BuffPolarity Polarity => polarity;

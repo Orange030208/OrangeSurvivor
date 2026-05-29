@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: page.menu
     kind: 0
     layer: 2
-    prefab: {fileID: 5453402992543493149, guid: 89a6afc08e4358d49a6203418c889fc3, type: 3}
+    prefab: {fileID: 3121099539797095427, guid: 30699126ef851574097a0c77090841e7, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
@@ -38,7 +38,7 @@ MonoBehaviour:
   - id: page.shop
     kind: 0
     layer: 2
-    prefab: {fileID: 3816208830851736021, guid: 20c94ac16a11dc54b9e607c6eff07912, type: 3}
+    prefab: {fileID: 6058553077153061582, guid: e35cbf62fef8f9644bfbe76baa063dd9, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
@@ -101,32 +101,21 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: popup.inventory.weaponOperate
-    kind: 1
-    layer: 3
-    prefab: {fileID: 7139556483707835314, guid: 32c53ab2a330ed146b8d9e720613f13b, type: 3}
-    singleton: 0
-    cacheOnClose: 1
-    trackInBackStack: 1
-    closeOnBackgroundClick: 0
-    warmupCount: 0
-    maxCachedInstancesOverride: 1
-    allowDuplicateViewType: 0
-  - id: popup.inventory.accessoryInfo
-    kind: 1
-    layer: 3
-    prefab: {fileID: 7139556483707835314, guid: b5e65ee1abc9e75448634e25fd97b368, type: 3}
-    singleton: 0
-    cacheOnClose: 1
-    trackInBackStack: 1
-    closeOnBackgroundClick: 0
-    warmupCount: 0
-    maxCachedInstancesOverride: 1
-    allowDuplicateViewType: 0
   - id: tooltip.describable
     kind: 3
     layer: 6
     prefab: {fileID: 9208315558322375508, guid: 09491bf92046d214186f496c0220146c, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: toast.text
+    kind: 5
+    layer: 9
+    prefab: {fileID: 6187642272192733200, guid: 474c2ba5d5404fe888788b388f71c9da, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 0
@@ -156,10 +145,10 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: popup.shop.inventory
+  - id: popup.equipment
     kind: 1
     layer: 3
-    prefab: {fileID: 3817496776507657762, guid: b48563450afdfde4f9dec6e3a2bbec43, type: 3}
+    prefab: {fileID: 252039946520287512, guid: d9c6592b7cfce534f94e4813c53b19b0, type: 3}
     singleton: 1
     cacheOnClose: 1
     trackInBackStack: 1
@@ -177,4 +166,26 @@ MonoBehaviour:
     closeOnBackgroundClick: 0
     warmupCount: 0
     maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: popup.gamepad
+    kind: 1
+    layer: 1
+    prefab: {fileID: 1127573995826686695, guid: 10090517b0ea82a4fa4ec5dc6d9e630d, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
+  - id: popup.properties
+    kind: 1
+    layer: 3
+    prefab: {fileID: 5369663276127211598, guid: f1232f4e97c99a142903c833ab0fbf7f, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0

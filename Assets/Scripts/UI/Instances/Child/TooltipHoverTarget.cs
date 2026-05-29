@@ -11,7 +11,8 @@ public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpH
 
     [SerializeField] private MonoBehaviour dataSourceComponent;
 
-    private IDescribable dataSource;
+    private IInfoDocumentSource dataSource;
+    private readonly InfoDocumentService infoDocumentService = new();
     private UIManager uiManager;
     private bool isPointerDown;
     private bool tooltipRequestInFlight;
@@ -21,10 +22,10 @@ public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpH
     private void Awake()
     {
         ValidateConfiguration();
-        dataSource = (IDescribable)dataSourceComponent;
+        dataSource = (IInfoDocumentSource)dataSourceComponent;
     }
 
-    public void SetDataSource(IDescribable source)
+    public void SetDataSource(IInfoDocumentSource source)
     {
         dataSource = source;
         if (source is MonoBehaviour behaviour)
@@ -94,9 +95,9 @@ public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpH
             throw new MissingReferenceException($"{nameof(TooltipHoverTarget)} '{name}' is missing tooltip data source component.");
         }
 
-        if (dataSourceComponent is not IDescribable)
+        if (dataSourceComponent is not IInfoDocumentSource)
         {
-            throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(IDescribable)}.");
+            throw new MissingComponentException($"{nameof(TooltipHoverTarget)} '{name}' requires a component implementing {nameof(IInfoDocumentSource)}.");
         }
     }
 
@@ -131,7 +132,13 @@ public class TooltipHoverTarget : ViewPartBase, IPointerDownHandler, IPointerUpH
                 preferredAnchor: FloatingViewAnchor.BottomRight,
                 useScreenPosition: true);
 
-            ViewHandle<DescribableTooltip> handle = await uiManager.ShowTooltipAsync<DescribableTooltip>(dataSource, options);
+            object payload = dataSource;
+            if (dataSource != null && infoDocumentService.TryBuild(dataSource, out InfoDocument builtDocument))
+            {
+                payload = builtDocument;
+            }
+
+            ViewHandle<DescribableTooltip> handle = await uiManager.ShowTooltipAsync<DescribableTooltip>(payload, options);
             if (!isPointerDown)
             {
                 await handle.CloseAsync(CloseReason.Cancel);

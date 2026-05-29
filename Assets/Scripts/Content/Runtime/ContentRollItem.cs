@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public readonly struct ContentRollItem
+public readonly struct ContentRollItem : IHasContentTier
 {
     public ContentRollItem(ContentPoolEntry entry, UnityEngine.Object content, float finalWeight)
     {
@@ -23,10 +23,23 @@ public readonly struct ContentRollItem
     public float FinalWeight { get; }
     public string EntryId => Entry != null ? Entry.EntryId : Content != null ? Content.name : string.Empty;
     public IReadOnlyList<ContentEntryMetadata> Metadata { get; }
+    public ContentTier Tier => TryGetTier(out ContentTier tier) ? tier : ContentTier.Common;
 
     public bool TryGetMetadata<T>(out T value)
         where T : ContentEntryMetadata
     {
         return ContentMetadataUtility.TryGetMetadata(Metadata, out value);
+    }
+
+    public bool TryGetTier(out ContentTier tier)
+    {
+        if (TryGetMetadata(out QualityMetadata qualityMetadata))
+        {
+            tier = qualityMetadata.Tier;
+            return true;
+        }
+
+        tier = default;
+        return false;
     }
 }

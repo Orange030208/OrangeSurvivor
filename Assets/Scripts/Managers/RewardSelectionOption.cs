@@ -1,4 +1,4 @@
-public abstract class RewardSelectionOption
+public abstract class RewardSelectionOption : IHasContentTier
 {
     protected RewardSelectionOption(string optionId, RewardOptionKind kind, IRewardCardPresentation presentation)
     {
@@ -10,6 +10,7 @@ public abstract class RewardSelectionOption
     public string OptionId { get; }
     public RewardOptionKind Kind { get; }
     public IRewardCardPresentation Presentation { get; }
+    public abstract ContentTier Tier { get; }
 }
 
 public sealed class UpgradeRewardSelectionOption : RewardSelectionOption
@@ -22,6 +23,7 @@ public sealed class UpgradeRewardSelectionOption : RewardSelectionOption
 
     public UpgradeCardSO UpgradeCard => UpgradeCardOption.Card;
     public UpgradeCardRollOption UpgradeCardOption { get; }
+    public override ContentTier Tier => UpgradeCardOption.Tier;
 }
 
 public sealed class WeaponRewardSelectionOption : RewardSelectionOption
@@ -42,6 +44,9 @@ public sealed class WeaponRewardSelectionOption : RewardSelectionOption
     public WeaponDataSO WeaponData { get; }
     public int Level { get; }
     public ContentRollItem RollItem { get; }
+    public override ContentTier Tier => RollItem.TryGetTier(out ContentTier tier)
+        ? tier
+        : ContentTierResolver.FromWeaponLevel(Level);
 }
 
 public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
@@ -59,4 +64,7 @@ public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
 
     public AccessoryDataSO AccessoryData { get; }
     public ContentRollItem RollItem { get; }
+    public override ContentTier Tier => RollItem.TryGetTier(out ContentTier tier)
+        ? tier
+        : AccessoryData != null ? ContentTierResolver.FromAccessoryRarity(AccessoryData.RarityGrade) : ContentTier.Common;
 }

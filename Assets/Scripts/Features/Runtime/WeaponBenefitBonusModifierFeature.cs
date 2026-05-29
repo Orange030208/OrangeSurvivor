@@ -43,21 +43,6 @@ public sealed class WeaponBenefitBonusModifierFeature : FeatureBase
         weaponsHolder.RemoveWeaponBenefitModifier(ResolveRuntimeSourceId());
     }
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        List<DescriptorInfo> infos = new();
-        AddBenefitInfo(infos, PropType.AttackSpeed, benefitBonus.AttackSpeedBenefitPercent);
-        AddBenefitInfo(infos, PropType.CriticalChance, benefitBonus.CriticalChanceBenefitPercent);
-        AddBenefitInfo(infos, PropType.CriticalPercent, benefitBonus.CriticalPercentBenefitPercent);
-        AddBenefitInfo(infos, PropType.AttackRange, benefitBonus.RangeBenefitPercent);
-        AddBenefitInfo(infos, PropType.KnockbackStrength, benefitBonus.KnockbackStrengthBenefitPercent);
-        AddBenefitInfo(infos, PropType.MeleeAttack, benefitBonus.MeleeAttackUsagePercent);
-        AddBenefitInfo(infos, PropType.RangedAttack, benefitBonus.RangedAttackUsagePercent);
-        AddBenefitInfo(infos, PropType.MagicAttack, benefitBonus.MagicAttackUsagePercent);
-        AddBenefitInfo(infos, PropType.SummonAttack, benefitBonus.SummonAttackUsagePercent);
-        return infos;
-    }
-
     private string ResolveRuntimeSourceId()
     {
         if (!string.IsNullOrWhiteSpace(runtimeSourceId))
@@ -85,18 +70,6 @@ public sealed class WeaponBenefitBonusModifierFeature : FeatureBase
         return parts.Count > 0
             ? $"所有武器{string.Join("，", parts)}。"
             : string.Empty;
-    }
-
-    private static void AddBenefitInfo(List<DescriptorInfo> infos, PropType propType, float benefitPercent)
-    {
-        if (benefitPercent <= 0f)
-        {
-            return;
-        }
-
-        infos.Add(new DescriptorInfo(
-            $"{GameContentRuntime.GetPropDisplayName(propType)}收益率",
-            $"+{benefitPercent:0.##}%"));
     }
 
     private static void AddBenefitDescription(List<string> parts, PropType propType, float benefitPercent)

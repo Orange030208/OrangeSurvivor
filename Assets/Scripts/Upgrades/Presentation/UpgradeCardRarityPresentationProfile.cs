@@ -16,7 +16,7 @@ public struct UpgradeCardRarityPresentationProfile
         float backgroundAlpha)
     {
         profile = new CardQualityPresentationProfile(
-            CardQualityResolver.FromUpgradeCardRarity(rarity),
+            ContentTierResolver.FromUpgradeCardRarity(rarity).ToCardQuality(),
             presentationKey,
             revealSfxKey,
             selectSfxKey,

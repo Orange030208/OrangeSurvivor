@@ -6,6 +6,7 @@ namespace Orange.UIFramework
     {
         private readonly bool valuesAssigned;
         private readonly bool closeOnOutsideClick;
+        private readonly bool showBackdrop;
         private readonly bool trackInStack;
         private readonly bool useScreenPosition;
         private readonly float margin;
@@ -20,10 +21,12 @@ namespace Orange.UIFramework
             bool trackInStack = true,
             float margin = 12f,
             FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight,
-            bool useScreenPosition = false)
+            bool useScreenPosition = false,
+            bool showBackdrop = false)
         {
             valuesAssigned = true;
             this.closeOnOutsideClick = closeOnOutsideClick;
+            this.showBackdrop = showBackdrop;
             this.trackInStack = trackInStack;
             this.useScreenPosition = useScreenPosition;
             this.margin = margin;
@@ -39,6 +42,8 @@ namespace Orange.UIFramework
         public Vector2 ScreenPosition { get; }
         public Vector2 Offset { get; }
         public bool CloseOnOutsideClick => !valuesAssigned || closeOnOutsideClick;
+        public bool ShowBackdrop => valuesAssigned && showBackdrop;
+        public bool UsesPopupBackdrop => CloseOnOutsideClick || ShowBackdrop;
         public string GroupId { get; }
         public bool ReplaceSameGroup { get; }
         public bool TrackInStack => !valuesAssigned || trackInStack;

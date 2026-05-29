@@ -18,8 +18,7 @@ public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPoint
     
     [SerializeField] protected ExtraInfoDescriber bottom;
 
-    [Header("卡片品质表现")]
-    [SerializeField] protected CardQualityVisualController cardQualityVisualController;
+    protected readonly InfoDocumentService InfoDocumentService = new();
 
     public event Action<PointerEventData> OnClicked;
 
@@ -31,25 +30,6 @@ public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPoint
     public void CleanClickEvent()
     {
         OnClicked = null;
-    }
-
-    public void RenderQuality(CardQuality quality)
-    {
-        if (cardQualityVisualController == null)
-        {
-            cardQualityVisualController = GetComponent<CardQualityVisualController>();
-        }
-
-        if (cardQualityVisualController == null)
-        {
-            Debug.LogWarning($"{nameof(InventoryOperatePopupBase)} '{name}' is missing {nameof(CardQualityVisualController)}; quality '{quality}' will not be rendered.", this);
-            return;
-        }
-
-        if (!cardQualityVisualController.Apply(quality))
-        {
-            Debug.LogWarning($"{nameof(InventoryOperatePopupBase)} '{name}' could not resolve card quality '{quality}'.", this);
-        }
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)
@@ -77,7 +57,26 @@ public abstract class InventoryOperatePopupBase : PopupBase, IDisposable, IPoint
 
     protected void RenderItemQuality(ItemDataSO itemData, int qualityValue)
     {
-        RenderQuality(CardQualityResolver.FromItem(itemData, qualityValue));
+    }
+
+    protected void RenderTier(IHasContentTier source)
+    {
+    }
+
+    protected void DisplayDocument(object source)
+    {
+        if (bottom == null)
+        {
+            return;
+        }
+
+        if (source != null && InfoDocumentService.TryBuild(source, out InfoDocument document))
+        {
+            bottom.Display(document);
+            return;
+        }
+
+        bottom.Display((InfoDocument)null);
     }
 
     protected void RaiseClicked(PointerEventData eventData)

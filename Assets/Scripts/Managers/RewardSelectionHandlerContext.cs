@@ -61,6 +61,8 @@ public sealed class RewardSelectionHandlerContext
             snapshot.DifficultyCoefficient,
             snapshot.EconomyCoefficient,
             snapshot.ShopPriceMultiplier,
+            snapshot.ShopRerollBasePrice,
+            snapshot.ShopRerollStepPrice,
             snapshot.DangerTier);
     }
 }

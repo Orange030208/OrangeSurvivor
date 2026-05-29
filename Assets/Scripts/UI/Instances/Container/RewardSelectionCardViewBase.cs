@@ -22,7 +22,6 @@ public abstract class RewardSelectionCardViewBase :
     [SerializeField] protected Describer bottom;
 
     [Header("卡片品质表现")]
-    [SerializeField] private CardQualityVisualController qualityVisual;
     [SerializeField] private CardQualityPresentationCatalogSO qualityPresentationCatalogOverride;
 
     [Header("卡片动效")]
@@ -74,7 +73,7 @@ public abstract class RewardSelectionCardViewBase :
 
         CardQualityPresentationProfile presentationProfile = default;
         bool hasPresentationProfile = TryResolveQualityPresentationProfile(
-            option.Quality,
+            option.Tier,
             out presentationProfile);
         if (hasPresentationProfile)
         {
@@ -293,8 +292,20 @@ public abstract class RewardSelectionCardViewBase :
 
         if (bottom != null)
         {
-            bottom.Display(option);
+            if (InfoDocumentServiceHolder.Service.TryBuild(option, out InfoDocument builtDocument))
+            {
+                bottom.Display(builtDocument);
+            }
+            else
+            {
+                bottom.Display((InfoDocument)null);
+            }
         }
+    }
+
+    private static class InfoDocumentServiceHolder
+    {
+        public static readonly InfoDocumentService Service = new();
     }
 
     private void CleanClickEvent()
@@ -386,12 +397,6 @@ public abstract class RewardSelectionCardViewBase :
 
     private void ApplyQualityVisual(CardQualityPresentationProfile presentationProfile)
     {
-        if (qualityVisual == null)
-        {
-            qualityVisual = GetComponent<CardQualityVisualController>();
-        }
-
-        qualityVisual?.Apply(presentationProfile);
     }
 
     private void SetRaycastBlocking(bool blocksRaycasts)
@@ -426,7 +431,7 @@ public abstract class RewardSelectionCardViewBase :
             nameof(option));
     }
 
-    private bool TryResolveQualityPresentationProfile(CardQuality quality, out CardQualityPresentationProfile profile)
+    private bool TryResolveQualityPresentationProfile(ContentTier tier, out CardQualityPresentationProfile profile)
     {
         CardQualityPresentationCatalogSO catalog = ResolveQualityPresentationCatalog();
         if (catalog == null)
@@ -436,9 +441,9 @@ public abstract class RewardSelectionCardViewBase :
             return false;
         }
 
-        if (!catalog.TryGetProfile(quality, out profile))
+        if (!catalog.TryGetProfile(tier, out profile))
         {
-            Debug.LogError($"{GetType().Name} could not find card quality presentation profile '{quality}'.", this);
+            Debug.LogError($"{GetType().Name} could not find card quality presentation profile '{tier}'.", this);
             return false;
         }
 
@@ -486,4 +491,5 @@ public abstract class RewardSelectionCardViewBase :
     {
         return motionController == null || motionController.CanReceiveInteraction;
     }
+
 }

@@ -119,7 +119,29 @@ namespace Orange.UIFramework
                 {
                     report.AddError($"UIFrameworkSettings '{name}' contains duplicate layer '{layer.Layer}'.");
                 }
+
+                if (!IsSortingLayerNameConfigured(layer.SortingLayerName))
+                {
+                    report.AddError($"UIFrameworkSettings '{name}' layer '{layer.Layer}' uses unknown SortingLayer '{layer.SortingLayerName}'.");
+                }
             }
+        }
+
+        private static bool IsSortingLayerNameConfigured(string sortingLayerName)
+        {
+            string resolvedName = string.IsNullOrWhiteSpace(sortingLayerName)
+                ? LayerDefinition.DEFAULT_SORTING_LAYER_NAME
+                : sortingLayerName.Trim();
+            SortingLayer[] sortingLayers = SortingLayer.layers;
+            for (int i = 0; i < sortingLayers.Length; i++)
+            {
+                if (sortingLayers[i].name == resolvedName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OnValidate()
@@ -155,6 +177,7 @@ namespace Orange.UIFramework
                 new LayerDefinition(ViewLayer.ModalMask, 300, true),
                 new LayerDefinition(ViewLayer.Modal, 320, true),
                 new LayerDefinition(ViewLayer.Tooltip, 500, false),
+                new LayerDefinition(ViewLayer.Toast, 600, false),
                 new LayerDefinition(ViewLayer.System, 700, true),
                 new LayerDefinition(ViewLayer.Debug, 900, true)
             };

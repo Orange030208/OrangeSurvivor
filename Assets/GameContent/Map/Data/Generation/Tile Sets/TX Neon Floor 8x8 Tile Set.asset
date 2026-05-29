@@ -1,0 +1,719 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2aaa52df57d92488df1388954242b3, type: 3}
+  m_Name: TX Neon Floor 8x8 Tile Set
+  m_EditorClassIdentifier: 
+  tiles:
+  - tileId: TX Tileset Neon Floor 8x8_0
+    tile: {fileID: 11400000, guid: 7ad19aa09b2456443b6d8e56e3961aa4, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_1
+    tile: {fileID: 11400000, guid: a502763ade9b4cb4da2ef0eba69f0197, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_10
+    tile: {fileID: 11400000, guid: 4194f013350d95044a29e59531499422, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_11
+    tile: {fileID: 11400000, guid: c2c3c73faeb951d4abb60f5e061c229a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_12
+    tile: {fileID: 11400000, guid: a4f1c00ca812f8a4991c6948708e9d2d, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_13
+    tile: {fileID: 11400000, guid: 6f811c5d4514e7049a9dc2e43977edfa, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_14
+    tile: {fileID: 11400000, guid: b543ad3f89202b746956cc5a3a54f9cf, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_15
+    tile: {fileID: 11400000, guid: 452e07816150cf84fbe712f80ddf5365, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_16
+    tile: {fileID: 11400000, guid: 8979138ade6bbb14dbf2f17b124b1dc6, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_17
+    tile: {fileID: 11400000, guid: 53d47314c6fd5a248b199862a3ca2de8, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_18
+    tile: {fileID: 11400000, guid: 85f576a0139fe7b48b28db2831b5220c, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_19
+    tile: {fileID: 11400000, guid: ffb74350190ed7a4d9a670ae64a88afc, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_2
+    tile: {fileID: 11400000, guid: 8fcdebaa002768442a561dceeeb737ec, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_20
+    tile: {fileID: 11400000, guid: 712c7a955b1411e468d4620bee9a8109, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_21
+    tile: {fileID: 11400000, guid: 1bee9dd5ec668314e8f380271b813ac2, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_22
+    tile: {fileID: 11400000, guid: 6d28b8d1e8d513e489c7f65a057866b6, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_23
+    tile: {fileID: 11400000, guid: aa9997ff442f3d84d98bec5b56b4f0a2, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_24
+    tile: {fileID: 11400000, guid: b934b50ee3df0ba46a0a930d48193de2, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_25
+    tile: {fileID: 11400000, guid: 0d7655a86b45f564ca65b3d7f6981476, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_26
+    tile: {fileID: 11400000, guid: e29b1011e3dd35e4c86f88f76def1e3a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_27
+    tile: {fileID: 11400000, guid: ba7ab8b8bb490c14398020c098b62a5f, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_28
+    tile: {fileID: 11400000, guid: bfac1a49f5b84064b954db867556c776, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_29
+    tile: {fileID: 11400000, guid: 991a180670979514fb9872733c79a243, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_3
+    tile: {fileID: 11400000, guid: d84a105accce1324c9332b275353ff55, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_30
+    tile: {fileID: 11400000, guid: 240f190d1078aa4449379395b1f118c6, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_31
+    tile: {fileID: 11400000, guid: d14364f19945d0946bd0eb8d35af0a8a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_32
+    tile: {fileID: 11400000, guid: 33437e2e3d80047439418060ea4bf476, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_33
+    tile: {fileID: 11400000, guid: 933d39fe7bee809438e9fa8ac50aad75, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_34
+    tile: {fileID: 11400000, guid: 82fe7cdd38cc197489eb99f16574d275, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_35
+    tile: {fileID: 11400000, guid: ad201fa61ea5c1742afc2f206de932d6, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_36
+    tile: {fileID: 11400000, guid: 22112d16466faf0408bb9b5af9ab8516, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_37
+    tile: {fileID: 11400000, guid: db84252d135c5fb40aa79c612828a5d5, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_38
+    tile: {fileID: 11400000, guid: 59796397881f7754b96d8d63ff25fe9f, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_39
+    tile: {fileID: 11400000, guid: 0d919b2277760994ab8edb01770132d9, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_4
+    tile: {fileID: 11400000, guid: 8106496f3a876e743b4b3ae919660259, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_40
+    tile: {fileID: 11400000, guid: ac373154b4e6c6d4f8270e19229ab3b1, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_41
+    tile: {fileID: 11400000, guid: 9551324e82f3e1b45a22d74cb0e2bc1f, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_42
+    tile: {fileID: 11400000, guid: 496c7e11d8c261644a7fd2ea4f01663c, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_43
+    tile: {fileID: 11400000, guid: b2a6ba1047c861f48a8571094ec6d31f, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_44
+    tile: {fileID: 11400000, guid: ae7b79bbff3104346a34c74f18710ed1, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_45
+    tile: {fileID: 11400000, guid: 73c237b12f5868647bf66a7af1042e34, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_46
+    tile: {fileID: 11400000, guid: 9dda67d3694d0e74cbcfd58c687cb2cc, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_47
+    tile: {fileID: 11400000, guid: bfda67f55f6d97947849eeda59244cfe, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_48
+    tile: {fileID: 11400000, guid: b8a19dd5839f1dd40924a99d22a87596, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_49
+    tile: {fileID: 11400000, guid: e7ffd8fe8eb2cd740aa216f0595bb037, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_5
+    tile: {fileID: 11400000, guid: 2361917d16173b64b97ca362704915f3, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_50
+    tile: {fileID: 11400000, guid: 2d3a5e689c35127459204a33931d8393, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_51
+    tile: {fileID: 11400000, guid: b78c2ee45fb40b749a161954375dd806, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_52
+    tile: {fileID: 11400000, guid: 61582672a56ef484291546ec51d8ba2c, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_53
+    tile: {fileID: 11400000, guid: bcca661359b631446ac55e1d8123818b, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_54
+    tile: {fileID: 11400000, guid: c3cf35a401aba9849a59584ff562f691, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_55
+    tile: {fileID: 11400000, guid: f7322e27ad1e7de4eb242a79aefaa13a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_56
+    tile: {fileID: 11400000, guid: d5bc8c23172a87d44a7a61215eb91c5c, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_57
+    tile: {fileID: 11400000, guid: ed2cf11a7bacdf446beabf43b0fb0799, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_58
+    tile: {fileID: 11400000, guid: e85745aa6e8edcc40be138457ef6633b, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_59
+    tile: {fileID: 11400000, guid: 1c1279cc3cc8b1b46bd581f6af3235fc, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_6
+    tile: {fileID: 11400000, guid: f0e830e597092434e92fc16650a0580b, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_60
+    tile: {fileID: 11400000, guid: b4e96186cf883a44eb8bcfb41ece233a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_61
+    tile: {fileID: 11400000, guid: 8a85ec697cf29f24c9bb00f71afc6590, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_62
+    tile: {fileID: 11400000, guid: 38754d9da557bfa44b006107adbb142c, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_63
+    tile: {fileID: 11400000, guid: 965921cd3d25493468dc963877b2810a, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_7
+    tile: {fileID: 11400000, guid: 8a60f74a0c5312b409aae7cbd25bf3de, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_8
+    tile: {fileID: 11400000, guid: fcecfdd29e0fcd84ab56116f3b675fb8, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []
+  - tileId: TX Tileset Neon Floor 8x8_9
+    tile: {fileID: 11400000, guid: 18b9ab8c044ac004080b7b03d420ae18, type: 2}
+    weight: 1
+    category: 0
+    allowRotation90: 0
+    sockets:
+      north: floor
+      east: floor
+      south: floor
+      west: floor
+    tags: []

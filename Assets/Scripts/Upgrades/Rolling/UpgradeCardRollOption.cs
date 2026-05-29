@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public readonly struct UpgradeCardRollOption
+public readonly struct UpgradeCardRollOption : IHasContentTier
 {
     public UpgradeCardRollOption(UpgradeCardSO card, ContentRollItem rollItem, int pickCount)
     {
@@ -15,6 +15,7 @@ public readonly struct UpgradeCardRollOption
     public int PickCount { get; }
     public int MaxPickCount => RollItem.Entry != null ? RollItem.Entry.MaxPickCount : 0;
     public bool HasPickLimit => MaxPickCount > 0;
+    public ContentTier Tier => Card != null ? ContentTierResolver.FromUpgradeCardRarity(Card.Rarity) : ContentTier.Common;
 
     public UpgradeCardOptionViewData CreateViewData()
     {

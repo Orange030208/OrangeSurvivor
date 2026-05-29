@@ -1,4 +1,3 @@
-using System;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
@@ -12,7 +11,10 @@ public class PropContainer : ViewPartBase
 
     private void Awake()
     {
-        propText.ForceMeshUpdate();
+        if (propText != null)
+        {
+            propText.ForceMeshUpdate();
+        }
     }
 
     public void Configure(Sprite icon, string propName, float propValue)

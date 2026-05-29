@@ -12,6 +12,8 @@ public sealed class DescribableTooltip : TooltipBase
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
 
+    private readonly InfoDocumentService infoDocumentService = new();
+
     protected override void Awake()
     {
         base.Awake();
@@ -44,12 +46,26 @@ public sealed class DescribableTooltip : TooltipBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        IDescribable describable = context.GetPayload<IDescribable>();
-        ApplyDocument(describable);
+        ApplyDocument(ResolveDocument(context.Payload));
         return UniTask.CompletedTask;
     }
 
-    private void ApplyDocument(IDescribable document)
+    private InfoDocument ResolveDocument(object payload)
+    {
+        if (payload is InfoDocument document)
+        {
+            return document;
+        }
+
+        if (payload != null && infoDocumentService.TryBuild(payload, out InfoDocument builtDocument))
+        {
+            return builtDocument;
+        }
+
+        return null;
+    }
+
+    private void ApplyDocument(InfoDocument document)
     {
         titleText.text = document != null ? document.Title : string.Empty;
         iconImage.sprite = document != null ? document.Icon : null;

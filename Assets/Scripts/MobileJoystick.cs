@@ -1,9 +1,15 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Orange.UIFramework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
-public class MobileJoystick : MonoBehaviour
+public class MobileJoystick : ViewPartBase
 {
     [Header("元素")]
+    [SerializeField] private GameObject inputRoot;
     [SerializeField] private RectTransform joystickOutline;
     [SerializeField] private RectTransform joystickKnob;
 
@@ -12,14 +18,17 @@ public class MobileJoystick : MonoBehaviour
 
     private Canvas parentCanvas;
     private RectTransform parentCanvasRectTransform;
+    private Graphic[] inputRootGraphics;
+    private EventTrigger[] inputRootEventTriggers;
     private Vector3 clickedPosition;
     private Vector3 move;
     private bool canControl;
 
+    private bool inputEnabled = true;
+
     private void Awake()
     {
-        parentCanvas = GetComponentInParent<Canvas>();
-        parentCanvasRectTransform = parentCanvas.GetComponent<RectTransform>();
+        ResolveReferences();
     }
 
     private void Start()
@@ -34,14 +43,44 @@ public class MobileJoystick : MonoBehaviour
 
     private void Update()
     {
-        if (canControl)
+        if (inputEnabled && canControl)
         {
             ControlJoystick();
         }
     }
 
+    public override UniTask ShowAsync(CancellationToken cancellationToken = default)
+    {
+        SetInputEnabled(true);
+        return UniTask.CompletedTask;
+    }
+
+    public override UniTask HideAsync(CancellationToken cancellationToken = default)
+    {
+        SetInputEnabled(false);
+        return UniTask.CompletedTask;
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        ResolveReferences();
+        inputEnabled = enabled;
+
+        if (!enabled || !canControl)
+        {
+            HideJoystick();
+        }
+
+        SetInputRootEnabled(enabled);
+    }
+
     public void ClickedOnJoystickZoneCallback()
     {
+        if (!inputEnabled)
+        {
+            return;
+        }
+
         clickedPosition = ReadPointerPosition();
         joystickOutline.position = clickedPosition;
         ShowJoystick();
@@ -49,7 +88,7 @@ public class MobileJoystick : MonoBehaviour
 
     public Vector2 GetMoveDirection()
     {
-        return move / GetCanvasScale();
+        return inputEnabled ? move / GetCanvasScale() : Vector2.zero;
     }
 
     private void ShowJoystick()
@@ -117,5 +156,63 @@ public class MobileJoystick : MonoBehaviour
     private float GetCanvasScale()
     {
         return parentCanvasRectTransform.localScale.x;
+    }
+
+    private void ResolveReferences()
+    {
+        if (inputRoot == null)
+        {
+            inputRoot = transform.parent != null ? transform.parent.gameObject : gameObject;
+        }
+
+        if (joystickOutline == null)
+        {
+            throw new MissingReferenceException($"{nameof(MobileJoystick)} '{name}' is missing joystick outline.");
+        }
+
+        if (joystickKnob == null)
+        {
+            throw new MissingReferenceException($"{nameof(MobileJoystick)} '{name}' is missing joystick knob.");
+        }
+
+        parentCanvas = GetComponentInParent<Canvas>(true);
+        if (parentCanvas == null)
+        {
+            throw new MissingReferenceException($"{nameof(MobileJoystick)} '{name}' requires a parent Canvas.");
+        }
+
+        parentCanvasRectTransform = parentCanvas.GetComponent<RectTransform>();
+        if (parentCanvasRectTransform == null)
+        {
+            throw new MissingComponentException($"{nameof(MobileJoystick)} parent canvas '{parentCanvas.name}' requires a RectTransform.");
+        }
+    }
+
+    private void SetInputRootEnabled(bool enabled)
+    {
+        if (inputRoot.GetComponent<ViewBase>() == null)
+        {
+            inputRoot.SetActive(enabled);
+            return;
+        }
+
+        inputRootGraphics ??= inputRoot.GetComponentsInChildren<Graphic>(true);
+        inputRootEventTriggers ??= inputRoot.GetComponentsInChildren<EventTrigger>(true);
+
+        for (int i = 0; i < inputRootGraphics.Length; i++)
+        {
+            if (inputRootGraphics[i] != null)
+            {
+                inputRootGraphics[i].raycastTarget = enabled;
+            }
+        }
+
+        for (int i = 0; i < inputRootEventTriggers.Length; i++)
+        {
+            if (inputRootEventTriggers[i] != null)
+            {
+                inputRootEventTriggers[i].enabled = enabled;
+            }
+        }
     }
 }

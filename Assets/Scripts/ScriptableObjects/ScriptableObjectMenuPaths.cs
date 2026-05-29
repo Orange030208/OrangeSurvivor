@@ -60,4 +60,8 @@ public static class ScriptableObjectMenuPaths
     public const string PROP_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Properties/Prop Presentation Catalog";
     public const string DAMAGE_TEXT_VISUAL_CONFIG = PRESENTATION_ROOT + "Combat/Damage Text Visual Config";
     public const string MAP_GROUND_THEME = WORLD_ROOT + "Map/Ground Theme";
+    public const string MAP_GENERATION_PROFILE = WORLD_ROOT + "Map/Generation Profile";
+    public const string MAP_TILE_SET = WORLD_ROOT + "Map/Tile Set";
+    public const string MAP_ADJACENCY_RULE_SET = WORLD_ROOT + "Map/Adjacency Rule Set";
+    public const string MAP_CONSTRAINT_PROFILE = WORLD_ROOT + "Map/Constraint Profile";
 }

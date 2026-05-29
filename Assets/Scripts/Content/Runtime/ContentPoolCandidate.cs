@@ -36,6 +36,12 @@ public sealed class ContentPoolCandidate
         qualityMetadata.ConfigureQualityValue(qualityValue);
     }
 
+    public void ConfigureTier(ContentTier tier)
+    {
+        QualityMetadata qualityMetadata = ContentMetadataUtility.GetOrCreateMetadata<QualityMetadata>(metadata);
+        qualityMetadata.ConfigureTier(tier);
+    }
+
     public void ConfigureWaveSpawnTags(WaveEnemyTag tags)
     {
         WaveSpawnMetadata spawnMetadata = ContentMetadataUtility.GetOrCreateMetadata<WaveSpawnMetadata>(metadata);

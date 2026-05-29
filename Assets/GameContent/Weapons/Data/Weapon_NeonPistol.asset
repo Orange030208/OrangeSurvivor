@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: Weapon_NeonPistol
+  m_EditorClassIdentifier: 
+  itemName: "霓虹手枪"
+  itemIcon: {fileID: 21300000, guid: 8ee6b5bfe06133b321d35cf4848d2d36, type: 3}
+  itemPrice: 30
+  itemType: 0
+  itemDescription: "精准远程武器，射程和暴击成长稳定，攻速成长较保守。"
+  weaponId: Weapon_NeonPistol
+  tags: 00000000
+  attackSequence: {fileID: 11400000, guid: b1ad746dfc0d4569a8eea93b3af756aa, type: 2}
+  visualForwardAngle: 45
+  holdAimWhenAttackReady: 1
+  attackSequenceOccupancy: 0.85
+  attackTimingMode: 0
+  targetingMode: 0
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: -0.10785697, y: 0.59428537}
+    localRotationOffset: 0
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: 83cbb16eaaee16f42a6ecba51100824d, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList:
+  - sfxKey: 300
+  sequenceVfxList: []
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 18
+    attackSpeed: 100
+    criticalChance: 12
+    criticalPercent: 180
+    range: 820
+    knockbackStrength: 5
+    statBenefits:
+      attackSpeedBenefitPercent: 75
+      criticalChanceBenefitPercent: 85
+      criticalPercentBenefitPercent: 92
+      rangeBenefitPercent: 95
+      knockbackStrengthBenefitPercent: 58
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 95
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 2
+    attack: 23
+    attackSpeed: 115
+    criticalChance: 15
+    criticalPercent: 190
+    range: 870
+    knockbackStrength: 6
+    statBenefits:
+      attackSpeedBenefitPercent: 76
+      criticalChanceBenefitPercent: 88
+      criticalPercentBenefitPercent: 96
+      rangeBenefitPercent: 98
+      knockbackStrengthBenefitPercent: 60
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 110
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 3
+    attack: 30
+    attackSpeed: 130
+    criticalChance: 19
+    criticalPercent: 205
+    range: 930
+    knockbackStrength: 7
+    statBenefits:
+      attackSpeedBenefitPercent: 78
+      criticalChanceBenefitPercent: 92
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 62
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 125
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 4
+    attack: 38
+    attackSpeed: 150
+    criticalChance: 24
+    criticalPercent: 220
+    range: 980
+    knockbackStrength: 8
+    statBenefits:
+      attackSpeedBenefitPercent: 80
+      criticalChanceBenefitPercent: 95
+      criticalPercentBenefitPercent: 105
+      rangeBenefitPercent: 100
+      knockbackStrengthBenefitPercent: 65
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 140
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []

@@ -7,9 +7,6 @@ Shader "Survivors/Procedural Sprite Animation"
         _FlashColor ("Flash Color", Color) = (1,1,1,1)
         _FlashAmount ("Flash Amount", Range(0, 1)) = 0
         _DissolveAmount ("Dissolve Amount", Range(0, 1)) = 0
-        _Squash ("Squash", Range(-1, 1)) = 0
-        _Stretch ("Stretch", Range(-1, 1)) = 0
-        _VerticalOffset ("Vertical Offset", Float) = 0
         _HueShift ("Hue Shift", Range(-1, 1)) = 0
         _GlowColor ("Glow Color", Color) = (0,0.9,1,1)
         _GlowAmount ("Glow Amount", Range(0, 4)) = 0
@@ -52,7 +49,6 @@ Shader "Survivors/Procedural Sprite Animation"
                 float4 vertex : SV_POSITION;
                 fixed4 color : COLOR;
                 float2 texcoord : TEXCOORD0;
-                float2 localPos : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -61,9 +57,6 @@ Shader "Survivors/Procedural Sprite Animation"
             fixed4 _GlowColor;
             fixed _FlashAmount;
             fixed _DissolveAmount;
-            half _Squash;
-            half _Stretch;
-            half _VerticalOffset;
             half _HueShift;
             half _GlowAmount;
 
@@ -87,19 +80,9 @@ Shader "Survivors/Procedural Sprite Animation"
             v2f vert(appdata_t input)
             {
                 v2f output;
-                float4 vertex = input.vertex;
-                float squashInfluence = (_Squash - _Stretch) * 0.7;
-                float squashScale = max(0.35, 1.0 - squashInfluence);
-                float stretchScale = max(0.35, 1.0 + squashInfluence);
-
-                vertex.x *= stretchScale;
-                vertex.y *= squashScale;
-                vertex.y += _VerticalOffset;
-
-                output.vertex = UnityObjectToClipPos(vertex);
+                output.vertex = UnityObjectToClipPos(input.vertex);
                 output.texcoord = input.texcoord;
                 output.color = input.color * _Color;
-                output.localPos = input.texcoord;
 
                 #ifdef PIXELSNAP_ON
                 output.vertex = UnityPixelSnap(output.vertex);

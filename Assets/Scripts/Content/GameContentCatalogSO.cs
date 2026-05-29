@@ -14,7 +14,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     // 这些字段保持显式序列化，方便在进 Play Mode 前从 Inspector 直接发现缺失引用。
     // 运行时代码统一读取下方只读属性，不直接修改 Catalog。
     [Header("玩法列表")]
-    [SerializeField] private WeaponDataListSO weaponDataList;
+    [SerializeField] private WeaponDataSO[] weapons = System.Array.Empty<WeaponDataSO>();
     [SerializeField] private AccessoryDataListSO accessoryDataList;
     [SerializeField] private CharacterDataSO defaultCharacter;
     [SerializeField] private UpgradeCardSO[] starterCards = System.Array.Empty<UpgradeCardSO>();
@@ -44,9 +44,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     [SerializeField] private DamageTextVisualConfigSO damageTextVisualConfig;
     [SerializeField] private Material itemQualityIconEffectMaterial;
 
-    public IReadOnlyList<WeaponDataSO> Weapons => weaponDataList != null && weaponDataList.Weapons != null
-        ? weaponDataList.Weapons
-        : System.Array.Empty<WeaponDataSO>();
+    public IReadOnlyList<WeaponDataSO> Weapons => weapons ?? System.Array.Empty<WeaponDataSO>();
 
     public IReadOnlyList<AccessoryDataSO> Accessories => accessoryDataList != null && accessoryDataList.Accessories != null
         ? accessoryDataList.Accessories
@@ -81,7 +79,11 @@ public sealed class GameContentCatalogSO : ScriptableObject
         errors ??= new List<string>();
         int initialCount = errors.Count;
 
-        ValidateRequired(weaponDataList, nameof(weaponDataList), errors);
+        if (Weapons.Count == 0)
+        {
+            errors.Add($"{nameof(GameContentCatalogSO)} '{name}' has no weapons.");
+        }
+
         ValidateRequired(accessoryDataList, nameof(accessoryDataList), errors);
         ValidateRequired(playerLevelConfig, nameof(playerLevelConfig), errors);
         ValidateRequired(runProgressionProfile, nameof(runProgressionProfile), errors);
@@ -106,11 +108,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(itemQualityVisualConfig, nameof(itemQualityVisualConfig), errors);
         ValidateRequired(damageTextVisualConfig, nameof(damageTextVisualConfig), errors);
         ValidateRequired(itemQualityIconEffectMaterial, nameof(itemQualityIconEffectMaterial), errors);
-
-        if (Weapons.Count == 0)
-        {
-            errors.Add($"{nameof(GameContentCatalogSO)} '{name}' has no weapons.");
-        }
 
         if (Accessories.Count == 0)
         {

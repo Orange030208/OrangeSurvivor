@@ -29,6 +29,7 @@ public static class GameContentAssetPaths
     public const string WeaponProjectilePrefabs = WeaponsPrefabs + "/Projectiles";
     public const string WeaponsSprites = Weapons + "/Sprites";
     public const string WeaponProjectileSprites = WeaponsSprites + "/Projectiles";
+    public const string WeaponProjectileAtlas = WeaponProjectileSprites + "/ProjectileCoreAtlas.png";
     public const string WeaponsAnimations = Weapons + "/Animations";
     public const string WeaponProjectileAnimations = WeaponsAnimations + "/Projectiles";
     public const string WeaponsVfx = Weapons + "/VFX";
@@ -70,6 +71,7 @@ public static class GameContentAssetPaths
     public const string UI = Root + "/UI";
     public const string UIData = UI + "/Data";
     public const string UIPrefabs = UI + "/Prefabs";
+    public const string UIPrefabsProp = UIPrefabs + "/Prop";
     public const string UISprites = UI + "/Sprites";
     public const string UIIconSprites = UISprites + "/Icons";
     public const string UIFonts = UI + "/Fonts";
@@ -79,11 +81,16 @@ public static class GameContentAssetPaths
     public const string UIViewPages = UIPrefabs + "/Pages";
     public const string UIViewContainers = UIPrefabs + "/Container";
     public const string PropPresentationCatalog = UIData + "/Prop Presentation Catalog.asset";
+    public const string TierColorPalette = UIData + "/Tier Color Palette.asset";
     public const string ItemQualityVisualConfig = UIData + "/Item Quality Visual Config.asset";
     public const string ItemQualityIconEffectMaterial = UIMaterials + "/WeaponQualityIconEffect.mat";
     public const string UIFrameworkSettings = UIData + "/OrangeUIFrameworkSettings.asset";
     public const string UIViewCatalog = UIData + "/OrangeUIViewCatalog.asset";
     public const string OrangeCanvasProfile = UIData + "/OrangeCanvasProfile.asset";
+    public const string PropertyShowFolder = UI + "/Cyber/PropertyShow";
+    public const string PropertyShowPropIconsAtlas = PropertyShowFolder + "/prop_icons.png";
+    public const string PropShowerPrefab = UIPrefabsProp + "/PropShower.prefab";
+    public const string CyberPropItemPrefab = UIPrefabsProp + "/CyberPropItem.prefab";
 
     public const string Audio = Root + "/Audio";
     public const string AudioData = Audio + "/Data";
@@ -110,5 +117,11 @@ public static class GameContentAssetPaths
     public const string MapPrefabs = Map + "/Prefabs";
     public const string MapTiles = Map + "/Tiles";
     public const string MapSprites = Map + "/Sprites";
+    public const string MapGeneration = MapData + "/Generation";
+    public const string MapGenerationProfiles = MapGeneration + "/Profiles";
+    public const string MapGenerationTileSets = MapGeneration + "/Tile Sets";
+    public const string MapGenerationRules = MapGeneration + "/Rules";
+    public const string MapGenerationConstraints = MapGeneration + "/Constraints";
+    public const string MapGenerationProfileFolder = MapGeneration;
     public const string TxGrassGroundTheme = MapData + "/TX Grass Ground Theme.asset";
 }

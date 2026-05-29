@@ -9,6 +9,6 @@ public sealed class UpgradeCardRarityPresentationCatalogSO : CardQualityPresenta
 {
     public static CardQualityPresentationProfile CreateBuiltinProfile(UpgradeCardRarity rarity)
     {
-        return CardQualityPresentationCatalogSO.CreateBuiltinProfile(CardQualityResolver.FromUpgradeCardRarity(rarity));
+        return CardQualityPresentationCatalogSO.CreateBuiltinProfile(ContentTierResolver.FromUpgradeCardRarity(rarity).ToCardQuality());
     }
 }

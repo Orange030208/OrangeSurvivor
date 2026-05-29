@@ -99,7 +99,7 @@ public sealed class ContentRollContext
         }
 
         int count = 0;
-        IReadOnlyList<EquippedWeaponInfo> equippedWeapons = weaponsHolder.EquippedWeapons;
+        IReadOnlyList<Weapon> equippedWeapons = weaponsHolder.EquippedWeapons;
         for (int i = 0; i < equippedWeapons.Count; i++)
         {
             WeaponDataSO weaponData = equippedWeapons[i].WeaponData;
@@ -125,7 +125,7 @@ public sealed class ContentRollContext
             return false;
         }
 
-        IReadOnlyList<EquippedWeaponInfo> equippedWeapons = weaponsHolder.EquippedWeapons;
+        IReadOnlyList<Weapon> equippedWeapons = weaponsHolder.EquippedWeapons;
         for (int i = 0; i < equippedWeapons.Count; i++)
         {
             if (IsSameWeapon(equippedWeapons[i].WeaponData, targetWeapon))

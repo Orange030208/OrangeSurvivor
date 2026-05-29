@@ -72,55 +72,6 @@ internal static class ItemDescriptionUtility
         return BuildLinesText(lines);
     }
 
-    public static List<DescriptorInfo> BuildDescriptorInfos(
-        string description,
-        IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureBase> specialFeatures)
-    {
-        return BuildDescriptorInfos(
-            description,
-            propertyModifiers,
-            specialFeatures,
-            null);
-    }
-
-    public static List<DescriptorInfo> BuildDescriptorInfos(
-        string description,
-        IReadOnlyList<PropModifierData> propertyModifiers,
-        IReadOnlyList<FeatureBase> specialFeatures,
-        IEnumerable<DescriptorInfo> extraInfos)
-    {
-        List<DescriptorInfo> infos = new List<DescriptorInfo>();
-        AddDescriptionInfo(infos, description);
-        AddPropertyInfos(infos, propertyModifiers);
-        AddFeatureInfos(infos, specialFeatures);
-        AddDescriptorInfos(infos, extraInfos);
-        return infos;
-    }
-
-    public static string FormatDescriptorInfo(DescriptorInfo descriptorInfo)
-    {
-        string label = descriptorInfo.label;
-        string value = descriptorInfo.value;
-
-        if (string.IsNullOrWhiteSpace(label))
-        {
-            return value ?? string.Empty;
-        }
-
-        if (IsDescriptionLabel(label))
-        {
-            return value ?? string.Empty;
-        }
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return label;
-        }
-
-        return $"{label}: {value}";
-    }
-
     public static string FormatRarity(AccessoryRarity rarity)
     {
         return rarity switch
@@ -234,7 +185,7 @@ internal static class ItemDescriptionUtility
             PropType.AttackSpeed => $"{value:0}",
             PropType.CriticalChance => $"{value:0.##}%",
             PropType.CriticalPercent => $"{value:0.##}%",
-            PropType.AttackRange => $"{PropValueUtility.DistancePointsToWorldUnits(value):0.##}格",
+            PropType.AttackRange => $"{value:0.##}",
             _ => value.ToString("0.##")
         };
     }
@@ -348,69 +299,6 @@ internal static class ItemDescriptionUtility
         }
 
         return $"{line.Label}: {line.Value}";
-    }
-
-    private static void AddDescriptionInfo(List<DescriptorInfo> infos, string description)
-    {
-        string normalizedDescription = NormalizeManualDescription(description);
-        if (string.IsNullOrWhiteSpace(normalizedDescription))
-        {
-            return;
-        }
-
-        infos.Add(new DescriptorInfo(string.Empty, normalizedDescription));
-    }
-
-    private static void AddPropertyInfos(List<DescriptorInfo> infos, IReadOnlyList<PropModifierData> propertyModifiers)
-    {
-        if (propertyModifiers == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < propertyModifiers.Count; i++)
-        {
-            PropModifierData modifier = propertyModifiers[i];
-            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
-        }
-    }
-
-    private static void AddFeatureInfos(List<DescriptorInfo> infos, IReadOnlyList<FeatureBase> specialFeatures)
-    {
-        if (specialFeatures == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < specialFeatures.Count; i++)
-        {
-            FeatureBase feature = specialFeatures[i];
-            if (feature == null || string.IsNullOrWhiteSpace(feature.Description))
-            {
-                continue;
-            }
-
-            string label = string.IsNullOrWhiteSpace(feature.Title) ? "特殊效果" : feature.Title;
-            infos.Add(new DescriptorInfo(label, feature.Description));
-        }
-    }
-
-    private static void AddDescriptorInfos(List<DescriptorInfo> infos, IEnumerable<DescriptorInfo> extraInfos)
-    {
-        if (extraInfos == null)
-        {
-            return;
-        }
-
-        foreach (DescriptorInfo info in extraInfos)
-        {
-            if (string.IsNullOrWhiteSpace(info.label) && string.IsNullOrWhiteSpace(info.value))
-            {
-                continue;
-            }
-
-            infos.Add(info);
-        }
     }
 
     private static bool IsDescriptionLabel(string label)

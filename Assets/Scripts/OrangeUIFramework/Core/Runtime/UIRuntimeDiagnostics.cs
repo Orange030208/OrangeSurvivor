@@ -13,6 +13,7 @@ namespace Orange.UIFramework
             IReadOnlyList<ViewDiagnostics> openViews,
             IReadOnlyList<PoolDiagnostics> pools,
             string currentTooltipInstanceId,
+            string currentToastInstanceId,
             string rootName = "",
             bool rootActive = false,
             IReadOnlyList<LayerDiagnostics> layers = null,
@@ -20,6 +21,7 @@ namespace Orange.UIFramework
             IReadOnlyList<ViewStackDiagnostics> popupStack = null,
             IReadOnlyList<ViewStackDiagnostics> modalStack = null,
             TooltipDiagnostics tooltip = default,
+            ToastDiagnostics toast = default,
             UIOperationDiagnostics operations = default,
             UIBlockerDiagnostics modalMask = default,
             UIBlockerDiagnostics popupOutsideClickBlocker = default,
@@ -31,6 +33,7 @@ namespace Orange.UIFramework
             OpenViews = openViews ?? Array.Empty<ViewDiagnostics>();
             Pools = pools ?? Array.Empty<PoolDiagnostics>();
             CurrentTooltipInstanceId = currentTooltipInstanceId ?? string.Empty;
+            CurrentToastInstanceId = currentToastInstanceId ?? string.Empty;
             RootName = rootName ?? string.Empty;
             RootActive = rootActive;
             Layers = layers ?? Array.Empty<LayerDiagnostics>();
@@ -38,6 +41,7 @@ namespace Orange.UIFramework
             PopupStack = popupStack ?? Array.Empty<ViewStackDiagnostics>();
             ModalStack = modalStack ?? Array.Empty<ViewStackDiagnostics>();
             Tooltip = tooltip;
+            Toast = toast;
             Operations = operations;
             ModalMask = modalMask;
             PopupOutsideClickBlocker = popupOutsideClickBlocker;
@@ -56,7 +60,9 @@ namespace Orange.UIFramework
         public IReadOnlyList<ViewDiagnostics> OpenViews { get; }
         public IReadOnlyList<PoolDiagnostics> Pools { get; }
         public string CurrentTooltipInstanceId { get; }
+        public string CurrentToastInstanceId { get; }
         public TooltipDiagnostics Tooltip { get; }
+        public ToastDiagnostics Toast { get; }
         public UIOperationDiagnostics Operations { get; }
         public UIBlockerDiagnostics ModalMask { get; }
         public UIBlockerDiagnostics PopupOutsideClickBlocker { get; }
@@ -165,6 +171,7 @@ namespace Orange.UIFramework
             string popupGroupId = "",
             bool popupTrackInStack = false,
             bool closeOnOutsideClick = false,
+            bool popupShowBackdrop = false,
             bool closeOnBackgroundClick = false)
         {
             Index = index;
@@ -181,6 +188,7 @@ namespace Orange.UIFramework
             PopupGroupId = popupGroupId ?? string.Empty;
             PopupTrackInStack = popupTrackInStack;
             CloseOnOutsideClick = closeOnOutsideClick;
+            PopupShowBackdrop = popupShowBackdrop;
             CloseOnBackgroundClick = closeOnBackgroundClick;
         }
 
@@ -198,6 +206,7 @@ namespace Orange.UIFramework
         public string PopupGroupId { get; }
         public bool PopupTrackInStack { get; }
         public bool CloseOnOutsideClick { get; }
+        public bool PopupShowBackdrop { get; }
         public bool CloseOnBackgroundClick { get; }
     }
 
@@ -248,6 +257,56 @@ namespace Orange.UIFramework
         public bool PlacementWasClamped { get; }
     }
 
+    public readonly struct ToastDiagnostics
+    {
+        public ToastDiagnostics(
+            bool hasToast = false,
+            string instanceId = "",
+            string viewId = "",
+            string viewTypeName = "",
+            ViewRuntimePhase phase = ViewRuntimePhase.None,
+            int queueCount = 0,
+            float durationSeconds = 0f,
+            bool inputActive = false,
+            bool blocksRaycasts = false,
+            bool hasPlacement = false,
+            Vector2 anchoredPosition = default,
+            FloatingViewAnchor resolvedAnchor = FloatingViewAnchor.Center,
+            bool placementWasFlipped = false,
+            bool placementWasClamped = false)
+        {
+            HasToast = hasToast;
+            InstanceId = instanceId ?? string.Empty;
+            ViewId = viewId ?? string.Empty;
+            ViewTypeName = viewTypeName ?? string.Empty;
+            Phase = phase;
+            QueueCount = queueCount;
+            DurationSeconds = durationSeconds;
+            InputActive = inputActive;
+            BlocksRaycasts = blocksRaycasts;
+            HasPlacement = hasPlacement;
+            AnchoredPosition = anchoredPosition;
+            ResolvedAnchor = resolvedAnchor;
+            PlacementWasFlipped = placementWasFlipped;
+            PlacementWasClamped = placementWasClamped;
+        }
+
+        public bool HasToast { get; }
+        public string InstanceId { get; }
+        public string ViewId { get; }
+        public string ViewTypeName { get; }
+        public ViewRuntimePhase Phase { get; }
+        public int QueueCount { get; }
+        public float DurationSeconds { get; }
+        public bool InputActive { get; }
+        public bool BlocksRaycasts { get; }
+        public bool HasPlacement { get; }
+        public Vector2 AnchoredPosition { get; }
+        public FloatingViewAnchor ResolvedAnchor { get; }
+        public bool PlacementWasFlipped { get; }
+        public bool PlacementWasClamped { get; }
+    }
+
     public readonly struct UIOperationDiagnostics
     {
         public UIOperationDiagnostics(
@@ -256,6 +315,7 @@ namespace Orange.UIFramework
             bool popupOperationBusy,
             bool modalOperationBusy,
             bool tooltipOperationBusy,
+            bool toastOperationBusy,
             int trackedViewCount,
             int openingViewCount,
             int closingViewCount,
@@ -266,6 +326,7 @@ namespace Orange.UIFramework
             PopupOperationBusy = popupOperationBusy;
             ModalOperationBusy = modalOperationBusy;
             TooltipOperationBusy = tooltipOperationBusy;
+            ToastOperationBusy = toastOperationBusy;
             TrackedViewCount = trackedViewCount;
             OpeningViewCount = openingViewCount;
             ClosingViewCount = closingViewCount;
@@ -277,6 +338,7 @@ namespace Orange.UIFramework
         public bool PopupOperationBusy { get; }
         public bool ModalOperationBusy { get; }
         public bool TooltipOperationBusy { get; }
+        public bool ToastOperationBusy { get; }
         public int TrackedViewCount { get; }
         public int OpeningViewCount { get; }
         public int ClosingViewCount { get; }
@@ -330,7 +392,8 @@ namespace Orange.UIFramework
             bool modalBlocksUnderlyingInput,
             int inputActiveViewCount,
             int raycastBlockingViewCount,
-            bool tooltipBlocksRaycasts)
+            bool tooltipBlocksRaycasts,
+            bool toastBlocksRaycasts)
         {
             TopPageInstanceId = topPageInstanceId ?? string.Empty;
             TopPopupInstanceId = topPopupInstanceId ?? string.Empty;
@@ -339,6 +402,7 @@ namespace Orange.UIFramework
             InputActiveViewCount = inputActiveViewCount;
             RaycastBlockingViewCount = raycastBlockingViewCount;
             TooltipBlocksRaycasts = tooltipBlocksRaycasts;
+            ToastBlocksRaycasts = toastBlocksRaycasts;
         }
 
         public string TopPageInstanceId { get; }
@@ -348,6 +412,7 @@ namespace Orange.UIFramework
         public int InputActiveViewCount { get; }
         public int RaycastBlockingViewCount { get; }
         public bool TooltipBlocksRaycasts { get; }
+        public bool ToastBlocksRaycasts { get; }
     }
 
     public readonly struct PoolDiagnostics

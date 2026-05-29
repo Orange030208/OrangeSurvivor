@@ -11,7 +11,7 @@ public abstract class RewardCardPresentationBase : IRewardCardPresentation
         string title,
         Sprite icon,
         string description,
-        CardQuality quality,
+        ContentTier tier,
         bool interactable)
     {
         OptionId = optionId ?? string.Empty;
@@ -20,7 +20,7 @@ public abstract class RewardCardPresentationBase : IRewardCardPresentation
         Title = title ?? string.Empty;
         Icon = icon;
         Description = description ?? string.Empty;
-        Quality = quality;
+        Tier = tier;
         Interactable = interactable;
     }
 
@@ -30,22 +30,21 @@ public abstract class RewardCardPresentationBase : IRewardCardPresentation
     public string Title { get; }
     public Sprite Icon { get; }
     public string Description { get; }
-    public CardQuality Quality { get; }
+    public ContentTier Tier { get; }
     public bool Interactable { get; }
-    public abstract IEnumerable<DescriptorInfo> GetExtraInfos();
 
-    protected static string BuildQualityDescription(string description, CardQuality quality)
+    protected static string BuildQualityDescription(string description, ContentTier tier)
     {
-        return $"{GetQualityText(quality)}\n{description}";
+        return $"{GetQualityText(tier)}\n{description}";
     }
 
-    protected static string GetQualityText(CardQuality quality)
+    protected static string GetQualityText(ContentTier tier)
     {
-        return quality switch
+        return tier switch
         {
-            CardQuality.Rare => "稀有",
-            CardQuality.Epic => "史诗",
-            CardQuality.Legendary => "传说",
+            ContentTier.Rare => "稀有",
+            ContentTier.Epic => "史诗",
+            ContentTier.Legendary => "传说",
             _ => "普通"
         };
     }
@@ -59,7 +58,7 @@ public sealed class UpgradeRewardCardPresentation : RewardCardPresentationBase
         string optionId,
         string title,
         string description,
-        CardQuality quality,
+        ContentTier tier,
         string[] tags,
         bool interactable)
         : base(
@@ -69,7 +68,7 @@ public sealed class UpgradeRewardCardPresentation : RewardCardPresentationBase
             title,
             null,
             description,
-            quality,
+            tier,
             interactable)
     {
         this.tags = tags ?? Array.Empty<string>();
@@ -77,42 +76,6 @@ public sealed class UpgradeRewardCardPresentation : RewardCardPresentationBase
 
     public IReadOnlyList<string> Tags => tags;
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        string description = BuildDescription(Description, Quality, tags);
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            yield return new DescriptorInfo(string.Empty, description);
-        }
-    }
-
-    private static string BuildDescription(string description, CardQuality quality, string[] tags)
-    {
-        string tagText = BuildTagText(tags);
-        return $"{GetQualityText(quality)}{tagText}\n{description}";
-    }
-
-    private static string BuildTagText(string[] tags)
-    {
-        if (tags == null || tags.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        int count = Mathf.Min(2, tags.Length);
-        string result = " · ";
-        for (int i = 0; i < count; i++)
-        {
-            if (i > 0)
-            {
-                result += "/";
-            }
-
-            result += tags[i];
-        }
-
-        return result;
-    }
 }
 
 public sealed class EquipmentRewardCardPresentation : RewardCardPresentationBase
@@ -120,27 +83,20 @@ public sealed class EquipmentRewardCardPresentation : RewardCardPresentationBase
     public EquipmentRewardCardPresentation(
         RewardOptionKind kind,
         string optionId,
-        IDescribable describable,
-        CardQuality quality,
+        string title,
+        Sprite icon,
+        string description,
+        ContentTier tier,
         bool interactable)
         : base(
             optionId,
             kind,
             RewardCardStyle.EquipmentReward,
-            describable != null ? describable.Title : string.Empty,
-            describable != null ? describable.Icon : null,
-            describable != null ? describable.Description : string.Empty,
-            quality,
+            title,
+            icon,
+            description,
+            tier,
             interactable)
     {
-    }
-
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        string description = BuildQualityDescription(Description, Quality);
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            yield return new DescriptorInfo(string.Empty, description);
-        }
     }
 }

@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
+  m_Name: Weapon_NeonRocketLauncher
+  m_EditorClassIdentifier: 
+  itemName: "霓虹火箭筒"
+  itemIcon: {fileID: 21300000, guid: e49a5fa49e6755d72ae826170cc30a9b, type: 3}
+  itemPrice: 45
+  itemType: 0
+  itemDescription: "强力范围远程武器，清场覆盖高但攻速极慢。"
+  weaponId: Weapon_NeonRocketLauncher
+  tags: 02000000
+  attackSequence: {fileID: 11400000, guid: c9a81a0e747841f9bf8c5ac52038f009, type: 2}
+  visualForwardAngle: 45
+  holdAimWhenAttackReady: 1
+  attackSequenceOccupancy: 0.95
+  attackTimingMode: 0
+  targetingMode: 0
+  spawnPoints:
+  - id: muzzle
+    localPosition: {x: -0.06, y: 0.62}
+    localRotationOffset: 0
+  sequenceProjectileList:
+  - spawnPointIndex: 0
+    projectileDefinition: {fileID: 11400000, guid: cd46c7cbdc536324b8476d1b386d7e53, type: 2}
+    burstId: 0
+    firingMode: 0
+    patternConfig:
+      spreadCount: 1
+      spreadAngle: 0
+      burstCount: 1
+      novaCount: 1
+      burstInterval: 0
+  sequenceSfxList:
+  - sfxKey: 300
+  sequenceVfxList: []
+  enableHitBox: 0
+  hitVfxPrefab: {fileID: 0}
+  hitBoxSize: {x: 1, y: 1}
+  hitBoxOffset: {x: 0, y: 0}
+  levelStats:
+  - level: 1
+    attack: 31
+    attackSpeed: 50
+    criticalChance: 3
+    criticalPercent: 175
+    range: 760
+    knockbackStrength: 24
+    statBenefits:
+      attackSpeedBenefitPercent: 50
+      criticalChanceBenefitPercent: 55
+      criticalPercentBenefitPercent: 78
+      rangeBenefitPercent: 90
+      knockbackStrengthBenefitPercent: 85
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 95
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 2
+    attack: 43
+    attackSpeed: 56
+    criticalChance: 4
+    criticalPercent: 180
+    range: 800
+    knockbackStrength: 30
+    statBenefits:
+      attackSpeedBenefitPercent: 52
+      criticalChanceBenefitPercent: 60
+      criticalPercentBenefitPercent: 84
+      rangeBenefitPercent: 94
+      knockbackStrengthBenefitPercent: 90
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 110
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 3
+    attack: 58
+    attackSpeed: 65
+    criticalChance: 5
+    criticalPercent: 190
+    range: 850
+    knockbackStrength: 38
+    statBenefits:
+      attackSpeedBenefitPercent: 55
+      criticalChanceBenefitPercent: 66
+      criticalPercentBenefitPercent: 90
+      rangeBenefitPercent: 98
+      knockbackStrengthBenefitPercent: 95
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 130
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
+  - level: 4
+    attack: 80
+    attackSpeed: 78
+    criticalChance: 7
+    criticalPercent: 205
+    range: 900
+    knockbackStrength: 48
+    statBenefits:
+      attackSpeedBenefitPercent: 58
+      criticalChanceBenefitPercent: 72
+      criticalPercentBenefitPercent: 100
+      rangeBenefitPercent: 104
+      knockbackStrengthBenefitPercent: 100
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 150
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []

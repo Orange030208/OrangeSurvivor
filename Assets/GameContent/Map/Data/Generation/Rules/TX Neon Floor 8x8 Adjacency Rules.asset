@@ -1,0 +1,1042 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c30fb29661039f41b223d116e2f4279, type: 3}
+  m_Name: TX Neon Floor 8x8 Adjacency Rules
+  m_EditorClassIdentifier: 
+  useExplicitRules: 1
+  useSocketCompatibility: 0
+  allowMissingRules: 0
+  rules:
+  - sourceTileId: TX Tileset Neon Floor 8x8_56
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_48
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_56
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_57
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_56
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_0
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_56
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_63
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_48
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_40
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_48
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_49
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_48
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_56
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_48
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_55
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_40
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_32
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_40
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_41
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_40
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_48
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_40
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_47
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_32
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_24
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_32
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_33
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_32
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_40
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_32
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_39
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_24
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_16
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_24
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_25
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_24
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_32
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_24
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_31
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_16
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_8
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_16
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_17
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_16
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_24
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_16
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_23
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_8
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_0
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_8
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_9
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_8
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_16
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_8
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_15
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_0
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_56
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_0
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_1
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_0
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_8
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_0
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_7
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_57
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_49
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_57
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_58
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_57
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_1
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_57
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_56
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_49
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_41
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_49
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_50
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_49
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_57
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_49
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_48
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_41
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_33
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_41
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_42
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_41
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_49
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_41
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_40
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_33
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_25
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_33
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_34
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_33
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_41
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_33
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_32
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_25
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_17
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_25
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_26
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_25
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_33
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_25
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_24
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_17
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_9
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_17
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_18
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_17
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_25
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_17
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_16
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_9
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_1
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_9
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_10
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_9
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_17
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_9
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_8
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_1
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_57
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_1
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_2
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_1
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_9
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_1
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_0
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_58
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_50
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_58
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_59
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_58
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_2
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_58
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_57
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_50
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_42
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_50
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_51
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_50
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_58
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_50
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_49
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_42
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_34
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_42
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_43
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_42
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_50
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_42
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_41
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_34
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_26
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_34
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_35
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_34
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_42
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_34
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_33
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_26
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_18
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_26
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_27
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_26
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_34
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_26
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_25
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_18
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_10
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_18
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_19
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_18
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_26
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_18
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_17
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_10
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_2
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_10
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_11
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_10
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_18
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_10
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_9
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_2
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_58
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_2
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_3
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_2
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_10
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_2
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_1
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_59
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_51
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_59
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_60
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_59
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_3
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_59
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_58
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_51
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_43
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_51
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_52
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_51
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_59
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_51
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_50
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_43
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_35
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_43
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_44
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_43
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_51
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_43
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_42
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_35
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_27
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_35
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_36
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_35
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_43
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_35
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_34
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_27
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_19
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_27
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_28
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_27
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_35
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_27
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_26
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_19
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_11
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_19
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_20
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_19
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_27
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_19
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_18
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_11
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_3
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_11
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_12
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_11
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_19
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_11
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_10
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_3
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_59
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_3
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_4
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_3
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_11
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_3
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_2
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_60
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_52
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_60
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_61
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_60
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_4
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_60
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_59
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_52
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_44
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_52
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_53
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_52
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_60
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_52
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_51
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_44
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_36
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_44
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_45
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_44
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_52
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_44
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_43
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_36
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_28
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_36
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_37
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_36
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_44
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_36
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_35
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_28
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_20
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_28
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_29
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_28
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_36
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_28
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_27
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_20
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_12
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_20
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_21
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_20
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_28
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_20
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_19
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_12
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_4
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_12
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_13
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_12
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_20
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_12
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_11
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_4
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_60
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_4
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_5
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_4
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_12
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_4
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_3
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_61
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_53
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_61
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_62
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_61
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_5
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_61
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_60
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_53
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_45
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_53
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_54
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_53
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_61
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_53
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_52
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_45
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_37
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_45
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_46
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_45
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_53
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_45
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_44
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_37
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_29
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_37
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_38
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_37
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_45
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_37
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_36
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_29
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_21
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_29
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_30
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_29
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_37
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_29
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_28
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_21
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_13
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_21
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_22
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_21
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_29
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_21
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_20
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_13
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_5
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_13
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_14
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_13
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_21
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_13
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_12
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_5
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_61
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_5
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_6
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_5
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_13
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_5
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_4
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_62
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_54
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_62
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_63
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_62
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_6
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_62
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_61
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_54
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_46
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_54
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_55
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_54
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_62
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_54
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_53
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_46
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_38
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_46
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_47
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_46
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_54
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_46
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_45
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_38
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_30
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_38
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_39
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_38
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_46
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_38
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_37
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_30
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_22
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_30
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_31
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_30
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_38
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_30
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_29
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_22
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_14
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_22
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_23
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_22
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_30
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_22
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_21
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_14
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_6
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_14
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_15
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_14
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_22
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_14
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_13
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_6
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_62
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_6
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_7
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_6
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_14
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_6
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_5
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_63
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_55
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_63
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_56
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_63
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_7
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_63
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_62
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_55
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_47
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_55
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_48
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_55
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_63
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_55
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_54
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_47
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_39
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_47
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_40
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_47
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_55
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_47
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_46
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_39
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_31
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_39
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_32
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_39
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_47
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_39
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_38
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_31
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_23
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_31
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_24
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_31
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_39
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_31
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_30
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_23
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_15
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_23
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_16
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_23
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_31
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_23
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_22
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_15
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_7
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_15
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_8
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_15
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_23
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_15
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_14
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_7
+    direction: 0
+    neighborTileId: TX Tileset Neon Floor 8x8_63
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_7
+    direction: 1
+    neighborTileId: TX Tileset Neon Floor 8x8_0
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_7
+    direction: 2
+    neighborTileId: TX Tileset Neon Floor 8x8_15
+    allowed: 1
+  - sourceTileId: TX Tileset Neon Floor 8x8_7
+    direction: 3
+    neighborTileId: TX Tileset Neon Floor 8x8_6
+    allowed: 1

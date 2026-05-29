@@ -1,8 +1,13 @@
-public interface IRewardCardPresentation : IDescribable
+using UnityEngine;
+
+public interface IRewardCardPresentation
 {
     string OptionId { get; }
     RewardOptionKind Kind { get; }
     RewardCardStyle Style { get; }
-    CardQuality Quality { get; }
+    string Title { get; }
+    Sprite Icon { get; }
+    string Description { get; }
+    ContentTier Tier { get; }
     bool Interactable { get; }
 }

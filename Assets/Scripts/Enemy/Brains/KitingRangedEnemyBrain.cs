@@ -60,9 +60,10 @@ public class KitingRangedEnemyBrain : EnemyBrain
 
     public override void StartBrain()
     {
+        bool shouldResetExistingState = HasBrainStarted;
         base.StartBrain();
 
-        if (stateMachine.HasState)
+        if (shouldResetExistingState && stateMachine.HasState)
         {
             stateMachine.ChangeState(KitingRangedAIState.Approach, true);
         }

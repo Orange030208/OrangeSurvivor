@@ -7,25 +7,15 @@ public class DescriptionDescriber : Describer
 {
     [SerializeField] private TextMeshProUGUI infoText;
 
-    public override void Display(IDescribable describable)
+    public override void Display(InfoDocument document)
     {
-        if (describable == null)
+        if (infoText == null)
         {
-            Display(string.Empty);
             return;
         }
 
-        Display(describable.Description);
-    }
-
-    private void Display(string description)
-    {
-        if (description == null)
-        {
-            infoText.text = "";
-            return;
-        }
-
-        infoText.text = description;
+        infoText.text = document != null
+            ? InfoDocumentTextFormatter.ToPlainText(document, includeHeader: false)
+            : string.Empty;
     }
 }

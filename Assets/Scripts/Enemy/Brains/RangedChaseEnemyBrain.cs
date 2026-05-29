@@ -57,10 +57,11 @@ public class RangedChaseEnemyBrain : EnemyBrain
 
     public override void StartBrain()
     {
+        bool shouldResetExistingState = HasBrainStarted;
         ResetRuntimeState();
         base.StartBrain();
 
-        if (stateMachine.HasState)
+        if (shouldResetExistingState && stateMachine.HasState)
         {
             stateMachine.ChangeState(RangedChaseAIState.Chase, true);
         }

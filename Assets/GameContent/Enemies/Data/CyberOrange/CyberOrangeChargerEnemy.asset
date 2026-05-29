@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dea8958739d48eb4590de73bbe6224ee, type: 3}
+  m_Name: CyberOrangeChargerEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5656739618877753840, guid: 656ce4a9febf5fc4a88c1d15fa5eea63, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 64897d983b3f6b245822df6f504928c3, type: 2}
+  animConfig: {fileID: 11400000, guid: 11d7279f6920491c9aec0ee9f69d7741, type: 2}
+  damagedSfxKey: 400
+  attackAction:
+    actionId: ChargerEnemy_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.55
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  chargeAction:
+    actionId: ChargerEnemy_Charge
+    animationStateName: Charge
+    completionMode: 1
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 0.75
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  attackCommitNormalizedTime: 0.55
+  chargeInterval: 5
+  preChargeDuration: 0.75
+  chargeDuration: 1.25
+  chargeDamageRadius: 1.1
+  chargeDamageMultiplier: 1.2
+  chargeModifiers:
+  - propType: 4
+    modifierType: 3
+    value: 100
+  attackSpeedBenefitRatio: 1

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -46,11 +45,6 @@ public sealed class PropertyModifierFeature : FeatureBase
         }
 
         Context.PropertiesManager.RemoveModifier(ResolveRuntimeSourceId(), modifier.propType, modifier.modifierType);
-    }
-
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        yield return new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText());
     }
 
     private string ResolveRuntimeSourceId()

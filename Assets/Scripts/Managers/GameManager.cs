@@ -20,13 +20,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private WaveManager waveManager;
     [SerializeField] private EnemyRegistry enemyRegistry;
-    [SerializeField] private InventoryOperateManager inventoryOperateManager;
     [SerializeField] private ShopManager shopManager;
     [SerializeField] private StageCompleteSummaryManager stageCompleteSummaryManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
     private GameState currentGameState = GameState.None;
+    private ViewHandle<GamePadUI> gamePadHandle;
+    private Player moveInputPlayer;
+    private IPlayerMoveInputReceiver moveInputReceiver;
+    private bool gamePadControlsMoveInput;
     private bool isPaused;
     private bool hasMoreWaves;
     private bool isRunTerminated;
@@ -82,6 +85,11 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 60;
         TransitionToState(initialGameState);
         SetPaused(false);
+    }
+
+    private void Update()
+    {
+        UpdateStandaloneMoveInput();
     }
 
     private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
@@ -496,6 +504,9 @@ public class GameManager : MonoBehaviour
                 await ClosePageAsync<MenuUIPage>(cancellationToken);
                 break;
             case GameState.Game:
+                ClearPlayerMoveInput();
+                gamePadControlsMoveInput = false;
+                await CloseGamePadAsync(cancellationToken);
                 await ClosePageAsync<GamingUIPage>(cancellationToken);
                 break;
             case GameState.GameOver:
@@ -521,6 +532,7 @@ public class GameManager : MonoBehaviour
                 await uiManager.OpenPageAsync<GamingUIPage>(
                     CreateGamingPageContext(),
                     cancellationToken);
+                await OpenGamePadAsync(cancellationToken);
                 break;
             case GameState.GameOver:
                 await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
@@ -565,18 +577,91 @@ public class GameManager : MonoBehaviour
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(ShopManager)} reference.");
         }
 
-        if (inventoryOperateManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(InventoryOperateManager)} reference.");
-        }
-
-        inventoryOperateManager.Bind(player);
         return new ShopPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
             player.GetComponent<PropertiesManager>(),
-            shopManager,
-            inventoryOperateManager);
+            shopManager);
+    }
+
+    private async UniTask OpenGamePadAsync(CancellationToken cancellationToken)
+    {
+        if (gamePadHandle.IsValid)
+        {
+            gamePadControlsMoveInput = true;
+            return;
+        }
+
+        if (!GamePadUI.IsRegisteredTouchControlsEnabled(uiManager.Catalog, Application.platform))
+        {
+            gamePadControlsMoveInput = false;
+            return;
+        }
+
+        gamePadHandle = await uiManager.ShowPopupAsync<GamePadUI>(
+            new GamePadUIContext(player),
+            CreateGamePadPopupOptions(),
+            cancellationToken);
+        gamePadControlsMoveInput = true;
+    }
+
+    private async UniTask CloseGamePadAsync(CancellationToken cancellationToken)
+    {
+        ViewHandle<GamePadUI> handle = gamePadHandle;
+        if (!handle.IsValid)
+        {
+            return;
+        }
+
+        gamePadHandle = default;
+        await handle.CloseAsync(CloseReason.Normal, cancellationToken);
+    }
+
+    private void UpdateStandaloneMoveInput()
+    {
+        if (currentGameState != GameState.Game || gamePadControlsMoveInput)
+        {
+            return;
+        }
+
+        GameInput input = GameInput.Instance;
+        Vector2 moveInput = input != null ? input.Move : Vector2.zero;
+        ApplyStandaloneMoveInput(moveInput);
+    }
+
+    private void ApplyStandaloneMoveInput(Vector2 moveInput)
+    {
+        IPlayerMoveInputReceiver receiver = ResolveMoveInputReceiver();
+        if (receiver == null)
+        {
+            return;
+        }
+
+        receiver.SetMoveInput(Vector2.ClampMagnitude(moveInput, 1f));
+    }
+
+    private void ClearPlayerMoveInput()
+    {
+        ResolveMoveInputReceiver()?.SetMoveInput(Vector2.zero);
+    }
+
+    private IPlayerMoveInputReceiver ResolveMoveInputReceiver()
+    {
+        if (player == null)
+        {
+            moveInputPlayer = null;
+            moveInputReceiver = null;
+            return null;
+        }
+
+        if (moveInputPlayer == player)
+        {
+            return moveInputReceiver;
+        }
+
+        moveInputPlayer = player;
+        moveInputReceiver = player.GetComponent<IPlayerMoveInputReceiver>();
+        return moveInputReceiver;
     }
 
     private void OpenPauseMenu()
@@ -594,6 +679,7 @@ public class GameManager : MonoBehaviour
         try
         {
             await uiManager.OpenPageAsync<GamePauseMenu>(
+                CreatePauseMenuContext(),
                 cancellationToken: this.GetCancellationTokenOnDestroy());
         }
         catch (OperationCanceledException)
@@ -643,6 +729,16 @@ public class GameManager : MonoBehaviour
         return uiManager.ClosePageAsync<TPage>(cancellationToken);
     }
 
+    private static PopupOptions CreateGamePadPopupOptions()
+    {
+        return new PopupOptions(
+            closeOnOutsideClick: false,
+            showBackdrop: false,
+            trackInStack: false,
+            groupId: "gamepad",
+            replaceSameGroup: false);
+    }
+
     private void ResolveSceneReferences()
     {
         if (mapGenerator == null)
@@ -682,6 +778,18 @@ public class GameManager : MonoBehaviour
         {
             throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
         }
+    }
+
+    private GamePauseMenuContext CreatePauseMenuContext()
+    {
+        EnsurePlayerReference();
+        PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
+        if (propertiesManager == null)
+        {
+            throw new MissingReferenceException($"{nameof(GameManager)} requires player '{player.name}' to have a {nameof(PropertiesManager)} before opening the pause menu.");
+        }
+
+        return new GamePauseMenuContext(player, propertiesManager);
     }
 
     private async UniTask RunPostStatePageOpenedAsync(

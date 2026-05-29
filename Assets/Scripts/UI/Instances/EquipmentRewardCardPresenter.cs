@@ -9,8 +9,10 @@ public sealed class EquipmentRewardCardPresenter
         return new EquipmentRewardCardPresentation(
             RewardOptionKind.Weapon,
             optionId,
-            new WeaponLevelDescribable(weaponData, clampedLevel),
-            CardQualityResolver.FromWeaponLevel(clampedLevel),
+            weaponData != null ? ItemDisplayHelper.GetWeaponDisplayName(weaponData.ItemName, clampedLevel) : string.Empty,
+            weaponData != null ? weaponData.ItemIcon : null,
+            weaponData != null ? weaponData.BuildDescriptionForLevel(clampedLevel) : string.Empty,
+            ContentTierResolver.FromWeaponLevel(clampedLevel),
             weaponData != null);
     }
 
@@ -20,8 +22,10 @@ public sealed class EquipmentRewardCardPresenter
         return new EquipmentRewardCardPresentation(
             RewardOptionKind.Accessory,
             optionId,
-            accessory,
-            accessory != null ? CardQualityResolver.FromAccessoryRarity(accessory.RarityGrade) : CardQuality.Common,
+            accessory != null ? accessory.ItemName : string.Empty,
+            accessory != null ? accessory.ItemIcon : null,
+            accessory != null ? accessory.Description : string.Empty,
+            accessory != null ? ContentTierResolver.FromAccessoryRarity(accessory.RarityGrade) : ContentTier.Common,
             accessory != null);
     }
 }

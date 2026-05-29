@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = ScriptableObjectMenuPaths.ACCESSORY, order = 0)]
-public class AccessoryDataSO : ItemDataSO
+public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource
 {
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
@@ -72,13 +72,9 @@ public class AccessoryDataSO : ItemDataSO
         return dictionary;
     }
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
+    public InfoDocument BuildInfoDocument()
     {
-        return ItemDescriptionUtility.BuildDescriptorInfos(
-            ItemDescriptionUtility.NormalizeManualDescription(itemDescription),
-            propertyModifiers,
-            specialFeatures,
-            BuildMetaInfos());
+        return new AccessoryInfoBuilder().Build(this);
     }
 
     private string BuildDescription()
@@ -89,15 +85,6 @@ public class AccessoryDataSO : ItemDataSO
             specialFeatures,
             BuildMetaLines(),
             string.Empty);
-    }
-
-    private IEnumerable<DescriptorInfo> BuildMetaInfos()
-    {
-        yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
-        if (HasOwnedLimit)
-        {
-            yield return new DescriptorInfo("持有上限", MaxOwnedCount.ToString());
-        }
     }
 
     private IEnumerable<ItemDescriptionLine> BuildMetaLines()

@@ -14,7 +14,7 @@ public static class UpgradeCardContentPoolTuningUtility
         entry.ConfigureRuntimeLimits(0, UpgradeCardSO.UNLIMITED_PICK_COUNT);
         entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
         {
-            new QualityMetadata((int)card.Rarity)
+            new QualityMetadata(ContentTierResolver.FromUpgradeCardRarity(card.Rarity))
         });
         entry.ConfigureRuntimeRules(BuildUpgradeCardConditions(), BuildUpgradeCardWeightRules());
         return entry;

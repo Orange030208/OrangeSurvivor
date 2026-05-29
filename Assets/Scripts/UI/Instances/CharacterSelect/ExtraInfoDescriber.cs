@@ -1,44 +1,19 @@
-using System.Collections.Generic;
-using System.Text;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ExtraInfoDescriber :Describer
 {
     [SerializeField] private TextMeshProUGUI infoText;
 
-    public override void Display(IDescribable describable)
+    public override void Display(InfoDocument document)
     {
-        if (describable == null)
+        if (infoText == null)
         {
-            Display((IEnumerable<DescriptorInfo>)null);
             return;
         }
 
-        Display(describable.GetExtraInfos());
-    }
-
-    private void Display(IEnumerable<DescriptorInfo> descriptorInfos)
-    {
-        if (descriptorInfos == null)
-        {
-            infoText.text = "";
-            return;
-        }
-
-        StringBuilder sb = new();
-        foreach (DescriptorInfo descriptorInfo in descriptorInfos)
-        {
-            string line = ItemDescriptionUtility.FormatDescriptorInfo(descriptorInfo);
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                continue;
-            }
-
-            sb.AppendLine(line);
-        }
-
-        infoText.text = sb.ToString().TrimEnd();
+        infoText.text = document != null
+            ? InfoDocumentTextFormatter.ToRichText(document)
+            : string.Empty;
     }
 }

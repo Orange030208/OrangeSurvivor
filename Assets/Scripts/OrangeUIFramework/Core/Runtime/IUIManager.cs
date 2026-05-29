@@ -43,6 +43,14 @@ namespace Orange.UIFramework
             CancellationToken cancellationToken = default)
             where TTooltip : TooltipBase;
 
+        UniTask<ViewHandle<TToast>> ShowToastAsync<TToast>(
+            object payload = null,
+            ToastOptions options = default,
+            CancellationToken cancellationToken = default)
+            where TToast : ToastBase;
+
+        UniTask ClearToastsAsync(CancellationToken cancellationToken = default);
+
         void UpdateTooltipPosition(Vector2 screenPosition);
         void HideTooltip();
         bool IsOpen<TView>() where TView : ViewBase;

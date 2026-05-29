@@ -1,0 +1,186 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public interface IInfoDocumentBuilder<in TSource>
+{
+    InfoDocument Build(TSource source);
+}
+
+public interface IInfoDocumentSource
+{
+    InfoDocument BuildInfoDocument();
+}
+
+public sealed class InfoDocumentService
+{
+    private readonly Dictionary<Type, BuilderRegistration> builders = new();
+
+    public InfoDocumentService(bool registerDefaultBuilders = true)
+    {
+        if (!registerDefaultBuilders)
+        {
+            return;
+        }
+
+        PropertiesInfoBuilder propertiesInfoBuilder = new();
+        BuffInfoBuilder buffInfoBuilder = new();
+        Register(new WeaponInfoBuilder());
+        Register<PropertiesInfoSource>(propertiesInfoBuilder);
+        Register<PropertiesManager>(propertiesInfoBuilder);
+        Register(new AccessoryInfoBuilder());
+        Register(new UpgradeCardInfoBuilder());
+        Register<BuffDataSO>(buffInfoBuilder);
+        Register<BuffInfoSource>(buffInfoBuilder);
+        Register<ActiveBuffViewData>(buffInfoBuilder);
+        Register<IRewardCardPresentation>(new RewardCardInfoBuilder());
+    }
+
+    public void Register<TSource>(IInfoDocumentBuilder<TSource> builder)
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        builders[typeof(TSource)] = new BuilderRegistration(
+            typeof(TSource),
+            source => builder.Build((TSource)source));
+    }
+
+    public bool TryBuild<TSource>(TSource source, out InfoDocument document)
+    {
+        return TryBuild((object)source, out document);
+    }
+
+    public bool TryBuild(object source, out InfoDocument document)
+    {
+        if (source is null)
+        {
+            document = null;
+            return false;
+        }
+
+        if (source is IInfoDocumentSource infoDocumentSource)
+        {
+            document = infoDocumentSource.BuildInfoDocument();
+            return document != null;
+        }
+
+        Type sourceType = source.GetType();
+        if (TryBuildWithRuntimeBuilder(source, sourceType, out document))
+        {
+            return true;
+        }
+
+        document = null;
+        return false;
+    }
+
+    public InfoDocument BuildOrThrow<TSource>(TSource source)
+    {
+        if (TryBuild(source, out InfoDocument document))
+        {
+            return document;
+        }
+
+        throw new InvalidOperationException($"No InfoDocument builder registered for {typeof(TSource).Name}.");
+    }
+
+    private bool TryBuildWithRuntimeBuilder(object source, Type sourceType, out InfoDocument document)
+    {
+        if (builders.TryGetValue(sourceType, out BuilderRegistration exactBuilder) &&
+            exactBuilder.TryBuild(source, out document))
+        {
+            return true;
+        }
+
+        foreach (KeyValuePair<Type, BuilderRegistration> pair in builders)
+        {
+            if (pair.Key == sourceType || !pair.Key.IsAssignableFrom(sourceType))
+            {
+                continue;
+            }
+
+            if (pair.Value.TryBuild(source, out document))
+            {
+                return true;
+            }
+        }
+
+        document = null;
+        return false;
+    }
+
+    private readonly struct BuilderRegistration
+    {
+        private readonly Type sourceType;
+        private readonly Func<object, InfoDocument> build;
+
+        public BuilderRegistration(Type sourceType, Func<object, InfoDocument> build)
+        {
+            this.sourceType = sourceType;
+            this.build = build;
+        }
+
+        public bool TryBuild(object source, out InfoDocument document)
+        {
+            if (source == null || !sourceType.IsInstanceOfType(source))
+            {
+                document = null;
+                return false;
+            }
+
+            document = build.Invoke(source);
+            return document != null;
+        }
+    }
+}
+
+[CreateAssetMenu(fileName = "Info Presentation Catalog", menuName = ScriptableObjectMenuPaths.PRESENTATION_ROOT + "Info/Info Presentation Catalog", order = 0)]
+public sealed class InfoPresentationCatalogSO : ScriptableObject
+{
+    [SerializeField] private List<InfoPresentationEntry> entries = new();
+
+    public IReadOnlyList<InfoPresentationEntry> Entries => entries;
+
+    public bool TryGetEntry(string id, out InfoPresentationEntry entry)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            entry = default;
+            return false;
+        }
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (entries[i].Matches(id))
+            {
+                entry = entries[i];
+                return true;
+            }
+        }
+
+        entry = default;
+        return false;
+    }
+}
+
+[Serializable]
+public struct InfoPresentationEntry
+{
+    [SerializeField] private string id;
+    [SerializeField] private string displayName;
+    [SerializeField] private Sprite icon;
+    [SerializeField] private InfoTone tone;
+
+    public string Id => id;
+    public string DisplayName => displayName;
+    public Sprite Icon => icon;
+    public InfoTone Tone => tone;
+
+    public bool Matches(string otherId)
+    {
+        return string.Equals(id, otherId, StringComparison.Ordinal);
+    }
+}

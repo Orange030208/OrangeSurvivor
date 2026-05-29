@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffIconItem : ViewPartBase, IDescribable
+public class BuffIconItem : ViewPartBase, IInfoDocumentSource
 {
     [SerializeField] private Image iconImage;
     [SerializeField] private Image borderImage;
@@ -55,14 +54,8 @@ public class BuffIconItem : ViewPartBase, IDescribable
         };
     }
 
-    public string Title => viewData.Describable.Title;
-
-    public Sprite Icon => viewData.Describable.Icon;
-
-    public string Description => viewData.Describable.Description;
-
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    public InfoDocument BuildInfoDocument()
     {
-        return viewData.Describable.GetExtraInfos();
+        return new BuffInfoBuilder().Build(BuffInfoSource.FromViewData(viewData));
     }
 }

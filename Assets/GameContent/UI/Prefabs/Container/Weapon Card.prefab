@@ -789,7 +789,6 @@ GameObject:
   - component: {fileID: 293202892692610221}
   - component: {fileID: 823908526393948807}
   - component: {fileID: 3343985659854495284}
-  - component: {fileID: 2110993686870779454}
   - component: {fileID: 3991975365694480743}
   m_Layer: 0
   m_Name: Weapon Card
@@ -884,26 +883,6 @@ MonoBehaviour:
   shadowRoot: {fileID: 9117456449783719404}
   shadowCanvasGroup: {fileID: 8943718567181734074}
   glowCanvasGroup: {fileID: 992121649904854935}
---- !u!114 &2110993686870779454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7139556483707835314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8907ea60dc1de7443b4efb78d4ad1299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoResolveReferences: 1
-  backgroundImage: {fileID: 5215344984666563382}
-  iconFrameImage: {fileID: 6022876627485476106}
-  iconBackgroundImage: {fileID: 2492314506202078464}
-  glowImage: {fileID: 3384547312911755051}
-  titleText: {fileID: 8294777454420629685}
-  shadowRect: {fileID: 9117456449783719404}
-  glowRect: {fileID: 1608392474127027030}
 --- !u!114 &3991975365694480743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -918,7 +897,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 8294777454420629685}
   bottom: {fileID: 964150818085217147}
-  qualityVisual: {fileID: 2110993686870779454}
   qualityPresentationCatalogOverride: {fileID: 11400000, guid: d96ef4342df246c1a76a7f95e470fd20, type: 2}
   motion: {fileID: 3343985659854495284}
   playRevealSfx: 1

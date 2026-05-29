@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// 批量把属性图标写入 PropPresentationCatalogSO。
-/// 图标文件默认按 PropType 命名，允许带尺寸后缀，例如 ShopPriceDiscount_64x64.png。
+/// 图标按 prop_icons.png 图集内的序号顺序绑定到 catalog 条目。
 /// </summary>
 public static class PropPresentationCatalogIconBinder
 {
     private const string CATALOG_PATH = GameContentAssetPaths.PropPresentationCatalog;
-    private const string ICON_FOLDER = GameContentAssetPaths.UIIconSprites;
+    private const string ICON_ATLAS_PATH = GameContentAssetPaths.PropertyShowPropIconsAtlas;
 
     [MenuItem("Survivors/Presentation/Bind Prop Presentation Icons")]
     public static void BindDefaultCatalogIcons()
@@ -23,13 +23,13 @@ public static class PropPresentationCatalogIconBinder
             return;
         }
 
-        int changedCount = BindIcons(catalog, ICON_FOLDER);
-        Debug.Log($"{nameof(PropPresentationCatalogIconBinder)} bound {changedCount} prop icons from {ICON_FOLDER}.");
+        int changedCount = BindIcons(catalog, ICON_ATLAS_PATH);
+        Debug.Log($"{nameof(PropPresentationCatalogIconBinder)} bound {changedCount} prop icons from {ICON_ATLAS_PATH}.");
     }
 
-    private static int BindIcons(PropPresentationCatalogSO catalog, string iconFolder)
+    private static int BindIcons(PropPresentationCatalogSO catalog, string iconAtlasPath)
     {
-        Dictionary<string, Sprite> iconsByName = BuildIconMap(iconFolder);
+        Dictionary<int, Sprite> iconsByIndex = BuildIconMap(iconAtlasPath);
         SerializedObject serializedCatalog = new SerializedObject(catalog);
         SerializedProperty entries = serializedCatalog.FindProperty("entries");
         int changedCount = 0;
@@ -37,13 +37,11 @@ public static class PropPresentationCatalogIconBinder
         for (int i = 0; i < entries.arraySize; i++)
         {
             SerializedProperty entry = entries.GetArrayElementAtIndex(i);
-            SerializedProperty propTypeProperty = entry.FindPropertyRelative("propType");
             SerializedProperty iconProperty = entry.FindPropertyRelative("icon");
 
-            string propTypeName = ((PropType)propTypeProperty.intValue).ToString();
-            if (!iconsByName.TryGetValue(propTypeName, out Sprite icon))
+            if (!iconsByIndex.TryGetValue(i, out Sprite icon))
             {
-                Debug.LogWarning($"No prop icon named {propTypeName} was found under {iconFolder}.");
+                Debug.LogWarning($"No prop icon index {i} was found under {iconAtlasPath}.");
                 continue;
             }
 
@@ -63,50 +61,44 @@ public static class PropPresentationCatalogIconBinder
         return changedCount;
     }
 
-    private static Dictionary<string, Sprite> BuildIconMap(string iconFolder)
+    private static Dictionary<int, Sprite> BuildIconMap(string iconAtlasPath)
     {
-        Dictionary<string, Sprite> iconsByName = new Dictionary<string, Sprite>(StringComparer.Ordinal);
-        string[] guids = AssetDatabase.FindAssets("t:Sprite", new[] { iconFolder });
-
-        for (int i = 0; i < guids.Length; i++)
+        Dictionary<int, Sprite> iconsByIndex = new Dictionary<int, Sprite>();
+        Object[] assets = AssetDatabase.LoadAllAssetsAtPath(iconAtlasPath);
+        for (int i = 0; i < assets.Length; i++)
         {
-            string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
-            Sprite icon = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
-            if (icon == null)
+            if (assets[i] is not Sprite icon)
             {
                 continue;
             }
 
-            string normalizedName = NormalizeIconName(Path.GetFileNameWithoutExtension(assetPath));
-            if (iconsByName.ContainsKey(normalizedName))
+            if (!TryParseAtlasIndex(icon.name, out int index))
             {
-                Debug.LogWarning($"Duplicate prop icon name {normalizedName} found at {assetPath}. Keeping the first one.");
                 continue;
             }
 
-            iconsByName.Add(normalizedName, icon);
+            if (iconsByIndex.ContainsKey(index))
+            {
+                Debug.LogWarning($"Duplicate prop icon index {index} found in {iconAtlasPath}. Keeping the first one.");
+                continue;
+            }
+
+            iconsByIndex.Add(index, icon);
         }
 
-        return iconsByName;
+        return iconsByIndex;
     }
 
-    private static string NormalizeIconName(string iconName)
+    private static bool TryParseAtlasIndex(string iconName, out int index)
     {
         int suffixIndex = iconName.LastIndexOf('_');
         if (suffixIndex < 0)
         {
-            return iconName;
+            index = -1;
+            return false;
         }
 
         string suffix = iconName.Substring(suffixIndex + 1);
-        return IsSizeSuffix(suffix) ? iconName.Substring(0, suffixIndex) : iconName;
-    }
-
-    private static bool IsSizeSuffix(string suffix)
-    {
-        string[] parts = suffix.Split('x');
-        return parts.Length == 2 &&
-               int.TryParse(parts[0], out _) &&
-               int.TryParse(parts[1], out _);
+        return int.TryParse(suffix, out index);
     }
 }

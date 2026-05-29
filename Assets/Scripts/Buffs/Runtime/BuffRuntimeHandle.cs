@@ -51,7 +51,7 @@ public sealed class BuffRuntimeHandle
     {
         if (buffData == null)
         {
-            return new ActiveBuffViewData(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, IDescribable.Default);
+            return new ActiveBuffViewData(string.Empty, string.Empty, null, BuffPolarity.Neutral, 0, 0, false, 0f, 0f, null);
         }
 
         bool hasDuration = totalDurationSeconds > 0f;

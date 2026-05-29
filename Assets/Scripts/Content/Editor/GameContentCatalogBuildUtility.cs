@@ -28,7 +28,6 @@ public static class GameContentCatalogBuildUtility
     public static void RebuildRuntimeContentCatalog()
     {
         EnsureFolders();
-        RefreshWeaponDataList();
         CreateOrUpdateContentPools();
         GameContentCatalogSO catalog = GetOrCreateCatalog();
         PopulateCatalog(catalog);
@@ -148,18 +147,6 @@ public static class GameContentCatalogBuildUtility
         }
     }
 
-    private static void RefreshWeaponDataList()
-    {
-        WeaponDataListSO weaponDataList = AssetDatabase.LoadAssetAtPath<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList);
-        if (weaponDataList == null)
-        {
-            Debug.LogError($"Missing required weapon data list at {GameContentAssetPaths.WeaponDataList}.");
-            return;
-        }
-
-        weaponDataList.RefreshWeapons();
-    }
-
     private static List<ContentPoolEntry> BuildChestRewardEntries()
     {
         List<ContentPoolEntry> entries = new();
@@ -173,7 +160,7 @@ public static class GameContentCatalogBuildUtility
             ContentPoolEntry entry = new(accessory, DefaultAccessoryWeight, accessory.AccessoryId);
             entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
             {
-                new QualityMetadata(accessory.Rarity)
+                new QualityMetadata(ContentTierResolver.FromAccessoryRarity(accessory.RarityGrade))
             });
             entry.ConfigureRuntimeRules(
                 new ContentCondition[] { new AccessoryOwnedLimitCondition() },
@@ -432,7 +419,7 @@ public static class GameContentCatalogBuildUtility
         SerializedObject serializedObject = new(catalog);
         // 使用 SerializedObject 写入私有序列化字段，避免为了编辑器装配流程暴露额外 public setter。
         StageDefinitionSO stageDefinition = LoadRequired<StageDefinitionSO>(GameContentAssetPaths.StageDefinition);
-        SetObject(serializedObject, "weaponDataList", LoadRequired<WeaponDataListSO>(GameContentAssetPaths.WeaponDataList));
+        SetObjectArray(serializedObject, "weapons", LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData));
         SetObject(serializedObject, "accessoryDataList", LoadRequired<AccessoryDataListSO>(GameContentAssetPaths.AccessoryDataList));
         SetDefaultCharacter(serializedObject);
         SetStarterCards(serializedObject);
@@ -630,6 +617,24 @@ public static class GameContentCatalogBuildUtility
     private static void SetObject(SerializedObject serializedObject, string propertyName, UnityEngine.Object value)
     {
         serializedObject.FindProperty(propertyName).objectReferenceValue = value;
+    }
+
+    private static void SetObjectArray<T>(SerializedObject serializedObject, string propertyName, IReadOnlyList<T> values)
+        where T : UnityEngine.Object
+    {
+        SerializedProperty property = serializedObject.FindProperty(propertyName);
+        if (property == null)
+        {
+            Debug.LogError($"Missing serialized property '{propertyName}' on {serializedObject.targetObject}.");
+            return;
+        }
+
+        int count = values != null ? values.Count : 0;
+        property.arraySize = count;
+        for (int i = 0; i < count; i++)
+        {
+            property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+        }
     }
 
     private static void BindBootstrap(GameContentCatalogSO catalog)
