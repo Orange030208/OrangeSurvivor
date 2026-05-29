@@ -168,7 +168,7 @@ public sealed class StarterCardSelectionFlow
             card.CardId,
             card.Title,
             card.Description,
-            CardQualityResolver.FromUpgradeCardRarity(card.Rarity),
+            ContentTierResolver.FromUpgradeCardRarity(card.Rarity),
             BuildTagLabels(card.TagList),
             true);
     }

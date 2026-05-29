@@ -44,6 +44,7 @@ public static class WeaponContentPoolTuningUtility
         entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
         {
             new WeaponLevelRollMetadata(clampedLevel, clampedLevel),
+            new QualityMetadata(ContentTierResolver.FromWeaponLevel(clampedLevel)),
             new ShopPricingMetadata(1f)
         });
         entry.ConfigureRuntimeRules(BuildAvailabilityConditions(openWave, closeWave), null);

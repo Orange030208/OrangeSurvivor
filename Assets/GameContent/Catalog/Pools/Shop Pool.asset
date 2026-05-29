@@ -2641,7 +2641,7 @@ MonoBehaviour:
     - rid: 7274046034566709676
   - entryId: Weapon_NeonBaseballBat_Lv1
     content: {fileID: 11400000, guid: 9b4aabfb4c17bca48fef30b9af31f08b, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2693,7 +2693,7 @@ MonoBehaviour:
     - rid: 7900000000000000015
   - entryId: Weapon_NeonBattleAxe_Lv1
     content: {fileID: 11400000, guid: 91c8d5353f59002fa7c69a635357a3f0, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2745,7 +2745,7 @@ MonoBehaviour:
     - rid: 7900000000000000031
   - entryId: Weapon_NeonChainsaw_Lv1
     content: {fileID: 11400000, guid: b23c10e0f9f2e3f13485fb4b9ee7fa49, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2797,7 +2797,7 @@ MonoBehaviour:
     - rid: 7900000000000000047
   - entryId: Weapon_NeonCombatKnife_Lv1
     content: {fileID: 11400000, guid: 90b7a6dd02c953047183641b17a31a9e, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2849,7 +2849,7 @@ MonoBehaviour:
     - rid: 7900000000000000063
   - entryId: Weapon_NeonCrownScepter_Lv1
     content: {fileID: 11400000, guid: c9262d704e16de4cd839f2b894d81053, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2901,7 +2901,7 @@ MonoBehaviour:
     - rid: 7900000000000000079
   - entryId: Weapon_NeonHeartScepter_Lv1
     content: {fileID: 11400000, guid: d79a2edf3c02e08819e4f17af379a4bc, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -2953,7 +2953,7 @@ MonoBehaviour:
     - rid: 7900000000000000095
   - entryId: Weapon_NeonKatana_Lv1
     content: {fileID: 11400000, guid: 3f15d30ccf8a4f75a73d4b6980ef27ad, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3005,7 +3005,7 @@ MonoBehaviour:
     - rid: 7900000000000000111
   - entryId: Weapon_NeonMace_Lv1
     content: {fileID: 11400000, guid: 7527f453ec8fce2af3136ee92932321b, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3057,7 +3057,7 @@ MonoBehaviour:
     - rid: 7900000000000000127
   - entryId: Weapon_NeonMinigun_Lv1
     content: {fileID: 11400000, guid: 9f199c3694388ad911e175a4dcee3ab5, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3109,7 +3109,7 @@ MonoBehaviour:
     - rid: 7900000000000000143
   - entryId: Weapon_NeonPistol_Lv1
     content: {fileID: 11400000, guid: 2e8891ee3b994c96aa1f33e418f2939b, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3161,7 +3161,7 @@ MonoBehaviour:
     - rid: 7900000000000000159
   - entryId: Weapon_NeonRocketLauncher_Lv1
     content: {fileID: 11400000, guid: ac03bd310f2587180c18b2cc6175878f, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3213,7 +3213,7 @@ MonoBehaviour:
     - rid: 7900000000000000175
   - entryId: Weapon_NeonSMG_Lv1
     content: {fileID: 11400000, guid: aef8d7c2aa7c49e48cc7a37dc0cc52a1, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3265,7 +3265,7 @@ MonoBehaviour:
     - rid: 7900000000000000191
   - entryId: Weapon_NeonShield_Lv1
     content: {fileID: 11400000, guid: 90125ca414481df6c7ec8e7e0f885576, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3317,7 +3317,7 @@ MonoBehaviour:
     - rid: 7900000000000000207
   - entryId: Weapon_NeonShotgun_Lv1
     content: {fileID: 11400000, guid: 9ac9a2b684197108d31946b1f7063ccc, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3369,7 +3369,7 @@ MonoBehaviour:
     - rid: 7900000000000000223
   - entryId: Weapon_NeonSpear_Lv1
     content: {fileID: 11400000, guid: 5d7e812870084c56f3c6955784ef1aa3, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
@@ -3421,7 +3421,7 @@ MonoBehaviour:
     - rid: 7900000000000000239
   - entryId: Weapon_NeonStarWand_Lv1
     content: {fileID: 11400000, guid: cc30c6b16f53b0ff8a6d9858ce5cce0e, type: 2}
-    baseWeight: 1
+    baseWeight: 6500
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []

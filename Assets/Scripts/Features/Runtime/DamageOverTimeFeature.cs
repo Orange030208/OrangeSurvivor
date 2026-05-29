@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -73,8 +72,4 @@ public sealed class DamageOverTimeFeature : FeatureBase
         Context.HealthComponent.ApplyHitResult(result);
     }
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        yield return new DescriptorInfo("持续伤害", $"{DamagePerSecond:0.##}/秒");
-    }
 }

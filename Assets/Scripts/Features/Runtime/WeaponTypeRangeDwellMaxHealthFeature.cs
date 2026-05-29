@@ -102,17 +102,6 @@ public sealed class WeaponTypeRangeDwellMaxHealthFeature : FeatureBase
         RemoveStaleWeapons();
     }
 
-    public override IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        yield return new DescriptorInfo("目标武器", string.IsNullOrWhiteSpace(targetWeaponId) ? "未配置" : targetWeaponId);
-        yield return new DescriptorInfo("蓄势时间", $"{RequiredDwellSeconds:0.##} 秒");
-        yield return new DescriptorInfo("离开保留", $"{LingerSeconds:0.##} 秒");
-        yield return new DescriptorInfo("每次层数", $"+{StacksPerTrigger}");
-        yield return new DescriptorInfo("层数上限", MaxStacks.ToString());
-        yield return new DescriptorInfo("每层最大生命", $"+{MaxHealthPerStack:0.##}");
-        yield return new DescriptorInfo("冷却", $"{CooldownSeconds:0.##} 秒");
-    }
-
     private float RequiredDwellSeconds => Mathf.Max(0f, requiredDwellSeconds);
     private float LingerSeconds => Mathf.Max(0f, lingerSeconds);
     private int StacksPerTrigger => Mathf.Max(1, stacksPerTrigger);
@@ -128,10 +117,10 @@ public sealed class WeaponTypeRangeDwellMaxHealthFeature : FeatureBase
         }
 
         HashSet<Weapon> currentMatches = new();
-        IReadOnlyList<EquippedWeaponInfo> equippedWeapons = weaponsHolder.EquippedWeapons;
+        IReadOnlyList<Weapon> equippedWeapons = weaponsHolder.EquippedWeapons;
         for (int i = 0; i < equippedWeapons.Count; i++)
         {
-            Weapon weapon = equippedWeapons[i].RuntimeWeapon;
+            Weapon weapon = equippedWeapons[i];
             if (!IsWeaponMatch(weapon))
             {
                 continue;

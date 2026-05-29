@@ -8,6 +8,7 @@ public class ShopPropertiesPopup : PopupBase
 {
     [SerializeField] private Describer propertiesDescriber;
 
+    private readonly InfoDocumentService infoDocumentService = new();
     private PropertiesManager propertiesManager;
 
     protected override void Awake()
@@ -19,19 +20,10 @@ public class ShopPropertiesPopup : PopupBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        ShopPropertiesPopupContext propertiesContext = context.GetPayload<ShopPropertiesPopupContext>();
-        if (propertiesContext == null)
-        {
-            ShopPageContext shopPageContext = context.GetPayload<ShopPageContext>();
-            if (shopPageContext == null)
-            {
-                throw new ArgumentException($"{nameof(ShopPropertiesPopup)} requires {nameof(ShopPropertiesPopupContext)} payload.");
-            }
+        PropertiesManager manager = context.GetPayload<PropertiesManager>()
+            ?? throw new InvalidOperationException($"{nameof(ShopPropertiesPopup)} requires {nameof(PropertiesManager)} payload.");
 
-            propertiesContext = new ShopPropertiesPopupContext(shopPageContext.PropertiesManager);
-        }
-
-        BindPropertiesManager(propertiesContext.PropertiesManager);
+        BindPropertiesManager(manager);
         return UniTask.CompletedTask;
     }
 
@@ -63,7 +55,19 @@ public class ShopPropertiesPopup : PopupBase
 
     private void RefreshPropertiesDisplay()
     {
-        propertiesDescriber.Display(propertiesManager);
+        if (propertiesManager == null)
+        {
+            propertiesDescriber.Display((InfoDocument)null);
+            return;
+        }
+
+        if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
+        {
+            propertiesDescriber.Display(document);
+            return;
+        }
+
+        propertiesDescriber.Display((InfoDocument)null);
     }
 
     private void ResolveViewParts()

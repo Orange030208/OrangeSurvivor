@@ -349,8 +349,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testPlayer: {fileID: 0}
   playerSpawnPosition: {x: 0, y: 0, z: 0}
-  enemyData: {fileID: 11400000, guid: b3661e4b9cf0424d8df4e1e67b00638f, type: 2}
-  spawnCount: 1
+  enemyData: {fileID: 11400000, guid: 85fd0e14f3679cf4aa183c27f20fe1e1, type: 2}
+  spawnCount: 8
   spawnRadius: 3
   spawnOnStart: 1
   enemyRegistry: {fileID: 425943046}
@@ -415,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a72a4af9ce2c474c85c69f55ec020cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  catalog: {fileID: 11400000, guid: 8c20d34dfbc80a944b8ee6fc2bd154eb, type: 2}
+  catalog: {fileID: 11400000, guid: 61e51e658ebb8d64bb518f5b019c3f66, type: 2}
 --- !u!4 &2145381652
 Transform:
   m_ObjectHideFlags: 0

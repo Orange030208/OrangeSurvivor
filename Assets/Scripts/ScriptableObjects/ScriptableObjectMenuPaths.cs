@@ -30,6 +30,7 @@ public static class ScriptableObjectMenuPaths
     public const string ACCESSORY_DATA_LIST = GAMEPLAY_ROOT + "Items/Accessories/Accessory Data List";
     public const string WEAPON_ATTACK_SEQUENCE = GAMEPLAY_ROOT + "Weapons/Attack Sequence";
     public const string WEAPON_DATA = GAMEPLAY_ROOT + "Weapons/Weapon Data";
+    public const string WEAPON_DATA_LIST = GAMEPLAY_ROOT + "Weapons/Weapon Data List";
     public const string STAGE_DEFINITION = GAMEPLAY_ROOT + "Waves/Stage Definition";
     public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
     public const string WAVE_SPAWN_PACK = GAMEPLAY_ROOT + "Waves/Wave Spawn Pack";

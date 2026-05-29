@@ -10,6 +10,7 @@ public class ChargerEnemyBrain : EnemyBrain
 
     public enum ChargerAIState
     {
+        Idle,
         Chase,
         Attack,
         ChargeWindup,
@@ -76,11 +77,12 @@ public class ChargerEnemyBrain : EnemyBrain
 
     public override void StartBrain()
     {
+        bool shouldResetExistingState = HasBrainStarted;
         RemoveChargeModifiers();
         ResetChargeTimer();
         base.StartBrain();
 
-        if (stateMachine.HasState)
+        if (shouldResetExistingState && stateMachine.HasState)
         {
             stateMachine.ChangeState(ChargerAIState.Chase, true);
         }
@@ -93,6 +95,7 @@ public class ChargerEnemyBrain : EnemyBrain
 
     private void RegisterStates()
     {
+        stateMachine.RegisterState(new IdleState(this));
         stateMachine.RegisterState(new ChaseState(this));
         stateMachine.RegisterState(new AttackState(this));
         stateMachine.RegisterState(new ChargeWindupState(this));
@@ -172,9 +175,32 @@ public class ChargerEnemyBrain : EnemyBrain
 
     private ChargerAIState ResolveStateAfterCharge()
     {
-        return target != null && attackStrategy.CanUse(target)
-            ? ChargerAIState.Attack
+        if (target == null)
+        {
+            return ChargerAIState.Chase;
+        }
+
+        if (attackStrategy.CanUse(target))
+        {
+            return ChargerAIState.Attack;
+        }
+
+        return attackStrategy.IsTargetInRange(target)
+            ? ChargerAIState.Idle
             : ChargerAIState.Chase;
+    }
+
+    private void RequestIdleOrChaseAfterAttack()
+    {
+        if (target == null)
+        {
+            stateMachine.RequestState(ChargerAIState.Idle);
+            return;
+        }
+
+        stateMachine.RequestState(attackStrategy.IsTargetInRange(target)
+            ? ChargerAIState.Idle
+            : ChargerAIState.Chase);
     }
 
     private void DealChargeDamage()
@@ -219,6 +245,49 @@ public class ChargerEnemyBrain : EnemyBrain
         }
     }
 
+    private sealed class IdleState : StateBase<ChargerAIState>
+    {
+        private readonly ChargerEnemyBrain brain;
+
+        public IdleState(ChargerEnemyBrain brain) : base(ChargerAIState.Idle)
+        {
+            this.brain = brain;
+        }
+
+        public override void OnEnter()
+        {
+            brain.currentMovable.StopMoving();
+            brain.currentAnimatable.PlayState(brain.enemyData.AnimConfig.IdleHash);
+        }
+
+        public override void OnUpdate()
+        {
+            brain.FaceTarget();
+
+            if (brain.target == null)
+            {
+                return;
+            }
+
+            if (brain.IsChargeReady())
+            {
+                brain.stateMachine.ChangeState(ChargerAIState.ChargeWindup);
+                return;
+            }
+
+            if (!brain.attackStrategy.IsTargetInRange(brain.target))
+            {
+                brain.stateMachine.ChangeState(ChargerAIState.Chase);
+                return;
+            }
+
+            if (brain.attackStrategy.CanUse(brain.target))
+            {
+                brain.stateMachine.ChangeState(ChargerAIState.Attack);
+            }
+        }
+    }
+
     private sealed class ChaseState : StateBase<ChargerAIState>
     {
         private readonly ChargerEnemyBrain brain;
@@ -239,7 +308,7 @@ public class ChargerEnemyBrain : EnemyBrain
 
             if (brain.target == null)
             {
-                brain.currentMovable.StopMoving();
+                brain.stateMachine.ChangeState(ChargerAIState.Idle);
                 return;
             }
 
@@ -252,6 +321,12 @@ public class ChargerEnemyBrain : EnemyBrain
             if (brain.attackStrategy.CanUse(brain.target))
             {
                 brain.stateMachine.ChangeState(ChargerAIState.Attack);
+                return;
+            }
+
+            if (brain.attackStrategy.IsTargetInRange(brain.target))
+            {
+                brain.stateMachine.ChangeState(ChargerAIState.Idle);
             }
         }
 
@@ -282,7 +357,7 @@ public class ChargerEnemyBrain : EnemyBrain
 
             if (brain.target == null)
             {
-                brain.stateMachine.RequestState(ChargerAIState.Chase, StateChangeMode.Force);
+                brain.stateMachine.RequestState(ChargerAIState.Idle, StateChangeMode.Force);
                 return;
             }
 
@@ -320,7 +395,7 @@ public class ChargerEnemyBrain : EnemyBrain
                 return;
             }
 
-            brain.stateMachine.RequestState(ChargerAIState.Chase);
+            brain.RequestIdleOrChaseAfterAttack();
         }
     }
 

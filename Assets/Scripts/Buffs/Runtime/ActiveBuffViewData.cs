@@ -12,7 +12,7 @@ public readonly struct ActiveBuffViewData
     public readonly bool HasDuration;
     public readonly float RemainingDurationSeconds;
     public readonly float TotalDurationSeconds;
-    public readonly IDescribable Describable;
+    public readonly IInfoDocumentSource InfoSource;
 
     public ActiveBuffViewData(
         string buffId,
@@ -24,7 +24,7 @@ public readonly struct ActiveBuffViewData
         bool hasDuration,
         float remainingDurationSeconds,
         float totalDurationSeconds,
-        IDescribable describable)
+        IInfoDocumentSource infoSource)
     {
         BuffId = buffId;
         DisplayName = displayName;
@@ -35,6 +35,6 @@ public readonly struct ActiveBuffViewData
         HasDuration = hasDuration;
         RemainingDurationSeconds = remainingDurationSeconds;
         TotalDurationSeconds = totalDurationSeconds;
-        Describable = describable;
+        InfoSource = infoSource;
     }
 }

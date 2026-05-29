@@ -35,6 +35,14 @@ public class SettingsPanelManager : PopupBase
     [Header("显示")]
     [SerializeField] private MonoBehaviour motionSource;
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private RectTransform visualRoot;
+    [SerializeField] private bool animateVisibility = true;
+    [SerializeField] [Min(0.01f)] private float visibilityShowDuration = 0.18f;
+    [SerializeField] [Min(0.01f)] private float visibilityHideDuration = 0.12f;
+    [SerializeField] [Range(0.8f, 1f)] private float hiddenScaleMultiplier = 0.96f;
+    [SerializeField] private bool animateCategorySwitch = true;
+    [SerializeField] [Min(0.01f)] private float categorySwitchDuration = 0.14f;
+    [SerializeField] [Min(0f)] private float categorySwitchOffset = 18f;
 
     [Header("平台配置")]
     [SerializeField] private PlatformSettingsProfileSO[] platformProfiles = Array.Empty<PlatformSettingsProfileSO>();
@@ -91,6 +99,10 @@ public class SettingsPanelManager : PopupBase
     private UIManager uiManager;
     private InputRebindOperation activeRebind;
     private SettingsCategory currentCategory = SettingsCategory.Audio;
+    private Tween visibilityTween;
+    private Tween categoryTween;
+    private Vector3 visualRootVisibleScale = Vector3.one;
+    private bool animationDefaultsCaptured;
     private bool visible = true;
     private bool controlsBound;
     private bool displayConfirmationPending;
@@ -107,6 +119,7 @@ public class SettingsPanelManager : PopupBase
         ApplyEditingStateToView();
         ApplyAudioPreview();
         motion?.RefreshDefaults();
+        CaptureAnimationDefaultsIfNeeded();
         SetHiddenImmediate();
     }
 
@@ -115,6 +128,8 @@ public class SettingsPanelManager : PopupBase
         activeRebind?.Cancel();
         activeRebind?.Dispose();
         UnbindControls();
+        visibilityTween?.Kill();
+        categoryTween?.Kill();
         motion?.Kill();
     }
 
@@ -135,6 +150,8 @@ public class SettingsPanelManager : PopupBase
 
     private void OnDisable()
     {
+        visibilityTween?.Kill();
+        categoryTween?.Kill();
         motion?.Kill();
     }
 
@@ -201,14 +218,14 @@ public class SettingsPanelManager : PopupBase
         visible = value;
         SetInteractionEnabled(value);
         SelectDefaultControlIfVisible(value);
-        return motion?.Play(value ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        return PlayVisibilityTween(value);
     }
 
     public void SetVisibleImmediate(bool value)
     {
         ResolvePresentationReferences();
         visible = value;
-        motion?.SetImmediate(value ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        SetVisibilityImmediate(value);
         SetInteractionEnabled(value);
         SelectDefaultControlIfVisible(value);
     }
@@ -253,6 +270,7 @@ public class SettingsPanelManager : PopupBase
         }
 
         RefreshRebindRows();
+        LogFeedback("设置已保存");
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -272,6 +290,7 @@ public class SettingsPanelManager : PopupBase
         GameSettingsService.Save(savedState);
         GameSettingsService.Apply(savedState, applyDisplay: true, applyInput: true);
         ApplyEditingStateToView();
+        LogFeedback("设置已恢复默认");
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -457,6 +476,7 @@ public class SettingsPanelManager : PopupBase
         GameSettingsService.Save(savedState);
         GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
         RefreshRebindRows();
+        LogFeedback("按键绑定已重置");
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -494,12 +514,14 @@ public class SettingsPanelManager : PopupBase
                     input?.SaveBindingOverridesToStore();
                     GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
                     RefreshRebindRows();
+                    LogFeedback("按键绑定已保存");
                     AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
                     return;
                 }
 
                 row.SetValue(result == InputRebindResult.Conflict ? "冲突" : "取消");
                 DOVirtual.DelayedCall(0.6f, RefreshRebindRows).SetUpdate(true);
+                LogFeedback(BuildRebindFeedbackMessage(result, message));
                 AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
             });
     }
@@ -730,10 +752,12 @@ public class SettingsPanelManager : PopupBase
                 this.GetCancellationTokenOnDestroy());
             if (result.Confirmed && result.Value)
             {
+                LogFeedback("显示设置已应用");
                 return;
             }
 
             RevertDisplaySettings(previousDisplay);
+            LogFeedback("显示设置已还原");
         }
         catch (OperationCanceledException)
         {
@@ -742,6 +766,7 @@ public class SettingsPanelManager : PopupBase
         {
             Debug.LogError($"{nameof(SettingsPanelManager)} '{name}' failed to show display confirmation modal. Reverting display settings.\n{exception}", this);
             RevertDisplaySettings(previousDisplay);
+            LogFeedback("显示设置应用失败，已还原");
         }
         finally
         {
@@ -756,6 +781,28 @@ public class SettingsPanelManager : PopupBase
         GameSettingsService.Save(savedState);
         DisplaySettingsService.Apply(previousDisplay);
         RefreshSettingsView();
+    }
+
+    private void LogFeedback(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        Debug.Log($"[Settings] {message}", this);
+    }
+
+    private static string BuildRebindFeedbackMessage(InputRebindResult result, string message)
+    {
+        return result switch
+        {
+            InputRebindResult.Conflict => "按键冲突，请重新绑定",
+            InputRebindResult.Canceled => "已取消按键绑定",
+            InputRebindResult.InvalidTarget => "无法绑定到该输入",
+            InputRebindResult.Failed => string.IsNullOrWhiteSpace(message) ? "按键绑定失败" : message,
+            _ => "按键绑定失败"
+        };
     }
 
     private UIManager ResolveUIManager()
@@ -864,6 +911,7 @@ public class SettingsPanelManager : PopupBase
             category = ResolveInitialCategory();
         }
 
+        bool categoryChanged = currentCategory != category;
         currentCategory = category;
         SetActive(audioSection, category == SettingsCategory.Audio && IsCategoryAvailable(SettingsCategory.Audio));
         SetActive(displaySection, category == SettingsCategory.Display && IsCategoryAvailable(SettingsCategory.Display));
@@ -874,6 +922,7 @@ public class SettingsPanelManager : PopupBase
         RefreshTabSelection();
         RefreshSectionTitle();
         SelectDefaultControlIfVisible(visible);
+        PlayCategorySwitchTween(ResolveActiveSection(category), categoryChanged);
     }
 
     private SettingsCategory ResolveInitialCategory()
@@ -1008,6 +1057,131 @@ public class SettingsPanelManager : PopupBase
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
         Handle.CloseAsync(CloseReason.Normal, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private Tween PlayVisibilityTween(bool show)
+    {
+        if (!animateVisibility || canvasGroup == null || visualRoot == null)
+        {
+            return motion?.Play(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        }
+
+        CaptureAnimationDefaultsIfNeeded();
+        visibilityTween?.Kill();
+
+        float duration = show ? visibilityShowDuration : visibilityHideDuration;
+        Vector3 hiddenScale = visualRootVisibleScale * hiddenScaleMultiplier;
+        canvasGroup.alpha = show ? 0f : 1f;
+        visualRoot.localScale = show ? hiddenScale : visualRootVisibleScale;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.SetUpdate(true);
+        sequence.Join(canvasGroup.DOFade(show ? 1f : 0f, duration).SetEase(show ? Ease.OutCubic : Ease.InCubic));
+        sequence.Join(visualRoot.DOScale(show ? visualRootVisibleScale : hiddenScale, duration).SetEase(show ? Ease.OutBack : Ease.InCubic));
+        sequence.OnKill(() => visibilityTween = null);
+        sequence.OnComplete(() =>
+        {
+            canvasGroup.alpha = show ? 1f : 0f;
+            visualRoot.localScale = show ? visualRootVisibleScale : hiddenScale;
+        });
+        visibilityTween = sequence;
+        return sequence;
+    }
+
+    private void SetVisibilityImmediate(bool show)
+    {
+        if (!animateVisibility || canvasGroup == null || visualRoot == null)
+        {
+            motion?.SetImmediate(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+            return;
+        }
+
+        CaptureAnimationDefaultsIfNeeded();
+        visibilityTween?.Kill();
+        canvasGroup.alpha = show ? 1f : 0f;
+        visualRoot.localScale = show ? visualRootVisibleScale : visualRootVisibleScale * hiddenScaleMultiplier;
+    }
+
+    private void PlayCategorySwitchTween(GameObject section, bool categoryChanged)
+    {
+        if (!animateCategorySwitch || !categoryChanged || !visible || section == null)
+        {
+            RestoreSectionTransitionState(section);
+            return;
+        }
+
+        RectTransform rectTransform = section.transform as RectTransform;
+        CanvasGroup sectionCanvasGroup = section.GetComponent<CanvasGroup>();
+        if (rectTransform == null || sectionCanvasGroup == null)
+        {
+            return;
+        }
+
+        categoryTween?.Kill();
+        Vector2 targetPosition = Vector2.zero;
+        rectTransform.anchoredPosition = targetPosition + new Vector2(categorySwitchOffset, 0f);
+        sectionCanvasGroup.alpha = 0f;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.SetUpdate(true);
+        sequence.Join(sectionCanvasGroup.DOFade(1f, categorySwitchDuration).SetEase(Ease.OutCubic));
+        sequence.Join(rectTransform.DOAnchorPos(targetPosition, categorySwitchDuration).SetEase(Ease.OutCubic));
+        sequence.OnKill(() => categoryTween = null);
+        sequence.OnComplete(() => RestoreSectionTransitionState(section));
+        categoryTween = sequence;
+    }
+
+    private static void RestoreSectionTransitionState(GameObject section)
+    {
+        if (section == null)
+        {
+            return;
+        }
+
+        if (section.transform is RectTransform rectTransform)
+        {
+            rectTransform.anchoredPosition = Vector2.zero;
+        }
+
+        CanvasGroup sectionCanvasGroup = section.GetComponent<CanvasGroup>();
+        if (sectionCanvasGroup != null)
+        {
+            sectionCanvasGroup.alpha = 1f;
+        }
+    }
+
+    private GameObject ResolveActiveSection(SettingsCategory category)
+    {
+        return category switch
+        {
+            SettingsCategory.Audio => audioSection,
+            SettingsCategory.Display => displaySection,
+            SettingsCategory.Control => inputSection,
+            SettingsCategory.Gameplay => gameplaySection,
+            SettingsCategory.Language => languageSection,
+            _ => null
+        };
+    }
+
+    private void CaptureAnimationDefaultsIfNeeded()
+    {
+        if (animationDefaultsCaptured)
+        {
+            return;
+        }
+
+        if (visualRoot == null)
+        {
+            Transform visualRootTransform = transform.Find("VisualRoot");
+            visualRoot = visualRootTransform as RectTransform;
+        }
+
+        if (visualRoot != null)
+        {
+            visualRootVisibleScale = visualRoot.localScale;
+        }
+
+        animationDefaultsCaptured = true;
     }
 
     private static void AddTabListener(Button button, UnityEngine.Events.UnityAction action)

@@ -28,9 +28,14 @@ public class CardQualityPresentationCatalogSO : ScriptableObject
         return false;
     }
 
+    public bool TryGetProfile(ContentTier tier, out CardQualityPresentationProfile profile)
+    {
+        return TryGetProfile(tier.ToCardQuality(), out profile);
+    }
+
     public bool TryGetProfile(UpgradeCardRarity rarity, out CardQualityPresentationProfile profile)
     {
-        return TryGetProfile(CardQualityResolver.FromUpgradeCardRarity(rarity), out profile);
+        return TryGetProfile(ContentTierResolver.FromUpgradeCardRarity(rarity), out profile);
     }
 
     public void InitializeRuntime(CardQualityPresentationProfile[] runtimeProfiles)

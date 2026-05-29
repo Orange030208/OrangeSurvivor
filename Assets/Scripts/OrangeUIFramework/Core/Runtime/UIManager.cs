@@ -28,15 +28,18 @@ namespace Orange.UIFramework
         private readonly List<RuntimeView> popupStack = new List<RuntimeView>();
         private readonly List<RuntimeView> modalStack = new List<RuntimeView>();
         private readonly List<ViewBase> tickingViews = new List<ViewBase>();
+        private readonly Queue<ToastRequest> toastQueue = new Queue<ToastRequest>();
         private readonly SemaphoreSlim pageOperationSemaphore = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim popupOperationSemaphore = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim modalOperationSemaphore = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim tooltipOperationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim toastOperationSemaphore = new SemaphoreSlim(1, 1);
         private Canvas rootCanvas;
         private CanvasScaler rootCanvasScaler;
         private GraphicRaycaster rootGraphicRaycaster;
         private RectTransform layersRoot;
         private RuntimeView currentTooltip;
+        private RuntimeView currentToast;
         private RectTransform modalMaskRoot;
         private Graphic modalMaskGraphic;
         private Button modalMaskButton;
@@ -46,6 +49,7 @@ namespace Orange.UIFramework
         private IViewLoader viewLoader;
         private IFloatingViewPositioner floatingViewPositioner;
         private int requestVersion;
+        private bool toastQueueProcessing;
         private bool initialized;
 
         public UIFrameworkSettings Settings => settings;
@@ -149,6 +153,7 @@ namespace Orange.UIFramework
                 BuildViewDiagnostics(),
                 BuildPoolDiagnostics(),
                 currentTooltip != null ? currentTooltip.InstanceId : string.Empty,
+                currentToast != null ? currentToast.InstanceId : string.Empty,
                 rootCanvas != null ? rootCanvas.name : string.Empty,
                 rootCanvas != null && rootCanvas.gameObject.activeInHierarchy,
                 layerDiagnostics,
@@ -156,6 +161,7 @@ namespace Orange.UIFramework
                 BuildStackDiagnostics(popupStack),
                 BuildStackDiagnostics(modalStack),
                 BuildTooltipDiagnostics(),
+                BuildToastDiagnostics(),
                 BuildOperationDiagnostics(),
                 BuildModalMaskDiagnostics(),
                 BuildPopupOutsideClickBlockerDiagnostics(),
@@ -174,14 +180,16 @@ namespace Orange.UIFramework
             builder.AppendLine($"Camera: {(string.IsNullOrWhiteSpace(diagnostics.CameraName) ? "None" : diagnostics.CameraName)}");
             builder.AppendLine($"RequestVersion: {diagnostics.RequestVersion}");
             builder.AppendLine($"CurrentTooltip: {(string.IsNullOrWhiteSpace(diagnostics.CurrentTooltipInstanceId) ? "None" : diagnostics.CurrentTooltipInstanceId)}");
+            builder.AppendLine($"CurrentToast: {(string.IsNullOrWhiteSpace(diagnostics.CurrentToastInstanceId) ? "None" : diagnostics.CurrentToastInstanceId)}");
+            builder.AppendLine($"ToastQueue: {diagnostics.Toast.QueueCount}");
             builder.AppendLine($"Layers: {diagnostics.Layers.Count}");
             builder.AppendLine($"PageStack: {diagnostics.PageStack.Count}");
             builder.AppendLine($"PopupStack: {diagnostics.PopupStack.Count}");
             builder.AppendLine($"ModalStack: {diagnostics.ModalStack.Count}");
             builder.AppendLine($"OpenViews: {diagnostics.OpenViews.Count} (live tracked views)");
             builder.AppendLine($"Pools: {diagnostics.Pools.Count}");
-            builder.AppendLine($"Operations: pageBusy={diagnostics.Operations.PageOperationBusy}, popupBusy={diagnostics.Operations.PopupOperationBusy}, modalBusy={diagnostics.Operations.ModalOperationBusy}, tooltipBusy={diagnostics.Operations.TooltipOperationBusy}, tracked={diagnostics.Operations.TrackedViewCount}, opening={diagnostics.Operations.OpeningViewCount}, closing={diagnostics.Operations.ClosingViewCount}, failed={diagnostics.Operations.FailedViewCount}");
-            builder.AppendLine($"Input: topPage={FormatId(diagnostics.Input.TopPageInstanceId)}, topPopup={FormatId(diagnostics.Input.TopPopupInstanceId)}, topModal={FormatId(diagnostics.Input.TopModalInstanceId)}, modalBlocks={diagnostics.Input.ModalBlocksUnderlyingInput}, inputActive={diagnostics.Input.InputActiveViewCount}, raycastBlocking={diagnostics.Input.RaycastBlockingViewCount}, tooltipRaycast={diagnostics.Input.TooltipBlocksRaycasts}");
+            builder.AppendLine($"Operations: pageBusy={diagnostics.Operations.PageOperationBusy}, popupBusy={diagnostics.Operations.PopupOperationBusy}, modalBusy={diagnostics.Operations.ModalOperationBusy}, tooltipBusy={diagnostics.Operations.TooltipOperationBusy}, toastBusy={diagnostics.Operations.ToastOperationBusy}, tracked={diagnostics.Operations.TrackedViewCount}, opening={diagnostics.Operations.OpeningViewCount}, closing={diagnostics.Operations.ClosingViewCount}, failed={diagnostics.Operations.FailedViewCount}");
+            builder.AppendLine($"Input: topPage={FormatId(diagnostics.Input.TopPageInstanceId)}, topPopup={FormatId(diagnostics.Input.TopPopupInstanceId)}, topModal={FormatId(diagnostics.Input.TopModalInstanceId)}, modalBlocks={diagnostics.Input.ModalBlocksUnderlyingInput}, inputActive={diagnostics.Input.InputActiveViewCount}, raycastBlocking={diagnostics.Input.RaycastBlockingViewCount}, tooltipRaycast={diagnostics.Input.TooltipBlocksRaycasts}, toastRaycast={diagnostics.Input.ToastBlocksRaycasts}");
             AppendBlockerDiagnostics(builder, "ModalMask", diagnostics.ModalMask);
             AppendBlockerDiagnostics(builder, "PopupOutsideClickBlocker", diagnostics.PopupOutsideClickBlocker);
 
@@ -195,6 +203,7 @@ namespace Orange.UIFramework
             AppendStackDiagnostics(builder, "PopupStack", diagnostics.PopupStack);
             AppendStackDiagnostics(builder, "ModalStack", diagnostics.ModalStack);
             AppendTooltipDiagnostics(builder, diagnostics.Tooltip);
+            AppendToastDiagnostics(builder, diagnostics.Toast);
 
             for (int i = 0; i < diagnostics.OpenViews.Count; i++)
             {
@@ -226,7 +235,7 @@ namespace Orange.UIFramework
                 builder.AppendLine($"- {title}[{view.Index}] {view.ViewTypeName}: id={view.ViewId}, instance={view.InstanceId}, kind={view.Kind}, phase={view.Phase}, top={view.IsTop}, request={view.RequestVersion}, input={view.InputActive}, raycast={view.BlocksRaycasts}, closing={view.Closing}");
                 if (view.Kind == ViewKind.Popup)
                 {
-                    builder.AppendLine($"  PopupOptions: group={FormatId(view.PopupGroupId)}, outsideClick={view.CloseOnOutsideClick}, trackInStack={view.PopupTrackInStack}");
+                    builder.AppendLine($"  PopupOptions: group={FormatId(view.PopupGroupId)}, outsideClick={view.CloseOnOutsideClick}, backdrop={view.PopupShowBackdrop}, trackInStack={view.PopupTrackInStack}");
                 }
                 else if (view.Kind == ViewKind.Modal)
                 {
@@ -247,6 +256,21 @@ namespace Orange.UIFramework
             if (tooltip.HasPlacement)
             {
                 builder.AppendLine($"  Placement: position={tooltip.AnchoredPosition}, anchor={tooltip.ResolvedAnchor}, flipped={tooltip.PlacementWasFlipped}, clamped={tooltip.PlacementWasClamped}");
+            }
+        }
+
+        private static void AppendToastDiagnostics(StringBuilder builder, ToastDiagnostics toast)
+        {
+            if (!toast.HasToast)
+            {
+                builder.AppendLine($"- Toast: None, queue={toast.QueueCount}");
+                return;
+            }
+
+            builder.AppendLine($"- Toast {toast.ViewTypeName}: id={toast.ViewId}, instance={toast.InstanceId}, phase={toast.Phase}, queue={toast.QueueCount}, duration={toast.DurationSeconds:0.###}, input={toast.InputActive}, raycast={toast.BlocksRaycasts}");
+            if (toast.HasPlacement)
+            {
+                builder.AppendLine($"  Placement: position={toast.AnchoredPosition}, anchor={toast.ResolvedAnchor}, flipped={toast.PlacementWasFlipped}, clamped={toast.PlacementWasClamped}");
             }
         }
 
@@ -333,6 +357,20 @@ namespace Orange.UIFramework
             where TTooltip : TooltipBase
         {
             return ShowTooltipInternalAsync<TTooltip>(payload, options, cancellationToken);
+        }
+
+        public UniTask<ViewHandle<TToast>> ShowToastAsync<TToast>(
+            object payload = null,
+            ToastOptions options = default,
+            CancellationToken cancellationToken = default)
+            where TToast : ToastBase
+        {
+            return ShowToastInternalAsync<TToast>(payload, options, cancellationToken);
+        }
+
+        public UniTask ClearToastsAsync(CancellationToken cancellationToken = default)
+        {
+            return ClearToastsInternalAsync(cancellationToken);
         }
 
         public void UpdateTooltipPosition(Vector2 screenPosition)
@@ -680,6 +718,211 @@ namespace Orange.UIFramework
             }
         }
 
+        private async UniTask<ViewHandle<TToast>> ShowToastInternalAsync<TToast>(
+            object payload,
+            ToastOptions options,
+            CancellationToken cancellationToken)
+            where TToast : ToastBase
+        {
+            EnsureInitialized();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            ToastRequest request = new ToastRequest(typeof(TToast), payload, options, cancellationToken);
+            using (cancellationToken.Register(() => request.Cancel(cancellationToken)))
+            {
+                await toastOperationSemaphore.WaitAsync(cancellationToken);
+                RuntimeView toastToReplace = null;
+                try
+                {
+                    if (request.Options.DisplayMode == ToastDisplayMode.ReplaceCurrent)
+                    {
+                        CancelQueuedToasts();
+                        toastToReplace = currentToast;
+                    }
+
+                    toastQueue.Enqueue(request);
+                    if (toastToReplace == null)
+                    {
+                        ProcessToastQueueAsync().Forget();
+                    }
+                }
+                finally
+                {
+                    toastOperationSemaphore.Release();
+                }
+
+                if (toastToReplace != null)
+                {
+                    await CloseRuntimeViewAsync(toastToReplace, CloseReason.Replace, CancellationToken.None);
+                    ProcessToastQueueAsync().Forget();
+                }
+
+                ViewHandle handle = await request.CompletionSource.Task;
+                return new ViewHandle<TToast>(handle, (TToast)handle.View);
+            }
+        }
+
+        private async UniTask ClearToastsInternalAsync(CancellationToken cancellationToken)
+        {
+            EnsureInitialized();
+            await toastOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                CancelQueuedToasts();
+
+                if (currentToast != null)
+                {
+                    await CloseRuntimeViewAsync(currentToast, CloseReason.Cancel, CancellationToken.None);
+                }
+            }
+            finally
+            {
+                toastOperationSemaphore.Release();
+            }
+        }
+
+        private void CancelQueuedToasts()
+        {
+            while (toastQueue.Count > 0)
+            {
+                ToastRequest queuedRequest = toastQueue.Dequeue();
+                queuedRequest.Cancel();
+            }
+        }
+
+        private async UniTaskVoid ProcessToastQueueAsync()
+        {
+            await toastOperationSemaphore.WaitAsync(CancellationToken.None);
+            try
+            {
+                if (toastQueueProcessing)
+                {
+                    return;
+                }
+
+                toastQueueProcessing = true;
+            }
+            finally
+            {
+                toastOperationSemaphore.Release();
+            }
+
+            try
+            {
+                while (true)
+                {
+                    ToastRequest request;
+                    await toastOperationSemaphore.WaitAsync(CancellationToken.None);
+                    try
+                    {
+                        if (currentToast != null || toastQueue.Count == 0)
+                        {
+                            return;
+                        }
+
+                        request = toastQueue.Dequeue();
+                        if (request.Canceled)
+                        {
+                            continue;
+                        }
+                    }
+                    finally
+                    {
+                        toastOperationSemaphore.Release();
+                    }
+
+                    await RunToastRequestAsync(request);
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+            finally
+            {
+                await toastOperationSemaphore.WaitAsync(CancellationToken.None);
+                try
+                {
+                    toastQueueProcessing = false;
+                    if (currentToast == null && toastQueue.Count > 0)
+                    {
+                        ProcessToastQueueAsync().Forget();
+                    }
+                }
+                finally
+                {
+                    toastOperationSemaphore.Release();
+                }
+            }
+        }
+
+        private async UniTask RunToastRequestAsync(ToastRequest request)
+        {
+            RuntimeView runtimeView = null;
+            try
+            {
+                request.ThrowIfCanceled();
+                ViewDefinition definition = ResolveDefinition(request.ViewType, ViewKind.Toast);
+                runtimeView = await OpenRuntimeViewAsync(
+                    definition,
+                    request.ViewType,
+                    ViewKind.Toast,
+                    request.Payload,
+                    ++requestVersion,
+                    request.CancellationToken);
+
+                if (request.CancellationToken.IsCancellationRequested)
+                {
+                    await CloseRuntimeViewAsync(runtimeView, CloseReason.Cancel, CancellationToken.None);
+                    throw new OperationCanceledException(request.CancellationToken);
+                }
+
+                using (request.CancellationToken.Register(() =>
+                {
+                    if (runtimeView != null && !runtimeView.Closing)
+                    {
+                        CloseRuntimeViewAsync(runtimeView, CloseReason.Cancel, CancellationToken.None).Forget();
+                    }
+                }))
+                {
+                runtimeView.ToastOptions = request.Options;
+                if (!IsRuntimeViewOpened(runtimeView))
+                {
+                    RegisterOpenedToast(runtimeView);
+                }
+
+                ApplyToastPosition(runtimeView);
+                RefreshInputState();
+                request.CompletionSource.TrySetResult(runtimeView.Handle);
+
+                int completedIndex = await UniTask.WhenAny(
+                    runtimeView.Handle.ClosedTask,
+                    UniTask.Delay(
+                    TimeSpan.FromSeconds(runtimeView.ToastOptions.DurationSeconds),
+                    settings != null && settings.UseUnscaledTime ? DelayType.UnscaledDeltaTime : DelayType.DeltaTime,
+                    PlayerLoopTiming.Update,
+                    CancellationToken.None));
+
+                if (completedIndex == 1 && ReferenceEquals(currentToast, runtimeView) && !runtimeView.Closing)
+                {
+                    await CloseRuntimeViewAsync(runtimeView, CloseReason.Completed, CancellationToken.None);
+                }
+                }
+            }
+            catch (OperationCanceledException operationCanceledException)
+            {
+                request.CompletionSource.TrySetCanceled(operationCanceledException.CancellationToken);
+            }
+            catch (Exception exception)
+            {
+                request.CompletionSource.TrySetException(exception);
+                if (runtimeView != null && IsRuntimeViewOpened(runtimeView))
+                {
+                    await CloseRuntimeViewAsync(runtimeView, CloseReason.Cancel, CancellationToken.None);
+                }
+            }
+        }
+
         private async UniTask<RuntimeView> OpenRuntimeViewAsync(
             ViewDefinition definition,
             Type viewType,
@@ -786,6 +1029,13 @@ namespace Orange.UIFramework
         {
             openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
             currentTooltip = runtimeView;
+            RegisterSharedRuntimeState(runtimeView);
+        }
+
+        private void RegisterOpenedToast(RuntimeView runtimeView)
+        {
+            openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
+            currentToast = runtimeView;
             RegisterSharedRuntimeState(runtimeView);
         }
 
@@ -948,6 +1198,15 @@ namespace Orange.UIFramework
             if (ReferenceEquals(currentTooltip, runtimeView))
             {
                 currentTooltip = null;
+            }
+
+            if (ReferenceEquals(currentToast, runtimeView))
+            {
+                currentToast = null;
+                if (toastQueue.Count > 0 && !toastQueueProcessing)
+                {
+                    ProcessToastQueueAsync().Forget();
+                }
             }
 
             if (runtimeView.Definition.Singleton &&
@@ -1127,6 +1386,7 @@ namespace Orange.UIFramework
                 runtimeView.PopupOptions.GroupId,
                 runtimeView.PopupOptions.TrackInStack,
                 runtimeView.PopupOptions.CloseOnOutsideClick,
+                runtimeView.PopupOptions.ShowBackdrop,
                 runtimeView.Definition.CloseOnBackgroundClick);
         }
 
@@ -1147,6 +1407,31 @@ namespace Orange.UIFramework
                 currentTooltip.TooltipOptions.FollowPointer,
                 currentTooltip.View != null && currentTooltip.View.InputActive,
                 currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
+                placement.HasValue,
+                placement.AnchoredPosition,
+                placement.ResolvedAnchor,
+                placement.WasFlipped,
+                placement.WasClamped);
+        }
+
+        private ToastDiagnostics BuildToastDiagnostics()
+        {
+            if (currentToast == null)
+            {
+                return new ToastDiagnostics(queueCount: toastQueue.Count);
+            }
+
+            FloatingViewPlacement placement = currentToast.LastPlacement;
+            return new ToastDiagnostics(
+                true,
+                currentToast.InstanceId,
+                currentToast.Definition.Id,
+                currentToast.ViewType.Name,
+                currentToast.View != null ? currentToast.View.Phase : ViewRuntimePhase.None,
+                toastQueue.Count,
+                currentToast.ToastOptions.DurationSeconds,
+                currentToast.View != null && currentToast.View.InputActive,
+                currentToast.View != null && currentToast.View.BlocksRaycasts,
                 placement.HasValue,
                 placement.AnchoredPosition,
                 placement.ResolvedAnchor,
@@ -1188,6 +1473,7 @@ namespace Orange.UIFramework
                 popupOperationSemaphore.CurrentCount == 0,
                 modalOperationSemaphore.CurrentCount == 0,
                 tooltipOperationSemaphore.CurrentCount == 0,
+                toastOperationSemaphore.CurrentCount == 0 || toastQueueProcessing,
                 trackedViewsByInstance.Count,
                 openingCount,
                 closingCount,
@@ -1213,7 +1499,7 @@ namespace Orange.UIFramework
                 popupOutsideClickBlockerGraphic,
                 popupOutsideClickBlockerButton,
                 topPopup,
-                topPopup != null && topPopup.PopupOptions.CloseOnOutsideClick);
+                topPopup != null && topPopup.PopupOptions.UsesPopupBackdrop);
         }
 
         private static UIBlockerDiagnostics BuildBlockerDiagnostics(
@@ -1270,7 +1556,8 @@ namespace Orange.UIFramework
                 topModal != null,
                 inputActiveCount,
                 raycastBlockingCount,
-                currentTooltip != null && currentTooltip.View != null && currentTooltip.View.BlocksRaycasts);
+                currentTooltip != null && currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
+                currentToast != null && currentToast.View != null && currentToast.View.BlocksRaycasts);
         }
 
         private bool IsStaleTransition(PageOpenMode mode, int operationVersion)
@@ -1405,6 +1692,11 @@ namespace Orange.UIFramework
                 currentTooltip.View.ApplyInputState(false, false);
             }
 
+            if (currentToast != null && currentToast.View != null)
+            {
+                currentToast.View.ApplyInputState(false, false);
+            }
+
             RefreshModalMask();
             RefreshPopupOutsideClickBlocker();
         }
@@ -1463,6 +1755,34 @@ namespace Orange.UIFramework
                 options.Margin,
                 hasPlacementOrigin ? options.PreferredAnchor : FloatingViewAnchor.Center,
                 rebuildLayout: false);
+        }
+
+        private void ApplyToastPosition(RuntimeView runtimeView)
+        {
+            if (runtimeView == null || runtimeView.View == null)
+            {
+                return;
+            }
+
+            RectTransform rectTransform = runtimeView.View.transform as RectTransform;
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            ToastOptions options = runtimeView.ToastOptions;
+            bool hasPlacementOrigin = options.HasAnchor || options.HasScreenPosition;
+            runtimeView.LastPlacement = floatingViewPositioner.Place(
+                rectTransform,
+                rectTransform.parent as RectTransform,
+                rootCanvas,
+                options.Anchor,
+                options.HasScreenPosition,
+                options.ScreenPosition,
+                options.Offset,
+                options.Margin,
+                hasPlacementOrigin ? options.PreferredAnchor : FloatingViewAnchor.Center,
+                rebuildLayout: true);
         }
 
         private ViewDefinition ResolveDefinition(Type viewType, ViewKind expectedKind)
@@ -1618,7 +1938,8 @@ namespace Orange.UIFramework
                     layerCanvas = layerRoot.gameObject.AddComponent<Canvas>();
                 }
 
-                layerCanvas.overrideSorting = true;
+                layerCanvas.overrideSorting = definition.OverrideSorting;
+                layerCanvas.sortingLayerName = definition.SortingLayerName;
                 layerCanvas.sortingOrder = definition.SortingOrder;
 
                 GraphicRaycaster layerRaycaster = layerRoot.GetComponent<GraphicRaycaster>();
@@ -1754,7 +2075,7 @@ namespace Orange.UIFramework
             }
 
             RuntimeView topPopup = popupStack.Count > 0 ? popupStack[popupStack.Count - 1] : null;
-            bool active = modalStack.Count == 0 && topPopup != null && topPopup.PopupOptions.CloseOnOutsideClick;
+            bool active = modalStack.Count == 0 && topPopup != null && topPopup.PopupOptions.UsesPopupBackdrop;
             popupOutsideClickBlockerRoot.gameObject.SetActive(active);
             if (!active)
             {
@@ -1881,8 +2202,57 @@ namespace Orange.UIFramework
             public int RequestVersion { get; }
             public PopupOptions PopupOptions { get; set; }
             public TooltipOptions TooltipOptions { get; set; }
+            public ToastOptions ToastOptions { get; set; }
             public FloatingViewPlacement LastPlacement { get; set; }
             public bool Closing { get; set; }
+        }
+
+        private sealed class ToastRequest
+        {
+            private bool canceled;
+            private CancellationToken cancellationToken;
+
+            public ToastRequest(
+                Type viewType,
+                object payload,
+                ToastOptions options,
+                CancellationToken cancellationToken)
+            {
+                ViewType = viewType ?? throw new ArgumentNullException(nameof(viewType));
+                Payload = payload;
+                Options = options;
+                this.cancellationToken = cancellationToken;
+                CompletionSource = new UniTaskCompletionSource<ViewHandle>();
+            }
+
+            public Type ViewType { get; }
+            public object Payload { get; }
+            public ToastOptions Options { get; }
+            public UniTaskCompletionSource<ViewHandle> CompletionSource { get; }
+            public CancellationToken CancellationToken => cancellationToken;
+            public bool Canceled => canceled;
+
+            public void Cancel()
+            {
+                Cancel(cancellationToken);
+            }
+
+            public void Cancel(CancellationToken token)
+            {
+                canceled = true;
+                cancellationToken = token;
+                CompletionSource.TrySetCanceled(token);
+            }
+
+            public void ThrowIfCanceled()
+            {
+                if (canceled)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
         }
     }
 }

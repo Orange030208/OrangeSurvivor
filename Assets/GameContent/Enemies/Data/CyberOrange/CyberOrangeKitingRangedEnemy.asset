@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 591c33237c92d23438fa02b3ad9b72cb, type: 3}
+  m_Name: CyberOrangeKitingRangedEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 9014201989840124585, guid: e3fa0fbcf2a3db0478b464aa72efaf8f, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: 103fad7efa2b7594ca4c1e9926b62b03, type: 2}
+  animConfig: {fileID: 11400000, guid: 11d7279f6920491c9aec0ee9f69d7741, type: 2}
+  damagedSfxKey: 400
+  retreatTriggerRangeRatio: 0.8
+  retreatCompleteRangeRatio: 1.4
+  attackAction:
+    actionId: Worm_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.5
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  attackCommitNormalizedTime: 0.5
+  attackSpeedBenefitRatio: 1
+  attackProjectileDefinition: {fileID: 11400000, guid: 3093a2090b534684abe0b37ffb5ea326, type: 2}
+  retreatMovement:
+    safeDistanceRatio: 1.4
+    retreatStepDistanceRatio: 0.42857143

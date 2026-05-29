@@ -67,10 +67,11 @@ public class ChaseEnemyBrain : EnemyBrain
 
     public override void StartBrain()
     {
+        bool shouldResetExistingState = HasBrainStarted;
         RemoveAttackMoveModifiers();
         base.StartBrain();
 
-        if (stateMachine.HasState)
+        if (shouldResetExistingState && stateMachine.HasState)
         {
             stateMachine.ChangeState(ChaseEnemyAIState.Chase, true);
         }
@@ -204,6 +205,12 @@ public class ChaseEnemyBrain : EnemyBrain
             if (brain.CanUseAttack(brain.target))
             {
                 brain.stateMachine.ChangeState(ChaseEnemyAIState.Attack);
+                return;
+            }
+
+            if (brain.attackStrategy.IsTargetInRange(brain.target))
+            {
+                brain.stateMachine.ChangeState(ChaseEnemyAIState.Idle);
             }
         }
 

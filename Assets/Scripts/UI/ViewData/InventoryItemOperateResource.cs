@@ -4,19 +4,19 @@ public readonly struct InventoryItemOperateResource
     public readonly ItemDataSO itemData;
     public readonly int colorDependencyNumber;
     public readonly int sellPrice;
-    public readonly IDescribable describable;
+    public readonly object infoSource;
 
     public InventoryItemOperateResource(
         string entryId,
         ItemDataSO itemData,
         int colorDependencyNumber,
         int sellPrice,
-        IDescribable describable)
+        object infoSource)
     {
         this.entryId = entryId;
         this.itemData = itemData;
         this.colorDependencyNumber = colorDependencyNumber;
         this.sellPrice = sellPrice;
-        this.describable = describable;
+        this.infoSource = infoSource;
     }
 }

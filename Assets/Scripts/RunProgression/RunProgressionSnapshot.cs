@@ -15,6 +15,8 @@ public readonly struct RunProgressionSnapshot
         1f,
         1f,
         1f,
+        5f,
+        1f,
         0);
 
     public int WaveNumber { get; }
@@ -24,6 +26,8 @@ public readonly struct RunProgressionSnapshot
     public float DifficultyCoefficient { get; }
     public float EconomyCoefficient { get; }
     public float ShopPriceMultiplier { get; }
+    public float ShopRerollBasePrice { get; }
+    public float ShopRerollStepPrice { get; }
     public int DangerTier { get; }
 
     public bool IsEndlessWave => TotalWaves > 0 && WaveNumber > TotalWaves;
@@ -39,6 +43,8 @@ public readonly struct RunProgressionSnapshot
         float difficultyCoefficient,
         float economyCoefficient,
         float shopPriceMultiplier,
+        float shopRerollBasePrice,
+        float shopRerollStepPrice,
         int dangerTier)
     {
         WaveNumber = Mathf.Max(1, waveNumber);
@@ -48,6 +54,8 @@ public readonly struct RunProgressionSnapshot
         DifficultyCoefficient = Mathf.Max(0f, difficultyCoefficient);
         EconomyCoefficient = Mathf.Max(0f, economyCoefficient);
         ShopPriceMultiplier = Mathf.Max(0f, shopPriceMultiplier);
+        ShopRerollBasePrice = Mathf.Max(0f, shopRerollBasePrice);
+        ShopRerollStepPrice = Mathf.Max(0f, shopRerollStepPrice);
         DangerTier = Mathf.Max(0, dangerTier);
     }
 }

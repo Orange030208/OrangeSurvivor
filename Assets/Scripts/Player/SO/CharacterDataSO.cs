@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDataSO : ScriptableObject, IDescribable
+public class CharacterDataSO : ScriptableObject, IInfoDocumentSource
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
@@ -24,7 +24,6 @@ public class CharacterDataSO : ScriptableObject, IDescribable
 
     [SerializeField] private List<AccessoryDataSO> initialAccessories = new();
 
-    public string Title => CharacterName;
     public Sprite Icon => CharacterIcon;
     public string Description => CharacterDescription;
     public BasePropGroupSO BasePropsAsset => basePropsAsset;
@@ -47,12 +46,13 @@ public class CharacterDataSO : ScriptableObject, IDescribable
         }
     }
 
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    public InfoDocument BuildInfoDocument()
     {
-        List<DescriptorInfo> infos = new();
+        List<InfoSection> sections = new();
+        List<InfoLine> lines = new();
         foreach (PropModifierData modifier in ExtraProps)
         {
-            infos.Add(new DescriptorInfo(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
+            lines.Add(InfoDocumentUtility.CreateSingleValueLine(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
         }
 
         foreach (WeaponEntry weapon in InitialWeapons)
@@ -63,8 +63,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
                 continue;
             }
 
-            infos.Add(new DescriptorInfo(weaponData.ItemName,
-                $"初始有{ColorHelper.WrapRichTextColor(weaponData.ItemName, ColorHelper.GetColorByLevel(weapon.level))}"));
+            lines.Add(InfoDocumentUtility.CreateSingleValueLine(weaponData.ItemName, $"初始有{weaponData.ItemName}"));
         }
 
         foreach (AccessoryDataSO accessory in InitialAccessories)
@@ -74,8 +73,7 @@ public class CharacterDataSO : ScriptableObject, IDescribable
                 continue;
             }
 
-            infos.Add(new DescriptorInfo(accessory.ItemName,
-                $"初始有{ColorHelper.WrapRichTextColor(accessory.ItemName, ColorHelper.GetColorByRarity(accessory.Rarity))}"));
+            lines.Add(InfoDocumentUtility.CreateSingleValueLine(accessory.ItemName, $"初始有{accessory.ItemName}"));
         }
 
         foreach (FeatureBase feature in SpecialFeatures)
@@ -85,10 +83,29 @@ public class CharacterDataSO : ScriptableObject, IDescribable
                 continue;
             }
 
-            infos.Add(new DescriptorInfo(feature.Title, feature.Description));
+            lines.Add(InfoDocumentUtility.CreateSingleValueLine(feature.Title, feature.Description));
         }
 
-        return infos;
+        if (lines.Count > 0)
+        {
+            sections.Add(new InfoSection(string.Empty, lines));
+        }
+
+        string description = ItemDescriptionUtility.NormalizeManualDescription(CharacterDescription);
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            sections.Add(new InfoSection(
+                string.Empty,
+                new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, description) }));
+        }
+
+        return new InfoDocument(
+            CharacterName,
+            CharacterName,
+            CharacterIcon,
+            InfoDocumentKind.General,
+            System.Array.Empty<string>(),
+            sections);
     }
 
     public List<PropModifierData> GetCharacterModifiers()

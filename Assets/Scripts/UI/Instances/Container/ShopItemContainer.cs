@@ -3,20 +3,55 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
 {
+    [Serializable]
+    private sealed class ShopItemTierConsumer : IContentTierConsumer
+    {
+        [SerializeField] private Image iconFrameImage;
+        [SerializeField] private Image currencyFrameImage;
+        [SerializeField] private TMP_Text titleText;
+        [SerializeField] private TierColorPaletteSO colorPalette;
+
+        public bool Consume(ContentTier tier)
+        {
+            if (colorPalette == null)
+            {
+                return false;
+            }
+
+            Apply(colorPalette.GetColor(tier));
+            return true;
+        }
+
+        private void Apply(Color color)
+        {
+            if (iconFrameImage != null)
+            {
+                iconFrameImage.color = color;
+            }
+
+            if (titleText != null)
+            {
+                titleText.color = color;
+            }
+
+            if (currencyFrameImage != null)
+            {
+                currencyFrameImage.color = color;
+            }
+        }
+
+    }
+
     [Header("基础信息")]
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private ExtraInfoDescriber bottom;
 
-    [Header("卡片品质表现")]
-    [FormerlySerializedAs("cardQualityVisualController")]
-    [SerializeField] private CardQualityVisualController qualityVisual;
-    [SerializeField] private CardQualityPresentationCatalogSO qualityPresentationCatalogOverride;
+    [Header("售罄表现")]
+    [SerializeField] private GameObject soldOutOverlayPrefab;
 
     [Header("商店操作")]
     [SerializeField] private Button buyButton;
@@ -25,26 +60,23 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
     [SerializeField] private Image lockImage;
     [SerializeField] private Sprite lockSprite, unlockSprite;
 
-    [Header("卡片动效")]
-    [FormerlySerializedAs("cardMotionController")]
-    [SerializeField] private CardMotionController motion;
+    [Header("商店商品档位表现")]
+    [SerializeField] private ShopItemTierConsumer tierConsumer = new();
 
     private int currentIndex = -1;
+    private bool isSoldOut;
+    private GameObject soldOutOverlayInstance;
+    private bool missingSoldOutOverlayLogged;
 
     public event Action<int> BuyRequested;
     public event Action<int> LockToggleRequested;
 
+    private void Awake()
+    {
+        SetSoldOutState(false);
+    }
+
     public void Configure(InfoAddIndex<ShopItemData> resource)
-    {
-        Configure(resource, true);
-    }
-
-    public void Configure(InfoAddIndex<ShopItemData> resource, bool playReveal)
-    {
-        Configure(resource, playReveal, refreshMotion: true);
-    }
-
-    public void Configure(InfoAddIndex<ShopItemData> resource, bool playReveal, bool refreshMotion)
     {
         ShopItemData shopItem = resource.info;
         ItemDataSO itemData = shopItem.ItemData;
@@ -54,18 +86,13 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
             throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' received a shop item without {nameof(ItemDataSO)}.");
         }
 
-        int colorDependency;
-        if (itemData is AccessoryDataSO accessoryData)
+        if (itemData is AccessoryDataSO)
         {
-            colorDependency = accessoryData.Rarity;
             SetNameText(itemData.ItemName);
-            bottom?.Display(accessoryData);
         }
-        else if (itemData is WeaponDataSO weaponData)
+        else if (itemData is WeaponDataSO)
         {
-            colorDependency = shopItem.Level;
             SetNameText(ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level));
-            bottom?.Display(new WeaponLevelDescribable(weaponData, shopItem.Level));
         }
         else
         {
@@ -88,17 +115,15 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
             iconImage.enabled = itemData.ItemIcon != null;
         }
 
-        RenderItemQuality(itemData, colorDependency);
+        if (!tierConsumer.Consume(shopItem.Tier))
+        {
+            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' could not resolve shop item tier '{shopItem.Tier}'.", this);
+        }
 
         RemoveButtonListeners();
 
         currentIndex = resource.index;
-
-        if (refreshMotion)
-        {
-            ConfigureCardMotionForReuse(playReveal);
-        }
-
+        SetSoldOutState(shopItem.SoldOut);
         AddButtonListeners();
     }
 
@@ -113,6 +138,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         BuyRequested = null;
         LockToggleRequested = null;
         currentIndex = -1;
+        SetSoldOutState(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -127,7 +153,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
 
     private void OnBuyButtonClicked()
     {
-        if (currentIndex < 0)
+        if (currentIndex < 0 || isSoldOut)
         {
             return;
         }
@@ -137,7 +163,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
 
     private void OnLockButtonClicked()
     {
-        if (currentIndex < 0)
+        if (currentIndex < 0 || isSoldOut)
         {
             return;
         }
@@ -152,48 +178,6 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         {
             nameText.text = text;
         }
-    }
-
-    private void RenderItemQuality(ItemDataSO itemData, int qualityValue)
-    {
-        CardQuality quality = CardQualityResolver.FromItem(itemData, qualityValue);
-        CardQualityPresentationCatalogSO catalog = ResolveQualityPresentationCatalog();
-        if (catalog == null)
-        {
-            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' could not resolve a card quality catalog for quality '{quality}'.", this);
-            return;
-        }
-
-        if (!catalog.TryGetProfile(quality, out CardQualityPresentationProfile profile))
-        {
-            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' could not resolve card quality '{quality}'.", this);
-            return;
-        }
-
-        if (qualityVisual == null)
-        {
-            qualityVisual = GetComponent<CardQualityVisualController>();
-        }
-
-        if (qualityVisual == null)
-        {
-            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' is missing {nameof(CardQualityVisualController)}; quality '{quality}' will not be rendered.", this);
-            return;
-        }
-
-        qualityVisual.Apply(profile);
-    }
-
-    private CardQualityPresentationCatalogSO ResolveQualityPresentationCatalog()
-    {
-        if (qualityPresentationCatalogOverride != null)
-        {
-            return qualityPresentationCatalogOverride;
-        }
-
-        return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
-            ? provider.CardQualityPresentationCatalog
-            : null;
     }
 
     private void AddButtonListeners()
@@ -222,14 +206,59 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         }
     }
 
-    private void ConfigureCardMotionForReuse(bool playReveal)
+    private void SetSoldOutState(bool soldOut)
     {
-        if (motion == null)
+        // 售罄只管理遮罩与交互，不回写 tier 颜色，避免两层表现相互覆盖。
+        isSoldOut = soldOut;
+
+        if (soldOut && soldOutOverlayInstance == null)
         {
-            motion = GetComponent<CardMotionController>();
+            EnsureSoldOutOverlayInstance();
         }
 
-        motion?.ConfigureForReuse(playReveal);
+        if (soldOutOverlayInstance != null)
+        {
+            soldOutOverlayInstance.SetActive(soldOut);
+            if (soldOut)
+            {
+                soldOutOverlayInstance.transform.SetAsLastSibling();
+            }
+        }
+
+        SetButtonInteractable(buyButton, !soldOut);
+        SetButtonInteractable(lockButton, !soldOut);
+    }
+
+    private void EnsureSoldOutOverlayInstance()
+    {
+        if (soldOutOverlayInstance != null)
+        {
+            return;
+        }
+
+        if (soldOutOverlayPrefab == null)
+        {
+            if (!missingSoldOutOverlayLogged)
+            {
+                Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' is missing {nameof(soldOutOverlayPrefab)}; sold out state will not show the overlay.", this);
+                missingSoldOutOverlayLogged = true;
+            }
+
+            return;
+        }
+
+        soldOutOverlayInstance = Instantiate(soldOutOverlayPrefab, transform, false);
+        soldOutOverlayInstance.transform.localScale = Vector3.one;
+        soldOutOverlayInstance.SetActive(false);
+        soldOutOverlayInstance.transform.SetAsLastSibling();
+    }
+
+    private static void SetButtonInteractable(Button button, bool interactable)
+    {
+        if (button != null)
+        {
+            button.interactable = interactable;
+        }
     }
 
     private void OnDestroy()

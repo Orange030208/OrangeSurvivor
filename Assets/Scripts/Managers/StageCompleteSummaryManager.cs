@@ -24,7 +24,6 @@ public class StageCompleteSummaryManager : MonoBehaviour
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
 
         TryBindWallet();
@@ -32,10 +31,10 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void OnDisable()
     {
+        UnbindWallet();
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
         GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
@@ -51,7 +50,7 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
-        wallet = eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null;
+        BindWallet(eventData.Player != null ? eventData.Player.GetComponent<CurrencyWallet>() : null);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -86,14 +85,14 @@ public class StageCompleteSummaryManager : MonoBehaviour
         killCount++;
     }
 
-    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    private void OnCurrencyAmountChanged(int currentAmount, int changeAmount)
     {
-        if (!isRunActive || eventData.Wallet != wallet || eventData.ChangeAmount <= 0)
+        if (!isRunActive || changeAmount <= 0)
         {
             return;
         }
 
-        goldEarned += eventData.ChangeAmount;
+        goldEarned += changeAmount;
     }
 
     public StageCompleteResult CreateResult()
@@ -134,7 +133,7 @@ public class StageCompleteSummaryManager : MonoBehaviour
             return;
         }
 
-        wallet = player.GetComponent<CurrencyWallet>();
+        BindWallet(player.GetComponent<CurrencyWallet>());
         WeaponsHolder weaponsHolder = player.GetComponent<WeaponsHolder>();
         if (weaponsHolder == null || weaponsHolder.EquippedWeapons.Count == 0)
         {
@@ -147,17 +146,42 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void TryBindWallet()
     {
+        Player player = FindFirstObjectByType<Player>();
+        CurrencyWallet resolvedWallet = null;
+        if (player != null)
+        {
+            resolvedWallet = player.GetComponent<CurrencyWallet>();
+        }
+
+        if (resolvedWallet == null)
+        {
+            resolvedWallet = wallet;
+        }
+
+        if (resolvedWallet != null)
+        {
+            BindWallet(resolvedWallet);
+        }
+    }
+
+    private void BindWallet(CurrencyWallet newWallet)
+    {
+        UnbindWallet();
+        wallet = newWallet;
         if (wallet != null)
         {
-            return;
+            wallet.OnAmountChanged += OnCurrencyAmountChanged;
         }
+    }
 
-        Player player = FindFirstObjectByType<Player>();
-        if (player == null)
+    private void UnbindWallet()
+    {
+        if (wallet == null)
         {
             return;
         }
 
-        wallet = player.GetComponent<CurrencyWallet>();
+        wallet.OnAmountChanged -= OnCurrencyAmountChanged;
+        wallet = null;
     }
 }

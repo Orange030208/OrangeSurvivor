@@ -9,12 +9,12 @@ public class AccessoryManager : EntityComponentBase
     private FeatureHost featureHost;
     private PropertiesManager propertiesManager;
     private Entity owner;
-    private readonly Dictionary<string, List<RuntimeAccessoryData>> equippedAccessoryDict = new();
-    private readonly List<RuntimeAccessoryData> equippedAccessoryList = new();
+    private readonly Dictionary<string, List<Accessory>> equippedAccessoryDict = new();
+    private readonly List<Accessory> equippedAccessoryList = new();
     public event Action<AccessoryDataSO> OnAccessoryEquipped;
     public event Action<AccessoryDataSO> OnAccessoryUnequipped;
 
-    public IReadOnlyList<RuntimeAccessoryData> EquippedAccessoryList => equippedAccessoryList.AsReadOnly();
+    public IReadOnlyList<Accessory> EquippedAccessoryList => equippedAccessoryList.AsReadOnly();
 
 
     public override Entity Owner => owner;
@@ -60,16 +60,16 @@ public class AccessoryManager : EntityComponentBase
         string accessoryKey = GetAccessoryKey(accessoryData);
         if (!equippedAccessoryDict.TryGetValue(accessoryKey, out var dictList))
         {
-            dictList = new List<RuntimeAccessoryData>();
+            dictList = new List<Accessory>();
             equippedAccessoryDict[accessoryKey] = dictList;
         }
 
-        var newAccessoryData = new RuntimeAccessoryData(accessoryData);
+        var newAccessoryData = new Accessory(accessoryData);
 
         dictList.Add(newAccessoryData);
         equippedAccessoryList.Add(newAccessoryData);
 
-        featureHost.InstallFeature(newAccessoryData.RuntimeId, newAccessoryData.AccessoryData.SpecialFeatures);
+        featureHost.InstallFeature(newAccessoryData.RuntimeId, newAccessoryData.Data.SpecialFeatures);
         propertiesManager.AddModifiers(newAccessoryData.RuntimeId, accessoryData.PropertyModifiers);
 
         OnAccessoryEquipped?.Invoke(accessoryData);
@@ -95,7 +95,7 @@ public class AccessoryManager : EntityComponentBase
         int count = 0;
         for (int i = 0; i < equippedAccessoryList.Count; i++)
         {
-            if (equippedAccessoryList[i].AccessoryData == accessoryData)
+            if (equippedAccessoryList[i].Data == accessoryData)
             {
                 count++;
             }
@@ -111,7 +111,7 @@ public class AccessoryManager : EntityComponentBase
             return 0;
         }
 
-        return equippedAccessoryDict.TryGetValue(accessoryId, out List<RuntimeAccessoryData> dictList)
+        return equippedAccessoryDict.TryGetValue(accessoryId, out List<Accessory> dictList)
             ? dictList.Count
             : 0;
     }
@@ -150,8 +150,64 @@ public class AccessoryManager : EntityComponentBase
         int index = equippedAccessoryList.LastIndexOf(equipped);
         if (index >= 0) equippedAccessoryList.RemoveAt(index);
 
-        OnAccessoryUnequipped?.Invoke(equipped.AccessoryData);
+        OnAccessoryUnequipped?.Invoke(equipped.Data);
         return true;
+    }
+
+    public bool UnequipAccessoryByRuntimeId(string runtimeId)
+    {
+        if (string.IsNullOrWhiteSpace(runtimeId) || featureHost == null || propertiesManager == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < equippedAccessoryList.Count; i++)
+        {
+            Accessory equipped = equippedAccessoryList[i];
+            if (!string.Equals(equipped.RuntimeId, runtimeId, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            equippedAccessoryList.RemoveAt(i);
+            RemoveFromAccessoryDictionary(equipped);
+            featureHost.RemoveFeature(equipped.RuntimeId);
+            propertiesManager.RemoveModifiers(equipped.RuntimeId);
+            OnAccessoryUnequipped?.Invoke(equipped.Data);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void RemoveFromAccessoryDictionary(Accessory equipped)
+    {
+        if (equipped.Data == null)
+        {
+            return;
+        }
+
+        string accessoryKey = GetAccessoryKey(equipped.Data);
+        if (!equippedAccessoryDict.TryGetValue(accessoryKey, out List<Accessory> dictList))
+        {
+            return;
+        }
+
+        for (int i = dictList.Count - 1; i >= 0; i--)
+        {
+            if (!string.Equals(dictList[i].RuntimeId, equipped.RuntimeId, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            dictList.RemoveAt(i);
+            break;
+        }
+
+        if (dictList.Count == 0)
+        {
+            equippedAccessoryDict.Remove(accessoryKey);
+        }
     }
 
     private static string GetAccessoryKey(AccessoryDataSO accessoryData)
@@ -172,7 +228,7 @@ public class AccessoryManager : EntityComponentBase
 
         foreach (var pair in equippedAccessoryDict)
         {
-            List<RuntimeAccessoryData> list = pair.Value;
+            List<Accessory> list = pair.Value;
             for (int i = 0; i < list.Count; i++)
             {
                 featureHost.RemoveFeature(list[i].RuntimeId);
@@ -185,14 +241,17 @@ public class AccessoryManager : EntityComponentBase
     }
 }
 
-public struct RuntimeAccessoryData
+public readonly struct Accessory : IHasContentTier
 {
-    public string RuntimeId;
-    public AccessoryDataSO AccessoryData;
-
-    public RuntimeAccessoryData(AccessoryDataSO accessoryData)
+    public Accessory(AccessoryDataSO data)
     {
-        this.AccessoryData = accessoryData;
-        RuntimeId = $"ACC_{accessoryData.AccessoryId}_{Guid.NewGuid():N}";
+        Data = data;
+        RuntimeId = $"ACC_{data.AccessoryId}_{Guid.NewGuid():N}";
     }
+
+    public string RuntimeId { get; }
+    public AccessoryDataSO Data { get; }
+    public string AccessoryId => Data != null ? Data.AccessoryId : string.Empty;
+    public AccessoryRarity RarityGrade => Data != null ? Data.RarityGrade : AccessoryRarity.Common;
+    public ContentTier Tier => ContentTierResolver.FromAccessoryRarity(RarityGrade);
 }

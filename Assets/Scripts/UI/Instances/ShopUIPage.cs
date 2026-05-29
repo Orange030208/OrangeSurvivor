@@ -4,14 +4,15 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ShopUIPage : PageBase
 {
-    private const string PROPERTIES_POPUP_BUTTON_NAME = "Arrow Right Button";
-    private const string INVENTORY_POPUP_BUTTON_NAME = "Arrow Left Button";
-    private const string PROPERTIES_POPUP_GROUP_ID = "shop.properties";
-    private const string INVENTORY_POPUP_GROUP_ID = "shop.inventory";
+    private const string PROPERTIES_POPUP_GROUP_ID = "properties";
+    private const string EQUIPMENT_POPUP_GROUP_ID = "equipment";
+    private const string PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE = "Not enough currency.";
+    private const string REROLL_INSUFFICIENT_CURRENCY_PREFIX = "Not enough currency for reroll";
 
     [Header("商品")]
     [SerializeField] private ShopItemListUI itemList;
@@ -24,24 +25,24 @@ public class ShopUIPage : PageBase
 
     [Header("Popup 入口")]
     [SerializeField] private Button propertiesPopupButton;
-    [SerializeField] private Button inventoryPopupButton;
+    [FormerlySerializedAs("inventoryPopupButton")]
+    [SerializeField] private Button equipmentPopupButton;
 
     private ShopManager shopManager;
     private CurrencyWallet currencyWallet;
     private ShopPageContext currentContext;
-    private ViewHandle<ShopPropertiesPopup> propertiesPopupHandle;
-    private ViewHandle<ShopInventoryPopup> inventoryPopupHandle;
+    private ViewHandle<PropertiesPopup> propertiesPopupHandle;
+    private ViewHandle<EquipmentPopup> equipmentPopupHandle;
     private bool buttonEventsBound;
     private bool managerEventsBound;
     private bool propertiesPopupOpen;
-    private bool inventoryPopupOpen;
+    private bool equipmentPopupOpen;
     private int propertiesPopupVersion;
-    private int inventoryPopupVersion;
+    private int equipmentPopupVersion;
 
     protected override void Awake()
     {
         base.Awake();
-        ResolveViewParts();
         ValidateConfiguration();
     }
 
@@ -67,24 +68,23 @@ public class ShopUIPage : PageBase
         }
 
         shopManager = context.ShopManager;
-        currencyWallet = context.CurrencyWallet;
         currentContext = context;
 
         BindButtonEvents();
         BindManagerEvents();
+        BindCurrencyWallet(context.CurrencyWallet);
         BindItemListEvents();
-
-        UpdateCurrencyAmount(context.CurrencyWallet != null ? context.CurrencyWallet.CurrentAmount : 0);
         shopManager.RefreshViewState();
     }
 
     private void ExitShopSession()
     {
         ClosePropertiesPopupAsync(CloseReason.Cancel).Forget();
-        CloseInventoryPopupAsync(CloseReason.Cancel).Forget();
+        CloseEquipmentPopupAsync(CloseReason.Cancel).Forget();
 
         UnbindButtonEvents();
         UnbindManagerEvents();
+        UnbindCurrencyWallet();
         UnbindItemListEvents();
 
         itemList.Clear();
@@ -112,12 +112,24 @@ public class ShopUIPage : PageBase
 
     private void ShowPurchaseSuccess(ShopPurchaseSuccess result)
     {
-        Debug.Log($"Purchase successful: {result.ItemData.ItemType}");
+        ItemDataSO itemData = result.ItemData;
+        string itemName = itemData != null && !string.IsNullOrWhiteSpace(itemData.ItemName)
+            ? itemData.ItemName
+            : "商品";
+
+        Debug.Log($"[Shop] 购买成功：{itemName}", this);
     }
 
     private void ShowPurchaseFailure(string message)
     {
-        Debug.LogWarning($"Purchase failed: {message}");
+        string feedbackMessage = BuildPurchaseFailureFeedbackMessage(message);
+        if (IsPurchaseInsufficientCurrency(message))
+        {
+            ShowToast(feedbackMessage);
+            return;
+        }
+
+        Debug.LogWarning($"[Shop] {feedbackMessage}", this);
     }
 
     private void OnRerollRequested()
@@ -136,9 +148,9 @@ public class ShopUIPage : PageBase
         TogglePropertiesPopupAsync().Forget();
     }
 
-    private void OnInventoryPopupRequested()
+    private void OnEquipmentPopupRequested()
     {
-        ToggleInventoryPopupAsync().Forget();
+        ToggleEquipmentPopupAsync().Forget();
     }
 
     private async UniTaskVoid TogglePropertiesPopupAsync()
@@ -167,8 +179,8 @@ public class ShopUIPage : PageBase
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<ShopPropertiesPopup> handle = await OwnerUIManager.ShowPopupAsync<ShopPropertiesPopup>(
-                new ShopPropertiesPopupContext(currentContext.PropertiesManager),
+            ViewHandle<PropertiesPopup> handle = await OwnerUIManager.ShowPopupAsync<PropertiesPopup>(
+                currentContext.PropertiesManager,
                 options,
                 this.GetCancellationTokenOnDestroy());
 
@@ -194,60 +206,60 @@ public class ShopUIPage : PageBase
         }
     }
 
-    private async UniTaskVoid ToggleInventoryPopupAsync()
+    private async UniTaskVoid ToggleEquipmentPopupAsync()
     {
-        if (inventoryPopupOpen)
+        if (equipmentPopupOpen)
         {
             AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-            await CloseInventoryPopupAsync(CloseReason.Normal);
+            await CloseEquipmentPopupAsync(CloseReason.Normal);
             return;
         }
 
-        if (currentContext == null)
+        if (currentContext == null || !TryCreateEquipmentContext(currentContext.Player, out EquipmentPopupContext equipmentContext))
         {
             return;
         }
 
-        int version = ++inventoryPopupVersion;
+        int version = ++equipmentPopupVersion;
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
 
         try
         {
             PopupOptions options = new PopupOptions(
                 closeOnOutsideClick: true,
-                groupId: INVENTORY_POPUP_GROUP_ID,
+                groupId: EQUIPMENT_POPUP_GROUP_ID,
                 replaceSameGroup: true,
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<ShopInventoryPopup> handle = await OwnerUIManager.ShowPopupAsync<ShopInventoryPopup>(
-                new ShopInventoryPopupContext(currentContext.InventoryOperateManager, OwnerUIManager),
+            ViewHandle<EquipmentPopup> handle = await OwnerUIManager.ShowPopupAsync<EquipmentPopup>(
+                equipmentContext,
                 options,
                 this.GetCancellationTokenOnDestroy());
 
-            if (version != inventoryPopupVersion || currentContext == null)
+            if (version != equipmentPopupVersion || currentContext == null)
             {
                 await handle.CloseAsync(CloseReason.Cancel);
                 return;
             }
 
-            inventoryPopupHandle = handle;
-            inventoryPopupOpen = true;
-            ObserveInventoryPopupClosedAsync(handle, version).Forget();
+            equipmentPopupHandle = handle;
+            equipmentPopupOpen = true;
+            ObserveEquipmentPopupClosedAsync(handle, version).Forget();
         }
         catch (Exception exception)
         {
-            if (version == inventoryPopupVersion)
+            if (version == equipmentPopupVersion)
             {
-                inventoryPopupOpen = false;
-                inventoryPopupHandle = default;
+                equipmentPopupOpen = false;
+                equipmentPopupHandle = default;
             }
 
             Debug.LogException(exception, this);
         }
     }
 
-    private async UniTaskVoid ObservePropertiesPopupClosedAsync(ViewHandle<ShopPropertiesPopup> handle, int version)
+    private async UniTaskVoid ObservePropertiesPopupClosedAsync(ViewHandle<PropertiesPopup> handle, int version)
     {
         try
         {
@@ -267,7 +279,7 @@ public class ShopUIPage : PageBase
         propertiesPopupHandle = default;
     }
 
-    private async UniTaskVoid ObserveInventoryPopupClosedAsync(ViewHandle<ShopInventoryPopup> handle, int version)
+    private async UniTaskVoid ObserveEquipmentPopupClosedAsync(ViewHandle<EquipmentPopup> handle, int version)
     {
         try
         {
@@ -278,13 +290,13 @@ public class ShopUIPage : PageBase
             Debug.LogException(exception, this);
         }
 
-        if (version != inventoryPopupVersion)
+        if (version != equipmentPopupVersion)
         {
             return;
         }
 
-        inventoryPopupOpen = false;
-        inventoryPopupHandle = default;
+        equipmentPopupOpen = false;
+        equipmentPopupHandle = default;
     }
 
     private async UniTask ClosePropertiesPopupAsync(CloseReason reason)
@@ -292,7 +304,7 @@ public class ShopUIPage : PageBase
         propertiesPopupVersion++;
         propertiesPopupOpen = false;
 
-        ViewHandle<ShopPropertiesPopup> handle = propertiesPopupHandle;
+        ViewHandle<PropertiesPopup> handle = propertiesPopupHandle;
         propertiesPopupHandle = default;
         if (!handle.IsValid)
         {
@@ -302,13 +314,13 @@ public class ShopUIPage : PageBase
         await handle.CloseAsync(reason);
     }
 
-    private async UniTask CloseInventoryPopupAsync(CloseReason reason)
+    private async UniTask CloseEquipmentPopupAsync(CloseReason reason)
     {
-        inventoryPopupVersion++;
-        inventoryPopupOpen = false;
+        equipmentPopupVersion++;
+        equipmentPopupOpen = false;
 
-        ViewHandle<ShopInventoryPopup> handle = inventoryPopupHandle;
-        inventoryPopupHandle = default;
+        ViewHandle<EquipmentPopup> handle = equipmentPopupHandle;
+        equipmentPopupHandle = default;
         if (!handle.IsValid)
         {
             return;
@@ -337,7 +349,7 @@ public class ShopUIPage : PageBase
         rerollButton.onClick.AddListener(OnRerollRequested);
         continueButton.onClick.AddListener(OnContinueRequested);
         propertiesPopupButton.onClick.AddListener(OnPropertiesPopupRequested);
-        inventoryPopupButton.onClick.AddListener(OnInventoryPopupRequested);
+        equipmentPopupButton.onClick.AddListener(OnEquipmentPopupRequested);
         buttonEventsBound = true;
     }
 
@@ -351,7 +363,7 @@ public class ShopUIPage : PageBase
         rerollButton.onClick.RemoveListener(OnRerollRequested);
         continueButton.onClick.RemoveListener(OnContinueRequested);
         propertiesPopupButton.onClick.RemoveListener(OnPropertiesPopupRequested);
-        inventoryPopupButton.onClick.RemoveListener(OnInventoryPopupRequested);
+        equipmentPopupButton.onClick.RemoveListener(OnEquipmentPopupRequested);
         buttonEventsBound = false;
     }
 
@@ -368,8 +380,6 @@ public class ShopUIPage : PageBase
             shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
             shopManager.PurchaseFailed += OnPurchaseFailed;
         }
-
-        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         managerEventsBound = true;
     }
 
@@ -386,8 +396,6 @@ public class ShopUIPage : PageBase
             shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
             shopManager.PurchaseFailed -= OnPurchaseFailed;
         }
-
-        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         managerEventsBound = false;
     }
 
@@ -409,6 +417,7 @@ public class ShopUIPage : PageBase
     {
         UpdateRerollState(viewState.RerollCost, viewState.CanReroll);
         RenderShopItems(viewState.Items, viewState.Reason);
+        LogRefresh(viewState.Reason);
     }
 
     private void OnPurchaseSucceeded(ShopPurchaseSuccess result)
@@ -421,32 +430,99 @@ public class ShopUIPage : PageBase
         ShowPurchaseFailure(failure.Message);
     }
 
-    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    private void OnCurrencyAmountChanged(int currentAmount, int changeAmount)
     {
-        if (currencyWallet != null && eventData.Wallet != currencyWallet)
+        UpdateCurrencyAmount(currentAmount);
+    }
+
+    private void BindCurrencyWallet(CurrencyWallet newCurrencyWallet)
+    {
+        UnbindCurrencyWallet();
+        currencyWallet = newCurrencyWallet;
+
+        if (currencyWallet != null)
+        {
+            currencyWallet.OnAmountChanged += OnCurrencyAmountChanged;
+            UpdateCurrencyAmount(currencyWallet.CurrentAmount);
+            return;
+        }
+
+        UpdateCurrencyAmount(0);
+    }
+
+    private void UnbindCurrencyWallet()
+    {
+        if (currencyWallet == null)
         {
             return;
         }
 
-        UpdateCurrencyAmount(eventData.CurrentAmount);
+        currencyWallet.OnAmountChanged -= OnCurrencyAmountChanged;
+        currencyWallet = null;
     }
 
-    private void ResolveViewParts()
+    private void LogRefresh(ShopRefreshReason reason)
     {
-        if (itemList == null)
+        switch (reason)
         {
-            itemList = GetComponentInChildren<ShopItemListUI>(true);
+            case ShopRefreshReason.Reroll:
+                Debug.Log("[Shop] 商店已刷新", this);
+                break;
+            case ShopRefreshReason.WaveRefresh:
+                Debug.Log("[Shop] 新一轮商店已刷新", this);
+                break;
+        }
+    }
+
+    private void ShowToast(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
         }
 
-        if (propertiesPopupButton == null)
+        UIManager manager = OwnerUIManager ?? UIManager.Instance;
+        if (manager == null)
         {
-            propertiesPopupButton = FindButtonByName(PROPERTIES_POPUP_BUTTON_NAME);
+            return;
         }
 
-        if (inventoryPopupButton == null)
+        manager.ShowToastAsync<TextToastView>(
+            new ToastPayload(message),
+            new ToastOptions(displayMode: ToastDisplayMode.ReplaceCurrent),
+            cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private static bool IsPurchaseInsufficientCurrency(string message)
+    {
+        return string.Equals(message, PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE, StringComparison.Ordinal);
+    }
+
+    private static string BuildPurchaseFailureFeedbackMessage(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
         {
-            inventoryPopupButton = FindButtonByName(INVENTORY_POPUP_BUTTON_NAME);
+            return "购买失败";
         }
+
+        if (message.StartsWith(REROLL_INSUFFICIENT_CURRENCY_PREFIX, StringComparison.Ordinal))
+        {
+            return "金币不足，无法刷新商店";
+        }
+
+        return message switch
+        {
+            "Item index out of range." => "商品已失效",
+            "Item data is null." => "商品数据异常，无法购买",
+            "Accessory data is null or wrong type." => "饰品数据异常，无法购买",
+            "Weapon data is null or wrong type." => "武器数据异常，无法购买",
+            PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE => "金币不足，无法购买",
+            "Accessory manager not found." => "当前角色无法装备饰品",
+            "Weapons holder not found." => "当前角色无法装备武器",
+            "Accessory owned limit reached." => "饰品数量已达上限",
+            "No empty weapon slot available." => "武器栏已满",
+            _ => "购买失败"
+        };
     }
 
     private void ValidateConfiguration()
@@ -481,24 +557,29 @@ public class ShopUIPage : PageBase
             throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing properties popup button.");
         }
 
-        if (inventoryPopupButton == null)
+        if (equipmentPopupButton == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing inventory popup button.");
+            throw new MissingReferenceException($"{nameof(ShopUIPage)} '{name}' is missing equipment popup button.");
         }
     }
 
-    private Button FindButtonByName(string buttonName)
+    private static bool TryCreateEquipmentContext(Player player, out EquipmentPopupContext equipmentContext)
     {
-        Button[] buttons = GetComponentsInChildren<Button>(true);
-        for (int i = 0; i < buttons.Length; i++)
+        equipmentContext = null;
+        if (player == null)
         {
-            Button button = buttons[i];
-            if (button != null && button.name == buttonName)
-            {
-                return button;
-            }
+            return false;
         }
 
-        return null;
+        WeaponsHolder weaponsHolder = player.GetComponent<WeaponsHolder>();
+        AccessoryManager accessoryManager = player.GetComponent<AccessoryManager>();
+        CurrencyWallet wallet = player.GetComponent<CurrencyWallet>();
+        if (weaponsHolder == null || accessoryManager == null || wallet == null)
+        {
+            return false;
+        }
+
+        equipmentContext = new EquipmentPopupContext(weaponsHolder, accessoryManager, wallet);
+        return true;
     }
 }

@@ -21,38 +21,62 @@ MonoBehaviour:
   layers:
   - layer: 0
     rootName: BackgroundLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: -300
     blocksRaycasts: 1
   - layer: 1
     rootName: HudLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: -100
     blocksRaycasts: 1
   - layer: 2
     rootName: PageLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 0
     blocksRaycasts: 1
   - layer: 3
     rootName: PopupLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 200
     blocksRaycasts: 1
   - layer: 4
     rootName: ModalMaskLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 300
     blocksRaycasts: 1
   - layer: 5
     rootName: ModalLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 320
     blocksRaycasts: 1
   - layer: 6
     rootName: TooltipLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 500
+    blocksRaycasts: 0
+  - layer: 9
+    rootName: ToastLayer
+    overrideSorting: 0
+    sortingLayerName: Default
+    sortingOrder: 600
     blocksRaycasts: 0
   - layer: 7
     rootName: SystemLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 700
     blocksRaycasts: 1
   - layer: 8
     rootName: DebugLayer
+    overrideSorting: 0
+    sortingLayerName: Default
     sortingOrder: 900
     blocksRaycasts: 1
   popupOutsideClickBlocker:

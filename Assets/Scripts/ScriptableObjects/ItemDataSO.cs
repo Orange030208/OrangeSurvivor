@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public enum ItemType
 {
@@ -8,7 +6,7 @@ public enum ItemType
     Accessory
 }
 
-public abstract class ItemDataSO : ScriptableObject,IDescribable
+public abstract class ItemDataSO : ScriptableObject
 {
     [SerializeField] protected string itemName;
     [SerializeField] protected Sprite itemIcon;
@@ -20,9 +18,7 @@ public abstract class ItemDataSO : ScriptableObject,IDescribable
     public Sprite ItemIcon => itemIcon;
     public int ItemPrice => itemPrice;
     public ItemType ItemType => itemType;
+    public virtual string ManualDescription => itemDescription ?? string.Empty;
 
-    public virtual string Title => itemName;
-    public virtual Sprite Icon => itemIcon;
     public virtual string Description => itemDescription;
-    public abstract IEnumerable<DescriptorInfo> GetExtraInfos();
 }

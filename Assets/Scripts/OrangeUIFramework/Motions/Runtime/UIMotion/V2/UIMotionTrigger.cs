@@ -95,11 +95,13 @@ namespace Orange.UIFramework
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (IsLeftButton(eventData))
+            if (!IsLeftButton(eventData) || !isPointerPressed)
             {
-                isPointerPressed = false;
+                // PointerExit already cancels drag-away presses; ignore the later PointerUp Unity sends to the pressed object.
+                return;
             }
 
+            isPointerPressed = false;
             Play(UIMotionTriggerEvent.PointerUp, eventData);
         }
 

@@ -29,9 +29,11 @@ public static class GameContentAssetPaths
     public const string WeaponProjectilePrefabs = WeaponsPrefabs + "/Projectiles";
     public const string WeaponsSprites = Weapons + "/Sprites";
     public const string WeaponProjectileSprites = WeaponsSprites + "/Projectiles";
+    public const string WeaponProjectileAtlas = WeaponProjectileSprites + "/ProjectileCoreAtlas.png";
     public const string WeaponsAnimations = Weapons + "/Animations";
     public const string WeaponProjectileAnimations = WeaponsAnimations + "/Projectiles";
     public const string WeaponsVfx = Weapons + "/VFX";
+    public const string WeaponDataList = WeaponsData + "/Weapon Data List.asset";
     public const string DefaultWeaponPrefab = WeaponsPrefabs + "/Weapon.prefab";
 
     public const string Accessories = Root + "/Accessories";
@@ -79,6 +81,7 @@ public static class GameContentAssetPaths
     public const string UIViewPages = UIPrefabs + "/Pages";
     public const string UIViewContainers = UIPrefabs + "/Container";
     public const string PropPresentationCatalog = UIData + "/Prop Presentation Catalog.asset";
+    public const string TierColorPalette = UIData + "/Tier Color Palette.asset";
     public const string ItemQualityVisualConfig = UIData + "/Item Quality Visual Config.asset";
     public const string ItemQualityIconEffectMaterial = UIMaterials + "/WeaponQualityIconEffect.mat";
     public const string UIFrameworkSettings = UIData + "/OrangeUIFrameworkSettings.asset";
@@ -119,5 +122,6 @@ public static class GameContentAssetPaths
     public const string MapGenerationTileSets = MapGeneration + "/Tile Sets";
     public const string MapGenerationRules = MapGeneration + "/Rules";
     public const string MapGenerationConstraints = MapGeneration + "/Constraints";
+    public const string MapGenerationProfileFolder = MapGeneration;
     public const string TxGrassGroundTheme = MapData + "/TX Grass Ground Theme.asset";
 }

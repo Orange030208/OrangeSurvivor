@@ -1,16 +1,17 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-public struct ShopItemData
+public struct ShopItemData : IHasContentTier
 {
     public ItemDataSO ItemData;
     public int Level;
     public bool Lock;
+    public bool SoldOut;
     public float ContentPriceMultiplier;
     public float RunPriceMultiplier;
     public float PlayerDiscountMultiplier;
     public ContentRollItem RollItem;
+    public ContentTier Tier => ResolveTier();
 
     public float PriceMultiplier
     {
@@ -27,15 +28,34 @@ public struct ShopItemData
             RunPriceMultiplier,
             PlayerDiscountMultiplier);
     }
+
+    private ContentTier ResolveTier()
+    {
+        if (ItemData == null)
+        {
+            return RollItem.TryGetTier(out ContentTier rollTier) ? rollTier : ContentTier.Common;
+        }
+
+        if (ItemData.ItemType == ItemType.Weapon)
+        {
+            return ContentTierResolver.FromWeaponLevel(Level);
+        }
+
+        if (ItemData is AccessoryDataSO accessoryData)
+        {
+            return ContentTierResolver.FromAccessoryRarity(accessoryData.RarityGrade);
+        }
+
+        return RollItem.TryGetTier(out ContentTier tier) ? tier : ContentTier.Common;
+    }
 }
 
 public class ShopManager : MonoBehaviour
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 4;
-    private const int BASE_REROLL_COST = 5;
+    private const int DEFAULT_REROLL_STEP_COST = 1;
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
-    [SerializeField] private int baseRerollCost = BASE_REROLL_COST;
     [SerializeField] private CurrencyWallet currencyWallet;
     [SerializeField] private ContentPoolSO shopPool;
 
@@ -45,8 +65,8 @@ public class ShopManager : MonoBehaviour
     private Player player;
     private PropertiesManager propertiesManager;
     private int freeShopRerolls;
-    private int rerollCost;
-    private int rerollCount;
+    private int totalRerollCount;
+    private int paidRerollCountThisWave;
     private int shopRefreshCount;
     private int currentWaveNumber = 1;
     private int currentCurrency;
@@ -55,15 +75,8 @@ public class ShopManager : MonoBehaviour
     public event Action<ShopPurchaseSuccess> PurchaseSucceeded;
     public event Action<ShopPurchaseFailure> PurchaseFailed;
 
-    private void Awake()
-    {
-        rerollCost = baseRerollCost;
-    }
-
     private void OnEnable()
     {
-        GameEventBus.Subscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
-        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Subscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
@@ -76,10 +89,9 @@ public class ShopManager : MonoBehaviour
 
     private void OnDisable()
     {
+        UnbindCurrencyWallet();
         UnbindPropertiesManager();
 
-        GameEventBus.Unsubscribe<ShopVideoAdRerollRequestedEvent>(OnVideoAdRerollRequested);
-        GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
         GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
         GameEventBus.Unsubscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
@@ -96,9 +108,8 @@ public class ShopManager : MonoBehaviour
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         player = eventData.Player;
-        currencyWallet = player != null ? player.GetComponent<CurrencyWallet>() : null;
         BindPropertiesManager(player != null ? player.GetComponent<PropertiesManager>() : null);
-        RefreshCurrency();
+        BindCurrencyWallet(player != null ? player.GetComponent<CurrencyWallet>() : null);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent eventData)
@@ -116,14 +127,9 @@ public class ShopManager : MonoBehaviour
         PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
-    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    private void OnCurrencyAmountChanged(int currentAmount, int changeAmount)
     {
-        if (eventData.Wallet != currencyWallet)
-        {
-            return;
-        }
-
-        currentCurrency = eventData.CurrentAmount;
+        currentCurrency = currentAmount;
         PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
@@ -140,6 +146,12 @@ public class ShopManager : MonoBehaviour
         if (itemData.ItemData == null)
         {
             NotifyPurchaseFailed("Item data is null.");
+            return;
+        }
+
+        if (itemData.SoldOut)
+        {
+            NotifyPurchaseFailed("Item already sold out.");
             return;
         }
 
@@ -182,13 +194,21 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        currencyWallet?.ChangeAmount(-price);
         RecordShopPick(itemData);
+
+        MarkItemAsSoldOut(itemIndex);
+
+        if (currencyWallet != null)
+        {
+            currencyWallet.ChangeAmount(-price);
+        }
+        else
+        {
+            PublishViewState(ShopRefreshReason.Purchase);
+        }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
-        RemoveItemFromShop(itemIndex);
-        PublishViewState(ShopRefreshReason.Purchase);
     }
 
     private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
@@ -220,42 +240,39 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        currencyWallet?.ChangeAmount(-price);
         RecordShopPick(itemData);
+
+        MarkItemAsSoldOut(itemIndex);
+
+        if (currencyWallet != null)
+        {
+            currencyWallet.ChangeAmount(-price);
+        }
+        else
+        {
+            PublishViewState(ShopRefreshReason.Purchase);
+        }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
         NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
-        RemoveItemFromShop(itemIndex);
-        PublishViewState(ShopRefreshReason.Purchase);
     }
 
-    private void RemoveItemFromShop(int index)
+    private void MarkItemAsSoldOut(int index)
     {
         if (currentItems == null || index < 0 || index >= currentItems.Length)
         {
             return;
         }
 
-        ShopItemData[] nextItems = new ShopItemData[Mathf.Max(0, currentItems.Length - 1)];
-        int writeIndex = 0;
-        for (int i = 0; i < currentItems.Length; i++)
-        {
-            if (i == index)
-            {
-                continue;
-            }
-
-            nextItems[writeIndex++] = currentItems[i];
-        }
-
-        currentItems = nextItems;
+        currentItems[index].SoldOut = true;
+        currentItems[index].Lock = false;
     }
 
     public void RequestReroll()
     {
         if (TryConsumeFreeShopReroll())
         {
-            RerollShopItems();
+            RerollShopItems(trackAsPaidReroll: false);
             AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
             PublishViewState(ShopRefreshReason.Reroll);
             return;
@@ -269,21 +286,14 @@ public class ShopManager : MonoBehaviour
         }
 
         currencyWallet?.ChangeAmount(-currentRerollCost);
-        RerollShopItems();
-        AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
-        PublishViewState(ShopRefreshReason.Reroll);
-    }
-
-    private void OnVideoAdRerollRequested()
-    {
-        Debug.Log("Video ad reroll requested - implement ad integration here.");
-        RerollShopItems();
+        RerollShopItems(trackAsPaidReroll: true);
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishViewState(ShopRefreshReason.Reroll);
     }
 
     private void RefreshShopForWaveEntry()
     {
+        paidRerollCountThisWave = 0;
         if (currentItems == null || currentItems.Length == 0)
         {
             GenerateShopItems();
@@ -304,7 +314,7 @@ public class ShopManager : MonoBehaviour
 
         for (int i = 0; i < currentItems.Length && writeIndex < count; i++)
         {
-            if (!currentItems[i].Lock || currentItems[i].ItemData == null)
+            if (!currentItems[i].Lock || currentItems[i].SoldOut || currentItems[i].ItemData == null)
             {
                 continue;
             }
@@ -321,11 +331,15 @@ public class ShopManager : MonoBehaviour
         currentItems = nextItems;
     }
 
-    private void RerollShopItems()
+    private void RerollShopItems(bool trackAsPaidReroll)
     {
-        rerollCount++;
+        totalRerollCount++;
+        if (trackAsPaidReroll)
+        {
+            paidRerollCountThisWave++;
+        }
+
         shopRefreshCount++;
-        rerollCost = baseRerollCost + rerollCount;
 
         int count = Mathf.Max(1, containersToAdd);
         ShopItemData[] nextItems = new ShopItemData[count];
@@ -335,7 +349,7 @@ public class ShopManager : MonoBehaviour
         {
             for (int i = 0; i < currentItems.Length && writeIndex < count; i++)
             {
-                if (currentItems[i].Lock && currentItems[i].ItemData != null)
+                if (currentItems[i].Lock && !currentItems[i].SoldOut && currentItems[i].ItemData != null)
                 {
                     nextItems[writeIndex++] = currentItems[i];
                 }
@@ -442,6 +456,7 @@ public class ShopManager : MonoBehaviour
             ItemData = itemData,
             Level = ResolveShopItemLevel(itemData, rollItem),
             Lock = false,
+            SoldOut = false,
             ContentPriceMultiplier = ResolveShopPriceMultiplier(rollItem),
             RunPriceMultiplier = ResolveRunPriceMultiplier(),
             PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier(),
@@ -459,7 +474,7 @@ public class ShopManager : MonoBehaviour
             historyScope: scope,
             history: contentHistoryState,
             shopRefreshCount: shopRefreshCount,
-            shopRerollCount: rerollCount);
+            shopRerollCount: totalRerollCount);
     }
 
     private void RecordShopPick(ShopItemData itemData)
@@ -555,6 +570,11 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
+        if (currentItems[itemIndex].SoldOut)
+        {
+            return;
+        }
+
         currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
         print($"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}");
         PublishViewState(ShopRefreshReason.StateUpdate);
@@ -562,30 +582,63 @@ public class ShopManager : MonoBehaviour
 
     private void TryBindWallet()
     {
-        if (currencyWallet != null && propertiesManager != null)
-        {
-            return;
-        }
-
         if (player == null)
         {
             player = FindFirstObjectByType<Player>();
         }
 
-        if (player == null)
+        CurrencyWallet resolvedWallet = null;
+        if (player != null)
+        {
+            resolvedWallet = player.GetComponent<CurrencyWallet>();
+        }
+
+        if (resolvedWallet == null)
+        {
+            resolvedWallet = currencyWallet;
+        }
+
+        if (player != null && propertiesManager == null)
+        {
+            BindPropertiesManager(player.GetComponent<PropertiesManager>());
+        }
+
+        if (resolvedWallet != null)
+        {
+            BindCurrencyWallet(resolvedWallet);
+        }
+    }
+
+    private void BindCurrencyWallet(CurrencyWallet newCurrencyWallet)
+    {
+        UnbindCurrencyWallet();
+        currencyWallet = newCurrencyWallet;
+
+        if (currencyWallet != null)
+        {
+            currencyWallet.OnAmountChanged += OnCurrencyAmountChanged;
+            currentCurrency = currencyWallet.CurrentAmount;
+        }
+        else
+        {
+            currentCurrency = 0;
+        }
+
+        if (currentItems != null)
+        {
+            PublishViewState(ShopRefreshReason.StateUpdate);
+        }
+    }
+
+    private void UnbindCurrencyWallet()
+    {
+        if (currencyWallet == null)
         {
             return;
         }
 
-        if (currencyWallet == null)
-        {
-            currencyWallet = player.GetComponent<CurrencyWallet>();
-        }
-
-        if (propertiesManager == null)
-        {
-            BindPropertiesManager(player.GetComponent<PropertiesManager>());
-        }
+        currencyWallet.OnAmountChanged -= OnCurrencyAmountChanged;
+        currencyWallet = null;
     }
 
     private void OnShopFreeRerollsGranted(ShopFreeRerollsGrantedEvent eventData)
@@ -623,21 +676,11 @@ public class ShopManager : MonoBehaviour
             return true;
         }
 
-        if (player == null)
-        {
-            TryBindWallet();
-        }
-
         return player == null || player == eventPlayer;
     }
 
     private float ResolvePlayerDiscountMultiplier()
     {
-        if (propertiesManager == null)
-        {
-            TryBindWallet();
-        }
-
         float discount = propertiesManager != null
             ? PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.ShopPriceDiscount,
@@ -654,8 +697,22 @@ public class ShopManager : MonoBehaviour
 
     private int ResolveCurrentRerollCost()
     {
-        float runPriceMultiplier = ResolveRunPriceMultiplier();
-        return Mathf.Max(0, Mathf.RoundToInt(rerollCost * runPriceMultiplier));
+        // 刷新基础价由局内推进快照统一提供，不再保留 ShopManager 本地兜底字段。
+        float baseCost = RunProgressionRuntime.CurrentSnapshot.ShopRerollBasePrice;
+        float stepCost = ResolveCurrentWaveRerollStepCost();
+        float currentCost = baseCost + (paidRerollCountThisWave * stepCost);
+        return Mathf.Max(0, Mathf.RoundToInt(currentCost));
+    }
+
+    private float ResolveCurrentWaveRerollStepCost()
+    {
+        RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
+        if (snapshot.ShopRerollStepPrice > 0f)
+        {
+            return snapshot.ShopRerollStepPrice;
+        }
+
+        return DEFAULT_REROLL_STEP_COST;
     }
 
     private void BindPropertiesManager(PropertiesManager newPropertiesManager)

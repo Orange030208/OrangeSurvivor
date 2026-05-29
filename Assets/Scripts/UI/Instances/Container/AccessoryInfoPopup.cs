@@ -8,9 +8,9 @@ public class AccessoryInfoPopup : InventoryOperatePopupBase
         }
 
         nameText.text = resource.itemData.ItemName;
-        iconImage.sprite = resource.itemData.Icon;
+        iconImage.sprite = resource.itemData.ItemIcon;
         RenderItemQuality(resource.itemData, resource.colorDependencyNumber);
-        bottom.Display(resource.describable);
+        DisplayDocument(resource.infoSource);
         CleanClickEvent();
     }
 }

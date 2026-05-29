@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.31764707}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -165,6 +165,8 @@ GameObject:
   - component: {fileID: 1127573995826686692}
   - component: {fileID: 1127573995826686693}
   - component: {fileID: 1127573995826686683}
+  - component: {fileID: 1127573995826686684}
+  - component: {fileID: 1127573995826686685}
   m_Layer: 5
   m_Name: Mobile Joystick Zone
   m_TagString: Untagged
@@ -190,8 +192,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -583.87}
-  m_SizeDelta: {x: 0, y: -1167.7}
+  m_AnchoredPosition: {x: 0, y: -299.99997}
+  m_SizeDelta: {x: 1024, y: -67.99994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1127573995826686692
 CanvasRenderer:
@@ -214,7 +216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.2}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -260,6 +262,35 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!225 &1127573995826686684
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127573995826686695}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1127573995826686685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127573995826686695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2ebc3dd8ef4fdf8c7f53ee51f3ed96, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  moveJoystick: {fileID: 1127573996609057480}
+  platformProfiles:
+  - {fileID: 11400000, guid: 3ff125093bcfb834299ddd778a2e0717, type: 2}
+  - {fileID: 11400000, guid: d107c85018da6f64590cd9cfe04e8c5f, type: 2}
+  - {fileID: 11400000, guid: deddce32587c3054f8fec5160809ded3, type: 2}
 --- !u!1 &1127573996609057482
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +326,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 583.87006}
+  m_AnchoredPosition: {x: -716, y: -6}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1127573996609057480
@@ -310,6 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cae9f43156cf514cbc5dde262f97d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputRoot: {fileID: 1127573995826686695}
   joystickOutline: {fileID: 1127573995357375090}
   joystickKnob: {fileID: 1127573995105584541}
   moveFactor: 540

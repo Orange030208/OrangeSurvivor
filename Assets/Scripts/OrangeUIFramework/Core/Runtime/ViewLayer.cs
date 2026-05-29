@@ -10,6 +10,7 @@ namespace Orange.UIFramework
         Modal,
         Tooltip,
         System,
-        Debug
+        Debug,
+        Toast
     }
 }

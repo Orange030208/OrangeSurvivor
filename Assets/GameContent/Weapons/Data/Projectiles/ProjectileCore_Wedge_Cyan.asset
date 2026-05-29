@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f21ea603ecfe74f8c2bbd0188a6bbc, type: 3}
+  m_Name: ProjectileCore_Wedge_Cyan
+  m_EditorClassIdentifier: 
+  id: ProjectileCore_Wedge_Cyan
+  displayName: Projectile Core Wedge Cyan
+  projectilePrefab: {fileID: 341816729667929756, guid: d19f6981a9202da438f19c702864048d, type: 3}
+  damageMultiplier: 1
+  speedMultiplier: 1
+  lifetimeMultiplier: 1
+  scaleMultiplier: 1
+  sprite: {fileID: 100000008, guid: d6d82f0037e0b5170cf4e0c9cf006ebf, type: 3}
+  animatorController: {fileID: 0}
+  material: {fileID: 0}
+  sortingOrder: 0
+  icon: {fileID: 0}
+  debugColor: {r: 0.24, g: 0.91, b: 1, a: 1}
+  launchSfxKey: 0
+  launchVfxPrefab: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  useDirectionFacing: 1
+  rotationOffset: 0
+  launchAnimationTrigger: 

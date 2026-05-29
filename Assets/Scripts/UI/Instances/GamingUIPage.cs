@@ -14,15 +14,12 @@ public class GamingUIPage : PageBase
     [SerializeField] private PlayerHealthPanel playerHealthPanel;
     [SerializeField] private PlayerExperiencePanel playerExperiencePanel;
     [SerializeField] private Button menuButton;
-    [SerializeField] private MobileJoystick moveJoystick;
     [SerializeField] private BuffBarUI buffBarUI;
 
     private GamingPageContext currentContext;
-    private IPlayerMoveInputReceiver moveInputReceiver;
     private PlayerLevel playerLevel;
+    private CurrencyWallet currencyWallet;
     private bool hudEventsBound;
-
-    public override bool RequiresTick => true;
 
     protected override void Awake()
     {
@@ -35,7 +32,6 @@ public class GamingUIPage : PageBase
         currentContext = context.GetPayload<GamingPageContext>()
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
-        BindInput(currentContext.Player);
         BindHud(currentContext);
         GameInput input = GameInput.Instance;
         if (input != null)
@@ -48,7 +44,6 @@ public class GamingUIPage : PageBase
 
     protected override void OnClosed(CloseReason reason)
     {
-        UnbindInput();
         UnbindHud();
         GameInput input = GameInput.Instance;
         if (input != null)
@@ -60,40 +55,12 @@ public class GamingUIPage : PageBase
         currentContext = null;
     }
 
-    protected override void OnTick(float deltaTime)
-    {
-        moveInputReceiver?.SetMoveInput(ReadMoveDirection());
-    }
-
     private void OnPauseClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         GameEventBus.Publish(new PauseGameRequestedEvent());
     }
 
-    private void BindInput(Player player)
-    {
-        moveInputReceiver = player != null ? player.GetComponent<IPlayerMoveInputReceiver>() : null;
-        moveInputReceiver?.SetMoveInput(Vector2.zero);
-    }
-
-    private void UnbindInput()
-    {
-        moveInputReceiver?.SetMoveInput(Vector2.zero);
-        moveInputReceiver = null;
-    }
-
-    private Vector2 ReadMoveDirection()
-    {
-        GameInput input = GameInput.Instance;
-        Vector2 inputMove = input != null ? input.Move : Vector2.zero;
-        if (inputMove.sqrMagnitude > 0.0001f)
-        {
-            return Vector2.ClampMagnitude(inputMove, 1f);
-        }
-
-        return moveJoystick != null ? moveJoystick.GetMoveDirection() : Vector2.zero;
-    }
 
     private void BindHud(GamingPageContext context)
     {
@@ -106,22 +73,22 @@ public class GamingUIPage : PageBase
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
         GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
         GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
-        GameEventBus.Subscribe<CurrencyChangedEvent>(OnCurrencyChanged);
         hudEventsBound = true;
 
         BindPlayerHud(context.Player);
-        RefreshCurrencyDisplay(context.CurrencyWallet);
+        BindCurrencyWallet(context.CurrencyWallet);
         ApplyWaveHud(context.WaveHudViewData);
     }
 
     private void UnbindHud()
     {
+        UnbindCurrencyWallet();
+
         if (hudEventsBound)
         {
             GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
             GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
             GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
-            GameEventBus.Unsubscribe<CurrencyChangedEvent>(OnCurrencyChanged);
             hudEventsBound = false;
         }
 
@@ -158,9 +125,33 @@ public class GamingUIPage : PageBase
         playerLevel = null;
     }
 
-    private void OnCurrencyChanged(CurrencyChangedEvent eventData)
+    private void OnCurrencyAmountChanged(int currentAmount, int changeAmount)
     {
-        RefreshCurrencyDisplay(eventData.Wallet);
+        RefreshCurrencyDisplay(currencyWallet);
+    }
+
+    private void BindCurrencyWallet(CurrencyWallet newCurrencyWallet)
+    {
+        UnbindCurrencyWallet();
+        currencyWallet = newCurrencyWallet;
+
+        if (currencyWallet != null)
+        {
+            currencyWallet.OnAmountChanged += OnCurrencyAmountChanged;
+        }
+
+        RefreshCurrencyDisplay(currencyWallet);
+    }
+
+    private void UnbindCurrencyWallet()
+    {
+        if (currencyWallet == null)
+        {
+            return;
+        }
+
+        currencyWallet.OnAmountChanged -= OnCurrencyAmountChanged;
+        currencyWallet = null;
     }
 
     private void RefreshCurrencyDisplay(CurrencyWallet wallet)
@@ -246,7 +237,5 @@ public class GamingUIPage : PageBase
         {
             throw new MissingReferenceException($"{nameof(GamingUIPage)} '{name}' is missing buff bar UI.");
         }
-
-        // Mobile joystick is optional on PC builds; GameInput is the primary input source.
     }
 }

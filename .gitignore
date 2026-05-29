@@ -70,6 +70,8 @@ obj.meta
 .Spotlight-V100
 .Trashes
 Icon?
+!Assets/GameContent/Weapons/Sprites/Icons/
+!Assets/GameContent/Weapons/Sprites/Icons/**
 !Assets/GameContent/UI/Sprites/Icons/
 Assets/GameContent/UI/Sprites/Icons/*
 !Assets/GameContent/UI/Sprites/Icons/Armor.png

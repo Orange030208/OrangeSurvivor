@@ -25,6 +25,8 @@ public sealed class RunProgressionProfileSO : ScriptableObject
     [Header("经济曲线")]
     [SerializeField] private AnimationCurve economyByWave = CreateEconomyCurve();
     [SerializeField] private AnimationCurve shopPriceMultiplierByWave = CreateShopPriceCurve();
+    [SerializeField] private AnimationCurve shopRerollBasePriceByWave = CreateShopRerollBasePriceCurve();
+    [SerializeField] private AnimationCurve shopRerollStepPriceByWave = CreateShopRerollStepPriceCurve();
     [SerializeField, Min(0f)] private float endlessEconomyMultiplierPerLoop = 1.1f;
     [SerializeField, Min(0f)] private float endlessShopPriceMultiplierPerLoop = 1.16f;
 
@@ -52,12 +54,17 @@ public sealed class RunProgressionProfileSO : ScriptableObject
         float difficulty = Mathf.Max(0f, EvaluateSafe(difficultyByWave, authoredT, 1f));
         float economy = Mathf.Max(0f, EvaluateSafe(economyByWave, authoredT, 1f));
         float shopPrice = Mathf.Max(0f, EvaluateSafe(shopPriceMultiplierByWave, authoredT, 1f));
+        float shopRerollBasePrice = Mathf.Max(0f, EvaluateSafe(shopRerollBasePriceByWave, authoredT, 5f));
+        float shopRerollStepPrice = Mathf.Max(0f, EvaluateSafe(shopRerollStepPriceByWave, authoredT, 1f));
 
         if (endlessProgress > 0f)
         {
             difficulty *= Mathf.Pow(Mathf.Max(0f, endlessDifficultyMultiplierPerLoop), endlessProgress);
             economy *= Mathf.Pow(Mathf.Max(0f, endlessEconomyMultiplierPerLoop), endlessProgress);
             shopPrice *= Mathf.Pow(Mathf.Max(0f, endlessShopPriceMultiplierPerLoop), endlessProgress);
+            float endlessShopRerollMultiplier = Mathf.Pow(Mathf.Max(0f, endlessShopPriceMultiplierPerLoop), endlessProgress);
+            shopRerollBasePrice *= endlessShopRerollMultiplier;
+            shopRerollStepPrice *= endlessShopRerollMultiplier;
         }
 
         int dangerTier = ResolveDangerTier(safeWave, authoredCount, endlessLoop);
@@ -69,6 +76,8 @@ public sealed class RunProgressionProfileSO : ScriptableObject
             difficulty,
             economy,
             shopPrice,
+            shopRerollBasePrice,
+            shopRerollStepPrice,
             dangerTier);
     }
 
@@ -107,6 +116,11 @@ public sealed class RunProgressionProfileSO : ScriptableObject
         endlessDifficultyMultiplierPerLoop = Mathf.Max(0f, endlessDifficultyMultiplierPerLoop);
         endlessEconomyMultiplierPerLoop = Mathf.Max(0f, endlessEconomyMultiplierPerLoop);
         endlessShopPriceMultiplierPerLoop = Mathf.Max(0f, endlessShopPriceMultiplierPerLoop);
+        difficultyByWave = EnsureCurve(difficultyByWave, CreateDifficultyCurve());
+        economyByWave = EnsureCurve(economyByWave, CreateEconomyCurve());
+        shopPriceMultiplierByWave = EnsureCurve(shopPriceMultiplierByWave, CreateShopPriceCurve());
+        shopRerollBasePriceByWave = EnsureCurve(shopRerollBasePriceByWave, CreateShopRerollBasePriceCurve());
+        shopRerollStepPriceByWave = EnsureCurve(shopRerollStepPriceByWave, CreateShopRerollStepPriceCurve());
         enemyPropScaleCurves = NormalizePropScaleCurves(enemyPropScaleCurves, CreateDefaultEnemyPropScaleCurves());
         bossPropMultipliers = NormalizePropMultipliers(bossPropMultipliers, CreateDefaultBossPropMultipliers());
         tagPressureRules = NormalizeTagPressureRules(tagPressureRules, CreateDefaultTagPressureRules());
@@ -241,6 +255,17 @@ public sealed class RunProgressionProfileSO : ScriptableObject
                 curve.MoveKey(i, key);
             }
         }
+    }
+
+    private static AnimationCurve EnsureCurve(AnimationCurve curve, AnimationCurve fallback)
+    {
+        if (curve == null || curve.length == 0)
+        {
+            return fallback;
+        }
+
+        ClampCurveValuesNonNegative(curve);
+        return curve;
     }
 
     private static int ResolveDangerTier(int waveNumber, int authoredWaveCount, int endlessLoop)
@@ -390,5 +415,25 @@ public sealed class RunProgressionProfileSO : ScriptableObject
             new Keyframe(0.47f, 1.45f),
             new Keyframe(0.74f, 1.85f),
             new Keyframe(1f, 2.3f));
+    }
+
+    private static AnimationCurve CreateShopRerollBasePriceCurve()
+    {
+        return new AnimationCurve(
+            new Keyframe(0f, 5f),
+            new Keyframe(0.21f, 6f),
+            new Keyframe(0.47f, 8f),
+            new Keyframe(0.74f, 11f),
+            new Keyframe(1f, 15f));
+    }
+
+    private static AnimationCurve CreateShopRerollStepPriceCurve()
+    {
+        return new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(0.21f, 2f),
+            new Keyframe(0.47f, 3f),
+            new Keyframe(0.74f, 4f),
+            new Keyframe(1f, 5f));
     }
 }

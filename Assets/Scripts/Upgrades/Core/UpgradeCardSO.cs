@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Upgrade Card", menuName = ScriptableObjectMenuPaths.UPGRADE_CARD, order = 0)]
-public class UpgradeCardSO : ScriptableObject, IDescribable
+public class UpgradeCardSO : ScriptableObject, IInfoDocumentSource
 {
     public const int UNLIMITED_PICK_COUNT = 0;
 
@@ -82,13 +82,9 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
             hasPickLimit);
     }
 
-    public IEnumerable<DescriptorInfo> GetExtraInfos()
+    public InfoDocument BuildInfoDocument()
     {
-        return ItemDescriptionUtility.BuildDescriptorInfos(
-            ShouldUseManualDescription() ? description : null,
-            null,
-            specialFeatures,
-            BuildMetaInfos());
+        return new UpgradeCardInfoBuilder().Build(this);
     }
 
     private string BuildDescription()
@@ -104,17 +100,6 @@ public class UpgradeCardSO : ScriptableObject, IDescribable
     private bool ShouldUseManualDescription()
     {
         return !HasAnyEffect() && !string.IsNullOrWhiteSpace(description);
-    }
-
-    private IEnumerable<DescriptorInfo> BuildMetaInfos()
-    {
-        yield return new DescriptorInfo("品质", ItemDescriptionUtility.FormatRarity(rarity));
-
-        string tagText = ItemDescriptionUtility.JoinUpgradeCardTags(tags, int.MaxValue);
-        if (!string.IsNullOrWhiteSpace(tagText))
-        {
-            yield return new DescriptorInfo("标签", tagText);
-        }
     }
 
     private static UpgradeCardTag ToTagMask(IReadOnlyList<UpgradeCardTag> source)

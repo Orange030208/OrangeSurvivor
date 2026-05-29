@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b89ccba8748b48bf805e70825310d3eb, type: 3}
+  m_Name: CyberOrangeRangedEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 2271194562792166508, guid: 5df57c3773a4710479b509be5aef3112, type: 3}
+  role: 0
+  basePropsAsset: {fileID: 11400000, guid: ff34a11329b029d4bb3b9cb04bd9a755, type: 2}
+  animConfig: {fileID: 11400000, guid: 11d7279f6920491c9aec0ee9f69d7741, type: 2}
+  damagedSfxKey: 400
+  normalAttackAction:
+    actionId: FlyForest_NormalAttack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.578
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  normalAttackCommitNormalizedTime: 0.578
+  normalAttackSpeedBenefitRatio: 1
+  normalAttackProjectileDefinition: {fileID: 11400000, guid: 566b3918b0593724d97eb7400d18e1c5, type: 2}

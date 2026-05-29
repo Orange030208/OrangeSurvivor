@@ -10,7 +10,7 @@ public sealed class UpgradeRewardCardPresenter
             viewData.CardId,
             viewData.Title,
             viewData.Description,
-            CardQualityResolver.FromUpgradeCardRarity(viewData.Rarity),
+            ContentTierResolver.FromUpgradeCardRarity(viewData.Rarity),
             BuildTagLabels(viewData.Tags),
             card != null);
     }

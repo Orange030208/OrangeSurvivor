@@ -104,6 +104,7 @@ public class MenuUIPage : PageBase
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+        ResetMenuEntryMotions();
         settingsPanelHandle = await OwnerUIManager.ShowPopupAsync<SettingsPanelManager>(
             new SettingsPanelManager.Context(OwnerUIManager),
             CreateSettingsPopupOptions(),
@@ -142,6 +143,7 @@ public class MenuUIPage : PageBase
     {
         return new PopupOptions(
             closeOnOutsideClick: false,
+            showBackdrop: true,
             groupId: "settings",
             replaceSameGroup: true,
             trackInStack: true);
@@ -175,7 +177,8 @@ public class MenuUIPage : PageBase
             ResolveButtonMotion(startButton),
             ResolveButtonMotion(continueButton),
             ResolveButtonMotion(codexButton),
-            ResolveButtonMotion(quitButton)
+            ResolveButtonMotion(quitButton),
+            ResolveButtonMotion(settingsButton)
         };
     }
 

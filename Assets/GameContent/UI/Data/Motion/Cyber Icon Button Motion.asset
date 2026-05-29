@@ -93,6 +93,9 @@ MonoBehaviour:
     - rid: 890410000000000029
     - rid: 890410000000000030
     - rid: 890410000000000031
+    - rid: 890410000000000032
+    - rid: 890410000000000033
+    - rid: 890410000000000034
   references:
     version: 2
     RefIds:
@@ -409,7 +412,7 @@ MonoBehaviour:
       data:
         targetKey: Self
         startDelay: 0
-        duration: 0.16
+        duration: 0.08
         ease: 27
         fromMode: 0
         fromValue: {x: 1, y: 1, z: 1}
@@ -420,7 +423,7 @@ MonoBehaviour:
       data:
         targetKey: Icon
         startDelay: 0
-        duration: 0.16
+        duration: 0.08
         ease: 27
         fromMode: 0
         fromValue: {x: 0, y: 0, z: 0}
@@ -437,3 +440,36 @@ MonoBehaviour:
         fromValue: {r: 1, g: 1, b: 1, a: 1}
         toMode: 2
         toValue: {r: 1, g: 0.12, b: 0.85, a: 1}
+    - rid: 890410000000000032
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Self
+        startDelay: 0.08
+        duration: 0.08
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 890410000000000033
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Icon
+        startDelay: 0.08
+        duration: 0.08
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 890410000000000034
+      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      data:
+        targetKey: Icon
+        startDelay: 0.08
+        duration: 0.06
+        ease: 8
+        fromMode: 0
+        fromValue: {r: 1, g: 1, b: 1, a: 1}
+        toMode: 1
+        toValue: {r: 1, g: 1, b: 1, a: 1}

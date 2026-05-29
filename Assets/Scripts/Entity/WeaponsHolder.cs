@@ -26,7 +26,7 @@ public class WeaponsHolder : EntityComponentBase
     [Tooltip("由武器容器显式决定这些武器默认攻击哪些层。")]
     [SerializeField] private LayerMask targetLayerMask;
 
-    private readonly List<EquippedWeaponInfo> equippedWeapons = new();
+    private readonly List<Weapon> equippedWeapons = new();
     private readonly List<WeaponPosition> weaponPositionPool = new();
     private readonly Dictionary<string, WeaponBenefitData> weaponBenefitModifierSources = new();
     private WeaponBenefitData currentWeaponBenefitBonus = WeaponBenefitData.Zero;
@@ -34,7 +34,7 @@ public class WeaponsHolder : EntityComponentBase
 
     public event Action OnWeaponBenefitBonusChanged;
     public event Action OnWeaponsChanged;
-    public IReadOnlyList<EquippedWeaponInfo> EquippedWeapons => equippedWeapons.AsReadOnly();
+    public IReadOnlyList<Weapon> EquippedWeapons => equippedWeapons.AsReadOnly();
     public int WeaponSlotCount => weaponPositions?.Length ?? 0;
     public WeaponBenefitData CurrentWeaponBenefitBonus => currentWeaponBenefitBonus;
 
@@ -669,25 +669,7 @@ public class WeaponsHolder : EntityComponentBase
                 continue;
             }
 
-            equippedWeapons.Add(new EquippedWeaponInfo(weapon.WeaponData, weapon.Level, weapon));
+            equippedWeapons.Add(weapon);
         }
-    }
-}
-
-/// <summary>
-/// 已装备武器快照。
-/// UI、背包面板或调试面板可以读取它，而不直接依赖具体的 WeaponPosition。
-/// </summary>
-public readonly struct EquippedWeaponInfo
-{
-    public WeaponDataSO WeaponData { get; }
-    public int Level { get; }
-    public Weapon RuntimeWeapon { get; }
-
-    public EquippedWeaponInfo(WeaponDataSO weaponData, int level, Weapon runtimeWeapon)
-    {
-        WeaponData = weaponData;
-        Level = level;
-        RuntimeWeapon = runtimeWeapon;
     }
 }

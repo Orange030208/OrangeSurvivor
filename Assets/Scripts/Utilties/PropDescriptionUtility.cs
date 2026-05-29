@@ -145,9 +145,8 @@ public static class PropDescriptionUtility
 
     private static string FormatSignedDistance(PropType propType, float value)
     {
-        float worldUnits = PropValueUtility.DistancePointsToWorldUnits(value);
-        string formatted = worldUnits.ToString("0.##");
-        string suffix = propType == PropType.MoveSpeed ? "格/秒" : "格";
+        string formatted = value.ToString("0.##");
+        string suffix = propType == PropType.MoveSpeed ? "/秒" : string.Empty;
         return value > 0 ? $"+{formatted}{suffix}" : $"{formatted}{suffix}";
     }
 }

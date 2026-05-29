@@ -160,7 +160,7 @@ public static class GameContentCatalogBuildUtility
             ContentPoolEntry entry = new(accessory, DefaultAccessoryWeight, accessory.AccessoryId);
             entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
             {
-                new QualityMetadata(accessory.Rarity)
+                new QualityMetadata(ContentTierResolver.FromAccessoryRarity(accessory.RarityGrade))
             });
             entry.ConfigureRuntimeRules(
                 new ContentCondition[] { new AccessoryOwnedLimitCondition() },

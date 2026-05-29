@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -24,6 +25,10 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Tilemap wallTilemap;
 
+    [Header("配置化生成")]
+    [SerializeField] private MapGenerationProfileSO generationProfile;
+    [SerializeField] private List<MapLayerTilemapBinding> layerTilemapBindings = new();
+
     [Header("瓦片资源")]
     [SerializeField] private TileBase groundTile;
     [SerializeField] private TileBase wallTile;
@@ -32,10 +37,13 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private bool fillWalls = true;
 
     private bool hasGenerated;
+    private int runtimeMapWidth;
+    private int runtimeMapHeight;
+    private float runtimeCellSize;
 
     public static bool HasRuntimeBounds => hasRuntimeBounds;
     public static Bounds RuntimeBounds => runtimeBounds;
-    public Vector2 MapSize => new(mapWidth * cellSize, mapHeight * cellSize);
+    public Vector2 MapSize => new(ResolveRuntimeMapWidth() * ResolveRuntimeCellSize(), ResolveRuntimeMapHeight() * ResolveRuntimeCellSize());
 
     public void GenerateIfNeeded()
     {
@@ -83,9 +91,18 @@ public class MapGenerator : MonoBehaviour
 
     private void BuildRuntimeMap()
     {
+        if (generationProfile != null)
+        {
+            BuildConfiguredRuntimeMap();
+            return;
+        }
+
         mapWidth = Mathf.Max(1, mapWidth);
         mapHeight = Mathf.Max(1, mapHeight);
         cellSize = Mathf.Max(0.1f, cellSize);
+        runtimeMapWidth = mapWidth;
+        runtimeMapHeight = mapHeight;
+        runtimeCellSize = cellSize;
 
         if (targetGrid != null)
         {
@@ -104,6 +121,53 @@ public class MapGenerator : MonoBehaviour
         {
             wallTilemap.CompressBounds();
         }
+    }
+
+    private void BuildConfiguredRuntimeMap()
+    {
+        if (generationProfile == null)
+        {
+            throw new MissingReferenceException($"{nameof(MapGenerator)} cannot build configured runtime map without a {nameof(MapGenerationProfileSO)}.");
+        }
+
+        MapGenerationPipeline pipeline = new();
+        MapGenerationRequest request = generationProfile.CreateRequest();
+        List<MapLayerTilemapBinding> effectiveBindings = CreateEffectiveLayerTilemapBindings();
+        MapGenerationValidationResult validation = MapGenerationValidator.ValidateProfile(
+            generationProfile,
+            layerId => MapTilemapPainter.HasTilemapBinding(effectiveBindings, layerId));
+
+        if (!validation.IsValid)
+        {
+            throw new MissingReferenceException($"Map generation profile '{generationProfile.name}' is invalid:\n{validation.Format()}");
+        }
+
+        MapGenerationResult result = pipeline.Generate(request);
+        if (!result.Success)
+        {
+            throw new MissingReferenceException($"Map generation failed for profile '{generationProfile.name}': {result.FailureReason}");
+        }
+
+        runtimeMapWidth = generationProfile.mapWidth;
+        runtimeMapHeight = generationProfile.mapHeight;
+        runtimeCellSize = generationProfile.cellSize;
+
+        if (targetGrid != null)
+        {
+            targetGrid.cellSize = new Vector3(runtimeCellSize, runtimeCellSize, 1f);
+        }
+
+        if (groundTilemap != null)
+        {
+            groundTilemap.ClearAllTiles();
+        }
+
+        if (wallTilemap != null)
+        {
+            wallTilemap.ClearAllTiles();
+        }
+
+        MapTilemapPainter.Paint(result, generationProfile, effectiveBindings);
     }
 
     private void FillGroundTiles()
@@ -356,6 +420,11 @@ public class MapGenerator : MonoBehaviour
         {
             wallTilemap.ClearAllTiles();
         }
+
+        if (generationProfile != null)
+        {
+            MapTilemapPainter.ClearBindings(layerTilemapBindings);
+        }
     }
 
     private void PublishRuntimeBounds()
@@ -367,6 +436,12 @@ public class MapGenerator : MonoBehaviour
 
     private void ValidateReferences()
     {
+        if (generationProfile != null)
+        {
+            ValidateConfiguredReferences();
+            return;
+        }
+
         if (groundTilemap == null)
         {
             throw new MissingReferenceException($"{nameof(MapGenerator)} requires a ground {nameof(Tilemap)} from the map prefab.");
@@ -388,6 +463,23 @@ public class MapGenerator : MonoBehaviour
             {
                 throw new MissingReferenceException($"{nameof(MapGenerator)} requires a wall {nameof(TileBase)} assignment or a {nameof(MapGroundThemeSO)} with a wall fallback tile when wall filling is enabled.");
             }
+        }
+    }
+
+    private void ValidateConfiguredReferences()
+    {
+        if (generationProfile == null)
+        {
+            throw new MissingReferenceException($"{nameof(MapGenerator)} requires a {nameof(MapGenerationProfileSO)} for configured generation.");
+        }
+
+        List<MapLayerTilemapBinding> effectiveBindings = CreateEffectiveLayerTilemapBindings();
+        MapGenerationValidationResult validation = MapGenerationValidator.ValidateProfile(
+            generationProfile,
+            layerId => MapTilemapPainter.HasTilemapBinding(effectiveBindings, layerId));
+        if (!validation.IsValid)
+        {
+            throw new MissingReferenceException($"Map generation profile '{generationProfile.name}' is invalid:\n{validation.Format()}");
         }
     }
 
@@ -414,6 +506,59 @@ public class MapGenerator : MonoBehaviour
     private bool HasStyledGroundTheme()
     {
         return groundTheme != null && groundTheme.HasGroundTiles;
+    }
+
+    private List<MapLayerTilemapBinding> CreateEffectiveLayerTilemapBindings()
+    {
+        List<MapLayerTilemapBinding> effectiveBindings = new();
+        if (layerTilemapBindings != null)
+        {
+            for (int i = 0; i < layerTilemapBindings.Count; i++)
+            {
+                MapLayerTilemapBinding binding = layerTilemapBindings[i];
+                if (binding == null)
+                {
+                    continue;
+                }
+
+                effectiveBindings.Add(binding);
+            }
+        }
+
+        if (!MapTilemapPainter.HasTilemapBinding(effectiveBindings, "Ground") && groundTilemap != null)
+        {
+            effectiveBindings.Add(new MapLayerTilemapBinding
+            {
+                layerId = "Ground",
+                tilemap = groundTilemap
+            });
+        }
+
+        if (!MapTilemapPainter.HasTilemapBinding(effectiveBindings, "Wall") && wallTilemap != null)
+        {
+            effectiveBindings.Add(new MapLayerTilemapBinding
+            {
+                layerId = "Wall",
+                tilemap = wallTilemap
+            });
+        }
+
+        return effectiveBindings;
+    }
+
+    private int ResolveRuntimeMapWidth()
+    {
+        return runtimeMapWidth > 0 ? runtimeMapWidth : mapWidth;
+    }
+
+    private int ResolveRuntimeMapHeight()
+    {
+        return runtimeMapHeight > 0 ? runtimeMapHeight : mapHeight;
+    }
+
+    private float ResolveRuntimeCellSize()
+    {
+        return runtimeCellSize > 0f ? runtimeCellSize : cellSize;
     }
 
     private void OnValidate()

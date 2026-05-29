@@ -168,6 +168,7 @@ namespace Orange.UIFramework
                 ViewKind.Popup => view is PopupBase,
                 ViewKind.Modal => IsModalType(viewType),
                 ViewKind.Tooltip => view is TooltipBase,
+                ViewKind.Toast => view is ToastBase,
                 _ => false
             };
 

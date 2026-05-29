@@ -9,6 +9,7 @@ public class ShopPropertiesPanel : ViewPartBase
     [SerializeField] private Describer propertiesDescriber;
 
     private IUIRuntimeMotion motion;
+    private readonly InfoDocumentService infoDocumentService = new();
     private PropertiesManager propertiesManager;
     private bool visible;
     private bool eventsBound;
@@ -91,7 +92,19 @@ public class ShopPropertiesPanel : ViewPartBase
 
     private void RefreshPropertiesDisplay()
     {
-        propertiesDescriber.Display(propertiesManager);
+        if (propertiesManager == null)
+        {
+            propertiesDescriber.Display((InfoDocument)null);
+            return;
+        }
+
+        if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
+        {
+            propertiesDescriber.Display(document);
+            return;
+        }
+
+        propertiesDescriber.Display((InfoDocument)null);
     }
 
     private void SetVisible(bool value)

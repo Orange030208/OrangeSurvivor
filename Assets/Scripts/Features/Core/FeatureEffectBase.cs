@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public interface IFeature
@@ -12,7 +11,7 @@ public interface IFeature
 }
 
 [Serializable]
-public abstract class FeatureBase : IFeature, IDescribable
+public abstract class FeatureBase : IFeature
 {
     public FeatureContext Context { get; set; }
     public string SourceId { get; set; }
@@ -27,10 +26,6 @@ public abstract class FeatureBase : IFeature, IDescribable
     public virtual string Title { get; set; }
     public virtual Sprite Icon { get; set; }
     public virtual string Description { get; set; }
-    public virtual IEnumerable<DescriptorInfo> GetExtraInfos()
-    {
-        return new List<DescriptorInfo>();
-    }
 
     public virtual FeatureBase CreateRuntimeCopy()
     {

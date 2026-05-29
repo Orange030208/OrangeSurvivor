@@ -10,6 +10,7 @@ OrangeUIFramework 是一个面向 Unity UGUI 的运行时 UI 管理框架，用�
 - `Popup`：局部浮层、操作菜单、信息面板等轻量 UI。
 - `Modal`：阻塞式弹窗，通常需要返回确认、取消或其他结果。
 - `Tooltip`：瞬态提示，通常跟随鼠标、触摸点或锚点。
+- `Toast`：全局轻提示，自动关闭，顺序排队显示。
 - `ViewPart`：页面内部子组件，不进入全局 UI 栈。
 
 框架核心能力：
@@ -18,9 +19,9 @@ OrangeUIFramework 是一个面向 Unity UGUI 的运行时 UI 管理框架，用�
 - 根据配置创建 UI 层级。
 - 通过 Catalog 注册和实例化全局 View。
 - 托管 View 打开、关闭、替换、重置、回收。
-- 管理 PageStack、PopupStack、ModalStack 和当前 Tooltip。
+- 管理 PageStack、PopupStack、ModalStack、当前 Tooltip 和 Toast 队列。
 - 管理输入焦点、射线阻挡、Modal 遮罩、Popup 外部点击关闭。
-- 统一处理 Popup 和 Tooltip 的锚点定位、屏幕点定位、自动翻转和边缘裁剪。
+- 统一处理 Popup、Tooltip 和 Toast 的锚点定位、屏幕点定位、自动翻转和边缘裁剪。
 - 支持 UniTask 异步流程。
 - 支持 DOTween / UIMotion 进入退出动画。
 - 支持对象池复用。
@@ -127,6 +128,7 @@ Orange.UIFramework
 - `PopupBase`
 - `ModalBase<TResult>`
 - `TooltipBase`
+- `ToastBase`
 - `ViewPartBase`
 - `ViewHandle`
 - `OpenContext`
@@ -209,6 +211,14 @@ UniTask<ViewHandle<TTooltip>> ShowTooltipAsync<TTooltip>(
     CancellationToken cancellationToken = default)
     where TTooltip : TooltipBase;
 
+UniTask<ViewHandle<TToast>> ShowToastAsync<TToast>(
+    object payload = null,
+    ToastOptions options = default,
+    CancellationToken cancellationToken = default)
+    where TToast : ToastBase;
+
+UniTask ClearToastsAsync(CancellationToken cancellationToken = default);
+
 void UpdateTooltipPosition(Vector2 screenPosition);
 void HideTooltip();
 bool IsOpen<TView>() where TView : ViewBase;
@@ -274,7 +284,22 @@ Cancel(CloseReason.Cancel);
 - 长按提示。
 - 跟随指针的说明面板。
 
-### 5.8 ViewPartBase
+### 5.8 ToastBase
+
+`ToastBase` 用于全局轻提示。Toast 默认非交互、不阻挡射线、自动关闭；默认从顶部居中附近出现；同一时间只显示一条，后续 `ShowToastAsync` 请求进入队列，当前 Toast 关闭或到达 `ToastOptions.DurationSeconds` 后再显示下一条。
+
+`ToastOptions.DisplayMode` 支持两种模式：
+
+- `Queue`：默认排队显示。
+- `ReplaceCurrent`：立即取消当前 Toast，并清空等待队列后显示新 Toast。
+
+适合：
+
+- 保存成功、设置已应用等短文本反馈。
+- 奖励获得、资源变化等不需要用户确认的提示。
+- 不应打断 Page、Popup 或 Modal 输入焦点的全局提示。
+
+### 5.9 ViewPartBase
 
 `ViewPartBase` 用于页面内部子组件。它不进入 Catalog，也不由 `UIManager` 全局打开。
 
@@ -303,7 +328,8 @@ public enum ViewKind
     Popup,
     Modal,
     Tooltip,
-    Part
+    Part,
+    Toast
 }
 ```
 
@@ -314,6 +340,7 @@ public enum ViewKind
 - `Modal`：全局阻塞弹窗，进入 ModalStack。
 - `Tooltip`：全局提示，通常唯一。
 - `Part`：内部组件，不允许注册到 Catalog。
+- `Toast`：全局轻提示，进入 Toast 队列，不进入返回栈。
 
 ### 6.2 ViewLayer
 
@@ -328,7 +355,8 @@ public enum ViewLayer
     Modal,
     Tooltip,
     System,
-    Debug
+    Debug,
+    Toast
 }
 ```
 
@@ -343,10 +371,12 @@ public enum ViewLayer
 | `ModalMask` | Modal 遮罩 | 300 |
 | `Modal` | Modal 内容 | 320 |
 | `Tooltip` | Tooltip | 500 |
+| `Toast` | 全局轻提示 | 600 |
 | `System` | 系统级 UI | 700 |
 | `Debug` | 调试 UI | 900 |
 
 实际层级由 `UIFrameworkSettings.Layers` 决定。
+`Toast` 枚举值为保持既有 Unity 序列化稳定而追加在末尾；默认配置通过 `SortingOrder = 600` 将 Toast 层放在 Tooltip 与 System 之间。
 
 ### 6.3 ViewRuntimePhase
 
@@ -462,7 +492,7 @@ public enum CloseReason
 
 `ViewCatalog` 是全局 View 注册表。
 
-每个可由 `UIManager` 打开的 `Page`、`Popup`、`Modal`、`Tooltip` 都必须注册。
+每个可由 `UIManager` 打开的 `Page`、`Popup`、`Modal`、`Tooltip`、`Toast` 都必须注册。
 
 不要注册：
 
@@ -477,7 +507,7 @@ public enum CloseReason
 
 关键字段：
 
-- `id`：View 唯一标识，建议 `page.xxx`、`popup.xxx`、`modal.xxx`、`tooltip.xxx`。
+- `id`：View 唯一标识，建议 `page.xxx`、`popup.xxx`、`modal.xxx`、`tooltip.xxx`、`toast.xxx`。
 - `kind`：View 类型。
 - `layer`：实例化到哪个层。
 - `prefab`：View Prefab。
@@ -1448,7 +1478,31 @@ await uiManager.ShowTooltipAsync<MyTooltip>(
     cancellationToken);
 ```
 
-## 26. 新增 ViewPart 流程
+## 26. 新增 Toast 流程
+
+1. 新增脚本继承 `ToastBase`。
+2. 创建 Toast Prefab，根节点必须有 `CanvasGroup` 和 Toast 脚本。
+3. 在 `OnOpeningAsync` 中读取 payload、刷新文本和布局。
+4. 在 `ViewCatalog` 注册：
+   - `id = toast.xxx`
+   - `kind = Toast`
+   - `layer = Toast`
+5. 通过 `ShowToastAsync<TToast>(payload, options)` 打开。
+6. 默认 Toast 位于顶部居中附近，并采用顺序排队：同一时间只显示一条，后续请求等待当前 Toast 关闭后再显示。
+7. 点击反馈等需要“最新提示立即生效”的场景，使用 `ToastDisplayMode.ReplaceCurrent`。
+8. 需要主动清理时调用 `ClearToastsAsync()`。
+
+示例：
+
+```csharp
+ToastOptions options = new ToastOptions(durationSeconds: 1.6f);
+await uiManager.ShowToastAsync<TextToastView>(new ToastPayload("保存成功"), options);
+
+ToastOptions replaceOptions = new ToastOptions(displayMode: ToastDisplayMode.ReplaceCurrent);
+await uiManager.ShowToastAsync<TextToastView>(new ToastPayload("刷新完成"), replaceOptions);
+```
+
+## 27. 新增 ViewPart 流程
 
 1. 新增脚本继承 `ViewPartBase`。
 2. 放在 Page、Popup 或 Modal 的子层级，或作为可复用子 Prefab。
@@ -1463,7 +1517,7 @@ await uiManager.ShowTooltipAsync<MyTooltip>(
 - 有独立生命周期、复杂绑定、复用价值或独立表现逻辑时再拆。
 - ViewPart 不应主动扫描场景寻找 UIManager。
 
-## 27. Button 点击绑定
+## 28. Button 点击绑定
 
 UI 点击目标统一使用 Unity `Button`。
 
@@ -1474,7 +1528,7 @@ UI 点击目标统一使用 Unity `Button`。
 - 可交互状态使用 `button.interactable`。
 - 需要默认焦点时通过 `EventSystem.current?.SetSelectedGameObject(button.gameObject)` 设置。
 
-## 28. 诊断
+## 29. 诊断
 
 `UIManager` 应提供运行时诊断入口，通常在 Inspector 中显示：
 
@@ -1488,7 +1542,7 @@ Log Runtime Diagnostics
 - Root Canvas 名称和模式。
 - 当前 Camera。
 - 当前 RequestVersion。
-- 当前 Tooltip。
+- 当前 Tooltip 和 Toast。
 - 所有 Layer 状态。
 - PageStack。
 - PopupStack。
@@ -1499,7 +1553,7 @@ Log Runtime Diagnostics
 - 输入焦点状态。
 - ModalMask 状态。
 - PopupOutsideClickBlocker 状态。
-- Popup / Tooltip 最近定位结果。
+- Popup / Tooltip / Toast 最近定位结果。
 
 排错顺序：
 
@@ -1511,10 +1565,10 @@ Log Runtime Diagnostics
 6. 检查 Prefab 根节点是否有正确 View 脚本和 `CanvasGroup`。
 7. 检查 payload 类型是否正确。
 8. 检查事件是否重复订阅或未解绑。
-9. 检查 Popup / Tooltip Options。
+9. 检查 Popup / Tooltip / Toast Options。
 10. 检查动画 Clip、TargetKey、CanvasGroup 和 Binding。
 
-## 29. 常见错误
+## 30. 常见错误
 
 `UIManager is missing UIFrameworkSettings`
 
@@ -1548,7 +1602,7 @@ Log Runtime Diagnostics
 
 - 内部组件需要打开全局 UI，但没有由拥有者注入 UIManager。
 
-## 30. 测试建议
+## 31. 测试建议
 
 建议至少覆盖：
 
@@ -1564,12 +1618,12 @@ Log Runtime Diagnostics
 - 动画缺失 Clip 或目标时的降级和日志。
 - ScreenSpaceOverlay 和 ScreenSpaceCamera 下的定位。
 
-## 31. AI 协作规则
+## 32. AI 协作规则
 
 AI 或自动化脚本修改 UI 时，必须先判断：
 
 1. 这个 UI 是否需要由 `UIManager` 全局打开？
-   - 是：继承 `PageBase`、`PopupBase`、`ModalBase<>` 或 `TooltipBase`，并注册 Catalog。
+   - 是：继承 `PageBase`、`PopupBase`、`ModalBase<>`、`TooltipBase` 或 `ToastBase`，并注册 Catalog。
    - 否：使用 `ViewPartBase` 或普通 MonoBehaviour，不注册 Catalog。
 2. 是否已有同类 View？
    - 优先复用既有模式。
@@ -1590,13 +1644,13 @@ AI 或自动化脚本修改 UI 时，必须先判断：
 10. 是否涉及复杂 Prefab 绑定？
     - 优先在 Unity Editor 中配置，不手写 YAML。
 
-## 32. AI 禁止事项
+## 33. AI 禁止事项
 
 不要做这些事：
 
 - 不要新增第二套 UIManager 或 UIService。
 - 不要把 `ViewPartBase` 注册到 `ViewCatalog`。
-- 不要让 Popup 或 Tooltip 自己实现屏幕裁剪和翻转定位。
+- 不要让 Popup、Tooltip 或 Toast 自己实现屏幕裁剪和翻转定位。
 - 不要直接销毁由 UIManager 打开的 View。
 - 不要直接调用 `ViewBase.OpenInternalAsync` 或 `ViewBase.CloseInternalAsync`。
 - 不要靠全局扫描寻找 UI 依赖。
@@ -1606,7 +1660,7 @@ AI 或自动化脚本修改 UI 时，必须先判断：
 - 不要假设 `trackInBackStack` 或 `warmupCount` 已经具备完整行为，必须以当前实现为准。
 - 不要把设计文档中未实现的 API 当成可用 API。
 
-## 33. 迁移到新项目的最小清单
+## 34. 迁移到新项目的最小清单
 
 迁移框架到新项目时，至少需要：
 
@@ -1623,6 +1677,6 @@ AI 或自动化脚本修改 UI 时，必须先判断：
 11. 在 Catalog 中注册该 Page。
 12. 从启动逻辑调用 `OpenPageAsync<FirstPage>()`。
 
-## 34. 总结
+## 35. 总结
 
 OrangeUIFramework 的核心使用原则是：全局 UI 必须注册到 `ViewCatalog` 并通过 `UIManager` 打开；页面内部组件使用 `ViewPartBase` 直接组合；生命周期中打开绑定、关闭解绑；Popup 和 Tooltip 定位交给框架；Modal 结果通过 `ModalResult<TResult>` 返回；动画通过 `IViewTransition` 接入；对象池复用要求 View 每次打开都能重新应用当前上下文。

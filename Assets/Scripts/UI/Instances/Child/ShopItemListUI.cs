@@ -1,20 +1,15 @@
 using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using Orange.UIFramework;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShopItemListUI : ViewPartBase
 {
-    private const float LAYOUT_MOVE_DURATION = 0.18f;
-
     [SerializeField] private ShopItemContainer itemPrefab;
     [SerializeField] private Transform itemParent;
 
     private readonly List<ShopItemContainer> renderedItems = new();
     private readonly List<ShopItemIdentity> renderedItemIdentities = new();
-    private readonly Dictionary<ShopItemContainer, Tween> layoutMoveTweens = new();
 
     public event Action<int> BuyRequested;
     public event Action<int> LockToggleRequested;
@@ -23,11 +18,6 @@ public class ShopItemListUI : ViewPartBase
     {
         ValidateConfiguration();
         itemParent.Clear();
-    }
-
-    private void OnDisable()
-    {
-        KillAllLayoutMoveTweens();
     }
 
     private void OnDestroy()
@@ -47,9 +37,7 @@ public class ShopItemListUI : ViewPartBase
 
         List<ShopItemContainer> previousItems = new(renderedItems);
         List<ShopItemIdentity> previousIdentities = new(renderedItemIdentities);
-        Dictionary<ShopItemContainer, Vector2> previousPositions = CaptureAnchoredPositions(previousItems);
         bool[] previousItemConsumed = new bool[previousItems.Count];
-        List<LayoutMoveRequest> layoutMoveRequests = new();
 
         renderedItems.Clear();
         renderedItemIdentities.Clear();
@@ -59,21 +47,16 @@ public class ShopItemListUI : ViewPartBase
             RenderItem(
                 items[i],
                 i,
-                reason,
                 previousItems,
                 previousIdentities,
-                previousPositions,
-                previousItemConsumed,
-                layoutMoveRequests);
+                previousItemConsumed);
         }
 
         DestroyUnusedPreviousItems(previousItems, previousItemConsumed);
-        PlayLayoutMoveAnimations(layoutMoveRequests);
     }
 
     public void Clear()
     {
-        KillAllLayoutMoveTweens();
         for (int i = 0; i < renderedItems.Count; i++)
         {
             DestroyItem(renderedItems[i]);
@@ -86,12 +69,9 @@ public class ShopItemListUI : ViewPartBase
     private void RenderItem(
         ShopItemData itemData,
         int itemIndex,
-        ShopRefreshReason reason,
         List<ShopItemContainer> previousItems,
         List<ShopItemIdentity> previousIdentities,
-        Dictionary<ShopItemContainer, Vector2> previousPositions,
-        bool[] previousItemConsumed,
-        List<LayoutMoveRequest> layoutMoveRequests)
+        bool[] previousItemConsumed)
     {
         if (itemData.ItemData == null)
         {
@@ -101,26 +81,17 @@ public class ShopItemListUI : ViewPartBase
 
         ShopItemIdentity nextIdentity = ShopItemIdentity.From(itemData);
         int reusableItemIndex = FindReusableItemIndex(nextIdentity, previousItems, previousIdentities, previousItemConsumed);
-        bool reusedExistingItem = reusableItemIndex >= 0;
-        bool playReveal = ShouldPlayReveal(itemData, reason, reusedExistingItem);
-        ShopItemContainer container = reusedExistingItem
+        ShopItemContainer container = reusableItemIndex >= 0
             ? previousItems[reusableItemIndex]
             : CreateItem();
 
-        if (reusedExistingItem)
+        if (reusableItemIndex >= 0)
         {
             previousItemConsumed[reusableItemIndex] = true;
         }
 
         container.transform.SetSiblingIndex(itemIndex);
-        bool refreshMotion = !reusedExistingItem || playReveal;
-        container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex), playReveal, refreshMotion);
-        if (!playReveal
-            && reusedExistingItem
-            && previousPositions.TryGetValue(container, out Vector2 previousAnchoredPosition))
-        {
-            layoutMoveRequests.Add(new LayoutMoveRequest(container, previousAnchoredPosition));
-        }
+        container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex));
 
         renderedItems.Add(container);
         renderedItemIdentities.Add(nextIdentity);
@@ -153,98 +124,9 @@ public class ShopItemListUI : ViewPartBase
             return;
         }
 
-        KillLayoutMoveTween(item, complete: false);
         UnbindItemCallbacks(item);
         item.CleanUp();
         Destroy(item.gameObject);
-    }
-
-    private Dictionary<ShopItemContainer, Vector2> CaptureAnchoredPositions(List<ShopItemContainer> items)
-    {
-        Dictionary<ShopItemContainer, Vector2> positions = new();
-        for (int i = 0; i < items.Count; i++)
-        {
-            ShopItemContainer item = items[i];
-            RectTransform rectTransform = GetRectTransform(item);
-            if (item == null || rectTransform == null)
-            {
-                continue;
-            }
-
-            positions[item] = rectTransform.anchoredPosition;
-        }
-
-        return positions;
-    }
-
-    private void PlayLayoutMoveAnimations(List<LayoutMoveRequest> layoutMoveRequests)
-    {
-        if (layoutMoveRequests.Count == 0)
-        {
-            return;
-        }
-
-        RectTransform parentRectTransform = itemParent as RectTransform;
-        if (parentRectTransform == null)
-        {
-            return;
-        }
-
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(parentRectTransform);
-        Canvas.ForceUpdateCanvases();
-
-        for (int i = 0; i < layoutMoveRequests.Count; i++)
-        {
-            PlayLayoutMoveAnimation(layoutMoveRequests[i]);
-        }
-    }
-
-    private void PlayLayoutMoveAnimation(LayoutMoveRequest request)
-    {
-        RectTransform rectTransform = GetRectTransform(request.Container);
-        if (rectTransform == null)
-        {
-            return;
-        }
-
-        Vector2 targetAnchoredPosition = rectTransform.anchoredPosition;
-        if ((targetAnchoredPosition - request.PreviousAnchoredPosition).sqrMagnitude < 0.01f)
-        {
-            return;
-        }
-
-        KillLayoutMoveTween(request.Container, complete: false);
-        rectTransform.anchoredPosition = request.PreviousAnchoredPosition;
-        Tween tween = rectTransform
-            .DOAnchorPos(targetAnchoredPosition, LAYOUT_MOVE_DURATION)
-            .SetEase(Ease.OutCubic)
-            .SetUpdate(true)
-            .OnKill(() => layoutMoveTweens.Remove(request.Container));
-
-        layoutMoveTweens[request.Container] = tween;
-    }
-
-    private void KillAllLayoutMoveTweens()
-    {
-        List<ShopItemContainer> items = new(layoutMoveTweens.Keys);
-        for (int i = 0; i < items.Count; i++)
-        {
-            KillLayoutMoveTween(items[i], complete: false);
-        }
-
-        layoutMoveTweens.Clear();
-    }
-
-    private void KillLayoutMoveTween(ShopItemContainer item, bool complete)
-    {
-        if (item == null || !layoutMoveTweens.TryGetValue(item, out Tween tween))
-        {
-            return;
-        }
-
-        tween?.Kill(complete);
-        layoutMoveTweens.Remove(item);
     }
 
     private int FindReusableItemIndex(
@@ -305,24 +187,6 @@ public class ShopItemListUI : ViewPartBase
         }
     }
 
-    private static RectTransform GetRectTransform(ShopItemContainer item)
-    {
-        return item != null ? item.transform as RectTransform : null;
-    }
-
-    private static bool ShouldPlayReveal(
-        ShopItemData itemData,
-        ShopRefreshReason reason,
-        bool reusedExistingItem)
-    {
-        if (reason == ShopRefreshReason.Reroll || reason == ShopRefreshReason.WaveRefresh)
-        {
-            return !itemData.Lock;
-        }
-
-        return !reusedExistingItem;
-    }
-
     private readonly struct ShopItemIdentity : IEquatable<ShopItemIdentity>
     {
         private readonly ItemDataSO itemData;
@@ -342,18 +206,6 @@ public class ShopItemListUI : ViewPartBase
         public bool Equals(ShopItemIdentity other)
         {
             return itemData == other.itemData && level == other.level;
-        }
-    }
-
-    private readonly struct LayoutMoveRequest
-    {
-        public readonly ShopItemContainer Container;
-        public readonly Vector2 PreviousAnchoredPosition;
-
-        public LayoutMoveRequest(ShopItemContainer container, Vector2 previousAnchoredPosition)
-        {
-            Container = container;
-            PreviousAnchoredPosition = previousAnchoredPosition;
         }
     }
 }
