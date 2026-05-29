@@ -384,7 +384,7 @@ MonoBehaviour:
         fromMode: 0
         fromValue: {x: 0, y: 0}
         toMode: 3
-        toValue: {x: 0, y: 8}
+        toValue: {x: 0, y: 0}
     - rid: 890410000000000027
       type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
       data:
