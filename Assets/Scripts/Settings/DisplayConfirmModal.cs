@@ -19,9 +19,9 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
 
     public override bool RequiresTick => true;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolveReferences();
         ValidateConfiguration();
         BindButtons();

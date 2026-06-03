@@ -48,6 +48,8 @@ namespace Orange.UIFramework
         private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
         private IFloatingViewPositioner floatingViewPositioner;
+        // Monotonic UI request sequence.
+        // Any transition that can supersede older async work bumps this value so stale continuations can detect it.
         private int requestVersion;
         private bool toastQueueProcessing;
         private bool initialized;
@@ -55,6 +57,9 @@ namespace Orange.UIFramework
         public UIFrameworkSettings Settings => settings;
         public ViewCatalog Catalog => catalog;
         public Canvas RootCanvas => rootCanvas;
+        /// <summary>
+        /// Current UI request sequence used by diagnostics and stale-transition checks.
+        /// </summary>
         public int RequestVersion => requestVersion;
         public bool IsInitialized => initialized;
 
@@ -438,6 +443,9 @@ namespace Orange.UIFramework
             }
         }
 
+        /// <summary>
+        /// 在页面操作已串行化后，真正执行本次页面打开流程。
+        /// </summary>
         private async UniTask<ViewHandle<TPage>> OpenPageLockedAsync<TPage>(
             object payload,
             PageOpenMode mode,
@@ -449,7 +457,7 @@ namespace Orange.UIFramework
             ThrowIfStaleTransition(mode, currentRequestVersion, cancellationToken);
 
             Type pageType = typeof(TPage);
-            ViewDefinition definition = ResolveDefinition(pageType, ViewKind.Page);
+            ViewDefinition definition = GetViewDefinition(pageType, ViewKind.Page);
 
             if (mode == PageOpenMode.ReplaceTop && pageStack.Count > 0)
             {
@@ -478,7 +486,7 @@ namespace Orange.UIFramework
                 }
             }
 
-            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, pageType, currentRequestVersion, cancellationToken);
+            RuntimeView runtimeView = await CreateViewAsync(definition, pageType, currentRequestVersion, cancellationToken);
             OpenContext context = new OpenContext(
                 pageType,
                 definition.Id,
@@ -595,7 +603,7 @@ namespace Orange.UIFramework
                 PopupOptions resolvedOptions = options;
 
                 Type popupType = typeof(TPopup);
-                ViewDefinition definition = ResolveDefinition(popupType, ViewKind.Popup);
+                ViewDefinition definition = GetViewDefinition(popupType, ViewKind.Popup);
 
                 if (resolvedOptions.ReplaceSameGroup && !string.IsNullOrWhiteSpace(resolvedOptions.GroupId))
                 {
@@ -640,7 +648,7 @@ namespace Orange.UIFramework
             try
             {
                 Type modalType = typeof(TModal);
-                ViewDefinition definition = ResolveDefinition(modalType, ViewKind.Modal);
+                ViewDefinition definition = GetViewDefinition(modalType, ViewKind.Modal);
                 runtimeView = await OpenRuntimeViewAsync(
                     definition,
                     modalType,
@@ -693,7 +701,7 @@ namespace Orange.UIFramework
                 await HideTooltipLockedAsync(CloseReason.Replace, CancellationToken.None);
 
                 Type tooltipType = typeof(TTooltip);
-                ViewDefinition definition = ResolveDefinition(tooltipType, ViewKind.Tooltip);
+                ViewDefinition definition = GetViewDefinition(tooltipType, ViewKind.Tooltip);
                 RuntimeView runtimeView = await OpenRuntimeViewAsync(
                     definition,
                     tooltipType,
@@ -862,7 +870,7 @@ namespace Orange.UIFramework
             try
             {
                 request.ThrowIfCanceled();
-                ViewDefinition definition = ResolveDefinition(request.ViewType, ViewKind.Toast);
+                ViewDefinition definition = GetViewDefinition(request.ViewType, ViewKind.Toast);
                 runtimeView = await OpenRuntimeViewAsync(
                     definition,
                     request.ViewType,
@@ -943,7 +951,7 @@ namespace Orange.UIFramework
                 }
             }
 
-            RuntimeView runtimeView = await CreateRuntimeViewAsync(definition, viewType, currentRequestVersion, cancellationToken);
+            RuntimeView runtimeView = await CreateViewAsync(definition, viewType, currentRequestVersion, cancellationToken);
             OpenContext context = new OpenContext(
                 viewType,
                 definition.Id,
@@ -964,7 +972,7 @@ namespace Orange.UIFramework
             }
         }
 
-        private async UniTask<RuntimeView> CreateRuntimeViewAsync(
+        private async UniTask<RuntimeView> CreateViewAsync(
             ViewDefinition definition,
             Type viewType,
             int currentRequestVersion,
@@ -1306,7 +1314,7 @@ namespace Orange.UIFramework
                     runtimeView.Definition.Id,
                     runtimeView.ViewType.Name,
                     runtimeView.Definition.Kind,
-                    runtimeView.View != null ? runtimeView.View.Phase : ViewRuntimePhase.None,
+                    runtimeView.View != null ? runtimeView.View.Phase : ViewPhase.None,
                     runtimeView.RequestVersion,
                     layerName,
                     runtimeView.View != null && runtimeView.View.InputActive,
@@ -1368,7 +1376,7 @@ namespace Orange.UIFramework
         {
             if (runtimeView == null)
             {
-                return new ViewStackDiagnostics(index, isTop, string.Empty, string.Empty, string.Empty, ViewKind.Part, ViewRuntimePhase.None, 0, false, false, false);
+                return new ViewStackDiagnostics(index, isTop, string.Empty, string.Empty, string.Empty, ViewKind.Part, ViewPhase.None, 0, false, false, false);
             }
 
             return new ViewStackDiagnostics(
@@ -1378,7 +1386,7 @@ namespace Orange.UIFramework
                 runtimeView.Definition.Id,
                 runtimeView.ViewType.Name,
                 runtimeView.Definition.Kind,
-                runtimeView.View != null ? runtimeView.View.Phase : ViewRuntimePhase.None,
+                runtimeView.View != null ? runtimeView.View.Phase : ViewPhase.None,
                 runtimeView.RequestVersion,
                 runtimeView.View != null && runtimeView.View.InputActive,
                 runtimeView.View != null && runtimeView.View.BlocksRaycasts,
@@ -1403,7 +1411,7 @@ namespace Orange.UIFramework
                 currentTooltip.InstanceId,
                 currentTooltip.Definition.Id,
                 currentTooltip.ViewType.Name,
-                currentTooltip.View != null ? currentTooltip.View.Phase : ViewRuntimePhase.None,
+                currentTooltip.View != null ? currentTooltip.View.Phase : ViewPhase.None,
                 currentTooltip.TooltipOptions.FollowPointer,
                 currentTooltip.View != null && currentTooltip.View.InputActive,
                 currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
@@ -1427,7 +1435,7 @@ namespace Orange.UIFramework
                 currentToast.InstanceId,
                 currentToast.Definition.Id,
                 currentToast.ViewType.Name,
-                currentToast.View != null ? currentToast.View.Phase : ViewRuntimePhase.None,
+                currentToast.View != null ? currentToast.View.Phase : ViewPhase.None,
                 toastQueue.Count,
                 currentToast.ToastOptions.DurationSeconds,
                 currentToast.View != null && currentToast.View.InputActive,
@@ -1447,21 +1455,21 @@ namespace Orange.UIFramework
             foreach (KeyValuePair<string, RuntimeView> pair in trackedViewsByInstance)
             {
                 RuntimeView runtimeView = pair.Value;
-                ViewRuntimePhase phase = runtimeView != null && runtimeView.View != null
+                ViewPhase phase = runtimeView != null && runtimeView.View != null
                     ? runtimeView.View.Phase
-                    : ViewRuntimePhase.None;
+                    : ViewPhase.None;
 
-                if (phase == ViewRuntimePhase.Opening || phase == ViewRuntimePhase.Loading || phase == ViewRuntimePhase.Loaded)
+                if (phase == ViewPhase.Opening || phase == ViewPhase.Loading || phase == ViewPhase.Loaded)
                 {
                     openingCount++;
                 }
 
-                if (phase == ViewRuntimePhase.Closing || (runtimeView != null && runtimeView.Closing))
+                if (phase == ViewPhase.Closing || (runtimeView != null && runtimeView.Closing))
                 {
                     closingCount++;
                 }
 
-                if (phase == ViewRuntimePhase.Failed)
+                if (phase == ViewPhase.Failed)
                 {
                     failedCount++;
                 }
@@ -1560,11 +1568,17 @@ namespace Orange.UIFramework
                 currentToast != null && currentToast.View != null && currentToast.View.BlocksRaycasts);
         }
 
+        /// <summary>
+        /// 判断当前页面操作是否已经被更新的请求覆盖。
+        /// </summary>
         private bool IsStaleTransition(PageOpenMode mode, int operationVersion)
         {
             return mode != PageOpenMode.Push && operationVersion != requestVersion;
         }
 
+        /// <summary>
+        /// 当旧页面请求已被更新请求覆盖时，直接中止旧流程。
+        /// </summary>
         private void ThrowIfStaleTransition(
             PageOpenMode mode,
             int operationVersion,
@@ -1597,8 +1611,8 @@ namespace Orange.UIFramework
             }
 
             if (runtimeView.View != null &&
-                runtimeView.View.Phase != ViewRuntimePhase.Closed &&
-                runtimeView.View.Phase != ViewRuntimePhase.Recycled)
+                runtimeView.View.Phase != ViewPhase.Closed &&
+                runtimeView.View.Phase != ViewPhase.Recycled)
             {
                 try
                 {
@@ -1785,7 +1799,7 @@ namespace Orange.UIFramework
                 rebuildLayout: true);
         }
 
-        private ViewDefinition ResolveDefinition(Type viewType, ViewKind expectedKind)
+        private ViewDefinition GetViewDefinition(Type viewType, ViewKind expectedKind)
         {
             if (viewType == null)
             {

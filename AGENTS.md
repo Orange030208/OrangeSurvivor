@@ -77,3 +77,7 @@
 - 未经明确要求，不主动做大规模重构，不随意改动现有公共接口、资源命名或目录结构。
 - 如需引入新包、新系统或较大结构调整，应先说明原因与影响。
 - 输出内容优先考虑长期维护成本。
+
+
+## UnitySkills
+- unity-skills: Unity Editor automation via REST API

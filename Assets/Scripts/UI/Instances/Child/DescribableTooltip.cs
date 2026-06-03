@@ -14,9 +14,9 @@ public sealed class DescribableTooltip : TooltipBase
 
     private readonly InfoDocumentService infoDocumentService = new();
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
 
         if (root == null)
         {

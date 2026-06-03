@@ -29,9 +29,9 @@ public class GamePauseMenu : PageBase
     private ViewHandle<PropertiesPopup> propertiesPopupHandle;
     private ViewHandle<EquipmentPopup> equipmentPopupHandle;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateConfiguration();
     }
 
@@ -143,8 +143,8 @@ public class GamePauseMenu : PageBase
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        settingsPanelHandle = await OwnerUIManager.ShowPopupAsync<SettingsPanelManager>(
-            new SettingsPanelManager.Context(OwnerUIManager),
+        settingsPanelHandle = await OwnerManager.ShowPopupAsync<SettingsPanelManager>(
+            new SettingsPanelManager.Context(OwnerManager),
             CreateSettingsPopupOptions(),
             this.GetCancellationTokenOnDestroy());
         ClearSettingsHandleWhenClosedAsync(settingsPanelHandle).Forget();
@@ -166,7 +166,7 @@ public class GamePauseMenu : PageBase
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        propertiesPopupHandle = await OwnerUIManager.ShowPopupAsync<PropertiesPopup>(
+        propertiesPopupHandle = await OwnerManager.ShowPopupAsync<PropertiesPopup>(
             currentContext.PropertiesManager,
             CreatePropertiesPopupOptions(),
             this.GetCancellationTokenOnDestroy());
@@ -189,7 +189,7 @@ public class GamePauseMenu : PageBase
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        equipmentPopupHandle = await OwnerUIManager.ShowPopupAsync<EquipmentPopup>(
+        equipmentPopupHandle = await OwnerManager.ShowPopupAsync<EquipmentPopup>(
             equipmentContext,
             CreateEquipmentPopupOptions(),
             this.GetCancellationTokenOnDestroy());

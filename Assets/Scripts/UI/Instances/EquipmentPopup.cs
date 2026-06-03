@@ -39,9 +39,9 @@ public sealed class EquipmentPopup : PopupBase
     private bool eventsBound;
     private bool dataBound;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolveViewParts();
         ValidateConfiguration();
         ApplyTabVisuals();

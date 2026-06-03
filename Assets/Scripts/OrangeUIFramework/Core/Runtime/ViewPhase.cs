@@ -1,6 +1,6 @@
 namespace Orange.UIFramework
 {
-    public enum ViewRuntimePhase
+    public enum ViewPhase
     {
         None,
         Loading,

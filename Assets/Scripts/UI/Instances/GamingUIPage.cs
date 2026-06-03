@@ -21,9 +21,9 @@ public class GamingUIPage : PageBase
     private CurrencyWallet currencyWallet;
     private bool hudEventsBound;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateConfiguration();
     }
 
@@ -102,7 +102,7 @@ public class GamingUIPage : PageBase
     {
         UnbindPlayerLevel();
         playerHealthPanel.BindPlayer(player);
-        buffBarUI.BeginSession(player, OwnerUIManager);
+        buffBarUI.BeginSession(player, OwnerManager);
 
         playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
         if (playerLevel == null)

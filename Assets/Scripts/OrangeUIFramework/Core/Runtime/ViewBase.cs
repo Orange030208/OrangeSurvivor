@@ -8,7 +8,7 @@ namespace Orange.UIFramework
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ViewBase : MonoBehaviour, IView
     {
-        private CanvasGroup resolvedCanvasGroup;
+        private CanvasGroup canvasGroup;
         private IViewTransition viewTransition;
         private ViewHandle handle;
         private bool initialized;
@@ -19,12 +19,17 @@ namespace Orange.UIFramework
         public bool InputActive { get; private set; }
         public bool BlocksRaycasts { get; private set; }
         public virtual bool RequiresTick => false;
-        public ViewRuntimePhase Phase { get; private set; } = ViewRuntimePhase.None;
+        public ViewPhase Phase { get; private set; } = ViewPhase.None;
         protected ViewHandle Handle => handle;
-        protected UIManager OwnerUIManager => handle.Owner;
-        protected CanvasGroup CanvasGroup => resolvedCanvasGroup;
+        protected UIManager OwnerManager => handle.Owner;
+        protected CanvasGroup CanvasGroup => canvasGroup;
 
-        protected virtual void Awake()
+        private void Awake()
+        {
+            OnCreate();
+        }
+
+        protected virtual void OnCreate()
         {
             ResolveReferences();
         }
@@ -39,7 +44,7 @@ namespace Orange.UIFramework
             ResolveReferences();
             handle = newHandle;
             initialized = true;
-            Phase = ViewRuntimePhase.Loaded;
+            Phase = ViewPhase.Loaded;
             OnInitialized(newHandle);
         }
 
@@ -48,8 +53,8 @@ namespace Orange.UIFramework
             ResolveReferences();
             InputActive = interactable;
             BlocksRaycasts = blocksRaycasts;
-            resolvedCanvasGroup.interactable = interactable;
-            resolvedCanvasGroup.blocksRaycasts = blocksRaycasts;
+            canvasGroup.interactable = interactable;
+            canvasGroup.blocksRaycasts = blocksRaycasts;
             OnInputChanged(interactable, blocksRaycasts);
         }
 
@@ -73,9 +78,9 @@ namespace Orange.UIFramework
             ResolveReferences();
             cancellationToken.ThrowIfCancellationRequested();
 
-            Phase = ViewRuntimePhase.Opening;
+            Phase = ViewPhase.Opening;
             gameObject.SetActive(true);
-            resolvedCanvasGroup.alpha = 1f;
+            canvasGroup.alpha = 1f;
             ApplyInputState(false, false);
 
             try
@@ -86,20 +91,20 @@ namespace Orange.UIFramework
                 cancellationToken.ThrowIfCancellationRequested();
 
                 IsOpen = true;
-                Phase = ViewRuntimePhase.Opened;
+                Phase = ViewPhase.Opened;
                 await OnOpenedAsync(cancellationToken);
             }
             catch
             {
                 IsOpen = false;
-                Phase = ViewRuntimePhase.Failed;
+                Phase = ViewPhase.Failed;
                 throw;
             }
         }
 
         internal async UniTask CloseInternalAsync(CloseReason reason, CancellationToken cancellationToken)
         {
-            if (Phase == ViewRuntimePhase.Closing || Phase == ViewRuntimePhase.Closed || Phase == ViewRuntimePhase.Recycled)
+            if (Phase == ViewPhase.Closing || Phase == ViewPhase.Closed || Phase == ViewPhase.Recycled)
             {
                 return;
             }
@@ -107,7 +112,7 @@ namespace Orange.UIFramework
             ResolveReferences();
             cancellationToken.ThrowIfCancellationRequested();
 
-            Phase = ViewRuntimePhase.Closing;
+            Phase = ViewPhase.Closing;
             ApplyInputState(false, false);
 
             try
@@ -120,13 +125,13 @@ namespace Orange.UIFramework
                 ResetTransitionForInactiveState();
                 OnClosed(reason);
                 IsOpen = false;
-                resolvedCanvasGroup.alpha = 1f;
-                Phase = ViewRuntimePhase.Closed;
+                canvasGroup.alpha = 1f;
+                Phase = ViewPhase.Closed;
                 gameObject.SetActive(false);
             }
             catch
             {
-                Phase = ViewRuntimePhase.Failed;
+                Phase = ViewPhase.Failed;
                 throw;
             }
         }
@@ -134,7 +139,7 @@ namespace Orange.UIFramework
         internal void MarkRecycled()
         {
             IsOpen = false;
-            Phase = ViewRuntimePhase.Recycled;
+            Phase = ViewPhase.Recycled;
         }
 
         protected virtual void OnInitialized(ViewHandle newHandle)
@@ -219,13 +224,13 @@ namespace Orange.UIFramework
 
         private void ResolveReferences()
         {
-            if (resolvedCanvasGroup != null)
+            if (canvasGroup != null)
             {
                 return;
             }
 
-            resolvedCanvasGroup = GetComponent<CanvasGroup>();
-            if (resolvedCanvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
             {
                 throw new MissingComponentException($"View '{name}' requires a CanvasGroup.");
             }

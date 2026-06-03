@@ -16,9 +16,9 @@ public class MenuUIPage : PageBase
     private UIMotionPlayer[] menuEntryMotions;
     private ViewHandle<SettingsPanelManager> settingsPanelHandle;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateConfiguration();
     }
 
@@ -105,8 +105,8 @@ public class MenuUIPage : PageBase
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         ResetMenuEntryMotions();
-        settingsPanelHandle = await OwnerUIManager.ShowPopupAsync<SettingsPanelManager>(
-            new SettingsPanelManager.Context(OwnerUIManager),
+        settingsPanelHandle = await OwnerManager.ShowPopupAsync<SettingsPanelManager>(
+            new SettingsPanelManager.Context(OwnerManager),
             CreateSettingsPopupOptions(),
             this.GetCancellationTokenOnDestroy());
         ClearSettingsHandleWhenClosedAsync(settingsPanelHandle).Forget();

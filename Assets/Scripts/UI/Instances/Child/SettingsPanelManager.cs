@@ -107,9 +107,9 @@ public class SettingsPanelManager : PopupBase
     private bool controlsBound;
     private bool displayConfirmationPending;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolvePresentationReferences();
         ResolveActiveProfile();
         ValidateConfiguration();
@@ -189,7 +189,7 @@ public class SettingsPanelManager : PopupBase
     {
         if (context == null)
         {
-            ConfigureOwner(OwnerUIManager);
+            ConfigureOwner(OwnerManager);
             return;
         }
 

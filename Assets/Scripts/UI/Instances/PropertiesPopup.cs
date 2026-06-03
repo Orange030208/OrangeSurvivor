@@ -14,9 +14,9 @@ public sealed class PropertiesPopup : PopupBase
     private PropertiesManager propertiesManager;
     private bool eventsBound;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolveViewParts();
         ValidateConfiguration();
     }

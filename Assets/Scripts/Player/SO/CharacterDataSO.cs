@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDataSO : ScriptableObject, IInfoDocumentSource
+public class CharacterDataSO : ScriptableObject
 {
     [field: SerializeField] public string CharacterName { get; private set; }
     [field: SerializeField] public Sprite CharacterIcon { get; private set; }
@@ -44,68 +44,6 @@ public class CharacterDataSO : ScriptableObject, IInfoDocumentSource
         {
             initialWeapons[i] = initialWeapons[i].Validated();
         }
-    }
-
-    public InfoDocument BuildInfoDocument()
-    {
-        List<InfoSection> sections = new();
-        List<InfoLine> lines = new();
-        foreach (PropModifierData modifier in ExtraProps)
-        {
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(modifier.GetDisplayName(), modifier.GetDisplayValueText()));
-        }
-
-        foreach (WeaponEntry weapon in InitialWeapons)
-        {
-            WeaponDataSO weaponData = weapon.weaponData;
-            if (weaponData == null)
-            {
-                continue;
-            }
-
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(weaponData.ItemName, $"初始有{weaponData.ItemName}"));
-        }
-
-        foreach (AccessoryDataSO accessory in InitialAccessories)
-        {
-            if (accessory == null)
-            {
-                continue;
-            }
-
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(accessory.ItemName, $"初始有{accessory.ItemName}"));
-        }
-
-        foreach (FeatureBase feature in SpecialFeatures)
-        {
-            if (feature == null)
-            {
-                continue;
-            }
-
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(feature.Title, feature.Description));
-        }
-
-        if (lines.Count > 0)
-        {
-            sections.Add(new InfoSection(string.Empty, lines));
-        }
-
-        string description = ItemDescriptionUtility.NormalizeManualDescription(CharacterDescription);
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            sections.Add(new InfoSection(
-                string.Empty,
-                new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, description) }));
-        }
-
-        return new InfoDocument(
-            CharacterName,
-            CharacterName,
-            CharacterIcon,
-            InfoDocumentKind.General,
-            System.Array.Empty<string>(),
-            sections);
     }
 
     public List<PropModifierData> GetCharacterModifiers()

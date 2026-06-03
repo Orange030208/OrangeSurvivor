@@ -11,9 +11,9 @@ public class ShopPropertiesPopup : PopupBase
     private readonly InfoDocumentService infoDocumentService = new();
     private PropertiesManager propertiesManager;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolveViewParts();
         ValidateConfiguration();
     }

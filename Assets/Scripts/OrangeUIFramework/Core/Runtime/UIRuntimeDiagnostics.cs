@@ -99,7 +99,7 @@ namespace Orange.UIFramework
             string viewId,
             string viewTypeName,
             ViewKind kind,
-            ViewRuntimePhase phase,
+            ViewPhase phase,
             int requestVersion,
             string layerName,
             bool inputActive,
@@ -138,7 +138,7 @@ namespace Orange.UIFramework
         public string ViewId { get; }
         public string ViewTypeName { get; }
         public ViewKind Kind { get; }
-        public ViewRuntimePhase Phase { get; }
+        public ViewPhase Phase { get; }
         public int RequestVersion { get; }
         public string LayerName { get; }
         public bool InputActive { get; }
@@ -163,7 +163,7 @@ namespace Orange.UIFramework
             string viewId,
             string viewTypeName,
             ViewKind kind,
-            ViewRuntimePhase phase,
+            ViewPhase phase,
             int requestVersion,
             bool inputActive,
             bool blocksRaycasts,
@@ -198,7 +198,7 @@ namespace Orange.UIFramework
         public string ViewId { get; }
         public string ViewTypeName { get; }
         public ViewKind Kind { get; }
-        public ViewRuntimePhase Phase { get; }
+        public ViewPhase Phase { get; }
         public int RequestVersion { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
@@ -217,7 +217,7 @@ namespace Orange.UIFramework
             string instanceId,
             string viewId,
             string viewTypeName,
-            ViewRuntimePhase phase,
+            ViewPhase phase,
             bool followPointer,
             bool inputActive,
             bool blocksRaycasts,
@@ -246,7 +246,7 @@ namespace Orange.UIFramework
         public string InstanceId { get; }
         public string ViewId { get; }
         public string ViewTypeName { get; }
-        public ViewRuntimePhase Phase { get; }
+        public ViewPhase Phase { get; }
         public bool FollowPointer { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
@@ -264,7 +264,7 @@ namespace Orange.UIFramework
             string instanceId = "",
             string viewId = "",
             string viewTypeName = "",
-            ViewRuntimePhase phase = ViewRuntimePhase.None,
+            ViewPhase phase = ViewPhase.None,
             int queueCount = 0,
             float durationSeconds = 0f,
             bool inputActive = false,
@@ -295,7 +295,7 @@ namespace Orange.UIFramework
         public string InstanceId { get; }
         public string ViewId { get; }
         public string ViewTypeName { get; }
-        public ViewRuntimePhase Phase { get; }
+        public ViewPhase Phase { get; }
         public int QueueCount { get; }
         public float DurationSeconds { get; }
         public bool InputActive { get; }

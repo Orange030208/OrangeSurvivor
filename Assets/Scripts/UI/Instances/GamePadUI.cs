@@ -42,9 +42,9 @@ public sealed class GamePadUI : PopupBase
         return gamePadPrefab.AllowsTouchControlsOnPlatform(platform);
     }
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateConfiguration();
     }
 

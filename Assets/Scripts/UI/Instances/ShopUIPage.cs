@@ -40,9 +40,9 @@ public class ShopUIPage : PageBase
     private int propertiesPopupVersion;
     private int equipmentPopupVersion;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateConfiguration();
     }
 
@@ -51,16 +51,16 @@ public class ShopUIPage : PageBase
         ShopPageContext shopPageContext = context.GetPayload<ShopPageContext>()
             ?? throw new InvalidOperationException($"{nameof(ShopUIPage)} requires {nameof(ShopPageContext)} payload.");
 
-        EnterShopSession(shopPageContext);
+        OnEnterShop(shopPageContext);
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        ExitShopSession();
+        OnExitShop();
     }
 
-    private void EnterShopSession(ShopPageContext context)
+    private void OnEnterShop(ShopPageContext context)
     {
         if (context == null)
         {
@@ -77,7 +77,7 @@ public class ShopUIPage : PageBase
         shopManager.RefreshViewState();
     }
 
-    private void ExitShopSession()
+    private void OnExitShop()
     {
         ClosePropertiesPopupAsync(CloseReason.Cancel).Forget();
         CloseEquipmentPopupAsync(CloseReason.Cancel).Forget();
@@ -179,7 +179,7 @@ public class ShopUIPage : PageBase
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<PropertiesPopup> handle = await OwnerUIManager.ShowPopupAsync<PropertiesPopup>(
+            ViewHandle<PropertiesPopup> handle = await OwnerManager.ShowPopupAsync<PropertiesPopup>(
                 currentContext.PropertiesManager,
                 options,
                 this.GetCancellationTokenOnDestroy());
@@ -232,7 +232,7 @@ public class ShopUIPage : PageBase
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<EquipmentPopup> handle = await OwnerUIManager.ShowPopupAsync<EquipmentPopup>(
+            ViewHandle<EquipmentPopup> handle = await OwnerManager.ShowPopupAsync<EquipmentPopup>(
                 equipmentContext,
                 options,
                 this.GetCancellationTokenOnDestroy());
@@ -481,7 +481,7 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        UIManager manager = OwnerUIManager ?? UIManager.Instance;
+        UIManager manager = OwnerManager ?? UIManager.Instance;
         if (manager == null)
         {
             return;

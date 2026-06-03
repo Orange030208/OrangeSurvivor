@@ -11,9 +11,9 @@ public sealed class TextToastView : ToastBase
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private Image iconImage;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ValidateReferences();
     }
 

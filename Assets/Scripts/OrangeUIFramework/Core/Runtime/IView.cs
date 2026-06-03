@@ -7,7 +7,7 @@ namespace Orange.UIFramework
         bool InputActive { get; }
         bool BlocksRaycasts { get; }
         bool RequiresTick { get; }
-        ViewRuntimePhase Phase { get; }
+        ViewPhase Phase { get; }
 
         void Initialize(ViewHandle handle);
         void ApplyInputState(bool interactable, bool blocksRaycasts);

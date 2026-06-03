@@ -11,9 +11,9 @@ public class RewardSelectionPopup : PopupBase
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private RewardSelectionCardGroup cardGroup;
 
-    protected override void Awake()
+    protected override void OnCreate()
     {
-        base.Awake();
+        base.OnCreate();
         ResolveViewParts();
         ValidateConfiguration();
     }

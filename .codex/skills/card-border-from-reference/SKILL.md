@@ -1,6 +1,6 @@
 ---
 name: card-border-from-reference
-description: "Project-local explicit-invocation workflow for generating transparent Unity card art or card borders from a user-provided reference image, using imagegen first and then deterministic PNG post-processing: crop content to the edges, resize/cover to 96x128, overlay Assets/GameContent/UI/Sprites/Card/CardBorder.png, and remove corner leakage. Use only when the user explicitly asks to use $card-border-from-reference or explicitly requests this exact reference-image card-border workflow; do not invoke implicitly."
+description: "项目本地的显式调用工作流：根据用户提供的参考图生成透明 Unity 卡牌图或卡牌边框。流程先使用 imagegen 生成基础图，再用确定性 PNG 后处理裁到内容边缘、覆盖缩放到 96x128、叠加 Assets/GameContent/UI/Sprites/Card/CardBorder.png，并清理圆角外溢。仅当用户明确要求使用 $card-border-from-reference，或明确要求这套参考图卡牌边框流程时使用，不要隐式触发。"
 ---
 
 # Card Border From Reference

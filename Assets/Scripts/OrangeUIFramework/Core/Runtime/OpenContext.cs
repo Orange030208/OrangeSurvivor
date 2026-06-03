@@ -31,6 +31,9 @@ namespace Orange.UIFramework
         public string InstanceId { get; }
         public ViewKind Kind { get; }
         public object Payload { get; }
+        /// <summary>
+        /// 记录创建当前打开上下文时的 UI 请求序号快照。
+        /// </summary>
         public int RequestVersion { get; }
 
         public TPayload GetPayload<TPayload>() where TPayload : class
