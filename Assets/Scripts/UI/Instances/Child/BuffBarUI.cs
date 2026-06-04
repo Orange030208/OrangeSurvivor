@@ -124,8 +124,11 @@ public class BuffBarUI : ViewPartBase
             return;
         }
 
-        TooltipHoverTarget tooltipTarget = item.GetComponent<TooltipHoverTarget>();
-        tooltipTarget?.ConfigureOwner(uiManager);
+        TooltipTrigger tooltipTrigger = item.GetComponent<TooltipTrigger>();
+        if (tooltipTrigger != null)
+        {
+            tooltipTrigger.Configure(item, uiManager);
+        }
     }
 
     private void SetVisibleItemCount(int visibleCount)

@@ -46,7 +46,8 @@ public sealed class StarterCardSelectionFlow
             groupId: POPUP_GROUP_ID,
             replaceSameGroup: true,
             trackInStack: false,
-            preferredAnchor: FloatingViewAnchor.Center);
+            preferredAnchor: FloatingViewAnchor.Center,
+            showBackdrop: true);
 
         ViewHandle<RewardSelectionPopup> handle = await uiManager.ShowPopupAsync<RewardSelectionPopup>(
             model,

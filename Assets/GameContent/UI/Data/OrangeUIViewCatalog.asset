@@ -101,16 +101,27 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: tooltip.describable
+  - id: tooltip.document
     kind: 3
     layer: 6
     prefab: {fileID: 9208315558322375508, guid: 09491bf92046d214186f496c0220146c, type: 3}
-    singleton: 1
+    singleton: 0
     cacheOnClose: 1
     trackInBackStack: 0
     closeOnBackgroundClick: 0
     warmupCount: 0
-    maxCachedInstancesOverride: 1
+    maxCachedInstancesOverride: 2
+    allowDuplicateViewType: 0
+  - id: tooltip.text
+    kind: 3
+    layer: 6
+    prefab: {fileID: 7312407001000000000, guid: 2f37b52b9b12402c91e5848bfa235e37, type: 3}
+    singleton: 0
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 2
     allowDuplicateViewType: 0
   - id: toast.text
     kind: 5

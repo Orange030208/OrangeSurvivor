@@ -1,6 +1,5 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace Orange.UIFramework
 {
@@ -37,11 +36,9 @@ namespace Orange.UIFramework
             CancellationToken cancellationToken = default)
             where TModal : ModalBase<TResult>;
 
-        UniTask<ViewHandle<TTooltip>> ShowTooltipAsync<TTooltip>(
-            object payload,
-            TooltipOptions options,
-            CancellationToken cancellationToken = default)
-            where TTooltip : TooltipBase;
+        UniTask<TooltipSessionHandle> ShowTooltipAsync(
+            TooltipRequest request,
+            CancellationToken cancellationToken = default);
 
         UniTask<ViewHandle<TToast>> ShowToastAsync<TToast>(
             object payload = null,
@@ -51,8 +48,6 @@ namespace Orange.UIFramework
 
         UniTask ClearToastsAsync(CancellationToken cancellationToken = default);
 
-        void UpdateTooltipPosition(Vector2 screenPosition);
-        void HideTooltip();
         bool IsOpen<TView>() where TView : ViewBase;
     }
 }

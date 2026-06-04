@@ -220,7 +220,8 @@ public class RewardSelectionManager : MonoBehaviour
             groupId: POPUP_GROUP_ID,
             replaceSameGroup: true,
             trackInStack: false,
-            preferredAnchor: FloatingViewAnchor.Center);
+            preferredAnchor: FloatingViewAnchor.Center,
+            showBackdrop: true);
         currentPopupHandle = await ResolveUIManager().ShowPopupAsync<RewardSelectionPopup>(
             model,
             popupOptions,

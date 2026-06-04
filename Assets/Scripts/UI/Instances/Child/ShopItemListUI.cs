@@ -10,6 +10,7 @@ public class ShopItemListUI : ViewPartBase
 
     private readonly List<ShopItemContainer> renderedItems = new();
     private readonly List<ShopItemIdentity> renderedItemIdentities = new();
+    private UIManager uiManager;
 
     public event Action<int> BuyRequested;
     public event Action<int> LockToggleRequested;
@@ -92,6 +93,7 @@ public class ShopItemListUI : ViewPartBase
 
         container.transform.SetSiblingIndex(itemIndex);
         container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex));
+        ConfigureTooltip(container);
 
         renderedItems.Add(container);
         renderedItemIdentities.Add(nextIdentity);
@@ -156,6 +158,20 @@ public class ShopItemListUI : ViewPartBase
     {
         container.BuyRequested += OnItemBuyRequested;
         container.LockToggleRequested += OnItemLockToggleRequested;
+    }
+
+    public void ConfigureOwner(UIManager ownerUIManager)
+    {
+        uiManager = ownerUIManager;
+    }
+
+    private void ConfigureTooltip(ShopItemContainer container)
+    {
+        TooltipTrigger tooltipTrigger = container.GetComponent<TooltipTrigger>();
+        if (tooltipTrigger != null)
+        {
+            tooltipTrigger.Configure(container, uiManager, canPin: true, interactiveTransient: true);
+        }
     }
 
     private void UnbindItemCallbacks(ShopItemContainer container)

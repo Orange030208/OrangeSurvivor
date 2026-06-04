@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace Orange.UIFramework
 {
-    public readonly struct TooltipOptions
+    public readonly struct TooltipPlacementOptions
     {
         private readonly bool valuesAssigned;
         private readonly bool useScreenPosition;
         private readonly float margin;
 
-        public TooltipOptions(
+        public TooltipPlacementOptions(
             RectTransform anchor = null,
             Vector2 screenPosition = default,
             Vector2 offset = default,
@@ -33,9 +33,33 @@ namespace Orange.UIFramework
         public bool FollowPointer { get; }
         public float Margin => valuesAssigned ? margin : 12f;
         public FloatingViewAnchor PreferredAnchor { get; }
-
         public bool HasAnchor => Anchor != null;
         public bool HasScreenPosition => ScreenPosition != default || useScreenPosition;
-        public static TooltipOptions Default => new TooltipOptions(margin: 12f);
+
+        public static TooltipPlacementOptions Default => new TooltipPlacementOptions(margin: 12f);
+
+        public TooltipPlacementOptions WithScreenPosition(Vector2 screenPosition)
+        {
+            return new TooltipPlacementOptions(
+                Anchor,
+                screenPosition,
+                Offset,
+                FollowPointer,
+                Margin,
+                PreferredAnchor,
+                useScreenPosition: true);
+        }
+
+        public TooltipPlacementOptions WithoutFollowPointer()
+        {
+            return new TooltipPlacementOptions(
+                Anchor,
+                ScreenPosition,
+                Offset,
+                followPointer: false,
+                Margin,
+                PreferredAnchor,
+                HasScreenPosition);
+        }
     }
 }

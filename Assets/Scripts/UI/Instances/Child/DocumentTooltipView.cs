@@ -5,12 +5,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed class DescribableTooltip : TooltipBase
+public class DocumentTooltipView : TooltipBase, ITooltipChromeHandler
 {
     [SerializeField] private RectTransform root;
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private ExtraInfoDescriber extraInfoDescriber;
+    [SerializeField] private TooltipChromeView chromeView;
 
     private readonly InfoDocumentService infoDocumentService = new();
 
@@ -25,22 +26,27 @@ public sealed class DescribableTooltip : TooltipBase
 
         if (root == null)
         {
-            throw new MissingComponentException($"{nameof(DescribableTooltip)} '{name}' requires a RectTransform root.");
+            throw new MissingComponentException($"{nameof(DocumentTooltipView)} '{name}' requires a RectTransform root.");
         }
 
         if (iconImage == null)
         {
-            throw new MissingReferenceException($"{nameof(DescribableTooltip)} '{name}' is missing icon image.");
+            throw new MissingReferenceException($"{nameof(DocumentTooltipView)} '{name}' is missing icon image.");
         }
 
         if (titleText == null)
         {
-            throw new MissingReferenceException($"{nameof(DescribableTooltip)} '{name}' is missing title text.");
+            throw new MissingReferenceException($"{nameof(DocumentTooltipView)} '{name}' is missing title text.");
         }
 
         if (extraInfoDescriber == null)
         {
-            throw new MissingReferenceException($"{nameof(DescribableTooltip)} '{name}' is missing description list displayer.");
+            throw new MissingReferenceException($"{nameof(DocumentTooltipView)} '{name}' is missing description list displayer.");
+        }
+
+        if (chromeView == null)
+        {
+            chromeView = GetComponentInChildren<TooltipChromeView>(true);
         }
     }
 
@@ -48,6 +54,11 @@ public sealed class DescribableTooltip : TooltipBase
     {
         ApplyDocument(ResolveDocument(context.Payload));
         return UniTask.CompletedTask;
+    }
+
+    public void ApplyTooltipChrome(TooltipChromeContext context)
+    {
+        chromeView?.ApplyTooltipChrome(context);
     }
 
     private InfoDocument ResolveDocument(object payload)

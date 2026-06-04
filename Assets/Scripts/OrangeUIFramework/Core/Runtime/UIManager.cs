@@ -38,7 +38,8 @@ namespace Orange.UIFramework
         private CanvasScaler rootCanvasScaler;
         private GraphicRaycaster rootGraphicRaycaster;
         private RectTransform layersRoot;
-        private RuntimeView currentTooltip;
+        private RuntimeView activeTransientTooltip;
+        private RuntimeView pinnedTooltip;
         private RuntimeView currentToast;
         private RectTransform modalMaskRoot;
         private Graphic modalMaskGraphic;
@@ -48,6 +49,7 @@ namespace Orange.UIFramework
         private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
         private IFloatingViewPositioner floatingViewPositioner;
+        private TooltipContentService tooltipContentService;
         // Monotonic UI request sequence.
         // Any transition that can supersede older async work bumps this value so stale continuations can detect it.
         private int requestVersion;
@@ -117,6 +119,7 @@ namespace Orange.UIFramework
             BuildFrameworkBlockers();
             viewLoader = new PrefabViewLoader();
             floatingViewPositioner = new FloatingViewPositioner();
+            tooltipContentService = new TooltipContentService();
             initialized = true;
         }
 
@@ -157,7 +160,7 @@ namespace Orange.UIFramework
                 requestVersion,
                 BuildViewDiagnostics(),
                 BuildPoolDiagnostics(),
-                currentTooltip != null ? currentTooltip.InstanceId : string.Empty,
+                activeTransientTooltip != null ? activeTransientTooltip.InstanceId : string.Empty,
                 currentToast != null ? currentToast.InstanceId : string.Empty,
                 rootCanvas != null ? rootCanvas.name : string.Empty,
                 rootCanvas != null && rootCanvas.gameObject.activeInHierarchy,
@@ -165,12 +168,14 @@ namespace Orange.UIFramework
                 BuildStackDiagnostics(pageStack),
                 BuildStackDiagnostics(popupStack),
                 BuildStackDiagnostics(modalStack),
-                BuildTooltipDiagnostics(),
+                BuildTooltipDiagnostics(activeTransientTooltip),
                 BuildToastDiagnostics(),
                 BuildOperationDiagnostics(),
                 BuildModalMaskDiagnostics(),
                 BuildPopupOutsideClickBlockerDiagnostics(),
-                BuildInputDiagnostics());
+                BuildInputDiagnostics(),
+                pinnedTooltip != null ? pinnedTooltip.InstanceId : string.Empty,
+                BuildTooltipDiagnostics(pinnedTooltip));
         }
 
         [ContextMenu("Log Runtime Diagnostics")]
@@ -185,6 +190,7 @@ namespace Orange.UIFramework
             builder.AppendLine($"Camera: {(string.IsNullOrWhiteSpace(diagnostics.CameraName) ? "None" : diagnostics.CameraName)}");
             builder.AppendLine($"RequestVersion: {diagnostics.RequestVersion}");
             builder.AppendLine($"CurrentTooltip: {(string.IsNullOrWhiteSpace(diagnostics.CurrentTooltipInstanceId) ? "None" : diagnostics.CurrentTooltipInstanceId)}");
+            builder.AppendLine($"PinnedTooltip: {(string.IsNullOrWhiteSpace(diagnostics.CurrentPinnedTooltipInstanceId) ? "None" : diagnostics.CurrentPinnedTooltipInstanceId)}");
             builder.AppendLine($"CurrentToast: {(string.IsNullOrWhiteSpace(diagnostics.CurrentToastInstanceId) ? "None" : diagnostics.CurrentToastInstanceId)}");
             builder.AppendLine($"ToastQueue: {diagnostics.Toast.QueueCount}");
             builder.AppendLine($"Layers: {diagnostics.Layers.Count}");
@@ -207,7 +213,8 @@ namespace Orange.UIFramework
             AppendStackDiagnostics(builder, "PageStack", diagnostics.PageStack);
             AppendStackDiagnostics(builder, "PopupStack", diagnostics.PopupStack);
             AppendStackDiagnostics(builder, "ModalStack", diagnostics.ModalStack);
-            AppendTooltipDiagnostics(builder, diagnostics.Tooltip);
+            AppendTooltipDiagnostics(builder, "TransientTooltip", diagnostics.Tooltip);
+            AppendTooltipDiagnostics(builder, "PinnedTooltip", diagnostics.PinnedTooltip);
             AppendToastDiagnostics(builder, diagnostics.Toast);
 
             for (int i = 0; i < diagnostics.OpenViews.Count; i++)
@@ -249,15 +256,15 @@ namespace Orange.UIFramework
             }
         }
 
-        private static void AppendTooltipDiagnostics(StringBuilder builder, TooltipDiagnostics tooltip)
+        private static void AppendTooltipDiagnostics(StringBuilder builder, string label, TooltipDiagnostics tooltip)
         {
             if (!tooltip.HasTooltip)
             {
-                builder.AppendLine("- Tooltip: None");
+                builder.AppendLine($"- {label}: None");
                 return;
             }
 
-            builder.AppendLine($"- Tooltip {tooltip.ViewTypeName}: id={tooltip.ViewId}, instance={tooltip.InstanceId}, phase={tooltip.Phase}, followPointer={tooltip.FollowPointer}, input={tooltip.InputActive}, raycast={tooltip.BlocksRaycasts}");
+            builder.AppendLine($"- {label} {tooltip.ViewTypeName}: id={tooltip.ViewId}, instance={tooltip.InstanceId}, phase={tooltip.Phase}, pinned={tooltip.IsPinned}, canPin={tooltip.CanPin}, canClose={tooltip.CanClose}, followPointer={tooltip.FollowPointer}, input={tooltip.InputActive}, raycast={tooltip.BlocksRaycasts}");
             if (tooltip.HasPlacement)
             {
                 builder.AppendLine($"  Placement: position={tooltip.AnchoredPosition}, anchor={tooltip.ResolvedAnchor}, flipped={tooltip.PlacementWasFlipped}, clamped={tooltip.PlacementWasClamped}");
@@ -355,13 +362,11 @@ namespace Orange.UIFramework
             return ShowModalInternalAsync<TModal, TResult>(payload, cancellationToken);
         }
 
-        public UniTask<ViewHandle<TTooltip>> ShowTooltipAsync<TTooltip>(
-            object payload,
-            TooltipOptions options,
+        public UniTask<TooltipSessionHandle> ShowTooltipAsync(
+            TooltipRequest request,
             CancellationToken cancellationToken = default)
-            where TTooltip : TooltipBase
         {
-            return ShowTooltipInternalAsync<TTooltip>(payload, options, cancellationToken);
+            return ShowTooltipInternalAsync(request, cancellationToken);
         }
 
         public UniTask<ViewHandle<TToast>> ShowToastAsync<TToast>(
@@ -378,20 +383,20 @@ namespace Orange.UIFramework
             return ClearToastsInternalAsync(cancellationToken);
         }
 
-        public void UpdateTooltipPosition(Vector2 screenPosition)
+        private void UpdateTooltipPosition(RuntimeView runtimeView, Vector2 screenPosition)
         {
-            if (currentTooltip == null || currentTooltip.View == null)
+            if (runtimeView == null || runtimeView.View == null)
             {
                 return;
             }
 
-            TooltipOptions currentOptions = currentTooltip.TooltipOptions;
+            TooltipPlacementOptions currentOptions = runtimeView.TooltipPlacementOptions;
             if (!currentOptions.FollowPointer)
             {
                 return;
             }
 
-            currentTooltip.TooltipOptions = new TooltipOptions(
+            runtimeView.TooltipPlacementOptions = new TooltipPlacementOptions(
                 currentOptions.Anchor,
                 screenPosition,
                 currentOptions.Offset,
@@ -399,12 +404,7 @@ namespace Orange.UIFramework
                 margin: currentOptions.Margin,
                 preferredAnchor: currentOptions.PreferredAnchor,
                 useScreenPosition: true);
-            ApplyTooltipPosition(currentTooltip);
-        }
-
-        public void HideTooltip()
-        {
-            HideTooltipWithGateAsync(CloseReason.Normal, CancellationToken.None).Forget();
+            ApplyTooltipPosition(runtimeView);
         }
 
         public bool IsOpen<TView>() where TView : ViewBase
@@ -687,38 +687,51 @@ namespace Orange.UIFramework
             return result;
         }
 
-        private async UniTask<ViewHandle<TTooltip>> ShowTooltipInternalAsync<TTooltip>(
-            object payload,
-            TooltipOptions options,
+        private async UniTask<TooltipSessionHandle> ShowTooltipInternalAsync(
+            TooltipRequest request,
             CancellationToken cancellationToken)
-            where TTooltip : TooltipBase
         {
             EnsureInitialized();
             cancellationToken.ThrowIfCancellationRequested();
             await tooltipOperationSemaphore.WaitAsync(cancellationToken);
             try
             {
-                await HideTooltipLockedAsync(CloseReason.Replace, CancellationToken.None);
+                if (!tooltipContentService.TryBuild(request, out TooltipContent content))
+                {
+                    throw new InvalidOperationException($"UIManager failed to build tooltip content from '{request.ResolveSource()?.GetType().Name ?? "null"}'.");
+                }
 
-                Type tooltipType = typeof(TTooltip);
-                ViewDefinition definition = GetViewDefinition(tooltipType, ViewKind.Tooltip);
+                TooltipSessionMode sessionMode = ResolveSessionMode(request);
+                RuntimeView replacedView = GetTooltipSlot(sessionMode);
+                if (replacedView != null)
+                {
+                    await CloseRuntimeViewAsync(replacedView, CloseReason.Replace, CancellationToken.None);
+                }
+
+                ViewDefinition definition = GetTooltipViewDefinition(content.ViewId);
+                Type tooltipType = GetDefinitionViewType(definition);
                 RuntimeView runtimeView = await OpenRuntimeViewAsync(
                     definition,
                     tooltipType,
                     ViewKind.Tooltip,
-                    payload,
+                    content.Payload,
                     ++requestVersion,
                     cancellationToken);
 
-                runtimeView.TooltipOptions = options;
+                runtimeView.TooltipPlacementOptions = ResolveRuntimePlacement(request, sessionMode);
+                runtimeView.TooltipContent = content;
+                runtimeView.TooltipChromeOptions = ResolveChromeOptions(content, request, sessionMode);
+                runtimeView.TooltipSessionMode = sessionMode;
                 if (!IsRuntimeViewOpened(runtimeView))
                 {
-                    RegisterOpenedTooltip(runtimeView);
+                    RegisterOpenedTooltip(runtimeView, sessionMode);
                 }
 
                 ApplyTooltipPosition(runtimeView);
+                TooltipSessionHandle handle = CreateTooltipSessionHandle(runtimeView);
+                ApplyTooltipChrome(runtimeView, handle);
                 RefreshInputState();
-                return new ViewHandle<TTooltip>(runtimeView.Handle, (TTooltip)runtimeView.View);
+                return handle;
             }
             finally
             {
@@ -1033,10 +1046,18 @@ namespace Orange.UIFramework
             RegisterSharedRuntimeState(runtimeView);
         }
 
-        private void RegisterOpenedTooltip(RuntimeView runtimeView)
+        private void RegisterOpenedTooltip(RuntimeView runtimeView, TooltipSessionMode sessionMode)
         {
             openedViewsByInstance[runtimeView.InstanceId] = runtimeView;
-            currentTooltip = runtimeView;
+            if (sessionMode == TooltipSessionMode.Pinned)
+            {
+                pinnedTooltip = runtimeView;
+            }
+            else
+            {
+                activeTransientTooltip = runtimeView;
+            }
+
             RegisterSharedRuntimeState(runtimeView);
         }
 
@@ -1159,12 +1180,124 @@ namespace Orange.UIFramework
             }
         }
 
-        private async UniTask HideTooltipWithGateAsync(CloseReason reason, CancellationToken cancellationToken)
+        private RuntimeView GetTooltipSlot(TooltipSessionMode sessionMode)
         {
+            return sessionMode == TooltipSessionMode.Pinned
+                ? pinnedTooltip
+                : activeTransientTooltip;
+        }
+
+        private RuntimeView GetOpenedTooltip(string instanceId)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId) ||
+                !openedViewsByInstance.TryGetValue(instanceId, out RuntimeView runtimeView) ||
+                runtimeView.Definition.Kind != ViewKind.Tooltip)
+            {
+                return null;
+            }
+
+            return runtimeView;
+        }
+
+        private TooltipSessionMode ResolveSessionMode(TooltipRequest request)
+        {
+            return request.PinMode == TooltipPinMode.Pinned
+                ? TooltipSessionMode.Pinned
+                : request.SessionMode;
+        }
+
+        private TooltipPlacementOptions ResolveRuntimePlacement(TooltipRequest request, TooltipSessionMode sessionMode)
+        {
+            TooltipPlacementOptions placement = request.PlacementOptions;
+            return sessionMode == TooltipSessionMode.Pinned
+                ? placement.WithoutFollowPointer()
+                : placement;
+        }
+
+        private TooltipChromeOptions ResolveChromeOptions(
+            TooltipContent content,
+            TooltipRequest request,
+            TooltipSessionMode sessionMode)
+        {
+            TooltipChromeOptions chromeOptions = content != null
+                ? content.ChromeOptions
+                : request.ChromeOptions;
+
+            if (request.PinMode == TooltipPinMode.UserOptional && !chromeOptions.AllowUserPin)
+            {
+                chromeOptions = new TooltipChromeOptions(
+                    allowUserPin: true,
+                    chromeOptions.ShowCloseButton,
+                    allowInteractiveTransient: true);
+            }
+
+            if (sessionMode == TooltipSessionMode.Pinned && !chromeOptions.ShowCloseButton)
+            {
+                chromeOptions = new TooltipChromeOptions(
+                    chromeOptions.AllowUserPin,
+                    showCloseButton: true,
+                    chromeOptions.AllowInteractiveTransient);
+            }
+
+            return chromeOptions;
+        }
+
+        private TooltipSessionHandle CreateTooltipSessionHandle(RuntimeView runtimeView)
+        {
+            string instanceId = runtimeView.InstanceId;
+            return new TooltipSessionHandle(
+                runtimeView.Handle,
+                runtimeView.TooltipSessionMode,
+                runtimeView.TooltipContent,
+                runtimeView.TooltipChromeOptions,
+                (reason, token) => CloseTooltipByInstanceIdAsync(instanceId, reason, token),
+                token => PinTooltipByInstanceIdAsync(instanceId, token),
+                token => UnpinTooltipByInstanceIdAsync(instanceId, token),
+                screenPosition => UpdateTooltipPosition(runtimeView, screenPosition));
+        }
+
+        private void ApplyTooltipChrome(RuntimeView runtimeView, TooltipSessionHandle handle)
+        {
+            if (runtimeView?.View == null)
+            {
+                return;
+            }
+
+            TooltipChromeContext context = new TooltipChromeContext(
+                handle,
+                runtimeView.TooltipChromeOptions,
+                runtimeView.TooltipSessionMode);
+
+            if (runtimeView.View is ITooltipChromeHandler chromeHandler)
+            {
+                chromeHandler.ApplyTooltipChrome(context);
+                return;
+            }
+
+            ITooltipChromeHandler childHandler = runtimeView.View.GetComponentInChildren<ITooltipChromeHandler>(true);
+            childHandler?.ApplyTooltipChrome(context);
+        }
+
+        private async UniTask CloseTooltipByInstanceIdAsync(
+            string instanceId,
+            CloseReason reason,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId))
+            {
+                return;
+            }
+
             await tooltipOperationSemaphore.WaitAsync(cancellationToken);
             try
             {
-                await HideTooltipLockedAsync(reason, cancellationToken);
+                if (!openedViewsByInstance.TryGetValue(instanceId, out RuntimeView runtimeView) ||
+                    runtimeView.Definition.Kind != ViewKind.Tooltip)
+                {
+                    return;
+                }
+
+                await CloseRuntimeViewAsync(runtimeView, reason, cancellationToken);
             }
             finally
             {
@@ -1172,14 +1305,85 @@ namespace Orange.UIFramework
             }
         }
 
-        private UniTask HideTooltipLockedAsync(CloseReason reason, CancellationToken cancellationToken)
+        private async UniTask PinTooltipByInstanceIdAsync(string instanceId, CancellationToken cancellationToken)
         {
-            if (currentTooltip == null)
+            if (string.IsNullOrWhiteSpace(instanceId))
             {
-                return UniTask.CompletedTask;
+                return;
             }
 
-            return CloseRuntimeViewAsync(currentTooltip, reason, cancellationToken);
+            await tooltipOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                if (!ReferenceEquals(activeTransientTooltip, GetOpenedTooltip(instanceId)))
+                {
+                    return;
+                }
+
+                RuntimeView transient = activeTransientTooltip;
+                if (transient == null)
+                {
+                    return;
+                }
+
+                if (pinnedTooltip != null)
+                {
+                    await CloseRuntimeViewAsync(pinnedTooltip, CloseReason.Replace, CancellationToken.None);
+                }
+
+                activeTransientTooltip = null;
+                pinnedTooltip = transient;
+                transient.TooltipSessionMode = TooltipSessionMode.Pinned;
+                transient.TooltipPlacementOptions = transient.TooltipPlacementOptions.WithoutFollowPointer();
+
+                TooltipSessionHandle handle = CreateTooltipSessionHandle(transient);
+                ApplyTooltipChrome(transient, handle);
+                RefreshInputState();
+            }
+            finally
+            {
+                tooltipOperationSemaphore.Release();
+            }
+        }
+
+        private async UniTask UnpinTooltipByInstanceIdAsync(string instanceId, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(instanceId))
+            {
+                return;
+            }
+
+            await tooltipOperationSemaphore.WaitAsync(cancellationToken);
+            try
+            {
+                if (!ReferenceEquals(pinnedTooltip, GetOpenedTooltip(instanceId)))
+                {
+                    return;
+                }
+
+                RuntimeView pinned = pinnedTooltip;
+                if (pinned == null)
+                {
+                    return;
+                }
+
+                if (activeTransientTooltip != null)
+                {
+                    await CloseRuntimeViewAsync(activeTransientTooltip, CloseReason.Replace, CancellationToken.None);
+                }
+
+                pinnedTooltip = null;
+                activeTransientTooltip = pinned;
+                pinned.TooltipSessionMode = TooltipSessionMode.Transient;
+
+                TooltipSessionHandle handle = CreateTooltipSessionHandle(pinned);
+                ApplyTooltipChrome(pinned, handle);
+                RefreshInputState();
+            }
+            finally
+            {
+                tooltipOperationSemaphore.Release();
+            }
         }
 
         private void CompleteModalResultIfNeeded(RuntimeView runtimeView, CloseReason reason)
@@ -1203,11 +1407,6 @@ namespace Orange.UIFramework
             modalStack.Remove(runtimeView);
             tickingViews.Remove(runtimeView.View);
 
-            if (ReferenceEquals(currentTooltip, runtimeView))
-            {
-                currentTooltip = null;
-            }
-
             if (ReferenceEquals(currentToast, runtimeView))
             {
                 currentToast = null;
@@ -1215,6 +1414,16 @@ namespace Orange.UIFramework
                 {
                     ProcessToastQueueAsync().Forget();
                 }
+            }
+
+            if (ReferenceEquals(activeTransientTooltip, runtimeView))
+            {
+                activeTransientTooltip = null;
+            }
+
+            if (ReferenceEquals(pinnedTooltip, runtimeView))
+            {
+                pinnedTooltip = null;
             }
 
             if (runtimeView.Definition.Singleton &&
@@ -1398,23 +1607,26 @@ namespace Orange.UIFramework
                 runtimeView.Definition.CloseOnBackgroundClick);
         }
 
-        private TooltipDiagnostics BuildTooltipDiagnostics()
+        private TooltipDiagnostics BuildTooltipDiagnostics(RuntimeView tooltip)
         {
-            if (currentTooltip == null)
+            if (tooltip == null)
             {
                 return default;
             }
 
-            FloatingViewPlacement placement = currentTooltip.LastPlacement;
+            FloatingViewPlacement placement = tooltip.LastPlacement;
             return new TooltipDiagnostics(
                 true,
-                currentTooltip.InstanceId,
-                currentTooltip.Definition.Id,
-                currentTooltip.ViewType.Name,
-                currentTooltip.View != null ? currentTooltip.View.Phase : ViewPhase.None,
-                currentTooltip.TooltipOptions.FollowPointer,
-                currentTooltip.View != null && currentTooltip.View.InputActive,
-                currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
+                tooltip.InstanceId,
+                tooltip.Definition.Id,
+                tooltip.ViewType.Name,
+                tooltip.View != null ? tooltip.View.Phase : ViewPhase.None,
+                tooltip.TooltipPlacementOptions.FollowPointer,
+                tooltip.View != null && tooltip.View.InputActive,
+                tooltip.View != null && tooltip.View.BlocksRaycasts,
+                tooltip.TooltipSessionMode == TooltipSessionMode.Pinned,
+                tooltip.TooltipChromeOptions.AllowUserPin,
+                tooltip.TooltipChromeOptions.ShowCloseButton,
                 placement.HasValue,
                 placement.AnchoredPosition,
                 placement.ResolvedAnchor,
@@ -1564,8 +1776,18 @@ namespace Orange.UIFramework
                 topModal != null,
                 inputActiveCount,
                 raycastBlockingCount,
-                currentTooltip != null && currentTooltip.View != null && currentTooltip.View.BlocksRaycasts,
+                HasTooltipBlockingRaycasts(),
                 currentToast != null && currentToast.View != null && currentToast.View.BlocksRaycasts);
+        }
+
+        private bool HasTooltipBlockingRaycasts()
+        {
+            return activeTransientTooltip != null &&
+                   activeTransientTooltip.View != null &&
+                   activeTransientTooltip.View.BlocksRaycasts ||
+                   pinnedTooltip != null &&
+                   pinnedTooltip.View != null &&
+                   pinnedTooltip.View.BlocksRaycasts;
         }
 
         /// <summary>
@@ -1701,10 +1923,8 @@ namespace Orange.UIFramework
                 modal.View.ApplyInputState(active, active);
             }
 
-            if (currentTooltip != null && currentTooltip.View != null)
-            {
-                currentTooltip.View.ApplyInputState(false, false);
-            }
+            ApplyTooltipInputState(activeTransientTooltip);
+            ApplyTooltipInputState(pinnedTooltip);
 
             if (currentToast != null && currentToast.View != null)
             {
@@ -1713,6 +1933,19 @@ namespace Orange.UIFramework
 
             RefreshModalMask();
             RefreshPopupOutsideClickBlocker();
+        }
+
+        private static void ApplyTooltipInputState(RuntimeView tooltip)
+        {
+            if (tooltip == null || tooltip.View == null)
+            {
+                return;
+            }
+
+            bool interactive = tooltip.TooltipSessionMode == TooltipSessionMode.Pinned ||
+                               tooltip.TooltipChromeOptions.RequiresInteraction;
+            bool blocksRaycasts = interactive;
+            tooltip.View.ApplyInputState(interactive, blocksRaycasts);
         }
 
         private void ApplyPopupPosition(RuntimeView runtimeView)
@@ -1756,7 +1989,7 @@ namespace Orange.UIFramework
                 return;
             }
 
-            TooltipOptions options = runtimeView.TooltipOptions;
+            TooltipPlacementOptions options = runtimeView.TooltipPlacementOptions;
             bool hasPlacementOrigin = options.HasAnchor || options.HasScreenPosition;
             runtimeView.LastPlacement = floatingViewPositioner.Place(
                 rectTransform,
@@ -1817,6 +2050,41 @@ namespace Orange.UIFramework
             }
 
             return definition;
+        }
+
+        private ViewDefinition GetTooltipViewDefinition(string viewId)
+        {
+            if (string.IsNullOrWhiteSpace(viewId))
+            {
+                throw new ArgumentException("Tooltip view id cannot be empty.", nameof(viewId));
+            }
+
+            if (!catalog.TryFindById(viewId, out ViewDefinition definition))
+            {
+                throw new KeyNotFoundException($"UIManager failed: tooltip view id '{viewId}' is not registered in ViewCatalog.");
+            }
+
+            if (definition.Kind != ViewKind.Tooltip)
+            {
+                throw new InvalidOperationException($"UIManager failed: view id '{viewId}' is registered as '{definition.Kind}', expected '{ViewKind.Tooltip}'.");
+            }
+
+            return definition;
+        }
+
+        private static Type GetDefinitionViewType(ViewDefinition definition)
+        {
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
+
+            if (!definition.TryGetViewType(out Type viewType))
+            {
+                throw new InvalidOperationException($"UIManager failed: view definition '{definition.Id}' does not resolve to a ViewBase type.");
+            }
+
+            return viewType;
         }
 
         private void EnsureInitialized()
@@ -2215,11 +2483,15 @@ namespace Orange.UIFramework
             public UniTask CloseTask => CloseSource != null ? CloseSource.Task : UniTask.CompletedTask;
             public int RequestVersion { get; }
             public PopupOptions PopupOptions { get; set; }
-            public TooltipOptions TooltipOptions { get; set; }
+            public TooltipPlacementOptions TooltipPlacementOptions { get; set; }
+            public TooltipContent TooltipContent { get; set; }
+            public TooltipChromeOptions TooltipChromeOptions { get; set; }
+            public TooltipSessionMode TooltipSessionMode { get; set; }
             public ToastOptions ToastOptions { get; set; }
             public FloatingViewPlacement LastPlacement { get; set; }
             public bool Closing { get; set; }
         }
+
 
         private sealed class ToastRequest
         {

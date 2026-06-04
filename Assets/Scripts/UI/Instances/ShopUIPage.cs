@@ -74,6 +74,7 @@ public class ShopUIPage : PageBase
         BindManagerEvents();
         BindCurrencyWallet(context.CurrencyWallet);
         BindItemListEvents();
+        itemList.ConfigureOwner(OwnerManager);
         shopManager.RefreshViewState();
     }
 
@@ -88,6 +89,7 @@ public class ShopUIPage : PageBase
         UnbindItemListEvents();
 
         itemList.Clear();
+        itemList.ConfigureOwner(null);
 
         shopManager = null;
         currencyWallet = null;

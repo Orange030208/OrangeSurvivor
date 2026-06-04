@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
+public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler, IInfoDocumentSource
 {
     [Serializable]
     private sealed class ShopItemTierConsumer : IContentTierConsumer
@@ -64,6 +64,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
     [SerializeField] private ShopItemTierConsumer tierConsumer = new();
 
     private int currentIndex = -1;
+    private ShopItemData currentShopItem;
     private bool isSoldOut;
     private GameObject soldOutOverlayInstance;
     private bool missingSoldOutOverlayLogged;
@@ -123,6 +124,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         RemoveButtonListeners();
 
         currentIndex = resource.index;
+        currentShopItem = shopItem;
         SetSoldOutState(shopItem.SoldOut);
         AddButtonListeners();
     }
@@ -138,7 +140,29 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         BuyRequested = null;
         LockToggleRequested = null;
         currentIndex = -1;
+        currentShopItem = default;
         SetSoldOutState(false);
+    }
+
+    public InfoDocument BuildInfoDocument()
+    {
+        ItemDataSO itemData = currentShopItem.ItemData;
+        if (itemData == null)
+        {
+            return null;
+        }
+
+        if (itemData is WeaponDataSO weaponData)
+        {
+            return new WeaponLevelDescribable(weaponData, currentShopItem.Level).BuildInfoDocument();
+        }
+
+        if (itemData is IInfoDocumentSource infoDocumentSource)
+        {
+            return infoDocumentSource.BuildInfoDocument();
+        }
+
+        return null;
     }
 
     public void OnPointerClick(PointerEventData eventData)

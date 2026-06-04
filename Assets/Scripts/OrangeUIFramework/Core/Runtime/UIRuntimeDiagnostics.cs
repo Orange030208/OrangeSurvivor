@@ -25,7 +25,9 @@ namespace Orange.UIFramework
             UIOperationDiagnostics operations = default,
             UIBlockerDiagnostics modalMask = default,
             UIBlockerDiagnostics popupOutsideClickBlocker = default,
-            UIInputDiagnostics input = default)
+            UIInputDiagnostics input = default,
+            string currentPinnedTooltipInstanceId = "",
+            TooltipDiagnostics pinnedTooltip = default)
         {
             CanvasMode = canvasMode ?? string.Empty;
             CameraName = cameraName ?? string.Empty;
@@ -46,6 +48,8 @@ namespace Orange.UIFramework
             ModalMask = modalMask;
             PopupOutsideClickBlocker = popupOutsideClickBlocker;
             Input = input;
+            CurrentPinnedTooltipInstanceId = currentPinnedTooltipInstanceId ?? string.Empty;
+            PinnedTooltip = pinnedTooltip;
         }
 
         public string CanvasMode { get; }
@@ -60,8 +64,10 @@ namespace Orange.UIFramework
         public IReadOnlyList<ViewDiagnostics> OpenViews { get; }
         public IReadOnlyList<PoolDiagnostics> Pools { get; }
         public string CurrentTooltipInstanceId { get; }
+        public string CurrentPinnedTooltipInstanceId { get; }
         public string CurrentToastInstanceId { get; }
         public TooltipDiagnostics Tooltip { get; }
+        public TooltipDiagnostics PinnedTooltip { get; }
         public ToastDiagnostics Toast { get; }
         public UIOperationDiagnostics Operations { get; }
         public UIBlockerDiagnostics ModalMask { get; }
@@ -221,6 +227,9 @@ namespace Orange.UIFramework
             bool followPointer,
             bool inputActive,
             bool blocksRaycasts,
+            bool isPinned,
+            bool canPin,
+            bool canClose,
             bool hasPlacement,
             Vector2 anchoredPosition,
             FloatingViewAnchor resolvedAnchor,
@@ -235,6 +244,9 @@ namespace Orange.UIFramework
             FollowPointer = followPointer;
             InputActive = inputActive;
             BlocksRaycasts = blocksRaycasts;
+            IsPinned = isPinned;
+            CanPin = canPin;
+            CanClose = canClose;
             HasPlacement = hasPlacement;
             AnchoredPosition = anchoredPosition;
             ResolvedAnchor = resolvedAnchor;
@@ -250,6 +262,9 @@ namespace Orange.UIFramework
         public bool FollowPointer { get; }
         public bool InputActive { get; }
         public bool BlocksRaycasts { get; }
+        public bool IsPinned { get; }
+        public bool CanPin { get; }
+        public bool CanClose { get; }
         public bool HasPlacement { get; }
         public Vector2 AnchoredPosition { get; }
         public FloatingViewAnchor ResolvedAnchor { get; }
