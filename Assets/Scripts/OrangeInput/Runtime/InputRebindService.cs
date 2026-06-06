@@ -112,12 +112,24 @@ namespace Orange.Input
             }
 
             string[] cancelControlPaths = entry.CancelControlPaths;
+            bool hasCancelControlPath = false;
             for (int i = 0; i < cancelControlPaths.Length; i++)
             {
                 if (!string.IsNullOrWhiteSpace(cancelControlPaths[i]))
                 {
+                    if (string.Equals(cancelControlPaths[i], "<Keyboard>/escape", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     operation.WithCancelingThrough(cancelControlPaths[i]);
+                    hasCancelControlPath = true;
                 }
+            }
+
+            if (!hasCancelControlPath && TryResolveDefaultCancelControlPath(entry, out string fallbackCancelControlPath))
+            {
+                operation.WithCancelingThrough(fallbackCancelControlPath);
             }
 
             operation = operation.OnCancel(rebindOperation =>
@@ -301,6 +313,25 @@ namespace Orange.Input
             }
 
             return string.Empty;
+        }
+
+        private static bool TryResolveDefaultCancelControlPath(InputRebindEntry entry, out string cancelControlPath)
+        {
+            cancelControlPath = string.Empty;
+
+            if (entry.ControlScheme.IndexOf("Gamepad", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                cancelControlPath = "<Gamepad>/buttonEast";
+                return true;
+            }
+
+            if (entry.ControlScheme.IndexOf("Keyboard", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                cancelControlPath = "<Keyboard>/backspace";
+                return true;
+            }
+
+            return false;
         }
 
         private static string ResolveRequiredDeviceName(string requiredControlPath)

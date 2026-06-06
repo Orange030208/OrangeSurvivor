@@ -465,6 +465,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7489271957595290616}
   - component: {fileID: 4101000000000000001}
+  - component: {fileID: 4101000000000000002}
+  - component: {fileID: 4101000000000000004}
   m_Layer: 5
   m_Name: Product
   m_TagString: Untagged
@@ -522,6 +524,41 @@ MonoBehaviour:
     currencyFrameImage: {fileID: 6388404554173141612}
     titleText: {fileID: 8765713524443440003}
     colorPalette: {fileID: 11400000, guid: ef9381ffb3bcc5446bebe8c824b323ef, type: 2}
+--- !u!114 &4101000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959106672326105166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57de027e9d73498eb865986b5e0ef0e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contentSourceComponent: {fileID: 4101000000000000001}
+  triggerMode: -1
+  hoverDelay: 0.05
+  longPressDelay: 0
+  followPointer: 1
+  offset: {x: 18, y: -18}
+  margin: 12
+  preferredAnchor: 0
+  allowPin: 0
+  allowInteractiveTransient: 0
+--- !u!114 &4101000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959106672326105166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c0ac748648a4ec5a778d8f816e27d7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetContainer: {fileID: 4101000000000000001}
 --- !u!1 &6436188089621444524
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,14 +7,14 @@ public static class CardQualityResolver
         return ContentTierResolver.FromUpgradeCardRarity(rarity).ToCardQuality();
     }
 
-    public static CardQuality FromAccessoryRarity(AccessoryRarity rarity)
+    public static CardQuality FromAccessoryTier(ContentTier tier)
     {
-        return ContentTierResolver.FromAccessoryRarity(rarity).ToCardQuality();
+        return tier.ToCardQuality();
     }
 
-    public static CardQuality FromAccessoryRarity(int rarity)
+    public static CardQuality FromAccessoryTier(int tier)
     {
-        return ContentTierResolver.FromAccessoryRarity(rarity).ToCardQuality();
+        return ((ContentTier)tier).ToCardQuality();
     }
 
     public static CardQuality FromWeaponLevel(int level)

@@ -77,7 +77,7 @@ public static class AccessoryJsonAssetSync
 
     private static void ValidateAccessory(AccessoryJsonAccessory accessory)
     {
-        ParseEnum<AccessoryRarity>(accessory.rarity, accessory.accessoryId, nameof(accessory.rarity));
+        ParseEnum<ContentTier>(accessory.rarity, accessory.accessoryId, nameof(accessory.rarity));
         if (accessory.itemPrice < 0)
         {
             throw new DataImportException($"{accessory.accessoryId} itemPrice must be >= 0.");
@@ -113,7 +113,7 @@ public static class AccessoryJsonAssetSync
         DataImportAssetUtility.SetEnum(serializedObject, "itemType", ItemType.Accessory);
         DataImportAssetUtility.SetString(serializedObject, "itemDescription", data.itemDescription);
         DataImportAssetUtility.FindRequiredProperty(serializedObject, "recyclePrice").intValue = Mathf.Max(0, data.recyclePrice);
-        DataImportAssetUtility.SetEnum(serializedObject, "rarity", ParseEnum<AccessoryRarity>(data.rarity, data.accessoryId, nameof(data.rarity)));
+        DataImportAssetUtility.SetEnum(serializedObject, "tier", ParseEnum<ContentTier>(data.rarity, data.accessoryId, nameof(data.rarity)));
         DataImportAssetUtility.FindRequiredProperty(serializedObject, "maxOwnedCount").intValue = Mathf.Max(0, data.maxOwnedCount);
         WritePropertyModifiers(serializedObject, data);
         WriteSpecialFeatures(serializedObject, data);

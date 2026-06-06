@@ -7,9 +7,9 @@ public static class ColorHelper
         return ItemQualityVisualResolver.Resolve(ItemType.Weapon, level).PrimaryColor;
     }
 
-    public static Color GetColorByRarity(int rarity)
+    public static Color GetColorByTier(ContentTier tier)
     {
-        return ItemQualityVisualResolver.Resolve(ItemType.Accessory, rarity).PrimaryColor;
+        return ItemQualityVisualResolver.Resolve(ItemType.Accessory, (int)tier).PrimaryColor;
     }
 
     public static Color GetColorByValue(float value)

@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Accessory Data", menuName = ScriptableObjectMenuPaths.ACCESSORY, order = 0)]
-public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource
+public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource, IHasContentTier
 {
     [SerializeField] protected string accessoryId;
     [SerializeField] protected int recyclePrice;
 
-    [SerializeField] private AccessoryRarity rarity;
+    [FormerlySerializedAs("rarity")]
+    [SerializeField] private ContentTier tier;
 
     [Header("持有规则")]
     [Tooltip("0 表示不限持有；1 表示唯一；大于 1 表示最多可同时持有的数量。")]
@@ -23,8 +25,7 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource
 
     public string AccessoryId => accessoryId;
     public int RecyclePrice => recyclePrice;
-    public AccessoryRarity RarityGrade => rarity;
-    public int Rarity => (int)rarity;
+    public ContentTier Tier => tier;
     public int MaxOwnedCount => Mathf.Max(0, maxOwnedCount);
     public bool HasOwnedLimit => MaxOwnedCount > 0;
     public override string Description => BuildDescription();
@@ -41,6 +42,7 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource
         }
 
         itemType = ItemType.Accessory;
+        tier = ContentTierResolver.FromQualityValue((int)tier);
         maxOwnedCount = Mathf.Max(0, maxOwnedCount);
     }
 
@@ -91,7 +93,7 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource
     {
         yield return new ItemDescriptionLine(
             "品质",
-            ItemDescriptionUtility.FormatRarity(rarity),
+            ItemDescriptionUtility.FormatRarity(tier),
             ItemDescriptionLineKind.Meta);
         if (HasOwnedLimit)
         {

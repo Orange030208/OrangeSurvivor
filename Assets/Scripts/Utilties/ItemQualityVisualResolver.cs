@@ -3,7 +3,7 @@ using UnityEngine;
 public static class ItemQualityVisualResolver
 {
     private const int MIN_WEAPON_LEVEL = 1;
-    private const int MAX_ACCESSORY_RARITY = 3;
+    private const int MAX_ACCESSORY_TIER = 3;
 
     private static readonly ItemQualityVisualStyle[] DefaultWeaponStyles =
     {
@@ -15,10 +15,10 @@ public static class ItemQualityVisualResolver
 
     private static readonly ItemQualityVisualStyle[] DefaultAccessoryStyles =
     {
-        CreateDefaultStyle((int)AccessoryRarity.Common, "Common", new Color32(184, 199, 209, 255)),
-        CreateDefaultStyle((int)AccessoryRarity.Rare, "Rare", new Color32(64, 140, 242, 255)),
-        CreateDefaultStyle((int)AccessoryRarity.Epic, "Epic", new Color32(168, 97, 230, 255)),
-        CreateDefaultStyle((int)AccessoryRarity.Legendary, "Legendary", new Color32(255, 168, 46, 255))
+        CreateDefaultStyle((int)ContentTier.Common, "Common", new Color32(184, 199, 209, 255)),
+        CreateDefaultStyle((int)ContentTier.Rare, "Rare", new Color32(64, 140, 242, 255)),
+        CreateDefaultStyle((int)ContentTier.Epic, "Epic", new Color32(168, 97, 230, 255)),
+        CreateDefaultStyle((int)ContentTier.Legendary, "Legendary", new Color32(255, 168, 46, 255))
     };
 
     public static ItemQualityVisualStyle Resolve(ItemDataSO itemData, int qualityValue)
@@ -46,9 +46,9 @@ public static class ItemQualityVisualResolver
         return ResolveDefaultStyle(ItemType.Weapon, level);
     }
 
-    public static ItemQualityVisualStyle GetDefaultAccessoryRarityStyle(int rarity)
+    public static ItemQualityVisualStyle GetDefaultAccessoryTierStyle(ContentTier tier)
     {
-        return ResolveDefaultStyle(ItemType.Accessory, rarity);
+        return ResolveDefaultStyle(ItemType.Accessory, (int)tier);
     }
 
     public static void Apply(
@@ -92,7 +92,7 @@ public static class ItemQualityVisualResolver
             case ItemType.Weapon:
                 return config.TryGetWeaponLevelStyle(qualityValue, out style);
             case ItemType.Accessory:
-                return config.TryGetAccessoryRarityStyle(qualityValue, out style);
+                return config.TryGetAccessoryTierStyle((ContentTier)qualityValue, out style);
             default:
                 style = default;
                 return false;
@@ -104,7 +104,7 @@ public static class ItemQualityVisualResolver
         switch (itemType)
         {
             case ItemType.Accessory:
-                return DefaultAccessoryStyles[Mathf.Clamp(qualityValue, 0, MAX_ACCESSORY_RARITY)];
+                return DefaultAccessoryStyles[Mathf.Clamp(qualityValue, 0, MAX_ACCESSORY_TIER)];
             case ItemType.Weapon:
             default:
                 int weaponIndex = Mathf.Clamp(WeaponLevelHelper.ClampLevel(qualityValue) - MIN_WEAPON_LEVEL, 0, DefaultWeaponStyles.Length - 1);

@@ -1,42 +1,51 @@
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public sealed class EquipmentInfoDocumentView : ViewPartBase
 {
-    [SerializeField] private Image iconImage;
+    [FormerlySerializedAs("iconImage")]
+    [SerializeField] private Image legacyIconImage;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI typeText;
+    [FormerlySerializedAs("typeText")]
+    [SerializeField] private TextMeshProUGUI metaText;
     [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private GameObject iconRoot;
 
     private void Awake()
     {
         ResolveReferences();
     }
 
-    public void Render(EquipmentInfoDocumentViewData data)
+    public void Render(ItemInfoViewData data)
     {
         ResolveReferences();
-        if (iconImage != null)
-        {
-            iconImage.sprite = data.Icon;
-            iconImage.enabled = data.Icon != null;
-        }
-
         if (nameText != null)
         {
             nameText.text = data.Name ?? string.Empty;
         }
 
-        if (typeText != null)
+        if (metaText != null)
         {
-            typeText.text = data.TypeText ?? string.Empty;
+            metaText.text = data.GetMetaText();
+            metaText.gameObject.SetActive(!string.IsNullOrWhiteSpace(metaText.text));
         }
 
         if (descriptionText != null)
         {
-            descriptionText.text = data.DescriptionText ?? string.Empty;
+            descriptionText.text = data.BodyRichText ?? string.Empty;
+        }
+
+        if (iconRoot == null && legacyIconImage != null)
+        {
+            iconRoot = legacyIconImage.gameObject;
+        }
+
+        if (iconRoot != null && iconRoot.activeSelf)
+        {
+            iconRoot.SetActive(false);
         }
     }
 
@@ -47,28 +56,39 @@ public sealed class EquipmentInfoDocumentView : ViewPartBase
 
     private void ResolveReferences()
     {
-        if (iconImage == null)
-        {
-            Transform icon = FindChildByName(transform, "InfoIcon");
-            iconImage = icon != null ? icon.GetComponent<Image>() : null;
-        }
-
         if (nameText == null)
         {
-            Transform text = FindChildByName(transform, "ItemName");
+            Transform text = FindChildByName(transform, "Name")
+                ?? FindChildByName(transform, "ItemName");
             nameText = text != null ? text.GetComponent<TextMeshProUGUI>() : null;
         }
 
-        if (typeText == null)
+        if (metaText == null)
         {
-            Transform text = FindChildByName(transform, "ItemType");
-            typeText = text != null ? text.GetComponent<TextMeshProUGUI>() : null;
+            Transform text = FindChildByName(transform, "Tag")
+                ?? FindChildByName(transform, "ItemType");
+            metaText = text != null ? text.GetComponent<TextMeshProUGUI>() : null;
         }
 
         if (descriptionText == null)
         {
-            Transform text = FindChildByName(transform, "InfoText");
+            Transform text = FindChildByName(transform, "Desc")
+                ?? FindChildByName(transform, "InfoText");
             descriptionText = text != null ? text.GetComponent<TextMeshProUGUI>() : null;
+        }
+
+        if (iconRoot == null)
+        {
+            Transform icon = FindChildByName(transform, "Icon")
+                ?? FindChildByName(transform, "InfoIcon");
+            iconRoot = icon != null ? icon.gameObject : null;
+        }
+
+        if (legacyIconImage == null)
+        {
+            Transform icon = FindChildByName(transform, "Icon")
+                ?? FindChildByName(transform, "InfoIcon");
+            legacyIconImage = icon != null ? icon.GetComponent<Image>() : null;
         }
     }
 

@@ -81,3 +81,4 @@ MonoBehaviour:
     blocksRaycasts: 1
   popupOutsideClickBlocker:
     prefab: {fileID: 5977609757145941152, guid: c2f95bd782735aa4188697310f2a2ba2, type: 3}
+  defaultTextTooltipViewId: tooltip.text

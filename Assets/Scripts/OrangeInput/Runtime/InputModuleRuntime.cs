@@ -116,6 +116,11 @@ namespace Orange.Input
             {
                 ActionsAsset.LoadBindingOverridesFromJson(overridesJson);
             }
+
+            if (StripLegacyEscapeOverrides() && profile.BindingOverrideStore != null)
+            {
+                profile.BindingOverrideStore.SaveBindingOverrides(SaveBindingOverrides());
+            }
         }
 
         public void ClearBindingOverrides()
@@ -154,6 +159,35 @@ namespace Orange.Input
 
             profile.BindingOverrideStore.ClearBindingOverrides();
             return true;
+        }
+
+        private bool StripLegacyEscapeOverrides()
+        {
+            if (ActionsAsset == null)
+            {
+                return false;
+            }
+
+            bool removedAny = false;
+            foreach (InputActionMap actionMap in ActionsAsset.actionMaps)
+            {
+                foreach (InputAction action in actionMap.actions)
+                {
+                    for (int bindingIndex = action.bindings.Count - 1; bindingIndex >= 0; bindingIndex--)
+                    {
+                        InputBinding binding = action.bindings[bindingIndex];
+                        if (!string.Equals(binding.effectivePath, "<Keyboard>/escape", System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        action.RemoveBindingOverride(bindingIndex);
+                        removedAny = true;
+                    }
+                }
+            }
+
+            return removedAny;
         }
 
         public bool ConfigureUi(EventSystem eventSystem)

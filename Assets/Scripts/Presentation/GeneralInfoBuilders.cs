@@ -19,7 +19,7 @@ public sealed class AccessoryInfoBuilder : IInfoDocumentBuilder<AccessoryDataSO>
         List<InfoSection> sections = new();
         List<InfoLine> metaLines = new()
         {
-            InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.RarityGrade), InfoTone.Emphasis)
+            InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.Tier), InfoTone.Emphasis)
         };
 
         if (source.HasOwnedLimit)
@@ -42,7 +42,7 @@ public sealed class AccessoryInfoBuilder : IInfoDocumentBuilder<AccessoryDataSO>
             source.ItemName,
             source.ItemIcon,
             InfoDocumentKind.Accessory,
-            new[] { ItemDescriptionUtility.FormatRarity(source.RarityGrade) },
+            new[] { ItemDescriptionUtility.FormatRarity(source.Tier) },
             sections);
     }
 }

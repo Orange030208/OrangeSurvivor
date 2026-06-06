@@ -43,7 +43,7 @@ public struct ShopItemData : IHasContentTier
 
         if (ItemData is AccessoryDataSO accessoryData)
         {
-            return ContentTierResolver.FromAccessoryRarity(accessoryData.RarityGrade);
+            return accessoryData.Tier;
         }
 
         return RollItem.TryGetTier(out ContentTier tier) ? tier : ContentTier.Common;

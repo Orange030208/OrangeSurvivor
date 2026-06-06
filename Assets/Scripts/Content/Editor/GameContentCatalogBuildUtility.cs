@@ -160,11 +160,11 @@ public static class GameContentCatalogBuildUtility
             ContentPoolEntry entry = new(accessory, DefaultAccessoryWeight, accessory.AccessoryId);
             entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
             {
-                new QualityMetadata(ContentTierResolver.FromAccessoryRarity(accessory.RarityGrade))
+                new QualityMetadata(accessory.Tier)
             });
             entry.ConfigureRuntimeRules(
                 new ContentCondition[] { new AccessoryOwnedLimitCondition() },
-                new[] { CreateLuckWeightRule(GetAccessoryLuckCoefficient(accessory.RarityGrade), 0.5f) });
+                new[] { CreateLuckWeightRule(GetAccessoryLuckCoefficient(accessory.Tier), 0.5f) });
             entries.Add(entry);
         }
 
@@ -353,14 +353,14 @@ public static class GameContentCatalogBuildUtility
             0f);
     }
 
-    private static float GetAccessoryLuckCoefficient(AccessoryRarity rarity)
+    private static float GetAccessoryLuckCoefficient(ContentTier tier)
     {
-        return rarity switch
+        return tier switch
         {
-            AccessoryRarity.Common => -0.4f,
-            AccessoryRarity.Rare => 0.4f,
-            AccessoryRarity.Epic => 0.9f,
-            AccessoryRarity.Legendary => 1.4f,
+            ContentTier.Common => -0.4f,
+            ContentTier.Rare => 0.4f,
+            ContentTier.Epic => 0.9f,
+            ContentTier.Legendary => 1.4f,
             _ => 0f
         };
     }

@@ -16,4 +16,14 @@ public class ExtraInfoDescriber :Describer
             ? InfoDocumentTextFormatter.ToRichText(document)
             : string.Empty;
     }
+
+    public void DisplayText(string text)
+    {
+        if (infoText == null)
+        {
+            return;
+        }
+
+        infoText.text = text ?? string.Empty;
+    }
 }

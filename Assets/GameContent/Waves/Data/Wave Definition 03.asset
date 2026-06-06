@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveId: Wave_003
   displayName: Wave 3
-  duration: 40
+  duration: 30
   completionMode: 0
   spawnLocation:
     resolverSettings:

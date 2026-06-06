@@ -7,6 +7,5 @@ namespace Orange.UIFramework
     {
         Hover = 1,
         LongPress = 2,
-        HoverAndLongPress = Hover | LongPress
     }
 }

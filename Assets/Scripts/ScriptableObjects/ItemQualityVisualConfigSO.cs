@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,27 +8,28 @@ public class ItemQualityVisualConfigSO : ScriptableObject
     [Header("武器等级样式")]
     [SerializeField] private List<ItemQualityVisualStyle> weaponLevelStyles = new();
 
-    [Header("饰品稀有度样式")]
-    [SerializeField] private List<ItemQualityVisualStyle> accessoryRarityStyles = new();
+    [Header("饰品品质样式")]
+    [FormerlySerializedAs("accessoryRarityStyles")]
+    [SerializeField] private List<ItemQualityVisualStyle> accessoryTierStyles = new();
 
     public IReadOnlyList<ItemQualityVisualStyle> WeaponLevelStyles => weaponLevelStyles;
-    public IReadOnlyList<ItemQualityVisualStyle> AccessoryRarityStyles => accessoryRarityStyles;
+    public IReadOnlyList<ItemQualityVisualStyle> AccessoryTierStyles => accessoryTierStyles;
 
     public bool TryGetWeaponLevelStyle(int level, out ItemQualityVisualStyle style)
     {
         return TryGetStyle(weaponLevelStyles, WeaponLevelHelper.ClampLevel(level), out style);
     }
 
-    public bool TryGetAccessoryRarityStyle(int rarity, out ItemQualityVisualStyle style)
+    public bool TryGetAccessoryTierStyle(ContentTier tier, out ItemQualityVisualStyle style)
     {
-        return TryGetStyle(accessoryRarityStyles, Mathf.Clamp(rarity, 0, (int)AccessoryRarity.Legendary), out style);
+        return TryGetStyle(accessoryTierStyles, Mathf.Clamp((int)tier, (int)ContentTier.Common, (int)ContentTier.Legendary), out style);
     }
 
     private void OnValidate()
     {
         RemoveUnsupportedWeaponLevelStyles();
         weaponLevelStyles.Sort(CompareStyle);
-        accessoryRarityStyles.Sort(CompareStyle);
+        accessoryTierStyles.Sort(CompareStyle);
     }
 
     [NaughtyAttributes.Button("使用默认样式")]
@@ -39,10 +41,10 @@ public class ItemQualityVisualConfigSO : ScriptableObject
             weaponLevelStyles.Add(ItemQualityVisualResolver.GetDefaultWeaponLevelStyle(level));
         }
 
-        accessoryRarityStyles.Clear();
-        for (int rarity = 0; rarity <= (int)AccessoryRarity.Legendary; rarity++)
+        accessoryTierStyles.Clear();
+        for (int rarity = (int)ContentTier.Common; rarity <= (int)ContentTier.Legendary; rarity++)
         {
-            accessoryRarityStyles.Add(ItemQualityVisualResolver.GetDefaultAccessoryRarityStyle(rarity));
+            accessoryTierStyles.Add(ItemQualityVisualResolver.GetDefaultAccessoryTierStyle((ContentTier)rarity));
         }
     }
 

@@ -40,7 +40,7 @@ public class AccessoryManager : EntityComponentBase
         }
     }
 
-    public override void OnDisableComponent()
+public override void OnDisableComponent()
     {
         ClearEquippedAccessories();
     }
@@ -64,7 +64,7 @@ public class AccessoryManager : EntityComponentBase
             equippedAccessoryDict[accessoryKey] = dictList;
         }
 
-        var newAccessoryData = new Accessory(accessoryData);
+        Accessory newAccessoryData = new Accessory(accessoryData);
 
         dictList.Add(newAccessoryData);
         equippedAccessoryList.Add(newAccessoryData);
@@ -241,7 +241,7 @@ public class AccessoryManager : EntityComponentBase
     }
 }
 
-public readonly struct Accessory : IHasContentTier
+public sealed class Accessory : IHasContentTier
 {
     public Accessory(AccessoryDataSO data)
     {
@@ -252,6 +252,5 @@ public readonly struct Accessory : IHasContentTier
     public string RuntimeId { get; }
     public AccessoryDataSO Data { get; }
     public string AccessoryId => Data != null ? Data.AccessoryId : string.Empty;
-    public AccessoryRarity RarityGrade => Data != null ? Data.RarityGrade : AccessoryRarity.Common;
-    public ContentTier Tier => ContentTierResolver.FromAccessoryRarity(RarityGrade);
+    public ContentTier Tier => Data != null ? Data.Tier : ContentTier.Common;
 }

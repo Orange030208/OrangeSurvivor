@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class DocumentTooltipView : TooltipBase, ITooltipChromeHandler
 {
+    public const string VIEW_ID = "tooltip.document";
+
     [SerializeField] private RectTransform root;
     [SerializeField] private Image iconImage;
     [SerializeField] private TextMeshProUGUI titleText;

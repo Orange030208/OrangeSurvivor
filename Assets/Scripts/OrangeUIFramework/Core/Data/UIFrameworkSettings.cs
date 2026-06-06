@@ -25,6 +25,9 @@ namespace Orange.UIFramework
         [Header("Popup 外部点击拦截器")]
         [SerializeField] private PopupOutsideClickBlockerSettings popupOutsideClickBlocker = new PopupOutsideClickBlockerSettings();
 
+        [Header("Tooltip 默认视图")]
+        [SerializeField] private string defaultTextTooltipViewId = string.Empty;
+
         public string InstanceIdPrefix => instanceIdPrefix;
         public bool UseUnscaledTime => useUnscaledTime;
         public string RootName => string.IsNullOrWhiteSpace(rootName) ? "UIRoot" : rootName;
@@ -33,6 +36,7 @@ namespace Orange.UIFramework
         public int MaxCachedInstancesPerView => maxCachedInstancesPerView;
         public IReadOnlyList<LayerDefinition> Layers => layers;
         public PopupOutsideClickBlockerSettings PopupOutsideClickBlocker => popupOutsideClickBlocker ?? new PopupOutsideClickBlockerSettings();
+        public string DefaultTextTooltipViewId => defaultTextTooltipViewId ?? string.Empty;
 
         public ValidationReport Validate(ViewCatalog catalog = null)
         {
@@ -57,6 +61,7 @@ namespace Orange.UIFramework
             if (catalog != null)
             {
                 report.Append(catalog.Validate());
+                ValidateTooltipDefaults(catalog, report);
             }
 
             return report;
@@ -155,6 +160,8 @@ namespace Orange.UIFramework
                 popupOutsideClickBlocker = new PopupOutsideClickBlockerSettings();
             }
 
+            defaultTextTooltipViewId = defaultTextTooltipViewId ?? string.Empty;
+
             if (layers == null)
             {
                 return;
@@ -181,6 +188,34 @@ namespace Orange.UIFramework
                 new LayerDefinition(ViewLayer.System, 700, true),
                 new LayerDefinition(ViewLayer.Debug, 900, true)
             };
+        }
+
+        private void ValidateTooltipDefaults(ViewCatalog catalog, ValidationReport report)
+        {
+            ValidateTooltipViewId(catalog, report, defaultTextTooltipViewId, nameof(defaultTextTooltipViewId));
+        }
+
+        private void ValidateTooltipViewId(
+            ViewCatalog catalog,
+            ValidationReport report,
+            string viewId,
+            string fieldName)
+        {
+            if (string.IsNullOrWhiteSpace(viewId))
+            {
+                return;
+            }
+
+            if (!catalog.TryFindById(viewId, out ViewDefinition definition))
+            {
+                report.AddError($"UIFrameworkSettings '{name}' {fieldName} '{viewId}' is not registered in ViewCatalog.");
+                return;
+            }
+
+            if (definition.Kind != ViewKind.Tooltip)
+            {
+                report.AddError($"UIFrameworkSettings '{name}' {fieldName} '{viewId}' must point to a Tooltip view.");
+            }
         }
     }
 }

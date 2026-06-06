@@ -48,21 +48,14 @@ public static class ContentTierResolver
         };
     }
 
-    public static ContentTier FromAccessoryRarity(AccessoryRarity rarity)
+    public static ContentTier FromAccessoryTier(ContentTier tier)
     {
-        return rarity switch
-        {
-            AccessoryRarity.Rare => ContentTier.Rare,
-            AccessoryRarity.Epic => ContentTier.Epic,
-            AccessoryRarity.Legendary => ContentTier.Legendary,
-            _ => ContentTier.Common
-        };
+        return ClampAccessoryTier(tier);
     }
 
-    public static ContentTier FromAccessoryRarity(int rarity)
+    public static ContentTier FromAccessoryTier(int tier)
     {
-        int clampedRarity = Mathf.Clamp(rarity, (int)AccessoryRarity.Common, (int)AccessoryRarity.Legendary);
-        return FromAccessoryRarity((AccessoryRarity)clampedRarity);
+        return ClampAccessoryTier((ContentTier)tier);
     }
 
     public static ContentTier FromWeaponLevel(int level)
@@ -86,7 +79,7 @@ public static class ContentTierResolver
 
         return itemData.ItemType switch
         {
-            ItemType.Accessory => FromAccessoryRarity(sourceValue),
+            ItemType.Accessory => FromAccessoryTier(sourceValue),
             ItemType.Weapon => FromWeaponLevel(sourceValue),
             _ => ContentTier.Common
         };
@@ -101,6 +94,11 @@ public static class ContentTierResolver
     public static int ToQualityValue(ContentTier tier)
     {
         return (int)tier;
+    }
+
+    private static ContentTier ClampAccessoryTier(ContentTier tier)
+    {
+        return (ContentTier)Mathf.Clamp((int)tier, (int)ContentTier.Common, (int)ContentTier.Legendary);
     }
 }
 

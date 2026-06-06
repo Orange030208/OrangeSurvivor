@@ -66,5 +66,5 @@ public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
     public ContentRollItem RollItem { get; }
     public override ContentTier Tier => RollItem.TryGetTier(out ContentTier tier)
         ? tier
-        : AccessoryData != null ? ContentTierResolver.FromAccessoryRarity(AccessoryData.RarityGrade) : ContentTier.Common;
+        : AccessoryData != null ? AccessoryData.Tier : ContentTier.Common;
 }

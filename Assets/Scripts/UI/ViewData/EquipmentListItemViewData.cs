@@ -4,7 +4,10 @@ public readonly struct EquipmentListItemViewData
     public readonly ItemDataSO ItemData;
     public readonly IHasContentTier TierSource;
 
-    public EquipmentListItemViewData(string entryId, ItemDataSO itemData, IHasContentTier tierSource)
+    public EquipmentListItemViewData(
+        string entryId,
+        ItemDataSO itemData,
+        IHasContentTier tierSource)
     {
         EntryId = entryId;
         ItemData = itemData;

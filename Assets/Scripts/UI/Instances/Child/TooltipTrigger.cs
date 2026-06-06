@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 [DisallowMultipleComponent]
 public sealed class TooltipTrigger : MonoBehaviour,
@@ -13,18 +14,40 @@ public sealed class TooltipTrigger : MonoBehaviour,
     IPointerDownHandler,
     IPointerUpHandler
 {
-    private static readonly Vector2 DEFAULT_OFFSET = new Vector2(18f, -18f);
-    private const float DEFAULT_MARGIN = 12f;
-    private const float DEFAULT_HOVER_DELAY = 0.05f;
-    private const float DEFAULT_LONG_PRESS_DELAY = 0.45f;
-
+    [Tooltip("可选的显式内容源组件。留空时会在当前物体上查找实现了 ITooltipContentSource 的组件。")]
     [SerializeField] private MonoBehaviour contentSourceComponent;
-    [SerializeField] private TooltipTriggerProfileSO profile;
-    [SerializeField] private bool allowPin;
-    [SerializeField] private bool allowInteractiveTransient;
-    [SerializeField] private string viewIdOverride;
 
-    private object contentSource;
+    [Tooltip("控制哪些指针交互会触发 Tooltip。Hover 用于鼠标悬停，LongPress 用于触屏长按。")]
+    [SerializeField] private TooltipTriggerMode triggerMode = TooltipTriggerMode.Hover;
+
+    [Tooltip("鼠标悬停后延迟多久显示 Tooltip，单位为秒。")]
+    [Min(0f)]
+    [SerializeField] private float hoverDelay = 0.05f;
+
+    [Tooltip("长按后延迟多久显示 Tooltip，单位为秒。")]
+    [Min(0f)]
+    [SerializeField] private float longPressDelay = 0.45f;
+
+    [Tooltip("Tooltip 显示后是否持续跟随当前指针位置。")]
+    [SerializeField] private bool followPointer = true;
+
+    [Tooltip("Tooltip 相对指针锚点的屏幕空间偏移量。")]
+    [SerializeField] private Vector2 offset = new Vector2(18f, -18f);
+
+    [Tooltip("Tooltip 贴边时保留的最小屏幕边距。")]
+    [Min(0f)]
+    [SerializeField] private float margin = 12f;
+
+    [Tooltip("Tooltip 相对指针优先采用的展开方向。")]
+    [SerializeField] private FloatingViewAnchor preferredAnchor = FloatingViewAnchor.BottomRight;
+
+    [Tooltip("启用后，若 Tooltip 视图支持固定操作，则允许用户将其固定。")]
+    [SerializeField] private bool allowPin;
+
+    [Tooltip("启用后，指针在触发源和 Tooltip 本体之间移动时不会立即关闭 Tooltip。")]
+    [SerializeField] private bool allowInteractiveTransient;
+
+    private ITooltipContentSource contentSource;
     private UIManager uiManager;
     private TooltipSessionHandle currentSession;
     private TooltipHoverArea currentHoverArea;
@@ -39,7 +62,7 @@ public sealed class TooltipTrigger : MonoBehaviour,
     {
         if (contentSourceComponent != null)
         {
-            contentSource = contentSourceComponent;
+            contentSource = contentSourceComponent as ITooltipContentSource;
         }
     }
 
@@ -58,22 +81,21 @@ public sealed class TooltipTrigger : MonoBehaviour,
         CancelPendingClose();
     }
 
-    public void SetContentSource(object source)
+    public void SetContentSource(ITooltipContentSource source)
     {
         contentSource = source;
         if (source is MonoBehaviour behaviour)
         {
             contentSourceComponent = behaviour;
         }
-    }
-
-    public void ConfigureOwner(UIManager manager)
-    {
-        uiManager = manager;
+        else if (source == null)
+        {
+            contentSourceComponent = null;
+        }
     }
 
     public void Configure(
-        object source,
+        ITooltipContentSource source,
         UIManager manager,
         bool canPin = false,
         bool interactiveTransient = false)
@@ -171,18 +193,25 @@ public sealed class TooltipTrigger : MonoBehaviour,
     private async UniTask ShowAsync(Vector2 screenPosition, CancellationToken cancellationToken)
     {
         UIManager manager = ResolveUIManager();
-        object source = ResolveContentSource();
+        ITooltipContentSource source = ResolveContentSource();
         if (manager == null || source == null)
         {
             return;
         }
 
+        if (!source.TryBuildTooltipContent(out TooltipContent content) || content == null)
+        {
+            Debug.LogWarning(
+                $"{nameof(TooltipTrigger)} '{name}' could not build tooltip content from source '{source.GetType().Name}'.",
+                this);
+            return;
+        }
+
         TooltipRequest request = new TooltipRequest(
-            source: source,
+            content: content,
             placementOptions: CreatePlacement(screenPosition),
             pinMode: ResolvePinMode(),
             chromeOptions: ResolveChromeOptions(),
-            viewIdOverride: viewIdOverride,
             sessionMode: TooltipSessionMode.Transient);
 
         currentSession = await manager.ShowTooltipAsync(request, cancellationToken);
@@ -195,67 +224,56 @@ public sealed class TooltipTrigger : MonoBehaviour,
 
     private TooltipPlacementOptions CreatePlacement(Vector2 screenPosition)
     {
-        if (profile != null)
-        {
-            return profile.CreatePlacement(screenPosition);
-        }
-
         return new TooltipPlacementOptions(
             screenPosition: screenPosition,
-            offset: DEFAULT_OFFSET,
-            followPointer: true,
-            margin: DEFAULT_MARGIN,
-            preferredAnchor: FloatingViewAnchor.BottomRight,
+            offset: offset,
+            followPointer: followPointer,
+            margin: margin,
+            preferredAnchor: preferredAnchor,
             useScreenPosition: true);
     }
 
     private TooltipChromeOptions ResolveChromeOptions()
     {
-        bool canPin = allowPin || profile != null && profile.AllowPin;
-        bool interactive = allowInteractiveTransient || profile != null && profile.AllowInteractiveTransient;
         return new TooltipChromeOptions(
-            allowUserPin: canPin,
+            allowUserPin: allowPin,
             showCloseButton: false,
-            allowInteractiveTransient: interactive);
+            allowInteractiveTransient: allowInteractiveTransient);
     }
 
     private TooltipPinMode ResolvePinMode()
     {
-        return allowPin || profile != null && profile.AllowPin
+        return allowPin
             ? TooltipPinMode.UserOptional
             : TooltipPinMode.Disabled;
     }
 
     private bool IsInteractiveRequest()
     {
-        return allowPin ||
-               allowInteractiveTransient ||
-               profile != null && (profile.AllowPin || profile.AllowInteractiveTransient);
+        return allowPin || allowInteractiveTransient;
     }
 
     private bool IsHoverEnabled()
     {
-        TooltipTriggerMode mode = profile != null ? profile.TriggerMode : TooltipTriggerMode.HoverAndLongPress;
-        return (mode & TooltipTriggerMode.Hover) != 0;
+        return (triggerMode & TooltipTriggerMode.Hover) != 0;
     }
 
     private bool IsLongPressEnabled()
     {
-        TooltipTriggerMode mode = profile != null ? profile.TriggerMode : TooltipTriggerMode.HoverAndLongPress;
-        return (mode & TooltipTriggerMode.LongPress) != 0;
+        return (triggerMode & TooltipTriggerMode.LongPress) != 0;
     }
 
     private float ResolveHoverDelay()
     {
-        return profile != null ? profile.HoverDelay : DEFAULT_HOVER_DELAY;
+        return hoverDelay;
     }
 
     private float ResolveLongPressDelay()
     {
-        return profile != null ? profile.LongPressDelay : DEFAULT_LONG_PRESS_DELAY;
+        return longPressDelay;
     }
 
-    private object ResolveContentSource()
+    private ITooltipContentSource ResolveContentSource()
     {
         if (contentSource != null)
         {
@@ -264,7 +282,14 @@ public sealed class TooltipTrigger : MonoBehaviour,
 
         if (contentSourceComponent != null)
         {
-            return contentSourceComponent;
+            if (contentSourceComponent is ITooltipContentSource typedContentSource)
+            {
+                return typedContentSource;
+            }
+
+            Debug.LogWarning(
+                $"{nameof(TooltipTrigger)} '{name}' content source component must implement {nameof(ITooltipContentSource)}.",
+                this);
         }
 
         ITooltipContentSource tooltipContentSource = GetComponent<ITooltipContentSource>();
@@ -273,8 +298,7 @@ public sealed class TooltipTrigger : MonoBehaviour,
             return tooltipContentSource;
         }
 
-        IInfoDocumentSource infoDocumentSource = GetComponent<IInfoDocumentSource>();
-        return infoDocumentSource;
+        return null;
     }
 
     private UIManager ResolveUIManager()
@@ -403,6 +427,16 @@ public sealed class TooltipTrigger : MonoBehaviour,
 
     private static bool IsMousePointer(PointerEventData eventData)
     {
-        return eventData != null && eventData.pointerId < 0;
+        if (eventData == null)
+        {
+            return false;
+        }
+
+        if (eventData is ExtendedPointerEventData extendedEventData)
+        {
+            return extendedEventData.pointerType == UIPointerType.MouseOrPen;
+        }
+
+        return eventData.pointerId < 0;
     }
 }

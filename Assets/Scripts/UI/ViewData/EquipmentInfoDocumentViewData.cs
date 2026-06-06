@@ -1,17 +1,16 @@
-using UnityEngine;
+using System;
 
+[Obsolete("Use ItemInfoViewData instead.")]
 public readonly struct EquipmentInfoDocumentViewData
 {
-    public readonly Sprite Icon;
     public readonly string Name;
     public readonly string TypeText;
     public readonly string DescriptionText;
 
-    public EquipmentInfoDocumentViewData(Sprite icon, string name, string typeText, string descriptionText)
+    public EquipmentInfoDocumentViewData(string name, string typeText, string descriptionText)
     {
-        Icon = icon;
-        Name = name;
-        TypeText = typeText;
-        DescriptionText = descriptionText;
+        Name = name ?? string.Empty;
+        TypeText = typeText ?? string.Empty;
+        DescriptionText = descriptionText ?? string.Empty;
     }
 }

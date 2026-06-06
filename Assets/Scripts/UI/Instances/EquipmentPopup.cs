@@ -33,6 +33,7 @@ public sealed class EquipmentPopup : PopupBase
 
     private readonly List<EquipmentEntry> currentEntries = new();
     private readonly List<EquipmentListItemViewData> listItemBuffer = new();
+    private readonly ItemInfoViewDataBuilder itemInfoViewDataBuilder = new();
     private EquipmentPopupContext popupContext;
     private EquipmentEntry? selectedEntry;
     private bool showWeapons = true;
@@ -233,7 +234,10 @@ public sealed class EquipmentPopup : PopupBase
                 continue;
             }
 
-            listItemBuffer.Add(new EquipmentListItemViewData(entry.EntryId, entry.ItemData, entry));
+            listItemBuffer.Add(new EquipmentListItemViewData(
+                entry.EntryId,
+                entry.ItemData,
+                entry));
         }
 
         inventoryListView.Render(listItemBuffer);
@@ -300,11 +304,7 @@ public sealed class EquipmentPopup : PopupBase
             itemData.ItemIcon,
             itemData.ItemName ?? string.Empty));
 
-        infoDocumentView.Render(new EquipmentInfoDocumentViewData(
-            itemData.ItemIcon,
-            itemData.ItemName ?? string.Empty,
-            GetItemTypeText(itemData.ItemType),
-            BuildInfoText(entry)));
+        infoDocumentView.Render(BuildItemInfoViewData(entry));
 
         RefreshActionState();
     }
@@ -538,39 +538,19 @@ public sealed class EquipmentPopup : PopupBase
         return runtimeWeapon == null ? null : $"WPN_{runtimeWeapon.GetInstanceID()}";
     }
 
-    private static string GetItemTypeText(ItemType itemType)
+    private ItemInfoViewData BuildItemInfoViewData(EquipmentEntry entry)
     {
-        return itemType switch
+        if (entry.RuntimeWeapon != null)
         {
-            ItemType.Weapon => "武器",
-            ItemType.Accessory => "饰品",
-            _ => string.Empty
-        };
-    }
-
-    private static string BuildInfoText(EquipmentEntry entry)
-    {
-        ItemDataSO itemData = entry.ItemData;
-        if (itemData == null)
-        {
-            return string.Empty;
+            return itemInfoViewDataBuilder.Build(entry.RuntimeWeapon);
         }
 
-        InfoDocument document = itemData switch
+        if (entry.RuntimeAccessory != null && entry.RuntimeAccessory.Data != null)
         {
-            WeaponDataSO weaponData => new WeaponInfoBuilder().Build(WeaponInfoSource.FromData(weaponData, entry.RuntimeWeapon != null ? entry.RuntimeWeapon.Level : WeaponLevelHelper.MinLevel)),
-            AccessoryDataSO accessoryData => accessoryData.BuildInfoDocument(),
-            IInfoDocumentSource infoDocumentSource => infoDocumentSource.BuildInfoDocument(),
-            _ => null
-        };
-
-        if (document == null)
-        {
-            return itemData.ManualDescription ?? string.Empty;
+            return itemInfoViewDataBuilder.Build(entry.RuntimeAccessory.Data);
         }
 
-        string text = InfoDocumentTextFormatter.ToRichText(document, includeHeader: false);
-        return string.IsNullOrWhiteSpace(text) ? itemData.ManualDescription ?? string.Empty : text;
+        return itemInfoViewDataBuilder.Build(entry.ItemData);
     }
 
     private static int GetSellPrice(EquipmentEntry entry)
@@ -737,12 +717,9 @@ public sealed class EquipmentPopup : PopupBase
         public Weapon RuntimeWeapon { get; }
         public Accessory RuntimeAccessory { get; }
         public bool IsWeapon => ItemData != null && ItemData.ItemType == ItemType.Weapon;
-        public int ColorDependencyNumber => RuntimeWeapon != null
-            ? RuntimeWeapon.Level
-            : RuntimeAccessory.Data != null ? (int)RuntimeAccessory.RarityGrade : 0;
         public ContentTier Tier => RuntimeWeapon != null
             ? RuntimeWeapon.Tier
-            : RuntimeAccessory.Data != null ? RuntimeAccessory.Tier : ContentTier.Common;
+            : RuntimeAccessory != null && RuntimeAccessory.Data != null ? RuntimeAccessory.Tier : ContentTier.Common;
 
         public static EquipmentEntry CreateWeapon(string entryId, Weapon runtimeWeapon)
         {

@@ -72,15 +72,15 @@ internal static class ItemDescriptionUtility
         return BuildLinesText(lines);
     }
 
-    public static string FormatRarity(AccessoryRarity rarity)
+    public static string FormatRarity(ContentTier tier)
     {
-        return rarity switch
+        return tier switch
         {
-            AccessoryRarity.Common => "普通",
-            AccessoryRarity.Rare => "稀有",
-            AccessoryRarity.Epic => "史诗",
-            AccessoryRarity.Legendary => "传说",
-            _ => rarity.ToString()
+            ContentTier.Common => "普通",
+            ContentTier.Rare => "稀有",
+            ContentTier.Epic => "史诗",
+            ContentTier.Legendary => "传说",
+            _ => tier.ToString()
         };
     }
 

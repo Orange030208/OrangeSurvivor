@@ -25,7 +25,7 @@ public sealed class EquipmentRewardCardPresenter
             accessory != null ? accessory.ItemName : string.Empty,
             accessory != null ? accessory.ItemIcon : null,
             accessory != null ? accessory.Description : string.Empty,
-            accessory != null ? ContentTierResolver.FromAccessoryRarity(accessory.RarityGrade) : ContentTier.Common,
+            accessory != null ? accessory.Tier : ContentTier.Common,
             accessory != null);
     }
 }

@@ -13,28 +13,6 @@ public class InventoryItem : ViewPartBase, IDisposable
 
     public event Action<string> Clicked;
 
-    public void Configure(string entryId, ItemDataSO itemData, int colorDependencyNumber)
-    {
-        ResolveReferences();
-        this.entryId = entryId;
-
-        if (iconImage != null)
-        {
-            iconImage.sprite = itemData != null ? itemData.ItemIcon : null;
-        }
-
-        ApplyTier(ContentTierResolver.FromItem(itemData, colorDependencyNumber));
-
-        if (button == null)
-        {
-            Debug.LogWarning($"{nameof(InventoryItem)} '{name}' is missing button reference.", this);
-            return;
-        }
-
-        button.onClick.RemoveListener(OnItemClicked);
-        button.onClick.AddListener(OnItemClicked);
-    }
-
     public void Configure(string entryId, ItemDataSO itemData, IHasContentTier tierSource)
     {
         ResolveReferences();

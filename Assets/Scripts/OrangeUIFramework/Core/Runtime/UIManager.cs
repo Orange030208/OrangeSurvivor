@@ -49,7 +49,6 @@ namespace Orange.UIFramework
         private Button popupOutsideClickBlockerButton;
         private IViewLoader viewLoader;
         private IFloatingViewPositioner floatingViewPositioner;
-        private TooltipContentService tooltipContentService;
         // Monotonic UI request sequence.
         // Any transition that can supersede older async work bumps this value so stale continuations can detect it.
         private int requestVersion;
@@ -119,7 +118,6 @@ namespace Orange.UIFramework
             BuildFrameworkBlockers();
             viewLoader = new PrefabViewLoader();
             floatingViewPositioner = new FloatingViewPositioner();
-            tooltipContentService = new TooltipContentService();
             initialized = true;
         }
 
@@ -696,10 +694,8 @@ namespace Orange.UIFramework
             await tooltipOperationSemaphore.WaitAsync(cancellationToken);
             try
             {
-                if (!tooltipContentService.TryBuild(request, out TooltipContent content))
-                {
-                    throw new InvalidOperationException($"UIManager failed to build tooltip content from '{request.ResolveSource()?.GetType().Name ?? "null"}'.");
-                }
+                request.Validate();
+                TooltipContent content = request.Content;
 
                 TooltipSessionMode sessionMode = ResolveSessionMode(request);
                 RuntimeView replacedView = GetTooltipSlot(sessionMode);
@@ -1221,7 +1217,12 @@ namespace Orange.UIFramework
         {
             TooltipChromeOptions chromeOptions = content != null
                 ? content.ChromeOptions
-                : request.ChromeOptions;
+                : TooltipChromeOptions.Passive;
+
+            if (request.ChromeOptions.HasAssignedValues)
+            {
+                chromeOptions = chromeOptions.Merge(request.ChromeOptions);
+            }
 
             if (request.PinMode == TooltipPinMode.UserOptional && !chromeOptions.AllowUserPin)
             {

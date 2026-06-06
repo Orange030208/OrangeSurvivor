@@ -93,7 +93,7 @@ public class ShopItemListUI : ViewPartBase
 
         container.transform.SetSiblingIndex(itemIndex);
         container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex));
-        ConfigureTooltip(container);
+        ConfigureTooltip(container, itemData);
 
         renderedItems.Add(container);
         renderedItemIdentities.Add(nextIdentity);
@@ -127,6 +127,8 @@ public class ShopItemListUI : ViewPartBase
         }
 
         UnbindItemCallbacks(item);
+        ShopItemTooltipSource tooltipSource = item.GetComponent<ShopItemTooltipSource>();
+        tooltipSource?.Clear();
         item.CleanUp();
         Destroy(item.gameObject);
     }
@@ -165,13 +167,32 @@ public class ShopItemListUI : ViewPartBase
         uiManager = ownerUIManager;
     }
 
-    private void ConfigureTooltip(ShopItemContainer container)
+    private void ConfigureTooltip(ShopItemContainer container, ShopItemData shopItem)
     {
-        TooltipTrigger tooltipTrigger = container.GetComponent<TooltipTrigger>();
-        if (tooltipTrigger != null)
+        if (container == null)
         {
-            tooltipTrigger.Configure(container, uiManager, canPin: true, interactiveTransient: true);
+            return;
         }
+
+        TooltipTrigger tooltipTrigger = container.GetComponent<TooltipTrigger>();
+        if (tooltipTrigger == null)
+        {
+            return;
+        }
+
+        ShopItemTooltipSource tooltipSource = container.GetComponent<ShopItemTooltipSource>();
+        if (tooltipSource == null)
+        {
+            Debug.LogWarning($"{nameof(ShopItemListUI)} '{name}' item '{container.name}' is missing {nameof(ShopItemTooltipSource)}.", container);
+            return;
+        }
+
+        tooltipSource.Bind(shopItem);
+        tooltipTrigger.Configure(
+            tooltipSource,
+            uiManager,
+            canPin: false,
+            interactiveTransient: true);
     }
 
     private void UnbindItemCallbacks(ShopItemContainer container)

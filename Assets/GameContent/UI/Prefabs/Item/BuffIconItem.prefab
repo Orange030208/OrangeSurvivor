@@ -530,8 +530,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57de027e9d73498eb865986b5e0ef0e9, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  contentSourceComponent: {fileID: 2675827089189243830}
-  profile: {fileID: 0}
+  contentSourceComponent: {fileID: 0}
+  triggerMode: 3
+  hoverDelay: 0.05
+  longPressDelay: 0.45
+  followPointer: 1
+  offset: {x: 18, y: -18}
+  margin: 12
+  preferredAnchor: 0
   allowPin: 0
   allowInteractiveTransient: 0
-  viewIdOverride:

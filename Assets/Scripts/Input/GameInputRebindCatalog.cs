@@ -3,8 +3,8 @@ using Orange.Input;
 
 public static class GameInputRebindCatalog
 {
-    private static readonly string[] keyboardCancelPaths = { "<Keyboard>/escape" };
-    private static readonly string[] gamepadCancelPaths = { "<Gamepad>/buttonEast", "<Keyboard>/escape" };
+    private static readonly string[] keyboardCancelPaths = { "<Keyboard>/backspace" };
+    private static readonly string[] gamepadCancelPaths = { "<Gamepad>/buttonEast" };
 
     private static readonly InputRebindEntry[] entries =
     {
@@ -12,7 +12,6 @@ public static class GameInputRebindCatalog
         new("Gameplay/Move", "Down", "Move Down", "Keyboard", "Keyboard&Mouse", "<Keyboard>", keyboardCancelPaths),
         new("Gameplay/Move", "Left", "Move Left", "Keyboard", "Keyboard&Mouse", "<Keyboard>", keyboardCancelPaths),
         new("Gameplay/Move", "Right", "Move Right", "Keyboard", "Keyboard&Mouse", "<Keyboard>", keyboardCancelPaths),
-        new("Gameplay/Pause", null, "Pause", "Keyboard", "Keyboard&Mouse", "<Keyboard>", keyboardCancelPaths),
         new("Gameplay/Pause", null, "Pause", "Gamepad", "Gamepad", "<Gamepad>", gamepadCancelPaths),
         new("UI/Submit", null, "UI Submit", "Keyboard", "Keyboard&Mouse", "<Keyboard>", keyboardCancelPaths),
         new("UI/Submit", null, "UI Submit", "Gamepad", "Gamepad", "<Gamepad>", gamepadCancelPaths),

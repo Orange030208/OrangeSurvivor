@@ -159,17 +159,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b409808d-5275-496d-9b6d-5bf5b42b7696",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Pause",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "55fc8307-3120-49cd-b308-d606e02175f7",
                     "path": "<Gamepad>/start",
                     "interactions": "",
@@ -420,7 +409,7 @@
                 {
                     "name": "",
                     "id": "cd7649cf-64ce-41a4-a7d3-11ff44f9e16c",
-                    "path": "<Keyboard>/escape",
+                    "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",

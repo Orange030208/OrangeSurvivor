@@ -119,16 +119,6 @@ public class BuffBarUI : ViewPartBase
 
     private void ConfigureTooltipTarget(BuffIconItem item)
     {
-        if (item == null)
-        {
-            return;
-        }
-
-        TooltipTrigger tooltipTrigger = item.GetComponent<TooltipTrigger>();
-        if (tooltipTrigger != null)
-        {
-            tooltipTrigger.Configure(item, uiManager);
-        }
     }
 
     private void SetVisibleItemCount(int visibleCount)

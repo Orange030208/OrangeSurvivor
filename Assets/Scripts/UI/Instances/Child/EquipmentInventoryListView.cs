@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public sealed class EquipmentInventoryListView : ViewPartBase
 {
-    private const string DEFAULT_ITEM_PREFAB_PATH = "Assets/GameContent/UI/Prefabs/Equipment/EquipmentItem.prefab";
-
     [SerializeField] private InventoryItem itemPrefab;
     [SerializeField] private Transform itemParent;
 
@@ -102,13 +100,6 @@ public sealed class EquipmentInventoryListView : ViewPartBase
         {
             itemParent = ResolveItemParent();
         }
-
-#if UNITY_EDITOR
-        if (itemPrefab == null)
-        {
-            itemPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<InventoryItem>(DEFAULT_ITEM_PREFAB_PATH);
-        }
-#endif
     }
 
     private Transform ResolveItemParent()
