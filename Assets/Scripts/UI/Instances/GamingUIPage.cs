@@ -102,7 +102,7 @@ public class GamingUIPage : PageBase
     {
         UnbindPlayerLevel();
         playerHealthPanel.BindPlayer(player);
-        buffBarUI.BeginSession(player, OwnerManager);
+        buffBarUI.BeginSession(player);
 
         playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
         if (playerLevel == null)

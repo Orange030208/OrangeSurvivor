@@ -48,7 +48,6 @@ public sealed class TooltipTrigger : MonoBehaviour,
     [SerializeField] private bool allowInteractiveTransient;
 
     private ITooltipContentSource contentSource;
-    private UIManager uiManager;
     private TooltipSessionHandle currentSession;
     private TooltipHoverArea currentHoverArea;
     private CancellationTokenSource showCts;
@@ -96,12 +95,10 @@ public sealed class TooltipTrigger : MonoBehaviour,
 
     public void Configure(
         ITooltipContentSource source,
-        UIManager manager,
         bool canPin = false,
         bool interactiveTransient = false)
     {
         SetContentSource(source);
-        uiManager = manager;
         allowPin = canPin;
         allowInteractiveTransient = interactiveTransient;
     }
@@ -192,9 +189,8 @@ public sealed class TooltipTrigger : MonoBehaviour,
 
     private async UniTask ShowAsync(Vector2 screenPosition, CancellationToken cancellationToken)
     {
-        UIManager manager = ResolveUIManager();
         ITooltipContentSource source = ResolveContentSource();
-        if (manager == null || source == null)
+        if (source == null)
         {
             return;
         }
@@ -214,7 +210,7 @@ public sealed class TooltipTrigger : MonoBehaviour,
             chromeOptions: ResolveChromeOptions(),
             sessionMode: TooltipSessionMode.Transient);
 
-        currentSession = await manager.ShowTooltipAsync(request, cancellationToken);
+        currentSession = await UIManager.Instance.ShowTooltipAsync(request, cancellationToken);
         BindTooltipHoverArea(currentSession);
         if (!pointerInsideSource && !pointerDown && !pointerInsideTooltip && !IsInteractiveRequest())
         {
@@ -299,11 +295,6 @@ public sealed class TooltipTrigger : MonoBehaviour,
         }
 
         return null;
-    }
-
-    private UIManager ResolveUIManager()
-    {
-        return uiManager != null ? uiManager : UIManager.Instance;
     }
 
     private void CancelPendingShow()

@@ -74,7 +74,6 @@ public class ShopUIPage : PageBase
         BindManagerEvents();
         BindCurrencyWallet(context.CurrencyWallet);
         BindItemListEvents();
-        itemList.ConfigureOwner(OwnerManager);
         shopManager.RefreshViewState();
     }
 
@@ -89,7 +88,6 @@ public class ShopUIPage : PageBase
         UnbindItemListEvents();
 
         itemList.Clear();
-        itemList.ConfigureOwner(null);
 
         shopManager = null;
         currencyWallet = null;
@@ -181,7 +179,7 @@ public class ShopUIPage : PageBase
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<PropertiesPopup> handle = await OwnerManager.ShowPopupAsync<PropertiesPopup>(
+            ViewHandle<PropertiesPopup> handle = await UIManager.Instance.ShowPopupAsync<PropertiesPopup>(
                 currentContext.PropertiesManager,
                 options,
                 this.GetCancellationTokenOnDestroy());
@@ -234,7 +232,7 @@ public class ShopUIPage : PageBase
                 trackInStack: true,
                 preferredAnchor: FloatingViewAnchor.Center);
 
-            ViewHandle<EquipmentPopup> handle = await OwnerManager.ShowPopupAsync<EquipmentPopup>(
+            ViewHandle<EquipmentPopup> handle = await UIManager.Instance.ShowPopupAsync<EquipmentPopup>(
                 equipmentContext,
                 options,
                 this.GetCancellationTokenOnDestroy());
@@ -483,13 +481,7 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        UIManager manager = OwnerManager ?? UIManager.Instance;
-        if (manager == null)
-        {
-            return;
-        }
-
-        manager.ShowToastAsync<TextToastView>(
+        UIManager.Instance.ShowToastAsync<TextToastView>(
             new ToastPayload(message),
             new ToastOptions(displayMode: ToastDisplayMode.ReplaceCurrent),
             cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();

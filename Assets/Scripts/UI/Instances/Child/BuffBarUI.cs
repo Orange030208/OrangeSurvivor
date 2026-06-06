@@ -10,7 +10,6 @@ public class BuffBarUI : ViewPartBase
     private readonly List<BuffIconItem> spawnedItems = new();
     private Player player;
     private BuffController buffController;
-    private UIManager uiManager;
 
     private void Awake()
     {
@@ -30,9 +29,8 @@ public class BuffBarUI : ViewPartBase
         EndSession();
     }
 
-    public void BeginSession(Player targetPlayer, UIManager ownerUIManager)
+    public void BeginSession(Player targetPlayer)
     {
-        uiManager = ownerUIManager;
         ConfigureTooltipTargets();
         BindPlayer(targetPlayer);
     }
@@ -40,7 +38,6 @@ public class BuffBarUI : ViewPartBase
     public void EndSession()
     {
         UnbindPlayer();
-        uiManager = null;
         SetVisibleItemCount(0);
     }
 

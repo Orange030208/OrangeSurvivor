@@ -37,13 +37,7 @@ namespace Orange.UIFramework
                 return viewId.Trim();
             }
 
-            UIManager manager = UIManager.Instance;
-            if (manager != null && manager.Settings != null)
-            {
-                return manager.Settings.DefaultTextTooltipViewId;
-            }
-
-            return string.Empty;
+            return UIManager.Instance.Settings.DefaultTextTooltipViewId;
         }
     }
 }

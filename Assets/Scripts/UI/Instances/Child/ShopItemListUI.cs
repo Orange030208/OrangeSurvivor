@@ -10,7 +10,6 @@ public class ShopItemListUI : ViewPartBase
 
     private readonly List<ShopItemContainer> renderedItems = new();
     private readonly List<ShopItemIdentity> renderedItemIdentities = new();
-    private UIManager uiManager;
 
     public event Action<int> BuyRequested;
     public event Action<int> LockToggleRequested;
@@ -162,11 +161,6 @@ public class ShopItemListUI : ViewPartBase
         container.LockToggleRequested += OnItemLockToggleRequested;
     }
 
-    public void ConfigureOwner(UIManager ownerUIManager)
-    {
-        uiManager = ownerUIManager;
-    }
-
     private void ConfigureTooltip(ShopItemContainer container, ShopItemData shopItem)
     {
         if (container == null)
@@ -190,7 +184,6 @@ public class ShopItemListUI : ViewPartBase
         tooltipSource.Bind(shopItem);
         tooltipTrigger.Configure(
             tooltipSource,
-            uiManager,
             canPin: false,
             interactiveTransient: true);
     }

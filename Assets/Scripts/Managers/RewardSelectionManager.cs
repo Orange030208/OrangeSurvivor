@@ -13,7 +13,6 @@ public class RewardSelectionManager : MonoBehaviour
     private const string PAUSE_SOURCE_ID = "rewardSelection";
     private const string POPUP_GROUP_ID = "rewardSelection";
 
-    [SerializeField] private UIManager uiManager;
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
     [SerializeField] private ContentPoolSO upgradeCardPool;
@@ -222,7 +221,7 @@ public class RewardSelectionManager : MonoBehaviour
             trackInStack: false,
             preferredAnchor: FloatingViewAnchor.Center,
             showBackdrop: true);
-        currentPopupHandle = await ResolveUIManager().ShowPopupAsync<RewardSelectionPopup>(
+        currentPopupHandle = await UIManager.Instance.ShowPopupAsync<RewardSelectionPopup>(
             model,
             popupOptions,
             cancellationToken);
@@ -374,11 +373,6 @@ public class RewardSelectionManager : MonoBehaviour
 
     private void TryBindSceneReferences()
     {
-        if (uiManager == null)
-        {
-            uiManager = FindFirstObjectByType<UIManager>();
-        }
-
         if (gameManager == null)
         {
             gameManager = FindFirstObjectByType<GameManager>();
@@ -413,17 +407,6 @@ public class RewardSelectionManager : MonoBehaviour
         {
             weaponsHolder = player.GetComponent<WeaponsHolder>();
         }
-    }
-
-    private UIManager ResolveUIManager()
-    {
-        TryBindSceneReferences();
-        if (uiManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(RewardSelectionManager)} requires an active {nameof(UIManager)}.");
-        }
-
-        return uiManager;
     }
 
     private bool IsGameStateActive()

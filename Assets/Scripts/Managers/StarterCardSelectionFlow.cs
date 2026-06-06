@@ -9,7 +9,6 @@ public sealed class StarterCardSelectionFlow
 {
     private const string POPUP_GROUP_ID = "starterCardSelection";
 
-    private readonly UIManager uiManager;
     private readonly Player player;
     private readonly UnityEngine.Object logContext;
     private readonly UpgradeCardApplyService applyService = new();
@@ -17,11 +16,8 @@ public sealed class StarterCardSelectionFlow
     private StarterCardSelectionOption[] currentOptions = Array.Empty<StarterCardSelectionOption>();
     private UniTaskCompletionSource<RewardSelectionResult> selectionCompletionSource;
 
-    public StarterCardSelectionFlow(UIManager uiManager, Player player, UnityEngine.Object logContext)
+    public StarterCardSelectionFlow(Player player, UnityEngine.Object logContext)
     {
-        this.uiManager = uiManager != null
-            ? uiManager
-            : throw new ArgumentNullException(nameof(uiManager));
         this.player = player != null
             ? player
             : throw new ArgumentNullException(nameof(player));
@@ -49,7 +45,7 @@ public sealed class StarterCardSelectionFlow
             preferredAnchor: FloatingViewAnchor.Center,
             showBackdrop: true);
 
-        ViewHandle<RewardSelectionPopup> handle = await uiManager.ShowPopupAsync<RewardSelectionPopup>(
+        ViewHandle<RewardSelectionPopup> handle = await UIManager.Instance.ShowPopupAsync<RewardSelectionPopup>(
             model,
             popupOptions,
             cancellationToken);

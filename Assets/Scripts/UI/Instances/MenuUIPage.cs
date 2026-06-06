@@ -105,8 +105,8 @@ public class MenuUIPage : PageBase
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         ResetMenuEntryMotions();
-        settingsPanelHandle = await OwnerManager.ShowPopupAsync<SettingsPanelManager>(
-            new SettingsPanelManager.Context(OwnerManager),
+        settingsPanelHandle = await UIManager.Instance.ShowPopupAsync<SettingsPanelManager>(
+            null,
             CreateSettingsPopupOptions(),
             this.GetCancellationTokenOnDestroy());
         ClearSettingsHandleWhenClosedAsync(settingsPanelHandle).Forget();

@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
 {
     private const string STARTER_CARD_SELECTION_PAUSE_SOURCE_ID = "starterCardSelection";
 
-    [SerializeField] private UIManager uiManager;
     [SerializeField] private Player player;
     [SerializeField] private MapGenerator mapGenerator;
     [SerializeField] private WaveManager waveManager;
@@ -526,24 +525,24 @@ public class GameManager : MonoBehaviour
         switch (state)
         {
             case GameState.Menu:
-                await uiManager.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
+                await UIManager.Instance.OpenPageAsync<MenuUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.Game:
-                await uiManager.OpenPageAsync<GamingUIPage>(
+                await UIManager.Instance.OpenPageAsync<GamingUIPage>(
                     CreateGamingPageContext(),
                     cancellationToken);
                 await OpenGamePadAsync(cancellationToken);
                 break;
             case GameState.GameOver:
-                await uiManager.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
+                await UIManager.Instance.OpenPageAsync<GameOverUIPage>(cancellationToken: cancellationToken);
                 break;
             case GameState.StageComplete:
-                await uiManager.OpenPageAsync<StageCompleteUIPage>(
+                await UIManager.Instance.OpenPageAsync<StageCompleteUIPage>(
                     CreateStageCompletePageContext(),
                     cancellationToken);
                 break;
             case GameState.Shop:
-                await uiManager.OpenPageAsync<ShopUIPage>(
+                await UIManager.Instance.OpenPageAsync<ShopUIPage>(
                     CreateShopPageContext(),
                     cancellationToken);
                 break;
@@ -592,13 +591,13 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (!GamePadUI.IsRegisteredTouchControlsEnabled(uiManager.Catalog, Application.platform))
+        if (!GamePadUI.IsRegisteredTouchControlsEnabled(UIManager.Instance.Catalog, Application.platform))
         {
             gamePadControlsMoveInput = false;
             return;
         }
 
-        gamePadHandle = await uiManager.ShowPopupAsync<GamePadUI>(
+        gamePadHandle = await UIManager.Instance.ShowPopupAsync<GamePadUI>(
             new GamePadUIContext(player),
             CreateGamePadPopupOptions(),
             cancellationToken);
@@ -671,14 +670,14 @@ public class GameManager : MonoBehaviour
 
     private async UniTask OpenPauseMenuAsync()
     {
-        if (uiManager.IsOpen<GamePauseMenu>())
+        if (UIManager.Instance.IsOpen<GamePauseMenu>())
         {
             return;
         }
 
         try
         {
-            await uiManager.OpenPageAsync<GamePauseMenu>(
+            await UIManager.Instance.OpenPageAsync<GamePauseMenu>(
                 CreatePauseMenuContext(),
                 cancellationToken: this.GetCancellationTokenOnDestroy());
         }
@@ -726,7 +725,7 @@ public class GameManager : MonoBehaviour
     private UniTask<bool> ClosePageAsync<TPage>(CancellationToken cancellationToken)
         where TPage : PageBase
     {
-        return uiManager.ClosePageAsync<TPage>(cancellationToken);
+        return UIManager.Instance.ClosePageAsync<TPage>(cancellationToken);
     }
 
     private static PopupOptions CreateGamePadPopupOptions()
@@ -754,11 +753,6 @@ public class GameManager : MonoBehaviour
         if (enemyRegistry == null)
         {
             enemyRegistry = FindFirstObjectByType<EnemyRegistry>();
-        }
-
-        if (uiManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(UIManager)} reference.");
         }
 
         if (waveManager == null)
@@ -845,7 +839,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        StarterCardSelectionFlow flow = new StarterCardSelectionFlow(uiManager, player, this);
+        StarterCardSelectionFlow flow = new StarterCardSelectionFlow(player, this);
         await flow.RunAsync(provider.StarterCards, cancellationToken);
     }
 

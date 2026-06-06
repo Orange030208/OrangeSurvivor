@@ -22,16 +22,6 @@ public class SettingsPanelManager : PopupBase
         Language
     }
 
-    public readonly struct Context
-    {
-        public Context(UIManager ownerUIManager)
-        {
-            OwnerUIManager = ownerUIManager;
-        }
-
-        public UIManager OwnerUIManager { get; }
-    }
-
     [Header("显示")]
     [SerializeField] private MonoBehaviour motionSource;
     [SerializeField] private CanvasGroup canvasGroup;
@@ -96,7 +86,6 @@ public class SettingsPanelManager : PopupBase
     private GameSettingsState editingState;
     private PlatformSettingsProfileSO activeProfile;
     private IUIRuntimeMotion motion;
-    private UIManager uiManager;
     private InputRebindOperation activeRebind;
     private SettingsCategory currentCategory = SettingsCategory.Audio;
     private Tween visibilityTween;
@@ -159,7 +148,6 @@ public class SettingsPanelManager : PopupBase
 
     protected override async UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        BindContext(context.Payload);
         BindControls();
         LoadSavedState();
         ApplyProfileToSections();
@@ -181,29 +169,7 @@ public class SettingsPanelManager : PopupBase
     protected override void OnClosed(CloseReason reason)
     {
         UnbindControls();
-        ConfigureOwner(null);
         SetHiddenImmediate();
-    }
-
-    private void BindContext(object context)
-    {
-        if (context == null)
-        {
-            ConfigureOwner(OwnerManager);
-            return;
-        }
-
-        if (context is not Context panelContext)
-        {
-            throw new ArgumentException($"{nameof(SettingsPanelManager)} '{name}' expects {nameof(Context)}.", nameof(context));
-        }
-
-        ConfigureOwner(panelContext.OwnerUIManager);
-    }
-
-    public void ConfigureOwner(UIManager ownerUIManager)
-    {
-        uiManager = ownerUIManager;
     }
 
     public Tween SetVisible(bool value)
@@ -745,9 +711,8 @@ public class SettingsPanelManager : PopupBase
         displayConfirmationPending = true;
         try
         {
-            UIManager manager = ResolveUIManager();
             DisplayConfirmModalContext context = new(previousDisplay, targetDisplay);
-            ModalResult<bool> result = await manager.ShowModalAsync<DisplayConfirmModal, bool>(
+            ModalResult<bool> result = await UIManager.Instance.ShowModalAsync<DisplayConfirmModal, bool>(
                 context,
                 this.GetCancellationTokenOnDestroy());
             if (result.Confirmed && result.Value)
@@ -803,21 +768,6 @@ public class SettingsPanelManager : PopupBase
             InputRebindResult.Failed => string.IsNullOrWhiteSpace(message) ? "按键绑定失败" : message,
             _ => "按键绑定失败"
         };
-    }
-
-    private UIManager ResolveUIManager()
-    {
-        if (uiManager != null)
-        {
-            return uiManager;
-        }
-
-        if (UIManager.Instance != null)
-        {
-            return UIManager.Instance;
-        }
-
-        throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' cannot show {nameof(DisplayConfirmModal)} without an owning {nameof(UIManager)}.");
     }
 
     private bool IsFeatureEnabled(SettingsFeature feature)
