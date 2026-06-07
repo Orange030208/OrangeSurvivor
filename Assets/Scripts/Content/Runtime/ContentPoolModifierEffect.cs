@@ -40,7 +40,7 @@ public abstract class ContentPoolModifier : FeatureBase, IContentPoolModifier
 [Serializable]
 public sealed class UpgradeCardTagContentPoolWeightModifier : ContentPoolModifier
 {
-    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private CardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private float weightMultiplier = 1f;
     [SerializeField] private float addedWeight;
@@ -57,7 +57,7 @@ public sealed class UpgradeCardTagContentPoolWeightModifier : ContentPoolModifie
         for (int i = 0; i < candidates.Count; i++)
         {
             ContentPoolCandidate candidate = candidates[i];
-            if (candidate?.Content is not UpgradeCardSO card ||
+            if (candidate?.Content is not RewardCardSO card ||
                 !ContentTagMatchUtility.Matches(card.Tags, targetTags, matchMode))
             {
                 continue;
@@ -100,7 +100,7 @@ public sealed class AssetContentPoolWeightModifier : ContentPoolModifier
 [Serializable]
 public sealed class UpgradeCardTagContentPoolMetadataModifier : ContentPoolModifier
 {
-    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private CardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private bool overrideLevelRange;
     [SerializeField, Min(0)] private int minLevel;
@@ -122,7 +122,7 @@ public sealed class UpgradeCardTagContentPoolMetadataModifier : ContentPoolModif
         for (int i = 0; i < candidates.Count; i++)
         {
             ContentPoolCandidate candidate = candidates[i];
-            if (candidate?.Content is not UpgradeCardSO card ||
+            if (candidate?.Content is not RewardCardSO card ||
                 !ContentTagMatchUtility.Matches(card.Tags, targetTags, matchMode))
             {
                 continue;

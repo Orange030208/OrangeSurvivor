@@ -52,14 +52,14 @@ internal static class ContentConditionCompareUtility
 
 internal static class ContentTagMatchUtility
 {
-    public static bool Matches(UpgradeCardTag candidateTags, UpgradeCardTag requiredTags, ContentTagMatchMode matchMode)
+    public static bool Matches(CardTag candidateTags, CardTag requiredTags, ContentTagMatchMode matchMode)
     {
         return matchMode switch
         {
-            ContentTagMatchMode.Any => requiredTags != UpgradeCardTag.None && (candidateTags & requiredTags) != 0,
-            ContentTagMatchMode.All => requiredTags != UpgradeCardTag.None && (candidateTags & requiredTags) == requiredTags,
-            ContentTagMatchMode.None => requiredTags == UpgradeCardTag.None
-                ? candidateTags == UpgradeCardTag.None
+            ContentTagMatchMode.Any => requiredTags != CardTag.None && (candidateTags & requiredTags) != 0,
+            ContentTagMatchMode.All => requiredTags != CardTag.None && (candidateTags & requiredTags) == requiredTags,
+            ContentTagMatchMode.None => requiredTags == CardTag.None
+                ? candidateTags == CardTag.None
                 : (candidateTags & requiredTags) == 0,
             ContentTagMatchMode.Exact => candidateTags == requiredTags,
             _ => false
@@ -472,7 +472,7 @@ public sealed class AccessoryOwnedLimitCondition : ContentCondition
 [Serializable]
 public sealed class UpgradeCardTagCondition : ContentCondition
 {
-    [SerializeField] private UpgradeCardTag requiredTags;
+    [SerializeField] private CardTag requiredTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private bool required = true;
 
@@ -480,14 +480,14 @@ public sealed class UpgradeCardTagCondition : ContentCondition
     {
     }
 
-    public UpgradeCardTagCondition(UpgradeCardTag requiredTags, bool required = true)
+    public UpgradeCardTagCondition(CardTag requiredTags, bool required = true)
     {
         this.requiredTags = requiredTags;
         this.required = required;
     }
 
     public UpgradeCardTagCondition(
-        UpgradeCardTag requiredTags,
+        CardTag requiredTags,
         ContentTagMatchMode matchMode,
         bool required = true)
     {
@@ -498,7 +498,7 @@ public sealed class UpgradeCardTagCondition : ContentCondition
 
     public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
     {
-        bool matches = entry?.Content is UpgradeCardSO card &&
+        bool matches = entry?.Content is RewardCardSO card &&
                        ContentTagMatchUtility.Matches(card.Tags, requiredTags, matchMode);
         return matches == required;
     }
@@ -507,7 +507,7 @@ public sealed class UpgradeCardTagCondition : ContentCondition
 [Serializable]
 public sealed class UpgradeCardTagPickCountCondition : ContentCondition
 {
-    [SerializeField] private UpgradeCardTag requiredTags;
+    [SerializeField] private CardTag requiredTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private ContentComparisonOperator comparisonOperator = ContentComparisonOperator.GreaterOrEqual;
     [SerializeField, Min(0)] private int compareValue;
@@ -517,7 +517,7 @@ public sealed class UpgradeCardTagPickCountCondition : ContentCondition
     }
 
     public UpgradeCardTagPickCountCondition(
-        UpgradeCardTag requiredTags,
+        CardTag requiredTags,
         ContentComparisonOperator comparisonOperator,
         int compareValue)
         : this(requiredTags, ContentTagMatchMode.Any, comparisonOperator, compareValue)
@@ -525,7 +525,7 @@ public sealed class UpgradeCardTagPickCountCondition : ContentCondition
     }
 
     public UpgradeCardTagPickCountCondition(
-        UpgradeCardTag requiredTags,
+        CardTag requiredTags,
         ContentTagMatchMode matchMode,
         ContentComparisonOperator comparisonOperator,
         int compareValue)
@@ -571,33 +571,33 @@ public sealed class ContentPickCountCondition : ContentCondition
 [Serializable]
 public sealed class UniqueUpgradeCardTagCondition : ContentCondition
 {
-    [SerializeField] private UpgradeCardTag restrictedTags = UpgradeCardTag.None;
+    [SerializeField] private CardTag restrictedTags = CardTag.None;
 
     public UniqueUpgradeCardTagCondition()
     {
     }
 
-    public UniqueUpgradeCardTagCondition(UpgradeCardTag restrictedTags)
+    public UniqueUpgradeCardTagCondition(CardTag restrictedTags)
     {
         this.restrictedTags = restrictedTags;
     }
 
     public override bool IsSatisfied(ContentRollContext context, ContentPoolEntry entry)
     {
-        if (entry?.Content is not UpgradeCardSO candidateCard || context?.SelectedEntries == null)
+        if (entry?.Content is not RewardCardSO candidateCard || context?.SelectedEntries == null)
         {
             return true;
         }
 
-        UpgradeCardTag candidateTags = ResolveComparedTags(candidateCard.Tags);
-        if (candidateTags == UpgradeCardTag.None)
+        CardTag candidateTags = ResolveComparedTags(candidateCard.Tags);
+        if (candidateTags == CardTag.None)
         {
             return true;
         }
 
         for (int i = 0; i < context.SelectedEntries.Count; i++)
         {
-            if (context.SelectedEntries[i]?.Content is not UpgradeCardSO selectedCard)
+            if (context.SelectedEntries[i]?.Content is not RewardCardSO selectedCard)
             {
                 continue;
             }
@@ -611,9 +611,9 @@ public sealed class UniqueUpgradeCardTagCondition : ContentCondition
         return true;
     }
 
-    private UpgradeCardTag ResolveComparedTags(UpgradeCardTag sourceTags)
+    private CardTag ResolveComparedTags(CardTag sourceTags)
     {
-        return restrictedTags == UpgradeCardTag.None ? sourceTags : sourceTags & restrictedTags;
+        return restrictedTags == CardTag.None ? sourceTags : sourceTags & restrictedTags;
     }
 }
 

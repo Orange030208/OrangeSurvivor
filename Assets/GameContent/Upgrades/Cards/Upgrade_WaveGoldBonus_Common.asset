@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_WaveGoldBonus_Common
   m_EditorClassIdentifier: 
-  cardId: Upgrade_WaveGoldBonus_Common
+  id: Upgrade_WaveGoldBonus_Common
   title: "\u6CE2\u6B21\u91D1\u5E01\u5F3A\u5316-\u666E\u901A"
-  rarity: 0
+  tier: 0
   tags: 64
   description: "\u53EA\u9002\u5408\u524D\u4E2D\u671F\uFF1B10 \u6CE2\u540E\u4EF7\u503C\u660E\u663E\u4E0B\u964D\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865438
   references:
     version: 2

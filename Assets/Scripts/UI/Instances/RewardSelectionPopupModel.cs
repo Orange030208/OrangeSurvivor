@@ -5,25 +5,25 @@ public sealed class RewardSelectionPopupModel
     public RewardSelectionPopupModel(
         string title,
         string description,
-        IRewardCardPresentation[] options,
+        RewardCardViewConfig[] options,
         Action<int, string> optionSelected = null)
     {
         Title = title ?? string.Empty;
         Description = description ?? string.Empty;
-        Options = options ?? Array.Empty<IRewardCardPresentation>();
+        Options = options ?? Array.Empty<RewardCardViewConfig>();
         OptionSelected = optionSelected;
     }
 
     public string Title { get; }
     public string Description { get; }
-    public IRewardCardPresentation[] Options { get; }
+    public RewardCardViewConfig[] Options { get; }
     public Action<int, string> OptionSelected { get; }
 }
 
 public readonly struct RewardSelectionCardBinding
 {
     public RewardSelectionCardBinding(
-        IRewardCardPresentation card,
+        RewardCardViewConfig card,
         int index,
         Action<int, string> optionSelected)
         : this(card, index, optionSelected, null)
@@ -31,7 +31,7 @@ public readonly struct RewardSelectionCardBinding
     }
 
     public RewardSelectionCardBinding(
-        IRewardCardPresentation card,
+        RewardCardViewConfig card,
         int index,
         Action<int, string> optionSelected,
         Action<int, string> submitRequested)
@@ -42,7 +42,7 @@ public readonly struct RewardSelectionCardBinding
         SubmitRequested = submitRequested;
     }
 
-    public IRewardCardPresentation Card { get; }
+    public RewardCardViewConfig Card { get; }
     public int Index { get; }
     public Action<int, string> OptionSelected { get; }
     public Action<int, string> SubmitRequested { get; }

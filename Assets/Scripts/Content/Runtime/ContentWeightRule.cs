@@ -117,7 +117,7 @@ public sealed class PlayerPropertyScaleWeightRule : ContentWeightRule
 [Serializable]
 public sealed class CandidateUpgradeCardTagWeightRule : ContentWeightRule
 {
-    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private CardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private float multiplier = 1f;
     [SerializeField] private float addedWeight;
@@ -127,7 +127,7 @@ public sealed class CandidateUpgradeCardTagWeightRule : ContentWeightRule
     }
 
     public CandidateUpgradeCardTagWeightRule(
-        UpgradeCardTag targetTags,
+        CardTag targetTags,
         float multiplier,
         float addedWeight = 0f,
         ContentTagMatchMode matchMode = ContentTagMatchMode.Any)
@@ -140,7 +140,7 @@ public sealed class CandidateUpgradeCardTagWeightRule : ContentWeightRule
 
     public override float ModifyWeight(float currentWeight, ContentRollContext context, ContentPoolEntry entry)
     {
-        if (entry?.Content is not UpgradeCardSO card ||
+        if (entry?.Content is not RewardCardSO card ||
             !ContentTagMatchUtility.Matches(card.Tags, targetTags, matchMode))
         {
             return currentWeight;
@@ -153,7 +153,7 @@ public sealed class CandidateUpgradeCardTagWeightRule : ContentWeightRule
 [Serializable]
 public sealed class UpgradeCardTagPickCountWeightRule : ContentWeightRule
 {
-    [SerializeField] private UpgradeCardTag targetTags;
+    [SerializeField] private CardTag targetTags;
     [SerializeField] private ContentTagMatchMode matchMode = ContentTagMatchMode.Any;
     [SerializeField] private float multiplierPerPick = 0.15f;
     [SerializeField] private float maxMultiplier = 10f;
@@ -163,7 +163,7 @@ public sealed class UpgradeCardTagPickCountWeightRule : ContentWeightRule
     }
 
     public UpgradeCardTagPickCountWeightRule(
-        UpgradeCardTag targetTags,
+        CardTag targetTags,
         float multiplierPerPick,
         float maxMultiplier = 10f,
         ContentTagMatchMode matchMode = ContentTagMatchMode.Any)

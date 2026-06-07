@@ -84,36 +84,24 @@ internal static class ItemDescriptionUtility
         };
     }
 
-    public static string FormatRarity(UpgradeCardRarity rarity)
-    {
-        return rarity switch
-        {
-            UpgradeCardRarity.Common => "普通",
-            UpgradeCardRarity.Rare => "稀有",
-            UpgradeCardRarity.Epic => "史诗",
-            UpgradeCardRarity.Legendary => "传说",
-            _ => rarity.ToString()
-        };
-    }
-
-    public static string FormatUpgradeCardTag(UpgradeCardTag tag)
+    public static string FormatUpgradeCardTag(CardTag tag)
     {
         return tag switch
         {
-            UpgradeCardTag.Attack => "攻击",
-            UpgradeCardTag.Defense => "防御",
-            UpgradeCardTag.Critical => "暴击",
-            UpgradeCardTag.AttackSpeed => "攻速",
-            UpgradeCardTag.MoveSpeed => "移动",
-            UpgradeCardTag.Pickup => "拾取",
-            UpgradeCardTag.Economy => "经济",
-            UpgradeCardTag.Weapon => "武器",
-            UpgradeCardTag.Melee => "近战",
-            UpgradeCardTag.Ranged => "远程",
-            UpgradeCardTag.Projectile => "投射物",
-            UpgradeCardTag.Recovery => "回复",
-            UpgradeCardTag.LowHealth => "低血",
-            UpgradeCardTag.AreaDamage => "范围",
+            CardTag.Attack => "攻击",
+            CardTag.Defense => "防御",
+            CardTag.Critical => "暴击",
+            CardTag.AttackSpeed => "攻速",
+            CardTag.MoveSpeed => "移动",
+            CardTag.Pickup => "拾取",
+            CardTag.Economy => "经济",
+            CardTag.Weapon => "武器",
+            CardTag.Melee => "近战",
+            CardTag.Ranged => "远程",
+            CardTag.Projectile => "投射物",
+            CardTag.Recovery => "回复",
+            CardTag.LowHealth => "低血",
+            CardTag.AreaDamage => "范围",
             _ => tag.ToString()
         };
     }
@@ -130,7 +118,7 @@ internal static class ItemDescriptionUtility
         };
     }
 
-    public static string JoinUpgradeCardTags(IReadOnlyList<UpgradeCardTag> tags, int maxCount)
+    public static string JoinUpgradeCardTags(IReadOnlyList<CardTag> tags, int maxCount)
     {
         if (tags == null || tags.Count == 0 || maxCount <= 0)
         {
@@ -152,7 +140,7 @@ internal static class ItemDescriptionUtility
         return builder.ToString();
     }
 
-    public static string JoinUpgradeCardTags(UpgradeCardTag tags, int maxCount)
+    public static string JoinUpgradeCardTags(CardTag tags, int maxCount)
     {
         return JoinUpgradeCardTags(ToUpgradeCardTagArray(tags), maxCount);
     }
@@ -306,17 +294,17 @@ internal static class ItemDescriptionUtility
         return string.Equals(label?.Trim(), "说明", StringComparison.Ordinal);
     }
 
-    private static UpgradeCardTag[] ToUpgradeCardTagArray(UpgradeCardTag mask)
+    private static CardTag[] ToUpgradeCardTagArray(CardTag mask)
     {
-        if (mask == UpgradeCardTag.None)
+        if (mask == CardTag.None)
         {
-            return Array.Empty<UpgradeCardTag>();
+            return Array.Empty<CardTag>();
         }
 
-        List<UpgradeCardTag> result = new();
-        foreach (UpgradeCardTag tag in Enum.GetValues(typeof(UpgradeCardTag)))
+        List<CardTag> result = new();
+        foreach (CardTag tag in Enum.GetValues(typeof(CardTag)))
         {
-            if (tag == UpgradeCardTag.None || (mask & tag) == 0)
+            if (tag == CardTag.None || (mask & tag) == 0)
             {
                 continue;
             }

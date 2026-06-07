@@ -5,9 +5,8 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
 {
     private const int OPTION_COUNT = 4;
 
-    private readonly UpgradeCardRollService rollService = new();
-    private readonly UpgradeCardApplyService applyService = new();
-    private readonly UpgradeRewardCardPresenter presenter = new();
+    private readonly RewardCardRollService rollService = new();
+    private readonly RewardCardApplyService applyService = new();
 
     public RewardSelectionReason Reason => RewardSelectionReason.Upgrade;
 
@@ -30,15 +29,16 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
             progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
             historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
             history: context.ContentHistoryState);
-        List<UpgradeCardRollOption> rollOptions = rollService.RollOptions(pool, rollContext);
+        List<RewardCardRollOption> rollOptions = rollService.RollOptions(pool, rollContext);
         int count = Mathf.Min(OPTION_COUNT, rollOptions.Count);
         RewardSelectionOption[] options = new RewardSelectionOption[count];
 
         for (int i = 0; i < count; i++)
         {
-            UpgradeCardRollOption rollOption = rollOptions[i];
-            UpgradeRewardCardPresentation presentation = presenter.Create(rollOption);
-            options[i] = new UpgradeRewardSelectionOption(rollOption, presentation);
+            RewardCardRollOption rollOption = rollOptions[i];
+            RewardCardOptionViewData viewData = rollOption.CreateViewData();
+            RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateUpgrade(viewData, rollOption.Card != null);
+            options[i] = new UpgradeRewardSelectionOption(rollOption, viewConfig);
         }
 
         if (options.Length == 0)
@@ -56,7 +56,7 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
             return false;
         }
 
-        UpgradeCardSO selectedCard = selectedOption.UpgradeCard;
+        RewardCardSO selectedCard = selectedOption.UpgradeCard;
         if (!applyService.Apply(selectedCard, context.Player))
         {
             Debug.LogWarning($"[UpgradeRewardSelectionHandler] Failed to apply upgrade card {selectedCard?.name}.", context.LogContext);
@@ -66,7 +66,7 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
         ContentPoolSO pool = ResolveUpgradeCardPool(context);
         context.ContentHistoryState.RecordPick(
             context.CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
-            selectedOption.UpgradeCardOption.RollItem);
+            selectedOption.RewardCardOption.RollItem);
         context.PlayerLevel?.ConsumeUpgradePoint();
         return true;
     }

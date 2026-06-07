@@ -5,35 +5,18 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
 
-[Serializable]
-public sealed class RewardCardPrefabEntry
-{
-    [SerializeField] private RewardCardStyle style;
-    [SerializeField] private RewardSelectionCardViewBase prefab;
-
-    public RewardCardPrefabEntry()
-    {
-    }
-
-    public RewardCardPrefabEntry(RewardCardStyle style, RewardSelectionCardViewBase prefab)
-    {
-        this.style = style;
-        this.prefab = prefab;
-    }
-
-    public RewardCardStyle Style => style;
-    public RewardSelectionCardViewBase Prefab => prefab;
-}
-
 public class RewardSelectionCardGroup : ViewPartBase
 {
     private const float REFRESH_OUT_STAGGER_SECONDS = 0.04f;
     private const float SUBMIT_REJECTED_STAGGER_SECONDS = 0.045f;
 
     [SerializeField] private Transform root;
-    [SerializeField] private RewardCardPrefabEntry[] cardPrefabs = Array.Empty<RewardCardPrefabEntry>();
+    [SerializeField] private RewardCard commonCardPrefab;
+    [SerializeField] private RewardCard rareCardPrefab;
+    [SerializeField] private RewardCard epicCardPrefab;
+    [SerializeField] private RewardCard legendaryCardPrefab;
 
-    private readonly List<RewardSelectionCardViewBase> activeContainers = new();
+    private readonly List<RewardCard> activeContainers = new();
     private CancellationTokenSource submitCancellation;
     private Action<int, string> optionSelected;
     private bool isSelectionLocked;
@@ -43,7 +26,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         EnsureRoot();
     }
 
-    public void Configure(IRewardCardPresentation[] options, Action<int, string> optionSelected)
+    public void Configure(RewardCardViewConfig[] options, Action<int, string> optionSelected)
     {
         CancelSubmitAnimation();
         this.optionSelected = optionSelected;
@@ -52,7 +35,7 @@ public class RewardSelectionCardGroup : ViewPartBase
 
         for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardViewBase container = activeContainers[i];
+            RewardCard container = activeContainers[i];
             if (container == null)
             {
                 continue;
@@ -103,7 +86,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         List<UniTask> runningTasks = new();
         for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardViewBase container = activeContainers[i];
+            RewardCard container = activeContainers[i];
             if (container == null || !container.gameObject.activeInHierarchy)
             {
                 continue;
@@ -133,7 +116,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         isSelectionLocked = true;
         for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardViewBase container = activeContainers[i];
+            RewardCard container = activeContainers[i];
             if (container == null)
             {
                 continue;
@@ -172,7 +155,7 @@ public class RewardSelectionCardGroup : ViewPartBase
             int rejectedOrder = 0;
             for (int i = 0; i < activeContainers.Count; i++)
             {
-                RewardSelectionCardViewBase container = activeContainers[i];
+                RewardCard container = activeContainers[i];
                 if (container == null || !container.gameObject.activeInHierarchy)
                 {
                     continue;
@@ -216,7 +199,7 @@ public class RewardSelectionCardGroup : ViewPartBase
     }
 
     private static async UniTask PlayContainerRefreshOutAsync(
-        RewardSelectionCardViewBase container,
+        RewardCard container,
         float startDelay,
         CancellationToken cancellationToken)
     {
@@ -241,7 +224,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         }
     }
 
-    private void RebuildContainers(IRewardCardPresentation[] options)
+    private void RebuildContainers(RewardCardViewConfig[] options)
     {
         ClearGeneratedContainers();
         int requiredCount = options != null ? options.Length : 0;
@@ -254,7 +237,7 @@ public class RewardSelectionCardGroup : ViewPartBase
         Transform parent = root != null ? root : transform;
         for (int i = 0; i < requiredCount; i++)
         {
-            IRewardCardPresentation option = options[i];
+            RewardCardViewConfig option = options[i];
             if (option == null)
             {
                 throw new ArgumentException(
@@ -262,8 +245,8 @@ public class RewardSelectionCardGroup : ViewPartBase
                     nameof(options));
             }
 
-            RewardSelectionCardViewBase prefab = ResolvePrefab(option.Style);
-            RewardSelectionCardViewBase container = Instantiate(prefab, parent, false);
+            RewardCard prefab = ResolvePrefab(option.Tier);
+            RewardCard container = Instantiate(prefab, parent, false);
             container.name = $"{prefab.name} ({i + 1})";
             container.gameObject.SetActive(true);
             container.BindSubmitGate(TryBeginSelection);
@@ -275,7 +258,7 @@ public class RewardSelectionCardGroup : ViewPartBase
     {
         for (int i = 0; i < activeContainers.Count; i++)
         {
-            RewardSelectionCardViewBase container = activeContainers[i];
+            RewardCard container = activeContainers[i];
             if (container == null)
             {
                 continue;
@@ -314,36 +297,26 @@ public class RewardSelectionCardGroup : ViewPartBase
         Clear();
     }
 
-    private RewardSelectionCardViewBase ResolvePrefab(RewardCardStyle style)
+    private RewardCard ResolvePrefab(ContentTier tier)
     {
-        if (cardPrefabs == null || cardPrefabs.Length == 0)
+        RewardCard prefab = tier switch
         {
-            throw new MissingReferenceException(
-                $"{nameof(RewardSelectionCardGroup)} '{name}' has no reward card prefab mappings.");
-        }
+            ContentTier.Rare => rareCardPrefab,
+            ContentTier.Epic => epicCardPrefab,
+            ContentTier.Legendary => legendaryCardPrefab,
+            _ => commonCardPrefab
+        };
 
-        for (int i = 0; i < cardPrefabs.Length; i++)
+        if (prefab != null)
         {
-            RewardCardPrefabEntry entry = cardPrefabs[i];
-            if (entry == null || entry.Style != style)
-            {
-                continue;
-            }
-
-            if (entry.Prefab == null)
-            {
-                throw new MissingReferenceException(
-                    $"{nameof(RewardSelectionCardGroup)} '{name}' has a null prefab for reward card style '{style}'.");
-            }
-
-            return entry.Prefab;
+            return prefab;
         }
 
         throw new MissingReferenceException(
-            $"{nameof(RewardSelectionCardGroup)} '{name}' is missing reward card prefab mapping for style '{style}'.");
+            $"{nameof(RewardSelectionCardGroup)} '{name}' is missing reward card prefab mapping for tier '{tier}'.");
     }
 
-    private static void DestroyGeneratedContainer(RewardSelectionCardViewBase container)
+    private static void DestroyGeneratedContainer(RewardCard container)
     {
         if (container == null)
         {

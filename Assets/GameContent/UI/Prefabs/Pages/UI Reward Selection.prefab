@@ -191,11 +191,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   root: {fileID: 215225996868831088}
-  cardPrefabs:
-  - style: 1
-    prefab: {fileID: 3991975365694480743, guid: 88d4a3c77e4222944a26f3a08560ca5e, type: 3}
-  - style: 0
-    prefab: {fileID: 8623527939464767253, guid: 6c09edfde291de1408b08678ee923f2f, type: 3}
+  commonCardPrefab: {fileID: 7022477854121971563, guid: 26cb5cc81bfee104b86ad818bd79e3f1, type: 3}
+  rareCardPrefab: {fileID: 7022477854121971563, guid: 04f593b03354c4d4c8fd445d94c1328a, type: 3}
+  epicCardPrefab: {fileID: 7022477854121971563, guid: cc5452178018dec4d90f06e45593afae, type: 3}
+  legendaryCardPrefab: {fileID: 7022477854121971563, guid: 20f6f3dfb61e36041b587cc84f57628d, type: 3}
 --- !u!114 &2902823917927253372
 MonoBehaviour:
   m_ObjectHideFlags: 0

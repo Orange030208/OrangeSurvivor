@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_MagicAttack_Legendary
   m_EditorClassIdentifier: 
-  cardId: Upgrade_MagicAttack_Legendary
+  id: Upgrade_MagicAttack_Legendary
   title: "\u9B54\u6CD5\u8BAD\u7EC3-\u4F20\u8BF4"
-  rarity: 3
+  tier: 3
   tags: 129
   description: "\u56DB\u7C7B\u653B\u51FB\u5361\u6743\u91CD\u7565\u4F4E\u4E8E\u901A\u7528\u8F93\u51FA\u5361\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865382
   references:
     version: 2

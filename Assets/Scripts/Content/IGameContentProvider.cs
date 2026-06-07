@@ -10,7 +10,7 @@ public interface IGameContentProvider
     IReadOnlyList<WeaponDataSO> Weapons { get; }
     IReadOnlyList<AccessoryDataSO> Accessories { get; }
     CharacterDataSO DefaultCharacter { get; }
-    IReadOnlyList<UpgradeCardSO> StarterCards { get; }
+    IReadOnlyList<RewardCardSO> StarterCards { get; }
     Player DefaultPlayerPrefab { get; }
     Weapon DefaultWeaponPrefab { get; }
     PlayerLevelConfigSO PlayerLevelConfig { get; }
@@ -21,7 +21,6 @@ public interface IGameContentProvider
     ContentPoolSO DropPool { get; }
     ContentPoolSO WaveSpawnPool { get; }
     ContentPoolSO WeaponRewardPool { get; }
-    CardQualityPresentationCatalogSO CardQualityPresentationCatalog { get; }
     PropPresentationCatalogSO PropPresentationCatalog { get; }
     StageDefinitionSO DefaultStageDefinition { get; }
     DamageTextFlow DamageTextPrefab { get; }

@@ -174,7 +174,6 @@ public static class GameContentCatalogBuildUtility
     private static List<ContentPoolEntry> BuildShopEntries()
     {
         List<ContentPoolEntry> entries = BuildChestRewardEntries();
-        IReadOnlyDictionary<string, WeaponJsonWeapon> weaponRowsById = LoadWeaponRowsById();
         foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
         {
             if (weapon == null)
@@ -182,14 +181,11 @@ public static class GameContentCatalogBuildUtility
                 continue;
             }
 
-            WeaponJsonWeapon row = ResolveWeaponRow(weaponRowsById, weapon);
             for (int level = WeaponLevelHelper.MinLevel; level <= WeaponLevelHelper.MaxLevel; level++)
             {
                 ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateShopEntry(
                     weapon,
-                    level,
-                    ResolveWeaponOpenWave(row),
-                    ResolveWeaponCloseWave(row));
+                    level);
                 if (entry == null)
                 {
                     continue;
@@ -197,8 +193,8 @@ public static class GameContentCatalogBuildUtility
 
                 entry.ConfigureRuntimeRules(
                     WeaponContentPoolTuningUtility.BuildAvailabilityConditions(
-                        ResolveWeaponOpenWave(row),
-                        ResolveWeaponCloseWave(row)),
+                        WeaponContentPoolTuningUtility.DefaultOpenWave,
+                        WeaponContentPoolTuningUtility.DefaultCloseWave),
                     new[] { CreateLuckWeightRule(GetWeaponLevelLuckCoefficient(level), 0.5f) });
                 entries.Add(entry);
             }
@@ -210,7 +206,6 @@ public static class GameContentCatalogBuildUtility
     private static List<ContentPoolEntry> BuildWeaponRewardEntries()
     {
         List<ContentPoolEntry> entries = new();
-        IReadOnlyDictionary<string, WeaponJsonWeapon> weaponRowsById = LoadWeaponRowsById();
         foreach (WeaponDataSO weapon in LoadAssets<WeaponDataSO>(GameContentAssetPaths.WeaponsData))
         {
             if (weapon == null)
@@ -218,12 +213,7 @@ public static class GameContentCatalogBuildUtility
                 continue;
             }
 
-            WeaponJsonWeapon row = ResolveWeaponRow(weaponRowsById, weapon);
-            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(
-                weapon,
-                ResolveWeaponBaseWeight(row),
-                ResolveWeaponOpenWave(row),
-                ResolveWeaponCloseWave(row));
+            ContentPoolEntry entry = WeaponContentPoolTuningUtility.CreateRewardEntry(weapon);
             if (entry == null)
             {
                 continue;
@@ -235,79 +225,17 @@ public static class GameContentCatalogBuildUtility
         return entries;
     }
 
-    private static IReadOnlyDictionary<string, WeaponJsonWeapon> LoadWeaponRowsById()
-    {
-        Dictionary<string, WeaponJsonWeapon> weaponRowsById = new(System.StringComparer.Ordinal);
-        try
-        {
-            IReadOnlyList<WeaponJsonWeapon> rows = WeaponJsonReader.ReadDefault();
-            for (int i = 0; i < rows.Count; i++)
-            {
-                WeaponJsonWeapon row = rows[i];
-                if (row == null || string.IsNullOrWhiteSpace(row.weaponId))
-                {
-                    continue;
-                }
-
-                weaponRowsById[row.weaponId] = row;
-            }
-        }
-        catch (DataImportException exception)
-        {
-            Debug.LogWarning(
-                $"Weapon JSON tuning could not be loaded for content pool generation. " +
-                $"Using default weapon pool tuning. {exception.Message}");
-        }
-
-        return weaponRowsById;
-    }
-
-    private static WeaponJsonWeapon ResolveWeaponRow(
-        IReadOnlyDictionary<string, WeaponJsonWeapon> rowsById,
-        WeaponDataSO weapon)
-    {
-        if (rowsById == null || weapon == null)
-        {
-            return null;
-        }
-
-        return rowsById.TryGetValue(weapon.WeaponId, out WeaponJsonWeapon row)
-            ? row
-            : null;
-    }
-
-    private static float ResolveWeaponBaseWeight(WeaponJsonWeapon row)
-    {
-        return row != null
-            ? Mathf.Max(0f, row.baseWeight)
-            : WeaponContentPoolTuningUtility.DefaultRewardWeaponWeight;
-    }
-
-    private static int ResolveWeaponOpenWave(WeaponJsonWeapon row)
-    {
-        return row != null
-            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultOpenWave, row.openWave)
-            : WeaponContentPoolTuningUtility.DefaultOpenWave;
-    }
-
-    private static int ResolveWeaponCloseWave(WeaponJsonWeapon row)
-    {
-        return row != null
-            ? Mathf.Max(WeaponContentPoolTuningUtility.DefaultCloseWave, row.closeWave)
-            : WeaponContentPoolTuningUtility.DefaultCloseWave;
-    }
-
     private static List<ContentPoolEntry> BuildUpgradeCardEntries()
     {
         List<ContentPoolEntry> entries = new();
-        foreach (UpgradeCardSO card in LoadAssets<UpgradeCardSO>(GameContentAssetPaths.UpgradeCards))
+        foreach (RewardCardSO card in LoadAssets<RewardCardSO>(GameContentAssetPaths.UpgradeCards))
         {
             if (card == null)
             {
                 continue;
             }
 
-            ContentPoolEntry entry = UpgradeCardContentPoolTuningUtility.CreateEntry(card);
+            ContentPoolEntry entry = RewardCardContentPoolTuningUtility.CreateEntry(card);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -436,7 +364,6 @@ public static class GameContentCatalogBuildUtility
         SetObject(serializedObject, "defaultWeaponPrefab", LoadRequiredPrefabComponent<Weapon>(GameContentAssetPaths.DefaultWeaponPrefab));
         SetObject(serializedObject, "damageTextPrefab", LoadRequiredPrefabComponent<DamageTextFlow>(GameContentAssetPaths.DamageTextPrefab));
         SetObject(serializedObject, "propPresentationCatalog", LoadRequired<PropPresentationCatalogSO>(GameContentAssetPaths.PropPresentationCatalog));
-        SetObject(serializedObject, "cardQualityPresentationCatalog", LoadRequired<CardQualityPresentationCatalogSO>(GameContentAssetPaths.CardQualityPresentationCatalog));
         SetObject(serializedObject, "itemQualityVisualConfig", LoadRequired<ItemQualityVisualConfigSO>(GameContentAssetPaths.ItemQualityVisualConfig));
         SetObject(serializedObject, "damageTextVisualConfig", GetOrCreateDamageTextVisualConfig());
         SetObject(serializedObject, "itemQualityIconEffectMaterial", LoadRequired<Material>(GameContentAssetPaths.ItemQualityIconEffectMaterial));
@@ -491,10 +418,10 @@ public static class GameContentCatalogBuildUtility
             "Upgrade_AttackSpeed_Common"
         };
 
-        List<UpgradeCardSO> starterCards = new();
+        List<RewardCardSO> starterCards = new();
         for (int i = 0; i < starterCardNames.Length; i++)
         {
-            UpgradeCardSO card = LoadFirstAsset<UpgradeCardSO>(
+            RewardCardSO card = LoadFirstAsset<RewardCardSO>(
                 GameContentAssetPaths.UpgradeCards,
                 starterCardNames[i]);
             if (card != null)
@@ -686,6 +613,5 @@ public static class GameContentCatalogBuildUtility
 
         return null;
     }
-
 }
 #endif

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_Armor_Epic
   m_EditorClassIdentifier: 
-  cardId: Upgrade_Armor_Epic
+  id: Upgrade_Armor_Epic
   title: "\u62A4\u7532\u5F3A\u5316-\u53F2\u8BD7"
-  rarity: 2
+  tier: 2
   tags: 2
   description: "\u5355\u70B9\u4EF7\u503C\u9AD8\uFF0C\u4E0D\u63D0\u4F9B Common \u6863\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865404
   references:
     version: 2

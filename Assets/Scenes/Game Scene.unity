@@ -10849,7 +10849,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3725aa447f4b05967362c38519e395, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 2066110832}
   player: {fileID: 0}
   mapGenerator: {fileID: 595972524}
   waveManager: {fileID: 0}
@@ -11921,7 +11920,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa34045666274caeb661917b2a511151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 0}
   accessoryManager: {fileID: 0}
   player: {fileID: 0}
   upgradeCardPool: {fileID: 0}

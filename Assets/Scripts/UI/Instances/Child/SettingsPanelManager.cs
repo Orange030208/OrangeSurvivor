@@ -8,6 +8,7 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
@@ -24,7 +25,8 @@ public class SettingsPanelManager : PopupBase
 
     [Header("显示")]
     [SerializeField] private MonoBehaviour motionSource;
-    [SerializeField] private CanvasGroup canvasGroup;
+    [FormerlySerializedAs("canvasGroup")]
+    [SerializeField] private CanvasGroup panelCanvasGroup;
     [SerializeField] private RectTransform visualRoot;
     [SerializeField] private bool animateVisibility = true;
     [SerializeField] [Min(0.01f)] private float visibilityShowDuration = 0.18f;
@@ -494,13 +496,13 @@ public class SettingsPanelManager : PopupBase
 
     private void SetInteractionEnabled(bool enabled)
     {
-        if (canvasGroup == null)
+        if (panelCanvasGroup == null)
         {
             return;
         }
 
-        canvasGroup.interactable = enabled;
-        canvasGroup.blocksRaycasts = enabled;
+        panelCanvasGroup.interactable = enabled;
+        panelCanvasGroup.blocksRaycasts = enabled;
     }
 
     private void SelectDefaultControlIfVisible(bool enabled)
@@ -1011,7 +1013,7 @@ public class SettingsPanelManager : PopupBase
 
     private Tween PlayVisibilityTween(bool show)
     {
-        if (!animateVisibility || canvasGroup == null || visualRoot == null)
+        if (!animateVisibility || panelCanvasGroup == null || visualRoot == null)
         {
             return motion?.Play(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
         }
@@ -1021,17 +1023,17 @@ public class SettingsPanelManager : PopupBase
 
         float duration = show ? visibilityShowDuration : visibilityHideDuration;
         Vector3 hiddenScale = visualRootVisibleScale * hiddenScaleMultiplier;
-        canvasGroup.alpha = show ? 0f : 1f;
+        panelCanvasGroup.alpha = show ? 0f : 1f;
         visualRoot.localScale = show ? hiddenScale : visualRootVisibleScale;
 
         Sequence sequence = DOTween.Sequence();
         sequence.SetUpdate(true);
-        sequence.Join(canvasGroup.DOFade(show ? 1f : 0f, duration).SetEase(show ? Ease.OutCubic : Ease.InCubic));
+        sequence.Join(panelCanvasGroup.DOFade(show ? 1f : 0f, duration).SetEase(show ? Ease.OutCubic : Ease.InCubic));
         sequence.Join(visualRoot.DOScale(show ? visualRootVisibleScale : hiddenScale, duration).SetEase(show ? Ease.OutBack : Ease.InCubic));
         sequence.OnKill(() => visibilityTween = null);
         sequence.OnComplete(() =>
         {
-            canvasGroup.alpha = show ? 1f : 0f;
+            panelCanvasGroup.alpha = show ? 1f : 0f;
             visualRoot.localScale = show ? visualRootVisibleScale : hiddenScale;
         });
         visibilityTween = sequence;
@@ -1040,7 +1042,7 @@ public class SettingsPanelManager : PopupBase
 
     private void SetVisibilityImmediate(bool show)
     {
-        if (!animateVisibility || canvasGroup == null || visualRoot == null)
+        if (!animateVisibility || panelCanvasGroup == null || visualRoot == null)
         {
             motion?.SetImmediate(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
             return;
@@ -1048,7 +1050,7 @@ public class SettingsPanelManager : PopupBase
 
         CaptureAnimationDefaultsIfNeeded();
         visibilityTween?.Kill();
-        canvasGroup.alpha = show ? 1f : 0f;
+        panelCanvasGroup.alpha = show ? 1f : 0f;
         visualRoot.localScale = show ? visualRootVisibleScale : visualRootVisibleScale * hiddenScaleMultiplier;
     }
 
@@ -1175,7 +1177,7 @@ public class SettingsPanelManager : PopupBase
             throw new MissingComponentException($"{nameof(SettingsPanelManager)} '{name}' motion source must implement {nameof(IUIRuntimeMotion)}.");
         }
 
-        if (canvasGroup == null)
+        if (panelCanvasGroup == null)
         {
             throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing canvas group.");
         }
@@ -1248,9 +1250,9 @@ public class SettingsPanelManager : PopupBase
 
     private void ResolvePresentationReferences()
     {
-        if (canvasGroup == null)
+        if (panelCanvasGroup == null)
         {
-            TryGetComponent(out canvasGroup);
+            TryGetComponent(out panelCanvasGroup);
         }
 
         if (motionSource != null)

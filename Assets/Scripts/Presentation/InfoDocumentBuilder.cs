@@ -29,11 +29,10 @@ public sealed class InfoDocumentService
         Register<PropertiesInfoSource>(propertiesInfoBuilder);
         Register<PropertiesManager>(propertiesInfoBuilder);
         Register(new AccessoryInfoBuilder());
-        Register(new UpgradeCardInfoBuilder());
+        Register(new RewardCardInfoBuilder());
         Register<BuffDataSO>(buffInfoBuilder);
         Register<BuffInfoSource>(buffInfoBuilder);
         Register<ActiveBuffViewData>(buffInfoBuilder);
-        Register<IRewardCardPresentation>(new RewardCardInfoBuilder());
     }
 
     public void Register<TSource>(IInfoDocumentBuilder<TSource> builder)

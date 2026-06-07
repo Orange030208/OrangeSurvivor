@@ -47,13 +47,13 @@ public sealed class AccessoryInfoBuilder : IInfoDocumentBuilder<AccessoryDataSO>
     }
 }
 
-public sealed class UpgradeCardInfoBuilder : IInfoDocumentBuilder<UpgradeCardSO>
+public sealed class RewardCardInfoBuilder : IInfoDocumentBuilder<RewardCardSO>
 {
     private const string MetaSectionTitle = "基础";
     private const string EffectsSectionTitle = "特殊效果";
     private const string DescriptionSectionTitle = "说明";
 
-    public InfoDocument Build(UpgradeCardSO source)
+    public InfoDocument Build(RewardCardSO source)
     {
         if (source == null)
         {
@@ -66,19 +66,19 @@ public sealed class UpgradeCardInfoBuilder : IInfoDocumentBuilder<UpgradeCardSO>
             MetaSectionTitle,
             new[]
             {
-                InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.Rarity), InfoTone.Emphasis)
+                InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.Tier), InfoTone.Emphasis)
             }));
 
-        InfoDocumentContentUtility.AddFeatureSection(sections, EffectsSectionTitle, source.SpecialFeatures);
-        if (source.SpecialFeatures == null || source.SpecialFeatures.Count == 0)
+        InfoDocumentContentUtility.AddFeatureSection(sections, EffectsSectionTitle, source.GrantedAbilities);
+        if (source.GrantedAbilities == null || source.GrantedAbilities.Count == 0)
         {
             InfoDocumentContentUtility.AddDescriptionSection(sections, DescriptionSectionTitle, source.Description);
         }
 
         return new InfoDocument(
-            string.IsNullOrWhiteSpace(source.CardId) ? source.name : source.CardId,
+            string.IsNullOrWhiteSpace(source.Id) ? source.name : source.Id,
             source.Title,
-            null,
+            source.Icon,
             InfoDocumentKind.UpgradeCard,
             tags,
             sections);
@@ -267,71 +267,6 @@ public sealed class BuffInfoBuilder :
     }
 }
 
-public sealed class RewardCardInfoBuilder : IInfoDocumentBuilder<IRewardCardPresentation>
-{
-    private const string MetaSectionTitle = "基础";
-    private const string DescriptionSectionTitle = "说明";
-
-    public InfoDocument Build(IRewardCardPresentation source)
-    {
-        if (source == null)
-        {
-            return InfoDocumentContentUtility.BuildMissingDocument(InfoDocumentKind.General, "缺失奖励数据");
-        }
-
-        List<InfoSection> sections = new()
-        {
-            new InfoSection(
-                MetaSectionTitle,
-                new[]
-                {
-                    InfoDocumentUtility.CreateSingleValueLine("品质", FormatQuality(source.Tier), InfoTone.Emphasis)
-                })
-        };
-
-        InfoDocumentContentUtility.AddDescriptionSection(sections, DescriptionSectionTitle, source.Description);
-        return new InfoDocument(
-            source.OptionId,
-            source.Title,
-            source.Icon,
-            ResolveDocumentKind(source.Kind),
-            BuildTags(source),
-            sections);
-    }
-
-    private static InfoDocumentKind ResolveDocumentKind(RewardOptionKind kind)
-    {
-        return kind switch
-        {
-            RewardOptionKind.Weapon => InfoDocumentKind.Weapon,
-            RewardOptionKind.Accessory => InfoDocumentKind.Accessory,
-            RewardOptionKind.UpgradeCard => InfoDocumentKind.UpgradeCard,
-            _ => InfoDocumentKind.General
-        };
-    }
-
-    private static IReadOnlyList<string> BuildTags(IRewardCardPresentation source)
-    {
-        if (source is UpgradeRewardCardPresentation upgradeReward)
-        {
-            return upgradeReward.Tags;
-        }
-
-        return new[] { FormatQuality(source.Tier) };
-    }
-
-    private static string FormatQuality(ContentTier tier)
-    {
-        return tier switch
-        {
-            ContentTier.Rare => "稀有",
-            ContentTier.Epic => "史诗",
-            ContentTier.Legendary => "传说",
-            _ => "普通"
-        };
-    }
-}
-
 internal static class InfoDocumentContentUtility
 {
     public static InfoDocument BuildMissingDocument(InfoDocumentKind kind, string title)
@@ -418,7 +353,7 @@ internal static class InfoDocumentContentUtility
             new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, normalizedDescription) }));
     }
 
-    public static List<string> BuildUpgradeTagLabels(IReadOnlyList<UpgradeCardTag> tags)
+    public static List<string> BuildUpgradeTagLabels(IReadOnlyList<CardTag> tags)
     {
         List<string> labels = new();
         if (tags == null)

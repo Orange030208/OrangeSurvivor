@@ -743,11 +743,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motionPlayer: {fileID: 909010101010101002}
-  profile: {fileID: 11400000, guid: 6211f4ddc9204336b5adebbf7592c0b3, type: 2}
+  profile: {fileID: 11400000, guid: 02704938cdf641ef866dc9419f0870c3, type: 2}
   restRoot: {fileID: 3473895060972581751}
   dynamicRoot: {fileID: 3473895060972581751}
-  autoResolveVisualRoot: 1
-  autoResolveVisualLayers: 1
   shadowRoot: {fileID: 5705760282534044090}
   shadowCanvasGroup: {fileID: 7669256257990080685}
   glowCanvasGroup: {fileID: 2791284554299328750}

@@ -22,14 +22,14 @@ public sealed class RewardSelectionRound
     public RewardSelectionOption[] Options { get; }
     public bool HasAnyOption => Options.Length > 0;
 
-    public IRewardCardPresentation[] CreatePresentations()
+    public RewardCardViewConfig[] CreateViewConfigs()
     {
-        IRewardCardPresentation[] presentations = new IRewardCardPresentation[Options.Length];
+        RewardCardViewConfig[] viewConfigs = new RewardCardViewConfig[Options.Length];
         for (int i = 0; i < Options.Length; i++)
         {
-            presentations[i] = Options[i]?.Presentation;
+            viewConfigs[i] = Options[i]?.ViewConfig;
         }
 
-        return presentations;
+        return viewConfigs;
     }
 }

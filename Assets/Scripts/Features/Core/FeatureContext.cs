@@ -2,10 +2,19 @@ using UnityEngine;
 
 public sealed class FeatureContext
 {
+    private FeatureHost featureHost;
+    private CurrencyWallet currencyWallet;
+
     public Entity OwnerEntity { get; }
     public Transform Transform => OwnerEntity.Transform;
     public PropertiesManager PropertiesManager { get; }
     public HealthComponent HealthComponent { get; }
+    public FeatureHost FeatureHost => featureHost != null
+        ? featureHost
+        : featureHost = OwnerEntity != null ? OwnerEntity.GetComponent<FeatureHost>() : null;
+    public CurrencyWallet CurrencyWallet => currencyWallet != null
+        ? currencyWallet
+        : currencyWallet = OwnerEntity != null ? OwnerEntity.GetComponent<CurrencyWallet>() : null;
 
     public FeatureContext(Entity ownerEntity, PropertiesManager propertiesManager)
     {

@@ -8,9 +8,101 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 295168467078335468, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 295168467078335468, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.38039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 295168467078335468, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.80784315
+      objectReference: {fileID: 0}
+    - target: {fileID: 295168467078335468, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294402510
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.b
+      value: 0.9686275
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.g
+      value: 0.3803922
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.r
+      value: 0.8078432
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494432766701493653, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494432766701493653, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.38039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494432766701493653, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.80784315
+      objectReference: {fileID: 0}
+    - target: {fileID: 4494432766701493653, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294402510
+      objectReference: {fileID: 0}
+    - target: {fileID: 5215344984666563382, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b1cc1f895247827499a59d7f9450f9c8, type: 3}
+    - target: {fileID: 5894113195898983682, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 117.4229
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894113195898983682, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 43.7698
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894113195898983682, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -1.492
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894113195898983682, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -57.299576
+      objectReference: {fileID: 0}
     - target: {fileID: 7139556483707835314, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
       propertyPath: m_Name
-      value: CardBase
+      value: EpicCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 8299340746185856592, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.b
+      value: 0.96862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 8299340746185856592, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.g
+      value: 0.38039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 8299340746185856592, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.r
+      value: 0.80784315
       objectReference: {fileID: 0}
     - target: {fileID: 8337600168010166629, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
       propertyPath: m_Pivot.x
@@ -91,6 +183,10 @@ PrefabInstance:
     - target: {fileID: 8337600168010166629, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8623527939464767253, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: selectSfxKey
+      value: 105
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -8,7 +8,6 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
     private const int DEFAULT_WEAPON_LEVEL = WeaponLevelHelper.MinLevel;
 
     private readonly ContentPoolRollService rollService = new();
-    private readonly EquipmentRewardCardPresenter presenter = new();
     private readonly Definition definition;
 
     private EquipmentRewardSelectionHandler(Definition definition)
@@ -54,7 +53,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
         for (int i = 0; i < count; i++)
         {
             ContentRollItem rollItem = items[i];
-            options[i] = definition.CreateOption(rollItem, presenter);
+            options[i] = definition.CreateOption(rollItem);
         }
 
         if (options.Length == 0)
@@ -92,7 +91,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
         private readonly Func<IGameContentProvider, ContentPoolSO> resolveProviderPool;
         private readonly Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext;
         private readonly Predicate<ContentPoolEntry> canUseEntry;
-        private readonly Func<ContentRollItem, EquipmentRewardCardPresenter, RewardSelectionOption> createOption;
+        private readonly Func<ContentRollItem, RewardSelectionOption> createOption;
         private readonly Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection;
         private readonly Func<RewardSelectionOption, ContentRollItem> getRollItem;
 
@@ -108,7 +107,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             Func<IGameContentProvider, ContentPoolSO> resolveProviderPool,
             Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext,
             Predicate<ContentPoolEntry> canUseEntry,
-            Func<ContentRollItem, EquipmentRewardCardPresenter, RewardSelectionOption> createOption,
+            Func<ContentRollItem, RewardSelectionOption> createOption,
             Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection,
             Func<RewardSelectionOption, ContentRollItem> getRollItem)
         {
@@ -155,16 +154,19 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                     history: context.ContentHistoryState,
                     weaponsHolder: context.WeaponsHolder),
                 entry => entry.Content is WeaponDataSO,
-                (rollItem, presenter) =>
+                rollItem =>
                 {
                     WeaponDataSO weaponData = rollItem.Content as WeaponDataSO;
-                    EquipmentRewardCardPresentation presentation = presenter.CreateWeapon(weaponData, DEFAULT_WEAPON_LEVEL);
+                    ContentTier tier = rollItem.TryGetTier(out ContentTier rollTier)
+                        ? rollTier
+                        : ContentTierResolver.FromWeaponLevel(DEFAULT_WEAPON_LEVEL);
+                    RewardCardViewConfig viewConfig =
+                        RewardCardViewConfigFactory.CreateWeapon(weaponData, DEFAULT_WEAPON_LEVEL, tier);
                     return new WeaponRewardSelectionOption(
-                        presentation.OptionId,
                         weaponData,
                         DEFAULT_WEAPON_LEVEL,
                         rollItem,
-                        presentation);
+                        viewConfig);
                 },
                 (option, context) =>
                 {
@@ -206,11 +208,16 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                     historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.ChestReward),
                     history: context.ContentHistoryState),
                 entry => entry.Content is AccessoryDataSO,
-                (rollItem, presenter) =>
+                rollItem =>
                 {
                     AccessoryDataSO accessory = rollItem.Content as AccessoryDataSO;
-                    EquipmentRewardCardPresentation presentation = presenter.CreateAccessory(accessory);
-                    return new AccessoryRewardSelectionOption(presentation.OptionId, accessory, rollItem, presentation);
+                    ContentTier tier = rollItem.TryGetTier(out ContentTier rollTier)
+                        ? rollTier
+                        : accessory != null
+                            ? ContentTierResolver.FromAccessoryTier(accessory.Tier)
+                            : ContentTier.Common;
+                    RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateAccessory(accessory, tier);
+                    return new AccessoryRewardSelectionOption(accessory, rollItem, viewConfig);
                 },
                 (option, context) =>
                 {
@@ -274,9 +281,9 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             return canUseEntry.Invoke(entry);
         }
 
-        public RewardSelectionOption CreateOption(ContentRollItem rollItem, EquipmentRewardCardPresenter presenter)
+        public RewardSelectionOption CreateOption(ContentRollItem rollItem)
         {
-            return createOption.Invoke(rollItem, presenter);
+            return createOption.Invoke(rollItem);
         }
 
         public bool ApplySelection(RewardSelectionOption option, RewardSelectionHandlerContext context)

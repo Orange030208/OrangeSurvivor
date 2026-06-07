@@ -17,7 +17,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     [SerializeField] private WeaponDataSO[] weapons = System.Array.Empty<WeaponDataSO>();
     [SerializeField] private AccessoryDataListSO accessoryDataList;
     [SerializeField] private CharacterDataSO defaultCharacter;
-    [SerializeField] private UpgradeCardSO[] starterCards = System.Array.Empty<UpgradeCardSO>();
+    [SerializeField] private RewardCardSO[] starterCards = System.Array.Empty<RewardCardSO>();
 
     [Header("玩法配置")]
     [SerializeField] private PlayerLevelConfigSO playerLevelConfig;
@@ -39,7 +39,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
 
     [Header("表现配置")]
     [SerializeField] private PropPresentationCatalogSO propPresentationCatalog;
-    [SerializeField] private CardQualityPresentationCatalogSO cardQualityPresentationCatalog;
     [SerializeField] private ItemQualityVisualConfigSO itemQualityVisualConfig;
     [SerializeField] private DamageTextVisualConfigSO damageTextVisualConfig;
     [SerializeField] private Material itemQualityIconEffectMaterial;
@@ -51,7 +50,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
         : System.Array.Empty<AccessoryDataSO>();
 
     public CharacterDataSO DefaultCharacter => defaultCharacter;
-    public IReadOnlyList<UpgradeCardSO> StarterCards => starterCards ?? System.Array.Empty<UpgradeCardSO>();
+    public IReadOnlyList<RewardCardSO> StarterCards => starterCards ?? System.Array.Empty<RewardCardSO>();
     public Player DefaultPlayerPrefab => defaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => defaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => playerLevelConfig;
@@ -62,7 +61,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
     public ContentPoolSO DropPool => dropPool;
     public ContentPoolSO WaveSpawnPool => waveSpawnPool;
     public ContentPoolSO WeaponRewardPool => weaponRewardPool;
-    public CardQualityPresentationCatalogSO CardQualityPresentationCatalog => cardQualityPresentationCatalog;
     public PropPresentationCatalogSO PropPresentationCatalog => propPresentationCatalog;
     public StageDefinitionSO DefaultStageDefinition => defaultStageDefinition;
     public DamageTextFlow DamageTextPrefab => damageTextPrefab;
@@ -88,7 +86,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(playerLevelConfig, nameof(playerLevelConfig), errors);
         ValidateRequired(runProgressionProfile, nameof(runProgressionProfile), errors);
         ValidateRequired(upgradeCardPool, nameof(upgradeCardPool), errors);
-        ValidatePoolContents<UpgradeCardSO>(upgradeCardPool, nameof(upgradeCardPool), errors);
+        ValidatePoolContents<RewardCardSO>(upgradeCardPool, nameof(upgradeCardPool), errors);
         ValidateRequired(chestRewardPool, nameof(chestRewardPool), errors);
         ValidatePoolContents<AccessoryDataSO>(chestRewardPool, nameof(chestRewardPool), errors);
         ValidateRequired(shopPool, nameof(shopPool), errors);
@@ -104,7 +102,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(defaultWeaponPrefab, nameof(defaultWeaponPrefab), errors);
         ValidateRequired(damageTextPrefab, nameof(damageTextPrefab), errors);
         ValidateRequired(propPresentationCatalog, nameof(propPresentationCatalog), errors);
-        ValidateRequired(cardQualityPresentationCatalog, nameof(cardQualityPresentationCatalog), errors);
         ValidateRequired(itemQualityVisualConfig, nameof(itemQualityVisualConfig), errors);
         ValidateRequired(damageTextVisualConfig, nameof(damageTextVisualConfig), errors);
         ValidateRequired(itemQualityIconEffectMaterial, nameof(itemQualityIconEffectMaterial), errors);
@@ -129,7 +126,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     {
         if (starterCards == null)
         {
-            starterCards = System.Array.Empty<UpgradeCardSO>();
+            starterCards = System.Array.Empty<RewardCardSO>();
         }
 
         // OnValidate 只打 warning，避免编辑资产时打断流程；真正进入运行时由 Bootstrap 打 error。

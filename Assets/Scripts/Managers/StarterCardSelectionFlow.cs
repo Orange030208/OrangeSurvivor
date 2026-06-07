@@ -11,7 +11,7 @@ public sealed class StarterCardSelectionFlow
 
     private readonly Player player;
     private readonly UnityEngine.Object logContext;
-    private readonly UpgradeCardApplyService applyService = new();
+    private readonly RewardCardApplyService applyService = new();
 
     private StarterCardSelectionOption[] currentOptions = Array.Empty<StarterCardSelectionOption>();
     private UniTaskCompletionSource<RewardSelectionResult> selectionCompletionSource;
@@ -24,7 +24,7 @@ public sealed class StarterCardSelectionFlow
         this.logContext = logContext;
     }
 
-    public async UniTask RunAsync(IReadOnlyList<UpgradeCardSO> starterCards, CancellationToken cancellationToken)
+    public async UniTask RunAsync(IReadOnlyList<RewardCardSO> starterCards, CancellationToken cancellationToken)
     {
         currentOptions = CreateOptions(starterCards);
         if (currentOptions.Length == 0)
@@ -35,7 +35,7 @@ public sealed class StarterCardSelectionFlow
         RewardSelectionPopupModel model = new(
             "选择开局卡",
             "选择 1 张开局升级卡。",
-            CreatePresentations(currentOptions),
+            CreateViewConfigs(currentOptions),
             OnOptionSelected);
         PopupOptions popupOptions = new(
             closeOnOutsideClick: false,
@@ -126,7 +126,7 @@ public sealed class StarterCardSelectionFlow
         return true;
     }
 
-    private static StarterCardSelectionOption[] CreateOptions(IReadOnlyList<UpgradeCardSO> starterCards)
+    private static StarterCardSelectionOption[] CreateOptions(IReadOnlyList<RewardCardSO> starterCards)
     {
         if (starterCards == null || starterCards.Count == 0)
         {
@@ -136,66 +136,39 @@ public sealed class StarterCardSelectionFlow
         List<StarterCardSelectionOption> options = new();
         for (int i = 0; i < starterCards.Count; i++)
         {
-            UpgradeCardSO card = starterCards[i];
+            RewardCardSO card = starterCards[i];
             if (card == null)
             {
                 continue;
             }
 
-            options.Add(new StarterCardSelectionOption(card, CreatePresentation(card)));
+            options.Add(new StarterCardSelectionOption(card, RewardCardViewConfigFactory.CreateUpgrade(card)));
         }
 
         return options.ToArray();
     }
 
-    private static IRewardCardPresentation[] CreatePresentations(StarterCardSelectionOption[] options)
+    private static RewardCardViewConfig[] CreateViewConfigs(StarterCardSelectionOption[] options)
     {
-        IRewardCardPresentation[] presentations = new IRewardCardPresentation[options.Length];
+        RewardCardViewConfig[] viewConfigs = new RewardCardViewConfig[options.Length];
         for (int i = 0; i < options.Length; i++)
         {
-            presentations[i] = options[i].Presentation;
+            viewConfigs[i] = options[i].ViewConfig;
         }
 
-        return presentations;
-    }
-
-    private static UpgradeRewardCardPresentation CreatePresentation(UpgradeCardSO card)
-    {
-        return new UpgradeRewardCardPresentation(
-            card.CardId,
-            card.Title,
-            card.Description,
-            ContentTierResolver.FromUpgradeCardRarity(card.Rarity),
-            BuildTagLabels(card.TagList),
-            true);
-    }
-
-    private static string[] BuildTagLabels(IReadOnlyList<UpgradeCardTag> tags)
-    {
-        if (tags == null || tags.Count == 0)
-        {
-            return Array.Empty<string>();
-        }
-
-        string[] labels = new string[tags.Count];
-        for (int i = 0; i < tags.Count; i++)
-        {
-            labels[i] = ItemDescriptionUtility.FormatUpgradeCardTag(tags[i]);
-        }
-
-        return labels;
+        return viewConfigs;
     }
 
     private readonly struct StarterCardSelectionOption
     {
-        public StarterCardSelectionOption(UpgradeCardSO card, IRewardCardPresentation presentation)
+        public StarterCardSelectionOption(RewardCardSO card, RewardCardViewConfig viewConfig)
         {
             Card = card;
-            Presentation = presentation;
+            ViewConfig = viewConfig;
         }
 
-        public UpgradeCardSO Card { get; }
-        public IRewardCardPresentation Presentation { get; }
-        public string OptionId => Presentation != null ? Presentation.OptionId : string.Empty;
+        public RewardCardSO Card { get; }
+        public RewardCardViewConfig ViewConfig { get; }
+        public string OptionId => ViewConfig != null ? ViewConfig.OptionId : string.Empty;
     }
 }

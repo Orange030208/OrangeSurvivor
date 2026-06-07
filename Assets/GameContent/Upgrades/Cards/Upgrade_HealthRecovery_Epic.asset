@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_HealthRecovery_Epic
   m_EditorClassIdentifier: 
-  cardId: Upgrade_HealthRecovery_Epic
+  id: Upgrade_HealthRecovery_Epic
   title: "\u751F\u547D\u6062\u590D\u5F3A\u5316-\u53F2\u8BD7"
-  rarity: 2
+  tier: 2
   tags: 2
   description: "\u5F53\u524D\u5B9E\u6218\u4E2D\u7A33\u5B9A\u6027\u9AD8\uFF0C\u4E0D\u80FD\u548C\u591A\u6761\u751F\u5B58\u94FE\u8DEF\u65E0\u8111\u53E0\u6EE1\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865401
   references:
     version: 2

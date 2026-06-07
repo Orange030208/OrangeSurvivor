@@ -8,9 +8,49 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 122470456638025138, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 497859349332115258, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 188
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608392474127027030, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.g
+      value: 0.63529414
+      objectReference: {fileID: 0}
+    - target: {fileID: 3384547312911755051, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9921569
+      objectReference: {fileID: 0}
     - target: {fileID: 7139556483707835314, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
       propertyPath: m_Name
-      value: CardBase
+      value: LegendaryCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 8623527939464767253, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
+      propertyPath: selectSfxKey
+      value: 106
       objectReference: {fileID: 0}
     - target: {fileID: 8337600168010166629, guid: 4ef51e5da9af8634abe7c292d7f87dda, type: 3}
       propertyPath: m_Pivot.x

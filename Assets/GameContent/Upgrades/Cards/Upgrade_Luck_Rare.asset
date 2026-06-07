@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_Luck_Rare
   m_EditorClassIdentifier: 
-  cardId: Upgrade_Luck_Rare
+  id: Upgrade_Luck_Rare
   title: "\u5E78\u8FD0\u5F3A\u5316-\u7A00\u6709"
-  rarity: 1
+  tier: 1
   tags: 64
   description: "\u540C\u65F6\u5F71\u54CD\u5546\u5E97\u548C\u5956\u52B1\u5165\u53E3\uFF0C\u6743\u91CD\u4FDD\u5B88\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865427
   references:
     version: 2

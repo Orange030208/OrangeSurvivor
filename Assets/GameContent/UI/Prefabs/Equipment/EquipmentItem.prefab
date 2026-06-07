@@ -86,6 +86,8 @@ GameObject:
   - component: {fileID: 2066595835807825875}
   - component: {fileID: 3764700732450898863}
   - component: {fileID: 4710896909159647376}
+  - component: {fileID: 1359818441167614500}
+  - component: {fileID: 1038229113854476291}
   m_Layer: 5
   m_Name: EquipmentItem
   m_TagString: Untagged
@@ -172,7 +174,55 @@ MonoBehaviour:
   frameImage: {fileID: 1095072241426117519}
   iconImage: {fileID: 8288878744162074938}
   button: {fileID: 3764700732450898863}
-  cardQualityVisualController: {fileID: 0}
+--- !u!114 &1359818441167614500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911169162544775657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definition: {fileID: 11400000, guid: c8f9d4a0b2e64a1bb7d3550f2f1379aa, type: 2}
+  targets:
+    bindings:
+    - key: Self
+      target: {fileID: 1419459275189776923}
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+--- !u!114 &1038229113854476291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911169162544775657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4929a3e45707a2e4cbfa06d4755193c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  bindings:
+  - triggerEvent: 1
+    clipId: HoverIn
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 2
+    clipId: HoverOut
+    requireLeftButton: 0
+    delay: 0
+  - triggerEvent: 3
+    clipId: Press
+    requireLeftButton: 1
+    delay: 0
+  - triggerEvent: 4
+    clipId: Release
+    requireLeftButton: 1
+    delay: 0
 --- !u!1 &5080570928629700826
 GameObject:
   m_ObjectHideFlags: 0

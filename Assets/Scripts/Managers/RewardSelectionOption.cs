@@ -1,40 +1,38 @@
+using System;
+
 public abstract class RewardSelectionOption : IHasContentTier
 {
-    protected RewardSelectionOption(string optionId, RewardOptionKind kind, IRewardCardPresentation presentation)
+    protected RewardSelectionOption(RewardCardViewConfig viewConfig)
     {
-        OptionId = optionId ?? string.Empty;
-        Kind = kind;
-        Presentation = presentation;
+        ViewConfig = viewConfig ?? throw new ArgumentNullException(nameof(viewConfig));
     }
 
-    public string OptionId { get; }
-    public RewardOptionKind Kind { get; }
-    public IRewardCardPresentation Presentation { get; }
-    public abstract ContentTier Tier { get; }
+    public string OptionId => ViewConfig.OptionId;
+    public RewardOptionKind Kind => ViewConfig.Kind;
+    public RewardCardViewConfig ViewConfig { get; }
+    public ContentTier Tier => ViewConfig.Tier;
 }
 
 public sealed class UpgradeRewardSelectionOption : RewardSelectionOption
 {
-    public UpgradeRewardSelectionOption(UpgradeCardRollOption upgradeCardOption, IRewardCardPresentation presentation)
-        : base(presentation?.OptionId, RewardOptionKind.UpgradeCard, presentation)
+    public UpgradeRewardSelectionOption(RewardCardRollOption rewardCardOption, RewardCardViewConfig viewConfig)
+        : base(viewConfig)
     {
-        UpgradeCardOption = upgradeCardOption;
+        RewardCardOption = rewardCardOption;
     }
 
-    public UpgradeCardSO UpgradeCard => UpgradeCardOption.Card;
-    public UpgradeCardRollOption UpgradeCardOption { get; }
-    public override ContentTier Tier => UpgradeCardOption.Tier;
+    public RewardCardSO UpgradeCard => RewardCardOption.Card;
+    public RewardCardRollOption RewardCardOption { get; }
 }
 
 public sealed class WeaponRewardSelectionOption : RewardSelectionOption
 {
     public WeaponRewardSelectionOption(
-        string optionId,
         WeaponDataSO weaponData,
         int level,
         ContentRollItem rollItem,
-        IRewardCardPresentation presentation)
-        : base(optionId, RewardOptionKind.Weapon, presentation)
+        RewardCardViewConfig viewConfig)
+        : base(viewConfig)
     {
         WeaponData = weaponData;
         Level = WeaponLevelHelper.ClampLevel(level);
@@ -44,19 +42,15 @@ public sealed class WeaponRewardSelectionOption : RewardSelectionOption
     public WeaponDataSO WeaponData { get; }
     public int Level { get; }
     public ContentRollItem RollItem { get; }
-    public override ContentTier Tier => RollItem.TryGetTier(out ContentTier tier)
-        ? tier
-        : ContentTierResolver.FromWeaponLevel(Level);
 }
 
 public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
 {
     public AccessoryRewardSelectionOption(
-        string optionId,
         AccessoryDataSO accessoryData,
         ContentRollItem rollItem,
-        IRewardCardPresentation presentation)
-        : base(optionId, RewardOptionKind.Accessory, presentation)
+        RewardCardViewConfig viewConfig)
+        : base(viewConfig)
     {
         AccessoryData = accessoryData;
         RollItem = rollItem;
@@ -64,7 +58,4 @@ public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
 
     public AccessoryDataSO AccessoryData { get; }
     public ContentRollItem RollItem { get; }
-    public override ContentTier Tier => RollItem.TryGetTier(out ContentTier tier)
-        ? tier
-        : AccessoryData != null ? AccessoryData.Tier : ContentTier.Common;
 }

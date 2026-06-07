@@ -26,7 +26,7 @@ public sealed class ContentHistoryState
             : bucket.GetContentPickCount(content);
     }
 
-    public int GetUpgradeCardTagPickCount(ContentHistoryScope scope, UpgradeCardTag requiredTag)
+    public int GetUpgradeCardTagPickCount(ContentHistoryScope scope, CardTag requiredTag)
     {
         return !buckets.TryGetValue(scope, out ContentHistoryBucket bucket)
             ? 0
@@ -35,7 +35,7 @@ public sealed class ContentHistoryState
 
     public int GetUpgradeCardTagPickCount(
         ContentHistoryScope scope,
-        UpgradeCardTag requiredTags,
+        CardTag requiredTags,
         ContentTagMatchMode matchMode)
     {
         return !buckets.TryGetValue(scope, out ContentHistoryBucket bucket)
@@ -95,8 +95,8 @@ public sealed class ContentHistoryState
         private readonly Dictionary<string, int> rollCountsByEntryId = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, int> pickCountsByEntryId = new(System.StringComparer.Ordinal);
         private readonly Dictionary<Object, int> pickCountsByContent = new();
-        private readonly Dictionary<UpgradeCardTag, int> upgradeCardTagPickCounts = new();
-        private readonly Dictionary<UpgradeCardTag, int> upgradeCardTagMaskPickCounts = new();
+        private readonly Dictionary<CardTag, int> upgradeCardTagPickCounts = new();
+        private readonly Dictionary<CardTag, int> upgradeCardTagMaskPickCounts = new();
         private readonly HashSet<string> previousRollEntryIds = new(System.StringComparer.Ordinal);
         private readonly List<string> previousOfferEntryIds = new();
 
@@ -117,21 +117,21 @@ public sealed class ContentHistoryState
             return pickCountsByContent.GetValueOrDefault(content, 0);
         }
 
-        public int GetUpgradeCardTagPickCount(UpgradeCardTag requiredTag)
+        public int GetUpgradeCardTagPickCount(CardTag requiredTag)
         {
             return upgradeCardTagPickCounts.GetValueOrDefault(requiredTag, 0);
         }
 
-        public int GetUpgradeCardTagPickCount(UpgradeCardTag requiredTags, ContentTagMatchMode matchMode)
+        public int GetUpgradeCardTagPickCount(CardTag requiredTags, ContentTagMatchMode matchMode)
         {
-            if (requiredTags != UpgradeCardTag.None && IsSingleBit(requiredTags) &&
+            if (requiredTags != CardTag.None && IsSingleBit(requiredTags) &&
                 matchMode is ContentTagMatchMode.Any or ContentTagMatchMode.All)
             {
                 return GetUpgradeCardTagPickCount(requiredTags);
             }
 
             int count = 0;
-            foreach (KeyValuePair<UpgradeCardTag, int> pair in upgradeCardTagMaskPickCounts)
+            foreach (KeyValuePair<CardTag, int> pair in upgradeCardTagMaskPickCounts)
             {
                 if (ContentTagMatchUtility.Matches(pair.Key, requiredTags, matchMode))
                 {
@@ -190,18 +190,18 @@ public sealed class ContentHistoryState
             }
 
             pickCountsByContent[content] = GetContentPickCount(content) + 1;
-            if (content is UpgradeCardSO upgradeCard)
+            if (content is RewardCardSO rewardCard)
             {
-                if (upgradeCard.Tags != UpgradeCardTag.None)
+                if (rewardCard.Tags != CardTag.None)
                 {
-                    upgradeCardTagMaskPickCounts[upgradeCard.Tags] =
-                        upgradeCardTagMaskPickCounts.GetValueOrDefault(upgradeCard.Tags, 0) + 1;
+                    upgradeCardTagMaskPickCounts[rewardCard.Tags] =
+                        upgradeCardTagMaskPickCounts.GetValueOrDefault(rewardCard.Tags, 0) + 1;
                 }
 
-                UpgradeCardTag[] tags = upgradeCard.TagList;
+                CardTag[] tags = rewardCard.TagList;
                 for (int i = 0; i < tags.Length; i++)
                 {
-                    UpgradeCardTag tag = tags[i];
+                    CardTag tag = tags[i];
                     upgradeCardTagPickCounts[tag] = GetUpgradeCardTagPickCount(tag) + 1;
                 }
             }
@@ -217,7 +217,7 @@ public sealed class ContentHistoryState
             pickCountsByEntryId[entryId] = GetPickCount(entryId) + 1;
         }
 
-        private static bool IsSingleBit(UpgradeCardTag tag)
+        private static bool IsSingleBit(CardTag tag)
         {
             int value = (int)tag;
             return value > 0 && (value & (value - 1)) == 0;

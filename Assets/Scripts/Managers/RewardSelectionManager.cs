@@ -185,7 +185,7 @@ public class RewardSelectionManager : MonoBehaviour
             RewardSelectionPopupModel model = new(
                 round.Title,
                 round.Description,
-                round.CreatePresentations(),
+                round.CreateViewConfigs(),
                 OnCurrentOptionSelected);
             UniTask<RewardSelectionResult> selectionTask = WaitForCurrentSelectionAsync(cancellationToken);
             await ShowOrRefreshPopupAsync(model, round.Options, cancellationToken);

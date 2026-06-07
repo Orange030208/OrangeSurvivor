@@ -23,7 +23,7 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public IReadOnlyList<WeaponDataSO> Weapons => catalog.Weapons;
     public IReadOnlyList<AccessoryDataSO> Accessories => catalog.Accessories;
     public CharacterDataSO DefaultCharacter => catalog.DefaultCharacter;
-    public IReadOnlyList<UpgradeCardSO> StarterCards => catalog.StarterCards;
+    public IReadOnlyList<RewardCardSO> StarterCards => catalog.StarterCards;
     public Player DefaultPlayerPrefab => catalog.DefaultPlayerPrefab;
     public Weapon DefaultWeaponPrefab => catalog.DefaultWeaponPrefab;
     public PlayerLevelConfigSO PlayerLevelConfig => catalog.PlayerLevelConfig;
@@ -34,7 +34,6 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public ContentPoolSO DropPool => catalog.DropPool;
     public ContentPoolSO WaveSpawnPool => catalog.WaveSpawnPool;
     public ContentPoolSO WeaponRewardPool => catalog.WeaponRewardPool;
-    public CardQualityPresentationCatalogSO CardQualityPresentationCatalog => catalog.CardQualityPresentationCatalog;
     public PropPresentationCatalogSO PropPresentationCatalog => catalog.PropPresentationCatalog;
     public StageDefinitionSO DefaultStageDefinition => catalog.DefaultStageDefinition;
     public DamageTextFlow DamageTextPrefab => catalog.DamageTextPrefab;

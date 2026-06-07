@@ -8,25 +8,17 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(UIMotionPlayer))]
 public class CardMotionController : ViewPartBase
 {
-    private const string VISUAL_ROOT_NAME = "VisualRoot";
-    private const string SHADOW_NAME = "Shadow";
-    private const string GLOW_NAME = "Glow";
-
     [Header("依赖")]
     [SerializeField] private UIMotionPlayer motionPlayer;
     [SerializeField] private CardMotionProfileSO profile;
 
     [Header("复位根节点")]
-    [Tooltip("默认使用当前物体。后续如果卡牌拆出视觉根节点，可以把视觉根节点拖进来，避免和外层布局互相影响。")]
     [SerializeField] private RectTransform restRoot;
 
     [Header("运行时动态")]
-    [Tooltip("用于悬停倾斜和轻微浮动的视觉根节点。为空时使用复位根节点。")]
     [SerializeField] private RectTransform dynamicRoot;
-    [SerializeField] private bool autoResolveVisualRoot = true;
 
     [Header("视觉层")]
-    [SerializeField] private bool autoResolveVisualLayers = true;
     [SerializeField] private RectTransform shadowRoot;
     [SerializeField] private CanvasGroup shadowCanvasGroup;
     [SerializeField] private CanvasGroup glowCanvasGroup;
@@ -61,7 +53,6 @@ public class CardMotionController : ViewPartBase
     {
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
-        ResolveVisualLayerReferences();
         CaptureVisualLayerPoseIfNeeded();
     }
 
@@ -70,7 +61,6 @@ public class CardMotionController : ViewPartBase
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
         CaptureDynamicPoseIfNeeded();
-        ResolveVisualLayerReferences();
         CaptureVisualLayerPoseIfNeeded();
         StartIdleFloatIfNeeded();
     }
@@ -91,16 +81,6 @@ public class CardMotionController : ViewPartBase
         {
             restRoot = transform as RectTransform;
         }
-
-        if (autoResolveVisualRoot && dynamicRoot == null)
-        {
-            dynamicRoot = FindRectTransformByName(VISUAL_ROOT_NAME);
-        }
-
-        if (autoResolveVisualLayers)
-        {
-            ResolveVisualLayerReferences();
-        }
     }
 
     public void ConfigureForReuse()
@@ -113,7 +93,6 @@ public class CardMotionController : ViewPartBase
         ResolveDependencies();
         CaptureRestPoseIfNeeded();
         CaptureDynamicPoseIfNeeded();
-        ResolveVisualLayerReferences();
         CaptureVisualLayerPoseIfNeeded();
         StopRuntimeDynamics(restorePose: true);
         if (!HasProfile())
@@ -482,39 +461,7 @@ public class CardMotionController : ViewPartBase
         }
 
         resolvedRestRoot = restRoot != null ? restRoot : transform as RectTransform;
-        if (autoResolveVisualRoot && dynamicRoot == null)
-        {
-            dynamicRoot = FindRectTransformByName(VISUAL_ROOT_NAME);
-        }
-
         resolvedDynamicRoot = dynamicRoot != null ? dynamicRoot : resolvedRestRoot;
-    }
-
-    private void ResolveVisualLayerReferences()
-    {
-        if (!autoResolveVisualLayers)
-        {
-            return;
-        }
-
-        if (shadowRoot == null)
-        {
-            shadowRoot = FindRectTransformByName(SHADOW_NAME);
-        }
-
-        if (shadowCanvasGroup == null && shadowRoot != null)
-        {
-            shadowCanvasGroup = shadowRoot.GetComponent<CanvasGroup>();
-        }
-
-        if (glowCanvasGroup == null)
-        {
-            RectTransform glowRoot = FindRectTransformByName(GLOW_NAME);
-            if (glowRoot != null)
-            {
-                glowCanvasGroup = glowRoot.GetComponent<CanvasGroup>();
-            }
-        }
     }
 
     private void CaptureRestPoseIfNeeded()
@@ -761,7 +708,6 @@ public class CardMotionController : ViewPartBase
         Vector2 shadowOffset,
         bool immediate)
     {
-        ResolveVisualLayerReferences();
         CaptureVisualLayerPoseIfNeeded();
         if (!HasProfile() || !profile.EnableVisualLayerDynamics)
         {
@@ -775,6 +721,7 @@ public class CardMotionController : ViewPartBase
             if (immediate)
             {
                 glowCanvasGroup.alpha = glowAlpha;
+                glowAlphaTween = null;
             }
             else
             {
@@ -791,6 +738,7 @@ public class CardMotionController : ViewPartBase
             if (immediate)
             {
                 shadowCanvasGroup.alpha = shadowAlpha;
+                shadowAlphaTween = null;
             }
             else
             {
@@ -808,6 +756,7 @@ public class CardMotionController : ViewPartBase
             if (immediate)
             {
                 shadowRoot.anchoredPosition = targetPosition;
+                shadowPositionTween = null;
             }
             else
             {
@@ -840,33 +789,4 @@ public class CardMotionController : ViewPartBase
         }
     }
 
-    private RectTransform FindRectTransformByName(string targetName)
-    {
-        Transform target = FindChildByName(transform, targetName);
-        return target as RectTransform;
-    }
-
-    private static Transform FindChildByName(Transform root, string targetName)
-    {
-        if (root == null || string.IsNullOrWhiteSpace(targetName))
-        {
-            return null;
-        }
-
-        if (root.name == targetName)
-        {
-            return root;
-        }
-
-        for (int i = 0; i < root.childCount; i++)
-        {
-            Transform found = FindChildByName(root.GetChild(i), targetName);
-            if (found != null)
-            {
-                return found;
-            }
-        }
-
-        return null;
-    }
 }

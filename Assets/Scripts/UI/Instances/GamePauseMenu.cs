@@ -300,7 +300,7 @@ public class GamePauseMenu : PageBase
     private static PopupOptions CreateEquipmentPopupOptions()
     {
         return new PopupOptions(
-            closeOnOutsideClick: true,
+            closeOnOutsideClick: false,
             showBackdrop: true,
             groupId: EQUIPMENT_POPUP_GROUP_ID,
             replaceSameGroup: true,

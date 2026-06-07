@@ -19,7 +19,7 @@ MonoBehaviour:
   releaseClipId: Release
   selectClipId: ClickPulse
   selectedClaimClipId: SelectedClaim
-  rejectedSubmitClipId: RejectedRipFall
+  rejectedSubmitClipId: RejectedSubmit
   restClipId: Visible
   refreshDefaultsOnConfigure: 1
   resetToRestClipWhenInterrupted: 1

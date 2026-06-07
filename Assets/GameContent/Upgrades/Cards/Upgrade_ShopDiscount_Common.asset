@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_ShopDiscount_Common
   m_EditorClassIdentifier: 
-  cardId: Upgrade_ShopDiscount_Common
+  id: Upgrade_ShopDiscount_Common
   title: "\u5546\u5E97\u6298\u6263\u5F3A\u5316-\u666E\u901A"
-  rarity: 0
+  tier: 0
   tags: 64
   description: "\u53D7 50% \u6709\u6548\u6298\u6263\u4E0A\u9650\u9650\u5236\uFF0C\u91CD\u590D\u540E\u8FB9\u9645\u4E0B\u964D\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865434
   references:
     version: 2

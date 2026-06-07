@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_Damage_Legendary
   m_EditorClassIdentifier: 
-  cardId: Upgrade_Damage_Legendary
+  id: Upgrade_Damage_Legendary
   title: "\u4F24\u5BB3\u5F3A\u5316-\u4F20\u8BF4"
-  rarity: 3
+  tier: 3
   tags: 1
   description: "\u6700\u901A\u7528\u8F93\u51FA\u5361\uFF0C\u4F5C\u4E3A\u8F93\u51FA\u9884\u7B97\u951A\u70B9\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865366
   references:
     version: 2

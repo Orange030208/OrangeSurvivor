@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_CriticalChance_Common
   m_EditorClassIdentifier: 
-  cardId: Upgrade_CriticalChance_Common
+  id: Upgrade_CriticalChance_Common
   title: "\u66B4\u51FB\u7387\u5F3A\u5316-\u666E\u901A"
-  rarity: 0
+  tier: 0
   tags: 5
   description: "\u66B4\u51FB\u7387\u662F\u4E58\u6CD5\u5165\u53E3\uFF0C\u6743\u91CD\u4F4E\u4E8E\u666E\u901A\u8F93\u51FA\u5361\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865387
   references:
     version: 2

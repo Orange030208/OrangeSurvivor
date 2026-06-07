@@ -27,27 +27,8 @@ public enum ContentTier
     Legendary = 3
 }
 
-public enum CardQuality
-{
-    Common = 0,
-    Rare = 1,
-    Epic = 2,
-    Legendary = 3
-}
-
 public static class ContentTierResolver
 {
-    public static ContentTier FromUpgradeCardRarity(UpgradeCardRarity rarity)
-    {
-        return rarity switch
-        {
-            UpgradeCardRarity.Rare => ContentTier.Rare,
-            UpgradeCardRarity.Epic => ContentTier.Epic,
-            UpgradeCardRarity.Legendary => ContentTier.Legendary,
-            _ => ContentTier.Common
-        };
-    }
-
     public static ContentTier FromAccessoryTier(ContentTier tier)
     {
         return ClampAccessoryTier(tier);
@@ -99,18 +80,5 @@ public static class ContentTierResolver
     private static ContentTier ClampAccessoryTier(ContentTier tier)
     {
         return (ContentTier)Mathf.Clamp((int)tier, (int)ContentTier.Common, (int)ContentTier.Legendary);
-    }
-}
-
-public static class ContentTierPresentationUtility
-{
-    public static CardQuality ToCardQuality(this ContentTier tier)
-    {
-        return (CardQuality)Mathf.Clamp((int)tier, (int)CardQuality.Common, (int)CardQuality.Legendary);
-    }
-
-    public static ContentTier ToContentTier(this CardQuality quality)
-    {
-        return (ContentTier)Mathf.Clamp((int)quality, (int)ContentTier.Common, (int)ContentTier.Legendary);
     }
 }

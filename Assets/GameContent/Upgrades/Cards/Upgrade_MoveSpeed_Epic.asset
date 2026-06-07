@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_MoveSpeed_Epic
   m_EditorClassIdentifier: 
-  cardId: Upgrade_MoveSpeed_Epic
+  id: Upgrade_MoveSpeed_Epic
   title: "\u79FB\u901F\u5F3A\u5316-\u53F2\u8BD7"
-  rarity: 2
+  tier: 2
   tags: 16
   description: "\u624B\u611F\u5C5E\u6027\uFF0C\u6570\u503C\u8FC7\u9AD8\u4F1A\u964D\u4F4E\u602A\u7269\u538B\u529B\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865416
   references:
     version: 2

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
   m_Name: Upgrade_PickupRadius_Epic
   m_EditorClassIdentifier: 
-  cardId: Upgrade_PickupRadius_Epic
+  id: Upgrade_PickupRadius_Epic
   title: "\u62FE\u53D6\u8303\u56F4\u5F3A\u5316-\u53F2\u8BD7"
-  rarity: 2
+  tier: 2
   tags: 32
   description: "\u4E3B\u8981\u6539\u5584\u62FE\u53D6\u6548\u7387\uFF0C\u4E0D\u76F4\u63A5\u63D0\u9AD8\u6218\u6597\u529B\u3002"
-  specialFeatures:
+  grantedAbilities:
   - rid: 7274046045303865424
   references:
     version: 2

@@ -13,8 +13,8 @@ public class CardMotionProfileSO : ScriptableObject
     [SerializeField] private string pressClipId;
     [SerializeField] private string releaseClipId;
     [SerializeField] private string selectClipId;
-    [SerializeField] private string selectedClaimClipId = Orange.UIFramework.UIMotionClipIds.SELECTED_CLAIM;
-    [SerializeField] private string rejectedSubmitClipId = Orange.UIFramework.UIMotionClipIds.REJECTED_RIP_FALL;
+    [SerializeField] private string selectedClaimClipId = CardMotionClipIds.SELECTED_CLAIM;
+    [SerializeField] private string rejectedSubmitClipId = CardMotionClipIds.REJECTED_SUBMIT;
     [Tooltip("可选。为空时中断复位只恢复控制器记录的根节点 Transform，不调用界面动画采样，避免没有可见/显示片段的资产刷警告。")]
     [SerializeField] private string restClipId = string.Empty;
 

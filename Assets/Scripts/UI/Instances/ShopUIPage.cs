@@ -226,7 +226,7 @@ public class ShopUIPage : PageBase
         try
         {
             PopupOptions options = new PopupOptions(
-                closeOnOutsideClick: true,
+                closeOnOutsideClick: false,
                 groupId: EQUIPMENT_POPUP_GROUP_ID,
                 replaceSameGroup: true,
                 trackInStack: true,
