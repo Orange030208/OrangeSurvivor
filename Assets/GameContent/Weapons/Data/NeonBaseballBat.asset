@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
-  m_Name: Weapon_NeonMace
+  m_Name: NeonBaseballBat
   m_EditorClassIdentifier: 
-  itemName: "霓虹钉头锤"
-  itemIcon: {fileID: 21300000, guid: af47e30c17478f07f0ed64ccb55f2f8a, type: 3}
-  itemPrice: 30
+  itemName: "霓虹棒球棍"
+  itemIcon: {fileID: 21300000, guid: 61df6877c6c5a0172449dcb5ca62d4a6, type: 3}
+  itemPrice: 25
   itemType: 0
-  itemDescription: "重型近战控制武器，击退强，暴击和攻速成长一般。"
-  weaponId: Weapon_NeonMace
+  itemDescription: "重型近战挥击，击退稳定，攻速短板明显。"
+  weaponId: Weapon_NeonBaseballBat
   tags: 02000000
   attackSequence: {fileID: 11400000, guid: 45eb0daa646e4ef49bf345486cc5d48a, type: 2}
   visualForwardAngle: 45
@@ -32,77 +32,77 @@ MonoBehaviour:
   sequenceVfxList: []
   enableHitBox: 1
   hitVfxPrefab: {fileID: 0}
-  hitBoxSize: {x: 0.38, y: 0.9}
-  hitBoxOffset: {x: 0.03, y: 0.22}
+  hitBoxSize: {x: 0.34, y: 0.92}
+  hitBoxOffset: {x: 0.04, y: 0.24}
   levelStats:
   - level: 1
-    attack: 34
-    attackSpeed: 62
-    criticalChance: 1
+    attack: 28
+    attackSpeed: 70
+    criticalChance: 4
     criticalPercent: 165
-    range: 165
-    knockbackStrength: 28
+    range: 175
+    knockbackStrength: 22
     statBenefits:
-      attackSpeedBenefitPercent: 56
-      criticalChanceBenefitPercent: 58
-      criticalPercentBenefitPercent: 76
-      rangeBenefitPercent: 84
-      knockbackStrengthBenefitPercent: 82
-      meleeAttackUsagePercent: 92
+      attackSpeedBenefitPercent: 58
+      criticalChanceBenefitPercent: 60
+      criticalPercentBenefitPercent: 75
+      rangeBenefitPercent: 85
+      knockbackStrengthBenefitPercent: 75
+      meleeAttackUsagePercent: 90
       rangedAttackUsagePercent: 0
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []
   - level: 2
-    attack: 49
-    attackSpeed: 66
-    criticalChance: 2
+    attack: 40
+    attackSpeed: 75
+    criticalChance: 4
     criticalPercent: 170
-    range: 180
-    knockbackStrength: 34
+    range: 190
+    knockbackStrength: 27
     statBenefits:
-      attackSpeedBenefitPercent: 58
-      criticalChanceBenefitPercent: 62
+      attackSpeedBenefitPercent: 60
+      criticalChanceBenefitPercent: 63
       criticalPercentBenefitPercent: 80
       rangeBenefitPercent: 88
-      knockbackStrengthBenefitPercent: 88
-      meleeAttackUsagePercent: 108
+      knockbackStrengthBenefitPercent: 80
+      meleeAttackUsagePercent: 105
       rangedAttackUsagePercent: 0
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []
   - level: 3
-    attack: 70
-    attackSpeed: 70
-    criticalChance: 3
+    attack: 58
+    attackSpeed: 80
+    criticalChance: 5
     criticalPercent: 180
-    range: 200
-    knockbackStrength: 42
+    range: 210
+    knockbackStrength: 34
     statBenefits:
-      attackSpeedBenefitPercent: 60
-      criticalChanceBenefitPercent: 66
+      attackSpeedBenefitPercent: 62
+      criticalChanceBenefitPercent: 68
       criticalPercentBenefitPercent: 86
       rangeBenefitPercent: 92
-      knockbackStrengthBenefitPercent: 94
-      meleeAttackUsagePercent: 126
+      knockbackStrengthBenefitPercent: 88
+      meleeAttackUsagePercent: 122
       rangedAttackUsagePercent: 0
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []
   - level: 4
-    attack: 99
-    attackSpeed: 76
-    criticalChance: 5
+    attack: 82
+    attackSpeed: 86
+    criticalChance: 6
     criticalPercent: 190
-    range: 225
-    knockbackStrength: 52
+    range: 235
+    knockbackStrength: 42
     statBenefits:
-      attackSpeedBenefitPercent: 63
+      attackSpeedBenefitPercent: 65
       criticalChanceBenefitPercent: 72
-      criticalPercentBenefitPercent: 94
-      rangeBenefitPercent: 98
-      knockbackStrengthBenefitPercent: 100
-      meleeAttackUsagePercent: 145
+      criticalPercentBenefitPercent: 92
+      rangeBenefitPercent: 96
+      knockbackStrengthBenefitPercent: 94
+      meleeAttackUsagePercent: 140
       rangedAttackUsagePercent: 0
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0

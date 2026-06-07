@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
-  m_Name: Weapon_NeonShield
+  m_Name: NeonShield
   m_EditorClassIdentifier: 
-  itemName: "霓虹盾牌"
+  itemName: "\u9713\u8679\u76FE\u724C"
   itemIcon: {fileID: 21300000, guid: 6f0479e5ccc6c23818fd14d7ab7e6448, type: 3}
   itemPrice: 25
   itemType: 0
-  itemDescription: "防御型近战盾击，伤害中等，击退和稳定性较好。"
+  itemDescription: "\u9632\u5FA1\u578B\u8FD1\u6218\u76FE\u51FB\uFF0C\u4F24\u5BB3\u4E2D\u7B49\uFF0C\u51FB\u9000\u548C\u7A33\u5B9A\u6027\u8F83\u597D\u3002"
   weaponId: Weapon_NeonShield
   tags: 02000000
-  attackSequence: {fileID: 11400000, guid: 80958bf42744413e95ead02c52422bc7, type: 2}
+  attackSequence: {fileID: 11400000, guid: 45eb0daa646e4ef49bf345486cc5d48a, type: 2}
   visualForwardAngle: 45
   holdAimWhenAttackReady: 0
   attackSequenceOccupancy: 0.95

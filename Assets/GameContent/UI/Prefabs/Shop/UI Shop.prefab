@@ -848,12 +848,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2677722287235422578}
-  - component: {fileID: 6907706580131902230}
   - component: {fileID: 6149483835221836518}
   - component: {fileID: 5285491970142398351}
   - component: {fileID: 5021639852417146353}
-  - component: {fileID: 5851351207401028652}
-  - component: {fileID: 8841584521935873828}
   m_Layer: 5
   m_Name: UI Shop
   m_TagString: Untagged
@@ -881,14 +878,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6907706580131902230
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6058553077153061582}
-  m_CullTransparentMesh: 1
 --- !u!225 &6149483835221836518
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -932,102 +921,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterGroups:
-  - name: Root
-    motions:
-    - {fileID: 8841584521935873828}
-    startDelay: 0
-    stagger: 0
-    playTogether: 1
-  - name: Props
-    motions:
-    - {fileID: 5566856009942671664}
-    - {fileID: 569846046971213337}
-    - {fileID: 4050196646563294286}
-    - {fileID: 5543595618336443224}
-    startDelay: 0.03
-    stagger: 0.05
-    playTogether: 1
-  - name: Inventory
-    motions:
-    - {fileID: 8605187509028925692}
-    startDelay: 0.06
-    stagger: 0
-    playTogether: 1
-  - name: Actions
-    motions:
-    - {fileID: 7833597596198247060}
-    - {fileID: 8893704363991267772}
-    startDelay: 0.08
-    stagger: 0.04
-    playTogether: 1
-  exitGroups:
-  - name: Actions
-    motions:
-    - {fileID: 7833597596198247060}
-    - {fileID: 8893704363991267772}
-    startDelay: 0
-    stagger: 0.03
-    playTogether: 1
-  - name: Inventory
-    motions:
-    - {fileID: 8605187509028925692}
-    startDelay: 0
-    stagger: 0
-    playTogether: 1
-  - name: Props
-    motions:
-    - {fileID: 5566856009942671664}
-    - {fileID: 569846046971213337}
-    - {fileID: 4050196646563294286}
-    - {fileID: 5543595618336443224}
-    startDelay: 0.02
-    stagger: 0.03
-    playTogether: 1
-  - name: Root
-    motions:
-    - {fileID: 8841584521935873828}
-    startDelay: 0.02
-    stagger: 0
-    playTogether: 1
+  enterGroups: []
+  exitGroups: []
   reverseExitOrder: 1
   useUnscaledTime: 1
-  timeScale: 0.8
---- !u!114 &5851351207401028652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6058553077153061582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  motionSource: {fileID: 5021639852417146353}
-  autoResolveInChildren: 1
-  hideImmediatelyBeforeEnter: 1
-  showImmediatelyWhenSkipped: 1
---- !u!114 &8841584521935873828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6058553077153061582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: a7d2e4c59b8f4f7e8c1d2a3b4c5d6e70, type: 2}
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 4933648707464499810}
-  refreshDefaultsOnEnable: 1
-  stopAllChannelsOnDestroy: 1
+  timeScale: 1
 --- !u!1 &7784649783223874928
 GameObject:
   m_ObjectHideFlags: 0

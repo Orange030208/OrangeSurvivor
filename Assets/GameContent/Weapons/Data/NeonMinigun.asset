@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
-  m_Name: Weapon_NeonSMG
+  m_Name: NeonMinigun
   m_EditorClassIdentifier: 
-  itemName: "霓虹冲锋枪"
-  itemIcon: {fileID: 21300000, guid: 306966750125c3b45dfd50df6de0c3df, type: 3}
-  itemPrice: 25
+  itemName: "霓虹转轮机枪"
+  itemIcon: {fileID: 21300000, guid: ea8a2a89efe444915500221f9d97a4ca, type: 3}
+  itemPrice: 40
   itemType: 0
-  itemDescription: "高频远程武器，依靠攻速和远程攻击成长，单发伤害与击退较低。"
-  weaponId: Weapon_NeonSMG
-  tags: 01000000
+  itemDescription: "强力高速远程压制，射速极高但单发和击退较低。"
+  weaponId: Weapon_NeonMinigun
+  tags: 0100000002000000
   attackSequence: {fileID: 11400000, guid: b1ad746dfc0d4569a8eea93b3af756aa, type: 2}
   visualForwardAngle: 45
   holdAimWhenAttackReady: 1
@@ -27,11 +27,11 @@ MonoBehaviour:
   targetingMode: 0
   spawnPoints:
   - id: muzzle
-    localPosition: {x: -0.07, y: 0.66}
+    localPosition: {x: -0.08, y: 0.66}
     localRotationOffset: 0
   sequenceProjectileList:
   - spawnPointIndex: 0
-    projectileDefinition: {fileID: 11400000, guid: 1add04f4625950645a63766eaefe07a5, type: 2}
+    projectileDefinition: {fileID: 11400000, guid: abd868e51529b8445ac8f0d56d84c20e, type: 2}
     burstId: 0
     firingMode: 0
     patternConfig:
@@ -50,73 +50,73 @@ MonoBehaviour:
   levelStats:
   - level: 1
     attack: 4
-    attackSpeed: 500
-    criticalChance: 3
-    criticalPercent: 155
-    range: 700
+    attackSpeed: 620
+    criticalChance: 2
+    criticalPercent: 150
+    range: 680
     knockbackStrength: 2
     statBenefits:
       attackSpeedBenefitPercent: 82
-      criticalChanceBenefitPercent: 42
-      criticalPercentBenefitPercent: 42
-      rangeBenefitPercent: 75
-      knockbackStrengthBenefitPercent: 25
-      meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 90
-      magicAttackUsagePercent: 0
-      summonAttackUsagePercent: 0
-    holderModifiers: []
-  - level: 2
-    attack: 5
-    attackSpeed: 600
-    criticalChance: 3
-    criticalPercent: 155
-    range: 720
-    knockbackStrength: 2
-    statBenefits:
-      attackSpeedBenefitPercent: 83
-      criticalChanceBenefitPercent: 44
-      criticalPercentBenefitPercent: 44
-      rangeBenefitPercent: 78
+      criticalChanceBenefitPercent: 40
+      criticalPercentBenefitPercent: 40
+      rangeBenefitPercent: 72
       knockbackStrengthBenefitPercent: 25
       meleeAttackUsagePercent: 0
       rangedAttackUsagePercent: 105
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []
+  - level: 2
+    attack: 5
+    attackSpeed: 720
+    criticalChance: 2
+    criticalPercent: 150
+    range: 700
+    knockbackStrength: 2
+    statBenefits:
+      attackSpeedBenefitPercent: 83
+      criticalChanceBenefitPercent: 42
+      criticalPercentBenefitPercent: 42
+      rangeBenefitPercent: 76
+      knockbackStrengthBenefitPercent: 25
+      meleeAttackUsagePercent: 0
+      rangedAttackUsagePercent: 122
+      magicAttackUsagePercent: 0
+      summonAttackUsagePercent: 0
+    holderModifiers: []
   - level: 3
     attack: 6
-    attackSpeed: 700
-    criticalChance: 4
-    criticalPercent: 160
-    range: 740
+    attackSpeed: 850
+    criticalChance: 3
+    criticalPercent: 155
+    range: 730
     knockbackStrength: 3
     statBenefits:
       attackSpeedBenefitPercent: 84
-      criticalChanceBenefitPercent: 46
-      criticalPercentBenefitPercent: 46
+      criticalChanceBenefitPercent: 45
+      criticalPercentBenefitPercent: 45
       rangeBenefitPercent: 80
       knockbackStrengthBenefitPercent: 28
       meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 120
+      rangedAttackUsagePercent: 145
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []
   - level: 4
     attack: 8
-    attackSpeed: 820
-    criticalChance: 5
-    criticalPercent: 165
+    attackSpeed: 980
+    criticalChance: 4
+    criticalPercent: 160
     range: 760
     knockbackStrength: 3
     statBenefits:
       attackSpeedBenefitPercent: 85
       criticalChanceBenefitPercent: 48
       criticalPercentBenefitPercent: 48
-      rangeBenefitPercent: 82
+      rangeBenefitPercent: 84
       knockbackStrengthBenefitPercent: 30
       meleeAttackUsagePercent: 0
-      rangedAttackUsagePercent: 135
+      rangedAttackUsagePercent: 165
       magicAttackUsagePercent: 0
       summonAttackUsagePercent: 0
     holderModifiers: []

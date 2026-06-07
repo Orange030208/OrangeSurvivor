@@ -113,6 +113,7 @@
 - `Gun Shot Heavy Recoil Attack Sequence.asset`：较强固定后坐力，7 个动作帧，后坐峰值约 `-0.32`。
 - `Melee Horizontal Slash Attack Sequence.asset`：普通横劈，31 个动作帧，路径接近上半圆，横向跨度约 `-0.92` 到 `0.9`。
 - `Melee Heavy Horizontal Slash Attack Sequence.asset`：重型横劈，31 个动作帧，横向跨度约 `-1.18` 到 `1.15`，主扫击更快。
+- `Melee Quick Thrust Attack Sequence.asset`：无后撤蓄力的高速直刺，18 个动作帧，前刺峰值 Y 约 `0.98`，命中窗口前置到前冲初段。
 
 这些示例的推荐策略：
 

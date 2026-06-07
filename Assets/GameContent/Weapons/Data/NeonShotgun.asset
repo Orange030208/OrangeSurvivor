@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
-  m_Name: Weapon_NeonShotgun
+  m_Name: NeonShotgun
   m_EditorClassIdentifier: 
   itemName: "霓虹霰弹枪"
   itemIcon: {fileID: 21300000, guid: 3587f399c03e352a532576d44f74ed51, type: 3}
