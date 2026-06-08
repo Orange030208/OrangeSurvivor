@@ -1,0 +1,57 @@
+Use case: local image region regeneration
+Asset type: Unity UI pause-logo raster asset
+Source references:
+- Full image: Pause.png for global cyber-neon style, color palette, glow density, and decorative language.
+- Crop reference: PauseLogo_CropReference.png for local composition and silhouette only.
+
+Target region:
+- Requested target: 暂停logo
+- Inferred crop bbox in source image: left 625, top 42, right 1415, bottom 405
+- Visible subject/content bbox in source image: left 625, top 45, right 1415, bottom 405
+- Source visible content size: 790 x 360
+- Source visible content ratio: 2.194
+
+Regenerate:
+Create a newly generated standalone version of the top-center Chinese pause title logo, centered on a compact canvas with a flat pure green chroma-key background (#00ff00) for easy later cutout.
+
+Detailed element inventory:
+- Region identity: a large decorative pause-title logo from a neon cyberpunk game pause screen, positioned at the top center of the source image.
+- Primary subject: bold Chinese text "暂停" in hot pink neon/magenta, very large, slanted slightly forward with aggressive angular brush-cut edges, thick blocky strokes, sharp torn ends, and black inner shadow gaps between stroke layers.
+- Secondary elements: a pink lightning bolt on the left; jagged angular cyber frame strokes behind and around the text; a small yellow crown above the title with a small yellow heart above it; a large hot-pink cat head outline on the right with pointed ears, X-shaped eyes, smiling mouth, tongue, whiskers, and neon highlight strokes; small nearby pink cross marks, blue plus mark, purple plus mark, and a pink triangle outline near the cat.
+- Geometry/layout: preserve the wide horizontal logo silhouette, roughly 2.19:1 visible content bbox ratio. Keep the text dominant in the center-left, crown above the first half of the title, cat head attached to the right, left lightning attached to the left side, and jagged outline strokes layered behind the text. Do not include surrounding menu buttons or lower pause-panel borders.
+- Color/material/lighting: high-saturation cyber neon palette on black in the reference, but final background should be flat pure green. Preserve hot pink/magenta as the dominant logo color, yellow crown accent, small cyan/blue and purple accent marks, bright neon glow, black inner shadow cuts, and glossy painted highlight streaks.
+- Text/symbols: preserve the exact readable Chinese text "暂停". The glyphs should feel like the source: heavy, angular, brush-cut, energetic, and game-logo-like.
+- Background/occlusion/style context: use only a flat opaque #00ff00 chroma-key background outside the logo. No black textured backdrop, no shadows cast onto the key background, no menu buttons, no extra panels, no unrelated cropped UI fragments.
+- Uncertainty: small decorative marks may vary slightly, but the main title text, crown, left lightning, right cat head, color family, and wide silhouette must remain recognizable.
+
+Preserve:
+- Source hue family, saturation, bright/dark relationship, neon glow feel, angular silhouette, decorative attachments, text wording, and visible content bbox ratio.
+
+Change/remove:
+- Remove the original black full-screen background and any unrelated menu-button edges.
+- Replace background with flat #00ff00 chroma-key fill for easy cutout.
+
+Background/alpha:
+- Opaque flat chroma-key source image, pure green #00ff00. Do not generate transparency directly.
+
+Canvas/layout:
+- Center the rebuilt logo on the output canvas.
+- Preserve the visible subject/content bbox width-to-height ratio and outer contour as closely as possible.
+- Canvas ratio, padding, and chroma-key background are secondary and must not alter the visible content bbox ratio.
+- Use only minimal padding needed for clean separation from the edge.
+
+Output constraints:
+- PNG raster image.
+- Recommended output size: 1024 x 512 or another compact canvas that allows the visible logo content to remain near ratio 2.19:1.
+- Crisp asset-ready edges with neon antialiasing suitable for later chroma-key removal.
+
+Validation target:
+- After generation, measure the generated visible subject/content bbox while ignoring #00ff00 background and empty padding.
+- Compare generated content ratio to source ratio 2.194.
+- Accept only if the visible content remains visually wide and close to the source logo proportions.
+
+Forbidden final methods:
+- No direct crop as final.
+- No cutout extraction as final.
+- No vector/procedural redraw as final.
+- Final image must come from image generation.

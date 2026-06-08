@@ -2,17 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum InfoDocumentKind
-{
-    Unknown = 0,
-    Weapon = 1,
-    Accessory = 2,
-    Buff = 3,
-    UpgradeCard = 4,
-    Properties = 5,
-    General = 6
-}
-
 public enum InfoTone
 {
     Neutral = 0,
@@ -23,193 +12,507 @@ public enum InfoTone
     Disabled = 5
 }
 
+public enum InfoItemType
+{
+    Title = 0,
+    SectionHeader = 1,
+    Text = 2,
+    TagText = 3,
+    Property = 4,
+    Image = 5,
+    LineBreak = 6,
+    Spacer = 7
+}
+
 public sealed class InfoDocument
 {
-    public string Id { get; }
-    public string Title { get; }
-    public Sprite Icon { get; }
-    public InfoDocumentKind Kind { get; }
-    public IReadOnlyList<string> Tags { get; }
-    public IReadOnlyList<InfoSection> Sections { get; }
-
     public InfoDocument(
         string id,
-        string title,
-        Sprite icon,
-        InfoDocumentKind kind,
-        IReadOnlyList<string> tags,
-        IReadOnlyList<InfoSection> sections)
+        IReadOnlyList<InfoItem> items)
     {
         Id = id ?? string.Empty;
-        Title = title ?? string.Empty;
+        Items = items ?? Array.Empty<InfoItem>();
+    }
+
+    public string Id { get; }
+    public IReadOnlyList<InfoItem> Items { get; }
+}
+
+public readonly struct InfoItem
+{
+    private readonly IInfoItemContentDecoder decoder;
+
+    public InfoItem(
+        InfoItemType type,
+        string content,
+        InfoTone tone = InfoTone.Neutral,
+        IInfoItemContentDecoder decoder = null)
+    {
+        Type = type;
+        Content = content ?? string.Empty;
+        Tone = tone;
+        this.decoder = decoder;
+    }
+
+    public InfoItemType Type { get; }
+    public string Content { get; }
+    public InfoTone Tone { get; }
+    public IInfoItemContentDecoder Decoder => decoder ?? PlainDecoder.Instance;
+}
+
+public interface IInfoItemContentDecoder
+{
+    string DecodeText(string content);
+    bool TryDecode<T>(string content, out T value);
+}
+
+public sealed class PlainDecoder : IInfoItemContentDecoder
+{
+    public static readonly PlainDecoder Instance = new();
+
+    private PlainDecoder()
+    {
+    }
+
+    public string DecodeText(string content)
+    {
+        return content ?? string.Empty;
+    }
+
+    public bool TryDecode<T>(string content, out T value)
+    {
+        if (typeof(T) == typeof(string))
+        {
+            value = (T)(object)(content ?? string.Empty);
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+}
+
+public sealed class PropertyDecoder : IInfoItemContentDecoder
+{
+    public static readonly PropertyDecoder Instance = new();
+
+    private PropertyDecoder()
+    {
+    }
+
+    public string DecodeText(string content)
+    {
+        InfoPropertyPresentation presentation = ResolvePresentation(content);
+        return string.IsNullOrWhiteSpace(presentation.DisplayName)
+            ? string.Empty
+            : $"{presentation.DisplayName}: ";
+    }
+
+    public bool TryDecode<T>(string content, out T value)
+    {
+        if (typeof(T) == typeof(InfoPropertyPresentation))
+        {
+            value = (T)(object)ResolvePresentation(content);
+            return true;
+        }
+
+        if (typeof(T) == typeof(string))
+        {
+            value = (T)(object)DecodeText(content);
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    private static InfoPropertyPresentation ResolvePresentation(string propertyId)
+    {
+        string normalizedId = string.IsNullOrWhiteSpace(propertyId) ? string.Empty : propertyId.Trim();
+        if (string.IsNullOrEmpty(normalizedId))
+        {
+            return new InfoPropertyPresentation(string.Empty, string.Empty, null);
+        }
+
+        if (Enum.TryParse(normalizedId, out PropType propType) &&
+            GameContentRuntime.TryGetPropPresentationEntry(propType, out PropPresentationEntry propEntry))
+        {
+            string displayName = string.IsNullOrWhiteSpace(propEntry.ChineseName)
+                ? normalizedId
+                : propEntry.ChineseName;
+            return new InfoPropertyPresentation(normalizedId, displayName, propEntry.Icon);
+        }
+
+        if (GameContentRuntime.TryGetPropPresentationEntry(normalizedId, out PropPresentationEntry entry))
+        {
+            string displayName = string.IsNullOrWhiteSpace(entry.ChineseName)
+                ? normalizedId
+                : entry.ChineseName;
+            return new InfoPropertyPresentation(normalizedId, displayName, entry.Icon);
+        }
+
+        return new InfoPropertyPresentation(normalizedId, normalizedId, null);
+    }
+}
+
+public abstract class ImageDecoder : IInfoItemContentDecoder
+{
+    private readonly Sprite fallbackSprite;
+
+    protected ImageDecoder(Sprite fallbackSprite = null)
+    {
+        this.fallbackSprite = fallbackSprite;
+    }
+
+    public string DecodeText(string content)
+    {
+        return string.Empty;
+    }
+
+    public bool TryDecode<T>(string content, out T value)
+    {
+        if (typeof(T) == typeof(Sprite))
+        {
+            Sprite sprite = Resolve(content);
+            if (sprite != null)
+            {
+                value = (T)(object)sprite;
+                return true;
+            }
+        }
+
+        if (typeof(T) == typeof(string))
+        {
+            value = (T)(object)(content ?? string.Empty);
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    protected Sprite FallbackSprite => fallbackSprite;
+
+    protected abstract Sprite Resolve(string content);
+
+    protected static string Normalize(string content)
+    {
+        return string.IsNullOrWhiteSpace(content) ? string.Empty : content.Trim();
+    }
+}
+
+public sealed class WeaponImage : ImageDecoder
+{
+    public static readonly WeaponImage Instance = new();
+
+    public WeaponImage(Sprite fallbackSprite = null) : base(fallbackSprite)
+    {
+    }
+
+    protected override Sprite Resolve(string content)
+    {
+        string weaponId = Normalize(content);
+        if (!string.IsNullOrWhiteSpace(weaponId) &&
+            GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            IReadOnlyList<WeaponDataSO> weapons = provider.Weapons;
+            for (int i = 0; i < weapons.Count; i++)
+            {
+                WeaponDataSO weapon = weapons[i];
+                if (weapon != null && string.Equals(weapon.WeaponId, weaponId, StringComparison.Ordinal))
+                {
+                    return weapon.ItemIcon != null ? weapon.ItemIcon : FallbackSprite;
+                }
+            }
+        }
+
+        return FallbackSprite;
+    }
+}
+
+public sealed class AccessoryImage : ImageDecoder
+{
+    public static readonly AccessoryImage Instance = new();
+
+    public AccessoryImage(Sprite fallbackSprite = null) : base(fallbackSprite)
+    {
+    }
+
+    protected override Sprite Resolve(string content)
+    {
+        string accessoryId = Normalize(content);
+        if (!string.IsNullOrWhiteSpace(accessoryId) &&
+            GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            IReadOnlyList<AccessoryDataSO> accessories = provider.Accessories;
+            for (int i = 0; i < accessories.Count; i++)
+            {
+                AccessoryDataSO accessory = accessories[i];
+                if (accessory != null && string.Equals(accessory.AccessoryId, accessoryId, StringComparison.Ordinal))
+                {
+                    return accessory.ItemIcon != null ? accessory.ItemIcon : FallbackSprite;
+                }
+            }
+        }
+
+        return FallbackSprite;
+    }
+}
+
+public sealed class BuffImage : ImageDecoder
+{
+    public static readonly BuffImage Instance = new();
+
+    public BuffImage(Sprite fallbackSprite = null) : base(fallbackSprite)
+    {
+    }
+
+    protected override Sprite Resolve(string content)
+    {
+        string buffId = Normalize(content);
+        if (!string.IsNullOrWhiteSpace(buffId) &&
+            GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            Sprite sprite = ResolveFromPools(buffId, provider);
+            if (sprite != null)
+            {
+                return sprite;
+            }
+        }
+
+        return FallbackSprite;
+    }
+
+    private Sprite ResolveFromPools(string buffId, IGameContentProvider provider)
+    {
+        ContentPoolSO[] pools =
+        {
+            provider.UpgradeCardPool,
+            provider.ChestRewardPool,
+            provider.ShopPool,
+            provider.DropPool,
+            provider.WaveSpawnPool,
+            provider.WeaponRewardPool
+        };
+
+        for (int poolIndex = 0; poolIndex < pools.Length; poolIndex++)
+        {
+            ContentPoolSO pool = pools[poolIndex];
+            if (pool == null || pool.Entries == null)
+            {
+                continue;
+            }
+
+            for (int i = 0; i < pool.Entries.Count; i++)
+            {
+                ContentPoolEntry entry = pool.Entries[i];
+                if (entry?.Content is BuffDataSO buffData &&
+                    string.Equals(buffData.BuffId, buffId, StringComparison.Ordinal))
+                {
+                    return buffData.Icon;
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+public sealed class RewardCardImage : ImageDecoder
+{
+    public static readonly RewardCardImage Instance = new();
+
+    public RewardCardImage(Sprite fallbackSprite = null) : base(fallbackSprite)
+    {
+    }
+
+    protected override Sprite Resolve(string content)
+    {
+        string cardId = Normalize(content);
+        if (!string.IsNullOrWhiteSpace(cardId) &&
+            GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
+        {
+            Sprite starterSprite = ResolveFromCards(provider.StarterCards, cardId);
+            if (starterSprite != null)
+            {
+                return starterSprite;
+            }
+
+            Sprite poolSprite = ResolveFromPools(cardId, provider);
+            if (poolSprite != null)
+            {
+                return poolSprite;
+            }
+        }
+
+        return FallbackSprite;
+    }
+
+    private static Sprite ResolveFromCards(IReadOnlyList<RewardCardSO> rewardCards, string cardId)
+    {
+        if (rewardCards == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < rewardCards.Count; i++)
+        {
+            RewardCardSO rewardCard = rewardCards[i];
+            if (rewardCard != null && string.Equals(rewardCard.Id, cardId, StringComparison.Ordinal))
+            {
+                return rewardCard.Icon;
+            }
+        }
+
+        return null;
+    }
+
+    private static Sprite ResolveFromPools(string cardId, IGameContentProvider provider)
+    {
+        ContentPoolSO[] pools =
+        {
+            provider.UpgradeCardPool,
+            provider.ChestRewardPool,
+            provider.ShopPool,
+            provider.DropPool,
+            provider.WaveSpawnPool,
+            provider.WeaponRewardPool
+        };
+
+        for (int poolIndex = 0; poolIndex < pools.Length; poolIndex++)
+        {
+            ContentPoolSO pool = pools[poolIndex];
+            if (pool == null || pool.Entries == null)
+            {
+                continue;
+            }
+
+            for (int i = 0; i < pool.Entries.Count; i++)
+            {
+                ContentPoolEntry entry = pool.Entries[i];
+                if (entry?.Content is RewardCardSO rewardCard &&
+                    string.Equals(rewardCard.Id, cardId, StringComparison.Ordinal))
+                {
+                    return rewardCard.Icon;
+                }
+            }
+        }
+
+        return null;
+    }
+}
+
+public readonly struct InfoPropertyPresentation
+{
+    public InfoPropertyPresentation(string id, string displayName, Sprite icon)
+    {
+        Id = id ?? string.Empty;
+        DisplayName = displayName ?? string.Empty;
         Icon = icon;
-        Kind = kind;
-        Tags = tags ?? Array.Empty<string>();
-        Sections = sections ?? Array.Empty<InfoSection>();
-    }
-}
-
-public sealed class InfoSection
-{
-    public string Title { get; }
-    public IReadOnlyList<InfoLine> Lines { get; }
-
-    public InfoSection(string title, IReadOnlyList<InfoLine> lines)
-    {
-        Title = title ?? string.Empty;
-        Lines = lines ?? Array.Empty<InfoLine>();
-    }
-}
-
-public sealed class InfoLine
-{
-    public string Label { get; }
-    public IReadOnlyList<InfoLinePart> Parts { get; }
-    public InfoTone Tone { get; }
-
-    public InfoLine(string label, IReadOnlyList<InfoLinePart> parts, InfoTone tone = InfoTone.Neutral)
-    {
-        Label = label ?? string.Empty;
-        Parts = parts ?? Array.Empty<InfoLinePart>();
-        Tone = tone;
-    }
-}
-
-public readonly struct InfoLinePart
-{
-    public InfoLinePart(string text, InfoTone tone = InfoTone.Neutral, bool isEmphasis = false)
-    {
-        Text = text ?? string.Empty;
-        Tone = tone;
-        IsEmphasis = isEmphasis;
     }
 
-    public string Text { get; }
-    public InfoTone Tone { get; }
-    public bool IsEmphasis { get; }
-}
-
-public readonly struct InfoValueSpan
-{
-    public InfoValueSpan(string text, InfoTone tone = InfoTone.Neutral)
-    {
-        Text = text ?? string.Empty;
-        Tone = tone;
-    }
-
-    public string Text { get; }
-    public InfoTone Tone { get; }
-}
-
-public readonly struct InfoStatReference
-{
-    public InfoStatReference(PropType propType, float value)
-    {
-        PropType = propType;
-        Value = value;
-    }
-
-    public PropType PropType { get; }
-    public float Value { get; }
+    public string Id { get; }
+    public string DisplayName { get; }
+    public Sprite Icon { get; }
 }
 
 public static class InfoDocumentUtility
 {
-    public static string BuildText(IReadOnlyList<InfoSection> sections)
+    public static InfoItem CreateTitle(
+        string title,
+        InfoTone tone = InfoTone.Emphasis,
+        IInfoItemContentDecoder decoder = null)
     {
-        if (sections == null || sections.Count == 0)
+        return new InfoItem(InfoItemType.Title, title, tone, decoder);
+    }
+
+    public static InfoItem CreateSectionHeader(
+        string title,
+        InfoTone tone = InfoTone.Emphasis,
+        IInfoItemContentDecoder decoder = null)
+    {
+        return new InfoItem(InfoItemType.SectionHeader, title, tone, decoder);
+    }
+
+    public static InfoItem CreateText(
+        string text,
+        InfoTone tone = InfoTone.Neutral,
+        IInfoItemContentDecoder decoder = null)
+    {
+        return new InfoItem(InfoItemType.Text, text, tone, decoder);
+    }
+
+    public static InfoItem CreateTagText(
+        string text,
+        InfoTone tone = InfoTone.Disabled,
+        IInfoItemContentDecoder decoder = null)
+    {
+        return new InfoItem(InfoItemType.TagText, text, tone, decoder);
+    }
+
+    public static InfoItem CreateLineBreak()
+    {
+        return new InfoItem(InfoItemType.LineBreak, string.Empty);
+    }
+
+    public static InfoItem CreateSpacer()
+    {
+        return new InfoItem(InfoItemType.Spacer, string.Empty);
+    }
+
+    public static InfoItem CreateImage(
+        string content,
+        ImageDecoder decoder,
+        InfoTone tone = InfoTone.Neutral)
+    {
+        return new InfoItem(InfoItemType.Image, content, tone, decoder);
+    }
+
+    public static InfoItem CreateImage(string content, InfoTone tone = InfoTone.Neutral)
+    {
+        return new InfoItem(InfoItemType.Image, content, tone);
+    }
+
+    public static InfoItem CreateProperty(
+        string propertyId,
+        InfoTone tone = InfoTone.Neutral,
+        IInfoItemContentDecoder decoder = null)
+    {
+        return new InfoItem(
+            InfoItemType.Property,
+            propertyId,
+            tone,
+            decoder ?? PropertyDecoder.Instance);
+    }
+
+    public static void AppendTextLine(List<InfoItem> items, string text, InfoTone tone = InfoTone.Neutral)
+    {
+        if (items == null || string.IsNullOrWhiteSpace(text))
         {
-            return string.Empty;
+            return;
         }
 
-        System.Text.StringBuilder builder = new();
-        for (int i = 0; i < sections.Count; i++)
+        items.Add(CreateText(text, tone));
+        items.Add(CreateLineBreak());
+    }
+
+    public static void AppendPropertyLine(
+        List<InfoItem> items,
+        string propertyId,
+        string valueText,
+        InfoTone valueTone = InfoTone.Neutral)
+    {
+        if (items == null || string.IsNullOrWhiteSpace(propertyId))
         {
-            InfoSection section = sections[i];
-            if (section == null)
-            {
-                continue;
-            }
-
-            if (!string.IsNullOrWhiteSpace(section.Title))
-            {
-                if (builder.Length > 0)
-                {
-                    builder.AppendLine();
-                }
-
-                builder.AppendLine(section.Title);
-            }
-
-            IReadOnlyList<InfoLine> lines = section.Lines;
-            if (lines == null)
-            {
-                continue;
-            }
-
-            for (int j = 0; j < lines.Count; j++)
-            {
-                InfoLine line = lines[j];
-                if (line == null)
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrWhiteSpace(line.Label))
-                {
-                    builder.Append(line.Label);
-                    builder.Append(": ");
-                }
-
-                builder.Append(BuildLineText(line.Parts));
-                if (j < lines.Count - 1)
-                {
-                    builder.AppendLine();
-                }
-            }
+            return;
         }
 
-        return builder.ToString();
-    }
-
-    public static string BuildLineText(IReadOnlyList<InfoLinePart> parts)
-    {
-        if (parts == null || parts.Count == 0)
+        items.Add(CreateProperty(propertyId));
+        if (!string.IsNullOrWhiteSpace(valueText))
         {
-            return string.Empty;
+            items.Add(CreateText(valueText, valueTone));
         }
 
-        System.Text.StringBuilder builder = new();
-        for (int i = 0; i < parts.Count; i++)
-        {
-            builder.Append(parts[i].Text);
-        }
-
-        return builder.ToString();
-    }
-
-    public static string BuildLineText(params InfoLinePart[] parts)
-    {
-        return BuildLineText((IReadOnlyList<InfoLinePart>)parts);
-    }
-
-    public static InfoLinePart Text(string text, InfoTone tone = InfoTone.Neutral)
-    {
-        return new InfoLinePart(text, tone);
-    }
-
-    public static InfoLinePart Emphasis(string text, InfoTone tone = InfoTone.Emphasis)
-    {
-        return new InfoLinePart(text, tone, true);
-    }
-
-    public static InfoLine CreateSingleValueLine(string label, string value, InfoTone tone = InfoTone.Neutral)
-    {
-        return new InfoLine(label, new[] { Text(value, tone) }, tone);
-    }
-
-    public static InfoLine CreateFormulaLine(string label, params InfoLinePart[] parts)
-    {
-        return new InfoLine(label, parts, InfoTone.Neutral);
+        items.Add(CreateLineBreak());
     }
 }

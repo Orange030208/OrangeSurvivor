@@ -34,6 +34,7 @@ public class BuffDataSO : ScriptableObject, IInfoDocumentSource
     public string BuffId => buffId;
     public string DisplayName => displayName;
     public Sprite Icon => icon;
+    public string ManualDescription => description;
     public string Description => BuildDescription();
 
     public InfoDocument BuildInfoDocument()
@@ -52,16 +53,8 @@ public class BuffDataSO : ScriptableObject, IInfoDocumentSource
 
     private string BuildDescription()
     {
-        return ItemDescriptionUtility.BuildDetailedDescription(
-            ShouldUseManualDescription() ? description : null,
-            null,
-            specialFeatures,
-            string.Empty);
-    }
-
-    private bool ShouldUseManualDescription()
-    {
-        return !HasAnyEffect() && !string.IsNullOrWhiteSpace(description);
+        InfoDocument document = BuildInfoDocument();
+        return InfoDocumentTextFormatter.ToPlainText(document, includeHeader: false);
     }
 
     private bool HasAnyEffect()

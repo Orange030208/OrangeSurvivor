@@ -96,17 +96,17 @@ public sealed class PropertiesPopup : PopupBase
     {
         if (propertiesManager == null)
         {
-            propertiesDescriber.Display((InfoDocument)null);
+            propertiesDescriber.Display(null, compactRowsOnly: true);
             return;
         }
 
         if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
         {
-            propertiesDescriber.Display(document);
+            propertiesDescriber.Display(document, compactRowsOnly: true);
             return;
         }
 
-        propertiesDescriber.Display((InfoDocument)null);
+        propertiesDescriber.Display(null, compactRowsOnly: true);
     }
 
     private void ResolveViewParts()

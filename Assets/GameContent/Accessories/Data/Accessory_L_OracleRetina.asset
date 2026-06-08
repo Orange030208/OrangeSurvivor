@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: Accessory_L_OracleRetina
+  m_EditorClassIdentifier: 
+  itemName: "神谕视网膜"
+  itemIcon: {fileID: 0}
+  itemPrice: 95
+  itemType: 1
+  itemDescription: "远处还没决定发生什么，它已经替你先看完结局。"
+  accessoryId: Accessory_L_OracleRetina
+  recyclePrice: 32
+  rarity: 3
+  maxOwnedCount: 0
+  propertyModifiers:
+  - propType: 30
+    modifierType: 0
+    value: 8
+  - propType: 2
+    modifierType: 0
+    value: 3
+  - propType: 3
+    modifierType: 0
+    value: 12
+  - propType: 15
+    modifierType: 0
+    value: 16
+  - propType: 4
+    modifierType: 0
+    value: -4
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

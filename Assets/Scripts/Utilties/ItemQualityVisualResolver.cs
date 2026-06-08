@@ -33,11 +33,6 @@ public static class ItemQualityVisualResolver
 
     public static ItemQualityVisualStyle Resolve(ItemType itemType, int qualityValue)
     {
-        if (TryResolveConfiguredStyle(itemType, qualityValue, out ItemQualityVisualStyle configuredStyle))
-        {
-            return configuredStyle;
-        }
-
         return ResolveDefaultStyle(itemType, qualityValue);
     }
 
@@ -78,27 +73,6 @@ public static class ItemQualityVisualResolver
         controller.Apply(style, spriteRenderer);
     }
 
-    private static bool TryResolveConfiguredStyle(ItemType itemType, int qualityValue, out ItemQualityVisualStyle style)
-    {
-        ItemQualityVisualConfigSO config = GetConfig();
-        if (config == null)
-        {
-            style = default;
-            return false;
-        }
-
-        switch (itemType)
-        {
-            case ItemType.Weapon:
-                return config.TryGetWeaponLevelStyle(qualityValue, out style);
-            case ItemType.Accessory:
-                return config.TryGetAccessoryTierStyle((ContentTier)qualityValue, out style);
-            default:
-                style = default;
-                return false;
-        }
-    }
-
     private static ItemQualityVisualStyle ResolveDefaultStyle(ItemType itemType, int qualityValue)
     {
         switch (itemType)
@@ -110,13 +84,6 @@ public static class ItemQualityVisualResolver
                 int weaponIndex = Mathf.Clamp(WeaponLevelHelper.ClampLevel(qualityValue) - MIN_WEAPON_LEVEL, 0, DefaultWeaponStyles.Length - 1);
                 return DefaultWeaponStyles[weaponIndex];
         }
-    }
-
-    private static ItemQualityVisualConfigSO GetConfig()
-    {
-        return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
-            ? provider.ItemQualityVisualConfig
-            : null;
     }
 
     private static ItemQualityVisualStyle CreateDefaultStyle(int qualityValue, string qualityLabel, Color primaryColor)

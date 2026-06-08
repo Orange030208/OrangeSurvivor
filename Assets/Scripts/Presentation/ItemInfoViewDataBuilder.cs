@@ -1,5 +1,3 @@
-using System;
-
 public sealed class ItemInfoViewDataBuilder
 {
     private readonly WeaponInfoBuilder weaponInfoBuilder = new();
@@ -70,32 +68,53 @@ public sealed class ItemInfoViewDataBuilder
         }
 
         return new ItemInfoViewData(
-            document.Title,
-            ResolveTypeText(document, fallbackTypeText),
+            ResolveTitle(document),
+            fallbackTypeText ?? string.Empty,
             ResolveTagText(document),
             InfoDocumentTextFormatter.ToRichText(document, includeHeader: false));
     }
 
     private static string ResolveTagText(InfoDocument document)
     {
-        return document != null && document.Tags != null && document.Tags.Count > 0
-            ? string.Join(" / ", document.Tags)
-            : string.Empty;
+        if (document?.Items == null)
+        {
+            return string.Empty;
+        }
+
+        for (int i = 0; i < document.Items.Count; i++)
+        {
+            InfoItem item = document.Items[i];
+            if (item.Type == InfoItemType.TagText && !string.IsNullOrWhiteSpace(item.Content))
+            {
+                return item.Decoder.DecodeText(item.Content);
+            }
+        }
+
+        return string.Empty;
     }
 
-    private static string ResolveTypeText(InfoDocument document, string fallbackTypeText)
+    private static string ResolveTitle(InfoDocument document)
     {
         if (document == null)
         {
-            return fallbackTypeText ?? string.Empty;
+            return string.Empty;
         }
 
-        return document.Kind switch
+        if (document.Items == null)
         {
-            InfoDocumentKind.Weapon => ResolveItemTypeText(ItemType.Weapon),
-            InfoDocumentKind.Accessory => ResolveItemTypeText(ItemType.Accessory),
-            _ => fallbackTypeText ?? string.Empty
-        };
+            return string.Empty;
+        }
+
+        for (int i = 0; i < document.Items.Count; i++)
+        {
+            InfoItem item = document.Items[i];
+            if (item.Type == InfoItemType.Title && !string.IsNullOrWhiteSpace(item.Content))
+            {
+                return item.Decoder.DecodeText(item.Content);
+            }
+        }
+
+        return string.Empty;
     }
 
     private static string ResolveItemTypeText(ItemType itemType)

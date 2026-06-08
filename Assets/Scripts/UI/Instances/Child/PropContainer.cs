@@ -36,6 +36,16 @@ public class PropContainer : ViewPartBase
         SetValue(propValueTextValue, rawValue, useSemanticColor);
     }
 
+    public void Configure(Sprite icon, string propName, string propValueTextValue, Color valueColor)
+    {
+        ResolveReferences();
+        propImage.sprite = icon;
+        propImage.enabled = icon != null;
+        propText.text = propName;
+        propValueText.color = valueColor;
+        propValueText.text = propValueTextValue;
+    }
+
     public void SetValue(string displayText, float rawValue)
     {
         SetValue(displayText, rawValue, true);

@@ -22,98 +22,93 @@ public static class InfoDocumentTextFormatter
         }
 
         StringBuilder builder = new();
-        if (includeHeader)
-        {
-            AppendHeader(builder, document);
-        }
-
-        AppendSections(builder, document.Sections, richText);
+        AppendItems(builder, document.Items, includeHeader, richText);
         return builder.ToString().TrimEnd();
     }
 
-    private static void AppendHeader(StringBuilder builder, InfoDocument document)
+    private static void AppendItems(StringBuilder builder, IReadOnlyList<InfoItem> items, bool includeHeader, bool richText)
     {
-        if (!string.IsNullOrWhiteSpace(document.Title))
-        {
-            builder.AppendLine(document.Title);
-        }
-
-        if (document.Tags != null && document.Tags.Count > 0)
-        {
-            builder.AppendLine(string.Join(" / ", document.Tags));
-        }
-
-        if (builder.Length > 0)
-        {
-            builder.AppendLine();
-        }
-    }
-
-    private static void AppendSections(StringBuilder builder, IReadOnlyList<InfoSection> sections, bool richText)
-    {
-        if (sections == null)
+        if (items == null)
         {
             return;
         }
 
-        for (int i = 0; i < sections.Count; i++)
+        bool hasWrittenContent = false;
+        bool lineHasContent = false;
+        for (int i = 0; i < items.Count; i++)
         {
-            InfoSection section = sections[i];
-            if (section == null || section.Lines == null || section.Lines.Count == 0)
+            InfoItem item = items[i];
+            if (ShouldSkipTextExportItem(item, includeHeader))
             {
                 continue;
             }
 
-            if (builder.Length > 0)
+            if (item.Type == InfoItemType.LineBreak)
             {
-                builder.AppendLine();
-            }
-
-            if (!string.IsNullOrWhiteSpace(section.Title))
-            {
-                builder.AppendLine(richText ? WrapTone(section.Title, InfoTone.Emphasis) : section.Title);
-            }
-
-            for (int lineIndex = 0; lineIndex < section.Lines.Count; lineIndex++)
-            {
-                string lineText = FormatLine(section.Lines[lineIndex], richText);
-                if (string.IsNullOrWhiteSpace(lineText))
+                if (lineHasContent)
                 {
-                    continue;
+                    builder.AppendLine();
+                    lineHasContent = false;
                 }
 
-                builder.AppendLine(lineText);
+                continue;
             }
+
+            if (item.Type == InfoItemType.Spacer)
+            {
+                if (hasWrittenContent)
+                {
+                    if (lineHasContent)
+                    {
+                        builder.AppendLine();
+                    }
+
+                    builder.AppendLine();
+                    lineHasContent = false;
+                }
+
+                continue;
+            }
+
+            string text = FormatItem(item, richText);
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                continue;
+            }
+
+            builder.Append(text);
+            hasWrittenContent = true;
+            lineHasContent = true;
         }
     }
 
-    private static string FormatLine(InfoLine line, bool richText)
+    private static bool ShouldSkipTextExportItem(InfoItem item, bool includeHeader)
     {
-        if (line == null)
+        return item.Type switch
+        {
+            InfoItemType.Image => true,
+            InfoItemType.Title => !includeHeader,
+            InfoItemType.TagText => !includeHeader,
+            _ => false
+        };
+    }
+
+    public static string FormatItem(InfoItem item, bool richText)
+    {
+        string content = item.Type switch
+        {
+            InfoItemType.LineBreak => string.Empty,
+            InfoItemType.Spacer => string.Empty,
+            InfoItemType.Image => string.Empty,
+            _ => item.Decoder.DecodeText(item.Content)
+        };
+
+        if (string.IsNullOrWhiteSpace(content))
         {
             return string.Empty;
         }
 
-        StringBuilder builder = new();
-        if (!string.IsNullOrWhiteSpace(line.Label))
-        {
-            builder.Append(line.Label);
-            builder.Append(": ");
-        }
-
-        if (line.Parts != null)
-        {
-            for (int i = 0; i < line.Parts.Count; i++)
-            {
-                InfoLinePart part = line.Parts[i];
-                builder.Append(richText ? WrapTone(part.Text, part.Tone) : part.Text);
-            }
-        }
-
-        string result = builder.ToString();
-        return richText && line.Tone != InfoTone.Neutral
-            ? WrapTone(result, line.Tone)
-            : result;
+        return richText ? WrapTone(content, item.Tone) : content;
     }
 
     private static string WrapTone(string text, InfoTone tone)

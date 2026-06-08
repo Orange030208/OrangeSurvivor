@@ -23,14 +23,15 @@ public readonly struct WeaponInfoSource
 
     public static WeaponInfoSource FromRuntime(Weapon runtimeWeapon)
     {
-        return new WeaponInfoSource(runtimeWeapon != null ? runtimeWeapon.WeaponData : null, runtimeWeapon != null ? runtimeWeapon.Level : WeaponLevelHelper.MinLevel, runtimeWeapon);
+        return new WeaponInfoSource(
+            runtimeWeapon != null ? runtimeWeapon.WeaponData : null,
+            runtimeWeapon != null ? runtimeWeapon.Level : WeaponLevelHelper.MinLevel,
+            runtimeWeapon);
     }
 }
 
 public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
 {
-    private const string UntitledSectionTitle = "";
-
     public InfoDocument Build(WeaponInfoSource source)
     {
         WeaponDataSO weaponData = source.WeaponData;
@@ -44,51 +45,68 @@ public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
         WeaponBenefitData baseBenefits = baseStats.StatBenefits;
         WeaponBenefitData runtimeBenefits = runtimeWeapon != null ? runtimeWeapon.Benefits : WeaponBenefitData.Zero;
 
-        List<InfoSection> sections = new()
+        List<InfoItem> items = new()
         {
-            new InfoSection(UntitledSectionTitle, BuildStatLines(baseStats, runtimeWeapon, baseBenefits, runtimeBenefits))
+            InfoDocumentUtility.CreateTitle(weaponData.ItemName),
+            InfoDocumentUtility.CreateLineBreak()
         };
 
-        List<InfoLine> holderLines = BuildHolderModifierLines(baseStats.HolderModifiers);
-        if (holderLines.Count > 0)
+        string imageKey = weaponData.WeaponId;
+        if (!string.IsNullOrWhiteSpace(imageKey))
         {
-            sections.Add(new InfoSection(UntitledSectionTitle, holderLines));
+            items.Add(InfoDocumentUtility.CreateImage(
+                imageKey,
+                new WeaponImage(weaponData.ItemIcon)));
+        }
+
+        string tagText = BuildTagText(weaponData.Tags);
+        if (!string.IsNullOrWhiteSpace(tagText))
+        {
+            items.Add(InfoDocumentUtility.CreateTagText(tagText));
+            items.Add(InfoDocumentUtility.CreateLineBreak());
+        }
+
+        items.Add(InfoDocumentUtility.CreateSectionHeader("基础属性"));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        items.AddRange(BuildStatItems(baseStats, runtimeWeapon, baseBenefits, runtimeBenefits));
+
+        List<InfoItem> holderItems = BuildHolderModifierItems(baseStats.HolderModifiers);
+        if (holderItems.Count > 0)
+        {
+            items.Add(InfoDocumentUtility.CreateSectionHeader("持有者修正"));
+            items.Add(InfoDocumentUtility.CreateLineBreak());
+            items.AddRange(holderItems);
         }
 
         string manualDescription = ItemDescriptionUtility.NormalizeManualDescription(weaponData.ManualDescription);
         if (!string.IsNullOrWhiteSpace(manualDescription))
         {
-            sections.Add(new InfoSection(
-                UntitledSectionTitle,
-                new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, manualDescription) }));
+            items.Add(InfoDocumentUtility.CreateSectionHeader("说明"));
+            items.Add(InfoDocumentUtility.CreateLineBreak());
+            InfoDocumentUtility.AppendTextLine(items, manualDescription);
         }
 
         return new InfoDocument(
             weaponData.WeaponId,
-            weaponData.ItemName,
-            weaponData.ItemIcon,
-            InfoDocumentKind.Weapon,
-            BuildTagLabels(weaponData.Tags),
-            sections);
+            items);
     }
 
     private static InfoDocument BuildMissingDocument()
     {
         return new InfoDocument(
             string.Empty,
-            "缺失武器数据",
-            null,
-            InfoDocumentKind.Weapon,
-            Array.Empty<string>(),
             new[]
             {
-                new InfoSection(
-                    UntitledSectionTitle,
-                    new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, "无法生成武器详情：WeaponDataSO 为空。", InfoTone.Warning) })
+                InfoDocumentUtility.CreateTitle("缺失武器数据"),
+                InfoDocumentUtility.CreateLineBreak(),
+                InfoDocumentUtility.CreateSectionHeader("说明"),
+                InfoDocumentUtility.CreateLineBreak(),
+                InfoDocumentUtility.CreateText("无法生成武器详情：WeaponDataSO 为空。", InfoTone.Warning),
+                InfoDocumentUtility.CreateLineBreak()
             });
     }
 
-    private static List<InfoLine> BuildStatLines(
+    private static List<InfoItem> BuildStatItems(
         WeaponLevelStatData baseStats,
         Weapon runtimeWeapon,
         WeaponBenefitData baseBenefits,
@@ -100,81 +118,71 @@ public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
         float range = baseStats.Range;
         float knockback = baseStats.KnockbackStrength;
 
-        List<InfoLine> lines = new()
-        {
-            BuildDamageLine(baseStats.Attack, baseBenefits, runtimeBenefits),
-            BuildBenefitLine("冷却", $"{FormatNumber(cooldown)}s", "攻速", baseBenefits.AttackSpeedBenefitPercent, runtimeBenefits.AttackSpeedBenefitPercent),
-            BuildBenefitLine("暴击率", FormatPercent(criticalChance), "暴击率", baseBenefits.CriticalChanceBenefitPercent, runtimeBenefits.CriticalChanceBenefitPercent),
-            BuildBenefitLine("暴击伤害", $"x{FormatNumber(criticalMultiplier)}", "暴击伤害", baseBenefits.CriticalPercentBenefitPercent, runtimeBenefits.CriticalPercentBenefitPercent),
-            BuildBenefitLine("范围", FormatRange(range), "攻击范围", baseBenefits.RangeBenefitPercent, runtimeBenefits.RangeBenefitPercent)
-        };
+        List<InfoItem> items = new();
+        AppendTextPropertyLine(items, PropType.Attack, BuildDamageText(baseStats.Attack, baseBenefits, runtimeBenefits), baseStats.Attack);
+        AppendTextPropertyLine(items, PropType.AttackSpeed, BuildBenefitLineText($"{FormatNumber(cooldown)}s", "攻速", baseBenefits.AttackSpeedBenefitPercent, runtimeBenefits.AttackSpeedBenefitPercent), cooldown);
+        AppendTextPropertyLine(items, PropType.CriticalChance, BuildBenefitLineText(FormatPercent(criticalChance), "暴击率", baseBenefits.CriticalChanceBenefitPercent, runtimeBenefits.CriticalChanceBenefitPercent), criticalChance);
+        AppendTextPropertyLine(items, PropType.CriticalPercent, BuildBenefitLineText($"x{FormatNumber(criticalMultiplier)}", "暴击伤害", baseBenefits.CriticalPercentBenefitPercent, runtimeBenefits.CriticalPercentBenefitPercent), criticalMultiplier);
+        AppendTextPropertyLine(items, PropType.AttackRange, BuildBenefitLineText(FormatNumber(range), "攻击范围", baseBenefits.RangeBenefitPercent, runtimeBenefits.RangeBenefitPercent), range);
 
         if (knockback > 0f || baseStats.KnockbackStrength > 0f)
         {
-            lines.Add(BuildBenefitLine("击退", FormatNumber(knockback), "击退", baseBenefits.KnockbackStrengthBenefitPercent, runtimeBenefits.KnockbackStrengthBenefitPercent));
+            AppendTextPropertyLine(
+                items,
+                PropType.KnockbackStrength,
+                BuildBenefitLineText(FormatNumber(knockback), "击退", baseBenefits.KnockbackStrengthBenefitPercent, runtimeBenefits.KnockbackStrengthBenefitPercent),
+                knockback);
         }
 
-        return lines;
+        return items;
     }
 
-    private static InfoLine BuildDamageLine(float baseDamage, WeaponBenefitData baseBenefits, WeaponBenefitData runtimeBenefits)
+    private static void AppendTextPropertyLine(List<InfoItem> items, PropType propType, string valueText, float rawValue)
     {
-        List<InfoLinePart> parts = new()
-        {
-            InfoDocumentUtility.Text(FormatNumber(baseDamage))
-        };
-
-        string attackUsageText = BuildAttackUsageText(baseBenefits, runtimeBenefits);
-        if (!string.IsNullOrWhiteSpace(attackUsageText))
-        {
-            parts.Add(InfoDocumentUtility.Text(" (", InfoTone.Disabled));
-            parts.Add(InfoDocumentUtility.Text(attackUsageText, InfoTone.Emphasis));
-            parts.Add(InfoDocumentUtility.Text(")", InfoTone.Disabled));
-        }
-
-        return new InfoLine("伤害", parts);
+        InfoDocumentUtility.AppendPropertyLine(
+            items,
+            propType.ToString(),
+            valueText,
+            rawValue > 0f ? InfoTone.Positive : rawValue < 0f ? InfoTone.Negative : InfoTone.Neutral);
     }
 
-    private static InfoLine BuildBenefitLine(
-        string label,
+    private static string BuildDamageText(float baseDamage, WeaponBenefitData baseBenefits, WeaponBenefitData runtimeBenefits)
+    {
+        string attackUsageText = BuildAttackUsageText(baseBenefits, runtimeBenefits);
+        return string.IsNullOrWhiteSpace(attackUsageText)
+            ? FormatNumber(baseDamage)
+            : $"{FormatNumber(baseDamage)} <color=#{ColorUtility.ToHtmlStringRGB(new Color32(135, 145, 155, 255))}>(</color><color=#{ColorUtility.ToHtmlStringRGB(new Color32(91, 214, 255, 255))}>{attackUsageText}</color><color=#{ColorUtility.ToHtmlStringRGB(new Color32(135, 145, 155, 255))}>)</color>";
+    }
+
+    private static string BuildBenefitLineText(
         string valueText,
         string contributionLabel,
         params float[] benefitPercents)
     {
-        List<InfoLinePart> parts = new()
-        {
-            InfoDocumentUtility.Text(valueText)
-        };
-
         string contributionText = BuildContributionText(contributionLabel, benefitPercents);
-        if (!string.IsNullOrWhiteSpace(contributionText))
-        {
-            parts.Add(InfoDocumentUtility.Text(" (", InfoTone.Disabled));
-            parts.Add(InfoDocumentUtility.Text(contributionText, InfoTone.Positive));
-            parts.Add(InfoDocumentUtility.Text(")", InfoTone.Disabled));
-        }
-
-        return new InfoLine(label, parts);
+        return string.IsNullOrWhiteSpace(contributionText)
+            ? valueText
+            : $"{valueText} <color=#{ColorUtility.ToHtmlStringRGB(new Color32(135, 145, 155, 255))}>(</color><color=#{ColorUtility.ToHtmlStringRGB(new Color32(79, 220, 111, 255))}>{contributionText}</color><color=#{ColorUtility.ToHtmlStringRGB(new Color32(135, 145, 155, 255))}>)</color>";
     }
 
-    private static List<InfoLine> BuildHolderModifierLines(IReadOnlyList<PropModifierData> modifiers)
+    private static List<InfoItem> BuildHolderModifierItems(IReadOnlyList<PropModifierData> modifiers)
     {
-        List<InfoLine> lines = new();
+        List<InfoItem> items = new();
         if (modifiers == null)
         {
-            return lines;
+            return items;
         }
 
         for (int i = 0; i < modifiers.Count; i++)
         {
             PropModifierData modifier = modifiers[i];
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(
-                modifier.GetDisplayName(),
-                modifier.GetDisplayValueText(),
-                modifier.value >= 0f ? InfoTone.Positive : InfoTone.Negative));
+            InfoDocumentUtility.AppendTextLine(
+                items,
+                $"持有者{modifier.GetDisplayName()}: {modifier.GetDisplayValueText()}",
+                modifier.value >= 0f ? InfoTone.Positive : InfoTone.Negative);
         }
 
-        return lines;
+        return items;
     }
 
     private static string BuildContributionText(string contributionLabel, params float[] benefitPercents)
@@ -199,20 +207,20 @@ public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
         return contributions.Count > 0 ? string.Join(" + ", contributions) : string.Empty;
     }
 
-    private static List<string> BuildTagLabels(IReadOnlyList<WeaponTag> tags)
+    private static string BuildTagText(IReadOnlyList<WeaponTag> tags)
     {
-        List<string> labels = new();
-        if (tags == null)
+        if (tags == null || tags.Count == 0)
         {
-            return labels;
+            return string.Empty;
         }
 
+        List<string> labels = new();
         for (int i = 0; i < tags.Count; i++)
         {
             labels.Add(FormatWeaponTag(tags[i]));
         }
 
-        return labels;
+        return string.Join(" / ", labels);
     }
 
     private static string BuildAttackUsageText(WeaponBenefitData baseBenefits, WeaponBenefitData runtimeBenefits)
@@ -245,11 +253,6 @@ public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
         }
 
         parts.Add(string.Join(" + ", contributions));
-    }
-
-    private static string FormatRange(float value)
-    {
-        return FormatNumber(value);
     }
 
     private static string FormatPercent(float value)

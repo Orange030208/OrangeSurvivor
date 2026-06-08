@@ -38,6 +38,5 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public StageDefinitionSO DefaultStageDefinition => catalog.DefaultStageDefinition;
     public DamageTextFlow DamageTextPrefab => catalog.DamageTextPrefab;
     public DamageTextVisualConfigSO DamageTextVisualConfig => catalog.DamageTextVisualConfig;
-    public ItemQualityVisualConfigSO ItemQualityVisualConfig => catalog.ItemQualityVisualConfig;
     public Material ItemQualityIconEffectMaterial => catalog.ItemQualityIconEffectMaterial;
 }

@@ -57,17 +57,28 @@ public class ShopPropertiesPopup : PopupBase
     {
         if (propertiesManager == null)
         {
-            propertiesDescriber.Display((InfoDocument)null);
+            DisplayPropertiesDocument(null);
             return;
         }
 
         if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
         {
-            propertiesDescriber.Display(document);
+            DisplayPropertiesDocument(document);
             return;
         }
 
-        propertiesDescriber.Display((InfoDocument)null);
+        DisplayPropertiesDocument(null);
+    }
+
+    private void DisplayPropertiesDocument(InfoDocument document)
+    {
+        if (propertiesDescriber is PropertiesIconTextDescriber iconTextDescriber)
+        {
+            iconTextDescriber.Display(document, compactRowsOnly: true);
+            return;
+        }
+
+        propertiesDescriber.Display(document);
     }
 
     private void ResolveViewParts()

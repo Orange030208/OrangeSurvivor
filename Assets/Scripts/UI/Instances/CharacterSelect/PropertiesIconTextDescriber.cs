@@ -23,6 +23,11 @@ public sealed class PropertiesIconTextDescriber : Describer
 
     public override void Display(InfoDocument document)
     {
+        Display(document, compactRowsOnly: false);
+    }
+
+    public void Display(InfoDocument document, bool compactRowsOnly)
+    {
         if (document == null)
         {
             Clear();
@@ -30,58 +35,38 @@ public sealed class PropertiesIconTextDescriber : Describer
         }
 
         int displayIndex = 0;
-        bool compactRowsOnly = document.Kind == InfoDocumentKind.Properties;
-        if (!compactRowsOnly && !string.IsNullOrWhiteSpace(document.Title))
-        {
-            PropContainer titleContainer = GetOrCreateContainer(displayIndex++);
-            titleContainer.gameObject.SetActive(true);
-            titleContainer.Configure(null, document.Title, document.Title, 0f);
-        }
+        List<InfoItem> currentLine = new();
 
-        if (!compactRowsOnly && document.Tags != null && document.Tags.Count > 0)
+        if (document.Items != null)
         {
-            PropContainer tagContainer = GetOrCreateContainer(displayIndex++);
-            tagContainer.gameObject.SetActive(true);
-            tagContainer.Configure(null, "标签", string.Join(" / ", document.Tags), 0f);
-        }
-
-        if (document.Sections != null)
-        {
-            for (int sectionIndex = 0; sectionIndex < document.Sections.Count; sectionIndex++)
+            for (int itemIndex = 0; itemIndex < document.Items.Count; itemIndex++)
             {
-                InfoSection section = document.Sections[sectionIndex];
-                if (section == null || section.Lines == null)
+                InfoItem item = document.Items[itemIndex];
+                if (item.Type == InfoItemType.LineBreak)
                 {
+                    FlushDocumentLine(currentLine, compactRowsOnly, ref displayIndex);
                     continue;
                 }
 
-                if (!compactRowsOnly && !string.IsNullOrWhiteSpace(section.Title))
+                if (item.Type == InfoItemType.Spacer)
                 {
-                    PropContainer sectionTitleContainer = GetOrCreateContainer(displayIndex++);
-                    sectionTitleContainer.gameObject.SetActive(true);
-                    sectionTitleContainer.Configure(null, section.Title, section.Title, 0f);
-                }
-
-                for (int lineIndex = 0; lineIndex < section.Lines.Count; lineIndex++)
-                {
-                    InfoLine line = section.Lines[lineIndex];
-                    if (line == null)
+                    FlushDocumentLine(currentLine, compactRowsOnly, ref displayIndex);
+                    if (!compactRowsOnly)
                     {
-                        continue;
+                        RenderSpacerLine(GetOrCreateContainer(displayIndex++));
                     }
 
-                    PropContainer container = GetOrCreateContainer(displayIndex++);
-                    string lineLabel = string.IsNullOrWhiteSpace(line.Label) ? string.Empty : line.Label;
-                    PropPresentationEntry presentation = ResolvePresentation(lineLabel);
-                    container.gameObject.SetActive(true);
-                    container.Configure(
-                        presentation.Icon,
-                        string.IsNullOrWhiteSpace(presentation.ChineseName) ? lineLabel : presentation.ChineseName,
-                        InfoDocumentUtility.BuildLineText(line.Parts),
-                        ResolveRawValue(line));
+                    continue;
+                }
+
+                if (item.Type != InfoItemType.Image)
+                {
+                    currentLine.Add(item);
                 }
             }
         }
+
+        FlushDocumentLine(currentLine, compactRowsOnly, ref displayIndex);
 
         HideUnusedContainers(displayIndex);
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot as RectTransform);
@@ -107,29 +92,176 @@ public sealed class PropertiesIconTextDescriber : Describer
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot as RectTransform);
     }
 
-    private static float ResolveRawValue(InfoLine line)
+    private void FlushDocumentLine(List<InfoItem> lineItems, bool compactRowsOnly, ref int displayIndex)
     {
-        if (line == null || line.Parts == null)
+        if (lineItems == null || lineItems.Count == 0)
         {
-            return 0f;
+            return;
         }
 
-        for (int i = 0; i < line.Parts.Count; i++)
+        if (TryBuildPropertyLine(lineItems, out InfoPropertyPresentation presentation, out string valueText, out InfoTone valueTone))
         {
-            string text = line.Parts[i].Text;
+            PropContainer propertyContainer = GetOrCreateContainer(displayIndex++);
+            propertyContainer.gameObject.SetActive(true);
+            propertyContainer.Configure(
+                presentation.Icon,
+                presentation.DisplayName,
+                valueText,
+                ResolveToneColor(valueTone));
+            lineItems.Clear();
+            return;
+        }
+
+        if (!compactRowsOnly)
+        {
+            PropContainer textContainer = GetOrCreateContainer(displayIndex++);
+            string text = BuildLineText(lineItems);
+            InfoTone tone = ResolveLineTone(lineItems);
+            string label = ResolveLineLabel(lineItems);
+            textContainer.gameObject.SetActive(true);
+            textContainer.Configure(null, label, text, ResolveToneColor(tone));
+        }
+
+        lineItems.Clear();
+    }
+
+    private static void RenderSpacerLine(PropContainer container)
+    {
+        if (container == null)
+        {
+            return;
+        }
+
+        container.gameObject.SetActive(true);
+        container.Configure(null, string.Empty, string.Empty, Color.clear);
+    }
+
+    private static bool TryBuildPropertyLine(
+        IReadOnlyList<InfoItem> lineItems,
+        out InfoPropertyPresentation presentation,
+        out string valueText,
+        out InfoTone valueTone)
+    {
+        presentation = default;
+        valueText = string.Empty;
+        valueTone = InfoTone.Neutral;
+
+        if (lineItems == null)
+        {
+            return false;
+        }
+
+        bool hasProperty = false;
+        for (int i = 0; i < lineItems.Count; i++)
+        {
+            InfoItem item = lineItems[i];
+            if (item.Type != InfoItemType.Property)
+            {
+                continue;
+            }
+
+            hasProperty = item.Decoder.TryDecode(item.Content, out presentation);
+            if (!hasProperty)
+            {
+                string fallback = item.Decoder.DecodeText(item.Content).Trim().TrimEnd(':');
+                presentation = new InfoPropertyPresentation(item.Content, fallback, null);
+                hasProperty = true;
+            }
+
+            break;
+        }
+
+        if (!hasProperty)
+        {
+            return false;
+        }
+
+        List<string> valueParts = new();
+        for (int i = 0; i < lineItems.Count; i++)
+        {
+            InfoItem item = lineItems[i];
+            if (item.Type == InfoItemType.Property)
+            {
+                continue;
+            }
+
+            string text = item.Decoder.DecodeText(item.Content);
             if (string.IsNullOrWhiteSpace(text))
             {
                 continue;
             }
 
-            string normalized = text.Trim().Replace("%", string.Empty).Replace("s", string.Empty).Replace("格", string.Empty);
-            if (float.TryParse(normalized, out float value))
+            if (valueTone == InfoTone.Neutral && item.Tone != InfoTone.Neutral)
             {
-                return value;
+                valueTone = item.Tone;
+            }
+
+            valueParts.Add(text.Trim());
+        }
+
+        valueText = string.Join(" ", valueParts);
+        return true;
+    }
+
+    private static string BuildLineText(IReadOnlyList<InfoItem> lineItems)
+    {
+        if (lineItems == null)
+        {
+            return string.Empty;
+        }
+
+        List<string> parts = new();
+        for (int i = 0; i < lineItems.Count; i++)
+        {
+            string text = lineItems[i].Decoder.DecodeText(lineItems[i].Content);
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                parts.Add(text.Trim());
             }
         }
 
-        return 0f;
+        return string.Join(" ", parts);
+    }
+
+    private static string ResolveLineLabel(IReadOnlyList<InfoItem> lineItems)
+    {
+        if (lineItems == null || lineItems.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return lineItems[0].Type == InfoItemType.TagText ? "标签" : string.Empty;
+    }
+
+    private static InfoTone ResolveLineTone(IReadOnlyList<InfoItem> lineItems)
+    {
+        if (lineItems == null)
+        {
+            return InfoTone.Neutral;
+        }
+
+        for (int i = 0; i < lineItems.Count; i++)
+        {
+            if (lineItems[i].Tone != InfoTone.Neutral)
+            {
+                return lineItems[i].Tone;
+            }
+        }
+
+        return InfoTone.Neutral;
+    }
+
+    private static Color ResolveToneColor(InfoTone tone)
+    {
+        return tone switch
+        {
+            InfoTone.Positive => new Color32(79, 220, 111, 255),
+            InfoTone.Negative => new Color32(236, 74, 74, 255),
+            InfoTone.Warning => new Color32(255, 183, 77, 255),
+            InfoTone.Emphasis => new Color32(91, 214, 255, 255),
+            InfoTone.Disabled => new Color32(135, 145, 155, 255),
+            _ => Color.white
+        };
     }
 
     private PropContainer GetOrCreateContainer(int index)
@@ -181,18 +313,6 @@ public sealed class PropertiesIconTextDescriber : Describer
         }
 
         return new PropPresentationEntry(propType, propType.ToString(), string.Empty, null);
-    }
-
-    private PropPresentationEntry ResolvePresentation(string propName)
-    {
-        if (GameContentRuntime.TryGetPropPresentationEntry(propName, out PropPresentationEntry entry))
-        {
-            return entry;
-        }
-
-        // 目录表漏配时仍显示原始 label，方便在 UI 上直接发现是哪项配置缺失。
-        string fallbackName = string.IsNullOrWhiteSpace(propName) ? string.Empty : propName;
-        return new PropPresentationEntry(default, fallbackName, string.Empty, null);
     }
 
     private static string ResolveDisplayName(PropPresentationEntry presentation, PropType propType)

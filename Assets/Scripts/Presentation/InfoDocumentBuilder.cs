@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public interface IInfoDocumentBuilder<in TSource>
 {
@@ -133,53 +132,5 @@ public sealed class InfoDocumentService
             document = build.Invoke(source);
             return document != null;
         }
-    }
-}
-
-[CreateAssetMenu(fileName = "Info Presentation Catalog", menuName = ScriptableObjectMenuPaths.PRESENTATION_ROOT + "Info/Info Presentation Catalog", order = 0)]
-public sealed class InfoPresentationCatalogSO : ScriptableObject
-{
-    [SerializeField] private List<InfoPresentationEntry> entries = new();
-
-    public IReadOnlyList<InfoPresentationEntry> Entries => entries;
-
-    public bool TryGetEntry(string id, out InfoPresentationEntry entry)
-    {
-        if (string.IsNullOrWhiteSpace(id))
-        {
-            entry = default;
-            return false;
-        }
-
-        for (int i = 0; i < entries.Count; i++)
-        {
-            if (entries[i].Matches(id))
-            {
-                entry = entries[i];
-                return true;
-            }
-        }
-
-        entry = default;
-        return false;
-    }
-}
-
-[Serializable]
-public struct InfoPresentationEntry
-{
-    [SerializeField] private string id;
-    [SerializeField] private string displayName;
-    [SerializeField] private Sprite icon;
-    [SerializeField] private InfoTone tone;
-
-    public string Id => id;
-    public string DisplayName => displayName;
-    public Sprite Icon => icon;
-    public InfoTone Tone => tone;
-
-    public bool Matches(string otherId)
-    {
-        return string.Equals(id, otherId, StringComparison.Ordinal);
     }
 }

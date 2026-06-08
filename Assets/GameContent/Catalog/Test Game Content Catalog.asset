@@ -50,6 +50,5 @@ MonoBehaviour:
   damageTextPrefab: {fileID: 6519705689686096954, guid: ee3cbea162a1d8b4ab0191c152b1df01, type: 3}
   propPresentationCatalog: {fileID: 11400000, guid: 8471ae8f049037f458bb624b30db3220, type: 2}
   cardQualityPresentationCatalog: {fileID: 11400000, guid: 5225a814071d1f6409620ae539e83b5e, type: 2}
-  itemQualityVisualConfig: {fileID: 11400000, guid: 5cc524dd2fb4b59429962f8b2f8b3e02, type: 2}
   damageTextVisualConfig: {fileID: 11400000, guid: 08daadb69b8441e46b0309730de7966e, type: 2}
   itemQualityIconEffectMaterial: {fileID: 2100000, guid: beeb74436c2546543a86ed579df17936, type: 2}

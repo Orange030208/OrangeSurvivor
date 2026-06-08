@@ -18,8 +18,6 @@ public sealed class PropertiesInfoBuilder :
     IInfoDocumentBuilder<PropertiesInfoSource>,
     IInfoDocumentBuilder<PropertiesManager>
 {
-    private const string SectionTitle = "角色属性";
-
     public InfoDocument Build(PropertiesManager source)
     {
         return Build(new PropertiesInfoSource(source));
@@ -31,20 +29,26 @@ public sealed class PropertiesInfoBuilder :
         {
             return new InfoDocument(
                 string.Empty,
-                "属性",
-                null,
-                InfoDocumentKind.Properties,
-                Array.Empty<string>(),
                 new[]
                 {
-                    new InfoSection(
-                        SectionTitle,
-                        new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, "无法生成属性详情：PropertiesManager 为空。", InfoTone.Warning) })
+                    InfoDocumentUtility.CreateTitle("属性"),
+                    InfoDocumentUtility.CreateLineBreak(),
+                    InfoDocumentUtility.CreateSectionHeader("角色属性"),
+                    InfoDocumentUtility.CreateLineBreak(),
+                    InfoDocumentUtility.CreateText("无法生成属性详情：PropertiesManager 为空。", InfoTone.Warning),
+                    InfoDocumentUtility.CreateLineBreak()
                 });
         }
 
         Dictionary<PropType, float> values = source.PropertiesManager.GetAllPropValues();
-        List<InfoLine> lines = new();
+        List<InfoItem> items = new()
+        {
+            InfoDocumentUtility.CreateTitle("属性"),
+            InfoDocumentUtility.CreateLineBreak(),
+            InfoDocumentUtility.CreateSectionHeader("角色属性"),
+            InfoDocumentUtility.CreateLineBreak()
+        };
+
         Array propTypes = Enum.GetValues(typeof(PropType));
         for (int i = 0; i < propTypes.Length; i++)
         {
@@ -58,19 +62,16 @@ public sealed class PropertiesInfoBuilder :
                 continue;
             }
 
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(
-                GameContentRuntime.GetPropDisplayName(propType),
+            InfoDocumentUtility.AppendPropertyLine(
+                items,
+                propType.ToString(),
                 propType.FormatDisplayValue(value),
-                ResolveTone(value)));
+                ResolveTone(value));
         }
 
         return new InfoDocument(
             "properties",
-            "属性",
-            null,
-            InfoDocumentKind.Properties,
-            Array.Empty<string>(),
-            new[] { new InfoSection(SectionTitle, lines) });
+            items);
     }
 
     private static InfoTone ResolveTone(float value)

@@ -1586,7 +1586,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef741b948a075734e84c35b648d495e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  legacyIconImage: {fileID: 4708820394221701247}
   nameText: {fileID: 5146808437265111932}
   metaText: {fileID: 3823833812078411026}
   descriptionText: {fileID: 7711534507664165341}

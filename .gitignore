@@ -143,3 +143,8 @@ Thumbs.db
 # Local Codex tooling state
 .codex/config.toml
 .superpowers/
+.codex_tmp/
+tmp/
+_analysis_*.png
+__pycache__/
+*.py[cod]

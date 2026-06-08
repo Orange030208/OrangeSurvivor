@@ -1,15 +1,10 @@
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 public sealed class EquipmentInfoDocumentView : ViewPartBase
 {
-    [FormerlySerializedAs("iconImage")]
-    [SerializeField] private Image legacyIconImage;
     [SerializeField] private TextMeshProUGUI nameText;
-    [FormerlySerializedAs("typeText")]
     [SerializeField] private TextMeshProUGUI metaText;
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private GameObject iconRoot;
@@ -36,11 +31,6 @@ public sealed class EquipmentInfoDocumentView : ViewPartBase
         if (descriptionText != null)
         {
             descriptionText.text = data.BodyRichText ?? string.Empty;
-        }
-
-        if (iconRoot == null && legacyIconImage != null)
-        {
-            iconRoot = legacyIconImage.gameObject;
         }
 
         if (iconRoot != null && iconRoot.activeSelf)
@@ -84,12 +74,6 @@ public sealed class EquipmentInfoDocumentView : ViewPartBase
             iconRoot = icon != null ? icon.gameObject : null;
         }
 
-        if (legacyIconImage == null)
-        {
-            Transform icon = FindChildByName(transform, "Icon")
-                ?? FindChildByName(transform, "InfoIcon");
-            legacyIconImage = icon != null ? icon.GetComponent<Image>() : null;
-        }
     }
 
     private static Transform FindChildByName(Transform root, string targetName)

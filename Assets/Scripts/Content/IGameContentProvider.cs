@@ -25,6 +25,5 @@ public interface IGameContentProvider
     StageDefinitionSO DefaultStageDefinition { get; }
     DamageTextFlow DamageTextPrefab { get; }
     DamageTextVisualConfigSO DamageTextVisualConfig { get; }
-    ItemQualityVisualConfigSO ItemQualityVisualConfig { get; }
     Material ItemQualityIconEffectMaterial { get; }
 }

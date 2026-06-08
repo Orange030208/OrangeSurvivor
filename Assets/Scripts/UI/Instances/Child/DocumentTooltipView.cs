@@ -80,10 +80,54 @@ public class DocumentTooltipView : TooltipBase, ITooltipChromeHandler
 
     private void ApplyDocument(InfoDocument document)
     {
-        titleText.text = document != null ? document.Title : string.Empty;
-        iconImage.sprite = document != null ? document.Icon : null;
-        iconImage.enabled = document != null && document.Icon != null;
+        titleText.text = ResolveTitle(document);
+        Sprite icon = ResolveIcon(document);
+        iconImage.sprite = icon;
+        iconImage.enabled = icon != null;
         extraInfoDescriber.Display(document);
         LayoutRebuilder.ForceRebuildLayoutImmediate(root);
+    }
+
+    private static string ResolveTitle(InfoDocument document)
+    {
+        if (document?.Items == null)
+        {
+            return string.Empty;
+        }
+
+        for (int i = 0; i < document.Items.Count; i++)
+        {
+            InfoItem item = document.Items[i];
+            if (item.Type == InfoItemType.Title && !string.IsNullOrWhiteSpace(item.Content))
+            {
+                return item.Decoder.DecodeText(item.Content);
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private static Sprite ResolveIcon(InfoDocument document)
+    {
+        if (document?.Items == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < document.Items.Count; i++)
+        {
+            InfoItem item = document.Items[i];
+            if (item.Type != InfoItemType.Image)
+            {
+                continue;
+            }
+
+            if (item.Decoder.TryDecode(item.Content, out Sprite sprite))
+            {
+                return sprite;
+            }
+        }
+
+        return null;
     }
 }

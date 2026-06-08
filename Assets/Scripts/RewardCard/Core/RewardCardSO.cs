@@ -24,6 +24,7 @@ public class RewardCardSO : ScriptableObject, IInfoDocumentSource
     public string Id => id;
     public string Title => title;
     public Sprite Icon => icon;
+    public string ManualDescription => description;
     public string Description => BuildDescription();
     public ContentTier Tier => tier;
     public CardTag Tags => tags;
@@ -92,17 +93,9 @@ public class RewardCardSO : ScriptableObject, IInfoDocumentSource
 
     private string BuildDescription()
     {
-        return ItemDescriptionUtility.BuildDetailedDescription(
-            ShouldUseManualDescription() ? description : null,
-            null,
-            grantedAbilities,
-            null,
-            "获得一项奖励。");
-    }
-
-    private bool ShouldUseManualDescription()
-    {
-        return !HasAnyEffect() && !string.IsNullOrWhiteSpace(description);
+        InfoDocument document = BuildInfoDocument();
+        string formatted = InfoDocumentTextFormatter.ToPlainText(document, includeHeader: false);
+        return string.IsNullOrWhiteSpace(formatted) ? "获得一项奖励。" : formatted;
     }
 
     private static CardTag ToTagMask(IReadOnlyList<CardTag> source)

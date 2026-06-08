@@ -4,84 +4,95 @@ using UnityEngine;
 
 public sealed class AccessoryInfoBuilder : IInfoDocumentBuilder<AccessoryDataSO>
 {
-    private const string MetaSectionTitle = "基础";
-    private const string StatsSectionTitle = "属性";
-    private const string EffectsSectionTitle = "特殊效果";
-    private const string DescriptionSectionTitle = "说明";
-
     public InfoDocument Build(AccessoryDataSO source)
     {
         if (source == null)
         {
-            return InfoDocumentContentUtility.BuildMissingDocument(InfoDocumentKind.Accessory, "缺失饰品数据");
+            return InfoDocumentContentUtility.BuildMissingDocument("缺失饰品数据");
         }
 
-        List<InfoSection> sections = new();
-        List<InfoLine> metaLines = new()
+        List<InfoItem> items = new()
         {
-            InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.Tier), InfoTone.Emphasis)
+            InfoDocumentUtility.CreateTitle(source.ItemName),
+            InfoDocumentUtility.CreateLineBreak()
         };
+
+        string imageKey = string.IsNullOrWhiteSpace(source.AccessoryId) ? source.name : source.AccessoryId;
+        if (!string.IsNullOrWhiteSpace(imageKey))
+        {
+            items.Add(InfoDocumentUtility.CreateImage(
+                imageKey,
+                new AccessoryImage(source.ItemIcon)));
+        }
+
+        items.Add(InfoDocumentUtility.CreateTagText(ItemDescriptionUtility.FormatRarity(source.Tier)));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        items.Add(InfoDocumentUtility.CreateSectionHeader("基础"));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        InfoDocumentUtility.AppendTextLine(items, $"品质: {ItemDescriptionUtility.FormatRarity(source.Tier)}", InfoTone.Emphasis);
 
         if (source.HasOwnedLimit)
         {
-            metaLines.Add(InfoDocumentUtility.CreateSingleValueLine("持有上限", source.MaxOwnedCount.ToString()));
+            InfoDocumentUtility.AppendTextLine(items, $"持有上限: {source.MaxOwnedCount}");
         }
 
         if (source.RecyclePrice > 0)
         {
-            metaLines.Add(InfoDocumentUtility.CreateSingleValueLine("回收价格", source.RecyclePrice.ToString()));
+            InfoDocumentUtility.AppendTextLine(items, $"回收价格: {source.RecyclePrice}");
         }
 
-        sections.Add(new InfoSection(MetaSectionTitle, metaLines));
-        InfoDocumentContentUtility.AddModifierSection(sections, StatsSectionTitle, source.PropertyModifiers);
-        InfoDocumentContentUtility.AddFeatureSection(sections, EffectsSectionTitle, source.SpecialFeatures);
-        InfoDocumentContentUtility.AddDescriptionSection(sections, DescriptionSectionTitle, source.ManualDescription);
+        InfoDocumentContentUtility.AddModifierItems(items, "属性", source.PropertyModifiers);
+        InfoDocumentContentUtility.AddFeatureItems(items, "特殊效果", source.SpecialFeatures);
+        InfoDocumentContentUtility.AddDescriptionItems(items, "说明", source.ManualDescription);
 
         return new InfoDocument(
             string.IsNullOrWhiteSpace(source.AccessoryId) ? source.name : source.AccessoryId,
-            source.ItemName,
-            source.ItemIcon,
-            InfoDocumentKind.Accessory,
-            new[] { ItemDescriptionUtility.FormatRarity(source.Tier) },
-            sections);
+            items);
     }
 }
 
 public sealed class RewardCardInfoBuilder : IInfoDocumentBuilder<RewardCardSO>
 {
-    private const string MetaSectionTitle = "基础";
-    private const string EffectsSectionTitle = "特殊效果";
-    private const string DescriptionSectionTitle = "说明";
-
     public InfoDocument Build(RewardCardSO source)
     {
         if (source == null)
         {
-            return InfoDocumentContentUtility.BuildMissingDocument(InfoDocumentKind.UpgradeCard, "缺失升级卡数据");
+            return InfoDocumentContentUtility.BuildMissingDocument("缺失升级卡数据");
         }
 
-        List<InfoSection> sections = new();
-        List<string> tags = InfoDocumentContentUtility.BuildUpgradeTagLabels(source.TagList);
-        sections.Add(new InfoSection(
-            MetaSectionTitle,
-            new[]
-            {
-                InfoDocumentUtility.CreateSingleValueLine("品质", ItemDescriptionUtility.FormatRarity(source.Tier), InfoTone.Emphasis)
-            }));
+        List<InfoItem> items = new()
+        {
+            InfoDocumentUtility.CreateTitle(source.Title),
+            InfoDocumentUtility.CreateLineBreak()
+        };
 
-        InfoDocumentContentUtility.AddFeatureSection(sections, EffectsSectionTitle, source.GrantedAbilities);
+        string imageKey = string.IsNullOrWhiteSpace(source.Id) ? source.name : source.Id;
+        if (!string.IsNullOrWhiteSpace(imageKey))
+        {
+            items.Add(InfoDocumentUtility.CreateImage(
+                imageKey,
+                new RewardCardImage(source.Icon)));
+        }
+
+        List<string> tags = InfoDocumentContentUtility.BuildUpgradeTagLabels(source.TagList);
+        if (tags.Count > 0)
+        {
+            items.Add(InfoDocumentUtility.CreateTagText(string.Join(" / ", tags), InfoTone.Disabled));
+            items.Add(InfoDocumentUtility.CreateLineBreak());
+        }
+
+        items.Add(InfoDocumentUtility.CreateSectionHeader("基础"));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        InfoDocumentUtility.AppendTextLine(items, $"品质: {ItemDescriptionUtility.FormatRarity(source.Tier)}", InfoTone.Emphasis);
+        InfoDocumentContentUtility.AddFeatureItems(items, "特殊效果", source.GrantedAbilities);
         if (source.GrantedAbilities == null || source.GrantedAbilities.Count == 0)
         {
-            InfoDocumentContentUtility.AddDescriptionSection(sections, DescriptionSectionTitle, source.Description);
+            InfoDocumentContentUtility.AddDescriptionItems(items, "说明", source.ManualDescription);
         }
 
         return new InfoDocument(
             string.IsNullOrWhiteSpace(source.Id) ? source.name : source.Id,
-            source.Title,
-            source.Icon,
-            InfoDocumentKind.UpgradeCard,
-            tags,
-            sections);
+            items);
     }
 }
 
@@ -143,11 +154,6 @@ public sealed class BuffInfoBuilder :
     IInfoDocumentBuilder<BuffInfoSource>,
     IInfoDocumentBuilder<ActiveBuffViewData>
 {
-    private const string StateSectionTitle = "状态";
-    private const string RulesSectionTitle = "规则";
-    private const string EffectsSectionTitle = "特殊效果";
-    private const string DescriptionSectionTitle = "说明";
-
     public InfoDocument Build(BuffDataSO source)
     {
         return Build(BuffInfoSource.FromData(source));
@@ -164,79 +170,86 @@ public sealed class BuffInfoBuilder :
         IInfoDocumentSource fallback = source.FallbackInfoSource;
         if (buffData == null && fallback == null)
         {
-            return InfoDocumentContentUtility.BuildMissingDocument(InfoDocumentKind.Buff, "缺失 Buff 数据");
+            return InfoDocumentContentUtility.BuildMissingDocument("缺失 Buff 数据");
         }
 
-        List<InfoSection> sections = new();
-        AddStateSection(sections, source);
-        AddRulesSection(sections, buffData);
-        if (buffData != null)
-        {
-            InfoDocumentContentUtility.AddFeatureSection(sections, EffectsSectionTitle, buffData.SpecialFeatures);
-            if (buffData.SpecialFeatures == null || buffData.SpecialFeatures.Count == 0)
-            {
-                InfoDocumentContentUtility.AddDescriptionSection(sections, DescriptionSectionTitle, buffData.Description);
-            }
-        }
-        else
+        if (buffData == null)
         {
             InfoDocument fallbackDocument = fallback.BuildInfoDocument();
-            return fallbackDocument ?? InfoDocumentContentUtility.BuildMissingDocument(InfoDocumentKind.Buff, "缺失 Buff 数据");
+            return fallbackDocument ?? InfoDocumentContentUtility.BuildMissingDocument("缺失 Buff 数据");
+        }
+
+        List<InfoItem> items = new()
+        {
+            InfoDocumentUtility.CreateTitle(buffData.DisplayName),
+            InfoDocumentUtility.CreateLineBreak()
+        };
+
+        string imageKey = buffData.BuffId;
+        if (!string.IsNullOrWhiteSpace(imageKey))
+        {
+            items.Add(InfoDocumentUtility.CreateImage(
+                imageKey,
+                new BuffImage(buffData.Icon)));
+        }
+
+        items.Add(InfoDocumentUtility.CreateTagText(FormatPolarity(buffData.Polarity), ResolvePolarityTone(buffData.Polarity)));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        AddStateItems(items, source);
+        AddRuleItems(items, buffData);
+        InfoDocumentContentUtility.AddFeatureItems(items, "特殊效果", buffData.SpecialFeatures);
+        if (buffData.SpecialFeatures == null || buffData.SpecialFeatures.Count == 0)
+        {
+            InfoDocumentContentUtility.AddDescriptionItems(items, "说明", buffData.ManualDescription);
         }
 
         return new InfoDocument(
             buffData.BuffId,
-            buffData.DisplayName,
-            buffData.Icon,
-            InfoDocumentKind.Buff,
-            new[] { FormatPolarity(buffData.Polarity) },
-            sections);
+            items);
     }
 
-    private static void AddStateSection(List<InfoSection> sections, BuffInfoSource source)
+    private static void AddStateItems(List<InfoItem> items, BuffInfoSource source)
     {
-        List<InfoLine> lines = new();
+        List<InfoItem> stateItems = new();
         if (source.StackCount > 0)
         {
             string stackText = source.MaxStackCount > 0
                 ? $"{source.StackCount} / {source.MaxStackCount}"
                 : source.StackCount.ToString();
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine("层数", stackText, InfoTone.Emphasis));
+            InfoDocumentUtility.AppendTextLine(stateItems, $"层数: {stackText}", InfoTone.Emphasis);
         }
 
         if (source.HasDuration)
         {
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(
-                "剩余时间",
-                $"{source.RemainingDurationSeconds:0.0}s",
-                InfoTone.Warning));
+            InfoDocumentUtility.AppendTextLine(stateItems, $"剩余时间: {source.RemainingDurationSeconds:0.0}s", InfoTone.Warning);
         }
 
-        if (lines.Count > 0)
+        if (stateItems.Count == 0)
         {
-            sections.Add(new InfoSection(StateSectionTitle, lines));
+            return;
         }
+
+        items.Add(InfoDocumentUtility.CreateSectionHeader("状态"));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        items.AddRange(stateItems);
     }
 
-    private static void AddRulesSection(List<InfoSection> sections, BuffDataSO buffData)
+    private static void AddRuleItems(List<InfoItem> items, BuffDataSO buffData)
     {
         if (buffData == null)
         {
             return;
         }
 
-        List<InfoLine> lines = new()
-        {
-            InfoDocumentUtility.CreateSingleValueLine("类型", FormatPolarity(buffData.Polarity), ResolvePolarityTone(buffData.Polarity)),
-            InfoDocumentUtility.CreateSingleValueLine("持续", FormatDuration(buffData))
-        };
+        items.Add(InfoDocumentUtility.CreateSectionHeader("规则"));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        InfoDocumentUtility.AppendTextLine(items, $"类型: {FormatPolarity(buffData.Polarity)}", ResolvePolarityTone(buffData.Polarity));
+        InfoDocumentUtility.AppendTextLine(items, $"持续: {FormatDuration(buffData)}");
 
         if (buffData.MaxStackCount > 1)
         {
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine("最大层数", buffData.MaxStackCount.ToString()));
+            InfoDocumentUtility.AppendTextLine(items, $"最大层数: {buffData.MaxStackCount}");
         }
-
-        sections.Add(new InfoSection(RulesSectionTitle, lines));
     }
 
     private static string FormatDuration(BuffDataSO buffData)
@@ -269,59 +282,56 @@ public sealed class BuffInfoBuilder :
 
 internal static class InfoDocumentContentUtility
 {
-    public static InfoDocument BuildMissingDocument(InfoDocumentKind kind, string title)
+    public static InfoDocument BuildMissingDocument(string title)
     {
         return new InfoDocument(
             string.Empty,
-            title,
-            null,
-            kind,
-            Array.Empty<string>(),
             new[]
             {
-                new InfoSection(
-                    "说明",
-                    new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, "无法生成详情：数据为空。", InfoTone.Warning) })
+                InfoDocumentUtility.CreateTitle(title),
+                InfoDocumentUtility.CreateLineBreak(),
+                InfoDocumentUtility.CreateSectionHeader("说明"),
+                InfoDocumentUtility.CreateLineBreak(),
+                InfoDocumentUtility.CreateText("无法生成详情：数据为空。", InfoTone.Warning),
+                InfoDocumentUtility.CreateLineBreak()
             });
     }
 
-    public static void AddModifierSection(
-        List<InfoSection> sections,
-        string title,
+    public static void AddModifierItems(
+        List<InfoItem> items,
+        string sectionTitle,
         IReadOnlyList<PropModifierData> modifiers)
     {
-        if (sections == null || modifiers == null || modifiers.Count == 0)
+        if (items == null || modifiers == null || modifiers.Count == 0)
         {
             return;
         }
 
-        List<InfoLine> lines = new();
+        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
         for (int i = 0; i < modifiers.Count; i++)
         {
             PropModifierData modifier = modifiers[i];
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(
-                modifier.GetDisplayName(),
+            InfoDocumentUtility.AppendPropertyLine(
+                items,
+                modifier.propType.ToString(),
                 modifier.GetDisplayValueText(),
-                ResolveModifierTone(modifier)));
-        }
-
-        if (lines.Count > 0)
-        {
-            sections.Add(new InfoSection(title, lines));
+                ResolveModifierTone(modifier));
         }
     }
 
-    public static void AddFeatureSection(
-        List<InfoSection> sections,
-        string title,
+    public static void AddFeatureItems(
+        List<InfoItem> items,
+        string sectionTitle,
         IReadOnlyList<FeatureBase> features)
     {
-        if (sections == null || features == null || features.Count == 0)
+        if (items == null || features == null || features.Count == 0)
         {
             return;
         }
 
-        List<InfoLine> lines = new();
+        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
         for (int i = 0; i < features.Count; i++)
         {
             FeatureBase feature = features[i];
@@ -331,26 +341,21 @@ internal static class InfoDocumentContentUtility
             }
 
             string label = string.IsNullOrWhiteSpace(feature.Title) ? "特殊效果" : feature.Title;
-            lines.Add(InfoDocumentUtility.CreateSingleValueLine(label, feature.Description, InfoTone.Emphasis));
-        }
-
-        if (lines.Count > 0)
-        {
-            sections.Add(new InfoSection(title, lines));
+            InfoDocumentUtility.AppendTextLine(items, $"{label}: {feature.Description}", InfoTone.Emphasis);
         }
     }
 
-    public static void AddDescriptionSection(List<InfoSection> sections, string title, string description)
+    public static void AddDescriptionItems(List<InfoItem> items, string sectionTitle, string description)
     {
         string normalizedDescription = ItemDescriptionUtility.NormalizeManualDescription(description);
-        if (sections == null || string.IsNullOrWhiteSpace(normalizedDescription))
+        if (items == null || string.IsNullOrWhiteSpace(normalizedDescription))
         {
             return;
         }
 
-        sections.Add(new InfoSection(
-            title,
-            new[] { InfoDocumentUtility.CreateSingleValueLine(string.Empty, normalizedDescription) }));
+        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
+        items.Add(InfoDocumentUtility.CreateLineBreak());
+        InfoDocumentUtility.AppendTextLine(items, normalizedDescription);
     }
 
     public static List<string> BuildUpgradeTagLabels(IReadOnlyList<CardTag> tags)

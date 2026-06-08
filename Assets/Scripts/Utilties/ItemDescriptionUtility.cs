@@ -2,28 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-internal enum ItemDescriptionLineKind
-{
-    Flavor,
-    Property,
-    Feature,
-    Meta
-}
-
-internal readonly struct ItemDescriptionLine
-{
-    public ItemDescriptionLine(string label, string value, ItemDescriptionLineKind kind)
-    {
-        Label = label;
-        Value = value;
-        Kind = kind;
-    }
-
-    public string Label { get; }
-    public string Value { get; }
-    public ItemDescriptionLineKind Kind { get; }
-}
-
 internal static class ItemDescriptionUtility
 {
     public static string NormalizeManualDescription(string description)
@@ -55,21 +33,23 @@ internal static class ItemDescriptionUtility
         string description,
         IReadOnlyList<PropModifierData> propertyModifiers,
         IReadOnlyList<FeatureBase> specialFeatures,
-        IEnumerable<ItemDescriptionLine> extraLines,
+        IEnumerable<InfoItem> extraItems,
         string fallbackText)
     {
-        List<ItemDescriptionLine> lines = new List<ItemDescriptionLine>();
-        AddFlavorLine(lines, description);
-        AddPropertyLines(lines, propertyModifiers);
-        AddFeatureLines(lines, specialFeatures);
-        AddExtraLines(lines, extraLines);
+        List<InfoItem> items = new();
+        AddFlavorItem(items, description);
+        AddPropertyItems(items, propertyModifiers);
+        AddFeatureItems(items, specialFeatures);
+        AddExtraItems(items, extraItems);
 
-        if (lines.Count == 0)
+        if (items.Count == 0)
         {
             return string.IsNullOrWhiteSpace(fallbackText) ? string.Empty : fallbackText;
         }
 
-        return BuildLinesText(lines);
+        return InfoDocumentTextFormatter.ToPlainText(
+            new InfoDocument(string.Empty, items),
+            includeHeader: false);
     }
 
     public static string FormatRarity(ContentTier tier)
@@ -125,7 +105,7 @@ internal static class ItemDescriptionUtility
             return string.Empty;
         }
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new();
         int count = tags.Count < maxCount ? tags.Count : maxCount;
         for (int i = 0; i < count; i++)
         {
@@ -152,7 +132,7 @@ internal static class ItemDescriptionUtility
             return string.Empty;
         }
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new();
         for (int i = 0; i < tags.Count; i++)
         {
             if (i > 0)
@@ -178,7 +158,7 @@ internal static class ItemDescriptionUtility
         };
     }
 
-    private static void AddFlavorLine(List<ItemDescriptionLine> lines, string description)
+    private static void AddFlavorItem(List<InfoItem> items, string description)
     {
         string normalizedDescription = NormalizeManualDescription(description);
         if (string.IsNullOrWhiteSpace(normalizedDescription))
@@ -186,10 +166,10 @@ internal static class ItemDescriptionUtility
             return;
         }
 
-        lines.Add(new ItemDescriptionLine(string.Empty, normalizedDescription, ItemDescriptionLineKind.Flavor));
+        InfoDocumentUtility.AppendTextLine(items, normalizedDescription);
     }
 
-    private static void AddPropertyLines(List<ItemDescriptionLine> lines, IReadOnlyList<PropModifierData> propertyModifiers)
+    private static void AddPropertyItems(List<InfoItem> items, IReadOnlyList<PropModifierData> propertyModifiers)
     {
         if (propertyModifiers == null)
         {
@@ -199,14 +179,15 @@ internal static class ItemDescriptionUtility
         for (int i = 0; i < propertyModifiers.Count; i++)
         {
             PropModifierData modifier = propertyModifiers[i];
-            lines.Add(new ItemDescriptionLine(
-                modifier.GetDisplayName(),
+            InfoDocumentUtility.AppendPropertyLine(
+                items,
+                modifier.propType.ToString(),
                 modifier.GetDisplayValueText(),
-                ItemDescriptionLineKind.Property));
+                modifier.value > 0f ? InfoTone.Positive : modifier.value < 0f ? InfoTone.Negative : InfoTone.Neutral);
         }
     }
 
-    private static void AddFeatureLines(List<ItemDescriptionLine> lines, IReadOnlyList<FeatureBase> specialFeatures)
+    private static void AddFeatureItems(List<InfoItem> items, IReadOnlyList<FeatureBase> specialFeatures)
     {
         if (specialFeatures == null)
         {
@@ -222,76 +203,28 @@ internal static class ItemDescriptionUtility
             }
 
             string label = string.IsNullOrWhiteSpace(feature.Title) ? "特殊效果" : feature.Title;
-            lines.Add(new ItemDescriptionLine(label, feature.Description, ItemDescriptionLineKind.Feature));
+            InfoDocumentUtility.AppendTextLine(items, $"{label}: {feature.Description}", InfoTone.Emphasis);
         }
     }
 
-    private static void AddExtraLines(List<ItemDescriptionLine> lines, IEnumerable<ItemDescriptionLine> extraLines)
+    private static void AddExtraItems(List<InfoItem> items, IEnumerable<InfoItem> extraItems)
     {
-        if (extraLines == null)
+        if (extraItems == null)
         {
             return;
         }
 
-        foreach (ItemDescriptionLine line in extraLines)
+        foreach (InfoItem item in extraItems)
         {
-            if (string.IsNullOrWhiteSpace(line.Label) && string.IsNullOrWhiteSpace(line.Value))
+            if (string.IsNullOrWhiteSpace(item.Content) &&
+                item.Type != InfoItemType.LineBreak &&
+                item.Type != InfoItemType.Spacer)
             {
                 continue;
             }
 
-            lines.Add(line);
+            items.Add(item);
         }
-    }
-
-    private static string BuildLinesText(IReadOnlyList<ItemDescriptionLine> lines)
-    {
-        StringBuilder builder = new StringBuilder();
-        ItemDescriptionLineKind? previousKind = null;
-        for (int i = 0; i < lines.Count; i++)
-        {
-            ItemDescriptionLine line = lines[i];
-            if (previousKind.HasValue && previousKind.Value != line.Kind)
-            {
-                builder.AppendLine();
-            }
-
-            builder.Append(FormatLine(line));
-
-            if (i < lines.Count - 1)
-            {
-                builder.AppendLine();
-            }
-
-            previousKind = line.Kind;
-        }
-
-        return builder.ToString();
-    }
-
-    private static string FormatLine(ItemDescriptionLine line)
-    {
-        if (string.IsNullOrWhiteSpace(line.Label))
-        {
-            return line.Value ?? string.Empty;
-        }
-
-        if (line.Kind == ItemDescriptionLineKind.Flavor || IsDescriptionLabel(line.Label))
-        {
-            return line.Value ?? string.Empty;
-        }
-
-        if (string.IsNullOrWhiteSpace(line.Value))
-        {
-            return line.Label;
-        }
-
-        return $"{line.Label}: {line.Value}";
-    }
-
-    private static bool IsDescriptionLabel(string label)
-    {
-        return string.Equals(label?.Trim(), "说明", StringComparison.Ordinal);
     }
 
     private static CardTag[] ToUpgradeCardTagArray(CardTag mask)

@@ -364,7 +364,6 @@ public static class GameContentCatalogBuildUtility
         SetObject(serializedObject, "defaultWeaponPrefab", LoadRequiredPrefabComponent<Weapon>(GameContentAssetPaths.DefaultWeaponPrefab));
         SetObject(serializedObject, "damageTextPrefab", LoadRequiredPrefabComponent<DamageTextFlow>(GameContentAssetPaths.DamageTextPrefab));
         SetObject(serializedObject, "propPresentationCatalog", LoadRequired<PropPresentationCatalogSO>(GameContentAssetPaths.PropPresentationCatalog));
-        SetObject(serializedObject, "itemQualityVisualConfig", LoadRequired<ItemQualityVisualConfigSO>(GameContentAssetPaths.ItemQualityVisualConfig));
         SetObject(serializedObject, "damageTextVisualConfig", GetOrCreateDamageTextVisualConfig());
         SetObject(serializedObject, "itemQualityIconEffectMaterial", LoadRequired<Material>(GameContentAssetPaths.ItemQualityIconEffectMaterial));
         serializedObject.ApplyModifiedPropertiesWithoutUndo();

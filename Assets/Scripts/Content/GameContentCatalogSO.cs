@@ -39,7 +39,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
 
     [Header("表现配置")]
     [SerializeField] private PropPresentationCatalogSO propPresentationCatalog;
-    [SerializeField] private ItemQualityVisualConfigSO itemQualityVisualConfig;
     [SerializeField] private DamageTextVisualConfigSO damageTextVisualConfig;
     [SerializeField] private Material itemQualityIconEffectMaterial;
 
@@ -65,7 +64,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
     public StageDefinitionSO DefaultStageDefinition => defaultStageDefinition;
     public DamageTextFlow DamageTextPrefab => damageTextPrefab;
     public DamageTextVisualConfigSO DamageTextVisualConfig => damageTextVisualConfig;
-    public ItemQualityVisualConfigSO ItemQualityVisualConfig => itemQualityVisualConfig;
     public Material ItemQualityIconEffectMaterial => itemQualityIconEffectMaterial;
 
     /// <summary>
@@ -102,7 +100,6 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(defaultWeaponPrefab, nameof(defaultWeaponPrefab), errors);
         ValidateRequired(damageTextPrefab, nameof(damageTextPrefab), errors);
         ValidateRequired(propPresentationCatalog, nameof(propPresentationCatalog), errors);
-        ValidateRequired(itemQualityVisualConfig, nameof(itemQualityVisualConfig), errors);
         ValidateRequired(damageTextVisualConfig, nameof(damageTextVisualConfig), errors);
         ValidateRequired(itemQualityIconEffectMaterial, nameof(itemQualityIconEffectMaterial), errors);
 

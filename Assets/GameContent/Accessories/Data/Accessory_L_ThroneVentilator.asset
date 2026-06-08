@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
+  m_Name: Accessory_L_ThroneVentilator
+  m_EditorClassIdentifier: 
+  itemName: "王座呼吸机"
+  itemIcon: {fileID: 0}
+  itemPrice: 90
+  itemType: 1
+  itemDescription: "它不在乎你是不是王，只在乎你有没有资格继续输出。"
+  accessoryId: Accessory_L_ThroneVentilator
+  recyclePrice: 30
+  rarity: 3
+  maxOwnedCount: 0
+  propertyModifiers:
+  - propType: 28
+    modifierType: 0
+    value: 10
+  - propType: 0
+    modifierType: 0
+    value: 4
+  specialFeatures: []
+  references:
+    version: 2
+    RefIds: []

@@ -327,7 +327,7 @@ MonoBehaviour:
   currencyText: {fileID: 6316118506106973962}
   playerHealthPanel: {fileID: 3283340110672499301}
   playerExperiencePanel: {fileID: 4187802825413841276}
-  menuButton: {fileID: 0}
+  menuButton: {fileID: 3021531797940362649}
   buffBarUI: {fileID: 7943445818030645722}
 --- !u!114 &1502020683537815238
 MonoBehaviour:
@@ -2504,7 +2504,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3867215657965919025, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Name
-      value: IconFrameButton
+      value: PauseButton
       objectReference: {fileID: 0}
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Sprite
@@ -2520,6 +2520,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 888742510910951627, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
   m_PrefabInstance: {fileID: 2263919301694410590}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3021531797940362649 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3928737244536181447, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
+  m_PrefabInstance: {fileID: 2263919301694410590}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4822258153106879761
 PrefabInstance:
   m_ObjectHideFlags: 0

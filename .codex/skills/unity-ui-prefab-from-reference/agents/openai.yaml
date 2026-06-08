@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unity UI Prefab From Reference"
+  short_description: "从参考图和素材生成并循环截图校准UGUI预制体工作流"
+  default_prompt: "Use $unity-ui-prefab-from-reference to build this Unity UGUI prefab from the reference image and verify it in the real scene Canvas."

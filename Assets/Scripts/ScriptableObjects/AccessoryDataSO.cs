@@ -81,26 +81,7 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource, IHasContentTier
 
     private string BuildDescription()
     {
-        return ItemDescriptionUtility.BuildDetailedDescription(
-            ItemDescriptionUtility.NormalizeManualDescription(itemDescription),
-            propertyModifiers,
-            specialFeatures,
-            BuildMetaLines(),
-            string.Empty);
-    }
-
-    private IEnumerable<ItemDescriptionLine> BuildMetaLines()
-    {
-        yield return new ItemDescriptionLine(
-            "品质",
-            ItemDescriptionUtility.FormatRarity(tier),
-            ItemDescriptionLineKind.Meta);
-        if (HasOwnedLimit)
-        {
-            yield return new ItemDescriptionLine(
-                "持有上限",
-                MaxOwnedCount.ToString(),
-                ItemDescriptionLineKind.Meta);
-        }
+        InfoDocument document = BuildInfoDocument();
+        return InfoDocumentTextFormatter.ToPlainText(document, includeHeader: false);
     }
 }

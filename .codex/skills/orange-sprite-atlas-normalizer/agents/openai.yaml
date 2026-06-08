@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orange Sprite Atlas Normalizer"
+  short_description: "Regrid misaligned icon atlases for Unity"
+  default_prompt: "Use $orange-sprite-atlas-normalizer to reorder, center, and export a slice-friendly sprite atlas from my source image."
