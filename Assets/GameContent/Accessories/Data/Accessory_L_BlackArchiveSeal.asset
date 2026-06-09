@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_L_BlackArchiveSeal
   m_EditorClassIdentifier: 
   itemName: "黑档案封印"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 6304701002cc460bae6711aba0f530cf, type: 3}
   itemPrice: 88
   itemType: 1
   itemDescription: "你每拆开一层，夜里就会多一种站在你这边的理由。"
   accessoryId: Accessory_L_BlackArchiveSeal
-  recyclePrice: 29
   rarity: 3
   maxOwnedCount: 0
   propertyModifiers:

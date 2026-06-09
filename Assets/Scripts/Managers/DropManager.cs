@@ -8,8 +8,7 @@ public class DropManager : MonoBehaviour
     [SerializeField] private ContentPoolSO dropPool;
     [SerializeField] private List<DropSourceRuleData> dropRules = new();
 
-    private ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentHistoryState contentHistoryState = new();
+    private readonly DropContentRoller contentRoller = new();
     private readonly List<ContentPoolEntry> productEntryBuffer = new();
     private IContentRandom random = new UnityContentRandom();
 
@@ -159,9 +158,10 @@ public class DropManager : MonoBehaviour
     {
         ContentPoolSO configuredPool = ResolveConfiguredDropPool();
         ContentRollContext context = CreateDropRollContext(configuredPool, source, waveNumber);
+        ContentRollScope scope = CreateRollScope(configuredPool);
         if (!rule.HasProductRules)
         {
-            return RollCollectionFromPool(configuredPool, context);
+            return RollCollectionFromPool(configuredPool, context, scope);
         }
 
         productEntryBuffer.Clear();
@@ -180,43 +180,41 @@ public class DropManager : MonoBehaviour
             return DropRollResult.None;
         }
 
-        ContentRollResult productResult = contentPoolRollService.Roll(
-            ContentPoolScopeIds.Drop,
+        ContentRollItem productItem = contentRoller.RollProduct(
             productEntryBuffer,
             context,
-            1,
-            false,
-            entry => entry.Content is CollectionSO or ContentPoolSO);
-        if (!productResult.HasAny)
+            scope,
+            RunContentHistoryRuntime.Current);
+        if (productItem.Content == null)
         {
             return DropRollResult.None;
         }
 
-        if (productResult.Items[0].Content is CollectionSO collection)
+        if (productItem.Content is CollectionSO collection)
         {
-            int quantity = ResolveDropQuantity(productResult.Items[0]);
+            int quantity = ResolveDropQuantity(productItem);
             return new DropRollResult(collection, quantity);
         }
 
-        return productResult.Items[0].Content is ContentPoolSO nestedPool
-            ? RollCollectionFromPool(nestedPool, context)
+        return productItem.Content is ContentPoolSO nestedPool
+            ? RollCollectionFromPool(nestedPool, context, scope)
             : DropRollResult.None;
     }
 
-    private DropRollResult RollCollectionFromPool(ContentPoolSO pool, ContentRollContext context)
+    private DropRollResult RollCollectionFromPool(ContentPoolSO pool, ContentRollContext context, ContentRollScope scope)
     {
         if (pool == null)
         {
             return DropRollResult.None;
         }
 
-        ContentRollResult configuredResult = contentPoolRollService.Roll(
+        ContentRollItem rollItem = contentRoller.RollCollection(
             pool,
             context,
-            1,
-            entry => entry.Content is CollectionSO);
-        return configuredResult.HasAny
-            ? new DropRollResult(configuredResult.Items[0].Content as CollectionSO, ResolveDropQuantity(configuredResult.Items[0]))
+            scope,
+            RunContentHistoryRuntime.Current);
+        return rollItem.Content != null
+            ? new DropRollResult(rollItem.Content as CollectionSO, ResolveDropQuantity(rollItem))
             : DropRollResult.None;
     }
 
@@ -265,16 +263,15 @@ public class DropManager : MonoBehaviour
             ContentPoolScopeIds.Drop,
             player,
             progressionSnapshot: snapshot,
-            historyScope: CreateHistoryScope(pool),
-            history: contentHistoryState,
+            historyScope: CreateRollScope(pool).ToHistoryScope(),
+            history: RunContentHistoryRuntime.Current.State,
             source: source,
             propertiesManager: ResolvePropertiesManager(source));
     }
 
-    private static ContentHistoryScope CreateHistoryScope(ContentPoolSO pool)
+    private static ContentRollScope CreateRollScope(ContentPoolSO pool)
     {
-        string poolId = pool != null ? pool.name : ContentPoolScopeIds.Drop;
-        return new ContentHistoryScope(ContentPoolScopeIds.Drop, poolId);
+        return DropContentRoller.CreateScope(pool);
     }
 
     private static float ResolveLuck(Entity source)

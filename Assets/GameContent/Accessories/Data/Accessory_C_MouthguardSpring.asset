@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "咬住以后，冲上去这件事就更像本能。"
   accessoryId: Accessory_C_MouthguardSpring
-  recyclePrice: 8
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

@@ -377,6 +377,7 @@ public class GameManager : MonoBehaviour
         RestorePlayerAfterWaveCleanup();
         if (oldState != GameState.Shop)
         {
+            RunContentHistoryRuntime.BeginRun();
             isRunTerminated = false;
         }
 

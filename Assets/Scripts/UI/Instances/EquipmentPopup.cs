@@ -302,7 +302,7 @@ public sealed class EquipmentPopup : PopupBase
 
         selectedDisplayView.Render(new EquipmentSelectedDisplayData(
             itemData.ItemIcon,
-            itemData.ItemName ?? string.Empty));
+            ResolveSelectedDisplayName(entry)));
 
         infoDocumentView.Render(BuildItemInfoViewData(entry));
 
@@ -551,6 +551,25 @@ public sealed class EquipmentPopup : PopupBase
         }
 
         return itemInfoViewDataBuilder.Build(entry.ItemData);
+    }
+
+    private static string ResolveSelectedDisplayName(EquipmentEntry entry)
+    {
+        if (entry.RuntimeWeapon != null && entry.RuntimeWeapon.WeaponData != null)
+        {
+            return ItemNameStyleUtility.GetWeaponDisplayName(
+                entry.RuntimeWeapon.WeaponData.ItemName,
+                entry.RuntimeWeapon.Tier);
+        }
+
+        if (entry.RuntimeAccessory != null && entry.RuntimeAccessory.Data != null)
+        {
+            return ItemNameStyleUtility.GetAccessoryDisplayName(
+                entry.RuntimeAccessory.Data.ItemName,
+                entry.RuntimeAccessory.Tier);
+        }
+
+        return entry.ItemData != null ? entry.ItemData.ItemName ?? string.Empty : string.Empty;
     }
 
     private static int GetSellPrice(EquipmentEntry entry)

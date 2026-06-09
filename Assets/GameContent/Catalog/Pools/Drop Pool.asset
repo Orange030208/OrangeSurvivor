@@ -15,160 +15,32 @@ MonoBehaviour:
   defaultRollCount: 1
   allowDuplicateResults: 0
   entries:
-  - entryId: Pool_Normal_Gold
-    content: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
-    baseWeight: 100
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448174
-    conditions: []
-    weightRules:
-    - rid: 7274046034566448175
-  - entryId: Pool_Heavy_Gold
-    content: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
-    baseWeight: 90
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448176
-    conditions: []
-    weightRules:
-    - rid: 7274046034566448177
-  - entryId: Pool_Heavy_Chest
+  - entryId: Chest
     content: {fileID: 11400000, guid: 8827be155b64dd044969b45be382db33, type: 2}
-    baseWeight: 10
+    baseWeight: 0.1
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448178
+    metadata: []
     conditions: []
     weightRules:
-    - rid: 7274046034566448179
-  - entryId: Pool_Elite_GoldPack
+    - rid: 4655337927210172448
+  - entryId: Coin
     content: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
-    baseWeight: 70
+    baseWeight: 0.9
     maxRollCount: 0
     maxPickCount: 0
     mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448180
+    metadata: []
     conditions: []
-    weightRules:
-    - rid: 7274046034566448181
-  - entryId: Pool_Elite_Chest
-    content: {fileID: 11400000, guid: 8827be155b64dd044969b45be382db33, type: 2}
-    baseWeight: 30
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448182
-    conditions: []
-    weightRules:
-    - rid: 7274046034566448183
-  - entryId: Pool_SmallChest_Gold
-    content: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
-    baseWeight: 55
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448184
-    conditions: []
-    weightRules:
-    - rid: 7274046034566448185
-  - entryId: Pool_Boss_Gold
-    content: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
-    baseWeight: 10
-    maxRollCount: 0
-    maxPickCount: 0
-    mutuallyExclusiveEntryIds: []
-    metadata:
-    - rid: 7274046034566448186
-    conditions: []
-    weightRules:
-    - rid: 7274046034566448187
+    weightRules: []
   references:
     version: 2
     RefIds:
-    - rid: 7274046034566448174
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 1
-    - rid: 7274046034566448175
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0012
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448176
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 1
-    - rid: 7274046034566448177
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0012
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448178
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 1
-    - rid: 7274046034566448179
+    - rid: 4655337927210172448
       type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
       data:
         propType: 9
         weightPerPoint: 0.0032000002
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448180
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 8
-    - rid: 7274046034566448181
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0012
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448182
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 1
-    - rid: 7274046034566448183
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0032000002
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448184
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 12
-    - rid: 7274046034566448185
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0012
-        minMultiplier: 0
-        maxMultiplier: 0
-    - rid: 7274046034566448186
-      type: {class: DropQuantityMetadata, ns: , asm: Assembly-CSharp}
-      data:
-        quantity: 40
-    - rid: 7274046034566448187
-      type: {class: PlayerPropertyScaleWeightRule, ns: , asm: Assembly-CSharp}
-      data:
-        propType: 9
-        weightPerPoint: 0.0012
-        minMultiplier: 0
+        minMultiplier: 0.5
         maxMultiplier: 0

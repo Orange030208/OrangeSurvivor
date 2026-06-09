@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61a68193d104be59557311d107409f1, type: 3}
   m_Name: Accessory_C_BoneZipTag
   m_EditorClassIdentifier: 
-  itemName: "骨片拉签"
+  itemName: "\u9AA8\u7247\u62C9\u7B7E"
   itemIcon: {fileID: 21300000, guid: 07958331ad727b74aaf80147012cd7ed, type: 3}
   itemPrice: 20
   itemType: 1
-  itemDescription: "它像在提醒你，靠近不是请求。"
+  itemDescription: "\u5B83\u50CF\u5728\u63D0\u9192\u4F60\uFF0C\u9760\u8FD1\u4E0D\u662F\u8BF7\u6C42\u3002"
   accessoryId: Accessory_C_BoneZipTag
-  recyclePrice: 7
-  rarity: 0
+  tier: 0
   maxOwnedCount: 0
   propertyModifiers:
   - propType: 29

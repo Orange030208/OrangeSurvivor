@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "它像备用零件，跟久了却更像第二意志。"
   accessoryId: Accessory_R_SpareHalo
-  recyclePrice: 14
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

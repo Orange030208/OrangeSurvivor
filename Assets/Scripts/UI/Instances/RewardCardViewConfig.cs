@@ -59,7 +59,7 @@ public static class RewardCardViewConfigFactory
             ResolveWeaponOptionId(weaponData, clampedLevel),
             RewardOptionKind.Weapon,
             tier,
-            weaponData != null ? ItemDisplayHelper.GetWeaponDisplayName(weaponData.ItemName, clampedLevel) : string.Empty,
+            weaponData != null ? ItemNameStyleUtility.GetWeaponDisplayName(weaponData.ItemName, clampedLevel) : string.Empty,
             weaponData != null ? weaponData.BuildDescriptionForLevel(clampedLevel) : string.Empty,
             weaponData != null ? weaponData.ItemIcon : null,
             weaponData != null);
@@ -71,7 +71,7 @@ public static class RewardCardViewConfigFactory
             ResolveAccessoryOptionId(accessoryData),
             RewardOptionKind.Accessory,
             tier,
-            accessoryData != null ? accessoryData.ItemName : string.Empty,
+            accessoryData != null ? ItemNameStyleUtility.GetAccessoryDisplayName(accessoryData.ItemName, tier) : string.Empty,
             accessoryData != null ? accessoryData.Description : string.Empty,
             accessoryData != null ? accessoryData.ItemIcon : null,
             accessoryData != null);

@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_E_AfterstormWrap
   m_EditorClassIdentifier: 
   itemName: "余暴裹板"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: d2524436d3fa4ca6bcbecb90a681e5df, type: 3}
   itemPrice: 61
   itemType: 1
   itemDescription: "扛过第一阵之后，它会教你怎么从第二阵里穿过去。"
   accessoryId: Accessory_E_AfterstormWrap
-  recyclePrice: 20
   rarity: 2
   maxOwnedCount: 0
   propertyModifiers:

@@ -20,7 +20,6 @@ public class RewardSelectionManager : MonoBehaviour
     [SerializeField] private ContentPoolSO weaponRewardPool;
 
     private readonly Queue<RewardSelectionRequest> pendingRequests = new();
-    private readonly ContentHistoryState contentHistoryState = new();
     private RewardSelectionOption[] currentOptions = Array.Empty<RewardSelectionOption>();
     private Dictionary<RewardSelectionReason, IRewardSelectionHandler> handlers;
     private ViewHandle<RewardSelectionPopup> currentPopupHandle;
@@ -471,7 +470,7 @@ public class RewardSelectionManager : MonoBehaviour
             playerLevel,
             accessoryManager,
             weaponsHolder,
-            contentHistoryState,
+            RunContentHistoryRuntime.Current,
             currentWaveNumber,
             upgradeCardPool,
             chestRewardPool,

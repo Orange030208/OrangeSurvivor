@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "风开始偏的时候，它会替你偏得更狠。"
   accessoryId: Accessory_C_CrosswindVane
-  recyclePrice: 8
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

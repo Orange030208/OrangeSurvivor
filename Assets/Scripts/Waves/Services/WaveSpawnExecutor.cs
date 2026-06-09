@@ -9,8 +9,7 @@ public class WaveSpawnExecutor
     private readonly EnemyFactory enemyFactory;
     private readonly ContentPoolSO waveSpawnPool;
     private readonly List<WaveSpawnRequest> requestBuffer = new();
-    private readonly ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentHistoryState contentHistoryState = new();
+    private readonly WaveSpawnContentSelector contentSelector = new();
 
     public WaveSpawnExecutor(EnemyFactory enemyFactory, ContentPoolSO waveSpawnPool)
     {
@@ -221,17 +220,16 @@ public class WaveSpawnExecutor
             return null;
         }
 
-        ContentRollResult result = contentPoolRollService.Roll(
+        ContentRollItem? result = contentSelector.Select(
             waveSpawnPool,
-            CreateWaveRollContext(modifierContext),
-            1,
-            entry => entry.Content is EnemySO || entry.Content is WaveSpawnPackSO);
-        if (!result.HasAny)
+            modifierContext,
+            RunContentHistoryRuntime.Current);
+        if (!result.HasValue)
         {
             return null;
         }
 
-        return result.Items[0];
+        return result.Value;
     }
 
     private static WaveEnemyTag ResolveEnemyTags(ContentRollItem item)
@@ -242,23 +240,6 @@ public class WaveSpawnExecutor
         }
 
         return WaveEnemyTag.Normal;
-    }
-
-    private ContentRollContext CreateWaveRollContext(WaveSpawnModifierContext modifierContext)
-    {
-        Player player = modifierContext.SpawnContext.Player;
-        string poolId = waveSpawnPool != null ? waveSpawnPool.name : ContentPoolScopeIds.WaveSpawn;
-        ContentHistoryScope scope = new(ContentPoolScopeIds.WaveSpawn, poolId);
-        return new ContentRollContext(
-            ContentPoolScopeIds.WaveSpawn,
-            player,
-            waveSpawn: modifierContext.SpawnContext,
-            progressionSnapshot: modifierContext.SpawnContext.ProgressionSnapshot,
-            historyScope: scope,
-            history: contentHistoryState,
-            source: modifierContext.SpawnContext.SpawnAnchor,
-            waveTrackId: modifierContext.Segment.TrackId,
-            waveProgressPercent: modifierContext.SpawnContext.NormalizedProgress * 100f);
     }
 
     private static void AppendModifierRequests(

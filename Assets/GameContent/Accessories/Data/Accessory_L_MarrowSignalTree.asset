@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_L_MarrowSignalTree
   m_EditorClassIdentifier: 
   itemName: "骨髓信号树"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: f5b3f5065ba44451ae2ca7cbee2485d4, type: 3}
   itemPrice: 84
   itemType: 1
   itemDescription: "它长出来的不是枝叶，是一群愿意替你回应的东西。"
   accessoryId: Accessory_L_MarrowSignalTree
-  recyclePrice: 28
   rarity: 3
   maxOwnedCount: 0
   propertyModifiers:

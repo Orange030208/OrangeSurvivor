@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_E_ChoirVat
   m_EditorClassIdentifier: 
   itemName: "合唱培养罐"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 416eb59087484a67abab8c830c6a2280, type: 3}
   itemPrice: 66
   itemType: 1
   itemDescription: "跟在你身后的声音，慢慢会多到像一整支队伍。"
   accessoryId: Accessory_E_ChoirVat
-  recyclePrice: 22
   rarity: 2
   maxOwnedCount: 0
   propertyModifiers:

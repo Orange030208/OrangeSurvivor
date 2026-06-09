@@ -89,11 +89,11 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
 
         if (itemData is AccessoryDataSO)
         {
-            SetNameText(itemData.ItemName);
+            SetNameText(ItemNameStyleUtility.GetAccessoryDisplayName(itemData.ItemName, shopItem.Tier));
         }
         else if (itemData is WeaponDataSO)
         {
-            SetNameText(ItemDisplayHelper.GetWeaponDisplayName(itemData.ItemName, shopItem.Level));
+            SetNameText(ItemNameStyleUtility.GetWeaponDisplayName(itemData.ItemName, shopItem.Level));
         }
         else
         {

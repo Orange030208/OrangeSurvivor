@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "拿着它排队的人，总觉得窗口会多看自己一眼。"
   accessoryId: Accessory_C_WinkCoupon
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

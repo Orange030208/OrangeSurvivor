@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "零碎会自己贴上来，麻烦也差不多。"
   accessoryId: Accessory_C_MagnetClip
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

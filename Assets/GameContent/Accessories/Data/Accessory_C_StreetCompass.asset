@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "它不负责方向，只负责催你别停。"
   accessoryId: Accessory_C_StreetCompass
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

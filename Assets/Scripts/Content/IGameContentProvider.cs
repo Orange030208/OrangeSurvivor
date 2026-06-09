@@ -16,6 +16,7 @@ public interface IGameContentProvider
     PlayerLevelConfigSO PlayerLevelConfig { get; }
     RunProgressionProfileSO RunProgressionProfile { get; }
     ContentPoolSO UpgradeCardPool { get; }
+    ContentPoolLibrarySO ContentPoolLibrary { get; }
     ContentPoolSO ChestRewardPool { get; }
     ContentPoolSO ShopPool { get; }
     ContentPoolSO DropPool { get; }
@@ -26,4 +27,5 @@ public interface IGameContentProvider
     DamageTextFlow DamageTextPrefab { get; }
     DamageTextVisualConfigSO DamageTextVisualConfig { get; }
     Material ItemQualityIconEffectMaterial { get; }
+    TierColorPaletteSO TierColorPalette { get; }
 }

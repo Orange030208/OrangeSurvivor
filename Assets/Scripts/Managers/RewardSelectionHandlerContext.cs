@@ -7,7 +7,7 @@ public sealed class RewardSelectionHandlerContext
         PlayerLevel playerLevel,
         AccessoryManager accessoryManager,
         WeaponsHolder weaponsHolder,
-        ContentHistoryState contentHistoryState,
+        RunContentHistory runContentHistory,
         int currentWaveNumber,
         ContentPoolSO upgradeCardPool,
         ContentPoolSO chestRewardPool,
@@ -18,7 +18,7 @@ public sealed class RewardSelectionHandlerContext
         PlayerLevel = playerLevel;
         AccessoryManager = accessoryManager;
         WeaponsHolder = weaponsHolder;
-        ContentHistoryState = contentHistoryState;
+        RunContentHistory = runContentHistory;
         CurrentWaveNumber = Mathf.Max(1, currentWaveNumber);
         UpgradeCardPool = upgradeCardPool;
         ChestRewardPool = chestRewardPool;
@@ -30,7 +30,8 @@ public sealed class RewardSelectionHandlerContext
     public PlayerLevel PlayerLevel { get; }
     public AccessoryManager AccessoryManager { get; }
     public WeaponsHolder WeaponsHolder { get; }
-    public ContentHistoryState ContentHistoryState { get; }
+    public RunContentHistory RunContentHistory { get; }
+    public ContentHistoryState ContentHistoryState => RunContentHistory != null ? RunContentHistory.State : null;
     public int CurrentWaveNumber { get; }
     public ContentPoolSO UpgradeCardPool { get; }
     public ContentPoolSO ChestRewardPool { get; }

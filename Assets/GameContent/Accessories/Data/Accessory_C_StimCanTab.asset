@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "一拉开就知道今晚不会安静。"
   accessoryId: Accessory_C_StimCanTab
-  recyclePrice: 8
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

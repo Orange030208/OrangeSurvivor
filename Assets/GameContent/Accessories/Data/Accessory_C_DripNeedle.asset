@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "血色回来的速度，刚好够你装作没事。"
   accessoryId: Accessory_C_DripNeedle
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

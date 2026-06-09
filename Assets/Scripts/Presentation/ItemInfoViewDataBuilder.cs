@@ -7,19 +7,28 @@ public sealed class ItemInfoViewDataBuilder
     public ItemInfoViewData Build(Weapon runtimeWeapon)
     {
         InfoDocument document = weaponInfoBuilder.Build(WeaponInfoSource.FromRuntime(runtimeWeapon));
-        return BuildFromDocument(document, ResolveItemTypeText(ItemType.Weapon));
+        string displayName = runtimeWeapon != null && runtimeWeapon.WeaponData != null
+            ? ItemNameStyleUtility.GetWeaponDisplayName(runtimeWeapon.WeaponData.ItemName, runtimeWeapon.Tier)
+            : string.Empty;
+        return BuildFromDocument(document, string.Empty, displayName);
     }
 
     public ItemInfoViewData Build(WeaponDataSO weaponData, int level)
     {
         InfoDocument document = weaponInfoBuilder.Build(WeaponInfoSource.FromData(weaponData, level));
-        return BuildFromDocument(document, ResolveItemTypeText(ItemType.Weapon));
+        string displayName = weaponData != null
+            ? ItemNameStyleUtility.GetWeaponDisplayName(weaponData.ItemName, level)
+            : string.Empty;
+        return BuildFromDocument(document, string.Empty, displayName);
     }
 
     public ItemInfoViewData Build(AccessoryDataSO accessoryData)
     {
         InfoDocument document = accessoryInfoBuilder.Build(accessoryData);
-        return BuildFromDocument(document, ResolveItemTypeText(ItemType.Accessory));
+        string displayName = accessoryData != null
+            ? ItemNameStyleUtility.GetAccessoryDisplayName(accessoryData.ItemName, accessoryData.Tier)
+            : string.Empty;
+        return BuildFromDocument(document, string.Empty, displayName);
     }
 
     public ItemInfoViewData Build(ItemDataSO itemData)
@@ -56,19 +65,22 @@ public sealed class ItemInfoViewDataBuilder
             itemData.ManualDescription);
     }
 
-    private static ItemInfoViewData BuildFromDocument(InfoDocument document, string fallbackTypeText)
+    private static ItemInfoViewData BuildFromDocument(
+        InfoDocument document,
+        string fallbackTypeText,
+        string overrideName = null)
     {
         if (document == null)
         {
             return new ItemInfoViewData(
-                string.Empty,
+                overrideName ?? string.Empty,
                 fallbackTypeText,
                 string.Empty,
                 string.Empty);
         }
 
         return new ItemInfoViewData(
-            ResolveTitle(document),
+            string.IsNullOrWhiteSpace(overrideName) ? ResolveTitle(document) : overrideName,
             fallbackTypeText ?? string.Empty,
             ResolveTagText(document),
             InfoDocumentTextFormatter.ToRichText(document, includeHeader: false));

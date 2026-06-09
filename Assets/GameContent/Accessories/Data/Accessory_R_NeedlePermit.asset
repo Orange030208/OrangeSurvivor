@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "有章的人总比没章的人更容易拿到下一针。"
   accessoryId: Accessory_R_NeedlePermit
-  recyclePrice: 13
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_L_WitchMarketCore
   m_EditorClassIdentifier: 
   itemName: "巫市母核"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 53a8bd5ed588458abda174e2d56a22ac, type: 3}
   itemPrice: 89
   itemType: 1
   itemDescription: "整条夜市最贵的东西，往往会先挑中最急的人。"
   accessoryId: Accessory_L_WitchMarketCore
-  recyclePrice: 30
   rarity: 3
   maxOwnedCount: 0
   propertyModifiers:

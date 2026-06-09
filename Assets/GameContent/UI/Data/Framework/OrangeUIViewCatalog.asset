@@ -90,17 +90,6 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: tooltip.document
-    kind: 3
-    layer: 6
-    prefab: {fileID: 9208315558322375508, guid: 09491bf92046d214186f496c0220146c, type: 3}
-    singleton: 0
-    cacheOnClose: 1
-    trackInBackStack: 0
-    closeOnBackgroundClick: 0
-    warmupCount: 0
-    maxCachedInstancesOverride: 2
-    allowDuplicateViewType: 0
   - id: tooltip.text
     kind: 3
     layer: 6

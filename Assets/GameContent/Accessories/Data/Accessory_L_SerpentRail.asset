@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_L_SerpentRail
   m_EditorClassIdentifier: 
   itemName: "蛇轨增压器"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: be3ad767559e4d9ea778cef67a19ff53, type: 3}
   itemPrice: 88
   itemType: 1
   itemDescription: "一旦加压到位，停下来反而更像事故。"
   accessoryId: Accessory_L_SerpentRail
-  recyclePrice: 29
   rarity: 3
   maxOwnedCount: 0
   propertyModifiers:

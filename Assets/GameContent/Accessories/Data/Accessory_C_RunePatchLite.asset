@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "它贴住裂缝，也顺手放大了回声。"
   accessoryId: Accessory_C_RunePatchLite
-  recyclePrice: 8
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

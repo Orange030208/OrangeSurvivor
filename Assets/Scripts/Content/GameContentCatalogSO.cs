@@ -26,6 +26,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     [SerializeField] private StageDefinitionSO defaultStageDefinition;
 
     [Header("内容池")]
+    [SerializeField] private ContentPoolLibrarySO contentPoolLibrary;
     [SerializeField] private ContentPoolSO chestRewardPool;
     [SerializeField] private ContentPoolSO shopPool;
     [SerializeField] private ContentPoolSO dropPool;
@@ -41,6 +42,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     [SerializeField] private PropPresentationCatalogSO propPresentationCatalog;
     [SerializeField] private DamageTextVisualConfigSO damageTextVisualConfig;
     [SerializeField] private Material itemQualityIconEffectMaterial;
+    [SerializeField] private TierColorPaletteSO tierColorPalette;
 
     public IReadOnlyList<WeaponDataSO> Weapons => weapons ?? System.Array.Empty<WeaponDataSO>();
 
@@ -55,6 +57,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     public PlayerLevelConfigSO PlayerLevelConfig => playerLevelConfig;
     public RunProgressionProfileSO RunProgressionProfile => runProgressionProfile;
     public ContentPoolSO UpgradeCardPool => upgradeCardPool;
+    public ContentPoolLibrarySO ContentPoolLibrary => contentPoolLibrary;
     public ContentPoolSO ChestRewardPool => chestRewardPool;
     public ContentPoolSO ShopPool => shopPool;
     public ContentPoolSO DropPool => dropPool;
@@ -65,6 +68,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
     public DamageTextFlow DamageTextPrefab => damageTextPrefab;
     public DamageTextVisualConfigSO DamageTextVisualConfig => damageTextVisualConfig;
     public Material ItemQualityIconEffectMaterial => itemQualityIconEffectMaterial;
+    public TierColorPaletteSO TierColorPalette => tierColorPalette;
 
     /// <summary>
     /// 校验运行时入口所需的关键引用。
@@ -102,6 +106,7 @@ public sealed class GameContentCatalogSO : ScriptableObject
         ValidateRequired(propPresentationCatalog, nameof(propPresentationCatalog), errors);
         ValidateRequired(damageTextVisualConfig, nameof(damageTextVisualConfig), errors);
         ValidateRequired(itemQualityIconEffectMaterial, nameof(itemQualityIconEffectMaterial), errors);
+        ValidateRequired(tierColorPalette, nameof(tierColorPalette), errors);
 
         if (Accessories.Count == 0)
         {

@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_L_OracleRetina
   m_EditorClassIdentifier: 
   itemName: "神谕视网膜"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 6d94937e9aea43e2bea4b7abcf3213ab, type: 3}
   itemPrice: 95
   itemType: 1
   itemDescription: "远处还没决定发生什么，它已经替你先看完结局。"
   accessoryId: Accessory_L_OracleRetina
-  recyclePrice: 32
   rarity: 3
   maxOwnedCount: 0
   propertyModifiers:

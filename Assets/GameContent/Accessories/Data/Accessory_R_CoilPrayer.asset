@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "有些祷告不是为了被听见，是为了先响起来。"
   accessoryId: Accessory_R_CoilPrayer
-  recyclePrice: 15
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

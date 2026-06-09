@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class RewardCardRollService
 {
-    private readonly ContentPoolRollService contentPoolRollService = new();
+    private readonly RewardContentRoller contentRoller = new();
 
-    public List<RewardCardRollOption> RollOptions(ContentPoolSO pool, ContentRollContext rollContext)
+    public List<RewardCardRollOption> RollOptions(
+        ContentPoolSO pool,
+        ContentRollContext rollContext,
+        RunContentHistory history)
     {
         List<RewardCardRollOption> options = new();
         if (pool == null)
@@ -14,13 +17,14 @@ public class RewardCardRollService
             return options;
         }
 
-        ContentRollResult result = contentPoolRollService.Roll(
+        ContentRollResult result = contentRoller.Roll(
             pool,
             rollContext,
             null,
             entry => entry.Content is RewardCardSO card &&
                      !string.IsNullOrWhiteSpace(card.Id) &&
-                     card.HasAnyEffect());
+                     card.HasAnyEffect(),
+            history);
 
         AddOptions(options, result, entryId => ResolvePickCount(rollContext, entryId));
         return options;

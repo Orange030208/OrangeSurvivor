@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "穿上它以后，受伤会先变成一件工程问题。"
   accessoryId: Accessory_R_CrankVest
-  recyclePrice: 14
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

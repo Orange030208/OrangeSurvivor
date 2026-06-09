@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "数字一抬头，气氛就先变成事故现场。"
   accessoryId: Accessory_R_SirenGauge
-  recyclePrice: 13
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

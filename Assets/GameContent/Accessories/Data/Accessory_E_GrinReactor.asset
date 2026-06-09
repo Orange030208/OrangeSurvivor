@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_E_GrinReactor
   m_EditorClassIdentifier: 
   itemName: "裂笑反应炉"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: aa3bc3045d3942b58dc9c7244ba5d7f3, type: 3}
   itemPrice: 64
   itemType: 1
   itemDescription: "它笑得越夸张，你的手就越不适合留白。"
   accessoryId: Accessory_E_GrinReactor
-  recyclePrice: 21
   rarity: 2
   maxOwnedCount: 0
   propertyModifiers:

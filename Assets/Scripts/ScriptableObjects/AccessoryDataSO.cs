@@ -6,8 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Accessory Data", menuName = ScriptableObjectMenuPaths.ACCESSORY, order = 0)]
 public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource, IHasContentTier
 {
+    private const float RECYCLE_PRICE_MULTIPLIER = 1f / 3f;
+
     [SerializeField] protected string accessoryId;
-    [SerializeField] protected int recyclePrice;
 
     [FormerlySerializedAs("rarity")]
     [SerializeField] private ContentTier tier;
@@ -24,7 +25,7 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource, IHasContentTier
     [SerializeReference] private List<FeatureBase> specialFeatures = new();
 
     public string AccessoryId => accessoryId;
-    public int RecyclePrice => recyclePrice;
+    public int RecyclePrice => PropValueUtility.ResolveNonNegativePrice(ItemPrice * RECYCLE_PRICE_MULTIPLIER);
     public ContentTier Tier => tier;
     public int MaxOwnedCount => Mathf.Max(0, maxOwnedCount);
     public bool HasOwnedLimit => MaxOwnedCount > 0;

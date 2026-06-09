@@ -7,6 +7,7 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
 
     private readonly RewardCardRollService rollService = new();
     private readonly RewardCardApplyService applyService = new();
+    private readonly RewardContentRoller contentRoller = new();
 
     public RewardSelectionReason Reason => RewardSelectionReason.Upgrade;
 
@@ -29,7 +30,7 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
             progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
             historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
             history: context.ContentHistoryState);
-        List<RewardCardRollOption> rollOptions = rollService.RollOptions(pool, rollContext);
+        List<RewardCardRollOption> rollOptions = rollService.RollOptions(pool, rollContext, context.RunContentHistory);
         int count = Mathf.Min(OPTION_COUNT, rollOptions.Count);
         RewardSelectionOption[] options = new RewardSelectionOption[count];
 
@@ -64,8 +65,11 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
         }
 
         ContentPoolSO pool = ResolveUpgradeCardPool(context);
-        context.ContentHistoryState.RecordPick(
-            context.CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
+        contentRoller.RecordPick(
+            pool,
+            ContentPoolScopeIds.UpgradeCard,
+            context.Player,
+            context.RunContentHistory,
             selectedOption.RewardCardOption.RollItem);
         context.PlayerLevel?.ConsumeUpgradePoint();
         return true;

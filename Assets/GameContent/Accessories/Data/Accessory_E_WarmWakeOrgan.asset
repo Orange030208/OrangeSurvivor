@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_E_WarmWakeOrgan
   m_EditorClassIdentifier: 
   itemName: "余温器官"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: a3270fc5e4524c49bc0ef0c62db92bc5, type: 3}
   itemPrice: 65
   itemType: 1
   itemDescription: "只要还留一点余温，它就不允许你轻易停机。"
   accessoryId: Accessory_E_WarmWakeOrgan
-  recyclePrice: 22
   rarity: 2
   maxOwnedCount: 0
   propertyModifiers:

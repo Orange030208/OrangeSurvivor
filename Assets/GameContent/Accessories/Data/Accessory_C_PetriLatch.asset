@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "里面那点躁动，总想跟着你一起出门。"
   accessoryId: Accessory_C_PetriLatch
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

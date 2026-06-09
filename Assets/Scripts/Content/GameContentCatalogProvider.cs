@@ -29,6 +29,7 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public PlayerLevelConfigSO PlayerLevelConfig => catalog.PlayerLevelConfig;
     public RunProgressionProfileSO RunProgressionProfile => catalog.RunProgressionProfile;
     public ContentPoolSO UpgradeCardPool => catalog.UpgradeCardPool;
+    public ContentPoolLibrarySO ContentPoolLibrary => catalog.ContentPoolLibrary;
     public ContentPoolSO ChestRewardPool => catalog.ChestRewardPool;
     public ContentPoolSO ShopPool => catalog.ShopPool;
     public ContentPoolSO DropPool => catalog.DropPool;
@@ -39,4 +40,5 @@ public sealed class GameContentCatalogProvider : IGameContentProvider
     public DamageTextFlow DamageTextPrefab => catalog.DamageTextPrefab;
     public DamageTextVisualConfigSO DamageTextVisualConfig => catalog.DamageTextVisualConfig;
     public Material ItemQualityIconEffectMaterial => catalog.ItemQualityIconEffectMaterial;
+    public TierColorPaletteSO TierColorPalette => catalog.TierColorPalette;
 }

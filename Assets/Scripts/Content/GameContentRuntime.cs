@@ -116,4 +116,21 @@ public static class GameContentRuntime
             ? entry.Description
             : string.Empty;
     }
+
+    public static Color GetTierColor(ContentTier tier)
+    {
+        if (TryGetProvider(out IGameContentProvider resolvedProvider) &&
+            resolvedProvider.TierColorPalette != null)
+        {
+            return resolvedProvider.TierColorPalette.GetColor(tier);
+        }
+
+        return tier switch
+        {
+            ContentTier.Rare => new Color(0.3019608f, 0.54901963f, 1f, 1f),
+            ContentTier.Epic => new Color(0.6392157f, 0.40784314f, 1f, 1f),
+            ContentTier.Legendary => new Color(1f, 0.6509804f, 0.20392157f, 1f),
+            _ => new Color(0.6745098f, 0.6745098f, 0.6745098f, 1f)
+        };
+    }
 }

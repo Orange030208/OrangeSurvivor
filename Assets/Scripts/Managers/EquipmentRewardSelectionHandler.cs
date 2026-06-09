@@ -7,7 +7,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
     private const int OPTION_COUNT = 3;
     private const int DEFAULT_WEAPON_LEVEL = WeaponLevelHelper.MinLevel;
 
-    private readonly ContentPoolRollService rollService = new();
+    private readonly RewardContentRoller rollService = new();
     private readonly Definition definition;
 
     private EquipmentRewardSelectionHandler(Definition definition)
@@ -45,7 +45,8 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             pool,
             rollContext,
             OPTION_COUNT,
-            definition.CanUseEntry);
+            definition.CanUseEntry,
+            context.RunContentHistory);
         List<ContentRollItem> items = new(result.Items);
         int count = Mathf.Min(OPTION_COUNT, items.Count);
         RewardSelectionOption[] options = new RewardSelectionOption[count];
@@ -73,8 +74,11 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
         ContentPoolSO pool = definition.ResolvePool(context);
         ContentRollItem rollItem = definition.GetRollItem(option);
-        context.ContentHistoryState.RecordPick(
-            context.CreateHistoryScope(pool, definition.ScopeId),
+        rollService.RecordPick(
+            pool,
+            definition.ScopeId,
+            context.Player,
+            context.RunContentHistory,
             rollItem);
         return true;
     }
@@ -90,7 +94,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
         private readonly Func<RewardSelectionHandlerContext, ContentPoolSO> resolveContextPool;
         private readonly Func<IGameContentProvider, ContentPoolSO> resolveProviderPool;
         private readonly Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext;
-        private readonly Predicate<ContentPoolEntry> canUseEntry;
+        private readonly Predicate<ContentPoolEntryDefinition> canUseEntry;
         private readonly Func<ContentRollItem, RewardSelectionOption> createOption;
         private readonly Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection;
         private readonly Func<RewardSelectionOption, ContentRollItem> getRollItem;
@@ -106,7 +110,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             Func<RewardSelectionHandlerContext, ContentPoolSO> resolveContextPool,
             Func<IGameContentProvider, ContentPoolSO> resolveProviderPool,
             Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext,
-            Predicate<ContentPoolEntry> canUseEntry,
+            Predicate<ContentPoolEntryDefinition> canUseEntry,
             Func<ContentRollItem, RewardSelectionOption> createOption,
             Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection,
             Func<RewardSelectionOption, ContentRollItem> getRollItem)
@@ -276,7 +280,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             return createRollContext.Invoke(context, pool);
         }
 
-        public bool CanUseEntry(ContentPoolEntry entry)
+        public bool CanUseEntry(ContentPoolEntryDefinition entry)
         {
             return canUseEntry.Invoke(entry);
         }

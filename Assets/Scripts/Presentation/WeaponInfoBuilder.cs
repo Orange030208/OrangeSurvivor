@@ -63,27 +63,25 @@ public sealed class WeaponInfoBuilder : IInfoDocumentBuilder<WeaponInfoSource>
         if (!string.IsNullOrWhiteSpace(tagText))
         {
             items.Add(InfoDocumentUtility.CreateTagText(tagText));
-            items.Add(InfoDocumentUtility.CreateLineBreak());
         }
 
-        items.Add(InfoDocumentUtility.CreateSectionHeader("基础属性"));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
         items.AddRange(BuildStatItems(baseStats, runtimeWeapon, baseBenefits, runtimeBenefits));
 
         List<InfoItem> holderItems = BuildHolderModifierItems(baseStats.HolderModifiers);
         if (holderItems.Count > 0)
         {
-            items.Add(InfoDocumentUtility.CreateSectionHeader("持有者修正"));
-            items.Add(InfoDocumentUtility.CreateLineBreak());
             items.AddRange(holderItems);
         }
 
         string manualDescription = ItemDescriptionUtility.NormalizeManualDescription(weaponData.ManualDescription);
         if (!string.IsNullOrWhiteSpace(manualDescription))
         {
-            items.Add(InfoDocumentUtility.CreateSectionHeader("说明"));
-            items.Add(InfoDocumentUtility.CreateLineBreak());
-            InfoDocumentUtility.AppendTextLine(items, manualDescription);
+            if (items.Count > 0)
+            {
+                items.Add(InfoDocumentUtility.CreateSpacer());
+            }
+
+            InfoDocumentUtility.AppendTextLine(items, $"\"{manualDescription}\"", InfoTone.Disabled);
         }
 
         return new InfoDocument(

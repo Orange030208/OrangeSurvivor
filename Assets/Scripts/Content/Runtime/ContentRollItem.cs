@@ -3,11 +3,20 @@ using System.Collections.Generic;
 public readonly struct ContentRollItem : IHasContentTier
 {
     public ContentRollItem(ContentPoolEntry entry, UnityEngine.Object content, float finalWeight)
+        : this(entry, content, finalWeight, entry?.Metadata)
+    {
+    }
+
+    public ContentRollItem(
+        ContentPoolEntry entry,
+        UnityEngine.Object content,
+        float finalWeight,
+        IReadOnlyList<ContentEntryMetadata> metadata)
     {
         Entry = entry;
         Content = content;
         FinalWeight = finalWeight;
-        Metadata = ContentMetadataUtility.CloneMetadata(entry?.Metadata);
+        Metadata = ContentMetadataUtility.CloneMetadata(metadata);
     }
 
     public ContentRollItem(ContentPoolCandidate candidate)

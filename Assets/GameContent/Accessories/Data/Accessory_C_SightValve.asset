@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "视线被拧紧之后，犹豫会先松掉。"
   accessoryId: Accessory_C_SightValve
-  recyclePrice: 7
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

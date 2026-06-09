@@ -54,6 +54,12 @@ public sealed class ContentPoolCandidate
         pricingMetadata.ConfigurePriceMultiplier(UnityEngine.Mathf.Max(MIN_PRICE_MULTIPLIER, priceMultiplier));
     }
 
+    internal void ReplaceMetadataForV2(IReadOnlyList<ContentEntryMetadata> nextMetadata)
+    {
+        metadata.Clear();
+        metadata.AddRange(ContentMetadataUtility.CloneMetadata(nextMetadata));
+    }
+
     public float GetPriceMultiplier()
     {
         return TryGetMetadata(out ShopPricingMetadata pricingMetadata)

@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "它像一张证件，允许你把危险做得更熟练。"
   accessoryId: Accessory_R_ChainPermit
-  recyclePrice: 14
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

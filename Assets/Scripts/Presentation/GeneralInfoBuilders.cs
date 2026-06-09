@@ -25,25 +25,14 @@ public sealed class AccessoryInfoBuilder : IInfoDocumentBuilder<AccessoryDataSO>
                 new AccessoryImage(source.ItemIcon)));
         }
 
-        items.Add(InfoDocumentUtility.CreateTagText(ItemDescriptionUtility.FormatRarity(source.Tier)));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
-        items.Add(InfoDocumentUtility.CreateSectionHeader("基础"));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
-        InfoDocumentUtility.AppendTextLine(items, $"品质: {ItemDescriptionUtility.FormatRarity(source.Tier)}", InfoTone.Emphasis);
-
         if (source.HasOwnedLimit)
         {
-            InfoDocumentUtility.AppendTextLine(items, $"持有上限: {source.MaxOwnedCount}");
+            InfoDocumentUtility.AppendTextLine(items, $"最多持有 {source.MaxOwnedCount}");
         }
 
-        if (source.RecyclePrice > 0)
-        {
-            InfoDocumentUtility.AppendTextLine(items, $"回收价格: {source.RecyclePrice}");
-        }
-
-        InfoDocumentContentUtility.AddModifierItems(items, "属性", source.PropertyModifiers);
-        InfoDocumentContentUtility.AddFeatureItems(items, "特殊效果", source.SpecialFeatures);
-        InfoDocumentContentUtility.AddDescriptionItems(items, "说明", source.ManualDescription);
+        InfoDocumentContentUtility.AddModifierItems(items, source.PropertyModifiers);
+        InfoDocumentContentUtility.AddFeatureItems(items, source.SpecialFeatures);
+        InfoDocumentContentUtility.AddDescriptionItems(items, source.ManualDescription);
 
         return new InfoDocument(
             string.IsNullOrWhiteSpace(source.AccessoryId) ? source.name : source.AccessoryId,
@@ -299,7 +288,6 @@ internal static class InfoDocumentContentUtility
 
     public static void AddModifierItems(
         List<InfoItem> items,
-        string sectionTitle,
         IReadOnlyList<PropModifierData> modifiers)
     {
         if (items == null || modifiers == null || modifiers.Count == 0)
@@ -307,8 +295,6 @@ internal static class InfoDocumentContentUtility
             return;
         }
 
-        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
         for (int i = 0; i < modifiers.Count; i++)
         {
             PropModifierData modifier = modifiers[i];
@@ -320,9 +306,16 @@ internal static class InfoDocumentContentUtility
         }
     }
 
+    public static void AddModifierItems(
+        List<InfoItem> items,
+        string _sectionTitle,
+        IReadOnlyList<PropModifierData> modifiers)
+    {
+        AddModifierItems(items, modifiers);
+    }
+
     public static void AddFeatureItems(
         List<InfoItem> items,
-        string sectionTitle,
         IReadOnlyList<FeatureBase> features)
     {
         if (items == null || features == null || features.Count == 0)
@@ -330,8 +323,6 @@ internal static class InfoDocumentContentUtility
             return;
         }
 
-        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
         for (int i = 0; i < features.Count; i++)
         {
             FeatureBase feature = features[i];
@@ -340,12 +331,22 @@ internal static class InfoDocumentContentUtility
                 continue;
             }
 
-            string label = string.IsNullOrWhiteSpace(feature.Title) ? "特殊效果" : feature.Title;
-            InfoDocumentUtility.AppendTextLine(items, $"{label}: {feature.Description}", InfoTone.Emphasis);
+            string text = string.IsNullOrWhiteSpace(feature.Title)
+                ? feature.Description
+                : $"{feature.Title}: {feature.Description}";
+            InfoDocumentUtility.AppendTextLine(items, text, InfoTone.Emphasis);
         }
     }
 
-    public static void AddDescriptionItems(List<InfoItem> items, string sectionTitle, string description)
+    public static void AddFeatureItems(
+        List<InfoItem> items,
+        string _sectionTitle,
+        IReadOnlyList<FeatureBase> features)
+    {
+        AddFeatureItems(items, features);
+    }
+
+    public static void AddDescriptionItems(List<InfoItem> items, string description)
     {
         string normalizedDescription = ItemDescriptionUtility.NormalizeManualDescription(description);
         if (items == null || string.IsNullOrWhiteSpace(normalizedDescription))
@@ -353,9 +354,17 @@ internal static class InfoDocumentContentUtility
             return;
         }
 
-        items.Add(InfoDocumentUtility.CreateSectionHeader(sectionTitle));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
-        InfoDocumentUtility.AppendTextLine(items, normalizedDescription);
+        if (items.Count > 0)
+        {
+            items.Add(InfoDocumentUtility.CreateSpacer());
+        }
+
+        InfoDocumentUtility.AppendTextLine(items, $"\"{normalizedDescription}\"", InfoTone.Disabled);
+    }
+
+    public static void AddDescriptionItems(List<InfoItem> items, string _sectionTitle, string description)
+    {
+        AddDescriptionItems(items, description);
     }
 
     public static List<string> BuildUpgradeTagLabels(IReadOnlyList<CardTag> tags)

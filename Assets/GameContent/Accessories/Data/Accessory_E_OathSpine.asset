@@ -13,12 +13,11 @@ MonoBehaviour:
   m_Name: Accessory_E_OathSpine
   m_EditorClassIdentifier: 
   itemName: "誓脊接口"
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: c775a8cacb804b9a96169ed806391a5d, type: 3}
   itemPrice: 64
   itemType: 1
   itemDescription: "接上它以后，后退会先经过一层审批。"
   accessoryId: Accessory_E_OathSpine
-  recyclePrice: 21
   rarity: 2
   maxOwnedCount: 0
   propertyModifiers:

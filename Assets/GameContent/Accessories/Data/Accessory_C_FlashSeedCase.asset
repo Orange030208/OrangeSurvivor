@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "它负责把你的动静撒得更远。"
   accessoryId: Accessory_C_FlashSeedCase
-  recyclePrice: 8
   rarity: 0
   maxOwnedCount: 0
   propertyModifiers:

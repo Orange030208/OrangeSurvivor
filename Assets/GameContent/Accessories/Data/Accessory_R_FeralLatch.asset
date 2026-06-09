@@ -18,7 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemDescription: "卡住那一下开始，距离就不再是礼貌问题。"
   accessoryId: Accessory_R_FeralLatch
-  recyclePrice: 14
   rarity: 1
   maxOwnedCount: 0
   propertyModifiers:

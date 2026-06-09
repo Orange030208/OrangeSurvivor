@@ -59,8 +59,7 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private CurrencyWallet currencyWallet;
     [SerializeField] private ContentPoolSO shopPool;
 
-    private readonly ContentPoolRollService contentPoolRollService = new();
-    private readonly ContentHistoryState contentHistoryState = new();
+    private readonly ShopContentRoller contentRoller = new();
     private ShopItemData[] currentItems;
     private Player player;
     private PropertiesManager propertiesManager;
@@ -428,19 +427,19 @@ public class ShopManager : MonoBehaviour
             return default;
         }
 
-        ContentRollContext context = CreateShopRollContext(pool);
-        ContentRollResult result = contentPoolRollService.Roll(
+        ContentRollItem rollItem = contentRoller.RollItem(
             pool,
-            context,
-            1,
-            entry => entry.Content is ItemDataSO);
-        if (!result.HasAny)
+            player,
+            shopRefreshCount,
+            totalRerollCount,
+            RunContentHistoryRuntime.Current);
+        if (rollItem.Content == null)
         {
             Debug.LogWarning("[ShopManager] No shop item could be rolled from content pool.", this);
             return default;
         }
 
-        return CreateShopItemData(result.Items[0]);
+        return CreateShopItemData(rollItem);
     }
 
     private ShopItemData CreateShopItemData(ContentRollItem rollItem)
@@ -464,19 +463,6 @@ public class ShopManager : MonoBehaviour
         };
     }
 
-    private ContentRollContext CreateShopRollContext(ContentPoolSO pool)
-    {
-        ContentHistoryScope scope = CreateHistoryScope(pool);
-        return new ContentRollContext(
-            ContentPoolScopeIds.Shop,
-            player,
-            progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
-            historyScope: scope,
-            history: contentHistoryState,
-            shopRefreshCount: shopRefreshCount,
-            shopRerollCount: totalRerollCount);
-    }
-
     private void RecordShopPick(ShopItemData itemData)
     {
         if (itemData.ItemData == null)
@@ -484,14 +470,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        contentHistoryState.RecordPick(CreateHistoryScope(ResolveShopPool()), itemData.RollItem);
-    }
-
-    private ContentHistoryScope CreateHistoryScope(ContentPoolSO pool)
-    {
-        string poolId = pool != null ? pool.name : ContentPoolScopeIds.Shop;
-        string ownerId = player != null ? player.GetInstanceID().ToString() : string.Empty;
-        return new ContentHistoryScope(ContentPoolScopeIds.Shop, poolId, ownerId);
+        contentRoller.RecordPick(ResolveShopPool(), player, RunContentHistoryRuntime.Current, itemData.RollItem);
     }
 
     private static int ResolveShopItemLevel(ItemDataSO itemData, ContentRollItem rollItem)
