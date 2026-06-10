@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Orange.Extraction;
 using UnityEngine;
 
 public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
@@ -7,7 +8,6 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
     private const int OPTION_COUNT = 3;
     private const int DEFAULT_WEAPON_LEVEL = WeaponLevelHelper.MinLevel;
 
-    private readonly RewardContentRoller rollService = new();
     private readonly Definition definition;
 
     private EquipmentRewardSelectionHandler(Definition definition)
@@ -34,29 +34,12 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
     public RewardSelectionRound CreateSelection(RewardSelectionHandlerContext context)
     {
-        ContentPoolSO pool = definition.ResolvePool(context);
-        if (pool == null)
+        if (context == null)
         {
             return EmptyRound();
         }
 
-        ContentRollContext rollContext = definition.CreateRollContext(context, pool);
-        ContentRollResult result = rollService.Roll(
-            pool,
-            rollContext,
-            OPTION_COUNT,
-            definition.CanUseEntry,
-            context.RunContentHistory);
-        List<ContentRollItem> items = new(result.Items);
-        int count = Mathf.Min(OPTION_COUNT, items.Count);
-        RewardSelectionOption[] options = new RewardSelectionOption[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            ContentRollItem rollItem = items[i];
-            options[i] = definition.CreateOption(rollItem);
-        }
-
+        RewardSelectionOption[] options = definition.CreateOptions(context);
         if (options.Length == 0)
         {
             Debug.LogWarning(definition.EmptyRollWarning, context.LogContext);
@@ -67,20 +50,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
     public bool ApplySelection(RewardSelectionOption option, RewardSelectionHandlerContext context)
     {
-        if (!definition.ApplySelection(option, context))
-        {
-            return false;
-        }
-
-        ContentPoolSO pool = definition.ResolvePool(context);
-        ContentRollItem rollItem = definition.GetRollItem(option);
-        rollService.RecordPick(
-            pool,
-            definition.ScopeId,
-            context.Player,
-            context.RunContentHistory,
-            rollItem);
-        return true;
+        return definition.ApplySelection(option, context);
     }
 
     private RewardSelectionRound EmptyRound()
@@ -91,51 +61,30 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
     private sealed class Definition
     {
         private readonly Func<RewardSelectionHandlerContext, bool> canCreateSelection;
-        private readonly Func<RewardSelectionHandlerContext, ContentPoolSO> resolveContextPool;
-        private readonly Func<IGameContentProvider, ContentPoolSO> resolveProviderPool;
-        private readonly Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext;
-        private readonly Predicate<ContentPoolEntryDefinition> canUseEntry;
-        private readonly Func<ContentRollItem, RewardSelectionOption> createOption;
+        private readonly Func<RewardSelectionHandlerContext, RewardSelectionOption[]> createOptions;
         private readonly Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection;
-        private readonly Func<RewardSelectionOption, ContentRollItem> getRollItem;
 
         private Definition(
             RewardSelectionReason reason,
             string title,
             string description,
-            string scopeId,
-            string missingPoolError,
             string emptyRollWarning,
             Func<RewardSelectionHandlerContext, bool> canCreateSelection,
-            Func<RewardSelectionHandlerContext, ContentPoolSO> resolveContextPool,
-            Func<IGameContentProvider, ContentPoolSO> resolveProviderPool,
-            Func<RewardSelectionHandlerContext, ContentPoolSO, ContentRollContext> createRollContext,
-            Predicate<ContentPoolEntryDefinition> canUseEntry,
-            Func<ContentRollItem, RewardSelectionOption> createOption,
-            Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection,
-            Func<RewardSelectionOption, ContentRollItem> getRollItem)
+            Func<RewardSelectionHandlerContext, RewardSelectionOption[]> createOptions,
+            Func<RewardSelectionOption, RewardSelectionHandlerContext, bool> applySelection)
         {
             Reason = reason;
             Title = title;
             Description = description;
-            ScopeId = scopeId;
-            MissingPoolError = missingPoolError;
             EmptyRollWarning = emptyRollWarning;
             this.canCreateSelection = canCreateSelection;
-            this.resolveContextPool = resolveContextPool;
-            this.resolveProviderPool = resolveProviderPool;
-            this.createRollContext = createRollContext;
-            this.canUseEntry = canUseEntry;
-            this.createOption = createOption;
+            this.createOptions = createOptions;
             this.applySelection = applySelection;
-            this.getRollItem = getRollItem;
         }
 
         public RewardSelectionReason Reason { get; }
         public string Title { get; }
         public string Description { get; }
-        public string ScopeId { get; }
-        public string MissingPoolError { get; }
         public string EmptyRollWarning { get; }
 
         public static Definition CreateWeapon()
@@ -144,34 +93,9 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                 RewardSelectionReason.Weapon,
                 "选择武器奖励",
                 "选择 1 把武器立即装备。",
-                ContentPoolScopeIds.WeaponReward,
-                $"[EquipmentRewardSelectionHandler] Missing weapon reward content pool in scene or {nameof(GameContentCatalogSO)}.",
                 "[EquipmentRewardSelectionHandler] No weapons could be rolled for weapon reward.",
                 context => context != null && context.WeaponsHolder != null,
-                context => context.WeaponRewardPool,
-                provider => provider.WeaponRewardPool,
-                (context, pool) => new ContentRollContext(
-                    ContentPoolScopeIds.WeaponReward,
-                    context.Player,
-                    progressionSnapshot: context.CreateWaveProgressionSnapshot(),
-                    historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.WeaponReward),
-                    history: context.ContentHistoryState,
-                    weaponsHolder: context.WeaponsHolder),
-                entry => entry.Content is WeaponDataSO,
-                rollItem =>
-                {
-                    WeaponDataSO weaponData = rollItem.Content as WeaponDataSO;
-                    ContentTier tier = rollItem.TryGetTier(out ContentTier rollTier)
-                        ? rollTier
-                        : ContentTierResolver.FromWeaponLevel(DEFAULT_WEAPON_LEVEL);
-                    RewardCardViewConfig viewConfig =
-                        RewardCardViewConfigFactory.CreateWeapon(weaponData, DEFAULT_WEAPON_LEVEL, tier);
-                    return new WeaponRewardSelectionOption(
-                        weaponData,
-                        DEFAULT_WEAPON_LEVEL,
-                        rollItem,
-                        viewConfig);
-                },
+                CreateWeaponOptions,
                 (option, context) =>
                 {
                     if (option is not WeaponRewardSelectionOption selectedOption || selectedOption.WeaponData == null)
@@ -187,10 +111,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
                     Debug.LogWarning($"[EquipmentRewardSelectionHandler] Failed to add weapon {selectedOption.WeaponData?.name}.", context.LogContext);
                     return false;
-                },
-                option => option is WeaponRewardSelectionOption selectedOption
-                    ? selectedOption.RollItem
-                    : default);
+                });
         }
 
         public static Definition CreateAccessory()
@@ -199,30 +120,9 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
                 RewardSelectionReason.Chest,
                 "选择宝箱奖励",
                 "选择 1 个饰品立即装备。",
-                ContentPoolScopeIds.ChestReward,
-                $"[EquipmentRewardSelectionHandler] Missing chest reward content pool in scene or {nameof(GameContentCatalogSO)}.",
                 "[EquipmentRewardSelectionHandler] No accessories could be rolled for chest reward.",
                 context => context != null,
-                context => context.ChestRewardPool,
-                provider => provider.ChestRewardPool,
-                (context, pool) => new ContentRollContext(
-                    ContentPoolScopeIds.ChestReward,
-                    context.Player,
-                    progressionSnapshot: context.CreateWaveProgressionSnapshot(),
-                    historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.ChestReward),
-                    history: context.ContentHistoryState),
-                entry => entry.Content is AccessoryDataSO,
-                rollItem =>
-                {
-                    AccessoryDataSO accessory = rollItem.Content as AccessoryDataSO;
-                    ContentTier tier = rollItem.TryGetTier(out ContentTier rollTier)
-                        ? rollTier
-                        : accessory != null
-                            ? ContentTierResolver.FromAccessoryTier(accessory.Tier)
-                            : ContentTier.Common;
-                    RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateAccessory(accessory, tier);
-                    return new AccessoryRewardSelectionOption(accessory, rollItem, viewConfig);
-                },
+                CreateAccessoryOptions,
                 (option, context) =>
                 {
                     if (option is not AccessoryRewardSelectionOption selectedOption || selectedOption.AccessoryData == null)
@@ -238,10 +138,7 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
                     Debug.LogWarning($"[EquipmentRewardSelectionHandler] Failed to add accessory {selectedOption.AccessoryData?.name}.", context.LogContext);
                     return false;
-                },
-                option => option is AccessoryRewardSelectionOption selectedOption
-                    ? selectedOption.RollItem
-                    : default);
+                });
         }
 
         public bool CanCreateSelection(RewardSelectionHandlerContext context)
@@ -249,45 +146,9 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             return canCreateSelection.Invoke(context);
         }
 
-        public ContentPoolSO ResolvePool(RewardSelectionHandlerContext context)
+        public RewardSelectionOption[] CreateOptions(RewardSelectionHandlerContext context)
         {
-            if (context == null)
-            {
-                return null;
-            }
-
-            ContentPoolSO pool = resolveContextPool.Invoke(context);
-            if (pool != null)
-            {
-                return pool;
-            }
-
-            if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
-            {
-                pool = resolveProviderPool.Invoke(provider);
-                if (pool != null)
-                {
-                    return pool;
-                }
-            }
-
-            Debug.LogError(MissingPoolError, context.LogContext);
-            return null;
-        }
-
-        public ContentRollContext CreateRollContext(RewardSelectionHandlerContext context, ContentPoolSO pool)
-        {
-            return createRollContext.Invoke(context, pool);
-        }
-
-        public bool CanUseEntry(ContentPoolEntryDefinition entry)
-        {
-            return canUseEntry.Invoke(entry);
-        }
-
-        public RewardSelectionOption CreateOption(ContentRollItem rollItem)
-        {
-            return createOption.Invoke(rollItem);
+            return createOptions.Invoke(context);
         }
 
         public bool ApplySelection(RewardSelectionOption option, RewardSelectionHandlerContext context)
@@ -295,9 +156,98 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             return context != null && applySelection.Invoke(option, context);
         }
 
-        public ContentRollItem GetRollItem(RewardSelectionOption option)
+        private static RewardSelectionOption[] CreateWeaponOptions(RewardSelectionHandlerContext context)
         {
-            return getRollItem.Invoke(option);
+            if (context?.Weapons == null || context.Weapons.Count == 0)
+            {
+                Debug.LogError("[EquipmentRewardSelectionHandler] Missing weapon reward candidates.", context?.LogContext);
+                return Array.Empty<RewardSelectionOption>();
+            }
+
+            ContentTier tier = ContentTierResolver.FromWeaponLevel(DEFAULT_WEAPON_LEVEL);
+            WeightedExtractionPool<WeaponDataSO, RewardSelectionHandlerContext> pool = new();
+            for (int i = 0; i < context.Weapons.Count; i++)
+            {
+                WeaponDataSO weapon = context.Weapons[i];
+                if (weapon == null || string.IsNullOrWhiteSpace(weapon.WeaponId))
+                {
+                    continue;
+                }
+
+                float baseWeight = context.TierWeightProfile != null
+                    ? context.TierWeightProfile.GetWeight(tier)
+                    : 1f;
+                pool.AddEntry(weapon.WeaponId, weapon, baseWeight);
+            }
+
+            IReadOnlyList<ExtractionResult<WeaponDataSO>> results = pool.DrawManyUnique(context, OPTION_COUNT);
+            RewardSelectionOption[] options = new RewardSelectionOption[results.Count];
+            for (int i = 0; i < results.Count; i++)
+            {
+                WeaponDataSO weaponData = results[i].Item;
+                RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateWeapon(
+                    weaponData,
+                    DEFAULT_WEAPON_LEVEL,
+                    tier);
+                options[i] = new WeaponRewardSelectionOption(weaponData, DEFAULT_WEAPON_LEVEL, viewConfig);
+            }
+
+            return options;
+        }
+
+        private static RewardSelectionOption[] CreateAccessoryOptions(RewardSelectionHandlerContext context)
+        {
+            if (context?.Accessories == null || context.Accessories.Count == 0)
+            {
+                Debug.LogError("[EquipmentRewardSelectionHandler] Missing chest reward candidates.", context?.LogContext);
+                return Array.Empty<RewardSelectionOption>();
+            }
+
+            if (context.TierWeightProfile == null)
+            {
+                Debug.LogError($"[EquipmentRewardSelectionHandler] Missing {nameof(ContentTierWeightProfileSO)}.", context.LogContext);
+                return Array.Empty<RewardSelectionOption>();
+            }
+
+            WeightedExtractionPool<AccessoryDataSO, RewardSelectionHandlerContext> pool = new();
+            for (int i = 0; i < context.Accessories.Count; i++)
+            {
+                AccessoryDataSO accessory = context.Accessories[i];
+                if (accessory == null || string.IsNullOrWhiteSpace(accessory.AccessoryId))
+                {
+                    continue;
+                }
+
+                pool.AddEntry(
+                    accessory.AccessoryId,
+                    accessory,
+                    context.TierWeightProfile.GetWeight(accessory.Tier),
+                    IsAccessoryEligible);
+            }
+
+            IReadOnlyList<ExtractionResult<AccessoryDataSO>> results = pool.DrawManyUnique(context, OPTION_COUNT);
+            RewardSelectionOption[] options = new RewardSelectionOption[results.Count];
+            for (int i = 0; i < results.Count; i++)
+            {
+                AccessoryDataSO accessory = results[i].Item;
+                ContentTier tier = accessory != null ? accessory.Tier : ContentTier.Common;
+                RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateAccessory(accessory, tier);
+                options[i] = new AccessoryRewardSelectionOption(accessory, viewConfig);
+            }
+
+            return options;
+        }
+
+        private static bool IsAccessoryEligible(
+            WeightedExtractionEntry<AccessoryDataSO, RewardSelectionHandlerContext> entry,
+            RewardSelectionHandlerContext context)
+        {
+            if (entry?.Item == null)
+            {
+                return false;
+            }
+
+            return context?.AccessoryManager == null || context.AccessoryManager.CanEquipAccessory(entry.Item);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine.Serialization;
 using UnityEngine;
 
@@ -22,7 +23,9 @@ public class AccessoryDataSO : ItemDataSO, IInfoDocumentSource, IHasContentTier
     [SerializeField] private List<PropModifierData> propertyModifiers = new();
 
     [Header("特殊能力")]
-    [SerializeReference] private List<FeatureBase> specialFeatures = new();
+    [SerializeReference, TypeFilter("@FeatureTypeSelectionUtility.GetSelectableFeatureTypes()")]
+    [ListDrawerSettings(Expanded = true)]
+    private List<FeatureBase> specialFeatures = new();
 
     public string AccessoryId => accessoryId;
     public int RecyclePrice => PropValueUtility.ResolveNonNegativePrice(ItemPrice * RECYCLE_PRICE_MULTIPLIER);

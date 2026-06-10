@@ -273,7 +273,7 @@ public sealed class BuffImage : ImageDecoder
         if (!string.IsNullOrWhiteSpace(buffId) &&
             GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
-            Sprite sprite = ResolveFromPools(buffId, provider);
+            Sprite sprite = ResolveFromBuffs(buffId, provider.Buffs);
             if (sprite != null)
             {
                 return sprite;
@@ -283,34 +283,20 @@ public sealed class BuffImage : ImageDecoder
         return FallbackSprite;
     }
 
-    private Sprite ResolveFromPools(string buffId, IGameContentProvider provider)
+    private static Sprite ResolveFromBuffs(string buffId, IReadOnlyList<BuffDataSO> buffs)
     {
-        ContentPoolSO[] pools =
+        if (buffs == null)
         {
-            provider.UpgradeCardPool,
-            provider.ChestRewardPool,
-            provider.ShopPool,
-            provider.DropPool,
-            provider.WaveSpawnPool,
-            provider.WeaponRewardPool
-        };
+            return null;
+        }
 
-        for (int poolIndex = 0; poolIndex < pools.Length; poolIndex++)
+        for (int i = 0; i < buffs.Count; i++)
         {
-            ContentPoolSO pool = pools[poolIndex];
-            if (pool == null || pool.Entries == null)
+            BuffDataSO buffData = buffs[i];
+            if (buffData != null &&
+                string.Equals(buffData.BuffId, buffId, StringComparison.Ordinal))
             {
-                continue;
-            }
-
-            for (int i = 0; i < pool.Entries.Count; i++)
-            {
-                ContentPoolEntry entry = pool.Entries[i];
-                if (entry?.Content is BuffDataSO buffData &&
-                    string.Equals(buffData.BuffId, buffId, StringComparison.Ordinal))
-                {
-                    return buffData.Icon;
-                }
+                return buffData.Icon;
             }
         }
 
@@ -338,10 +324,10 @@ public sealed class RewardCardImage : ImageDecoder
                 return starterSprite;
             }
 
-            Sprite poolSprite = ResolveFromPools(cardId, provider);
-            if (poolSprite != null)
+            Sprite rewardSprite = ResolveFromCards(provider.RewardCards, cardId);
+            if (rewardSprite != null)
             {
-                return poolSprite;
+                return rewardSprite;
             }
         }
 
@@ -361,40 +347,6 @@ public sealed class RewardCardImage : ImageDecoder
             if (rewardCard != null && string.Equals(rewardCard.Id, cardId, StringComparison.Ordinal))
             {
                 return rewardCard.Icon;
-            }
-        }
-
-        return null;
-    }
-
-    private static Sprite ResolveFromPools(string cardId, IGameContentProvider provider)
-    {
-        ContentPoolSO[] pools =
-        {
-            provider.UpgradeCardPool,
-            provider.ChestRewardPool,
-            provider.ShopPool,
-            provider.DropPool,
-            provider.WaveSpawnPool,
-            provider.WeaponRewardPool
-        };
-
-        for (int poolIndex = 0; poolIndex < pools.Length; poolIndex++)
-        {
-            ContentPoolSO pool = pools[poolIndex];
-            if (pool == null || pool.Entries == null)
-            {
-                continue;
-            }
-
-            for (int i = 0; i < pool.Entries.Count; i++)
-            {
-                ContentPoolEntry entry = pool.Entries[i];
-                if (entry?.Content is RewardCardSO rewardCard &&
-                    string.Equals(rewardCard.Id, cardId, StringComparison.Ordinal))
-                {
-                    return rewardCard.Icon;
-                }
             }
         }
 

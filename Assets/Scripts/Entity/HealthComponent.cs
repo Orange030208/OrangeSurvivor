@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 /// <summary>
@@ -39,6 +40,19 @@ public class HealthComponent : EntityComponentBase
     public float MaxHealth => maxHealth;
     public bool IsDeathSequenceRunning => isDeathSequenceRunning;
     public override Entity Owner => owner;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(100)]
+    private float DebugCurrentHealth => CurrentHealth;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(101)]
+    private float DebugMaxHealth => MaxHealth;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(102)]
+    private Entity DebugOwner => Owner;
+
+    [ShowInInspector, FoldoutGroup("Debug"), PropertyOrder(103)]
+    [MinValue(0f)]
+    private float debugAmount = 10f;
 
     public override void Initialize(Entity owner)
     {
@@ -342,5 +356,31 @@ public class HealthComponent : EntityComponentBase
 
         float lifeStealValue = dealtDamage * lifeStealRatio * LIFE_STEAL_HEAL_RATE_PER_RATIO;
         Heal(Math.Min(lifeStealValue, maxHealth - health));
+    }
+
+    [Button("Apply Debug Hit"), FoldoutGroup("Debug"), PropertyOrder(104)]
+    [EnableIf("@UnityEngine.Application.isPlaying")]
+    private void ApplyDebugHit()
+    {
+        float amount = Mathf.Max(0f, debugAmount);
+        if (Owner == null || amount <= 0f)
+        {
+            return;
+        }
+
+        HitService.Apply(new HitRequest(
+            null,
+            Owner,
+            new HitSpec(amount, 0f, 1f),
+            transform.position,
+            HitSourceKind.Direct,
+            sourcePosition: transform.position));
+    }
+
+    [Button("Heal"), FoldoutGroup("Debug"), PropertyOrder(105)]
+    [EnableIf("@UnityEngine.Application.isPlaying")]
+    private void ApplyDebugHeal()
+    {
+        Heal(Mathf.Max(0f, debugAmount));
     }
 }

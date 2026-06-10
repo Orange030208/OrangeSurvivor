@@ -168,7 +168,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   containersToAdd: 6
   currencyWallet: {fileID: 0}
-  shopPool: {fileID: 0}
 --- !u!1 &326447967
 GameObject:
   m_ObjectHideFlags: 0
@@ -11074,8 +11073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a54c4f8c3d6e84eae6f17b7980263b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageDefinition: {fileID: 0}
-  waveSpawnPool: {fileID: 0}
+  stageDirectorProfile: {fileID: 11400000, guid: b37efc9d6e21484bb89a9d0f50fb0c91, type: 2}
   spawnAroundEntity: {fileID: 0}
 --- !u!114 &542457227
 MonoBehaviour:
@@ -11480,7 +11478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc602abbb2e045e7aa2962a05bd9bb8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropPool: {fileID: 11400000, guid: 86ea0096fa653e64ab92a4527d6d936f, type: 2}
+  dropCollectionProfile: {fileID: 11400000, guid: cd748879010345e2bae4f12d966d5ef7, type: 2}
   dropRules: []
 --- !u!4 &889382728
 Transform:
@@ -11922,9 +11920,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   accessoryManager: {fileID: 0}
   player: {fileID: 0}
-  upgradeCardPool: {fileID: 0}
-  chestRewardPool: {fileID: 0}
-  weaponRewardPool: {fileID: 0}
 --- !u!1 &1566269876
 GameObject:
   m_ObjectHideFlags: 0

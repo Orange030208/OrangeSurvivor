@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 /// <summary>
@@ -8,6 +9,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Weapon Attack Sequence", menuName = ScriptableObjectMenuPaths.WEAPON_ATTACK_SEQUENCE, order = 0)]
 public class AttackSequenceDefinitionSO : ScriptableObject
 {
+#if UNITY_EDITOR
+    private const string ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME = "AttackSequenceStudioWindow";
+#endif
+
     [Header("检视面板")]
     [Tooltip("一次完整攻击序列的持续时间。动作和事件关键帧使用 0 到 1 的归一化时间。")]
     [SerializeField] private float duration = 0.25f;
@@ -24,6 +29,7 @@ public class AttackSequenceDefinitionSO : ScriptableObject
 
     [Header("运动")]
     [Tooltip("攻击动作采样得到的本地位置与旋转帧。")]
+    [ListDrawerSettings(Expanded = true, ListElementLabelName = nameof(WeaponMotionKeyframe.InspectorLabel))]
     [SerializeField] private List<WeaponMotionKeyframe> motionKeyframes = new()
     {
         new WeaponMotionKeyframe(0f, Vector3.zero, Vector3.zero),
@@ -34,6 +40,7 @@ public class AttackSequenceDefinitionSO : ScriptableObject
 
     [Header("序列事件")]
     [Tooltip("序列播放过程中触发的玩法事件与表现事件。")]
+    [ListDrawerSettings(Expanded = true, ListElementLabelName = nameof(WeaponSequenceEventKeyframe.InspectorLabel))]
     [SerializeField] private List<WeaponSequenceEventKeyframe> eventKeyframes = new()
     {
         WeaponSequenceEventKeyframe.CreateWindowEvent(0.4f, WeaponSequenceEventType.OpenHitWindow, 0),
@@ -51,6 +58,11 @@ public class AttackSequenceDefinitionSO : ScriptableObject
     public Vector2 OppositeDirectionRetargetWeight => new(Mathf.Clamp01(oppositeDirectionRetargetWeight.x), Mathf.Clamp01(oppositeDirectionRetargetWeight.y));
     public IReadOnlyList<WeaponMotionKeyframe> MotionKeyframes => motionKeyframes;
     public IReadOnlyList<WeaponSequenceEventKeyframe> EventKeyframes => eventKeyframes;
+
+    [PropertySpace(SpaceBefore = 8, SpaceAfter = 8)]
+    [InfoBox("When the current target local offset equals Reference Target Offset, the sampled animation plays unchanged. X/Y Scale Weight controls how strongly each axis scales toward the current target offset. Opposite Direction Retarget Weight limits scaling for samples that move away from the reference target direction, useful for keeping backward windup distance stable.")]
+    [ShowInInspector, ReadOnly, PropertyOrder(-1)]
+    private string RetargetingGuide => "Retargeting";
 
     public static AttackSequenceDefinitionSO CreateRuntimeSequence(string sequenceName, float sequenceDuration)
     {
@@ -86,6 +98,65 @@ public class AttackSequenceDefinitionSO : ScriptableObject
     {
         targetOffsetMode = mode;
     }
+
+#if UNITY_EDITOR
+    [Button("打开武器工作台"), PropertyOrder(20)]
+    private void OpenWeaponWorkbench()
+    {
+        OpenWeaponWorkbenchInEditor(this);
+    }
+#endif
+
+    [Button("Add Motion Sample"), PropertyOrder(21)]
+    private void AddMotionSample()
+    {
+        motionKeyframes ??= new List<WeaponMotionKeyframe>();
+        if (motionKeyframes.Count == 0)
+        {
+            motionKeyframes.Add(new WeaponMotionKeyframe(1f, Vector3.zero, Vector3.zero));
+            return;
+        }
+
+        WeaponMotionKeyframe source = motionKeyframes[motionKeyframes.Count - 1];
+        WeaponMotionKeyframe next = source;
+        next.normalizedTime = Mathf.Clamp01(source.normalizedTime);
+        motionKeyframes.Add(next);
+    }
+
+#if UNITY_EDITOR
+    private static void OpenWeaponWorkbenchInEditor(AttackSequenceDefinitionSO sequence)
+    {
+        Type windowType = FindEditorType(ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME);
+        System.Reflection.MethodInfo openMethod = windowType?.GetMethod(
+            "Open",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+            binder: null,
+            types: new[] { typeof(AttackSequenceDefinitionSO) },
+            modifiers: null);
+        if (openMethod == null)
+        {
+            Debug.LogWarning($"{ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME}.Open(AttackSequenceDefinitionSO) was not found.");
+            return;
+        }
+
+        openMethod.Invoke(null, new object[] { sequence });
+    }
+
+    private static Type FindEditorType(string typeName)
+    {
+        System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        for (int i = 0; i < assemblies.Length; i++)
+        {
+            Type candidate = assemblies[i].GetType(typeName, throwOnError: false);
+            if (candidate != null)
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+#endif
 }
 
 public enum WeaponSequenceTargetOffsetMode
@@ -122,7 +193,11 @@ public struct WeaponMotionKeyframe
     public float localPositionY;
     public Vector3 localEulerAngles;
     public WeaponMotionEase ease;
+    [ShowIf("@this.ease == WeaponMotionEase.CustomCurve")]
     public AnimationCurve customCurve;
+
+    [ShowInInspector, ReadOnly]
+    public string InspectorLabel => $"t={normalizedTime:0.00}  X:{localPositionX:0.##}  Y:{localPositionY:0.##}";
 
     public WeaponMotionKeyframe(float normalizedTime, Vector3 localPosition, Vector3 localEulerAngles, WeaponMotionEase ease = WeaponMotionEase.Linear)
     {
@@ -150,6 +225,9 @@ public struct WeaponSequenceEventKeyframe
     [Range(0f, 1f)] public float normalizedTime;
     public WeaponSequenceEventType eventType;
     public int eventKey;
+
+    [ShowInInspector, ReadOnly]
+    public string InspectorLabel => $"t={normalizedTime:0.00}  {eventType}  key:{eventKey}";
 
     public static WeaponSequenceEventKeyframe CreateWindowEvent(float normalizedTime, WeaponSequenceEventType eventType, int eventKey)
     {

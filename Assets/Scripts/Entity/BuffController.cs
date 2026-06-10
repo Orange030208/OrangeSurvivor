@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [RequireComponent(typeof(Entity), typeof(FeatureHost))]
@@ -16,6 +17,27 @@ public class BuffController : EntityComponentBase
     public override Entity Owner => owner;
 
     public event Action<ActiveBuffViewData[]> OnActiveBuffViewDataChanged;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(100)]
+    private int DebugActiveBuffCount => BuildActiveBuffViewData().Length;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(101)]
+    private ActiveBuffViewData[] DebugActiveBuffs => BuildActiveBuffViewData();
+
+    [ShowInInspector, FoldoutGroup("Debug"), PropertyOrder(102)]
+    private BuffDataSO debugBuffData;
+
+    [ShowInInspector, FoldoutGroup("Debug"), PropertyOrder(103)]
+    private bool overrideDuration;
+
+    [ShowIf(nameof(overrideDuration))]
+    [ShowInInspector, FoldoutGroup("Debug"), PropertyOrder(104)]
+    private BuffDurationPolicy durationPolicy = BuffDurationPolicy.Timed;
+
+    [ShowIf(nameof(overrideDuration))]
+    [ShowInInspector, FoldoutGroup("Debug"), PropertyOrder(105)]
+    [MinValue(0f)]
+    private float durationSeconds = 5f;
 
     public override void Initialize(Entity owner)
     {
@@ -456,5 +478,37 @@ public class BuffController : EntityComponentBase
     {
         ActiveBuffViewData[] viewData = BuildActiveBuffViewData();
         OnActiveBuffViewDataChanged?.Invoke(viewData);
+    }
+
+    [Button("Apply Buff"), FoldoutGroup("Debug"), PropertyOrder(106)]
+    [EnableIf("@UnityEngine.Application.isPlaying && this.debugBuffData != null")]
+    private void ApplyDebugBuff()
+    {
+        BuffApplyRequest request = overrideDuration
+            ? new BuffApplyRequest(debugBuffData, durationPolicy, Mathf.Max(0f, durationSeconds))
+            : new BuffApplyRequest(debugBuffData);
+
+        ApplyBuff(request);
+    }
+
+    [Button("Remove Buff"), FoldoutGroup("Debug"), PropertyOrder(107)]
+    [EnableIf("@UnityEngine.Application.isPlaying && this.debugBuffData != null")]
+    private void RemoveDebugBuff()
+    {
+        RemoveBuff(debugBuffData.BuffId);
+    }
+
+    [Button("Remove One Stack"), FoldoutGroup("Debug"), PropertyOrder(108)]
+    [EnableIf("@UnityEngine.Application.isPlaying && this.debugBuffData != null")]
+    private void RemoveDebugBuffStack()
+    {
+        RemoveSingleStack(debugBuffData.BuffId);
+    }
+
+    [Button("Clear All Buffs"), FoldoutGroup("Debug"), PropertyOrder(109)]
+    [EnableIf("@UnityEngine.Application.isPlaying")]
+    private void ClearDebugBuffs()
+    {
+        ClearAllBuffs();
     }
 }

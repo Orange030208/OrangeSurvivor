@@ -15,9 +15,6 @@ public class RewardSelectionManager : MonoBehaviour
 
     [SerializeField] private AccessoryManager accessoryManager;
     [SerializeField] private Player player;
-    [SerializeField] private ContentPoolSO upgradeCardPool;
-    [SerializeField] private ContentPoolSO chestRewardPool;
-    [SerializeField] private ContentPoolSO weaponRewardPool;
 
     private readonly Queue<RewardSelectionRequest> pendingRequests = new();
     private RewardSelectionOption[] currentOptions = Array.Empty<RewardSelectionOption>();
@@ -464,41 +461,18 @@ public class RewardSelectionManager : MonoBehaviour
     private RewardSelectionHandlerContext CreateHandlerContext()
     {
         TryBindPlayerReferences();
-        ResolveContentPoolsFromProvider();
+        GameContentRuntime.TryGetProvider(out IGameContentProvider provider);
         return new RewardSelectionHandlerContext(
             player,
             playerLevel,
             accessoryManager,
             weaponsHolder,
-            RunContentHistoryRuntime.Current,
             currentWaveNumber,
-            upgradeCardPool,
-            chestRewardPool,
-            weaponRewardPool,
+            provider != null ? provider.RewardCards : null,
+            provider != null ? provider.Accessories : null,
+            provider != null ? provider.Weapons : null,
+            provider != null ? provider.ContentTierWeightProfile : null,
             this);
-    }
-
-    private void ResolveContentPoolsFromProvider()
-    {
-        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
-        {
-            return;
-        }
-
-        if (upgradeCardPool == null)
-        {
-            upgradeCardPool = provider.UpgradeCardPool;
-        }
-
-        if (chestRewardPool == null)
-        {
-            chestRewardPool = provider.ChestRewardPool;
-        }
-
-        if (weaponRewardPool == null)
-        {
-            weaponRewardPool = provider.WeaponRewardPool;
-        }
     }
 
     private readonly struct RewardSelectionRequest

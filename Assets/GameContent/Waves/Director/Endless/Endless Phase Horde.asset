@@ -1,0 +1,146 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: addf81ebdfe6ab049a3af0286d0f4edb, type: 3}
+  m_Name: Endless Phase Horde
+  m_EditorClassIdentifier:
+  phaseId: EndlessPhase_Horde
+  displayName: Horde Rush
+  duration: 38
+  completionMode: 0
+  totalBudget: 20
+  alivePressureCap: 10
+  pacingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.8
+      outSlope: 0.8
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.2
+      inSlope: 0.8
+      outSlope: 1.0666667
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.0666667
+      outSlope: 1.0666667
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  compositionTargets:
+  - role: 1
+    budgetShare: 0.8
+    minBudget: 0
+    maxBudget: 0
+    priority: 0
+  - role: 3
+    budgetShare: 0.2
+    minBudget: 0
+    maxBudget: 0
+    priority: 0
+  roster:
+  - entryId: CyberOrangeSlowMeleeEnemy_Melee
+    enemy: {fileID: 11400000, guid: 71e829d5edaf66c41930f553b930185b, type: 2}
+    role: 1
+    tags: 1
+    cost: 1.15
+    minGroupSize: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.9
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeFastMeleeEnemy_Melee
+    enemy: {fileID: 11400000, guid: 2b0065e858d0f6243a43f0aa7bd7da9d, type: 2}
+    role: 1
+    tags: 9
+    cost: 1.38
+    minGroupSize: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.9
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeChargerEnemy_Elite
+    enemy: {fileID: 11400000, guid: 85fd0e14f3679cf4aa183c27f20fe1e1, type: 2}
+    role: 3
+    tags: 104
+    cost: 2.875
+    minGroupSize: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.9
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  scriptedBeats: []
+  spawnLocationOverride:
+    resolverSettings:
+      boundsPadding: 1
+      resolveAttempts: 16
+      spawnClearance: 0.1
+      minBounds: {x: -12, y: -12}
+      maxBounds: {x: 12, y: 12}
+      obstacleLayerNames:
+      - Wall
+    strategy:
+      rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1001
+      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
+      data:

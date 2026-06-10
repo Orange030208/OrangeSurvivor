@@ -20,7 +20,6 @@ public static class ScriptableObjectMenuPaths
     public const string PLAYER_LEVEL_CONFIG = GAMEPLAY_ROOT + "Player/Level Config";
     public const string RUN_PROGRESSION_PROFILE = GAMEPLAY_ROOT + "Run Progression/Profile";
     public const string UPGRADE_CARD = GAMEPLAY_ROOT + "Upgrades/Upgrade Card";
-    public const string UPGRADE_CARD_POOL = GAMEPLAY_ROOT + "Upgrades/Upgrade Card Pool";
     public const string UPGRADE_CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Upgrades/Upgrade Card Motion Profile";
     public const string CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Cards/Card Motion Profile";
     public const string PROJECTILE_DEFINITION = GAMEPLAY_ROOT + "Projectiles/Projectile Definition";
@@ -29,12 +28,12 @@ public static class ScriptableObjectMenuPaths
     public const string WEAPON_ATTACK_SEQUENCE = GAMEPLAY_ROOT + "Weapons/Attack Sequence";
     public const string WEAPON_DATA = GAMEPLAY_ROOT + "Weapons/Weapon Data";
     public const string WEAPON_DATA_LIST = GAMEPLAY_ROOT + "Weapons/Weapon Data List";
-    public const string STAGE_DEFINITION = GAMEPLAY_ROOT + "Waves/Stage Definition";
-    public const string WAVE_DEFINITION = GAMEPLAY_ROOT + "Waves/Wave Definition";
-    public const string WAVE_SPAWN_PACK = GAMEPLAY_ROOT + "Waves/Wave Spawn Pack";
-    public const string CONTENT_POOL = GAMEPLAY_ROOT + "Content/Content Pool";
-    public const string CONTENT_TAG = GAMEPLAY_ROOT + "Content/Content Tag";
-    public const string CONTENT_FACT_DEFINITION = GAMEPLAY_ROOT + "Content/Fact Definition";
+    public const string STAGE_DIRECTOR_PROFILE = GAMEPLAY_ROOT + "Waves/Director/Stage Director Profile";
+    public const string WAVE_DIRECTOR_DEFINITION = GAMEPLAY_ROOT + "Waves/Director/Wave Director Definition";
+    public const string ENDLESS_DIRECTOR_PROFILE = GAMEPLAY_ROOT + "Waves/Director/Endless Director Profile";
+    public const string ENDLESS_PHASE_CARD = GAMEPLAY_ROOT + "Waves/Director/Endless Phase Card";
+    public const string DROP_COLLECTION_PROFILE = GAMEPLAY_ROOT + "Drops/Drop Collection Profile";
+    public const string CONTENT_TIER_WEIGHT_PROFILE = GAMEPLAY_ROOT + "Content/Tier Weight Profile";
 
     public const string ENTITY_ANIMATION_CONFIG = ENTITY_ROOT + "Animation/Entity Animation Config";
     public const string PROCEDURAL_ANIMATION_PROFILE = ENTITY_ROOT + "Animation/Procedural Animation Profile";

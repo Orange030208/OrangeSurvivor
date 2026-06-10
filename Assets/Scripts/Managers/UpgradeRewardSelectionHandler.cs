@@ -1,13 +1,12 @@
 using System.Collections.Generic;
+using Orange.Extraction;
 using UnityEngine;
 
 public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
 {
     private const int OPTION_COUNT = 4;
 
-    private readonly RewardCardRollService rollService = new();
     private readonly RewardCardApplyService applyService = new();
-    private readonly RewardContentRoller contentRoller = new();
 
     public RewardSelectionReason Reason => RewardSelectionReason.Upgrade;
 
@@ -18,25 +17,35 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
 
     public RewardSelectionRound CreateSelection(RewardSelectionHandlerContext context)
     {
-        ContentPoolSO pool = ResolveUpgradeCardPool(context);
-        if (pool == null)
+        if (context == null || context.TierWeightProfile == null)
         {
+            Debug.LogError($"[{nameof(UpgradeRewardSelectionHandler)}] Missing {nameof(ContentTierWeightProfileSO)}.", context?.LogContext);
             return EmptyRound();
         }
 
-        ContentRollContext rollContext = new(
-            ContentPoolScopeIds.UpgradeCard,
-            context.Player,
-            progressionSnapshot: RunProgressionRuntime.CurrentSnapshot,
-            historyScope: context.CreateHistoryScope(pool, ContentPoolScopeIds.UpgradeCard),
-            history: context.ContentHistoryState);
-        List<RewardCardRollOption> rollOptions = rollService.RollOptions(pool, rollContext, context.RunContentHistory);
-        int count = Mathf.Min(OPTION_COUNT, rollOptions.Count);
-        RewardSelectionOption[] options = new RewardSelectionOption[count];
-
-        for (int i = 0; i < count; i++)
+        if (context.RewardCards == null || context.RewardCards.Count == 0)
         {
-            RewardCardRollOption rollOption = rollOptions[i];
+            Debug.LogError($"[{nameof(UpgradeRewardSelectionHandler)}] Missing reward card candidates.", context.LogContext);
+            return EmptyRound();
+        }
+
+        WeightedExtractionPool<RewardCardSO, RewardSelectionHandlerContext> pool = new();
+        for (int i = 0; i < context.RewardCards.Count; i++)
+        {
+            RewardCardSO card = context.RewardCards[i];
+            if (card == null || string.IsNullOrWhiteSpace(card.Id) || !card.HasAnyEffect())
+            {
+                continue;
+            }
+
+            pool.AddEntry(card.Id, card, context.TierWeightProfile.GetWeight(card.Tier));
+        }
+
+        IReadOnlyList<ExtractionResult<RewardCardSO>> results = pool.DrawManyUnique(context, OPTION_COUNT);
+        RewardSelectionOption[] options = new RewardSelectionOption[results.Count];
+        for (int i = 0; i < results.Count; i++)
+        {
+            RewardCardRollOption rollOption = new(results[i].Item, results[i].EntryId, 0);
             RewardCardOptionViewData viewData = rollOption.CreateViewData();
             RewardCardViewConfig viewConfig = RewardCardViewConfigFactory.CreateUpgrade(viewData, rollOption.Card != null);
             options[i] = new UpgradeRewardSelectionOption(rollOption, viewConfig);
@@ -64,13 +73,6 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
             return false;
         }
 
-        ContentPoolSO pool = ResolveUpgradeCardPool(context);
-        contentRoller.RecordPick(
-            pool,
-            ContentPoolScopeIds.UpgradeCard,
-            context.Player,
-            context.RunContentHistory,
-            selectedOption.RewardCardOption.RollItem);
         context.PlayerLevel?.ConsumeUpgradePoint();
         return true;
     }
@@ -78,21 +80,5 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
     private static RewardSelectionRound EmptyRound()
     {
         return new RewardSelectionRound("选择升级奖励", "选择 1 张升级卡。", System.Array.Empty<RewardSelectionOption>());
-    }
-
-    private static ContentPoolSO ResolveUpgradeCardPool(RewardSelectionHandlerContext context)
-    {
-        if (context.UpgradeCardPool != null)
-        {
-            return context.UpgradeCardPool;
-        }
-
-        if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider) && provider.UpgradeCardPool != null)
-        {
-            return provider.UpgradeCardPool;
-        }
-
-        Debug.LogError($"[UpgradeRewardSelectionHandler] Missing upgrade card content pool in scene or {nameof(GameContentCatalogSO)}.", context.LogContext);
-        return null;
     }
 }

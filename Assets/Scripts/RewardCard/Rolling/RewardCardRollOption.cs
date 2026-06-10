@@ -2,19 +2,20 @@ using UnityEngine;
 
 public readonly struct RewardCardRollOption : IHasContentTier
 {
-    public RewardCardRollOption(RewardCardSO card, ContentRollItem rollItem, int pickCount)
+    public RewardCardRollOption(RewardCardSO card, string entryId, int pickCount)
     {
         Card = card;
-        RollItem = rollItem;
+        EntryId = string.IsNullOrWhiteSpace(entryId)
+            ? card != null ? card.Id : string.Empty
+            : entryId;
         PickCount = Mathf.Max(0, pickCount);
     }
 
     public RewardCardSO Card { get; }
-    public ContentRollItem RollItem { get; }
-    public string EntryId => RollItem.EntryId;
+    public string EntryId { get; }
     public int PickCount { get; }
-    public int MaxPickCount => RollItem.Entry != null ? RollItem.Entry.MaxPickCount : 0;
-    public bool HasPickLimit => MaxPickCount > 0;
+    public int MaxPickCount => RewardCardSO.UNLIMITED_PICK_COUNT;
+    public bool HasPickLimit => false;
     public ContentTier Tier => Card != null ? Card.Tier : ContentTier.Common;
 
     public RewardCardOptionViewData CreateViewData()

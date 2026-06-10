@@ -5,7 +5,6 @@ public static class ShopPricingService
     public static int GetPrice(
         ItemDataSO itemData,
         int level,
-        float contentPriceMultiplier,
         float runPriceMultiplier,
         float playerDiscountMultiplier)
     {
@@ -19,20 +18,17 @@ public static class ShopPricingService
             : itemData.ItemPrice;
         return ApplyPriceMultiplier(
             basePrice,
-            contentPriceMultiplier,
             runPriceMultiplier,
             playerDiscountMultiplier);
     }
 
     public static int ApplyPriceMultiplier(
         int basePrice,
-        float contentPriceMultiplier,
         float runPriceMultiplier,
         float playerDiscountMultiplier)
     {
-        float contentMultiplier = contentPriceMultiplier > 0f ? contentPriceMultiplier : 1f;
         float runMultiplier = runPriceMultiplier > 0f ? runPriceMultiplier : 1f;
         float discountMultiplier = PropValueUtility.ResolveEffectiveShopPriceMultiplier(playerDiscountMultiplier);
-        return PropValueUtility.ResolveNonNegativePrice(basePrice * contentMultiplier * runMultiplier * discountMultiplier);
+        return PropValueUtility.ResolveNonNegativePrice(basePrice * runMultiplier * discountMultiplier);
     }
 }

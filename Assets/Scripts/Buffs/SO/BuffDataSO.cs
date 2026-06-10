@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff Data", menuName = ScriptableObjectMenuPaths.BUFF, order = 0)]
@@ -29,7 +30,9 @@ public class BuffDataSO : ScriptableObject, IInfoDocumentSource
     [SerializeField] private BuffOverflowMode overflowMode = BuffOverflowMode.RefreshDurationOnly;
 
     [Header("特殊能力")]
-    [SerializeReference] private List<FeatureBase> specialFeatures = new();
+    [SerializeReference, TypeFilter("@FeatureTypeSelectionUtility.GetSelectableFeatureTypes()")]
+    [ListDrawerSettings(Expanded = true)]
+    private List<FeatureBase> specialFeatures = new();
 
     public string BuffId => buffId;
     public string DisplayName => displayName;

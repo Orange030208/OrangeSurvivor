@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Reward Card", menuName = ScriptableObjectMenuPaths.UPGRADE_CARD, order = 0)]
@@ -19,7 +20,9 @@ public class RewardCardSO : ScriptableObject, IInfoDocumentSource
     [SerializeField] private string description;
 
     [Header("卡片能力")]
-    [SerializeReference] private List<FeatureBase> grantedAbilities = new();
+    [SerializeReference, TypeFilter("@FeatureTypeSelectionUtility.GetSelectableFeatureTypes()")]
+    [ListDrawerSettings(Expanded = true)]
+    private List<FeatureBase> grantedAbilities = new();
 
     public string Id => id;
     public string Title => title;

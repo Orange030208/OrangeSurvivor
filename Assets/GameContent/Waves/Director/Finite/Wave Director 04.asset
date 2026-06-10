@@ -1,0 +1,226 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5e3518c219e0f4994a19529fb53e6b, type: 3}
+  m_Name: Wave Director 04
+  m_EditorClassIdentifier:
+  waveId: DirectorWave_04
+  displayName: Wave 4
+  duration: 45
+  completionMode: 0
+  totalBudget: 24
+  alivePressureCap: 11
+  pacingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.5
+      outSlope: 0.5
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.2
+      value: 0.1
+      inSlope: 0.5
+      outSlope: 1.3
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.7
+      value: 0.75
+      inSlope: 1.3
+      outSlope: 0.8333333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.8333333
+      outSlope: 0.8333333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  compositionTargets:
+  - role: 1
+    budgetShare: 0.5
+    minBudget: 0
+    maxBudget: 0
+    priority: 0
+  - role: 2
+    budgetShare: 0.25
+    minBudget: 0
+    maxBudget: 0
+    priority: 0
+  - role: 3
+    budgetShare: 0.25
+    minBudget: 0
+    maxBudget: 0
+    priority: 0
+  roster:
+  - entryId: CyberOrangeSlowMeleeEnemy_Melee
+    enemy: {fileID: 11400000, guid: 71e829d5edaf66c41930f553b930185b, type: 2}
+    role: 1
+    tags: 1
+    cost: 1.2
+    minGroupSize: 1
+    maxGroupSize: 2
+    cooldownSeconds: 1.2
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeFastMeleeEnemy_Melee
+    enemy: {fileID: 11400000, guid: 2b0065e858d0f6243a43f0aa7bd7da9d, type: 2}
+    role: 1
+    tags: 9
+    cost: 1.44
+    minGroupSize: 1
+    maxGroupSize: 2
+    cooldownSeconds: 1.2
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeRangedEnemy_Ranged
+    enemy: {fileID: 11400000, guid: 0d240fe886b09634998dc9812266d850, type: 2}
+    role: 2
+    tags: 12
+    cost: 1.92
+    minGroupSize: 1
+    maxGroupSize: 2
+    cooldownSeconds: 1.2
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeKitingRangedEnemy_Ranged
+    enemy: {fileID: 11400000, guid: 0ea1949e755c75c47b662cc15e0e773a, type: 2}
+    role: 2
+    tags: 12
+    cost: 1.92
+    minGroupSize: 1
+    maxGroupSize: 2
+    cooldownSeconds: 1.2
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  - entryId: CyberOrangeChargerEnemy_Elite
+    enemy: {fileID: 11400000, guid: 85fd0e14f3679cf4aa183c27f20fe1e1, type: 2}
+    role: 3
+    tags: 104
+    cost: 3
+    minGroupSize: 1
+    maxGroupSize: 2
+    cooldownSeconds: 1.2
+    maxAlive: 0
+    activeTimeRange: {x: 0, y: 100}
+    spawnLocationOverride:
+      resolverSettings:
+        boundsPadding: 1
+        resolveAttempts: 16
+        spawnClearance: 0.1
+        minBounds: {x: -12, y: -12}
+        maxBounds: {x: 12, y: 12}
+        obstacleLayerNames:
+        - Wall
+      strategy:
+        rid: 1001
+  scriptedBeats:
+  - beatId: EliteBurst_30
+    useNormalizedTriggerTime: 0
+    triggerTime: 30
+    normalizedTriggerTime: 30
+    ignoreBudget: 0
+    allowWhenPressureCapped: 1
+    commands:
+    - commandId: CyberOrangeChargerEnemy_burst
+      enemy: {fileID: 11400000, guid: 85fd0e14f3679cf4aa183c27f20fe1e1, type: 2}
+      role: 3
+      tags: 104
+      count: 2
+      cost: 3.75
+      spawnLocationOverride:
+        resolverSettings:
+          boundsPadding: 1
+          resolveAttempts: 16
+          spawnClearance: 0.1
+          minBounds: {x: -12, y: -12}
+          maxBounds: {x: 12, y: 12}
+          obstacleLayerNames:
+          - Wall
+        strategy:
+          rid: 1001
+  spawnLocationOverride:
+    resolverSettings:
+      boundsPadding: 1
+      resolveAttempts: 16
+      spawnClearance: 0.1
+      minBounds: {x: -12, y: -12}
+      maxBounds: {x: 12, y: 12}
+      obstacleLayerNames:
+      - Wall
+    strategy:
+      rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1001
+      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
+      data:

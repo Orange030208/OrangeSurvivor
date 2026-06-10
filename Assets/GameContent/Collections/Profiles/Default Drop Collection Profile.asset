@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420ba2dc3cd211449bfd1fba4ff0113e, type: 3}
+  m_Name: Default Drop Collection Profile
+  m_EditorClassIdentifier:
+  entries:
+  - entryId: Coin
+    collection: {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}
+    baseWeight: 0.9
+    luckCoefficient: 0
+  - entryId: Chest
+    collection: {fileID: 11400000, guid: 8827be155b64dd044969b45be382db33, type: 2}
+    baseWeight: 0.1
+    luckCoefficient: 0.8

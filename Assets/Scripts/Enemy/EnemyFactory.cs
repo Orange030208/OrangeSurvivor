@@ -6,7 +6,7 @@ public sealed class EnemyFactory
 {
     private static RunProgressionProfileSO fallbackProgressionProfile;
 
-    public void Spawn(
+    public Enemy Spawn(
         EnemySO enemyData,
         Entity target,
         Vector3 spawnPosition,
@@ -32,6 +32,7 @@ public sealed class EnemyFactory
 
         Enemy enemy = Object.Instantiate(template, spawnPosition, Quaternion.identity, parent);
         ApplyEnemyData(enemy, enemyData, target, progressionSnapshot, enemyTags);
+        return enemy;
     }
 
     private static void ApplyEnemyData(

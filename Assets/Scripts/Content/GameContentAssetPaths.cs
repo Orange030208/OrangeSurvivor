@@ -3,12 +3,9 @@ public static class GameContentAssetPaths
     public const string Root = "Assets/GameContent";
 
     public const string CatalogFolder = Root + "/Catalog";
-    public const string CatalogPools = CatalogFolder + "/Pools";
     public const string GameContentCatalog = CatalogFolder + "/Game Content Catalog.asset";
-    public const string ChestRewardPool = CatalogPools + "/Chest Reward Pool.asset";
-    public const string ShopPool = CatalogPools + "/Shop Pool.asset";
-    public const string DropPool = CatalogPools + "/Drop Pool.asset";
-    public const string WeaponRewardPool = CatalogPools + "/Weapon Reward Pool.asset";
+    public const string Tier = Root + "/Tier";
+    public const string ContentTierWeightProfile = Tier + "/Content Tier Weight Profile.asset";
 
     public const string RunProgression = Root + "/RunProgression";
     public const string RunProgressionProfile = RunProgression + "/Run Progression Profile.asset";
@@ -43,16 +40,14 @@ public static class GameContentAssetPaths
 
     public const string Upgrades = Root + "/Upgrades";
     public const string UpgradeCards = Upgrades + "/Cards";
-    public const string UpgradePools = Upgrades + "/Pools";
     public const string UpgradePresentation = Upgrades + "/Presentation";
-    public const string UpgradeCardPool = UpgradePools + "/Upgrade Card Pool.asset";
 
     public const string Waves = Root + "/Waves";
     public const string WavesData = Waves + "/Data";
-    public const string WaveSpawnPacks = Waves + "/SpawnPacks";
-    public const string WavePools = Waves + "/Pools";
-    public const string StageDefinition = WavesData + "/Stage Definition.asset";
-    public const string WaveSpawnPool = WavePools + "/Wave Spawn Pool.asset";
+    public const string WavesDirector = Waves + "/Director";
+    public const string WavesDirectorFinite = WavesDirector + "/Finite";
+    public const string WavesDirectorEndless = WavesDirector + "/Endless";
+    public const string StageDirectorProfile = WavesDirector + "/Stage Spawn Director Profile.asset";
 
     public const string Enemies = Root + "/Enemies";
     public const string EnemiesData = Enemies + "/Data";
@@ -63,6 +58,8 @@ public static class GameContentAssetPaths
 
     public const string Collections = Root + "/Collections";
     public const string CollectionsData = Collections + "/Data";
+    public const string CollectionProfiles = Collections + "/Profiles";
+    public const string DefaultDropCollectionProfile = CollectionProfiles + "/Default Drop Collection Profile.asset";
     public const string CollectionsPrefabs = Collections + "/Prefabs";
     public const string CollectionsSprites = Collections + "/Sprites";
     public const string CollectionsAnimations = Collections + "/Animations";
@@ -80,7 +77,7 @@ public static class GameContentAssetPaths
     public const string UIViewPages = UIPrefabs + "/Pages";
     public const string UIViewContainers = UIPrefabs + "/Container";
     public const string PropPresentationCatalog = UIData + "/Prop Presentation Catalog.asset";
-    public const string TierColorPalette = UIData + "/Tier Color Palette.asset";
+    public const string TierColorPalette = Tier + "/Tier Color Palette.asset";
     public const string ItemQualityIconEffectMaterial = UIMaterials + "/WeaponQualityIconEffect.mat";
     public const string UIFrameworkSettings = UIData + "/OrangeUIFrameworkSettings.asset";
     public const string UIViewCatalog = UIData + "/OrangeUIViewCatalog.asset";

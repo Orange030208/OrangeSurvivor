@@ -7,24 +7,15 @@ public struct ShopItemData : IHasContentTier
     public int Level;
     public bool Lock;
     public bool SoldOut;
-    public float ContentPriceMultiplier;
     public float RunPriceMultiplier;
     public float PlayerDiscountMultiplier;
-    public ContentRollItem RollItem;
     public ContentTier Tier => ResolveTier();
-
-    public float PriceMultiplier
-    {
-        get => PlayerDiscountMultiplier;
-        set => PlayerDiscountMultiplier = value;
-    }
 
     public int GetPrice()
     {
         return ShopPricingService.GetPrice(
             ItemData,
             Level,
-            ContentPriceMultiplier,
             RunPriceMultiplier,
             PlayerDiscountMultiplier);
     }
@@ -33,7 +24,7 @@ public struct ShopItemData : IHasContentTier
     {
         if (ItemData == null)
         {
-            return RollItem.TryGetTier(out ContentTier rollTier) ? rollTier : ContentTier.Common;
+            return ContentTier.Common;
         }
 
         if (ItemData.ItemType == ItemType.Weapon)
@@ -46,7 +37,7 @@ public struct ShopItemData : IHasContentTier
             return accessoryData.Tier;
         }
 
-        return RollItem.TryGetTier(out ContentTier tier) ? tier : ContentTier.Common;
+        return ContentTier.Common;
     }
 }
 
@@ -57,9 +48,8 @@ public class ShopManager : MonoBehaviour
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private CurrencyWallet currencyWallet;
-    [SerializeField] private ContentPoolSO shopPool;
 
-    private readonly ShopContentRoller contentRoller = new();
+    private readonly ShopExtractionRoller extractionRoller = new();
     private ShopItemData[] currentItems;
     private Player player;
     private PropertiesManager propertiesManager;
@@ -193,8 +183,6 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        RecordShopPick(itemData);
-
         MarkItemAsSoldOut(itemIndex);
 
         if (currencyWallet != null)
@@ -238,8 +226,6 @@ public class ShopManager : MonoBehaviour
             NotifyPurchaseFailed("No empty weapon slot available.");
             return;
         }
-
-        RecordShopPick(itemData);
 
         MarkItemAsSoldOut(itemIndex);
 
@@ -420,102 +406,58 @@ public class ShopManager : MonoBehaviour
 
     private ShopItemData RollShopItem()
     {
-        ContentPoolSO pool = ResolveShopPool();
-        if (pool == null)
+        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
-            Debug.LogError($"[ShopManager] Missing shop content pool in scene or {nameof(GameContentCatalogSO)}.", this);
+            Debug.LogError($"[ShopManager] Missing {nameof(IGameContentProvider)}. Cannot roll shop item.", this);
             return default;
         }
 
-        ContentRollItem rollItem = contentRoller.RollItem(
-            pool,
-            player,
-            shopRefreshCount,
-            totalRerollCount,
-            RunContentHistoryRuntime.Current);
-        if (rollItem.Content == null)
+        ShopExtractionContext context = new(ResolveAccessoryManager());
+        if (provider.ContentTierWeightProfile == null)
         {
-            Debug.LogWarning("[ShopManager] No shop item could be rolled from content pool.", this);
+            Debug.LogError(
+                $"[ShopManager] Missing {nameof(ContentTierWeightProfileSO)} in {nameof(GameContentCatalogSO)}.",
+                this);
             return default;
         }
 
-        return CreateShopItemData(rollItem);
+        if (!extractionRoller.TryRollOne(
+                provider.Weapons,
+                provider.Accessories,
+                provider.ContentTierWeightProfile,
+                context,
+                out ShopExtractionCandidate candidate))
+        {
+            Debug.LogWarning("[ShopManager] No shop item could be rolled from configured weapon/accessory candidates.", this);
+            return default;
+        }
+
+        return CreateShopItemData(candidate);
     }
 
-    private ShopItemData CreateShopItemData(ContentRollItem rollItem)
+    private ShopItemData CreateShopItemData(ShopExtractionCandidate candidate)
     {
-        ItemDataSO itemData = rollItem.Content as ItemDataSO;
-        if (itemData == null)
+        if (candidate?.ItemData == null)
         {
             return default;
         }
 
         return new ShopItemData
         {
-            ItemData = itemData,
-            Level = ResolveShopItemLevel(itemData, rollItem),
+            ItemData = candidate.ItemData,
+            Level = candidate.Level,
             Lock = false,
             SoldOut = false,
-            ContentPriceMultiplier = ResolveShopPriceMultiplier(rollItem),
             RunPriceMultiplier = ResolveRunPriceMultiplier(),
-            PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier(),
-            RollItem = rollItem
+            PlayerDiscountMultiplier = ResolvePlayerDiscountMultiplier()
         };
     }
 
-    private void RecordShopPick(ShopItemData itemData)
+    private AccessoryManager ResolveAccessoryManager()
     {
-        if (itemData.ItemData == null)
-        {
-            return;
-        }
-
-        contentRoller.RecordPick(ResolveShopPool(), player, RunContentHistoryRuntime.Current, itemData.RollItem);
-    }
-
-    private static int ResolveShopItemLevel(ItemDataSO itemData, ContentRollItem rollItem)
-    {
-        if (itemData == null || itemData.ItemType != ItemType.Weapon)
-        {
-            return WeaponLevelHelper.MinLevel;
-        }
-
-        int minLevel = WeaponLevelHelper.MinLevel;
-        int maxLevel = WeaponLevelHelper.MaxLevel;
-        if (rollItem.TryGetMetadata(out WeaponLevelRollMetadata levelMetadata))
-        {
-            minLevel = levelMetadata.MinLevel;
-            maxLevel = levelMetadata.MaxLevel;
-        }
-
-        if (maxLevel < minLevel)
-        {
-            maxLevel = minLevel;
-        }
-
-        return UnityEngine.Random.Range(minLevel, maxLevel + 1);
-    }
-
-    private static float ResolveShopPriceMultiplier(ContentRollItem rollItem)
-    {
-        return rollItem.TryGetMetadata(out ShopPricingMetadata pricingMetadata)
-            ? pricingMetadata.PriceMultiplier
-            : 1f;
-    }
-
-    private ContentPoolSO ResolveShopPool()
-    {
-        if (shopPool != null)
-        {
-            return shopPool;
-        }
-
-        if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
-        {
-            return null;
-        }
-
-        return provider.ShopPool;
+        return player != null && player.TryGetComponent(out AccessoryManager accessoryManager)
+            ? accessoryManager
+            : FindFirstObjectByType<AccessoryManager>();
     }
 
     private void PublishViewState(ShopRefreshReason reason = ShopRefreshReason.StateUpdate)

@@ -9,23 +9,22 @@ public interface IGameContentProvider
 {
     IReadOnlyList<WeaponDataSO> Weapons { get; }
     IReadOnlyList<AccessoryDataSO> Accessories { get; }
+    IReadOnlyList<RewardCardSO> RewardCards { get; }
+    IReadOnlyList<CollectionSO> Collections { get; }
+    IReadOnlyList<EnemySO> Enemies { get; }
+    IReadOnlyList<BuffDataSO> Buffs { get; }
     CharacterDataSO DefaultCharacter { get; }
     IReadOnlyList<RewardCardSO> StarterCards { get; }
     Player DefaultPlayerPrefab { get; }
     Weapon DefaultWeaponPrefab { get; }
     PlayerLevelConfigSO PlayerLevelConfig { get; }
     RunProgressionProfileSO RunProgressionProfile { get; }
-    ContentPoolSO UpgradeCardPool { get; }
-    ContentPoolLibrarySO ContentPoolLibrary { get; }
-    ContentPoolSO ChestRewardPool { get; }
-    ContentPoolSO ShopPool { get; }
-    ContentPoolSO DropPool { get; }
-    ContentPoolSO WaveSpawnPool { get; }
-    ContentPoolSO WeaponRewardPool { get; }
+    DropCollectionProfileSO DropCollectionProfile { get; }
+    StageDirectorProfileSO DefaultStageDirectorProfile { get; }
     PropPresentationCatalogSO PropPresentationCatalog { get; }
-    StageDefinitionSO DefaultStageDefinition { get; }
     DamageTextFlow DamageTextPrefab { get; }
     DamageTextVisualConfigSO DamageTextVisualConfig { get; }
     Material ItemQualityIconEffectMaterial { get; }
     TierColorPaletteSO TierColorPalette { get; }
+    ContentTierWeightProfileSO ContentTierWeightProfile { get; }
 }

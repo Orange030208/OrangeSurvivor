@@ -5,6 +5,7 @@ namespace Orange.UIFramework
     using System.Threading;
     using Cysharp.Threading.Tasks;
     using DG.Tweening;
+    using Sirenix.OdinInspector;
     using UnityEngine;
 
     [DisallowMultipleComponent]
@@ -28,6 +29,9 @@ namespace Orange.UIFramework
         private readonly Dictionary<string, List<Tween>> activeTweensByChannel = new(StringComparer.Ordinal);
         private bool initialized;
         private bool defaultsCaptured;
+
+        [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(100)]
+        private List<string> DebugClipOptions => GetOptionList();
 
         private void Awake()
         {
@@ -313,6 +317,53 @@ namespace Orange.UIFramework
         private static string ResolveChannel(string channel)
         {
             return string.IsNullOrWhiteSpace(channel) ? UIMotionChannelIds.VISIBILITY : channel;
+        }
+
+        [Button("Show"), FoldoutGroup("Debug"), PropertyOrder(101)]
+        private void PreviewShow()
+        {
+            PreviewClip(UIMotionClipIds.SHOW);
+        }
+
+        [Button("Hide"), FoldoutGroup("Debug"), PropertyOrder(102)]
+        private void PreviewHide()
+        {
+            PreviewClip(UIMotionClipIds.HIDE);
+        }
+
+        [Button("Hover In"), FoldoutGroup("Debug"), PropertyOrder(103)]
+        private void PreviewHoverIn()
+        {
+            PreviewClip(UIMotionClipIds.HOVER_IN);
+        }
+
+        [Button("Click Pulse"), FoldoutGroup("Debug"), PropertyOrder(104)]
+        private void PreviewClickPulse()
+        {
+            PreviewClip(UIMotionClipIds.CLICK_PULSE);
+        }
+
+        [Button("Refresh Defaults"), FoldoutGroup("Debug"), PropertyOrder(105)]
+        private void RefreshDefaultsFromInspector()
+        {
+            RefreshDefaults();
+        }
+
+        [Button("Stop All"), FoldoutGroup("Debug"), PropertyOrder(106)]
+        private void StopAllFromInspector()
+        {
+            Kill();
+        }
+
+        private void PreviewClip(string clipId)
+        {
+            if (!Application.isPlaying)
+            {
+                SetImmediate(clipId);
+                return;
+            }
+
+            Play(clipId);
         }
     }
 }

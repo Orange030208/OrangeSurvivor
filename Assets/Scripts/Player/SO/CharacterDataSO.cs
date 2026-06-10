@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class CharacterDataSO : ScriptableObject
@@ -16,7 +17,9 @@ public class CharacterDataSO : ScriptableObject
     [Header("角色额外属性")] [Tooltip("按照属性语义填写。百分比属性与所有乘区统一使用百分比点：1 表示 1%，10 表示 10%。点数属性仍按属性单位填写。")] [SerializeField]
     private List<PropModifierData> extraProps = new();
 
-    [Header("角色特殊能力")] [SerializeReference]
+    [Header("角色特殊能力")]
+    [SerializeReference, TypeFilter("@FeatureTypeSelectionUtility.GetSelectableFeatureTypes()")]
+    [ListDrawerSettings(Expanded = true)]
     private List<FeatureBase> specialFeatures = new();
 
     [Space(8)] [Header("初始装备")] [SerializeField]

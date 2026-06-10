@@ -30,32 +30,26 @@ public sealed class WeaponRewardSelectionOption : RewardSelectionOption
     public WeaponRewardSelectionOption(
         WeaponDataSO weaponData,
         int level,
-        ContentRollItem rollItem,
         RewardCardViewConfig viewConfig)
         : base(viewConfig)
     {
         WeaponData = weaponData;
         Level = WeaponLevelHelper.ClampLevel(level);
-        RollItem = rollItem;
     }
 
     public WeaponDataSO WeaponData { get; }
     public int Level { get; }
-    public ContentRollItem RollItem { get; }
 }
 
 public sealed class AccessoryRewardSelectionOption : RewardSelectionOption
 {
     public AccessoryRewardSelectionOption(
         AccessoryDataSO accessoryData,
-        ContentRollItem rollItem,
         RewardCardViewConfig viewConfig)
         : base(viewConfig)
     {
         AccessoryData = accessoryData;
-        RollItem = rollItem;
     }
 
     public AccessoryDataSO AccessoryData { get; }
-    public ContentRollItem RollItem { get; }
 }

@@ -140,7 +140,6 @@ public sealed class DropSourceRuleData
 [Serializable]
 public sealed class DropProductRuleData
 {
-    [SerializeField] private ContentPoolSO productPool;
     [SerializeField] private CollectionSO product;
     [SerializeField, Min(0f)] private float baseWeight = 1f;
     [SerializeField] private float luckCoefficient;
@@ -162,67 +161,9 @@ public sealed class DropProductRuleData
         this.quantity = Mathf.Max(1, quantity);
     }
 
-    public DropProductRuleData(
-        ContentPoolSO productPool,
-        float baseWeight,
-        float luckCoefficient = 0f,
-        int quantity = 1)
-    {
-        this.productPool = productPool;
-        this.baseWeight = Mathf.Max(0f, baseWeight);
-        this.luckCoefficient = luckCoefficient;
-        this.quantity = Mathf.Max(1, quantity);
-    }
-
-    public ContentPoolSO ProductPool => productPool;
     public CollectionSO Product => product;
     public float BaseWeight => Mathf.Max(0f, baseWeight);
     public float LuckCoefficient => luckCoefficient;
     public int Quantity => Mathf.Max(1, quantity);
-
-    public ContentPoolEntry CreateEntry(ContentPoolSO fallbackPool, int index)
-    {
-        UnityEngine.Object content = ResolveContent(fallbackPool);
-        if (content == null || BaseWeight <= 0f)
-        {
-            return null;
-        }
-
-        ContentPoolEntry entry = new(content, BaseWeight, ResolveEntryId(content, index));
-        entry.ConfigureRuntimeMetadata(new ContentEntryMetadata[]
-        {
-            new DropQuantityMetadata(Quantity)
-        });
-        if (!Mathf.Approximately(luckCoefficient, 0f))
-        {
-            entry.ConfigureRuntimeRules(
-                null,
-                new ContentWeightRule[]
-                {
-                    new PlayerPropertyScaleWeightRule(
-                        PropType.Luck,
-                        luckCoefficient / DropSourceRuleData.LUCK_WEIGHT_DIVISOR,
-                        0f,
-                        0f)
-                });
-        }
-
-        return entry;
-    }
-
-    private UnityEngine.Object ResolveContent(ContentPoolSO fallbackPool)
-    {
-        if (product != null)
-        {
-            return product;
-        }
-
-        return productPool != null ? productPool : fallbackPool;
-    }
-
-    private static string ResolveEntryId(UnityEngine.Object content, int index)
-    {
-        string contentName = content != null ? content.name : "None";
-        return $"DropProduct_{index}_{contentName}";
-    }
+    public bool IsValid => product != null && BaseWeight > 0f;
 }

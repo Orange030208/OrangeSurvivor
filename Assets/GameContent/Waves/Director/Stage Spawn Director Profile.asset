@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6d46a1d788e2c04da3a1997f593e9dc, type: 3}
+  m_Name: Stage Spawn Director Profile
+  m_EditorClassIdentifier:
+  mode: 1
+  finiteWaves:
+  - {fileID: 11400000, guid: 9a6b82b9c3e947dbbc2a36eb9c5a0c11, type: 2}
+  - {fileID: 11400000, guid: 5c472c7b58f049dda7a8187875df3221, type: 2}
+  - {fileID: 11400000, guid: 0e3d457402414c77a124fcc6968ef031, type: 2}
+  - {fileID: 11400000, guid: 914f9c744a29404f96b46b3a34325141, type: 2}
+  - {fileID: 11400000, guid: 2c1a53763fe8483d89a29e9550b0fa51, type: 2}
+  endlessProfile: {fileID: 11400000, guid: 2d55b0dc750b49379900ab2b35aa8e71, type: 2}
+  directorTickInterval: 0.5
+  maxCatchUpTicksPerFrame: 3
+  defaultSpawnLocation:
+    resolverSettings:
+      boundsPadding: 1
+      resolveAttempts: 16
+      spawnClearance: 0.1
+      minBounds: {x: -12, y: -12}
+      maxBounds: {x: 12, y: 12}
+      obstacleLayerNames:
+      - Wall
+    strategy:
+      rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1001
+      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
+      data:

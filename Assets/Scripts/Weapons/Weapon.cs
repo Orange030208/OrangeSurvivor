@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 /// <summary>
@@ -13,6 +14,7 @@ using UnityEngine;
 [RequireComponent(typeof(WeaponSequenceBridge))]
 public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDamageDealtNotifier, IHasContentTier
 {
+    private const string ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME = "AttackSequenceStudioWindow";
     private const int DEFAULT_WEAPON_LEVEL = 1;
     private const float MIN_AIM_DIRECTION_SQR_MAGNITUDE = 0.0001f;
     private const string HOLDER_LEVEL_MODIFIER_SOURCE_PREFIX = "WEAPON_LEVEL_";
@@ -100,6 +102,66 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     public LayerMask TargetLayerMask => targetLayerMask;
     public Entity SourceEntity => ResolveAttackSourceEntity();
     public event Action<HitResult> DamageDealt;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(100)]
+    private int DebugLevel => Level;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(101)]
+    private bool DebugIsAttacking => IsAttacking;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(102)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugDamageValue => Damage;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(103)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugAttackIntervalValue => AttackInterval;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(104)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugCooldownRemainingValue => DebugCooldownRemaining;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(105)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugRangeValue => Range;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(106)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugCriticalChanceValue => CriticalChance;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug"), PropertyOrder(107)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugCriticalMultiplierValue => CriticalMultiplier;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(108)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private WeaponAttackTimingMode DebugTimingMode => WeaponData != null
+        ? WeaponData.AttackTimingMode
+        : WeaponAttackTimingMode.CompressedIntoAttackInterval;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(109)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugOriginalSequenceDuration => DebugAttackSequence != null ? Mathf.Max(0f, DebugAttackSequence.Duration) : 0f;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(110)]
+    [ShowIf("@UnityEngine.Application.isPlaying")]
+    private float DebugEffectiveSequenceDuration => CalculateEffectiveSequenceDuration();
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(111)]
+    [ShowIf("@UnityEngine.Application.isPlaying && this.DebugTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown")]
+    private float DebugPostSequenceCooldown => AttackInterval;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(112)]
+    [ShowIf("@UnityEngine.Application.isPlaying && this.DebugTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown")]
+    private float DebugFullCycleDuration => CalculateEffectiveSequenceDuration() + AttackInterval;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(113)]
+    [ShowIf("@UnityEngine.Application.isPlaying && this.DebugTimingMode != WeaponAttackTimingMode.FixedSequenceThenCooldown")]
+    private float DebugTimingWindow => CalculateTimingWindow();
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Debug/Sequence Timing"), PropertyOrder(114)]
+    [ShowIf("@UnityEngine.Application.isPlaying && this.DebugTimingMode != WeaponAttackTimingMode.FixedSequenceThenCooldown")]
+    private float DebugCompressionRatioPercent => CalculateCompressionRatio() * 100f;
 
 
     public virtual void OnFixedTick(float deltaTime)
@@ -218,6 +280,36 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
         RecalculateRuntimeStats();
     }
 
+#if UNITY_EDITOR
+    [Button("打开武器工作台"), FoldoutGroup("Debug"), PropertyOrder(115)]
+    [EnableIf("@this.WeaponData != null")]
+    private void OpenWeaponWorkbench()
+    {
+        OpenWeaponWorkbenchInEditor(WeaponData);
+    }
+#endif
+
+    [Button("Refresh Runtime Stats"), FoldoutGroup("Debug"), PropertyOrder(116)]
+    [EnableIf("@UnityEngine.Application.isPlaying")]
+    private void RefreshRuntimeStatsFromInspector()
+    {
+        RefreshRuntimeStats();
+    }
+
+    [Button("Force Attack Current Target"), FoldoutGroup("Debug"), PropertyOrder(117)]
+    [EnableIf("@UnityEngine.Application.isPlaying")]
+    private void ForceAttackCurrentTargetFromInspector()
+    {
+        Entity target = GetCurrentTarget();
+        if (target == null)
+        {
+            Debug.LogWarning("Weapon debug inspector: no current target in range.", this);
+            return;
+        }
+
+        BeginAttack(target);
+    }
+
     public void ApplyVisualForwardAngle()
     {
         if (visualForwardTransform == null)
@@ -241,6 +333,68 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     {
         return lockedAttackTarget != null ? lockedAttackTarget : currentTarget;
     }
+
+    private float CalculateTimingWindow()
+    {
+        return Mathf.Max(0f, AttackInterval * (WeaponData != null ? WeaponData.AttackSequenceOccupancy : 0.85f));
+    }
+
+    private float CalculateEffectiveSequenceDuration()
+    {
+        AttackSequenceDefinitionSO sequence = DebugAttackSequence;
+        if (sequence == null)
+        {
+            return 0f;
+        }
+
+        if (DebugTimingMode == WeaponAttackTimingMode.FixedSequenceThenCooldown)
+        {
+            return Mathf.Max(0.01f, sequence.Duration);
+        }
+
+        return Mathf.Min(Mathf.Max(0.01f, sequence.Duration), Mathf.Max(0.01f, CalculateTimingWindow()));
+    }
+
+    private float CalculateCompressionRatio()
+    {
+        float originalDuration = DebugOriginalSequenceDuration;
+        return originalDuration <= 0.0001f ? 1f : CalculateEffectiveSequenceDuration() / originalDuration;
+    }
+
+#if UNITY_EDITOR
+    private static void OpenWeaponWorkbenchInEditor(WeaponDataSO weaponData)
+    {
+        Type windowType = FindEditorType(ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME);
+        System.Reflection.MethodInfo openMethod = windowType?.GetMethod(
+            "Open",
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+            binder: null,
+            types: new[] { typeof(WeaponDataSO) },
+            modifiers: null);
+        if (openMethod == null)
+        {
+            Debug.LogWarning($"{ATTACK_SEQUENCE_STUDIO_WINDOW_TYPE_NAME}.Open(WeaponDataSO) was not found.");
+            return;
+        }
+
+        openMethod.Invoke(null, new object[] { weaponData });
+    }
+
+    private static Type FindEditorType(string typeName)
+    {
+        System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        for (int i = 0; i < assemblies.Length; i++)
+        {
+            Type candidate = assemblies[i].GetType(typeName, throwOnError: false);
+            if (candidate != null)
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+#endif
 
     protected HitSpec BuildHitSpec()
     {

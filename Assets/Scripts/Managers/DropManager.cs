@@ -1,15 +1,14 @@
-using UnityEngine;
 using System.Collections.Generic;
+using Orange.Extraction;
+using UnityEngine;
 
 public class DropManager : MonoBehaviour
 {
     private const int BASE_KILL_EXPERIENCE = 1;
 
-    [SerializeField] private ContentPoolSO dropPool;
+    [SerializeField] private DropCollectionProfileSO dropCollectionProfile;
     [SerializeField] private List<DropSourceRuleData> dropRules = new();
 
-    private readonly DropContentRoller contentRoller = new();
-    private readonly List<ContentPoolEntry> productEntryBuffer = new();
     private IContentRandom random = new UnityContentRandom();
 
     private void OnEnable()
@@ -24,12 +23,7 @@ public class DropManager : MonoBehaviour
 
     private void OnEntityDied(EntityDiedEvent deadEvent)
     {
-        if (deadEvent.Reason == EntityDeathReason.WaveCleanup)
-        {
-            return;
-        }
-
-        if (deadEvent.Entity is not Enemy)
+        if (deadEvent.Reason == EntityDeathReason.WaveCleanup || deadEvent.Entity is not Enemy)
         {
             return;
         }
@@ -41,7 +35,6 @@ public class DropManager : MonoBehaviour
         RunProgressionSnapshot progressionSnapshot = RunProgressionRuntime.CurrentSnapshot;
         DropRollResult dropResult = RollDropForSource(dropSource, deadEvent.Source, progressionSnapshot.WaveNumber);
         CollectionSO dropSO = dropResult.Collection;
-
         if (dropSO == null)
         {
             return;
@@ -49,7 +42,7 @@ public class DropManager : MonoBehaviour
 
         if (dropSO.prefab == null)
         {
-            Debug.LogError($"[DropManager] {dropSO?.name} has no prefab assigned.", this);
+            Debug.LogError($"[DropManager] {dropSO.name} has no prefab assigned.", this);
             return;
         }
 
@@ -151,145 +144,132 @@ public class DropManager : MonoBehaviour
             return DropRollResult.None;
         }
 
-        return RollDropProduct(rule, source, waveNumber);
+        return RollDropProduct(rule, ResolveLuck(source));
     }
 
-    private DropRollResult RollDropProduct(DropSourceRuleData rule, Entity source, int waveNumber)
+    private DropRollResult RollDropProduct(DropSourceRuleData rule, float luck)
     {
-        ContentPoolSO configuredPool = ResolveConfiguredDropPool();
-        ContentRollContext context = CreateDropRollContext(configuredPool, source, waveNumber);
-        ContentRollScope scope = CreateRollScope(configuredPool);
         if (!rule.HasProductRules)
         {
-            return RollCollectionFromPool(configuredPool, context, scope);
+            return RollCollectionFromProfile(ResolveConfiguredDropProfile(), luck);
         }
 
-        productEntryBuffer.Clear();
-        IReadOnlyList<DropProductRuleData> products = rule.Products;
+        if (!TryDrawProduct(rule.Products, luck, out DropProductRuleData product))
+        {
+            return DropRollResult.None;
+        }
+
+        return new DropRollResult(product.Product, product.Quantity);
+    }
+
+    private DropRollResult RollCollectionFromProfile(DropCollectionProfileSO profile, float luck)
+    {
+        if (!TryDrawCollection(profile != null ? profile.Entries : null, luck, out CollectionSO collection))
+        {
+            return DropRollResult.None;
+        }
+
+        return new DropRollResult(collection, 1);
+    }
+
+    private DropCollectionProfileSO ResolveConfiguredDropProfile()
+    {
+        if (dropCollectionProfile != null)
+        {
+            return dropCollectionProfile;
+        }
+
+        return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
+            ? provider.DropCollectionProfile
+            : null;
+    }
+
+    private static bool TryDrawProduct(
+        IReadOnlyList<DropProductRuleData> products,
+        float luck,
+        out DropProductRuleData selectedProduct)
+    {
+        selectedProduct = null;
+        if (products == null || products.Count == 0)
+        {
+            return false;
+        }
+
+        WeightedExtractionPool<DropProductRuleData> extractionPool = new();
         for (int i = 0; i < products.Count; i++)
         {
-            ContentPoolEntry entry = products[i]?.CreateEntry(configuredPool, i);
-            if (entry != null)
+            DropProductRuleData product = products[i];
+            if (product == null || !product.IsValid)
             {
-                productEntryBuffer.Add(entry);
+                continue;
             }
+
+            extractionPool.AddEntry(
+                ResolveProductEntryId(product, i),
+                product,
+                ResolveEffectiveWeight(product.BaseWeight, luck, product.LuckCoefficient));
         }
 
-        if (productEntryBuffer.Count == 0)
+        if (!extractionPool.TryDrawOne(out ExtractionResult<DropProductRuleData> result))
         {
-            return DropRollResult.None;
+            return false;
         }
 
-        ContentRollItem productItem = contentRoller.RollProduct(
-            productEntryBuffer,
-            context,
-            scope,
-            RunContentHistoryRuntime.Current);
-        if (productItem.Content == null)
-        {
-            return DropRollResult.None;
-        }
-
-        if (productItem.Content is CollectionSO collection)
-        {
-            int quantity = ResolveDropQuantity(productItem);
-            return new DropRollResult(collection, quantity);
-        }
-
-        return productItem.Content is ContentPoolSO nestedPool
-            ? RollCollectionFromPool(nestedPool, context, scope)
-            : DropRollResult.None;
+        selectedProduct = result.Item;
+        return true;
     }
 
-    private DropRollResult RollCollectionFromPool(ContentPoolSO pool, ContentRollContext context, ContentRollScope scope)
+    private static bool TryDrawCollection(
+        IReadOnlyList<DropCollectionProfileEntry> entries,
+        float luck,
+        out CollectionSO collection)
     {
-        if (pool == null)
+        collection = null;
+        if (entries == null || entries.Count == 0)
         {
-            return DropRollResult.None;
+            return false;
         }
 
-        ContentRollItem rollItem = contentRoller.RollCollection(
-            pool,
-            context,
-            scope,
-            RunContentHistoryRuntime.Current);
-        return rollItem.Content != null
-            ? new DropRollResult(rollItem.Content as CollectionSO, ResolveDropQuantity(rollItem))
-            : DropRollResult.None;
-    }
-
-    private static int ResolveDropQuantity(ContentRollItem rollItem)
-    {
-        return rollItem.TryGetMetadata(out DropQuantityMetadata quantityMetadata)
-            ? quantityMetadata.Quantity
-            : 1;
-    }
-
-    private ContentPoolSO ResolveConfiguredDropPool()
-    {
-        if (dropPool != null)
+        WeightedExtractionPool<CollectionSO> extractionPool = new();
+        for (int i = 0; i < entries.Count; i++)
         {
-            return dropPool;
+            DropCollectionProfileEntry entry = entries[i];
+            if (entry == null || !entry.IsValid)
+            {
+                continue;
+            }
+
+            extractionPool.AddEntry(
+                entry.EntryId,
+                entry.Collection,
+                ResolveEffectiveWeight(entry.BaseWeight, luck, entry.LuckCoefficient));
         }
 
-        if (GameContentRuntime.TryGetProvider(out IGameContentProvider provider) && provider.DropPool != null)
+        if (!extractionPool.TryDrawOne(out ExtractionResult<CollectionSO> result))
         {
-            return provider.DropPool;
+            return false;
         }
 
-        return null;
+        collection = result.Item;
+        return collection != null;
     }
 
-    private ContentRollContext CreateDropRollContext(ContentPoolSO pool, Entity source, int waveNumber)
+    private static float ResolveEffectiveWeight(float baseWeight, float luck, float luckCoefficient)
     {
-        Player player = ResolvePlayer(source);
-        RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
-        if (snapshot.WaveNumber != Mathf.Max(1, waveNumber))
-        {
-            snapshot = new RunProgressionSnapshot(
-                waveNumber,
-                snapshot.TotalWaves,
-                snapshot.RunMinutes,
-                snapshot.EndlessLoop,
-                snapshot.DifficultyCoefficient,
-                snapshot.EconomyCoefficient,
-                snapshot.ShopPriceMultiplier,
-                snapshot.ShopRerollBasePrice,
-                snapshot.ShopRerollStepPrice,
-                snapshot.DangerTier);
-        }
-
-        return new ContentRollContext(
-            ContentPoolScopeIds.Drop,
-            player,
-            progressionSnapshot: snapshot,
-            historyScope: CreateRollScope(pool).ToHistoryScope(),
-            history: RunContentHistoryRuntime.Current.State,
-            source: source,
-            propertiesManager: ResolvePropertiesManager(source));
+        float multiplier = 1f + luck * luckCoefficient / DropSourceRuleData.LUCK_WEIGHT_DIVISOR;
+        return Mathf.Max(0f, baseWeight * Mathf.Max(0f, multiplier));
     }
 
-    private static ContentRollScope CreateRollScope(ContentPoolSO pool)
+    private static string ResolveProductEntryId(DropProductRuleData product, int index)
     {
-        return DropContentRoller.CreateScope(pool);
+        string productName = product?.Product != null ? product.Product.name : "None";
+        return $"DropProduct_{index}_{productName}";
     }
 
     private static float ResolveLuck(Entity source)
     {
         PropertiesManager propertiesManager = ResolvePropertiesManager(source);
         return propertiesManager != null ? propertiesManager.GetPropValue(PropType.Luck) : 0f;
-    }
-
-    private static Player ResolvePlayer(Entity source)
-    {
-        if (source is Player player)
-        {
-            return player;
-        }
-
-        return source is Weapon weapon && weapon.Owner is Player ownerPlayer
-            ? ownerPlayer
-            : null;
     }
 
     private static PropertiesManager ResolvePropertiesManager(Entity source)
@@ -309,5 +289,4 @@ public class DropManager : MonoBehaviour
             ? ownerPropertiesManager
             : null;
     }
-
 }
