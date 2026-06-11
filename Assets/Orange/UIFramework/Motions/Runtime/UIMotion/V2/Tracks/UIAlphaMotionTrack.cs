@@ -37,7 +37,7 @@ public sealed class UIAlphaMotionTrack : UIMotionTrackDefinition
             return null;
         }
 
-        return canvasGroup.DOFade(end, duration);
+        return DOTween.To(() => canvasGroup.alpha, value => canvasGroup.alpha = value, end, duration);
     }
 
     protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)

@@ -93,7 +93,7 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
 
         if (!useEnterOvershoot || enterOvershootDistance <= 0f)
         {
-            sequence.Join(rectTransform.DOAnchorPos(visiblePosition, duration).SetEase(Ease));
+            sequence.Join(CreatePositionTween(rectTransform, visiblePosition, duration).SetEase(Ease));
             JoinFade(sequence, canvasGroup, 1f, duration, Ease);
             return sequence;
         }
@@ -102,12 +102,12 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
         float settleDuration = Mathf.Max(0f, duration - overshootDuration);
         Vector2 overshootPosition = visiblePosition + GetEnterOvershootOffset();
 
-        sequence.Join(rectTransform.DOAnchorPos(overshootPosition, overshootDuration).SetEase(enterOvershootEase));
+        sequence.Join(CreatePositionTween(rectTransform, overshootPosition, overshootDuration).SetEase(enterOvershootEase));
         JoinFade(sequence, canvasGroup, 1f, overshootDuration, enterOvershootEase);
 
         if (settleDuration > 0f)
         {
-            sequence.Append(rectTransform.DOAnchorPos(visiblePosition, settleDuration).SetEase(enterSettleEase));
+            sequence.Append(CreatePositionTween(rectTransform, visiblePosition, settleDuration).SetEase(enterSettleEase));
         }
         else
         {
@@ -120,7 +120,7 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
     private Tween CreateHideTween(RectTransform rectTransform, CanvasGroup canvasGroup, Vector2 hiddenPosition, float duration)
     {
         Sequence sequence = DOTween.Sequence();
-        sequence.Join(rectTransform.DOAnchorPos(hiddenPosition, duration).SetEase(Ease));
+        sequence.Join(CreatePositionTween(rectTransform, hiddenPosition, duration).SetEase(Ease));
         JoinFade(sequence, canvasGroup, fade ? hiddenAlpha : 1f, duration, Ease);
         return sequence;
     }
@@ -142,7 +142,25 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
             return;
         }
 
-        sequence.Join(canvasGroup.DOFade(alpha, duration).SetEase(ease));
+        sequence.Join(CreateAlphaTween(canvasGroup, alpha, duration).SetEase(ease));
+    }
+
+    private Tween CreatePositionTween(RectTransform rectTransform, Vector2 endValue, float duration)
+    {
+        return DOTween.To(
+            () => rectTransform.anchoredPosition,
+            value => rectTransform.anchoredPosition = value,
+            endValue,
+            duration);
+    }
+
+    private Tween CreateAlphaTween(CanvasGroup canvasGroup, float endValue, float duration)
+    {
+        return DOTween.To(
+            () => canvasGroup.alpha,
+            value => canvasGroup.alpha = value,
+            endValue,
+            duration);
     }
 
     private Vector2 GetHiddenOffset(RectTransform rectTransform)

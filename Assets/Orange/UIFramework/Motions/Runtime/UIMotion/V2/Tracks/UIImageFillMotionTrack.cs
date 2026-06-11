@@ -38,7 +38,7 @@ public sealed class UIImageFillMotionTrack : UIMotionTrackDefinition
             return null;
         }
 
-        return image.DOFillAmount(end, duration);
+        return DOTween.To(() => image.fillAmount, value => image.fillAmount = value, end, duration);
     }
 
     protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)

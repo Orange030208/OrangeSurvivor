@@ -38,7 +38,7 @@ public sealed class UIGraphicColorMotionTrack : UIMotionTrackDefinition
             return null;
         }
 
-        return graphic.DOColor(end, duration);
+        return DOTween.To(() => graphic.color, value => graphic.color = value, end, duration);
     }
 
     protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)

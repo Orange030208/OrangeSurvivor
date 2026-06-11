@@ -37,7 +37,7 @@ public sealed class UIMoveMotionTrack : UIMotionTrackDefinition
             return null;
         }
 
-        return rectTransform.DOAnchorPos(end, duration);
+        return DOTween.To(() => rectTransform.anchoredPosition, value => rectTransform.anchoredPosition = value, end, duration);
     }
 
     protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
