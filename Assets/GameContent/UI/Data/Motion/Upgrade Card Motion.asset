@@ -114,7 +114,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 590100000000000001
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 590100000000000002
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 590100000000000003
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 590100000000000004
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -158,7 +158,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 0
     - rid: 590100000000000005
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: -36}
     - rid: 590100000000000006
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.92, y: 0.92, z: 1}
     - rid: 590100000000000007
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 590100000000000008
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 590100000000000009
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -213,7 +213,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 590100000000000010
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -224,7 +224,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 0
     - rid: 590100000000000011
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: -44}
     - rid: 590100000000000012
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -246,7 +246,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.9, y: 0.9, z: 1}
     - rid: 590100000000000013
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 12}
     - rid: 590100000000000014
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -268,7 +268,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.045, y: 1.045, z: 1}
     - rid: 590100000000000015
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
         toMode: 1
         toValue: {x: 0, y: 0}
     - rid: 590100000000000016
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -290,7 +290,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 590100000000000017
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -301,7 +301,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 4}
     - rid: 590100000000000018
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -312,7 +312,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.975, y: 0.975, z: 1}
     - rid: 590100000000000019
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -323,7 +323,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 12}
     - rid: 590100000000000020
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -334,7 +334,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.045, y: 1.045, z: 1}
     - rid: 590100000000000021
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -345,7 +345,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 14}
     - rid: 590100000000000022
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -356,7 +356,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.065, y: 1.065, z: 1}
     - rid: 590100000000000023
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -367,7 +367,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 7274046004401012736
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -378,7 +378,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 72}
     - rid: 7274046004401012737
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -389,7 +389,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.18, y: 1.18, z: 1}
     - rid: 7274046004401012738
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -400,7 +400,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 7274046004401012743
-      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0.22
@@ -411,7 +411,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: -820}
     - rid: 7274046004401012744
-      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0.22
@@ -422,7 +422,7 @@ MonoBehaviour:
         toMode: 3
         toValue: {x: 0, y: 0, z: -8}
     - rid: 7274046004401012745
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0.22
@@ -433,7 +433,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 0.92, y: 0.92, z: 1}
     - rid: 7274046004401012746
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0.5
@@ -443,3 +443,4 @@ MonoBehaviour:
         fromValue: 1
         toMode: 2
         toValue: 0
+

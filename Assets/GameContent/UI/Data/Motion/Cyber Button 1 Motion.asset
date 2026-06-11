@@ -36,7 +36,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 812430561200000001
-      type: {class: UIImageFillMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIImageFillMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Frame
         startDelay: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 812430561200000002
-      type: {class: UIImageFillMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIImageFillMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Frame
         startDelay: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 0
     - rid: 812430561200000003
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Root
         startDelay: 0
@@ -69,7 +69,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1.055, y: 1.055, z: 1}
     - rid: 812430561200000004
-      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Text
         startDelay: 0.03
@@ -80,7 +80,7 @@ MonoBehaviour:
         toMode: 2
         toValue: {r: 0.72, g: 1, b: 1, a: 1}
     - rid: 812430561200000005
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Root
         startDelay: 0
@@ -91,7 +91,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 812430561200000006
-      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIGraphicColorMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Text
         startDelay: 0
@@ -101,3 +101,4 @@ MonoBehaviour:
         fromValue: {r: 1, g: 1, b: 1, a: 1}
         toMode: 1
         toValue: {r: 1, g: 1, b: 1, a: 1}
+

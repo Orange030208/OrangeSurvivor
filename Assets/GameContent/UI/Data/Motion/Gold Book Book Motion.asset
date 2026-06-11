@@ -34,7 +34,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 451547002770030882
-      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
         totalDuration: 0.5
         frameEvents: []
     - rid: 451547002770030883
-      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
         enterOvershootEase: 9
         enterSettleEase: 9
     - rid: 451547002770030884
-      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UISpriteSequenceMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -93,7 +93,7 @@ MonoBehaviour:
         totalDuration: 0.5
         frameEvents: []
     - rid: 451547002770030885
-      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -109,3 +109,4 @@ MonoBehaviour:
         enterOvershootDurationRatio: 0.78
         enterOvershootEase: 9
         enterSettleEase: 9
+

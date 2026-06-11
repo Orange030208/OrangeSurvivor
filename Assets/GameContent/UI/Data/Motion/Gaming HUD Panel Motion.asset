@@ -34,7 +34,7 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 462115000000000001
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 1
     - rid: 462115000000000002
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -56,7 +56,7 @@ MonoBehaviour:
         toMode: 4
         toValue: {x: 1, y: 1, z: 1}
     - rid: 462115000000000003
-      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
         toMode: 2
         toValue: 0
     - rid: 462115000000000004
-      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Assembly-CSharp}
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
         targetKey: Self
         startDelay: 0
@@ -77,3 +77,4 @@ MonoBehaviour:
         fromValue: {x: 1, y: 1, z: 1}
         toMode: 4
         toValue: {x: 0.98, y: 0.98, z: 1}
+
