@@ -47,15 +47,11 @@ public class BuffController : EntityComponentBase
 
     public override void OnEnableComponent()
     {
-        GameEventBus.Subscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
-        GameEventBus.Subscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
         GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
     }
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<ApplyBuffRequestedEvent, string>(owner.RuntimeId, OnApplyBuffRequested);
-        GameEventBus.Unsubscribe<RemoveBuffRequestedEvent, string>(owner.RuntimeId, OnRemoveBuffRequested);
         GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
 
         ClearAllBuffs();
@@ -449,16 +445,6 @@ public class BuffController : EntityComponentBase
     {
         stacks = null;
         return !string.IsNullOrWhiteSpace(buffId) && buffStacksById.TryGetValue(buffId, out stacks);
-    }
-
-    private void OnApplyBuffRequested(ApplyBuffRequestedEvent eventData)
-    {
-        ApplyBuff(eventData.Request);
-    }
-
-    private void OnRemoveBuffRequested(RemoveBuffRequestedEvent eventData)
-    {
-        RemoveBuff(eventData.BuffId);
     }
 
     private void OnWaveStarted(WaveStartedEvent eventData)

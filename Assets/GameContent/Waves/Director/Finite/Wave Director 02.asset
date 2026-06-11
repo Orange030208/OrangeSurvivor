@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Wave 2
   duration: 35
   completionMode: 0
-  totalBudget: 16
-  alivePressureCap: 8
+  totalBudget: 72
+  alivePressureCap: 18
   pacingCurve:
     serializedVersion: 2
     m_Curve:
@@ -69,8 +69,8 @@ MonoBehaviour:
     tags: 1
     cost: 1.1
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -90,8 +90,8 @@ MonoBehaviour:
     tags: 9
     cost: 1.32
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -111,8 +111,8 @@ MonoBehaviour:
     tags: 104
     cost: 2.75
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:

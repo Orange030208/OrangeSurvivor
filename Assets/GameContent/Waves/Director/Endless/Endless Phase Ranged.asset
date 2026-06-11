@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Ranged Pressure
   duration: 42
   completionMode: 0
-  totalBudget: 24
-  alivePressureCap: 11
+  totalBudget: 108
+  alivePressureCap: 24
   pacingCurve:
     serializedVersion: 2
     m_Curve:
@@ -74,8 +74,8 @@ MonoBehaviour:
     tags: 1
     cost: 1.2
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -95,8 +95,8 @@ MonoBehaviour:
     tags: 9
     cost: 1.44
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -116,8 +116,8 @@ MonoBehaviour:
     tags: 12
     cost: 1.92
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -137,8 +137,8 @@ MonoBehaviour:
     tags: 12
     cost: 1.92
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:
@@ -158,8 +158,8 @@ MonoBehaviour:
     tags: 104
     cost: 3
     minGroupSize: 1
-    maxGroupSize: 2
-    cooldownSeconds: 1
+    maxGroupSize: 3
+    cooldownSeconds: 0.25
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
     spawnLocationOverride:

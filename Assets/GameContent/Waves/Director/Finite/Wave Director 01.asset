@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Wave 1
   duration: 30
   completionMode: 0
-  totalBudget: 12
-  alivePressureCap: 6
+  totalBudget: 54
+  alivePressureCap: 14
   pacingCurve:
     serializedVersion: 2
     m_Curve:
@@ -55,7 +55,7 @@ MonoBehaviour:
     tags: 1
     cost: 1
     minGroupSize: 1
-    maxGroupSize: 2
+    maxGroupSize: 3
     cooldownSeconds: 0
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
@@ -76,7 +76,7 @@ MonoBehaviour:
     tags: 9
     cost: 1.2
     minGroupSize: 1
-    maxGroupSize: 2
+    maxGroupSize: 3
     cooldownSeconds: 0
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}

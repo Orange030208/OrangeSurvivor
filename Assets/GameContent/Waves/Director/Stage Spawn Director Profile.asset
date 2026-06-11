@@ -20,8 +20,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 914f9c744a29404f96b46b3a34325141, type: 2}
   - {fileID: 11400000, guid: 2c1a53763fe8483d89a29e9550b0fa51, type: 2}
   endlessProfile: {fileID: 11400000, guid: 2d55b0dc750b49379900ab2b35aa8e71, type: 2}
-  directorTickInterval: 0.5
-  maxCatchUpTicksPerFrame: 3
+  directorTickInterval: 0.25
+  maxCatchUpTicksPerFrame: 6
   defaultSpawnLocation:
     resolverSettings:
       boundsPadding: 1

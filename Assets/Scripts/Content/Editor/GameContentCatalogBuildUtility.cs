@@ -340,11 +340,11 @@ public static class GameContentCatalogBuildUtility
                     "Wave 1",
                     30f,
                     WaveCompletionMode.TimerOnly,
-                    12f,
-                    6f,
+                    54f,
+                    14f,
                     AnimationCurve.Linear(0f, 0f, 1f, 1f),
                     new[] { new SpawnRoleTarget(SpawnRole.Melee, 1f) },
-                    BuildRoster(templates.MeleeEntries, 1f, 1, 2, 0f, 0, 0f, 100f),
+                    BuildRoster(templates.MeleeEntries, 1f, 1, 3, 0f, 0, 0f, 100f),
                     System.Array.Empty<ScriptedSpawnBeat>())),
             GetOrCreateFiniteWave("Wave Director 02", wave =>
                 wave.Configure(
@@ -352,15 +352,15 @@ public static class GameContentCatalogBuildUtility
                     "Wave 2",
                     35f,
                     WaveCompletionMode.TimerOnly,
-                    16f,
-                    8f,
+                    72f,
+                    18f,
                     CreatePacingCurve(0f, 0f, 0.35f, 0.2f, 1f, 1f),
                     new[]
                     {
                         new SpawnRoleTarget(SpawnRole.Melee, 0.75f),
                         new SpawnRoleTarget(SpawnRole.Elite, 0.25f)
                     },
-                    BuildRoster(templates.MeleeAndEliteEntries, 1.1f, 1, 2, 1f, 0, 0f, 100f),
+                    BuildRoster(templates.MeleeAndEliteEntries, 1.1f, 1, 3, 0.25f, 0, 0f, 100f),
                     System.Array.Empty<ScriptedSpawnBeat>())),
             GetOrCreateFiniteWave("Wave Director 03", wave =>
                 wave.Configure(
@@ -368,15 +368,15 @@ public static class GameContentCatalogBuildUtility
                     "Wave 3",
                     40f,
                     WaveCompletionMode.TimerOnly,
-                    20f,
-                    9f,
+                    96f,
+                    22f,
                     CreatePacingCurve(0f, 0f, 0.3f, 0.15f, 1f, 1f),
                     new[]
                     {
                         new SpawnRoleTarget(SpawnRole.Melee, 0.65f),
                         new SpawnRoleTarget(SpawnRole.Ranged, 0.35f)
                     },
-                    BuildRoster(templates.MeleeAndRangedEntries, 1.15f, 1, 2, 1f, 0, 0f, 100f),
+                    BuildRoster(templates.MeleeAndRangedEntries, 1.15f, 1, 3, 0.35f, 0, 0f, 100f),
                     System.Array.Empty<ScriptedSpawnBeat>())),
             GetOrCreateFiniteWave("Wave Director 04", wave =>
                 wave.Configure(
@@ -384,8 +384,8 @@ public static class GameContentCatalogBuildUtility
                     "Wave 4",
                     45f,
                     WaveCompletionMode.TimerOnly,
-                    24f,
-                    11f,
+                    126f,
+                    26f,
                     CreatePacingCurve(0f, 0f, 0.2f, 0.1f, 0.7f, 0.75f, 1f, 1f),
                     new[]
                     {
@@ -393,7 +393,7 @@ public static class GameContentCatalogBuildUtility
                         new SpawnRoleTarget(SpawnRole.Ranged, 0.25f),
                         new SpawnRoleTarget(SpawnRole.Elite, 0.25f)
                     },
-                    BuildRoster(templates.MixedEntries, 1.2f, 1, 2, 1.2f, 0, 0f, 100f),
+                    BuildRoster(templates.MixedEntries, 1.2f, 1, 3, 0.35f, 0, 0f, 100f),
                     BuildEliteBurstBeats(templates.EliteAnchor))),
             GetOrCreateFiniteWave("Wave Director 05", wave =>
                 wave.Configure(
@@ -401,8 +401,8 @@ public static class GameContentCatalogBuildUtility
                     "Wave 5",
                     55f,
                     templates.BossAnchor != null ? WaveCompletionMode.BossDefeated : WaveCompletionMode.TimerOnly,
-                    18f,
-                    10f,
+                    150f,
+                    28f,
                     CreatePacingCurve(0f, 0f, 0.45f, 0.35f, 1f, 0.8f),
                     new[]
                     {
@@ -410,7 +410,7 @@ public static class GameContentCatalogBuildUtility
                         new SpawnRoleTarget(SpawnRole.Ranged, 0.2f),
                         new SpawnRoleTarget(SpawnRole.Elite, 0.35f)
                     },
-                    BuildRoster(templates.MixedEntries, 1.25f, 1, 2, 1.1f, 0, 0f, 100f),
+                    BuildRoster(templates.MixedEntries, 1.25f, 1, 3, 0.3f, 0, 0f, 100f),
                     BuildBossBeat(templates.BossAnchor)))
         };
 
@@ -420,15 +420,15 @@ public static class GameContentCatalogBuildUtility
                 "Horde Rush",
                 38f,
                 WaveCompletionMode.TimerOnly,
+                84f,
                 20f,
-                10f,
                 CreatePacingCurve(0f, 0f, 0.25f, 0.2f, 1f, 1f),
                 new[]
                 {
                     new SpawnRoleTarget(SpawnRole.Melee, 0.8f),
                     new SpawnRoleTarget(SpawnRole.Elite, 0.2f)
                 },
-                BuildRoster(templates.MeleeAndEliteEntries, 1.15f, 1, 3, 0.9f, 0, 0f, 100f),
+                BuildRoster(templates.MeleeAndEliteEntries, 1.15f, 1, 4, 0.25f, 0, 0f, 100f),
                 System.Array.Empty<ScriptedSpawnBeat>()));
         EndlessPhaseCardSO rangedPhase = GetOrCreateEndlessPhase("Endless Phase Ranged", phase =>
             phase.Configure(
@@ -436,8 +436,8 @@ public static class GameContentCatalogBuildUtility
                 "Ranged Pressure",
                 42f,
                 WaveCompletionMode.TimerOnly,
+                108f,
                 24f,
-                11f,
                 CreatePacingCurve(0f, 0f, 0.3f, 0.2f, 1f, 1f),
                 new[]
                 {
@@ -445,7 +445,7 @@ public static class GameContentCatalogBuildUtility
                     new SpawnRoleTarget(SpawnRole.Ranged, 0.35f),
                     new SpawnRoleTarget(SpawnRole.Elite, 0.15f)
                 },
-                BuildRoster(templates.MixedEntries, 1.2f, 1, 2, 1f, 0, 0f, 100f),
+                BuildRoster(templates.MixedEntries, 1.2f, 1, 3, 0.25f, 0, 0f, 100f),
                 System.Array.Empty<ScriptedSpawnBeat>()));
         EndlessPhaseCardSO elitePhase = GetOrCreateEndlessPhase("Endless Phase Elite", phase =>
             phase.Configure(
@@ -453,8 +453,8 @@ public static class GameContentCatalogBuildUtility
                 "Elite Check",
                 46f,
                 WaveCompletionMode.TimerOnly,
+                132f,
                 28f,
-                12f,
                 CreatePacingCurve(0f, 0f, 0.25f, 0.15f, 0.8f, 0.85f, 1f, 1f),
                 new[]
                 {
@@ -462,7 +462,7 @@ public static class GameContentCatalogBuildUtility
                     new SpawnRoleTarget(SpawnRole.Ranged, 0.2f),
                     new SpawnRoleTarget(SpawnRole.Elite, 0.4f)
                 },
-                BuildRoster(templates.MixedEntries, 1.35f, 1, 2, 1.2f, 0, 0f, 100f),
+                BuildRoster(templates.MixedEntries, 1.35f, 1, 3, 0.3f, 0, 0f, 100f),
                 BuildEliteBurstBeats(templates.EliteAnchor)));
 
         EndlessDirectorProfileSO endlessProfile = GetOrCreateEndlessDirectorProfile();
@@ -481,8 +481,8 @@ public static class GameContentCatalogBuildUtility
             StageDirectorMode.FiniteThenEndless,
             finiteWaves,
             endlessProfile,
-            0.5f,
-            3,
+            0.25f,
+            6,
             SpawnLocationDefinition.CreateDefault());
     }
 

@@ -21,23 +21,3 @@ public readonly struct BuffApplyRequest
         DurationSeconds = durationSeconds;
     }
 }
-
-public struct ApplyBuffRequestedEvent : IGameEvent
-{
-    public BuffApplyRequest Request;
-
-    public ApplyBuffRequestedEvent(BuffApplyRequest request)
-    {
-        Request = request;
-    }
-}
-
-public struct RemoveBuffRequestedEvent : IGameEvent
-{
-    public string BuffId;
-
-    public RemoveBuffRequestedEvent(string buffId)
-    {
-        BuffId = buffId;
-    }
-}
