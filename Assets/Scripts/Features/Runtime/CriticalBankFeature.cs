@@ -35,12 +35,12 @@ public sealed class CriticalBankFeature : HitModifierFeatureBase
     {
         currentBankPoints = Mathf.Clamp(currentBankPoints, 0, MaxBankPoints);
         ClearPendingConsumption();
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
     }
 
     public override void OnUninstall()
     {
-        GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
         ClearPendingConsumption();
     }
 

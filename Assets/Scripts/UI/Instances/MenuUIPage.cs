@@ -63,7 +63,7 @@ public class MenuUIPage : PageBase
     private void OnStartButtonOnClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish<MenuStartClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.MenuStartClicked);
     }
 
     private void OnContinueButtonClicked()

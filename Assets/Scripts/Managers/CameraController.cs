@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
 
         if (target == null)
         {
@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
     private void LateUpdate()

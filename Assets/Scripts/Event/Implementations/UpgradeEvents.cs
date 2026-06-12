@@ -8,7 +8,12 @@ public enum RewardSelectionReason
     Weapon
 }
 
-public struct UpgradeRewardAvailableEvent : IGameEvent
+public enum RewardTrigger
+{
+    ChestCollected
+}
+
+public struct UpgradeRewardAvailableEvent
 {
     public int UnspentUpgradePoints;
 

@@ -28,12 +28,12 @@ public sealed class OnKillBurstFeature : FeatureBase
         cooldownRemaining = 0f;
         isApplyingBurst = false;
         processedTargets.Clear();
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
     }
 
     public override void OnUninstall()
     {
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
         cooldownRemaining = 0f;
         isApplyingBurst = false;
         processedTargets.Clear();

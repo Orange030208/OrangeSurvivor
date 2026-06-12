@@ -66,11 +66,11 @@ public class ShopManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Subscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.Register<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
+        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
         TryBindWallet();
         RefreshCurrency();
@@ -81,11 +81,11 @@ public class ShopManager : MonoBehaviour
         UnbindCurrencyWallet();
         UnbindPropertiesManager();
 
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Unsubscribe<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
-        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.UnRegister<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
+        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
     }
 
     private void Start()

@@ -59,24 +59,24 @@ public class AudioManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
-        GameEventBus.Subscribe<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
-        GameEventBus.Subscribe<AudioMusicStopRequestedEvent>(OnAudioMusicStopRequested);
-        GameEventBus.Subscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
-        GameEventBus.Subscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
-        GameEventBus.Subscribe<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
-        GameEventBus.Subscribe<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
+        YokiFrame.EventKit.Type.Register<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
+        YokiFrame.EventKit.Type.Register<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
+        YokiFrame.EventKit.Enum.Register(AudioCommand.MusicStopRequested, OnAudioMusicStopRequested);
+        YokiFrame.EventKit.Type.Register<AudioStopRequestedEvent>(OnAudioStopRequested);
+        YokiFrame.EventKit.Type.Register<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
+        YokiFrame.EventKit.Type.Register<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
+        YokiFrame.EventKit.Type.Register<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
-        GameEventBus.Unsubscribe<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
-        GameEventBus.Unsubscribe<AudioMusicStopRequestedEvent>(OnAudioMusicStopRequested);
-        GameEventBus.Unsubscribe<AudioStopRequestedEvent>(OnAudioStopRequested);
-        GameEventBus.Unsubscribe<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
-        GameEventBus.Unsubscribe<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
-        GameEventBus.Unsubscribe<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
+        YokiFrame.EventKit.Type.UnRegister<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
+        YokiFrame.EventKit.Type.UnRegister<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
+        YokiFrame.EventKit.Enum.UnRegister(AudioCommand.MusicStopRequested, OnAudioMusicStopRequested);
+        YokiFrame.EventKit.Type.UnRegister<AudioStopRequestedEvent>(OnAudioStopRequested);
+        YokiFrame.EventKit.Type.UnRegister<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
+        YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
+        YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
     }
 
     private void OnValidate()
@@ -274,7 +274,7 @@ public class AudioManager : MonoBehaviour
         PlayMusic(eventData.BgmKey, eventData.RestartIfPlaying);
     }
 
-    private void OnAudioMusicStopRequested(AudioMusicStopRequestedEvent eventData)
+    private void OnAudioMusicStopRequested()
     {
         StopMusic();
     }

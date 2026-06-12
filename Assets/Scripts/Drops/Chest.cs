@@ -132,6 +132,6 @@ public class Chest : Collection
 
     protected override void OnCollected(IEntity entity)
     {
-        GameEventBus.Publish(new ChestCollectedEvent());
+        YokiFrame.EventKit.Enum.Send(RewardTrigger.ChestCollected);
     }
 }

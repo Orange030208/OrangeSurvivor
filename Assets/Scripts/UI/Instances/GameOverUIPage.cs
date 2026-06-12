@@ -25,12 +25,12 @@ public class GameOverUIPage : PageBase
     private void OnRestartClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish<GameOverRestartClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.GameOverRestartClicked);
     }
 
     private void OnMenuClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-        GameEventBus.Publish<GameOverReturnToMenuClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.GameOverReturnToMenuClicked);
     }
 }

@@ -140,7 +140,7 @@ public class ShopUIPage : PageBase
     private void OnContinueRequested()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish<ShopContinueClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.ShopContinueClicked);
     }
 
     private void OnPropertiesPopupRequested()

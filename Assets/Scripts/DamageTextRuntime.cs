@@ -17,7 +17,7 @@ public static class DamageTextRuntime
     {
         if (isSubscribed)
         {
-            GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
+            YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
         }
 
         cachedPrefabFlow = null;
@@ -157,7 +157,7 @@ public static class DamageTextRuntime
             return;
         }
 
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
         isSubscribed = true;
     }
 }

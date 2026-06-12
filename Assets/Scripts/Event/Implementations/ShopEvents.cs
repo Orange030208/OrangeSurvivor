@@ -1,12 +1,4 @@
-public struct ShopVideoAdRerollRequestedEvent : IGameEvent
-{
-}
-
-public struct ShopContinueClickedEvent : IGameEvent
-{
-}
-
-public struct ShopFreeRerollsGrantedEvent : IGameEvent
+public struct ShopFreeRerollsGrantedEvent
 {
     public Player Player;
     public int Count;

@@ -89,13 +89,13 @@ public class StageCompleteUIPage : PageBase
     private void OnRestartClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish<StageCompleteRestartClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.StageCompleteRestartClicked);
     }
 
     private void OnMenuClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-        GameEventBus.Publish<StageCompleteReturnToMenuClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.StageCompleteReturnToMenuClicked);
     }
 
 }

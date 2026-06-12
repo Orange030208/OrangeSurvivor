@@ -69,10 +69,10 @@ public class WaveManager : MonoBehaviour, IWaveController
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
-        GameEventBus.Subscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.Register<EnemyRegisteredEvent>(OnEnemyRegistered);
+        YokiFrame.EventKit.Type.Register<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
 
         TryBindSpawnAnchor();
         PublishWaveRuntimeChanged();
@@ -80,10 +80,10 @@ public class WaveManager : MonoBehaviour, IWaveController
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
-        GameEventBus.Unsubscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.UnRegister<EnemyRegisteredEvent>(OnEnemyRegistered);
+        YokiFrame.EventKit.Type.UnRegister<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
         RunProgressionRuntime.ClearProvider(runProgressionService);
     }
 
@@ -239,8 +239,8 @@ public class WaveManager : MonoBehaviour, IWaveController
         ResetCountdownTickState();
 
         PublishWaveRuntimeChanged();
-        GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
-        GameEventBus.Publish(new WaveProgressEvent(
+        YokiFrame.EventKit.Type.Send(new WaveStartedEvent(CurrentWave, TotalWaves));
+        YokiFrame.EventKit.Type.Send(new WaveProgressEvent(
             CurrentWaveDuration,
             CurrentWaveDuration,
             currentCompletionRule.ShowsCountdownTimer));
@@ -287,7 +287,7 @@ public class WaveManager : MonoBehaviour, IWaveController
         runtimeState.CompletionTriggered = true;
         runProgressionService?.CompleteWave(CurrentWave);
         PublishWaveRuntimeChanged();
-        GameEventBus.Publish(new WaveCompletedEvent(
+        YokiFrame.EventKit.Type.Send(new WaveCompletedEvent(
             CurrentWave,
             TotalWaves,
             CurrentTimer,
@@ -340,7 +340,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             return;
         }
 
-        GameEventBus.Publish(new WaveStartedEvent(CurrentWave, TotalWaves));
+        YokiFrame.EventKit.Type.Send(new WaveStartedEvent(CurrentWave, TotalWaves));
         PublishWaveProgress();
     }
 
@@ -348,7 +348,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     {
         float waveDuration = CurrentWaveDuration;
         float remaining = CalculateRemainingWaveTime(waveDuration);
-        GameEventBus.Publish(new WaveProgressEvent(
+        YokiFrame.EventKit.Type.Send(new WaveProgressEvent(
             remaining,
             waveDuration,
             HasStarted && currentCompletionRule.ShowsCountdownTimer));
@@ -403,7 +403,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     private void PublishWaveRuntimeChanged()
     {
         WaveRuntimeViewData viewData = CreateRuntimeViewData();
-        GameEventBus.Publish(new WaveRuntimeChangedEvent(
+        YokiFrame.EventKit.Type.Send(new WaveRuntimeChangedEvent(
             viewData.CurrentWave,
             viewData.TotalWaves,
             viewData.HasStarted,

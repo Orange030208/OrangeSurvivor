@@ -1,4 +1,4 @@
-public struct ScreenShakeRequestedEvent : IGameEvent
+public struct ScreenShakeRequestedEvent
 {
     public ScreenShakeRequest Request;
 

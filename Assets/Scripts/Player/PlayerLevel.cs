@@ -118,7 +118,7 @@ public class PlayerLevel : EntityComponentBase
                 AudioSfxBridge.RequestPlay(AudioSfxKey.PlayerLevelUp);
             }
 
-            GameEventBus.Publish(new UpgradeRewardAvailableEvent(unspentUpgradePoints));
+            YokiFrame.EventKit.Type.Send(new UpgradeRewardAvailableEvent(unspentUpgradePoints));
         }
     }
 

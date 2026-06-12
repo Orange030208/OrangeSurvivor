@@ -15,12 +15,12 @@ public static class AudioPlaybackBridge
             return;
         }
 
-        GameEventBus.Publish(new AudioMusicPlayRequestedEvent(bgmKey, restartIfPlaying));
+        YokiFrame.EventKit.Type.Send(new AudioMusicPlayRequestedEvent(bgmKey, restartIfPlaying));
     }
 
     public static void RequestStopMusic()
     {
-        GameEventBus.Publish(new AudioMusicStopRequestedEvent());
+        YokiFrame.EventKit.Enum.Send(AudioCommand.MusicStopRequested);
     }
 
     // 扩展说明：业务层与状态层统一通过这里发出 BGM 播放意图，后续可替换为直接服务调用而不修改调用方。
@@ -38,16 +38,16 @@ public static class AudioPlaybackBridge
             return;
         }
 
-        GameEventBus.Publish(new AudioStopRequestedEvent(busType));
+        YokiFrame.EventKit.Type.Send(new AudioStopRequestedEvent(busType));
     }
 
     public static void RequestStopSfxGroup(string groupId)
     {
-        GameEventBus.Publish(new AudioSfxGroupStopRequestedEvent(groupId));
+        YokiFrame.EventKit.Type.Send(new AudioSfxGroupStopRequestedEvent(groupId));
     }
 
     public static void RequestSetSfxGroupVolume(string groupId, float volume)
     {
-        GameEventBus.Publish(new AudioSfxGroupVolumeChangedEvent(groupId, volume));
+        YokiFrame.EventKit.Type.Send(new AudioSfxGroupVolumeChangedEvent(groupId, volume));
     }
 }

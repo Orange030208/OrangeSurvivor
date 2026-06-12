@@ -18,13 +18,13 @@ public sealed class StateScopedPropertyModifierFeature : FeatureBase
     public override void OnInstall()
     {
         runtimeSourceId = ResolveRuntimeSourceId();
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
         ApplyForCurrentState();
     }
 
     public override void OnUninstall()
     {
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
         RemoveModifiers();
         runtimeSourceId = null;
     }

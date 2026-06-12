@@ -32,12 +32,12 @@ public sealed class ScreenShakePlayer : MonoBehaviour
     private void OnEnable()
     {
         ResolveCamera();
-        GameEventBus.Subscribe<ScreenShakeRequestedEvent>(OnScreenShakeRequested);
+        YokiFrame.EventKit.Type.Register<ScreenShakeRequestedEvent>(OnScreenShakeRequested);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<ScreenShakeRequestedEvent>(OnScreenShakeRequested);
+        YokiFrame.EventKit.Type.UnRegister<ScreenShakeRequestedEvent>(OnScreenShakeRequested);
         StopAll();
     }
 

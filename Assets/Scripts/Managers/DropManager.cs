@@ -13,12 +13,12 @@ public class DropManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
     }
 
     private void OnEntityDied(EntityDiedEvent deadEvent)

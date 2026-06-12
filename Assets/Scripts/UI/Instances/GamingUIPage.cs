@@ -58,7 +58,7 @@ public class GamingUIPage : PageBase
     private void OnPauseClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish(new PauseGameRequestedEvent());
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.PauseRequested);
     }
 
 
@@ -70,9 +70,9 @@ public class GamingUIPage : PageBase
         }
 
         UnbindHud();
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Subscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
-        GameEventBus.Subscribe<WaveProgressEvent>(OnWaveProgress);
+        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Enum.Register(WaveMilestone.AllWavesCompleted, OnAllWavesCompleted);
+        YokiFrame.EventKit.Type.Register<WaveProgressEvent>(OnWaveProgress);
         hudEventsBound = true;
 
         BindPlayerHud(context.Player);
@@ -86,9 +86,9 @@ public class GamingUIPage : PageBase
 
         if (hudEventsBound)
         {
-            GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-            GameEventBus.Unsubscribe<AllWavesCompletedEvent>(OnAllWavesCompleted);
-            GameEventBus.Unsubscribe<WaveProgressEvent>(OnWaveProgress);
+            YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
+            YokiFrame.EventKit.Enum.UnRegister(WaveMilestone.AllWavesCompleted, OnAllWavesCompleted);
+            YokiFrame.EventKit.Type.UnRegister<WaveProgressEvent>(OnWaveProgress);
             hudEventsBound = false;
         }
 

@@ -1,4 +1,4 @@
-public struct AudioBgmPlayRequestedEvent : IGameEvent
+public struct AudioBgmPlayRequestedEvent
 {
     public AudioBgmKey BgmKey;
     public bool RestartIfPlaying;
@@ -10,7 +10,7 @@ public struct AudioBgmPlayRequestedEvent : IGameEvent
     }
 }
 
-public struct AudioMusicPlayRequestedEvent : IGameEvent
+public struct AudioMusicPlayRequestedEvent
 {
     public AudioBgmKey BgmKey;
     public bool RestartIfPlaying;
@@ -22,7 +22,7 @@ public struct AudioMusicPlayRequestedEvent : IGameEvent
     }
 }
 
-public struct AudioStopRequestedEvent : IGameEvent
+public struct AudioStopRequestedEvent
 {
     public AudioBusType BusType;
 
@@ -32,11 +32,12 @@ public struct AudioStopRequestedEvent : IGameEvent
     }
 }
 
-public struct AudioMusicStopRequestedEvent : IGameEvent
+public enum AudioCommand
 {
+    MusicStopRequested
 }
 
-public struct AudioSfxGroupStopRequestedEvent : IGameEvent
+public struct AudioSfxGroupStopRequestedEvent
 {
     public string GroupId;
 
@@ -46,7 +47,7 @@ public struct AudioSfxGroupStopRequestedEvent : IGameEvent
     }
 }
 
-public struct AudioSfxGroupVolumeChangedEvent : IGameEvent
+public struct AudioSfxGroupVolumeChangedEvent
 {
     public string GroupId;
     public float Volume;
@@ -58,7 +59,7 @@ public struct AudioSfxGroupVolumeChangedEvent : IGameEvent
     }
 }
 
-public struct AudioSfxPlayRequestedEvent : IGameEvent
+public struct AudioSfxPlayRequestedEvent
 {
     public AudioSfxKey SfxKey;
     public bool HasPosition;

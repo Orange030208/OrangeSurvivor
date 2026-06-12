@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-public struct WaveStartedEvent : IGameEvent
+public struct WaveStartedEvent
 {
     public int CurrentWave;
     public int TotalWaves;
@@ -11,8 +11,7 @@ public struct WaveStartedEvent : IGameEvent
         TotalWaves = totalWaves;
     }
 }
-
-public struct WaveCompletedEvent : IGameEvent
+public struct WaveCompletedEvent
 {
     public int WaveNumber;
     public int TotalWaves;
@@ -33,11 +32,12 @@ public struct WaveCompletedEvent : IGameEvent
     }
 }
 
-public struct AllWavesCompletedEvent : IGameEvent
+public enum WaveMilestone
 {
+    AllWavesCompleted
 }
 
-public struct WaveProgressEvent : IGameEvent
+public struct WaveProgressEvent
 {
     public float RemainingTime;
     public float TotalTime;
@@ -56,7 +56,7 @@ public struct WaveProgressEvent : IGameEvent
     }
 }
 
-public struct WaveRuntimeChangedEvent : IGameEvent
+public struct WaveRuntimeChangedEvent
 {
     public int CurrentWave;
     public int TotalWaves;
@@ -88,8 +88,4 @@ public struct WaveRuntimeChangedEvent : IGameEvent
         ElapsedTime = elapsedTime;
         CurrentWaveDuration = currentWaveDuration;
     }
-}
-
-public struct ChestCollectedEvent : IGameEvent
-{
 }

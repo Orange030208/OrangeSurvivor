@@ -226,7 +226,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
         }
 
         isRuntimeRegistered = true;
-        GameEventBus.Publish(new EnemyRegisteredEvent(this, Role));
+        YokiFrame.EventKit.Type.Send(new EnemyRegisteredEvent(this, Role));
     }
 
     private void BeginSpawnSequenceIfNeeded()
@@ -296,6 +296,6 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
         }
 
         isRuntimeRegistered = false;
-        GameEventBus.Publish(new EnemyUnregisteredEvent(this, Role));
+        YokiFrame.EventKit.Type.Send(new EnemyUnregisteredEvent(this, Role));
     }
 }

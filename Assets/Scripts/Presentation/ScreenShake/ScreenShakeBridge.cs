@@ -24,7 +24,7 @@ public static class ScreenShakeBridge
             return;
         }
 
-        GameEventBus.Publish(new ScreenShakeRequestedEvent(request));
+        YokiFrame.EventKit.Type.Send(new ScreenShakeRequestedEvent(request));
     }
 
     public static bool CanRequest(ScreenShakeRequest request)

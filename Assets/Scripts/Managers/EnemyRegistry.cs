@@ -11,14 +11,14 @@ public class EnemyRegistry : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
-        GameEventBus.Subscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        YokiFrame.EventKit.Type.Register<EnemyRegisteredEvent>(OnEnemyRegistered);
+        YokiFrame.EventKit.Type.Register<EnemyUnregisteredEvent>(OnEnemyUnregistered);
     }
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<EnemyRegisteredEvent>(OnEnemyRegistered);
-        GameEventBus.Unsubscribe<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        YokiFrame.EventKit.Type.UnRegister<EnemyRegisteredEvent>(OnEnemyRegistered);
+        YokiFrame.EventKit.Type.UnRegister<EnemyUnregisteredEvent>(OnEnemyUnregistered);
     }
 
     private void OnEnemyRegistered(EnemyRegisteredEvent eventData)

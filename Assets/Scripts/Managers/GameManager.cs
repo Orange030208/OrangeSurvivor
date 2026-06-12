@@ -47,36 +47,36 @@ public class GameManager : MonoBehaviour
     {
         ResolveSceneReferences();
 
-        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Subscribe<MenuStartClickedEvent>(OnMenuStartClicked);
-        GameEventBus.Subscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
-        GameEventBus.Subscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
-        GameEventBus.Subscribe<GameOverReturnToMenuClickedEvent>(OnGameOverReturnToMenuClicked);
-        GameEventBus.Subscribe<StageCompleteRestartClickedEvent>(OnStageCompleteRestartClicked);
-        GameEventBus.Subscribe<StageCompleteReturnToMenuClickedEvent>(OnStageCompleteReturnToMenuClicked);
-        GameEventBus.Subscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
-        GameEventBus.Subscribe<PauseMenuContinueClickedEvent>(OnPauseMenuContinueClicked);
-        GameEventBus.Subscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
-        GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<WaveCompletedEvent>(OnWaveCompleted);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.MenuStartClicked, OnMenuStartClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.ShopContinueClicked, OnShopContinueClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.GameOverRestartClicked, OnGameOverRestartClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.GameOverReturnToMenuClicked, OnGameOverReturnToMenuClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.StageCompleteRestartClicked, OnStageCompleteRestartClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.StageCompleteReturnToMenuClicked, OnStageCompleteReturnToMenuClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseRequested, OnPauseGameRequested);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseMenuContinueClicked, OnPauseMenuContinueClicked);
+        YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseMenuReturnToMenuClicked, OnPauseMenuReturnToMenuClicked);
+        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
         hasMoreWaves = waveManager != null && waveManager.HasMoreWaves;
     }
 
     private void OnDisable()
     {
         stateTransitionVersion++;
-        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Unsubscribe<MenuStartClickedEvent>(OnMenuStartClicked);
-        GameEventBus.Unsubscribe<ShopContinueClickedEvent>(OnShopContinueClicked);
-        GameEventBus.Unsubscribe<GameOverRestartClickedEvent>(OnGameOverRestartClicked);
-        GameEventBus.Unsubscribe<GameOverReturnToMenuClickedEvent>(OnGameOverReturnToMenuClicked);
-        GameEventBus.Unsubscribe<StageCompleteRestartClickedEvent>(OnStageCompleteRestartClicked);
-        GameEventBus.Unsubscribe<StageCompleteReturnToMenuClickedEvent>(OnStageCompleteReturnToMenuClicked);
-        GameEventBus.Unsubscribe<PauseGameRequestedEvent>(OnPauseGameRequested);
-        GameEventBus.Unsubscribe<PauseMenuContinueClickedEvent>(OnPauseMenuContinueClicked);
-        GameEventBus.Unsubscribe<PauseMenuReturnToMenuClickedEvent>(OnPauseMenuReturnToMenuClicked);
-        GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.MenuStartClicked, OnMenuStartClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.ShopContinueClicked, OnShopContinueClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverRestartClicked, OnGameOverRestartClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverReturnToMenuClicked, OnGameOverReturnToMenuClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteRestartClicked, OnStageCompleteRestartClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteReturnToMenuClicked, OnStageCompleteReturnToMenuClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseRequested, OnPauseGameRequested);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuContinueClicked, OnPauseMenuContinueClicked);
+        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuReturnToMenuClicked, OnPauseMenuReturnToMenuClicked);
+        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
     }
 
     private void Start()
@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
             ApplySimulationState();
             EnterState(oldState, currentGameState);
             ApplyStateMusic(currentGameState);
-            GameEventBus.Publish(new GameStateChangedEvent(oldState, currentGameState));
+            YokiFrame.EventKit.Type.Send(new GameStateChangedEvent(oldState, currentGameState));
         }
         finally
         {
@@ -419,7 +419,7 @@ public class GameManager : MonoBehaviour
             isEnteringPostWaveStateAfterCleanup = true;
             if (!completedEvent.HasNextWave)
             {
-                GameEventBus.Publish<AllWavesCompletedEvent>();
+                YokiFrame.EventKit.Enum.Send(WaveMilestone.AllWavesCompleted);
                 AudioSfxBridge.RequestPlay(AudioSfxKey.StageCompleted);
                 transitionRequested = true;
                 TransitionToState(GameState.StageComplete);
@@ -873,7 +873,7 @@ public class GameManager : MonoBehaviour
         }
 
         player = Instantiate(playerPrefab, playerSpawnPosition, Quaternion.identity);
-        GameEventBus.Publish(new PlayerSpawnedEvent(player));
+        YokiFrame.EventKit.Type.Send(new PlayerSpawnedEvent(player));
     }
 
     private void SetPaused(bool paused)

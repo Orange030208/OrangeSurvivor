@@ -27,12 +27,12 @@ public sealed class OnHitApplyBuffFeature : FeatureBase
 
     public override void OnInstall()
     {
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
     }
 
     public override void OnUninstall()
     {
-        GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
     }
 
     private void OnEntityDamaged(EntityDamagedEvent eventData)

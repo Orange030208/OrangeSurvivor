@@ -12,7 +12,7 @@ public static class EnemyDamagedSfxRuntime
     {
         if (isSubscribed)
         {
-            GameEventBus.Unsubscribe<EntityDamagedEvent>(OnEntityDamaged);
+            YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
         }
 
         isSubscribed = false;
@@ -47,7 +47,7 @@ public static class EnemyDamagedSfxRuntime
             return;
         }
 
-        GameEventBus.Subscribe<EntityDamagedEvent>(OnEntityDamaged);
+        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
         isSubscribed = true;
     }
 }

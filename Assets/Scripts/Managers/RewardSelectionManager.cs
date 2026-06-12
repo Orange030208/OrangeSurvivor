@@ -34,12 +34,12 @@ public class RewardSelectionManager : MonoBehaviour
     private void OnEnable()
     {
         EnsureHandlers();
-        GameEventBus.Subscribe<ChestCollectedEvent>(OnChestCollected);
-        GameEventBus.Subscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Subscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Enum.Register(RewardTrigger.ChestCollected, OnChestCollected);
+        YokiFrame.EventKit.Type.Register<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
+        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
         TryBindSceneReferences();
         TryBindPlayerReferences();
@@ -47,12 +47,12 @@ public class RewardSelectionManager : MonoBehaviour
 
     private void OnDisable()
     {
-        GameEventBus.Unsubscribe<ChestCollectedEvent>(OnChestCollected);
-        GameEventBus.Unsubscribe<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
-        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
-        GameEventBus.Unsubscribe<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        YokiFrame.EventKit.Enum.UnRegister(RewardTrigger.ChestCollected, OnChestCollected);
+        YokiFrame.EventKit.Type.UnRegister<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
+        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
 
         ResetRewardFlow(resumeWave: false);
     }

@@ -21,10 +21,10 @@ public class StageCompleteSummaryManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Subscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Subscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.Register<WaveCompletedEvent>(OnWaveCompleted);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
 
         TryBindWallet();
     }
@@ -32,10 +32,10 @@ public class StageCompleteSummaryManager : MonoBehaviour
     private void OnDisable()
     {
         UnbindWallet();
-        GameEventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-        GameEventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
-        GameEventBus.Unsubscribe<EntityDiedEvent>(OnEntityDied);
-        GameEventBus.Unsubscribe<PlayerSpawnedEvent>(OnPlayerSpawned);
+        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
+        YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted);
+        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
     }
 
     private void Update()

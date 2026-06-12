@@ -103,7 +103,7 @@ public class GamePauseMenu : PageBase
     private void OnContinueClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-        GameEventBus.Publish<PauseMenuContinueClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.PauseMenuContinueClicked);
     }
 
     private void OnRestartClicked()
@@ -115,7 +115,7 @@ public class GamePauseMenu : PageBase
     private void OnMenuClicked()
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-        GameEventBus.Publish<PauseMenuReturnToMenuClickedEvent>();
+        YokiFrame.EventKit.Enum.Send(GameFlowCommand.PauseMenuReturnToMenuClicked);
     }
 
     private void OnStatusClicked()

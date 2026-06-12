@@ -47,12 +47,12 @@ public class BuffController : EntityComponentBase
 
     public override void OnEnableComponent()
     {
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
     }
 
     public override void OnDisableComponent()
     {
-        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
 
         ClearAllBuffs();
     }
@@ -379,7 +379,7 @@ public class BuffController : EntityComponentBase
             return;
         }
 
-        GameEventBus.Publish(new BuffStackChangedEvent(owner, buffData, previousStackCount, currentStackCount));
+        YokiFrame.EventKit.Type.Send(new BuffStackChangedEvent(owner, buffData, previousStackCount, currentStackCount));
     }
 
     private void PublishStackRemovedEvent(BuffDataSO buffData, bool expired, int remainingStackCount)
@@ -391,12 +391,12 @@ public class BuffController : EntityComponentBase
 
         if (expired)
         {
-            GameEventBus.Publish(new BuffStackExpiredEvent(owner, buffData, SINGLE_STACK_CHANGE_COUNT,
+            YokiFrame.EventKit.Type.Send(new BuffStackExpiredEvent(owner, buffData, SINGLE_STACK_CHANGE_COUNT,
                 remainingStackCount));
             return;
         }
 
-        GameEventBus.Publish(new BuffStackRemovedEvent(owner, buffData, SINGLE_STACK_CHANGE_COUNT,
+        YokiFrame.EventKit.Type.Send(new BuffStackRemovedEvent(owner, buffData, SINGLE_STACK_CHANGE_COUNT,
             remainingStackCount));
     }
 

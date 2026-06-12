@@ -182,14 +182,14 @@ public sealed class MonsterTestSceneController : MonoBehaviour
 
     private static void PublishTestGameState()
     {
-        GameEventBus.Publish(new GameStateChangedEvent(GameState.None, GameState.Game));
+        YokiFrame.EventKit.Type.Send(new GameStateChangedEvent(GameState.None, GameState.Game));
     }
 
     private void PublishTestPlayerSpawned()
     {
         if (testPlayer != null)
         {
-            GameEventBus.Publish(new PlayerSpawnedEvent(testPlayer));
+            YokiFrame.EventKit.Type.Send(new PlayerSpawnedEvent(testPlayer));
         }
     }
 

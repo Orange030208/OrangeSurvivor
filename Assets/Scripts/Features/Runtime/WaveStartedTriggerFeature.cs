@@ -23,12 +23,12 @@ public sealed class WaveStartedTriggerFeature : FeatureBase
     public override void OnInstall()
     {
         runtimeSourceId = ResolveRuntimeSourceId();
-        GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
     }
 
     public override void OnUninstall()
     {
-        GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
         RemoveWaveStartPropertyModifiers();
         runtimeSourceId = null;
     }

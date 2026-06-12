@@ -25,7 +25,7 @@ public sealed class ChargeBasedDamageImmunityFeature : HitModifierFeatureBase, I
         ResetCharges();
         if (refreshOnWaveStart)
         {
-            GameEventBus.Subscribe<WaveStartedEvent>(OnWaveStarted);
+            YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
         }
     }
 
@@ -33,7 +33,7 @@ public sealed class ChargeBasedDamageImmunityFeature : HitModifierFeatureBase, I
     {
         if (refreshOnWaveStart)
         {
-            GameEventBus.Unsubscribe<WaveStartedEvent>(OnWaveStarted);
+            YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
         }
     }
 

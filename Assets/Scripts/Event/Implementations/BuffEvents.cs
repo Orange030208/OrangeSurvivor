@@ -1,4 +1,4 @@
-public struct BuffStackChangedEvent : IGameEvent
+public struct BuffStackChangedEvent
 {
     public Entity Owner;
     public BuffDataSO BuffData;
@@ -14,7 +14,7 @@ public struct BuffStackChangedEvent : IGameEvent
     }
 }
 
-public struct BuffStackRemovedEvent : IGameEvent
+public struct BuffStackRemovedEvent
 {
     public Entity Owner;
     public BuffDataSO BuffData;
@@ -30,7 +30,7 @@ public struct BuffStackRemovedEvent : IGameEvent
     }
 }
 
-public struct BuffStackExpiredEvent : IGameEvent
+public struct BuffStackExpiredEvent
 {
     public Entity Owner;
     public BuffDataSO BuffData;

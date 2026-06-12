@@ -153,7 +153,7 @@ public class HealthComponent : EntityComponentBase
         appliedResult = result.WithFinalDamage(realDamage);
         lastDamageSource = appliedResult.Source;
         OnDamaged?.Invoke(appliedResult);
-        GameEventBus.Publish(new EntityDamagedEvent(owner, appliedResult));
+        YokiFrame.EventKit.Type.Send(new EntityDamagedEvent(owner, appliedResult));
         ApplyLifeStealToSource(appliedResult);
 
         PublishHealthChanged();
@@ -232,7 +232,7 @@ public class HealthComponent : EntityComponentBase
         isDeathSequenceRunning = true;
         owner.DisableRuntime();
         OnDeathSequenceStarted?.Invoke();
-        GameEventBus.Publish(new EntityDiedEvent(owner, transform.position, lastDamageSource, deathReason));
+        YokiFrame.EventKit.Type.Send(new EntityDiedEvent(owner, transform.position, lastDamageSource, deathReason));
         StartCoroutine(RunDeathSequence());
     }
 

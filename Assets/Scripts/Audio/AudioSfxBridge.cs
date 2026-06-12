@@ -13,7 +13,7 @@ public static class AudioSfxBridge
             return;
         }
 
-        GameEventBus.Publish(new AudioSfxPlayRequestedEvent(sfxKey));
+        YokiFrame.EventKit.Type.Send(new AudioSfxPlayRequestedEvent(sfxKey));
     }
 
     public static void RequestPlay(AudioSfxKey sfxKey, UnityEngine.Vector2 position)
@@ -23,6 +23,6 @@ public static class AudioSfxBridge
             return;
         }
 
-        GameEventBus.Publish(new AudioSfxPlayRequestedEvent(sfxKey, position));
+        YokiFrame.EventKit.Type.Send(new AudioSfxPlayRequestedEvent(sfxKey, position));
     }
 }

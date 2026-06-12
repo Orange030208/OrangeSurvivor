@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct GameStateChangedEvent : IGameEvent
+public struct GameStateChangedEvent
 {
     public GameState OldState;
     public GameState NewState;
@@ -12,15 +12,20 @@ public struct GameStateChangedEvent : IGameEvent
     }
 }
 
-public struct PauseGameRequestedEvent : IGameEvent
+public enum GameFlowCommand
 {
+    MenuStartClicked,
+    ShopContinueClicked,
+    GameOverRestartClicked,
+    GameOverReturnToMenuClicked,
+    StageCompleteRestartClicked,
+    StageCompleteReturnToMenuClicked,
+    PauseRequested,
+    PauseMenuContinueClicked,
+    PauseMenuReturnToMenuClicked
 }
 
-public struct MenuStartClickedEvent : IGameEvent
-{
-}
-
-public struct PlayerSpawnedEvent : IGameEvent
+public struct PlayerSpawnedEvent
 {
     public Player Player;
 
@@ -30,23 +35,8 @@ public struct PlayerSpawnedEvent : IGameEvent
     }
 }
 
-public struct GameOverRestartClickedEvent : IGameEvent
-{
-}
 
-public struct GameOverReturnToMenuClickedEvent : IGameEvent
-{
-}
-
-public struct StageCompleteRestartClickedEvent : IGameEvent
-{
-}
-
-public struct StageCompleteReturnToMenuClickedEvent : IGameEvent
-{
-}
-
-public struct EntityDamagedEvent : IGameEvent
+public struct EntityDamagedEvent
 {
     public Entity Entity;
     public HitResult HitResult;
@@ -64,7 +54,7 @@ public enum EntityDeathReason
     WaveCleanup = 1
 }
 
-public struct EntityDiedEvent : IGameEvent
+public struct EntityDiedEvent
 {
     public Entity Entity;
     public Vector2 Position;
@@ -88,14 +78,4 @@ public struct EntityDiedEvent : IGameEvent
         Source = source;
         Reason = reason;
     }
-}
-
-// 暂停菜单页面内部点击“继续”后的意图事件，交给 GameManager 统一处理。
-public struct PauseMenuContinueClickedEvent : IGameEvent
-{
-}
-
-// 暂停菜单页面内部点击“返回菜单”后的意图事件，交给 GameManager 统一处理。
-public struct PauseMenuReturnToMenuClickedEvent : IGameEvent
-{
 }
