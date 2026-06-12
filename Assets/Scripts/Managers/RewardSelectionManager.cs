@@ -467,12 +467,20 @@ public class RewardSelectionManager : MonoBehaviour
             playerLevel,
             accessoryManager,
             weaponsHolder,
+            ResolvePlayerLuck(),
             currentWaveNumber,
             provider != null ? provider.RewardCards : null,
             provider != null ? provider.Accessories : null,
             provider != null ? provider.Weapons : null,
             provider != null ? provider.ContentTierWeightProfile : null,
             this);
+    }
+
+    private float ResolvePlayerLuck()
+    {
+        return player != null && player.TryGetComponent(out PropertiesManager propertiesManager)
+            ? propertiesManager.GetPropValue(PropType.Luck)
+            : 0f;
     }
 
     private readonly struct RewardSelectionRequest

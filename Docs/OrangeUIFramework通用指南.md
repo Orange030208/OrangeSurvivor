@@ -41,7 +41,7 @@ OrangeUIFramework 是一个面向 Unity UGUI 的运行时 UI 管理框架，用�
 框架默认依赖：
 
 - Unity UGUI。
-- TextMeshPro，如果使用内置本地化文本组件。
+- TextMeshPro，如果使用 TMP 文本组件。
 - UniTask，用于异步打开、关闭、等待结果和取消。
 - DOTween，如果使用 `UIMotionTransition`、`UIMotionPlayer` 或 Motion Track。
 
@@ -74,9 +74,6 @@ Assets/Scripts/OrangeUIFramework/
       UIMotion/
         V2/
           Tracks/
-  Localization/
-    Runtime/
-    Data/
   Editor/
 ```
 
@@ -1208,33 +1205,6 @@ Target: VisualRoot
 
 这样 Motion 资产可以继续使用 `targetKey = Self`，实际运动作用到视觉节点。
 
-## 21. 本地化
-
-框架提供轻量本地化模块：
-
-- `LocalizationService`
-- `ILocalizationService`
-- `LocalizationTable`
-- `LocalizationEntry`
-- `LocalizedText`
-
-`LocalizationService`：
-
-- 维护当前语言。
-- 按语言查找 `LocalizationTable`。
-- 找不到 key 时返回 key。
-- 支持简单 `{arg}` 占位替换。
-- 语言变化时触发 `LanguageChanged`。
-
-`LocalizedText`：
-
-- 要求同对象有 `TMP_Text`。
-- 启用时绑定服务。
-- 语言变化时自动刷新。
-- 支持运行时修改 key 和参数。
-
-本地化模块是可选能力。项目也可以接入 Unity Localization 或其他本地化系统，但应通过接口或适配层隔离。
-
 ## 22. 新增 Page 流程
 
 1. 新增脚本继承 `PageBase`。
@@ -1667,7 +1637,7 @@ AI 或自动化脚本修改 UI 时，必须先判断：
 1. 拷贝 `OrangeUIFramework` 运行时代码。
 2. 安装 UniTask。
 3. 如使用动画，安装 DOTween。
-4. 如使用本地化文本，安装 TextMeshPro。
+4. 如使用 TMP 文本组件，安装 TextMeshPro。
 5. 创建 `CanvasProfile`。
 6. 创建 `UIFrameworkSettings`。
 7. 创建 `ViewCatalog`。

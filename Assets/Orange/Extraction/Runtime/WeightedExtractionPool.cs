@@ -36,6 +36,8 @@ namespace Orange.Extraction
 
         public IReadOnlyList<WeightedExtractionEntry<TItem, TContext>> Entries => new ReadOnlyCollection<WeightedExtractionEntry<TItem, TContext>>(entries);
         public int Count => entries.Count;
+        public LinkedList<IExtractionWeightModifier<TItem, TContext>> WeightModifiers { get; } =
+            new LinkedList<IExtractionWeightModifier<TItem, TContext>>();
         protected IExtractionRandom Random => random;
 
         public WeightedExtractionEntry<TItem, TContext> AddEntry(
@@ -105,6 +107,34 @@ namespace Orange.Extraction
         public void Clear()
         {
             entries.Clear();
+        }
+
+        public void AddWeightModifier(IExtractionWeightModifier<TItem, TContext> weightModifier)
+        {
+            if (weightModifier == null)
+            {
+                throw new ArgumentNullException(nameof(weightModifier));
+            }
+
+            WeightModifiers.AddLast(weightModifier);
+        }
+
+        public void AddWeightModifiers(IEnumerable<IExtractionWeightModifier<TItem, TContext>> weightModifiers)
+        {
+            if (weightModifiers == null)
+            {
+                throw new ArgumentNullException(nameof(weightModifiers));
+            }
+
+            if (ReferenceEquals(weightModifiers, WeightModifiers))
+            {
+                weightModifiers = new List<IExtractionWeightModifier<TItem, TContext>>(WeightModifiers);
+            }
+
+            foreach (IExtractionWeightModifier<TItem, TContext> weightModifier in weightModifiers)
+            {
+                AddWeightModifier(weightModifier);
+            }
         }
 
         public ExtractionEvaluation<TItem> Evaluate(TContext context)
@@ -201,15 +231,46 @@ namespace Orange.Extraction
 
         private float CalculateFinalWeight(WeightedExtractionEntry<TItem, TContext> entry, TContext context)
         {
-            float finalWeight = entry.BaseWeight;
+            entry.CurrentWeight = entry.BaseWeight;
 
-            if (entry.WeightModifier != null)
+            // Entry modifiers resolve the inner weight first, then the pool applies outer-stage modifiers.
+            ApplyWeightModifiers(entry.WeightModifiers, entry, context);
+            ApplyWeightModifiers(WeightModifiers, entry, context);
+
+            ExtractionValidation.ThrowIfInvalidFinalWeight(entry.CurrentWeight, entry.EntryId);
+            return entry.CurrentWeight < 0f ? 0f : entry.CurrentWeight;
+        }
+
+        private void ApplyWeightModifiers(
+            IEnumerable<IExtractionWeightModifier<TItem, TContext>> modifiers,
+            WeightedExtractionEntry<TItem, TContext> entry,
+            TContext context)
+        {
+            if (modifiers == null)
             {
-                finalWeight = entry.WeightModifier.ModifyWeight(entry, entry.BaseWeight, context);
+                return;
             }
 
-            ExtractionValidation.ThrowIfInvalidFinalWeight(finalWeight, entry.EntryId);
-            return finalWeight < 0f ? 0f : finalWeight;
+            foreach (IExtractionWeightModifier<TItem, TContext> modifier in modifiers)
+            {
+                ApplyWeightModifier(modifier, entry, context);
+            }
+        }
+
+        private static void ApplyWeightModifier(
+            IExtractionWeightModifier<TItem, TContext> modifier,
+            WeightedExtractionEntry<TItem, TContext> entry,
+            TContext context)
+        {
+            if (modifier == null)
+            {
+                return;
+            }
+
+            entry.CurrentWeight = entry.CurrentWeight < 0f ? 0f : entry.CurrentWeight;
+            float modifiedWeight = modifier.ModifyWeight(entry, context);
+            ExtractionValidation.ThrowIfInvalidFinalWeight(modifiedWeight, entry.EntryId);
+            entry.CurrentWeight = modifiedWeight < 0f ? 0f : modifiedWeight;
         }
 
         private bool TryDrawFromEvaluation(

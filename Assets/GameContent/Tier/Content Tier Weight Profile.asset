@@ -16,3 +16,7 @@ MonoBehaviour:
   rareWeight: 30
   epicWeight: 0
   legendaryWeight: 0
+  commonWeightPerLuckPoint: -1
+  rareWeightPerLuckPoint: 20
+  epicWeightPerLuckPoint: 20
+  legendaryWeightPerLuckPoint: 10

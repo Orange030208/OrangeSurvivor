@@ -30,6 +30,12 @@ public sealed class UpgradeRewardSelectionHandler : IRewardSelectionHandler
         }
 
         WeightedExtractionPool<RewardCardSO, RewardSelectionHandlerContext> pool = new();
+        pool.AddWeightModifier(
+            new ContentTierLuckWeightModifier<RewardCardSO, RewardSelectionHandlerContext>(
+                context.TierWeightProfile,
+                card => card != null ? card.Tier : ContentTier.Common,
+                handlerContext => handlerContext != null ? handlerContext.Luck : 0f));
+
         for (int i = 0; i < context.RewardCards.Count; i++)
         {
             RewardCardSO card = context.RewardCards[i];

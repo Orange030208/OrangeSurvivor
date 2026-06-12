@@ -1,0 +1,4 @@
+interface:
+  display_name: "Survivors UI Prefab Workflow"
+  short_description: "Survivors UGUI prefab build and verification workflow"
+  default_prompt: "Use $survivors-ui-prefab-workflow to build or revise this Survivors UGUI prefab, preserve bindings, set intentional anchors and pivots, reuse local motion patterns, and clean temporary artifacts."

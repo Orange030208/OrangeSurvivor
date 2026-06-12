@@ -166,6 +166,15 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
 
             ContentTier tier = ContentTierResolver.FromWeaponLevel(DEFAULT_WEAPON_LEVEL);
             WeightedExtractionPool<WeaponDataSO, RewardSelectionHandlerContext> pool = new();
+            if (context.TierWeightProfile != null)
+            {
+                pool.AddWeightModifier(
+                    new ContentTierLuckWeightModifier<WeaponDataSO, RewardSelectionHandlerContext>(
+                        context.TierWeightProfile,
+                        _ => tier,
+                        handlerContext => handlerContext != null ? handlerContext.Luck : 0f));
+            }
+
             for (int i = 0; i < context.Weapons.Count; i++)
             {
                 WeaponDataSO weapon = context.Weapons[i];
@@ -210,6 +219,12 @@ public sealed class EquipmentRewardSelectionHandler : IRewardSelectionHandler
             }
 
             WeightedExtractionPool<AccessoryDataSO, RewardSelectionHandlerContext> pool = new();
+            pool.AddWeightModifier(
+                new ContentTierLuckWeightModifier<AccessoryDataSO, RewardSelectionHandlerContext>(
+                    context.TierWeightProfile,
+                    accessory => accessory != null ? accessory.Tier : ContentTier.Common,
+                    handlerContext => handlerContext != null ? handlerContext.Luck : 0f));
+
             for (int i = 0; i < context.Accessories.Count; i++)
             {
                 AccessoryDataSO accessory = context.Accessories[i];

@@ -412,7 +412,7 @@ public class ShopManager : MonoBehaviour
             return default;
         }
 
-        ShopExtractionContext context = new(ResolveAccessoryManager());
+        ShopExtractionContext context = new(ResolveAccessoryManager(), ResolvePlayerLuck());
         if (provider.ContentTierWeightProfile == null)
         {
             Debug.LogError(
@@ -608,6 +608,13 @@ public class ShopManager : MonoBehaviour
                 propertiesManager.GetPropValue(PropType.ShopPriceDiscount))
             : 0f;
         return Mathf.Max(PropValueUtility.MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, 1f - discount);
+    }
+
+    private float ResolvePlayerLuck()
+    {
+        return propertiesManager != null
+            ? propertiesManager.GetPropValue(PropType.Luck)
+            : 0f;
     }
 
     private float ResolveRunPriceMultiplier()

@@ -426,7 +426,7 @@ public class SettingsPanelManager : PopupBase
         int index = activeProfile.IndexOfLanguage(editingState.LanguageCode);
         editingState.LanguageCode = activeProfile.GetLanguageAt(WrapIndex(index + offset, activeProfile.GetLanguageCount()));
         RefreshSettingsView();
-        SaveAndApplyLanguage();
+        SaveLanguagePreference();
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
     }
 
@@ -594,12 +594,12 @@ public class SettingsPanelManager : PopupBase
         }
     }
 
-    private void SaveAndApplyLanguage()
+    private void SaveLanguagePreference()
     {
+        // 语言偏好只做持久化，新的本地化系统会在独立层接管实际切换。
         editingState.Sanitize();
         savedState.LanguageCode = editingState.LanguageCode;
         GameSettingsService.Save(savedState);
-        GameSettingsService.ApplyLanguage(savedState.LanguageCode).Forget();
     }
 
     private void ApplyEditingStateToView()

@@ -10,7 +10,14 @@ public sealed class ShopExtractionPool : WeightedExtractionPool<ShopExtractionCa
         IExtractionRandom random = null)
         : base(random)
     {
-        AddCandidates(candidates, tierWeightProfile ?? throw new ArgumentNullException(nameof(tierWeightProfile)));
+        ContentTierWeightProfileSO resolvedTierWeightProfile =
+            tierWeightProfile ?? throw new ArgumentNullException(nameof(tierWeightProfile));
+        AddWeightModifier(
+            new ContentTierLuckWeightModifier<ShopExtractionCandidate, ShopExtractionContext>(
+                resolvedTierWeightProfile,
+                candidate => candidate.Tier,
+                context => context.Luck));
+        AddCandidates(candidates, resolvedTierWeightProfile);
     }
 
     private void AddCandidates(

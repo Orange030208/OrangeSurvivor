@@ -10,7 +10,7 @@
 
 - 业务类继承 `WeightedExtractionPool<TItem, TContext>`。
 - 使用一组业务数据初始化统一基础权重条目。
-- 每个条目拥有 `EntryId`、`Item`、`BaseWeight`、可选可抽条件、可选权重修改器。
+- 每个条目拥有 `EntryId`、`Item`、`BaseWeight`、可选可抽条件、可选权重修改链。
 - 支持 `Evaluate` 权重预览、`TryDrawOne` 单抽、`DrawManyUnique` 不放回多抽。
 - 支持注入 `IExtractionRandom`，用于固定 seed、测试复现和抽取问题排查。
 
@@ -36,17 +36,17 @@
 - `Item`：实际被抽取的数据。
 - `BaseWeight`：基础权重，必须是有限且大于等于 0 的数值。
 - `Eligibility`：可选可抽条件；返回 `false` 时该条目不会参与本次抽取。
-- `WeightModifier`：可选权重修改器；用于根据上下文计算最终有效权重。
+- `WeightModifiers`：可选有序权重修改链；用于按添加顺序叠加多个修改器。
 
 ### IExtractionWeightModifier<TItem, TContext>
 
-用于定义业务权重变化规则。修改器接收条目、基础权重和上下文，返回最终权重。
+用于定义业务权重变化规则。修改器接收条目和上下文，直接读取 `entry.CurrentWeight` 作为当前阶段权重输入，返回调整后的权重。
 
 注意：
 
 - 返回负数会被框架钳制为 0。
 - 返回 `NaN` 或无穷大会抛出异常。
-- 当前每个条目只挂一个修改器；多个规则需要业务侧自行封装为组合修改器。
+- 条目可以挂多个修改器，顺序由链表的插入顺序决定。
 
 ### IExtractionRandom
 
@@ -58,10 +58,11 @@
 
 1. 遍历所有候选条目。
 2. 执行 `Eligibility`，不可抽条目标记为 `Ineligible`。
-3. 对可抽条目执行 `WeightModifier`，得到最终权重。
-4. 最终权重小于等于 0 的条目标记为 `ZeroWeight`。
-5. 最终权重大于 0 的条目标记为 `Drawable`，加入总权重。
-6. 根据随机值和总权重选中一个 `Drawable` 条目。
+3. 先对可抽条目的 `WeightModifiers` 链依次执行修改器，得到条目内部权重。
+4. 再对抽取池自身的 `WeightModifiers` 链执行修改器，得到外层池级最终权重。
+5. 最终权重小于等于 0 的条目标记为 `ZeroWeight`。
+6. 最终权重大于 0 的条目标记为 `Drawable`，加入总权重。
+7. 根据随机值和总权重选中一个 `Drawable` 条目。
 
 `Evaluate(context)` 只执行第 1 到第 5 步，不消耗随机数，适合 UI 预览、调试输出和测试断言。
 
@@ -110,12 +111,9 @@ using Orange.Extraction;
 
 public sealed class LuckWeaponWeightModifier : IExtractionWeightModifier<WeaponDataSO, WeaponDrawContext>
 {
-    public float ModifyWeight(
-        WeightedExtractionEntry<WeaponDataSO, WeaponDrawContext> entry,
-        float baseWeight,
-        WeaponDrawContext context)
+    public float ModifyWeight(WeightedExtractionEntry<WeaponDataSO, WeaponDrawContext> entry, WeaponDrawContext context)
     {
-        return baseWeight * (1f + context.Luck * 0.01f);
+        return entry.CurrentWeight + (context.Luck * 0.01f);
     }
 }
 ```
@@ -163,7 +161,7 @@ pool.AddEntry(
 - 不提供抽取历史持久化。
 - 不提供可视化调试窗口。
 
-这些能力可以在业务层通过 `TContext`、`Eligibility`、`IExtractionWeightModifier` 先行组合实现。只有当多个业务系统反复需要同一种能力时，再考虑下沉到框架层。
+这些能力可以在业务层通过 `TContext`、`Eligibility` 和 `WeightModifiers` 先行组合实现。只有当多个业务系统反复需要同一种能力时，再考虑下沉到框架层。
 
 ## 7. 后续可选增强
 
@@ -172,7 +170,7 @@ pool.AddEntry(
 - 增加重复 `EntryId` 检查。
 - 在候选快照中增加概率百分比字段。
 - 支持按 `EntryId` 临时排除候选。
-- 文档化或内置 `CompositeWeightModifier`。
+- 增加更完整的 `WeightModifiers` 调试输出或条件插入辅助 API。
 
 中等增强：
 
@@ -189,7 +187,7 @@ pool.AddEntry(
 ## 8. 使用建议
 
 - 框架层只放通用抽取机制，不写死武器、稀有度、商店、波次等业务概念。
-- 业务变化优先放进 `TContext`、`Eligibility` 和 `IExtractionWeightModifier`。
+- 业务变化优先放进 `TContext`、`Eligibility` 和 `WeightModifiers`。
 - 需要复现问题时，优先注入固定 seed 或固定序列的 `IExtractionRandom`。
-- 多个权重规则叠加时，先在业务侧封装组合修改器，等规则稳定后再考虑沉淀通用实现。
+- 多个权重规则叠加时，优先直接追加到 `WeightModifiers` 链中；等规则稳定后，再考虑进一步封装复用型修改器。
 - 接入 UI 概率预览时优先使用 `Evaluate(context)`，不要为了预览调用真实抽取。

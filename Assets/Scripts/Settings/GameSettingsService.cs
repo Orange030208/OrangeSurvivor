@@ -1,5 +1,3 @@
-using Cysharp.Threading.Tasks;
-using Orange.UIFramework;
 using UnityEngine;
 
 public static class GameSettingsService
@@ -85,7 +83,6 @@ public static class GameSettingsService
 
         state.Sanitize();
         ApplyAudio(state);
-        ApplyLanguage(state.LanguageCode).Forget();
 
         if (applyDisplay)
         {
@@ -109,14 +106,6 @@ public static class GameSettingsService
         audioManager.SetMasterVolume(state.MasterVolume);
         audioManager.SetSfxVolume(state.SfxVolume);
         audioManager.SetMusicVolume(state.MusicVolume);
-    }
-
-    public static UniTask ApplyLanguage(string languageCode)
-    {
-        LocalizationService localizationService = LocalizationService.Current;
-        return localizationService != null
-            ? localizationService.SetLanguageAsync(NormalizeLanguageCode(languageCode))
-            : UniTask.CompletedTask;
     }
 
     public static string NormalizeLanguageCode(string languageCode)

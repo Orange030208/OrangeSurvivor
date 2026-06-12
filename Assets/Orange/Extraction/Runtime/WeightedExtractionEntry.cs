@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Orange.Extraction
 {
@@ -27,14 +28,46 @@ namespace Orange.Extraction
             Item = item;
             BaseWeight = baseWeight;
             Eligibility = eligibility;
-            WeightModifier = weightModifier;
+            WeightModifiers = new LinkedList<IExtractionWeightModifier<TItem, TContext>>();
+
+            if (weightModifier != null)
+            {
+                WeightModifiers.AddLast(weightModifier);
+            }
         }
 
         public string EntryId { get; }
         public TItem Item { get; }
         public float BaseWeight { get; }
         public ExtractionEligibility<TItem, TContext> Eligibility { get; }
-        public IExtractionWeightModifier<TItem, TContext> WeightModifier { get; }
+        /// <summary>
+        /// The current staged weight used while modifiers are being evaluated.
+        /// </summary>
+        public float CurrentWeight { get; set; }
+        public LinkedList<IExtractionWeightModifier<TItem, TContext>> WeightModifiers { get; }
+
+        public void AddWeightModifier(IExtractionWeightModifier<TItem, TContext> weightModifier)
+        {
+            WeightModifiers.AddLast(weightModifier);
+        }
+
+        public void AddWeightModifiers(IEnumerable<IExtractionWeightModifier<TItem, TContext>> weightModifiers)
+        {
+            if (weightModifiers == null)
+            {
+                throw new ArgumentNullException(nameof(weightModifiers));
+            }
+
+            if (ReferenceEquals(weightModifiers, WeightModifiers))
+            {
+                weightModifiers = new List<IExtractionWeightModifier<TItem, TContext>>(WeightModifiers);
+            }
+
+            foreach (IExtractionWeightModifier<TItem, TContext> weightModifier in weightModifiers)
+            {
+                WeightModifiers.AddLast(weightModifier);
+            }
+        }
 
         public bool IsEligible(TContext context)
         {

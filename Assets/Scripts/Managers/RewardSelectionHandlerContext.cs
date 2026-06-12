@@ -8,6 +8,7 @@ public sealed class RewardSelectionHandlerContext
         PlayerLevel playerLevel,
         AccessoryManager accessoryManager,
         WeaponsHolder weaponsHolder,
+        float luck,
         int currentWaveNumber,
         IReadOnlyList<RewardCardSO> rewardCards,
         IReadOnlyList<AccessoryDataSO> accessories,
@@ -19,6 +20,7 @@ public sealed class RewardSelectionHandlerContext
         PlayerLevel = playerLevel;
         AccessoryManager = accessoryManager;
         WeaponsHolder = weaponsHolder;
+        Luck = luck;
         CurrentWaveNumber = Mathf.Max(1, currentWaveNumber);
         RewardCards = rewardCards ?? System.Array.Empty<RewardCardSO>();
         Accessories = accessories ?? System.Array.Empty<AccessoryDataSO>();
@@ -31,6 +33,7 @@ public sealed class RewardSelectionHandlerContext
     public PlayerLevel PlayerLevel { get; }
     public AccessoryManager AccessoryManager { get; }
     public WeaponsHolder WeaponsHolder { get; }
+    public float Luck { get; }
     public int CurrentWaveNumber { get; }
     public IReadOnlyList<RewardCardSO> RewardCards { get; }
     public IReadOnlyList<AccessoryDataSO> Accessories { get; }

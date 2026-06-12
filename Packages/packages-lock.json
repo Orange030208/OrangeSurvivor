@@ -38,17 +38,12 @@
       "dependencies": {},
       "hash": "211e8b88b0d95c1dfc88c2fae1216d5d6d4ba1fe"
     },
-    "com.tuyoogame.yooasset": {
-      "version": "3.0.2-beta",
+    "com.hinatayoki.yokiframe": {
+      "version": "https://github.com/HinataYoki/YokiFrame.git",
       "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.assetbundle": "1.0.0",
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.modules.unitywebrequestassetbundle": "1.0.0",
-        "com.unity.scriptablebuildpipeline": "1.21.25"
-      },
-      "url": "https://package.openupm.com"
+      "source": "git",
+      "dependencies": {},
+      "hash": "2e702993f3c5a3707fc73cef6235ff144c132307"
     },
     "com.unity.2d.animation": {
       "version": "9.2.0",
@@ -266,13 +261,6 @@
       "dependencies": {
         "com.unity.render-pipelines.core": "14.0.10"
       }
-    },
-    "com.unity.scriptablebuildpipeline": {
-      "version": "1.21.25",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.cn"
     },
     "com.unity.searcher": {
       "version": "4.9.2",

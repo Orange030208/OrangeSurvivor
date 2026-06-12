@@ -1,13 +1,16 @@
 namespace Orange.Extraction
 {
     /// <summary>
-    /// Returns the final effective weight for one entry under a business-defined context.
+    /// Returns the adjusted weight for one entry under a business-defined context.
     /// </summary>
     public interface IExtractionWeightModifier<TItem, TContext>
     {
-        float ModifyWeight(
-            WeightedExtractionEntry<TItem, TContext> entry,
-            float baseWeight,
-            TContext context);
+        /// <param name="entry">
+        /// The source extraction entry.
+        /// <see cref="WeightedExtractionEntry{TItem, TContext}.BaseWeight"/> remains the original base weight.
+        /// <see cref="WeightedExtractionEntry{TItem, TContext}.CurrentWeight"/> is the current staged weight before this modifier is applied.
+        /// </param>
+        /// <param name="context">The business context used by the modifier.</param>
+        float ModifyWeight(WeightedExtractionEntry<TItem, TContext> entry, TContext context);
     }
 }
