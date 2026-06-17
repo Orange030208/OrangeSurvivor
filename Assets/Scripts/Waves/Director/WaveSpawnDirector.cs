@@ -44,7 +44,7 @@ public sealed class WaveSpawnDirector
                     beatCommand.Tags,
                     beatCommand.Count,
                     beatCommand.UnitCost,
-                    beatCommand.SpawnLocationOverride,
+                    beatCommand.SpawnRule,
                     SpawnReason.ScriptedBeat,
                     !beat.IgnoreBudget,
                     beat.BeatId));
@@ -246,7 +246,7 @@ public sealed class WaveSpawnDirector
             entry.Tags,
             allowed,
             entry.UnitCost,
-            entry.SpawnLocationOverride,
+            entry.SpawnRule,
             reason,
             true);
         return true;

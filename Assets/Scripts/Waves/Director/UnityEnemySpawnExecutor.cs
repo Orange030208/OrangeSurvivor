@@ -20,8 +20,8 @@ public sealed class UnityEnemySpawnExecutor : IEnemySpawnExecutor
             return 0;
         }
 
-        SpawnPositionResolver resolver = command.SpawnLocationOverride != null
-            ? SpawnPositionResolver.FromDefinition(command.SpawnLocationOverride)
+        SpawnPositionResolver resolver = command.SpawnRule != null
+            ? SpawnPositionResolver.FromDefinition(command.SpawnRule)
             : defaultResolver;
         if (resolver == null)
         {

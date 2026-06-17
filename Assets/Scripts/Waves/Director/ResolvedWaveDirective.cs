@@ -42,7 +42,7 @@ public sealed class ResolvedEnemyRosterEntry
         int maxAlive,
         float activeStartTime,
         float activeEndTime,
-        SpawnLocationDefinition spawnLocationOverride)
+        SpawnLocationDefinition spawnRule)
     {
         EntryId = entryId;
         Enemy = enemy;
@@ -55,7 +55,7 @@ public sealed class ResolvedEnemyRosterEntry
         MaxAlive = maxAlive;
         ActiveStartTime = activeStartTime;
         ActiveEndTime = activeEndTime;
-        SpawnLocationOverride = spawnLocationOverride;
+        SpawnRule = spawnRule;
     }
 
     public string EntryId { get; }
@@ -69,7 +69,7 @@ public sealed class ResolvedEnemyRosterEntry
     public int MaxAlive { get; }
     public float ActiveStartTime { get; }
     public float ActiveEndTime { get; }
-    public SpawnLocationDefinition SpawnLocationOverride { get; }
+    public SpawnLocationDefinition SpawnRule { get; }
 
     public bool IsActiveAt(float timeSeconds)
     {
@@ -86,7 +86,7 @@ public sealed class ResolvedBeatCommand
         WaveEnemyTag tags,
         int count,
         float unitCost,
-        SpawnLocationDefinition spawnLocationOverride)
+        SpawnLocationDefinition spawnRule)
     {
         EntryId = entryId;
         Enemy = enemy;
@@ -94,7 +94,7 @@ public sealed class ResolvedBeatCommand
         Tags = tags;
         Count = count;
         UnitCost = unitCost;
-        SpawnLocationOverride = spawnLocationOverride;
+        SpawnRule = spawnRule;
     }
 
     public string EntryId { get; }
@@ -103,7 +103,7 @@ public sealed class ResolvedBeatCommand
     public WaveEnemyTag Tags { get; }
     public int Count { get; }
     public float UnitCost { get; }
-    public SpawnLocationDefinition SpawnLocationOverride { get; }
+    public SpawnLocationDefinition SpawnRule { get; }
 }
 
 public sealed class ResolvedScriptedSpawnBeat
@@ -145,7 +145,7 @@ public sealed class ResolvedWaveDirective
         float totalBudget,
         float alivePressureCap,
         AnimationCurve pacingCurve,
-        SpawnLocationDefinition defaultSpawnLocation,
+        SpawnLocationDefinition defaultSpawnRule,
         IReadOnlyList<ResolvedSpawnRoleTarget> compositionTargets,
         IReadOnlyList<ResolvedEnemyRosterEntry> roster,
         IReadOnlyList<ResolvedScriptedSpawnBeat> scriptedBeats)
@@ -163,7 +163,7 @@ public sealed class ResolvedWaveDirective
         TotalBudget = Mathf.Max(0f, totalBudget);
         AlivePressureCap = Mathf.Max(0f, alivePressureCap);
         PacingCurve = pacingCurve != null ? pacingCurve : AnimationCurve.Linear(0f, 0f, 1f, 1f);
-        DefaultSpawnLocation = defaultSpawnLocation ?? SpawnLocationDefinition.CreateDefault();
+        DefaultSpawnRule = defaultSpawnRule ?? SpawnLocationDefinition.CreateDefault();
         CompositionTargets = compositionTargets ?? Array.Empty<ResolvedSpawnRoleTarget>();
         Roster = roster ?? Array.Empty<ResolvedEnemyRosterEntry>();
         ScriptedBeats = scriptedBeats ?? Array.Empty<ResolvedScriptedSpawnBeat>();
@@ -182,7 +182,7 @@ public sealed class ResolvedWaveDirective
     public float TotalBudget { get; }
     public float AlivePressureCap { get; }
     public AnimationCurve PacingCurve { get; }
-    public SpawnLocationDefinition DefaultSpawnLocation { get; }
+    public SpawnLocationDefinition DefaultSpawnRule { get; }
     public IReadOnlyList<ResolvedSpawnRoleTarget> CompositionTargets { get; }
     public IReadOnlyList<ResolvedEnemyRosterEntry> Roster { get; }
     public IReadOnlyList<ResolvedScriptedSpawnBeat> ScriptedBeats { get; }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Wave Director Definition", menuName = ScriptableObjectMenuPaths.WAVE_DIRECTOR_DEFINITION, order = 0)]
 public sealed class WaveDirectorDefinitionSO : ScriptableObject
@@ -16,7 +17,8 @@ public sealed class WaveDirectorDefinitionSO : ScriptableObject
     [SerializeField] private SpawnRoleTarget[] compositionTargets = Array.Empty<SpawnRoleTarget>();
     [SerializeField] private EnemyRosterEntry[] roster = Array.Empty<EnemyRosterEntry>();
     [SerializeField] private ScriptedSpawnBeat[] scriptedBeats = Array.Empty<ScriptedSpawnBeat>();
-    [SerializeField] private SpawnLocationDefinition spawnLocationOverride;
+    [FormerlySerializedAs("spawnLocationOverride")]
+    [SerializeField] private SpawnLocationDefinition spawnRule;
 
     public string WaveId => waveId;
     public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? waveId : displayName;
@@ -28,7 +30,7 @@ public sealed class WaveDirectorDefinitionSO : ScriptableObject
     public SpawnRoleTarget[] CompositionTargets => compositionTargets ?? Array.Empty<SpawnRoleTarget>();
     public EnemyRosterEntry[] Roster => roster ?? Array.Empty<EnemyRosterEntry>();
     public ScriptedSpawnBeat[] ScriptedBeats => scriptedBeats ?? Array.Empty<ScriptedSpawnBeat>();
-    public SpawnLocationDefinition SpawnLocationOverride => spawnLocationOverride;
+    public SpawnLocationDefinition SpawnRule => spawnRule;
 
     public static AnimationCurve CreateDefaultPacingCurve()
     {
@@ -46,7 +48,7 @@ public sealed class WaveDirectorDefinitionSO : ScriptableObject
         SpawnRoleTarget[] compositionTargets,
         EnemyRosterEntry[] roster,
         ScriptedSpawnBeat[] scriptedBeats,
-        SpawnLocationDefinition spawnLocationOverride = null)
+        SpawnLocationDefinition spawnRule = null)
     {
         this.waveId = waveId;
         this.displayName = displayName;
@@ -58,7 +60,7 @@ public sealed class WaveDirectorDefinitionSO : ScriptableObject
         this.compositionTargets = compositionTargets ?? Array.Empty<SpawnRoleTarget>();
         this.roster = roster ?? Array.Empty<EnemyRosterEntry>();
         this.scriptedBeats = scriptedBeats ?? Array.Empty<ScriptedSpawnBeat>();
-        this.spawnLocationOverride = spawnLocationOverride;
+        this.spawnRule = spawnRule;
         OnValidate();
     }
 
@@ -81,7 +83,7 @@ public sealed class WaveDirectorDefinitionSO : ScriptableObject
         compositionTargets ??= Array.Empty<SpawnRoleTarget>();
         roster ??= Array.Empty<EnemyRosterEntry>();
         scriptedBeats ??= Array.Empty<ScriptedSpawnBeat>();
-        spawnLocationOverride?.Validate();
+        spawnRule?.Validate();
 
         for (int i = 0; i < compositionTargets.Length; i++)
         {

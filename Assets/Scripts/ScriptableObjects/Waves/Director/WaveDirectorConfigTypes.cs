@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public sealed class EnemyRosterEntry
@@ -14,7 +15,8 @@ public sealed class EnemyRosterEntry
     [SerializeField] private float cooldownSeconds = 0f;
     [SerializeField] private int maxAlive;
     [SerializeField] private Vector2 activeTimeRange = new Vector2(0f, 100f);
-    [SerializeField] private SpawnLocationDefinition spawnLocationOverride;
+    [FormerlySerializedAs("spawnLocationOverride")]
+    [SerializeField] private SpawnLocationDefinition spawnRule;
 
     public string EntryId => string.IsNullOrWhiteSpace(entryId) && enemy != null ? enemy.name : entryId;
     public EnemySO Enemy => enemy;
@@ -26,7 +28,7 @@ public sealed class EnemyRosterEntry
     public float CooldownSeconds => Mathf.Max(0f, cooldownSeconds);
     public int MaxAlive => Mathf.Max(0, maxAlive);
     public Vector2 ActiveTimeRange => activeTimeRange;
-    public SpawnLocationDefinition SpawnLocationOverride => spawnLocationOverride;
+    public SpawnLocationDefinition SpawnRule => spawnRule;
     public bool IsValid => enemy != null && Cost > 0f;
 
     public EnemyRosterEntry()
@@ -44,7 +46,7 @@ public sealed class EnemyRosterEntry
         float cooldownSeconds,
         int maxAlive,
         Vector2 activeTimeRange,
-        SpawnLocationDefinition spawnLocationOverride = null)
+        SpawnLocationDefinition spawnRule = null)
     {
         this.entryId = entryId;
         this.enemy = enemy;
@@ -56,7 +58,7 @@ public sealed class EnemyRosterEntry
         this.cooldownSeconds = cooldownSeconds;
         this.maxAlive = maxAlive;
         this.activeTimeRange = activeTimeRange;
-        this.spawnLocationOverride = spawnLocationOverride;
+        this.spawnRule = spawnRule;
         Validate();
     }
 
@@ -80,7 +82,7 @@ public sealed class EnemyRosterEntry
         float start = Mathf.Clamp(activeTimeRange.x, 0f, 100f);
         float end = Mathf.Clamp(activeTimeRange.y, start, 100f);
         activeTimeRange = new Vector2(start, end);
-        spawnLocationOverride?.Validate();
+        spawnRule?.Validate();
     }
 }
 
@@ -126,7 +128,8 @@ public sealed class EnemySpawnCommandTemplate
     [SerializeField] private WaveEnemyTag tags = WaveEnemyTag.Normal;
     [SerializeField] private int count = 1;
     [SerializeField] private float cost = 1f;
-    [SerializeField] private SpawnLocationDefinition spawnLocationOverride;
+    [FormerlySerializedAs("spawnLocationOverride")]
+    [SerializeField] private SpawnLocationDefinition spawnRule;
 
     public string CommandId => string.IsNullOrWhiteSpace(commandId) && enemy != null ? enemy.name : commandId;
     public EnemySO Enemy => enemy;
@@ -134,7 +137,7 @@ public sealed class EnemySpawnCommandTemplate
     public WaveEnemyTag Tags => tags == WaveEnemyTag.None ? WaveEnemyTag.Normal : tags;
     public int Count => Mathf.Max(1, count);
     public float Cost => Mathf.Max(0f, cost);
-    public SpawnLocationDefinition SpawnLocationOverride => spawnLocationOverride;
+    public SpawnLocationDefinition SpawnRule => spawnRule;
     public bool IsValid => enemy != null && Count > 0 && Cost > 0f;
 
     public EnemySpawnCommandTemplate()
@@ -148,7 +151,7 @@ public sealed class EnemySpawnCommandTemplate
         WaveEnemyTag tags,
         int count,
         float cost,
-        SpawnLocationDefinition spawnLocationOverride = null)
+        SpawnLocationDefinition spawnRule = null)
     {
         this.commandId = commandId;
         this.enemy = enemy;
@@ -156,7 +159,7 @@ public sealed class EnemySpawnCommandTemplate
         this.tags = tags;
         this.count = count;
         this.cost = cost;
-        this.spawnLocationOverride = spawnLocationOverride;
+        this.spawnRule = spawnRule;
         Validate();
     }
 
@@ -174,7 +177,7 @@ public sealed class EnemySpawnCommandTemplate
 
         count = Mathf.Max(1, count);
         cost = Mathf.Max(0f, cost);
-        spawnLocationOverride?.Validate();
+        spawnRule?.Validate();
     }
 }
 

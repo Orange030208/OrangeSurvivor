@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Endless Phase Card", menuName = ScriptableObjectMenuPaths.ENDLESS_PHASE_CARD, order = 0)]
 public sealed class EndlessPhaseCardSO : ScriptableObject
@@ -16,7 +17,8 @@ public sealed class EndlessPhaseCardSO : ScriptableObject
     [SerializeField] private SpawnRoleTarget[] compositionTargets = Array.Empty<SpawnRoleTarget>();
     [SerializeField] private EnemyRosterEntry[] roster = Array.Empty<EnemyRosterEntry>();
     [SerializeField] private ScriptedSpawnBeat[] scriptedBeats = Array.Empty<ScriptedSpawnBeat>();
-    [SerializeField] private SpawnLocationDefinition spawnLocationOverride;
+    [FormerlySerializedAs("spawnLocationOverride")]
+    [SerializeField] private SpawnLocationDefinition spawnRule;
 
     public string PhaseId => phaseId;
     public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? phaseId : displayName;
@@ -28,7 +30,7 @@ public sealed class EndlessPhaseCardSO : ScriptableObject
     public SpawnRoleTarget[] CompositionTargets => compositionTargets ?? Array.Empty<SpawnRoleTarget>();
     public EnemyRosterEntry[] Roster => roster ?? Array.Empty<EnemyRosterEntry>();
     public ScriptedSpawnBeat[] ScriptedBeats => scriptedBeats ?? Array.Empty<ScriptedSpawnBeat>();
-    public SpawnLocationDefinition SpawnLocationOverride => spawnLocationOverride;
+    public SpawnLocationDefinition SpawnRule => spawnRule;
 
     public void Configure(
         string phaseId,
@@ -41,7 +43,7 @@ public sealed class EndlessPhaseCardSO : ScriptableObject
         SpawnRoleTarget[] compositionTargets,
         EnemyRosterEntry[] roster,
         ScriptedSpawnBeat[] scriptedBeats,
-        SpawnLocationDefinition spawnLocationOverride = null)
+        SpawnLocationDefinition spawnRule = null)
     {
         this.phaseId = phaseId;
         this.displayName = displayName;
@@ -53,7 +55,7 @@ public sealed class EndlessPhaseCardSO : ScriptableObject
         this.compositionTargets = compositionTargets ?? Array.Empty<SpawnRoleTarget>();
         this.roster = roster ?? Array.Empty<EnemyRosterEntry>();
         this.scriptedBeats = scriptedBeats ?? Array.Empty<ScriptedSpawnBeat>();
-        this.spawnLocationOverride = spawnLocationOverride;
+        this.spawnRule = spawnRule;
         OnValidate();
     }
 
@@ -76,7 +78,7 @@ public sealed class EndlessPhaseCardSO : ScriptableObject
         compositionTargets ??= Array.Empty<SpawnRoleTarget>();
         roster ??= Array.Empty<EnemyRosterEntry>();
         scriptedBeats ??= Array.Empty<ScriptedSpawnBeat>();
-        spawnLocationOverride?.Validate();
+        spawnRule?.Validate();
 
         for (int i = 0; i < compositionTargets.Length; i++)
         {

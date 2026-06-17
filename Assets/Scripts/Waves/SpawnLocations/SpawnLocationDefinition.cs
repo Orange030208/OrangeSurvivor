@@ -23,6 +23,8 @@ public sealed class SpawnLocationDefinition
         return new SpawnLocationDefinition();
     }
 
+    public bool HasExplicitPosition => false;
+
     public void Validate()
     {
         resolverSettings ??= SpawnLocationResolverSettings.CreateDefault();

@@ -97,7 +97,7 @@ public sealed class WaveDirectiveResolver
             waveDefinition.TotalBudget,
             waveDefinition.AlivePressureCap,
             waveDefinition.PacingCurve,
-            waveDefinition.SpawnLocationOverride ?? profile.DefaultSpawnLocation,
+            waveDefinition.SpawnRule ?? profile.DefaultSpawnRule,
             ResolveCompositionTargets(waveDefinition.CompositionTargets),
             ResolveRoster(waveDefinition.Roster, waveDefinition.Duration),
             ResolveBeats(waveDefinition.ScriptedBeats, waveDefinition.Duration));
@@ -144,7 +144,7 @@ public sealed class WaveDirectiveResolver
             phaseCard.TotalBudget * budgetMultiplier,
             phaseCard.AlivePressureCap * aliveCapMultiplier,
             phaseCard.PacingCurve,
-            phaseCard.SpawnLocationOverride ?? profile.DefaultSpawnLocation,
+            phaseCard.SpawnRule ?? profile.DefaultSpawnRule,
             ResolveCompositionTargets(phaseCard.CompositionTargets),
             roster,
             beats);
@@ -241,7 +241,7 @@ public sealed class WaveDirectiveResolver
                 entry.MaxAlive,
                 duration * Mathf.Clamp01(activeRange.x / 100f),
                 duration * Mathf.Clamp01(activeRange.y / 100f),
-                entry.SpawnLocationOverride));
+                    entry.SpawnRule));
         }
 
         return resolved;
@@ -285,7 +285,7 @@ public sealed class WaveDirectiveResolver
                     sourceCommand.Tags,
                     sourceCommand.Count,
                     sourceCommand.Cost,
-                    sourceCommand.SpawnLocationOverride));
+                    sourceCommand.SpawnRule));
             }
 
             if (commands.Count == 0)

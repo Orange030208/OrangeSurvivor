@@ -30,7 +30,7 @@ public sealed class WaveDirectorRuntimeSession
     {
         currentDirective = resolver.Resolve(profile, waveIndex);
         director = new WaveSpawnDirector(currentDirective);
-        defaultSpawnResolver = SpawnPositionResolver.FromDefinition(currentDirective.DefaultSpawnLocation);
+        defaultSpawnResolver = SpawnPositionResolver.FromDefinition(currentDirective.DefaultSpawnRule);
         tickAccumulator = 0f;
         activeEnemies.Clear();
     }

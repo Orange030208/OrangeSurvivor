@@ -7,7 +7,7 @@ public sealed class EnemySpawnCommand
         WaveEnemyTag enemyTags,
         int spawnCount,
         float unitCost,
-        SpawnLocationDefinition spawnLocationOverride,
+        SpawnLocationDefinition spawnRule,
         SpawnReason reason,
         bool consumesBudget,
         string beatId = null)
@@ -18,7 +18,7 @@ public sealed class EnemySpawnCommand
         EnemyTags = enemyTags;
         SpawnCount = spawnCount;
         UnitCost = unitCost;
-        SpawnLocationOverride = spawnLocationOverride;
+        SpawnRule = spawnRule;
         Reason = reason;
         ConsumesBudget = consumesBudget;
         BeatId = beatId;
@@ -30,7 +30,7 @@ public sealed class EnemySpawnCommand
     public WaveEnemyTag EnemyTags { get; }
     public int SpawnCount { get; }
     public float UnitCost { get; }
-    public SpawnLocationDefinition SpawnLocationOverride { get; }
+    public SpawnLocationDefinition SpawnRule { get; }
     public SpawnReason Reason { get; }
     public bool ConsumesBudget { get; }
     public string BeatId { get; }

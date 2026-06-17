@@ -22,7 +22,7 @@ MonoBehaviour:
   endlessProfile: {fileID: 11400000, guid: 2d55b0dc750b49379900ab2b35aa8e71, type: 2}
   directorTickInterval: 0.25
   maxCatchUpTicksPerFrame: 6
-  defaultSpawnLocation:
+  defaultSpawnRule:
     resolverSettings:
       boundsPadding: 1
       resolveAttempts: 16

@@ -59,7 +59,7 @@ MonoBehaviour:
     cooldownSeconds: 0
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
-    spawnLocationOverride:
+    spawnRule:
       resolverSettings:
         boundsPadding: 1
         resolveAttempts: 16
@@ -78,7 +78,7 @@ MonoBehaviour:
     cooldownSeconds: 0
     maxAlive: 0
     activeTimeRange: {x: 0, y: 100}
-    spawnLocationOverride:
+    spawnRule:
       resolverSettings:
         boundsPadding: 1
         resolveAttempts: 16
@@ -88,7 +88,7 @@ MonoBehaviour:
         obstacleLayerNames:
         - Wall
   scriptedBeats: []
-  spawnLocationOverride:
+  spawnRule:
     resolverSettings:
       boundsPadding: 1
       resolveAttempts: 16
