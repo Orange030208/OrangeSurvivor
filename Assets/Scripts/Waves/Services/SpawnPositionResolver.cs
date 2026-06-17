@@ -1,4 +1,5 @@
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SpawnPositionResolver
 {
@@ -9,7 +10,6 @@ public class SpawnPositionResolver
     private static bool hasLoggedFallbackCollider;
 
     private readonly SpawnLocationResolverSettings settings;
-    private readonly ISpawnLocationStrategy strategy;
     private readonly Collider2D[] obstacleHitBuffer = new Collider2D[OBSTACLE_HIT_BUFFER_SIZE];
 
     private SpawnPositionResolver(SpawnLocationDefinition definition)
@@ -17,7 +17,6 @@ public class SpawnPositionResolver
         SpawnLocationDefinition resolvedDefinition = definition ?? SpawnLocationDefinition.CreateDefault();
         resolvedDefinition.Validate();
         settings = resolvedDefinition.ResolverSettings;
-        strategy = resolvedDefinition.Strategy;
     }
 
     public static SpawnPositionResolver FromDefinition(SpawnLocationDefinition definition)
@@ -61,7 +60,7 @@ public class SpawnPositionResolver
         float occupancyRadius = ResolveOccupancyRadius(enemyDefinition);
         for (int i = 0; i < settings.ResolveAttempts; i++)
         {
-            Vector2 candidate = CreateCandidatePosition(context.AnchorEntity.Center, resolvedMinBounds, resolvedMaxBounds);
+            Vector2 candidate = CreateCandidatePosition(resolvedMinBounds, resolvedMaxBounds);
             if (IsSafeSpawnPosition(candidate, occupancyRadius, resolvedMinBounds, resolvedMaxBounds))
             {
                 position = candidate;
@@ -73,10 +72,11 @@ public class SpawnPositionResolver
         return false;
     }
 
-    private Vector2 CreateCandidatePosition(Vector2 anchorPosition, Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
+    private Vector2 CreateCandidatePosition(Vector2 resolvedMinBounds, Vector2 resolvedMaxBounds)
     {
-        SpawnLocationStrategyContext strategyContext = new(anchorPosition, resolvedMinBounds, resolvedMaxBounds);
-        return strategy.CreateCandidatePosition(strategyContext);
+        return new Vector2(
+            Random.Range(resolvedMinBounds.x, resolvedMaxBounds.x),
+            Random.Range(resolvedMinBounds.y, resolvedMaxBounds.y));
     }
 
     private void ApplyBoundsPadding(ref Vector2 resolvedMinBounds, ref Vector2 resolvedMaxBounds)

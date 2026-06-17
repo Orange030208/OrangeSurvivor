@@ -96,8 +96,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   - entryId: CyberOrangeFastMeleeEnemy_Melee
     enemy: {fileID: 11400000, guid: 2b0065e858d0f6243a43f0aa7bd7da9d, type: 2}
     role: 1
@@ -117,8 +115,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   - entryId: CyberOrangeRangedEnemy_Ranged
     enemy: {fileID: 11400000, guid: 0d240fe886b09634998dc9812266d850, type: 2}
     role: 2
@@ -138,8 +134,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   - entryId: CyberOrangeKitingRangedEnemy_Ranged
     enemy: {fileID: 11400000, guid: 0ea1949e755c75c47b662cc15e0e773a, type: 2}
     role: 2
@@ -159,8 +153,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   - entryId: CyberOrangeChargerEnemy_Elite
     enemy: {fileID: 11400000, guid: 85fd0e14f3679cf4aa183c27f20fe1e1, type: 2}
     role: 3
@@ -180,8 +172,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   scriptedBeats:
   - beatId: EliteBurst_30
     useNormalizedTriggerTime: 0
@@ -196,17 +186,15 @@ MonoBehaviour:
       tags: 104
       count: 2
       cost: 3.75
-      spawnLocationOverride:
-        resolverSettings:
-          boundsPadding: 1
-          resolveAttempts: 16
-          spawnClearance: 0.1
-          minBounds: {x: -12, y: -12}
-          maxBounds: {x: 12, y: 12}
-          obstacleLayerNames:
-          - Wall
-        strategy:
-          rid: 1001
+        spawnLocationOverride:
+          resolverSettings:
+            boundsPadding: 1
+            resolveAttempts: 16
+            spawnClearance: 0.1
+            minBounds: {x: -12, y: -12}
+            maxBounds: {x: 12, y: 12}
+            obstacleLayerNames:
+            - Wall
   spawnLocationOverride:
     resolverSettings:
       boundsPadding: 1
@@ -216,11 +204,3 @@ MonoBehaviour:
       maxBounds: {x: 12, y: 12}
       obstacleLayerNames:
       - Wall
-    strategy:
-      rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1001
-      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
-      data:

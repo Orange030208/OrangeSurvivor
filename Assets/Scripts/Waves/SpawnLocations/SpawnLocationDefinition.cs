@@ -5,19 +5,16 @@ using UnityEngine;
 public sealed class SpawnLocationDefinition
 {
     [SerializeField] private SpawnLocationResolverSettings resolverSettings = SpawnLocationResolverSettings.CreateDefault();
-    [SerializeReference] private SpawnLocationStrategyModel strategy = new RandomInsideMapSpawnLocationStrategy();
 
     public SpawnLocationResolverSettings ResolverSettings => resolverSettings;
-    public SpawnLocationStrategyModel Strategy => strategy;
 
     public SpawnLocationDefinition()
     {
     }
 
-    public SpawnLocationDefinition(SpawnLocationResolverSettings resolverSettings, SpawnLocationStrategyModel strategy)
+    public SpawnLocationDefinition(SpawnLocationResolverSettings resolverSettings)
     {
         this.resolverSettings = resolverSettings;
-        this.strategy = strategy;
         Validate();
     }
 
@@ -30,6 +27,5 @@ public sealed class SpawnLocationDefinition
     {
         resolverSettings ??= SpawnLocationResolverSettings.CreateDefault();
         resolverSettings.Validate();
-        strategy ??= new RandomInsideMapSpawnLocationStrategy();
     }
 }

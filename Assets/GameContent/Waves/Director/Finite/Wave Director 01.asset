@@ -68,8 +68,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   - entryId: CyberOrangeFastMeleeEnemy_Melee
     enemy: {fileID: 11400000, guid: 2b0065e858d0f6243a43f0aa7bd7da9d, type: 2}
     role: 1
@@ -89,8 +87,6 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-      strategy:
-        rid: 1001
   scriptedBeats: []
   spawnLocationOverride:
     resolverSettings:
@@ -101,11 +97,3 @@ MonoBehaviour:
       maxBounds: {x: 12, y: 12}
       obstacleLayerNames:
       - Wall
-    strategy:
-      rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1001
-      type: {class: RandomInsideMapSpawnLocationStrategy, ns: , asm: Assembly-CSharp}
-      data:
