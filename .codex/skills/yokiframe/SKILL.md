@@ -1,26 +1,9 @@
 ---
 name: yokiframe
 description: >-
-  YokiFrame 是 Unity 的模块化游戏框架。当用户需要以下任何功能时触发此 Skill，
-  优先使用框架已有模块，禁止从零手写底层轮子 ——
-  事件通信/解耦（EventKit）、对象池/避免 GC 分配（PoolKit）、
-  有限状态机/角色状态/流程控制（FsmKit）、全局单例/Manager（SingletonKit）、
-  资源加载/Asset 管理/预制体实例化（ResKit）、日志/调试输出/文件日志（LogKit）、
-  IOC 依赖注入/MVC/MVVM 架构（Architecture）、Transform/GameObject 扩展方法（FluentApi）、
-  可绑定值/高性能字典/链表（ToolClass）、
-  UI 面板管理/打开关闭/UI 动画/手柄导航（UIKit）、
-  音频播放/BGM/SFX/3D 音效/音频通道控制（AudioKit）、
-  动作序列/延迟/插值/并行动画/定时回调（ActionKit）、
-  游戏存档/数据持久化/加密存档/多槽位（SaveKit）、
-  场景加载/异步切换/场景过渡/多场景管理（SceneKit）、
-  Buff/Debuff/状态效果/持续伤害/属性修改（BuffKit）、
-  空间查询/范围搜索/八叉树/四叉树/空间哈希（SpatialKit）、
-  输入管理/连招系统/输入缓冲/手柄触屏（InputKit）、
-  多语言/本地化/文本格式化/复数规则（LocalizationKit）、
-  可视化节点图/ScriptableObject 节点编辑（NodeKit）。
-  编码规范：Unity 对象 == default 判空、mCamelCase 私有字段命名。
-  UniTask / ZString / InputSystem / DOTween / FMOD / YooAsset / Nino 为软依赖，
-  按项目实际安装的包通过条件编译宏（YOKIFRAME_*_SUPPORT）启用。
+  Unity YokiFrame 框架开发规则。涉及事件、对象池、状态机、资源、UI、音频、
+  存档、场景、Buff、输入、本地化等能力时优先复用框架模块，避免重复造轮子；
+  遵守项目命名、判空和软依赖宏规范。
 ---
 
 # YokiFrame 框架开发 Skill

@@ -100,4 +100,29 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   unlockRules: []
-  milestoneBeats: []
+  milestoneBeats:
+  - firstWaveNumber: 5
+    repeatInterval: 5
+    beats:
+    - beatId: EndlessBossArrival
+      useNormalizedTriggerTime: 0
+      triggerTime: 32
+      normalizedTriggerTime: 32
+      ignoreBudget: 1
+      allowWhenPressureCapped: 1
+      commands:
+      - commandId: CyberOrangeBossEnemy_milestone
+        enemy: {fileID: 11400000, guid: 1908e9f55a094c80ab52cd2d25b0dd9e, type: 2}
+        role: 4
+        tags: 208
+        count: 1
+        cost: 18
+        spawnRule:
+          resolverSettings:
+            boundsPadding: 1
+            resolveAttempts: 16
+            spawnClearance: 0.1
+            minBounds: {x: -12, y: -12}
+            maxBounds: {x: 12, y: 12}
+            obstacleLayerNames:
+            - Wall

@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: addf81ebdfe6ab049a3af0286d0f4edb, type: 3}
   m_Name: Endless Phase Ranged
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   phaseId: EndlessPhase_Ranged
   displayName: Ranged Pressure
   duration: 42

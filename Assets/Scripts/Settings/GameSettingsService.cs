@@ -1,4 +1,7 @@
 using UnityEngine;
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+using YokiFrame;
+#endif
 
 public static class GameSettingsService
 {
@@ -12,7 +15,7 @@ public static class GameSettingsService
     private const string RESOLUTION_HEIGHT_KEY = "Settings.ResolutionHeight";
     private const string WINDOW_MODE_KEY = "Settings.WindowMode";
     private const string LANGUAGE_CODE_KEY = "Settings.LanguageCode";
-    private const string INPUT_REBINDS_JSON_KEY = "Settings.InputRebindsJson";
+    public const string INPUT_REBINDS_JSON_KEY = "Settings.InputRebindsJson";
 
     public static GameSettingsState Current { get; private set; } = GameSettingsState.Default();
 
@@ -68,9 +71,6 @@ public static class GameSettingsService
         GameSettingsState state = Load();
         state.InputRebindsJson = rebindsJson ?? string.Empty;
         Save(state);
-        GameInput input = GameInput.Instance;
-        input?.LoadBindingOverrides(state.InputRebindsJson);
-        input?.SaveBindingOverridesToStore();
         ApplyInput(state.InputRebindsJson);
     }
 
@@ -126,13 +126,37 @@ public static class GameSettingsService
             return;
         }
 
-        GameInput input = GameInput.Instance;
-        if (input != null)
+        if (string.IsNullOrWhiteSpace(rebindsJson))
         {
-            if (!input.LoadBindingOverridesFromStore())
-            {
-                input.LoadBindingOverrides(rebindsJson);
-            }
+            ResetInputBindings();
+            return;
         }
+
+        ImportInputBindings(rebindsJson);
+    }
+
+    private static void ImportInputBindings(string rebindsJson)
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (InputKit.Asset == default)
+        {
+            return;
+        }
+
+        InputKit.ImportBindingsJson(rebindsJson);
+#endif
+    }
+
+    private static void ResetInputBindings()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (InputKit.Asset == default)
+        {
+            return;
+        }
+
+        InputKit.ResetAllBindings();
+        InputKit.ClearSavedBindings();
+#endif
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   waveId: DirectorWave_05
   displayName: Wave 5
   duration: 55
-  completionMode: 0
+  completionMode: 1
   totalBudget: 150
   alivePressureCap: 28
   pacingCurve:
@@ -163,7 +163,29 @@ MonoBehaviour:
         maxBounds: {x: 12, y: 12}
         obstacleLayerNames:
         - Wall
-  scriptedBeats: []
+  scriptedBeats:
+  - beatId: BossArrival_35
+    useNormalizedTriggerTime: 0
+    triggerTime: 35
+    normalizedTriggerTime: 35
+    ignoreBudget: 1
+    allowWhenPressureCapped: 1
+    commands:
+    - commandId: CyberOrangeBossEnemy_arrival
+      enemy: {fileID: 11400000, guid: 1908e9f55a094c80ab52cd2d25b0dd9e, type: 2}
+      role: 4
+      tags: 208
+      count: 1
+      cost: 18
+      spawnRule:
+        resolverSettings:
+          boundsPadding: 1
+          resolveAttempts: 16
+          spawnClearance: 0.1
+          minBounds: {x: -12, y: -12}
+          maxBounds: {x: 12, y: 12}
+          obstacleLayerNames:
+          - Wall
   spawnRule:
     resolverSettings:
       boundsPadding: 1

@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc39d31c61240ebab76b21321c45c2c, type: 3}
+  m_Name: CyberOrangeBossEnemy
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5656739618877753840, guid: 89b7bf71364440a0b4608ca47216908c, type: 3}
+  role: 1
+  basePropsAsset: {fileID: 11400000, guid: 5392c608e94b4ce2bf1134412b26ebf0, type: 2}
+  animConfig: {fileID: 11400000, guid: 11d7279f6920491c9aec0ee9f69d7741, type: 2}
+  damagedSfxKey: 400
+  attackAction:
+    actionId: CyberOrangeBoss_Attack
+    animationStateName: Attack
+    completionMode: 0
+    hasCommitPoint: 1
+    commitNormalizedTime: 0.5
+    exitNormalizedTime: 1
+    duration: 0.1
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  chargeAction:
+    actionId: CyberOrangeBoss_Charge
+    animationStateName: Charge
+    completionMode: 1
+    hasCommitPoint: 0
+    commitNormalizedTime: 0
+    exitNormalizedTime: 1
+    duration: 0.65
+    stopMovementWhileRunning: 1
+    interruptPolicy: 0
+  attackCommitNormalizedTime: 0.5
+  attackSpeedBenefitRatio: 0.85
+  attackRangeMultiplier: 1.2
+  attackStateMoveModifiers:
+  - propType: 4
+    modifierType: 3
+    value: -100
+  attackHitShape: 1
+  enableAttackScreenShake: 1
+  attackScreenShake:
+    amplitude: 0.25
+    frequency: 30
+    duration: 0.12
+    directionalInfluence: 0.15
+    falloffRadius: 18
+  attackScreenShakeScale: 1
+  chargeCooldown: 6
+  chargeWindupDuration: 0.65
+  chargeDuration: 1.15
+  chargeDamageRadius: 1.45
+  chargeDamageMultiplier: 1.6
+  chargeModifiers:
+  - propType: 4
+    modifierType: 3
+    value: 160
+  enableChargeScreenShake: 1
+  chargeScreenShake:
+    amplitude: 0.25
+    frequency: 30
+    duration: 0.12
+    directionalInfluence: 0.15
+    falloffRadius: 18
+  chargeScreenShakeScale: 1.2
+  barrageCooldown: 7.5
+  barrageWindupDuration: 0.4
+  barrageShotCount: 3
+  barrageShotInterval: 0.16
+  barrageSpreadAngle: 18
+  barrageRangeMultiplier: 1.45
+  barrageDamageMultiplier: 0.7
+  barrageProjectileDefinition: {fileID: 11400000, guid: be119abdbc9f4b148a972073e42955eb, type: 2}
+  barrageSfxKey: 201
+  enrageHealthRatio: 0.45
+  enrageModifiers:
+  - propType: 4
+    modifierType: 3
+    value: 20
+  - propType: 1
+    modifierType: 3
+    value: 20
+  - propType: 0
+    modifierType: 3
+    value: 15
+  enrageSfxKey: 0

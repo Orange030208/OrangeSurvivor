@@ -6,6 +6,7 @@ using DG.Tweening;
 using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using YokiFrame;
 
 /// <summary>
 /// 游戏主状态管理器：负责全局游戏状态切换、暂停控制、回菜单以及主 UI 过渡编排。
@@ -623,9 +624,22 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        GameInput input = GameInput.Instance;
-        Vector2 moveInput = input != null ? input.Move : Vector2.zero;
-        ApplyStandaloneMoveInput(moveInput);
+        ApplyStandaloneMoveInput(ReadGameplayMoveInput());
+    }
+
+    private static Vector2 ReadGameplayMoveInput()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (!InputKit.IsRegistered<SurvivorsInputActions>())
+        {
+            return Vector2.zero;
+        }
+
+        SurvivorsInputActions input = InputKit.Get<SurvivorsInputActions>();
+        return input != default ? input.Gameplay.Move.ReadValue<Vector2>() : Vector2.zero;
+#else
+        return Vector2.zero;
+#endif
     }
 
     private void ApplyStandaloneMoveInput(Vector2 moveInput)

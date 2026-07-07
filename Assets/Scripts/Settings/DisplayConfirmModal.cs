@@ -4,7 +4,9 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using YokiFrame;
 
 [DisallowMultipleComponent]
 public sealed class DisplayConfirmModal : ModalBase<bool>
@@ -15,6 +17,7 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
     [SerializeField] private Button cancelButton;
 
     private float remainingSeconds;
+    private InputAction uiCancelAction;
     private bool inputBound;
 
     public override bool RequiresTick => true;
@@ -150,14 +153,19 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
             return;
         }
 
-        GameInput input = GameInput.Instance;
-        if (input == null)
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        SurvivorsInputActions input = InputKit.IsRegistered<SurvivorsInputActions>()
+            ? InputKit.Get<SurvivorsInputActions>()
+            : null;
+        uiCancelAction = input != default ? input.UI.Cancel : null;
+        if (uiCancelAction == null)
         {
             return;
         }
 
-        input.UiCancelPerformed += OnUiCancelPerformed;
+        uiCancelAction.performed += OnUiCancelPerformed;
         inputBound = true;
+#endif
     }
 
     private void UnbindCancelInput()
@@ -167,10 +175,10 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
             return;
         }
 
-        GameInput input = GameInput.Instance;
-        if (input != null)
+        if (uiCancelAction != null)
         {
-            input.UiCancelPerformed -= OnUiCancelPerformed;
+            uiCancelAction.performed -= OnUiCancelPerformed;
+            uiCancelAction = null;
         }
 
         inputBound = false;
@@ -186,7 +194,7 @@ public sealed class DisplayConfirmModal : ModalBase<bool>
         Cancel(CloseReason.Cancel);
     }
 
-    private void OnUiCancelPerformed()
+    private void OnUiCancelPerformed(InputAction.CallbackContext context)
     {
         Cancel(CloseReason.Cancel);
     }

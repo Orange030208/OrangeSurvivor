@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Orange.Input;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using YokiFrame;
 
 [DisallowMultipleComponent]
 public class SettingsPanelManager : PopupBase
@@ -88,7 +89,7 @@ public class SettingsPanelManager : PopupBase
     private GameSettingsState editingState;
     private PlatformSettingsProfileSO activeProfile;
     private IUIRuntimeMotion motion;
-    private InputRebindOperation activeRebind;
+    private CancellationTokenSource activeRebindCancellation;
     private SettingsCategory currentCategory = SettingsCategory.Audio;
     private Tween visibilityTween;
     private Tween categoryTween;
@@ -116,8 +117,7 @@ public class SettingsPanelManager : PopupBase
 
     private void OnDestroy()
     {
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
+        CancelActiveRebind();
         UnbindControls();
         visibilityTween?.Kill();
         categoryTween?.Kill();
@@ -162,9 +162,7 @@ public class SettingsPanelManager : PopupBase
 
     protected override UniTask OnClosingAsync(CloseReason reason, CancellationToken cancellationToken)
     {
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
-        activeRebind = null;
+        CancelActiveRebind();
         return HideAsync(cancellationToken);
     }
 
@@ -220,15 +218,12 @@ public class SettingsPanelManager : PopupBase
     {
         GameSettingsState previousState = savedState.Clone();
         GameSettingsState targetState = editingState.Clone();
-        GameInput input = GameInput.Instance;
-        targetState.InputRebindsJson = input != null
-            ? input.SaveBindingOverrides()
-            : targetState.InputRebindsJson;
+        targetState.InputRebindsJson = SaveBindingOverrides();
         targetState.Sanitize();
 
         savedState = targetState.Clone();
         GameSettingsService.Save(savedState);
-        input?.SaveBindingOverridesToStore();
+        SaveBindingOverridesToStore();
         GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
 
         bool displayChanged = !previousState.ToDisplaySnapshot().Equals(targetState.ToDisplaySnapshot());
@@ -244,15 +239,12 @@ public class SettingsPanelManager : PopupBase
 
     public void ResetToDefaults()
     {
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
-        activeRebind = null;
+        CancelActiveRebind();
 
         editingState = GameSettingsState.Default();
         savedState = editingState.Clone();
-        GameInput input = GameInput.Instance;
-        input?.ClearBindingOverrides();
-        input?.ClearBindingOverrideStore();
+        ClearBindingOverrides();
+        ClearBindingOverrideStore();
         editingState.InputRebindsJson = string.Empty;
         savedState.InputRebindsJson = string.Empty;
         GameSettingsService.Save(savedState);
@@ -339,8 +331,7 @@ public class SettingsPanelManager : PopupBase
     private void LoadSavedState()
     {
         savedState = GameSettingsService.Load();
-        GameInput input = GameInput.Instance;
-        input?.LoadBindingOverrides(savedState.InputRebindsJson);
+        LoadBindingOverrides(savedState.InputRebindsJson);
         editingState = savedState.Clone();
         ClampEditingStateToProfile();
     }
@@ -432,13 +423,10 @@ public class SettingsPanelManager : PopupBase
 
     private void OnResetBindingsClicked()
     {
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
-        activeRebind = null;
+        CancelActiveRebind();
 
-        GameInput input = GameInput.Instance;
-        input?.ClearBindingOverrides();
-        input?.ClearBindingOverrideStore();
+        ClearBindingOverrides();
+        ClearBindingOverrideStore();
         editingState.InputRebindsJson = string.Empty;
         savedState.InputRebindsJson = string.Empty;
         GameSettingsService.Save(savedState);
@@ -455,43 +443,61 @@ public class SettingsPanelManager : PopupBase
             return;
         }
 
-        activeRebind?.Cancel();
-        activeRebind?.Dispose();
+        RebindAsync(row, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private async UniTaskVoid RebindAsync(SettingsRebindRow row, CancellationToken destroyCancellationToken)
+    {
+        CancelActiveRebind();
 
         row.SetValue("按下按键...");
         row.SetInteractable(false);
 
-        GameInput input = GameInput.Instance;
-        InputRebindEntry entry = row.Entry;
-        activeRebind = InputRebindService.StartInteractiveRebind(
-            input,
-            entry,
-            (result, message) =>
+        if (!TryResolveBinding(row, out InputAction action, out int bindingIndex))
+        {
+            row.SetInteractable(true);
+            row.SetValue("取消");
+            DOVirtual.DelayedCall(0.6f, RefreshRebindRows).SetUpdate(true);
+            LogFeedback("无法绑定到该输入");
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+            return;
+        }
+
+        activeRebindCancellation = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        try
+        {
+            bool success = await RebindAsync(row, action, bindingIndex, activeRebindCancellation.Token);
+            row.SetInteractable(true);
+
+            if (success)
             {
-                activeRebind?.Dispose();
-                activeRebind = null;
-                row.SetInteractable(true);
+                editingState.InputRebindsJson = SaveBindingOverrides();
+                savedState.InputRebindsJson = editingState.InputRebindsJson;
+                GameSettingsService.Save(savedState);
+                SaveBindingOverridesToStore();
+                GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
+                RefreshRebindRows();
+                LogFeedback("按键绑定已保存");
+                AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
+                return;
+            }
 
-                if (result == InputRebindResult.Success)
-                {
-                    editingState.InputRebindsJson = input != null
-                        ? input.SaveBindingOverrides()
-                        : string.Empty;
-                    savedState.InputRebindsJson = editingState.InputRebindsJson;
-                    GameSettingsService.Save(savedState);
-                    input?.SaveBindingOverridesToStore();
-                    GameSettingsService.Apply(savedState, applyDisplay: false, applyInput: true);
-                    RefreshRebindRows();
-                    LogFeedback("按键绑定已保存");
-                    AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
-                    return;
-                }
-
-                row.SetValue(result == InputRebindResult.Conflict ? "冲突" : "取消");
-                DOVirtual.DelayedCall(0.6f, RefreshRebindRows).SetUpdate(true);
-                LogFeedback(BuildRebindFeedbackMessage(result, message));
-                AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
-            });
+            row.SetValue("取消");
+            DOVirtual.DelayedCall(0.6f, RefreshRebindRows).SetUpdate(true);
+            LogFeedback("按键绑定已取消或无效");
+            AudioSfxBridge.RequestPlay(AudioSfxKey.UiCancel);
+        }
+        catch (OperationCanceledException)
+        {
+            row.SetInteractable(true);
+            row.SetValue("取消");
+            DOVirtual.DelayedCall(0.6f, RefreshRebindRows).SetUpdate(true);
+        }
+        finally
+        {
+            activeRebindCancellation?.Dispose();
+            activeRebindCancellation = null;
+        }
     }
 
     private void SetInteractionEnabled(bool enabled)
@@ -625,7 +631,6 @@ public class SettingsPanelManager : PopupBase
 
     private void RefreshRebindRows()
     {
-        GameInput input = GameInput.Instance;
         activeRebindRows.Clear();
 
         for (int i = 0; i < rebindRows.Length; i++)
@@ -643,12 +648,322 @@ public class SettingsPanelManager : PopupBase
             if (allowed)
             {
                 activeRebindRows.Add(row);
-                row.SetValue(InputRebindService.GetDisplayString(input, row.Entry));
+                row.SetValue(GetBindingDisplayString(row));
             }
         }
 
         resetBindingsButton.gameObject.SetActive(activeRebindRows.Count > 0);
         resetBindingsButton.interactable = activeRebindRows.Count > 0;
+    }
+
+    private static string SaveBindingOverrides()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        return InputKit.Asset != default ? InputKit.ExportBindingsJson() : string.Empty;
+#else
+        return string.Empty;
+#endif
+    }
+
+    private static bool SaveBindingOverridesToStore()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (InputKit.Asset == default)
+        {
+            return false;
+        }
+
+        InputKit.SaveBindings();
+        return true;
+#else
+        return false;
+#endif
+    }
+
+    private static void LoadBindingOverrides(string overridesJson)
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (InputKit.Asset == default)
+        {
+            return;
+        }
+
+        InputKit.Asset.RemoveAllBindingOverrides();
+        if (!string.IsNullOrWhiteSpace(overridesJson))
+        {
+            InputKit.Asset.LoadBindingOverridesFromJson(overridesJson);
+        }
+#endif
+    }
+
+    private static void ClearBindingOverrides()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (InputKit.Asset != default)
+        {
+            InputKit.ResetAllBindings();
+        }
+#endif
+    }
+
+    private static void ClearBindingOverrideStore()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        InputKit.ClearSavedBindings();
+#endif
+    }
+
+    private static string GetBindingDisplayString(SettingsRebindRow row)
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        return TryResolveBinding(row, out InputAction action, out int bindingIndex)
+            ? InputKit.GetBindingDisplayString(action, bindingIndex)
+            : "-";
+#else
+        return "-";
+#endif
+    }
+
+    private static async UniTask<bool> RebindAsync(
+        SettingsRebindRow row,
+        InputAction action,
+        int bindingIndex,
+        CancellationToken cancellationToken)
+    {
+#if YOKIFRAME_UNITASK_SUPPORT && YOKIFRAME_INPUTSYSTEM_SUPPORT
+        RebindOptions options = RebindOptions.Default;
+        options.BindingIndex = bindingIndex;
+        options.BindingGroup = string.IsNullOrWhiteSpace(row.BindingGroup) ? null : row.BindingGroup;
+        options.CancelKey = ResolveCancelKey(row);
+        options.ExcludedControls = BuildExcludedControls(row);
+
+        bool success = await InputKit.RebindAsync(action, options, cancellationToken);
+        if (!success)
+        {
+            return false;
+        }
+
+        string newPath = action.bindings[bindingIndex].effectivePath;
+        if (!MatchesRequiredDevice(row.RequiredControlPath, newPath) || HasSameActionConflict(action, bindingIndex, newPath))
+        {
+            action.RemoveBindingOverride(bindingIndex);
+            SaveBindingOverridesToStore();
+            return false;
+        }
+
+        return true;
+#else
+        await UniTask.Yield();
+        return false;
+#endif
+    }
+
+    private static bool TryResolveBinding(SettingsRebindRow row, out InputAction action, out int bindingIndex)
+    {
+        action = null;
+        bindingIndex = -1;
+
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (!InputKit.IsRegistered<SurvivorsInputActions>())
+        {
+            return false;
+        }
+
+        SurvivorsInputActions input = InputKit.Get<SurvivorsInputActions>();
+        if (input == default)
+        {
+            return false;
+        }
+
+        action = ResolveAction(input, row.ActionPath);
+        if (action == null)
+        {
+            Debug.LogError($"{nameof(SettingsPanelManager)} cannot find rebind action '{row.ActionPath}'.");
+            return false;
+        }
+
+        bindingIndex = ResolveBindingIndex(action, row);
+        if (bindingIndex >= 0)
+        {
+            return true;
+        }
+
+        Debug.LogError($"{nameof(SettingsPanelManager)} cannot find binding for '{row.DisplayLabel}'.");
+#endif
+        return false;
+    }
+
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+    private static InputAction ResolveAction(SurvivorsInputActions input, string actionPath)
+    {
+        return actionPath switch
+        {
+            "Gameplay/Move" => input.Gameplay.Move,
+            "Gameplay/Pause" => input.Gameplay.Pause,
+            "UI/Navigate" => input.UI.Navigate,
+            "UI/Submit" => input.UI.Submit,
+            "UI/Cancel" => input.UI.Cancel,
+            "UI/Point" => input.UI.Point,
+            "UI/Click" => input.UI.Click,
+            "UI/Scroll" => input.UI.Scroll,
+            _ => null
+        };
+    }
+#endif
+
+    private static int ResolveBindingIndex(InputAction action, SettingsRebindRow row)
+    {
+        string group = string.IsNullOrWhiteSpace(row.BindingGroup) ? string.Empty : row.BindingGroup;
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            InputBinding binding = action.bindings[i];
+            if (binding.isComposite || !BindingMatchesGroup(binding, group))
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(row.CompositePartName))
+            {
+                if (binding.isPartOfComposite &&
+                    string.Equals(binding.name, row.CompositePartName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return i;
+                }
+
+                continue;
+            }
+
+            if (!binding.isPartOfComposite)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static bool BindingMatchesGroup(InputBinding binding, string group)
+    {
+        return string.IsNullOrWhiteSpace(group) ||
+               (!string.IsNullOrWhiteSpace(binding.groups) &&
+                binding.groups.IndexOf(group, StringComparison.OrdinalIgnoreCase) >= 0);
+    }
+
+    private static string ResolveCancelKey(SettingsRebindRow row)
+    {
+        string[] cancelControlPaths = row.CancelControlPaths;
+        for (int i = 0; i < cancelControlPaths.Length; i++)
+        {
+            if (!string.IsNullOrWhiteSpace(cancelControlPaths[i]))
+            {
+                return cancelControlPaths[i];
+            }
+        }
+
+        if (row.ControlScheme.IndexOf("Gamepad", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return "<Gamepad>/buttonEast";
+        }
+
+        if (row.ControlScheme.IndexOf("Keyboard", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return "<Keyboard>/backspace";
+        }
+
+#if YOKIFRAME_UNITASK_SUPPORT && YOKIFRAME_INPUTSYSTEM_SUPPORT
+        return RebindOptions.Default.CancelKey;
+#else
+        return "<Keyboard>/escape";
+#endif
+    }
+
+    private static string[] BuildExcludedControls(SettingsRebindRow row)
+    {
+#if YOKIFRAME_UNITASK_SUPPORT && YOKIFRAME_INPUTSYSTEM_SUPPORT
+        string[] defaults = RebindOptions.Default.ExcludedControls;
+#else
+        string[] defaults = Array.Empty<string>();
+#endif
+        if (string.IsNullOrWhiteSpace(row.RequiredControlPath))
+        {
+            return defaults;
+        }
+
+        string[] excludedControls = new string[defaults.Length + 1];
+        Array.Copy(defaults, excludedControls, defaults.Length);
+        excludedControls[^1] = ResolveOppositeDevicePath(row.RequiredControlPath);
+        return excludedControls;
+    }
+
+    private static string ResolveOppositeDevicePath(string requiredControlPath)
+    {
+        string deviceName = ResolveDeviceName(requiredControlPath);
+        if (deviceName.IndexOf("Gamepad", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return "<Keyboard>";
+        }
+
+        if (deviceName.IndexOf("Keyboard", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return "<Gamepad>";
+        }
+
+        return "<Pointer>";
+    }
+
+    private static bool MatchesRequiredDevice(string requiredControlPath, string controlPath)
+    {
+        if (string.IsNullOrWhiteSpace(controlPath))
+        {
+            return false;
+        }
+
+        string deviceName = ResolveDeviceName(requiredControlPath);
+        return string.IsNullOrWhiteSpace(deviceName) ||
+               controlPath.IndexOf(deviceName, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static string ResolveDeviceName(string controlPath)
+    {
+        if (string.IsNullOrWhiteSpace(controlPath))
+        {
+            return string.Empty;
+        }
+
+        string trimmed = controlPath.Trim();
+        if (trimmed[0] == '<')
+        {
+            int closeIndex = trimmed.IndexOf('>');
+            return closeIndex > 1 ? trimmed.Substring(1, closeIndex - 1) : string.Empty;
+        }
+
+        int slashIndex = trimmed.IndexOf('/');
+        return slashIndex > 0 ? trimmed.Substring(0, slashIndex) : trimmed;
+    }
+
+    private static bool HasSameActionConflict(InputAction action, int bindingIndex, string path)
+    {
+        if (action == null || string.IsNullOrWhiteSpace(path) || bindingIndex < 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            if (i == bindingIndex)
+            {
+                continue;
+            }
+
+            InputBinding binding = action.bindings[i];
+            if (!binding.isComposite &&
+                string.Equals(binding.effectivePath, path, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void ApplyProfileToSections()
@@ -758,18 +1073,6 @@ public class SettingsPanelManager : PopupBase
         }
 
         Debug.Log($"[Settings] {message}", this);
-    }
-
-    private static string BuildRebindFeedbackMessage(InputRebindResult result, string message)
-    {
-        return result switch
-        {
-            InputRebindResult.Conflict => "按键冲突，请重新绑定",
-            InputRebindResult.Canceled => "已取消按键绑定",
-            InputRebindResult.InvalidTarget => "无法绑定到该输入",
-            InputRebindResult.Failed => string.IsNullOrWhiteSpace(message) ? "按键绑定失败" : message,
-            _ => "按键绑定失败"
-        };
     }
 
     private bool IsFeatureEnabled(SettingsFeature feature)
@@ -1163,6 +1466,22 @@ public class SettingsPanelManager : PopupBase
         {
             button.onClick.RemoveListener(action);
         }
+    }
+
+    private void CancelActiveRebind()
+    {
+#if YOKIFRAME_UNITASK_SUPPORT && YOKIFRAME_INPUTSYSTEM_SUPPORT
+        InputKit.CancelRebinding();
+#endif
+
+        if (activeRebindCancellation == null)
+        {
+            return;
+        }
+
+        activeRebindCancellation.Cancel();
+        activeRebindCancellation.Dispose();
+        activeRebindCancellation = null;
     }
 
     private void ValidateConfiguration()

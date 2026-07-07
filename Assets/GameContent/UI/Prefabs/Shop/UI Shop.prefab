@@ -1458,7 +1458,19 @@ PrefabInstance:
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 103266987, guid: 366e54913c68f1746bcec488af5e64a5, type: 3}
+      objectReference: {fileID: 21300000, guid: ed9a60e51f0bff5409af277dfc94bcba, type: 3}
+    - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
+      propertyPath: m_Color.b
+      value: 0.36862746
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
+      propertyPath: m_Color.g
+      value: 0.050980397
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
+      propertyPath: m_Color.r
+      value: 0.909804
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1591,7 +1603,7 @@ PrefabInstance:
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: ef5d4c1887f7e9343bcfeed3ef3c19fd, type: 3}
+      objectReference: {fileID: 21300000, guid: 11eb6ddbd5020c348b245f4cdbe15de4, type: 3}
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Color.b
       value: 0.854902
@@ -2135,7 +2147,7 @@ PrefabInstance:
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: c2711db4afbbdc047bf468e14d7c5831, type: 3}
+      objectReference: {fileID: 21300000, guid: 11e31286cac0b7945af9d47d8fab6ae9, type: 3}
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Color.b
       value: 0.8078432
@@ -2273,6 +2285,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: StatsButton
       objectReference: {fileID: 0}
+    - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 96b72a686879420d851a7ec8a069d8e4, type: 3}
     - target: {fileID: 4377151711207345139, guid: 6b4f90d35ea9a144cad8e3e12cba23ff, type: 3}
       propertyPath: m_Color.b
       value: 0.37254903

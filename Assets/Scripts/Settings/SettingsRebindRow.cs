@@ -1,5 +1,4 @@
 using System;
-using Orange.Input;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
@@ -31,17 +30,13 @@ public sealed class SettingsRebindRow : ViewPartBase
 
     private Action<SettingsRebindRow> rebindRequested;
 
-    public InputRebindEntry Entry =>
-        new(
-            actionPath,
-            string.IsNullOrWhiteSpace(compositePartName) ? null : compositePartName,
-            label,
-            controlScheme,
-            bindingGroup,
-            requiredControlPath,
-            cancelControlPaths);
-
+    public string ActionPath => actionPath;
+    public string CompositePartName => string.IsNullOrWhiteSpace(compositePartName) ? null : compositePartName;
+    public string DisplayLabel => $"{label} ({controlScheme})";
     public string ControlScheme => controlScheme;
+    public string BindingGroup => bindingGroup;
+    public string RequiredControlPath => requiredControlPath;
+    public string[] CancelControlPaths => cancelControlPaths ?? Array.Empty<string>();
     public Selectable DefaultSelectable => rebindButton;
 
     public override void Bind(object context)
@@ -61,18 +56,6 @@ public sealed class SettingsRebindRow : ViewPartBase
         {
             rebindButton.onClick.RemoveListener(OnRebindClicked);
         }
-    }
-
-    public void Configure(InputRebindEntry entry)
-    {
-        actionPath = entry.ActionPath;
-        compositePartName = entry.CompositePartName;
-        label = entry.Label;
-        controlScheme = entry.ControlScheme;
-        bindingGroup = entry.BindingGroup;
-        requiredControlPath = entry.RequiredControlPath;
-        cancelControlPaths = entry.CancelControlPaths;
-        RefreshLabel();
     }
 
     public void Initialize(Action<SettingsRebindRow> onRebindRequested)
@@ -132,7 +115,7 @@ public sealed class SettingsRebindRow : ViewPartBase
     {
         if (labelText != null)
         {
-            labelText.text = Entry.DisplayLabel;
+            labelText.text = DisplayLabel;
         }
     }
 

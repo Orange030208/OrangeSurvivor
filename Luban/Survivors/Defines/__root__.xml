@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+  <module name="common">
+    <enum name="ContentTier">
+      <var name="Common" value="0"/>
+      <var name="Rare" value="1"/>
+      <var name="Epic" value="2"/>
+      <var name="Legendary" value="3"/>
+    </enum>
+
+    <enum name="PropModifierType">
+      <var name="Add" value="0"/>
+      <var name="BaseMultiplier" value="1"/>
+      <var name="BonusMultiplier" value="2"/>
+      <var name="FinalMultiplier" value="3"/>
+    </enum>
+
+    <enum name="PropType">
+      <var name="Attack" value="0"/>
+      <var name="AttackSpeed" value="1"/>
+      <var name="CriticalChance" value="2"/>
+      <var name="CriticalPercent" value="3"/>
+      <var name="MoveSpeed" value="4"/>
+      <var name="MaxHealth" value="5"/>
+      <var name="HealthRecoverySpeed" value="7"/>
+      <var name="Armor" value="8"/>
+      <var name="Luck" value="9"/>
+      <var name="Dodge" value="10"/>
+      <var name="LifeSteal" value="11"/>
+      <var name="PickupRadius" value="12"/>
+      <var name="ProjectileSpeed" value="14"/>
+      <var name="AttackRange" value="15"/>
+      <var name="ProjectilePierceCount" value="16"/>
+      <var name="KnockbackStrength" value="18"/>
+      <var name="KnockbackResistance" value="19"/>
+      <var name="ExperienceGain" value="20"/>
+      <var name="ShopPriceDiscount" value="21"/>
+      <var name="WaveGoldRewardBonus" value="22"/>
+      <var name="DamageReduction" value="25"/>
+      <var name="HealingPower" value="26"/>
+      <var name="WeaponSlotCount" value="27"/>
+      <var name="Damage" value="28"/>
+      <var name="MeleeAttack" value="29"/>
+      <var name="RangedAttack" value="30"/>
+      <var name="MagicAttack" value="31"/>
+      <var name="SummonAttack" value="32"/>
+    </enum>
+
+    <enum name="ResourceKind">
+      <var name="Sprite" value="0"/>
+      <var name="Prefab" value="1"/>
+      <var name="Audio" value="2"/>
+      <var name="Material" value="3"/>
+      <var name="TextAsset" value="4"/>
+    </enum>
+
+    <enum name="ResourceLoadBackend">
+      <var name="ResKit" value="0"/>
+      <var name="Resources" value="1"/>
+      <var name="YooAsset" value="2"/>
+      <var name="Addressables" value="3"/>
+    </enum>
+
+    <enum name="ValueType">
+      <var name="String" value="0"/>
+      <var name="Number" value="1"/>
+      <var name="Bool" value="2"/>
+      <var name="Id" value="3"/>
+    </enum>
+
+    <bean name="PropModifierData">
+      <var name="propType" type="common.PropType"/>
+      <var name="modifierType" type="common.PropModifierType"/>
+      <var name="value" type="float"/>
+    </bean>
+
+    <bean name="WeaponBenefitData">
+      <var name="attackSpeedBenefitPercent" type="float"/>
+      <var name="criticalChanceBenefitPercent" type="float"/>
+      <var name="criticalPercentBenefitPercent" type="float"/>
+      <var name="rangeBenefitPercent" type="float"/>
+      <var name="knockbackStrengthBenefitPercent" type="float"/>
+      <var name="meleeAttackUsagePercent" type="float"/>
+      <var name="rangedAttackUsagePercent" type="float"/>
+      <var name="magicAttackUsagePercent" type="float"/>
+      <var name="summonAttackUsagePercent" type="float"/>
+    </bean>
+
+    <bean name="KeyValueArg">
+      <var name="key" type="string"/>
+      <var name="valueType" type="common.ValueType"/>
+      <var name="stringValue" type="string"/>
+      <var name="numberValue" type="float"/>
+      <var name="boolValue" type="bool"/>
+      <var name="idValue" type="string"/>
+    </bean>
+
+    <bean name="ResourceRow">
+      <var name="id" type="string"/>
+      <var name="kind" type="common.ResourceKind"/>
+      <var name="backend" type="common.ResourceLoadBackend"/>
+      <var name="path" type="string"/>
+      <var name="preload" type="bool"/>
+    </bean>
+
+    <table name="TbResource" value="common.ResourceRow" input="common/resource.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="feature">
+    <enum name="TriggerType">
+      <var name="Passive" value="0"/>
+      <var name="OnDealHit" value="1"/>
+      <var name="OnReceiveHit" value="2"/>
+      <var name="OnKill" value="3"/>
+      <var name="Periodic" value="4"/>
+      <var name="OnWaveStart" value="5"/>
+      <var name="OnWaveEnd" value="6"/>
+      <var name="Manual" value="7"/>
+    </enum>
+
+    <enum name="TargetSelector">
+      <var name="Owner" value="0"/>
+      <var name="HitTarget" value="1"/>
+      <var name="CurrentHit" value="2"/>
+      <var name="NearbyEnemies" value="3"/>
+      <var name="SelfAndAllies" value="4"/>
+    </enum>
+
+    <enum name="CompareOp">
+      <var name="Always" value="0"/>
+      <var name="Equal" value="1"/>
+      <var name="NotEqual" value="2"/>
+      <var name="Greater" value="3"/>
+      <var name="GreaterOrEqual" value="4"/>
+      <var name="Less" value="5"/>
+      <var name="LessOrEqual" value="6"/>
+    </enum>
+
+    <enum name="ConditionType">
+      <var name="None" value="0"/>
+      <var name="OwnerProp" value="1"/>
+      <var name="Currency" value="2"/>
+      <var name="HealthRatio" value="3"/>
+      <var name="TargetHasBuff" value="4"/>
+      <var name="WaveNumber" value="5"/>
+    </enum>
+
+    <bean name="ConditionSpec">
+      <var name="conditionType" type="feature.ConditionType"/>
+      <var name="compareOp" type="feature.CompareOp"/>
+      <var name="lhsKey" type="string"/>
+      <var name="rhsNumber" type="float"/>
+      <var name="rhsId" type="string"/>
+    </bean>
+
+    <bean name="FeatureSpec">
+      <bean name="ModifyPropSpec">
+        <var name="modifier" type="common.PropModifierData"/>
+      </bean>
+
+      <bean name="ApplyBuffSpec">
+        <var name="buffId" type="string"/>
+        <var name="durationSeconds" type="float"/>
+        <var name="maxStack" type="int"/>
+      </bean>
+
+      <bean name="ForceCriticalSpec">
+        <var name="consumeOnHit" type="bool"/>
+      </bean>
+
+      <bean name="DamageOverTimeSpec">
+        <var name="damagePerSecond" type="float"/>
+        <var name="tickIntervalSeconds" type="float"/>
+        <var name="damagePropType" type="common.PropType"/>
+      </bean>
+
+      <bean name="GoldReserveSpec">
+        <var name="minGold" type="int"/>
+        <var name="modifier" type="common.PropModifierData"/>
+      </bean>
+
+      <bean name="MarkedTargetSpec">
+        <var name="damageBonusPercent" type="float"/>
+        <var name="durationSeconds" type="float"/>
+      </bean>
+
+      <bean name="OnKillBurstSpec">
+        <var name="radius" type="float"/>
+        <var name="damage" type="float"/>
+        <var name="maxTargets" type="int"/>
+      </bean>
+
+      <bean name="SpawnProjectileSpec">
+        <var name="projectileId" type="string"/>
+        <var name="count" type="int"/>
+        <var name="spreadAngle" type="float"/>
+      </bean>
+
+      <bean name="CustomSpec">
+        <var name="logicId" type="string"/>
+        <var name="args" type="list,common.KeyValueArg"/>
+      </bean>
+    </bean>
+
+    <bean name="FeatureRow">
+      <var name="id" type="string"/>
+      <var name="title" type="string"/>
+      <var name="description" type="string"/>
+      <var name="iconKey" type="string"/>
+      <var name="triggerType" type="feature.TriggerType"/>
+      <var name="targetSelector" type="feature.TargetSelector"/>
+      <var name="chancePercent" type="float"/>
+      <var name="cooldownSeconds" type="float"/>
+      <var name="durationSeconds" type="float"/>
+      <var name="tickIntervalSeconds" type="float"/>
+      <var name="maxStack" type="int"/>
+      <var name="priority" type="int"/>
+      <var name="conditions" type="list,feature.ConditionSpec"/>
+      <var name="spec" type="feature.FeatureSpec"/>
+    </bean>
+
+    <bean name="FeatureSetRow">
+      <var name="id" type="string"/>
+      <var name="title" type="string"/>
+      <var name="comment" type="string"/>
+    </bean>
+
+    <bean name="FeatureSetEntryRow">
+      <var name="id" type="string"/>
+      <var name="setId" type="string"/>
+      <var name="order" type="int"/>
+      <var name="featureId" type="string"/>
+    </bean>
+
+    <table name="TbFeature" value="feature.FeatureRow" input="feature/feature.xlsx" index="id" mode="map"/>
+    <table name="TbFeatureSet" value="feature.FeatureSetRow" input="feature/feature_set.xlsx" index="id" mode="map"/>
+    <table name="TbFeatureSetEntry" value="feature.FeatureSetEntryRow" input="feature/feature_set_entry.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="reward">
+    <bean name="RewardCardRow">
+      <var name="id" type="string"/>
+      <var name="title" type="string"/>
+      <var name="tier" type="common.ContentTier"/>
+      <var name="tags" type="int"/>
+      <var name="iconKey" type="string"/>
+      <var name="featureSetId" type="string"/>
+      <var name="openWave" type="int"/>
+      <var name="baseWeight" type="int"/>
+      <var name="repeatWeightMultiplier" type="float"/>
+    </bean>
+
+    <table name="TbRewardCard" value="reward.RewardCardRow" input="reward/reward_card.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="item">
+    <enum name="WeaponTag">
+      <var name="Precision" value="0"/>
+      <var name="Fast" value="1"/>
+      <var name="Heavy" value="2"/>
+      <var name="Growth" value="3"/>
+    </enum>
+
+    <bean name="AccessoryRow">
+      <var name="id" type="string"/>
+      <var name="name" type="string"/>
+      <var name="tier" type="common.ContentTier"/>
+      <var name="price" type="int"/>
+      <var name="maxOwnedCount" type="int"/>
+      <var name="iconKey" type="string"/>
+      <var name="featureSetId" type="string"/>
+      <var name="openWave" type="int"/>
+      <var name="baseWeight" type="int"/>
+    </bean>
+
+    <bean name="WeaponRow">
+      <var name="id" type="string"/>
+      <var name="name" type="string"/>
+      <var name="tags" type="list,item.WeaponTag"/>
+      <var name="priceLv1" type="int"/>
+      <var name="iconKey" type="string"/>
+      <var name="runtimePrefabKey" type="string"/>
+      <var name="attackSequenceId" type="string"/>
+      <var name="featureSetId" type="string"/>
+      <var name="openWave" type="int"/>
+      <var name="baseWeight" type="int"/>
+    </bean>
+
+    <bean name="WeaponLevelRow">
+      <var name="id" type="string"/>
+      <var name="weaponId" type="string"/>
+      <var name="level" type="int"/>
+      <var name="attack" type="float"/>
+      <var name="attackSpeed" type="float"/>
+      <var name="criticalChance" type="float"/>
+      <var name="criticalPercent" type="float"/>
+      <var name="range" type="float"/>
+      <var name="knockbackStrength" type="float"/>
+      <var name="benefits" type="common.WeaponBenefitData"/>
+    </bean>
+
+    <bean name="WeaponHolderModifierRow">
+      <var name="id" type="string"/>
+      <var name="weaponId" type="string"/>
+      <var name="level" type="int"/>
+      <var name="modifier" type="common.PropModifierData"/>
+    </bean>
+
+    <table name="TbAccessory" value="item.AccessoryRow" input="item/accessory.xlsx" index="id" mode="map"/>
+    <table name="TbWeapon" value="item.WeaponRow" input="item/weapon.xlsx" index="id" mode="map"/>
+    <table name="TbWeaponLevel" value="item.WeaponLevelRow" input="item/weapon_level.xlsx" index="id" mode="map"/>
+    <table name="TbWeaponHolderModifier" value="item.WeaponHolderModifierRow" input="item/weapon_holder_modifier.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="buff">
+    <bean name="BuffRow">
+      <var name="id" type="string"/>
+      <var name="title" type="string"/>
+      <var name="durationSeconds" type="float"/>
+      <var name="maxStack" type="int"/>
+      <var name="featureSetId" type="string"/>
+      <var name="iconKey" type="string"/>
+    </bean>
+
+    <table name="TbBuff" value="buff.BuffRow" input="buff/buff.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="enemy">
+    <enum name="EnemyRole">
+      <var name="Normal" value="0"/>
+      <var name="Boss" value="1"/>
+    </enum>
+
+    <bean name="EnemyRow">
+      <var name="id" type="string"/>
+      <var name="name" type="string"/>
+      <var name="role" type="enemy.EnemyRole"/>
+      <var name="runtimePrefabKey" type="string"/>
+      <var name="brainId" type="string"/>
+      <var name="featureSetId" type="string"/>
+      <var name="baseExp" type="int"/>
+    </bean>
+
+    <bean name="EnemyBasePropRow">
+      <var name="id" type="string"/>
+      <var name="enemyId" type="string"/>
+      <var name="prop" type="common.PropModifierData"/>
+    </bean>
+
+    <table name="TbEnemy" value="enemy.EnemyRow" input="enemy/enemy.xlsx" index="id" mode="map"/>
+    <table name="TbEnemyBaseProp" value="enemy.EnemyBasePropRow" input="enemy/enemy_base_prop.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="economy">
+    <enum name="ContentPoolKind">
+      <var name="Shop" value="0"/>
+      <var name="Drop" value="1"/>
+      <var name="Reward" value="2"/>
+    </enum>
+
+    <enum name="ContentKind">
+      <var name="RewardCard" value="0"/>
+      <var name="Accessory" value="1"/>
+      <var name="Weapon" value="2"/>
+      <var name="Buff" value="3"/>
+      <var name="Gold" value="4"/>
+    </enum>
+
+    <bean name="ShopPoolEntryRow">
+      <var name="id" type="string"/>
+      <var name="contentKind" type="economy.ContentKind"/>
+      <var name="contentId" type="string"/>
+      <var name="level" type="int"/>
+      <var name="openWave" type="int"/>
+      <var name="closeWave" type="int"/>
+      <var name="baseWeight" type="int"/>
+      <var name="luckWeightPercent" type="float"/>
+    </bean>
+
+    <bean name="DropPoolRow">
+      <var name="id" type="string"/>
+      <var name="sourceKind" type="string"/>
+      <var name="sourceId" type="string"/>
+      <var name="dropRatePercent" type="float"/>
+    </bean>
+
+    <bean name="DropPoolEntryRow">
+      <var name="id" type="string"/>
+      <var name="poolId" type="string"/>
+      <var name="contentKind" type="economy.ContentKind"/>
+      <var name="contentId" type="string"/>
+      <var name="amount" type="int"/>
+      <var name="baseWeight" type="int"/>
+      <var name="luckWeightPercent" type="float"/>
+    </bean>
+
+    <table name="TbShopPoolEntry" value="economy.ShopPoolEntryRow" input="economy/shop_pool_entry.xlsx" index="id" mode="map"/>
+    <table name="TbDropPool" value="economy.DropPoolRow" input="economy/drop_pool.xlsx" index="id" mode="map"/>
+    <table name="TbDropPoolEntry" value="economy.DropPoolEntryRow" input="economy/drop_pool_entry.xlsx" index="id" mode="map"/>
+  </module>
+
+  <module name="wave">
+    <bean name="RunProgressionPointRow">
+      <var name="id" type="string"/>
+      <var name="wave" type="int"/>
+      <var name="difficulty" type="float"/>
+      <var name="economy" type="float"/>
+      <var name="shopPriceMultiplier" type="float"/>
+      <var name="shopRerollBasePrice" type="float"/>
+      <var name="shopRerollStepPrice" type="float"/>
+    </bean>
+
+    <bean name="WaveRow">
+      <var name="id" type="string"/>
+      <var name="wave" type="int"/>
+      <var name="durationSeconds" type="float"/>
+      <var name="featureSetId" type="string"/>
+    </bean>
+
+    <bean name="WaveSpawnPlanRow">
+      <var name="id" type="string"/>
+      <var name="waveId" type="string"/>
+      <var name="enemyId" type="string"/>
+      <var name="startTime01" type="float"/>
+      <var name="endTime01" type="float"/>
+      <var name="spawnFrequency" type="float"/>
+      <var name="spawnCountPerBatch" type="int"/>
+      <var name="maxSpawnBatches" type="int"/>
+      <var name="weight" type="int"/>
+    </bean>
+
+    <table name="TbRunProgressionPoint" value="wave.RunProgressionPointRow" input="wave/run_progression_point.xlsx" index="id" mode="map"/>
+    <table name="TbWave" value="wave.WaveRow" input="wave/wave.xlsx" index="id" mode="map"/>
+    <table name="TbWaveSpawnPlan" value="wave.WaveSpawnPlanRow" input="wave/wave_spawn_plan.xlsx" index="id" mode="map"/>
+  </module>
+</module>

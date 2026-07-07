@@ -4,7 +4,9 @@ using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using YokiFrame;
 
 public class GamingUIPage : PageBase
 {
@@ -19,6 +21,7 @@ public class GamingUIPage : PageBase
     private GamingPageContext currentContext;
     private PlayerLevel playerLevel;
     private CurrencyWallet currencyWallet;
+    private InputAction pauseAction;
     private bool hudEventsBound;
 
     protected override void OnCreate()
@@ -33,11 +36,16 @@ public class GamingUIPage : PageBase
             ?? throw new InvalidOperationException($"{nameof(GamingUIPage)} requires {nameof(GamingPageContext)} payload.");
 
         BindHud(currentContext);
-        GameInput input = GameInput.Instance;
-        if (input != null)
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        SurvivorsInputActions input = InputKit.IsRegistered<SurvivorsInputActions>()
+            ? InputKit.Get<SurvivorsInputActions>()
+            : null;
+        pauseAction = input != default ? input.Gameplay.Pause : null;
+        if (pauseAction != null)
         {
-            input.PausePerformed += OnPauseClicked;
+            pauseAction.performed += OnPausePerformed;
         }
+#endif
         menuButton.onClick.AddListener(OnPauseClicked);
         return UniTask.CompletedTask;
     }
@@ -45,14 +53,19 @@ public class GamingUIPage : PageBase
     protected override void OnClosed(CloseReason reason)
     {
         UnbindHud();
-        GameInput input = GameInput.Instance;
-        if (input != null)
+        if (pauseAction != null)
         {
-            input.PausePerformed -= OnPauseClicked;
+            pauseAction.performed -= OnPausePerformed;
+            pauseAction = null;
         }
 
         menuButton.onClick.RemoveListener(OnPauseClicked);
         currentContext = null;
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        OnPauseClicked();
     }
 
     private void OnPauseClicked()

@@ -11327,10 +11327,8 @@ GameObject:
   m_Component:
   - component: {fileID: 842639264}
   - component: {fileID: 842639263}
-  - component: {fileID: 842639265}
-  - component: {fileID: 842639266}
   m_Layer: 0
-  m_Name: GameInput
+  m_Name: InputBootstrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11345,16 +11343,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 842639262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b67509ccf34147dbac66debaf0d0b722, type: 3}
+  m_Script: {fileID: 11500000, guid: c9d6f19b9b2d4e68aa580b12ccf80a7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputRuntime: {fileID: 842639266}
   dontDestroyOnLoad: 1
-  moveActionPath: Gameplay/Move
-  pauseActionPath: Gameplay/Pause
-  uiCancelActionPath: UI/Cancel
-  gameplayContextId: Gameplay
-  uiContextId: UI
+  uiInputModule: {fileID: 1432474702}
+  configureUiInputModule: 1
+  uiMoveRepeatDelay: 0.45
+  uiMoveRepeatRate: 0.08
 --- !u!4 &842639264
 Transform:
   m_ObjectHideFlags: 0
@@ -11370,36 +11366,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &842639265
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842639262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0d6ca855b144bdeb1b8a07623484bb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  input: {fileID: 842639263}
-  inputRuntime: {fileID: 842639266}
-  inputProfile: {fileID: 11400000, guid: 03c401a6204b4fe98c67a84b51467d31, type: 2}
-  eventSystem: {fileID: 1432474700}
---- !u!114 &842639266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842639262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56405d8805ae4253a52f0106b1133dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 03c401a6204b4fe98c67a84b51467d31, type: 2}
-  dontDestroyOnLoad: 1
 --- !u!1 &885074028
 GameObject:
   m_ObjectHideFlags: 0
@@ -11479,7 +11445,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropCollectionProfile: {fileID: 11400000, guid: cd748879010345e2bae4f12d966d5ef7, type: 2}
-  dropRules: []
+  dropRules:
+  - sourceType: Boss
+    sourceId: 
+    killExperience: 8
+    dropChance: 1
+    dropChanceCap: 1
+    products:
+    - product: {fileID: 11400000, guid: e8c5ce53cf7a4eb49683af220c2ee345, type: 2}
+      baseWeight: 1
+      luckCoefficient: 0
+      quantity: 1
 --- !u!4 &889382728
 Transform:
   m_ObjectHideFlags: 0
@@ -11837,6 +11813,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1432474701}
   - component: {fileID: 1432474700}
+  - component: {fileID: 1432474702}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -11874,6 +11851,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1432474702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432474698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.45
+  m_MoveRepeatRate: 0.08
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: 0}
+  m_PointAction: {fileID: 0}
+  m_MoveAction: {fileID: 0}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
+  m_LeftClickAction: {fileID: 0}
+  m_MiddleClickAction: {fileID: 0}
+  m_RightClickAction: {fileID: 0}
+  m_ScrollWheelAction: {fileID: 0}
+  m_TrackedDevicePositionAction: {fileID: 0}
+  m_TrackedDeviceOrientationAction: {fileID: 0}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &1539746160
 GameObject:
   m_ObjectHideFlags: 0

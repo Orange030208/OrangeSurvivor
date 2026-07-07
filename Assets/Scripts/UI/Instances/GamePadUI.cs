@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
 using UnityEngine;
+using YokiFrame;
 
 public sealed class GamePadUI : PopupBase
 {
@@ -96,14 +97,28 @@ public sealed class GamePadUI : PopupBase
 
     private Vector2 ReadMoveDirection()
     {
-        GameInput input = GameInput.Instance;
-        Vector2 inputMove = input != null ? input.Move : Vector2.zero;
+        Vector2 inputMove = ReadGameplayMoveInput();
         if (inputMove.sqrMagnitude > 0.0001f)
         {
             return Vector2.ClampMagnitude(inputMove, 1f);
         }
 
         return touchControlsEnabled ? moveJoystick.GetMoveDirection() : Vector2.zero;
+    }
+
+    private static Vector2 ReadGameplayMoveInput()
+    {
+#if YOKIFRAME_INPUTSYSTEM_SUPPORT
+        if (!InputKit.IsRegistered<SurvivorsInputActions>())
+        {
+            return Vector2.zero;
+        }
+
+        SurvivorsInputActions input = InputKit.Get<SurvivorsInputActions>();
+        return input != default ? input.Gameplay.Move.ReadValue<Vector2>() : Vector2.zero;
+#else
+        return Vector2.zero;
+#endif
     }
 
     private void ApplyTouchControlsState()
