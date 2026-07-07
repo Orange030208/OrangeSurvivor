@@ -2,8 +2,6 @@
     "name": "Orange.UIFramework",
     "rootNamespace": "Orange.UIFramework",
     "references": [
-        "DOTween",
-        "Sirenix.OdinInspector.Attributes",
         "UniTask",
         "Unity.TextMeshPro",
         "UnityEngine.UI"
@@ -11,8 +9,10 @@
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "DOTween.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Orange.UIFramework;
+using Orange.Utilities;
 using UnityEngine;
 
 public class ShopItemListUI : ViewPartBase

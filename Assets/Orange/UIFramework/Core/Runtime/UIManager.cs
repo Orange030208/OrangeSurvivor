@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -178,8 +177,6 @@ namespace Orange.UIFramework
         }
 
         [ContextMenu("Log Runtime Diagnostics")]
-        [Button("Log Runtime Diagnostics"), FoldoutGroup("Debug"), PropertyOrder(100)]
-        [EnableIf("@UnityEngine.Application.isPlaying")]
         public void LogRuntimeDiagnostics()
         {
             UIRuntimeDiagnostics diagnostics = GetRuntimeDiagnostics();

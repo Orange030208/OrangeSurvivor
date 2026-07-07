@@ -3,7 +3,6 @@ namespace Orange.UIFramework
 {
     using System;
     using System.Collections.Generic;
-    using Sirenix.OdinInspector;
     using UnityEngine;
 
 [Serializable]
@@ -19,8 +18,7 @@ public sealed class UIMotionClipDefinition
     // 用于整体拉伸或压缩 Clip 时长，不破坏各 Track 自身配置的相对比例。
     [SerializeField] [Min(0.01f)] private float durationScale = 1f;
     // SerializeReference 允许同一个列表保存不同类型的 Track，扩展新动画属性时无需修改 Clip 结构。
-    [SerializeReference, TypeFilter("@Orange.UIFramework.UIMotionTrackTypeSelectionUtility.GetSelectableTrackTypes()")]
-    [ListDrawerSettings(Expanded = true)]
+    [SerializeReference]
     private List<UIMotionTrackDefinition> tracks = new();
 
     public string ClipId => string.IsNullOrWhiteSpace(clipId) ? UIMotionClipIds.SHOW : clipId;
@@ -29,9 +27,6 @@ public sealed class UIMotionClipDefinition
     public UIMotionConflictPolicy ConflictPolicy => conflictPolicy;
     public float DurationScale => Mathf.Max(0.01f, durationScale);
     public IReadOnlyList<UIMotionTrackDefinition> Tracks => tracks;
-
-    [ShowInInspector, ReadOnly, PropertyOrder(-10)]
-    private string InspectorTitle => string.IsNullOrWhiteSpace(ClipId) ? "Clip" : ClipId;
 
     public static UIMotionClipDefinition CreateDefault(
         string clipId,
@@ -49,50 +44,5 @@ public sealed class UIMotionClipDefinition
         };
     }
 
-    [Button("Alpha"), ButtonGroup("Add Track"), PropertyOrder(20)]
-    private void AddAlphaTrack() => AddTrack<UIAlphaMotionTrack>();
-
-    [Button("Move"), ButtonGroup("Add Track"), PropertyOrder(21)]
-    private void AddMoveTrack() => AddTrack<UIMoveMotionTrack>();
-
-    [Button("Sidebar"), ButtonGroup("Add Track"), PropertyOrder(22)]
-    private void AddSidebarTrack() => AddTrack<UISidebarMotionTrack>();
-
-    [Button("Scale"), ButtonGroup("Add Track"), PropertyOrder(23)]
-    private void AddScaleTrack() => AddTrack<UIScaleMotionTrack>();
-
-    [Button("Rotate"), ButtonGroup("Add Track"), PropertyOrder(24)]
-    private void AddRotateTrack() => AddTrack<UIRotateMotionTrack>();
-
-    [Button("Graphic Color"), ButtonGroup("Add Track"), PropertyOrder(25)]
-    private void AddGraphicColorTrack() => AddTrack<UIGraphicColorMotionTrack>();
-
-    [Button("Image Fill"), ButtonGroup("Add Track"), PropertyOrder(26)]
-    private void AddImageFillTrack() => AddTrack<UIImageFillMotionTrack>();
-
-    [Button("Sprite Swap"), ButtonGroup("Add Track"), PropertyOrder(27)]
-    private void AddSpriteSwapTrack() => AddTrack<UISpriteSwapMotionTrack>();
-
-    [Button("Sprite Sequence"), ButtonGroup("Add Track"), PropertyOrder(28)]
-    private void AddSpriteSequenceTrack() => AddTrack<UISpriteSequenceMotionTrack>();
-
-    [Button("TMP Typewriter"), ButtonGroup("Add Track"), PropertyOrder(29)]
-    private void AddTmpTypewriterTrack() => AddTrack<UITMPTypewriterMotionTrack>();
-
-    [Button("Material Float"), ButtonGroup("Add Track"), PropertyOrder(30)]
-    private void AddMaterialFloatTrack() => AddTrack<UIMaterialFloatMotionTrack>();
-
-    [Button("Material Color"), ButtonGroup("Add Track"), PropertyOrder(31)]
-    private void AddMaterialColorTrack() => AddTrack<UIMaterialColorMotionTrack>();
-
-    [Button("Callback"), ButtonGroup("Add Track"), PropertyOrder(32)]
-    private void AddCallbackTrack() => AddTrack<UICallbackMotionTrack>();
-
-    private void AddTrack<T>()
-        where T : UIMotionTrackDefinition, new()
-    {
-        tracks ??= new List<UIMotionTrackDefinition>();
-        tracks.Add(new T());
-    }
 }
 }
