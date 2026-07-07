@@ -8,11 +8,13 @@ namespace Orange.UIFramework
     using UnityEngine;
 
     [DisallowMultipleComponent]
-    // UI 动画系统的运行时入口：负责把 UIMotionDefinition 中配置的 Clip 解析成 DOTween 播放序列。
+    // UI 动画系统的运行时入口：负责把组件内配置的 Clip 解析成 DOTween 播放序列。
     // 这个组件只做“播放编排”和“目标解析”，具体属性如何变化由各个 UIMotionTrackDefinition 决定。
     public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenceMotion
     {
-        [SerializeField] private UIMotionDefinition definition;
+        // 动效配置直接跟随组件序列化，避免单组件使用的动画还要额外维护 ScriptableObject 资产。
+        [SerializeField] private bool useUnscaledTime = true;
+        [SerializeField] private List<UIMotionClipDefinition> clips = new();
 
         // 目标注册表保存 Inspector 中配置的 key -> Transform 映射，并缓存初始快照。
         // Track 通过 key 查找目标，避免 Clip 直接依赖具体层级或硬编码对象引用。
@@ -69,7 +71,7 @@ namespace Orange.UIFramework
                 return null;
             }
 
-            tween.SetUpdate(definition.UseUnscaledTime);
+            tween.SetUpdate(useUnscaledTime);
             RegisterChannelTween(clip.Channel, tween);
             return tween;
         }
@@ -135,7 +137,28 @@ namespace Orange.UIFramework
         public List<string> GetOptionList()
         {
             InitializeIfNeeded();
-            return definition != null ? definition.GetClipIds() : new List<string>();
+            List<string> clipIds = new();
+            if (clips == null)
+            {
+                return clipIds;
+            }
+
+            // 供 Inspector/配置面板生成选项列表；去重可以避免重复 ClipId 造成 UI 选择歧义。
+            for (int i = 0; i < clips.Count; i++)
+            {
+                UIMotionClipDefinition clip = clips[i];
+                if (clip == null || string.IsNullOrWhiteSpace(clip.ClipId))
+                {
+                    continue;
+                }
+
+                if (!clipIds.Contains(clip.ClipId))
+                {
+                    clipIds.Add(clip.ClipId);
+                }
+            }
+
+            return clipIds;
         }
 
         public void PrepareEnter()
@@ -179,7 +202,30 @@ namespace Orange.UIFramework
         private bool TryGetClip(string clipId, out UIMotionClipDefinition clip)
         {
             clip = null;
-            return definition != null && definition.TryGetClip(clipId, out clip);
+            if (string.IsNullOrWhiteSpace(clipId) || clips == null)
+            {
+                return false;
+            }
+
+            // ClipId 作为外部调用契约，保持区分大小写的精确匹配，避免同名配置被意外命中。
+            for (int i = 0; i < clips.Count; i++)
+            {
+                UIMotionClipDefinition candidate = clips[i];
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(candidate.ClipId, clipId, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                clip = candidate;
+                return true;
+            }
+
+            return false;
         }
 
         private bool TryGetClipWithFallback(string clipId, out UIMotionClipDefinition clip)

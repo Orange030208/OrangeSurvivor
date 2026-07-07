@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Orange.UIFramework;
@@ -10,7 +11,7 @@ public class CardMotionController : ViewPartBase
 {
     [Header("依赖")]
     [SerializeField] private UIMotionPlayer motionPlayer;
-    [SerializeField] private CardMotionProfileSO profile;
+    [SerializeField] private CardMotionSettings motionSettings = new();
 
     [Header("复位根节点")]
     [SerializeField] private RectTransform restRoot;
@@ -45,9 +46,94 @@ public class CardMotionController : ViewPartBase
     private bool isPointerInside;
     private bool isSubmitting;
     private bool isRevealPlaying;
-    private bool missingProfileLogged;
+    private bool missingSettingsLogged;
 
     public bool CanReceiveInteraction => !isRevealPlaying && !isSubmitting;
+
+    [Serializable]
+    private sealed class CardMotionSettings
+    {
+        [Header("界面动画片段")]
+        [SerializeField] private string revealClipId = UIMotionClipIds.SHOW;
+        [SerializeField] private string hoverInClipId = UIMotionClipIds.HOVER_IN;
+        [SerializeField] private string hoverOutClipId = UIMotionClipIds.HOVER_OUT;
+        [SerializeField] private string pressClipId = UIMotionClipIds.PRESS;
+        [SerializeField] private string releaseClipId = UIMotionClipIds.RELEASE;
+        [SerializeField] private string selectClipId = UIMotionClipIds.CLICK_PULSE;
+        [SerializeField] private string selectedClaimClipId = CardMotionClipIds.SELECTED_CLAIM;
+        [SerializeField] private string rejectedSubmitClipId = CardMotionClipIds.REJECTED_SUBMIT;
+        [Tooltip("可选。为空时中断复位只恢复控制器记录的根节点 Transform，不调用界面动画采样，避免没有可见/显示片段的配置刷警告。")]
+        [SerializeField] private string restClipId = UIMotionClipIds.VISIBLE;
+
+        [Header("复用与中断")]
+        [Tooltip("配置新卡牌内容时刷新界面动画默认快照，避免对象复用后保留上一张卡的交互状态。")]
+        [SerializeField] private bool refreshDefaultsOnConfigure = true;
+
+        [Tooltip("对象隐藏或点击流程被打断时，采样到稳定可见状态后再刷新默认快照。")]
+        [SerializeField] private bool resetToRestClipWhenInterrupted = true;
+
+        [Tooltip("卡牌配置新内容后是否播放显示片段。关闭后只刷新状态并恢复运行时浮动。")]
+        [SerializeField] private bool playRevealOnConfigure = true;
+
+        [Header("运行时卡牌动态")]
+        [SerializeField] private bool enableIdleFloat = true;
+        [SerializeField] [Min(0f)] private float idleFloatAmplitude = 4f;
+        [SerializeField] [Min(0.05f)] private float idleFloatDuration = 2.4f;
+
+        [SerializeField] private bool enablePointerTilt = true;
+        [SerializeField] [Range(0f, 18f)] private float hoverTiltAngle = 5f;
+        [SerializeField] [Min(0.01f)] private float hoverTiltDuration = 0.14f;
+        [SerializeField] [Min(0.01f)] private float hoverReturnDuration = 0.18f;
+
+        [Header("视觉层动态")]
+        [SerializeField] private bool enableVisualLayerDynamics = true;
+        [SerializeField] [Range(0f, 1f)] private float glowIdleAlpha = 0.12f;
+        [SerializeField] [Range(0f, 1f)] private float glowHoverAlpha = 0.38f;
+        [SerializeField] [Range(0f, 1f)] private float glowPressAlpha = 0.24f;
+        [SerializeField] [Range(0f, 1f)] private float glowSelectAlpha = 0.68f;
+        [SerializeField] [Range(0f, 1f)] private float shadowIdleAlpha = 0.42f;
+        [SerializeField] [Range(0f, 1f)] private float shadowHoverAlpha = 0.62f;
+        [SerializeField] [Range(0f, 1f)] private float shadowPressAlpha = 0.34f;
+        [SerializeField] private Vector2 shadowHoverOffset = new Vector2(0f, -8f);
+        [SerializeField] private Vector2 shadowPressOffset = new Vector2(0f, -3f);
+        [SerializeField] [Min(0.01f)] private float visualLayerTweenDuration = 0.14f;
+
+        public string RevealClipId => NormalizeClipId(revealClipId);
+        public string HoverInClipId => NormalizeClipId(hoverInClipId);
+        public string HoverOutClipId => NormalizeClipId(hoverOutClipId);
+        public string PressClipId => NormalizeClipId(pressClipId);
+        public string ReleaseClipId => NormalizeClipId(releaseClipId);
+        public string SelectClipId => NormalizeClipId(selectClipId);
+        public string SelectedClaimClipId => NormalizeClipId(selectedClaimClipId);
+        public string RejectedSubmitClipId => NormalizeClipId(rejectedSubmitClipId);
+        public string RestClipId => NormalizeClipId(restClipId);
+        public bool RefreshDefaultsOnConfigure => refreshDefaultsOnConfigure;
+        public bool ResetToRestClipWhenInterrupted => resetToRestClipWhenInterrupted;
+        public bool PlayRevealOnConfigure => playRevealOnConfigure;
+        public bool EnableIdleFloat => enableIdleFloat;
+        public float IdleFloatAmplitude => Mathf.Max(0f, idleFloatAmplitude);
+        public float IdleFloatDuration => Mathf.Max(0.05f, idleFloatDuration);
+        public bool EnablePointerTilt => enablePointerTilt;
+        public float HoverTiltAngle => Mathf.Max(0f, hoverTiltAngle);
+        public float HoverTiltDuration => Mathf.Max(0.01f, hoverTiltDuration);
+        public float HoverReturnDuration => Mathf.Max(0.01f, hoverReturnDuration);
+        public bool EnableVisualLayerDynamics => enableVisualLayerDynamics;
+        public float GlowIdleAlpha => Mathf.Clamp01(glowIdleAlpha);
+        public float GlowHoverAlpha => Mathf.Clamp01(glowHoverAlpha);
+        public float GlowPressAlpha => Mathf.Clamp01(glowPressAlpha);
+        public float GlowSelectAlpha => Mathf.Clamp01(glowSelectAlpha);
+        public float ShadowIdleAlpha => Mathf.Clamp01(shadowIdleAlpha);
+        public float ShadowHoverAlpha => Mathf.Clamp01(shadowHoverAlpha);
+        public float ShadowPressAlpha => Mathf.Clamp01(shadowPressAlpha);
+        public Vector2 ShadowHoverOffset => shadowHoverOffset;
+        public Vector2 ShadowPressOffset => shadowPressOffset;
+        public float VisualLayerTweenDuration => Mathf.Max(0.01f, visualLayerTweenDuration);
+
+        private static string NormalizeClipId(string clipId)
+        {
+            return string.IsNullOrWhiteSpace(clipId) ? string.Empty : clipId.Trim();
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -81,6 +167,11 @@ public class CardMotionController : ViewPartBase
         {
             restRoot = transform as RectTransform;
         }
+
+        if (motionSettings == null)
+        {
+            motionSettings = new CardMotionSettings();
+        }
     }
 
     public void ConfigureForReuse()
@@ -95,7 +186,7 @@ public class CardMotionController : ViewPartBase
         CaptureDynamicPoseIfNeeded();
         CaptureVisualLayerPoseIfNeeded();
         StopRuntimeDynamics(restorePose: true);
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -103,7 +194,7 @@ public class CardMotionController : ViewPartBase
         PlayIdleVisualLayer(immediate: true);
         SampleRestClipIfNeeded();
 
-        if (profile.RefreshDefaultsOnConfigure)
+        if (motionSettings.RefreshDefaultsOnConfigure)
         {
             motionPlayer?.RefreshDefaults();
         }
@@ -119,7 +210,7 @@ public class CardMotionController : ViewPartBase
 
     public void PlayHoverIn(PointerEventData eventData = null)
     {
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -132,13 +223,13 @@ public class CardMotionController : ViewPartBase
 
         StopIdleFloat(restorePose: false);
         PlayHoverVisualLayer();
-        PlayClip(profile.HoverInClipId);
+        PlayClip(motionSettings.HoverInClipId);
         UpdatePointerTilt(eventData);
     }
 
     public void PlayHoverOut()
     {
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -150,7 +241,7 @@ public class CardMotionController : ViewPartBase
         }
 
         PlayIdleVisualLayer(immediate: false);
-        Tween hoverOutTween = PlayClip(profile.HoverOutClipId);
+        Tween hoverOutTween = PlayClip(motionSettings.HoverOutClipId);
         ReturnPointerTilt();
         if (hoverOutTween != null)
         {
@@ -164,31 +255,31 @@ public class CardMotionController : ViewPartBase
 
     public void PlayPress()
     {
-        if (!HasProfile() || isRevealPlaying)
+        if (!HasMotionSettings() || isRevealPlaying)
         {
             return;
         }
 
         StopIdleFloat(restorePose: false);
         PlayPressVisualLayer();
-        PlayClip(profile.PressClipId);
+        PlayClip(motionSettings.PressClipId);
     }
 
     public void PlayRelease()
     {
-        if (!HasProfile() || isRevealPlaying)
+        if (!HasMotionSettings() || isRevealPlaying)
         {
             return;
         }
 
         PlayHoverVisualLayer();
-        PlayClip(profile.ReleaseClipId);
+        PlayClip(motionSettings.ReleaseClipId);
     }
 
     public async UniTask PlaySelectAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -197,18 +288,18 @@ public class CardMotionController : ViewPartBase
         StopRuntimeDynamics(restorePose: true);
         PlaySelectVisualLayer();
 
-        if (motionPlayer == null || string.IsNullOrWhiteSpace(profile.SelectClipId))
+        if (motionPlayer == null || string.IsNullOrWhiteSpace(motionSettings.SelectClipId))
         {
             return;
         }
 
-        await motionPlayer.PlayAsync(profile.SelectClipId, cancellationToken);
+        await motionPlayer.PlayAsync(motionSettings.SelectClipId, cancellationToken);
     }
 
     public async UniTask PlaySelectedSubmitAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -222,9 +313,9 @@ public class CardMotionController : ViewPartBase
             return;
         }
 
-        string clipId = !string.IsNullOrWhiteSpace(profile.SelectedClaimClipId)
-            ? profile.SelectedClaimClipId
-            : profile.SelectClipId;
+        string clipId = !string.IsNullOrWhiteSpace(motionSettings.SelectedClaimClipId)
+            ? motionSettings.SelectedClaimClipId
+            : motionSettings.SelectClipId;
         if (string.IsNullOrWhiteSpace(clipId))
         {
             return;
@@ -236,7 +327,7 @@ public class CardMotionController : ViewPartBase
     public async UniTask PlayRejectedSubmitAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -251,8 +342,8 @@ public class CardMotionController : ViewPartBase
             return;
         }
 
-        string clipId = !string.IsNullOrWhiteSpace(profile.RejectedSubmitClipId)
-            ? profile.RejectedSubmitClipId
+        string clipId = !string.IsNullOrWhiteSpace(motionSettings.RejectedSubmitClipId)
+            ? motionSettings.RejectedSubmitClipId
             : UIMotionClipIds.HIDE;
         await motionPlayer.PlayAsync(clipId, cancellationToken);
     }
@@ -260,7 +351,7 @@ public class CardMotionController : ViewPartBase
     public async UniTask PlayRefreshOutAsync(CancellationToken cancellationToken)
     {
         ResolveDependencies();
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
@@ -291,7 +382,7 @@ public class CardMotionController : ViewPartBase
         StopRuntimeDynamics(restorePose: true);
         motionPlayer?.Kill();
 
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             RestoreRestPose();
             RestoreDynamicPose();
@@ -300,9 +391,9 @@ public class CardMotionController : ViewPartBase
             return;
         }
 
-        string restClipId = profile.RestClipId;
+        string restClipId = motionSettings.RestClipId;
         if (motionPlayer != null
-            && profile.ResetToRestClipWhenInterrupted
+            && motionSettings.ResetToRestClipWhenInterrupted
             && !string.IsNullOrWhiteSpace(restClipId))
         {
             motionPlayer.SetImmediate(restClipId);
@@ -320,12 +411,12 @@ public class CardMotionController : ViewPartBase
     public void UpdatePointerTilt(PointerEventData eventData)
     {
         ResolveDependencies();
-        if (!HasProfile()
+        if (!HasMotionSettings()
             || eventData == null
             || !isPointerInside
             || isSubmitting
             || isRevealPlaying
-            || !profile.EnablePointerTilt)
+            || !motionSettings.EnablePointerTilt)
         {
             return;
         }
@@ -353,13 +444,13 @@ public class CardMotionController : ViewPartBase
             ? Mathf.Clamp(localPoint.y / (rect.height * 0.5f), -1f, 1f)
             : 0f;
 
-        float tiltAngle = profile.HoverTiltAngle;
+        float tiltAngle = motionSettings.HoverTiltAngle;
         Vector3 targetEulerAngles = dynamicLocalEulerAngles + new Vector3(
             -normalizedY * tiltAngle,
             normalizedX * tiltAngle,
             -normalizedX * tiltAngle * 0.18f);
 
-        PlayPointerTilt(targetEulerAngles, profile.HoverTiltDuration);
+        PlayPointerTilt(targetEulerAngles, motionSettings.HoverTiltDuration);
     }
 
     private Tween PlayClip(string clipId)
@@ -375,12 +466,12 @@ public class CardMotionController : ViewPartBase
 
     private void PlayRevealOrStartIdle()
     {
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
 
-        if (!profile.PlayRevealOnConfigure)
+        if (!motionSettings.PlayRevealOnConfigure)
         {
             StartIdleFloatIfNeeded();
             return;
@@ -395,7 +486,7 @@ public class CardMotionController : ViewPartBase
 
         revealTween?.Kill();
         isRevealPlaying = true;
-        revealTween = PlayClip(profile.RevealClipId);
+        revealTween = PlayClip(motionSettings.RevealClipId);
         if (revealTween == null)
         {
             isRevealPlaying = false;
@@ -409,13 +500,13 @@ public class CardMotionController : ViewPartBase
     private void SampleRestClipIfNeeded()
     {
         if (motionPlayer == null
-            || string.IsNullOrWhiteSpace(profile.RestClipId)
-            || !profile.ResetToRestClipWhenInterrupted)
+            || string.IsNullOrWhiteSpace(motionSettings.RestClipId)
+            || !motionSettings.ResetToRestClipWhenInterrupted)
         {
             return;
         }
 
-        motionPlayer.SetImmediate(profile.RestClipId);
+        motionPlayer.SetImmediate(motionSettings.RestClipId);
     }
 
     private void OnRevealComplete()
@@ -427,27 +518,27 @@ public class CardMotionController : ViewPartBase
         {
             StopIdleFloat(restorePose: false);
             PlayHoverVisualLayer();
-            PlayClip(profile.HoverInClipId);
+            PlayClip(motionSettings.HoverInClipId);
             return;
         }
 
         StartIdleFloatIfNeeded();
     }
 
-    private bool HasProfile()
+    private bool HasMotionSettings()
     {
-        if (profile != null)
+        if (motionSettings != null)
         {
-            missingProfileLogged = false;
+            missingSettingsLogged = false;
             return true;
         }
 
-        if (!missingProfileLogged)
+        if (!missingSettingsLogged)
         {
             Debug.LogError(
-                $"{nameof(CardMotionController)} on '{name}' requires an {nameof(CardMotionProfileSO)} asset.",
+                $"{nameof(CardMotionController)} on '{name}' is missing inline motion settings.",
                 this);
-            missingProfileLogged = true;
+            missingSettingsLogged = true;
         }
 
         return false;
@@ -565,15 +656,15 @@ public class CardMotionController : ViewPartBase
         ResolveDependencies();
         CaptureDynamicPoseIfNeeded();
 
-        if (!HasProfile()
+        if (!HasMotionSettings()
             || !isActiveAndEnabled
             || isSubmitting
-            || !profile.EnableIdleFloat)
+            || !motionSettings.EnableIdleFloat)
         {
             return;
         }
 
-        if (resolvedDynamicRoot == null || Mathf.Approximately(profile.IdleFloatAmplitude, 0f))
+        if (resolvedDynamicRoot == null || Mathf.Approximately(motionSettings.IdleFloatAmplitude, 0f))
         {
             return;
         }
@@ -585,7 +676,7 @@ public class CardMotionController : ViewPartBase
 
         resolvedDynamicRoot.anchoredPosition = dynamicAnchoredPosition;
         idleFloatTween = resolvedDynamicRoot
-            .DOAnchorPosY(dynamicAnchoredPosition.y + profile.IdleFloatAmplitude, profile.IdleFloatDuration)
+            .DOAnchorPosY(dynamicAnchoredPosition.y + motionSettings.IdleFloatAmplitude, motionSettings.IdleFloatDuration)
             .SetEase(Ease.InOutSine)
             .SetLoops(-1, LoopType.Yoyo)
             .SetUpdate(true);
@@ -644,12 +735,12 @@ public class CardMotionController : ViewPartBase
             return;
         }
 
-        if (!HasProfile())
+        if (!HasMotionSettings())
         {
             return;
         }
 
-        PlayPointerTilt(dynamicLocalEulerAngles, profile.HoverReturnDuration);
+        PlayPointerTilt(dynamicLocalEulerAngles, motionSettings.HoverReturnDuration);
     }
 
     private void PlayPointerTilt(Vector3 targetEulerAngles, float duration)
@@ -669,8 +760,8 @@ public class CardMotionController : ViewPartBase
     private void PlayIdleVisualLayer(bool immediate)
     {
         PlayVisualLayerState(
-            profile.GlowIdleAlpha,
-            profile.ShadowIdleAlpha,
+            motionSettings.GlowIdleAlpha,
+            motionSettings.ShadowIdleAlpha,
             Vector2.zero,
             immediate);
     }
@@ -678,27 +769,27 @@ public class CardMotionController : ViewPartBase
     private void PlayHoverVisualLayer()
     {
         PlayVisualLayerState(
-            profile.GlowHoverAlpha,
-            profile.ShadowHoverAlpha,
-            profile.ShadowHoverOffset,
+            motionSettings.GlowHoverAlpha,
+            motionSettings.ShadowHoverAlpha,
+            motionSettings.ShadowHoverOffset,
             immediate: false);
     }
 
     private void PlayPressVisualLayer()
     {
         PlayVisualLayerState(
-            profile.GlowPressAlpha,
-            profile.ShadowPressAlpha,
-            profile.ShadowPressOffset,
+            motionSettings.GlowPressAlpha,
+            motionSettings.ShadowPressAlpha,
+            motionSettings.ShadowPressOffset,
             immediate: false);
     }
 
     private void PlaySelectVisualLayer()
     {
         PlayVisualLayerState(
-            profile.GlowSelectAlpha,
-            profile.ShadowHoverAlpha,
-            profile.ShadowHoverOffset,
+            motionSettings.GlowSelectAlpha,
+            motionSettings.ShadowHoverAlpha,
+            motionSettings.ShadowHoverOffset,
             immediate: false);
     }
 
@@ -709,12 +800,12 @@ public class CardMotionController : ViewPartBase
         bool immediate)
     {
         CaptureVisualLayerPoseIfNeeded();
-        if (!HasProfile() || !profile.EnableVisualLayerDynamics)
+        if (!HasMotionSettings() || !motionSettings.EnableVisualLayerDynamics)
         {
             return;
         }
 
-        float duration = profile.VisualLayerTweenDuration;
+        float duration = motionSettings.VisualLayerTweenDuration;
         if (glowCanvasGroup != null)
         {
             glowAlphaTween?.Kill();

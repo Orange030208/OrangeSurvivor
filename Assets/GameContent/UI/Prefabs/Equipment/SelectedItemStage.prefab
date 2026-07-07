@@ -431,11 +431,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 82bc97d1c4bf94f4bbed8fe1fb768827, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 904510000000001001
+    - rid: 904510000000001002
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 904510000000001003
+    - rid: 904510000000001004
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 904510000000001001
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 9
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 904510000000001002
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 27
+        fromMode: 2
+        fromValue: {x: 0.72, y: 0.72, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 904510000000001003
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 904510000000001004
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.92, y: 0.92, z: 1}
+
 --- !u!1 &7592534340386106291
 GameObject:
   m_ObjectHideFlags: 0

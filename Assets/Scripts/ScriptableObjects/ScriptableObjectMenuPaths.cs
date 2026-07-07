@@ -21,8 +21,6 @@ public static class ScriptableObjectMenuPaths
     public const string PLAYER_LEVEL_CONFIG = GAMEPLAY_ROOT + "Player/Level Config";
     public const string RUN_PROGRESSION_PROFILE = GAMEPLAY_ROOT + "Run Progression/Profile";
     public const string UPGRADE_CARD = GAMEPLAY_ROOT + "Upgrades/Upgrade Card";
-    public const string UPGRADE_CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Upgrades/Upgrade Card Motion Profile";
-    public const string CARD_MOTION_PROFILE = PRESENTATION_ROOT + "Cards/Card Motion Profile";
     public const string PROJECTILE_DEFINITION = GAMEPLAY_ROOT + "Projectiles/Projectile Definition";
     public const string ACCESSORY = GAMEPLAY_ROOT + "Items/Accessories/Accessory";
     public const string ACCESSORY_DATA_LIST = GAMEPLAY_ROOT + "Items/Accessories/Accessory Data List";
@@ -52,7 +50,6 @@ public static class ScriptableObjectMenuPaths
     public const string AUDIO_BUS_SETTINGS = SYSTEMS_ROOT + "Audio/Bus Settings";
     public const string UI_FRAMEWORK_SETTINGS = SYSTEMS_ROOT + "UI/Framework Settings";
     public const string UI_PREFAB_CATALOG = SYSTEMS_ROOT + "UI/Prefab Catalog";
-    public const string UI_MOTION_DEFINITION = SYSTEMS_ROOT + "UI/Motion Definition";
 
     public const string ITEM_QUALITY_VISUAL_CONFIG = PRESENTATION_ROOT + "Items/Quality Visual Config";
     public const string PROP_PRESENTATION_CATALOG = PRESENTATION_ROOT + "Properties/Prop Presentation Catalog";

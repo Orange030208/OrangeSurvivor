@@ -119,11 +119,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: c9a45ec944650134ab59f31475db967f, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030896
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030897
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030896
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 9
+        phase: 0
+        hiddenDirection: 1
+        extraHideOffset: 0
+        fade: 1
+        hiddenAlpha: 0
+        useEnterOvershoot: 1
+        enterOvershootDistance: 36
+        enterOvershootDurationRatio: 0.78
+        enterOvershootEase: 9
+        enterSettleEase: 9
+    - rid: 451547002770030897
+      type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.22
+        ease: 8
+        phase: 1
+        hiddenDirection: 1
+        extraHideOffset: 0
+        fade: 1
+        hiddenAlpha: 0
+        useEnterOvershoot: 1
+        enterOvershootDistance: 36
+        enterOvershootDurationRatio: 0.78
+        enterOvershootEase: 9
+        enterSettleEase: 9
+
 --- !u!114 &5478952684804095051
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1406,11 +1406,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 2fb6f164fc2544cc87beb8afbec0060c, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000001
+    - rid: 462115000000000002
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000003
+    - rid: 462115000000000004
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 462115000000000001
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 462115000000000002
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: {x: 0.96, y: 0.96, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 462115000000000003
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 462115000000000004
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 1}
+
 --- !u!1 &4241110579536794523
 GameObject:
   m_ObjectHideFlags: 0
@@ -1741,11 +1806,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 2fb6f164fc2544cc87beb8afbec0060c, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000001
+    - rid: 462115000000000002
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000003
+    - rid: 462115000000000004
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 462115000000000001
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 462115000000000002
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: {x: 0.96, y: 0.96, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 462115000000000003
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 462115000000000004
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 1}
+
 --- !u!1 &6853565531215463001
 GameObject:
   m_ObjectHideFlags: 0
@@ -2129,11 +2259,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 2fb6f164fc2544cc87beb8afbec0060c, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000001
+    - rid: 462115000000000002
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000003
+    - rid: 462115000000000004
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 462115000000000001
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 462115000000000002
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: {x: 0.96, y: 0.96, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 462115000000000003
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 462115000000000004
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 1}
+
 --- !u!1 &8468786808046846508
 GameObject:
   m_ObjectHideFlags: 0
@@ -2222,11 +2417,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: 2fb6f164fc2544cc87beb8afbec0060c, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000001
+    - rid: 462115000000000002
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 462115000000000003
+    - rid: 462115000000000004
   targets:
     bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 462115000000000001
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 462115000000000002
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.2
+        ease: 9
+        fromMode: 2
+        fromValue: {x: 0.96, y: 0.96, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 462115000000000003
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: 1
+        toMode: 2
+        toValue: 0
+    - rid: 462115000000000004
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.98, y: 0.98, z: 1}
+
 --- !u!1 &8571822930655768596
 GameObject:
   m_ObjectHideFlags: 0

@@ -192,7 +192,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: fcd06bacca4caaa4483859b67b802e69, type: 2}
+  useUnscaledTime: 1
+  clips:
+  - clipId: Show
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030769
+    - rid: 451547002770030770
+    - rid: 451547002770030771
+    - rid: 451547002770030772
+  - clipId: Hide
+    channel: Visibility
+    playMode: 0
+    conflictPolicy: 1
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030773
+    - rid: 451547002770030774
+    - rid: 451547002770030775
+    - rid: 451547002770030776
+  - clipId: Press
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030777
+    - rid: 451547002770030778
+    - rid: 451547002770030779
+    - rid: 451547002770030780
+  - clipId: Release
+    channel: Interaction
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030781
+    - rid: 451547002770030782
+    - rid: 451547002770030783
+    - rid: 451547002770030784
+  - clipId: ClickPulse
+    channel: Feedback
+    playMode: 0
+    conflictPolicy: 2
+    durationScale: 1
+    tracks:
+    - rid: 451547002770030785
+    - rid: 451547002770030786
+    - rid: 451547002770030787
+    - rid: 451547002770030788
   targets:
     bindings:
     - key: Self
@@ -200,6 +251,230 @@ MonoBehaviour:
   currentConfigOption: 
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 451547002770030769
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030770
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030771
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 451547002770030772
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.12
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030773
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 0
+    - rid: 451547002770030774
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030775
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.96, y: 0.96, z: 0.96}
+    - rid: 451547002770030776
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.14
+        ease: 8
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030777
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 27
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030778
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 27
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 1
+        toValue: {x: 0, y: 0}
+    - rid: 451547002770030779
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 27
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.9, y: 0.9, z: 0.9}
+    - rid: 451547002770030780
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.16
+        ease: 27
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030781
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030782
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 2}
+    - rid: 451547002770030783
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1, y: 1, z: 1}
+    - rid: 451547002770030784
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+    - rid: 451547002770030785
+      type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: 0
+        toMode: 2
+        toValue: 1
+    - rid: 451547002770030786
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: -4}
+    - rid: 451547002770030787
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 0.96, y: 0.96, z: 0.96}
+    - rid: 451547002770030788
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        targetKey: Self
+        startDelay: 0
+        duration: 0.08
+        ease: 6
+        fromMode: 0
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0}
+
 --- !u!114 &3388566457622636206
 MonoBehaviour:
   m_ObjectHideFlags: 0
