@@ -14,9 +14,9 @@ public sealed class UIImageFillMotionTrack : UIMotionTrackDefinition
     [SerializeField] private UIMotionFloatValueMode toMode = UIMotionFloatValueMode.Custom;
     [SerializeField] [Range(0f, 1f)] private float toValue = 1f;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetImage(TargetKey, out Image image))
+        if (!targets.TryGetImage(this, out Image image))
         {
             LogMissingTarget(nameof(Image));
             return null;
@@ -41,9 +41,9 @@ public sealed class UIImageFillMotionTrack : UIMotionTrackDefinition
         return DOTween.To(() => image.fillAmount, value => image.fillAmount = value, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetImage(TargetKey, out Image image)
+        if (!targets.TryGetImage(this, out Image image)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;

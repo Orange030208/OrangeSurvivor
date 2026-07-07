@@ -11,12 +11,12 @@ public sealed class UICallbackMotionTrack : UIMotionTrackDefinition
 {
     [SerializeField] private UnityEvent callback;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
         return DOVirtual.DelayedCall(0f, () => callback?.Invoke());
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
         if (normalizedTime >= 1f)
         {

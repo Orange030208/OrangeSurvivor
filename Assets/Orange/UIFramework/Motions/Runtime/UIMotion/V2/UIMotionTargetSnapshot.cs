@@ -15,11 +15,15 @@ public sealed class UIMotionTargetSnapshot
         CanvasGroup = transform != null ? transform.GetComponent<CanvasGroup>() : null;
         Graphic = transform != null ? transform.GetComponent<Graphic>() : null;
         Image = transform != null ? transform.GetComponent<Image>() : null;
+        if (transform != null)
+        {
+            LocalScale = transform.localScale;
+            LocalEulerAngles = transform.localEulerAngles;
+        }
+
         if (RectTransform != null)
         {
             AnchoredPosition = RectTransform.anchoredPosition;
-            LocalScale = RectTransform.localScale;
-            LocalEulerAngles = RectTransform.localEulerAngles;
         }
 
         if (CanvasGroup != null)

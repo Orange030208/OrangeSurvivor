@@ -335,12 +335,6 @@ MonoBehaviour:
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 5216779074915373659}
-    - key: Icon
-      target: {fileID: 6467798822098040012}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -349,7 +343,7 @@ MonoBehaviour:
     - rid: 890410000000000001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -360,7 +354,7 @@ MonoBehaviour:
     - rid: 890410000000000002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.2
         ease: 27
@@ -371,7 +365,7 @@ MonoBehaviour:
     - rid: 890410000000000003
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -382,7 +376,7 @@ MonoBehaviour:
     - rid: 890410000000000005
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0
         ease: 6
@@ -393,7 +387,7 @@ MonoBehaviour:
     - rid: 890410000000000006
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0
         ease: 6
@@ -404,7 +398,7 @@ MonoBehaviour:
     - rid: 890410000000000007
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0
         ease: 6
@@ -415,7 +409,7 @@ MonoBehaviour:
     - rid: 890410000000000009
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -426,7 +420,7 @@ MonoBehaviour:
     - rid: 890410000000000010
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -437,7 +431,7 @@ MonoBehaviour:
     - rid: 890410000000000011
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -448,7 +442,7 @@ MonoBehaviour:
     - rid: 890410000000000013
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -459,7 +453,7 @@ MonoBehaviour:
     - rid: 890410000000000014
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -470,7 +464,7 @@ MonoBehaviour:
     - rid: 890410000000000017
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -481,7 +475,7 @@ MonoBehaviour:
     - rid: 890410000000000018
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -492,7 +486,7 @@ MonoBehaviour:
     - rid: 890410000000000021
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -503,7 +497,7 @@ MonoBehaviour:
     - rid: 890410000000000022
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -514,7 +508,7 @@ MonoBehaviour:
     - rid: 890410000000000025
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -525,7 +519,7 @@ MonoBehaviour:
     - rid: 890410000000000026
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -536,7 +530,7 @@ MonoBehaviour:
     - rid: 890410000000000029
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0
         duration: 0.08
         ease: 27
@@ -547,7 +541,7 @@ MonoBehaviour:
     - rid: 890410000000000032
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5216779074915373659}
         startDelay: 0.08
         duration: 0.08
         ease: 8
@@ -1112,12 +1106,6 @@ MonoBehaviour:
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 6477387928566420541}
-    - key: Icon
-      target: {fileID: 1731371569737618860}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -1126,7 +1114,7 @@ MonoBehaviour:
     - rid: 890410000000000001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -1137,7 +1125,7 @@ MonoBehaviour:
     - rid: 890410000000000002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.2
         ease: 27
@@ -1148,7 +1136,7 @@ MonoBehaviour:
     - rid: 890410000000000003
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -1159,7 +1147,7 @@ MonoBehaviour:
     - rid: 890410000000000005
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0
         ease: 6
@@ -1170,7 +1158,7 @@ MonoBehaviour:
     - rid: 890410000000000006
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0
         ease: 6
@@ -1181,7 +1169,7 @@ MonoBehaviour:
     - rid: 890410000000000007
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0
         ease: 6
@@ -1192,7 +1180,7 @@ MonoBehaviour:
     - rid: 890410000000000009
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -1203,7 +1191,7 @@ MonoBehaviour:
     - rid: 890410000000000010
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -1214,7 +1202,7 @@ MonoBehaviour:
     - rid: 890410000000000011
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -1225,7 +1213,7 @@ MonoBehaviour:
     - rid: 890410000000000013
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -1236,7 +1224,7 @@ MonoBehaviour:
     - rid: 890410000000000014
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -1247,7 +1235,7 @@ MonoBehaviour:
     - rid: 890410000000000017
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -1258,7 +1246,7 @@ MonoBehaviour:
     - rid: 890410000000000018
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -1269,7 +1257,7 @@ MonoBehaviour:
     - rid: 890410000000000021
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -1280,7 +1268,7 @@ MonoBehaviour:
     - rid: 890410000000000022
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -1291,7 +1279,7 @@ MonoBehaviour:
     - rid: 890410000000000025
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -1302,7 +1290,7 @@ MonoBehaviour:
     - rid: 890410000000000026
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -1313,7 +1301,7 @@ MonoBehaviour:
     - rid: 890410000000000029
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0
         duration: 0.08
         ease: 27
@@ -1324,7 +1312,7 @@ MonoBehaviour:
     - rid: 890410000000000032
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6477387928566420541}
         startDelay: 0.08
         duration: 0.08
         ease: 8
@@ -1662,8 +1650,6 @@ MonoBehaviour:
     durationScale: 1
     tracks:
     - rid: 451547002770030889
-  targets:
-    bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -1672,7 +1658,7 @@ MonoBehaviour:
     - rid: 451547002770030888
       type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.24
         ease: 9
@@ -1689,7 +1675,7 @@ MonoBehaviour:
     - rid: 451547002770030889
       type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.22
         ease: 8
@@ -2064,8 +2050,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useUnscaledTime: 1
   clips: []
-  targets:
-    bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
 --- !u!114 &6559247038171939370
@@ -2660,12 +2644,6 @@ MonoBehaviour:
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 5305453828035018075}
-    - key: Icon
-      target: {fileID: 5068574954121414799}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -2674,7 +2652,7 @@ MonoBehaviour:
     - rid: 890410000000000001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -2685,7 +2663,7 @@ MonoBehaviour:
     - rid: 890410000000000002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.2
         ease: 27
@@ -2696,7 +2674,7 @@ MonoBehaviour:
     - rid: 890410000000000003
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -2707,7 +2685,7 @@ MonoBehaviour:
     - rid: 890410000000000005
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0
         ease: 6
@@ -2718,7 +2696,7 @@ MonoBehaviour:
     - rid: 890410000000000006
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0
         ease: 6
@@ -2729,7 +2707,7 @@ MonoBehaviour:
     - rid: 890410000000000007
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0
         ease: 6
@@ -2740,7 +2718,7 @@ MonoBehaviour:
     - rid: 890410000000000009
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -2751,7 +2729,7 @@ MonoBehaviour:
     - rid: 890410000000000010
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -2762,7 +2740,7 @@ MonoBehaviour:
     - rid: 890410000000000011
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -2773,7 +2751,7 @@ MonoBehaviour:
     - rid: 890410000000000013
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -2784,7 +2762,7 @@ MonoBehaviour:
     - rid: 890410000000000014
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -2795,7 +2773,7 @@ MonoBehaviour:
     - rid: 890410000000000017
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -2806,7 +2784,7 @@ MonoBehaviour:
     - rid: 890410000000000018
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -2817,7 +2795,7 @@ MonoBehaviour:
     - rid: 890410000000000021
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -2828,7 +2806,7 @@ MonoBehaviour:
     - rid: 890410000000000022
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -2839,7 +2817,7 @@ MonoBehaviour:
     - rid: 890410000000000025
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -2850,7 +2828,7 @@ MonoBehaviour:
     - rid: 890410000000000026
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -2861,7 +2839,7 @@ MonoBehaviour:
     - rid: 890410000000000029
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0
         duration: 0.08
         ease: 27
@@ -2872,7 +2850,7 @@ MonoBehaviour:
     - rid: 890410000000000032
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 5305453828035018075}
         startDelay: 0.08
         duration: 0.08
         ease: 8
@@ -3129,12 +3107,6 @@ MonoBehaviour:
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 4542531368360292673}
-    - key: Icon
-      target: {fileID: 1674994044845329217}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -3143,7 +3115,7 @@ MonoBehaviour:
     - rid: 890410000000000001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -3154,7 +3126,7 @@ MonoBehaviour:
     - rid: 890410000000000002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.2
         ease: 27
@@ -3165,7 +3137,7 @@ MonoBehaviour:
     - rid: 890410000000000003
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -3176,7 +3148,7 @@ MonoBehaviour:
     - rid: 890410000000000005
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0
         ease: 6
@@ -3187,7 +3159,7 @@ MonoBehaviour:
     - rid: 890410000000000006
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0
         ease: 6
@@ -3198,7 +3170,7 @@ MonoBehaviour:
     - rid: 890410000000000007
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0
         ease: 6
@@ -3209,7 +3181,7 @@ MonoBehaviour:
     - rid: 890410000000000009
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -3220,7 +3192,7 @@ MonoBehaviour:
     - rid: 890410000000000010
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -3231,7 +3203,7 @@ MonoBehaviour:
     - rid: 890410000000000011
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -3242,7 +3214,7 @@ MonoBehaviour:
     - rid: 890410000000000013
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -3253,7 +3225,7 @@ MonoBehaviour:
     - rid: 890410000000000014
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -3264,7 +3236,7 @@ MonoBehaviour:
     - rid: 890410000000000017
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -3275,7 +3247,7 @@ MonoBehaviour:
     - rid: 890410000000000018
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -3286,7 +3258,7 @@ MonoBehaviour:
     - rid: 890410000000000021
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -3297,7 +3269,7 @@ MonoBehaviour:
     - rid: 890410000000000022
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -3308,7 +3280,7 @@ MonoBehaviour:
     - rid: 890410000000000025
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -3319,7 +3291,7 @@ MonoBehaviour:
     - rid: 890410000000000026
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -3330,7 +3302,7 @@ MonoBehaviour:
     - rid: 890410000000000029
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0
         duration: 0.08
         ease: 27
@@ -3341,7 +3313,7 @@ MonoBehaviour:
     - rid: 890410000000000032
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 4542531368360292673}
         startDelay: 0.08
         duration: 0.08
         ease: 8
@@ -4192,12 +4164,6 @@ MonoBehaviour:
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
-  targets:
-    bindings:
-    - key: Self
-      target: {fileID: 6525883107220449774}
-    - key: Icon
-      target: {fileID: 7850259252580478448}
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -4206,7 +4172,7 @@ MonoBehaviour:
     - rid: 890410000000000001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -4217,7 +4183,7 @@ MonoBehaviour:
     - rid: 890410000000000002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.2
         ease: 27
@@ -4228,7 +4194,7 @@ MonoBehaviour:
     - rid: 890410000000000003
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.2
         ease: 9
@@ -4239,7 +4205,7 @@ MonoBehaviour:
     - rid: 890410000000000005
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0
         ease: 6
@@ -4250,7 +4216,7 @@ MonoBehaviour:
     - rid: 890410000000000006
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0
         ease: 6
@@ -4261,7 +4227,7 @@ MonoBehaviour:
     - rid: 890410000000000007
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0
         ease: 6
@@ -4272,7 +4238,7 @@ MonoBehaviour:
     - rid: 890410000000000009
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -4283,7 +4249,7 @@ MonoBehaviour:
     - rid: 890410000000000010
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -4294,7 +4260,7 @@ MonoBehaviour:
     - rid: 890410000000000011
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -4305,7 +4271,7 @@ MonoBehaviour:
     - rid: 890410000000000013
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -4316,7 +4282,7 @@ MonoBehaviour:
     - rid: 890410000000000014
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.14
         ease: 27
@@ -4327,7 +4293,7 @@ MonoBehaviour:
     - rid: 890410000000000017
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -4338,7 +4304,7 @@ MonoBehaviour:
     - rid: 890410000000000018
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.12
         ease: 8
@@ -4349,7 +4315,7 @@ MonoBehaviour:
     - rid: 890410000000000021
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -4360,7 +4326,7 @@ MonoBehaviour:
     - rid: 890410000000000022
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.07
         ease: 6
@@ -4371,7 +4337,7 @@ MonoBehaviour:
     - rid: 890410000000000025
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -4382,7 +4348,7 @@ MonoBehaviour:
     - rid: 890410000000000026
       type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.11
         ease: 27
@@ -4393,7 +4359,7 @@ MonoBehaviour:
     - rid: 890410000000000029
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0
         duration: 0.08
         ease: 27
@@ -4404,7 +4370,7 @@ MonoBehaviour:
     - rid: 890410000000000032
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 6525883107220449774}
         startDelay: 0.08
         duration: 0.08
         ease: 8

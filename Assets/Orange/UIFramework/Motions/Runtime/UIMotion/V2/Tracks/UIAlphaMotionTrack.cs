@@ -13,9 +13,9 @@ public sealed class UIAlphaMotionTrack : UIMotionTrackDefinition
     [SerializeField] private UIMotionFloatValueMode toMode = UIMotionFloatValueMode.Custom;
     [SerializeField] [Range(0f, 1f)] private float toValue = 1f;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetCanvasGroup(TargetKey, out CanvasGroup canvasGroup))
+        if (!targets.TryGetCanvasGroup(this, out CanvasGroup canvasGroup))
         {
             LogMissingTarget(nameof(CanvasGroup));
             return null;
@@ -40,9 +40,9 @@ public sealed class UIAlphaMotionTrack : UIMotionTrackDefinition
         return DOTween.To(() => canvasGroup.alpha, value => canvasGroup.alpha = value, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetCanvasGroup(TargetKey, out CanvasGroup canvasGroup)
+        if (!targets.TryGetCanvasGroup(this, out CanvasGroup canvasGroup)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;

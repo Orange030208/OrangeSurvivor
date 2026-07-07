@@ -41,18 +41,23 @@ public enum UIMotionColorValueMode
 // 新增 UI 动画类型时优先继承这个类，而不是把分支堆到 UIMotionPlayer 中。
 public abstract class UIMotionTrackDefinition
 {
-    // targetKey 由 UIMotionTargetRegistry 解析，默认 SELF 表示挂载 UIMotionPlayer 的对象。
-    [SerializeField] private string targetKey = UIMotionTargetKeys.SELF;
+    // 为空时默认作用于挂载 UIMotionPlayer 的 Transform；需要动画子节点时直接拖拽目标。
+    [SerializeField] private Transform target;
     [SerializeField] [Min(0f)] private float startDelay;
     [SerializeField] [Min(0f)] private float duration = 0.2f;
     [SerializeField] private Ease ease = Ease.OutCubic;
 
-    public string TargetKey => string.IsNullOrWhiteSpace(targetKey) ? UIMotionTargetKeys.SELF : targetKey;
+    public Transform Target => target;
     public float StartDelay => Mathf.Max(0f, startDelay);
     public float Duration => Mathf.Max(0f, duration);
     public Ease Ease => ease;
 
-    public Tween CreateTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    public Transform ResolveTarget(Transform owner)
+    {
+        return target != null ? target : owner;
+    }
+
+    public Tween CreateTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
         if (targets == null)
         {
@@ -93,8 +98,8 @@ public abstract class UIMotionTrackDefinition
         return wrapper;
     }
 
-    protected abstract Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context);
-    protected abstract void ApplySample(UIMotionTargetRegistry targets, float normalizedTime);
+    protected abstract Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context);
+    protected abstract void ApplySample(UIMotionTargetCache targets, float normalizedTime);
 
     protected float ResolveDuration(UIMotionPlaybackContext context)
     {
@@ -102,14 +107,14 @@ public abstract class UIMotionTrackDefinition
         return Duration * Mathf.Max(0.01f, context.DurationScale);
     }
 
-    protected bool TryGetSnapshot(UIMotionTargetRegistry targets, out UIMotionTargetSnapshot snapshot)
+    protected bool TryGetSnapshot(UIMotionTargetCache targets, out UIMotionTargetSnapshot snapshot)
     {
-        return targets.TryGetSnapshot(TargetKey, out snapshot);
+        return targets.TryGetSnapshot(this, out snapshot);
     }
 
     protected void LogMissingTarget(string expectedComponent)
     {
-        Debug.LogWarning($"{GetType().Name} could not play because target '{TargetKey}' is missing {expectedComponent}.");
+        Debug.LogWarning($"{GetType().Name} could not play because the resolved target is missing {expectedComponent}.");
     }
 }
 }

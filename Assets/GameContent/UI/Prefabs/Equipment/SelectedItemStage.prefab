@@ -449,8 +449,6 @@ MonoBehaviour:
     tracks:
     - rid: 904510000000001003
     - rid: 904510000000001004
-  targets:
-    bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -459,7 +457,7 @@ MonoBehaviour:
     - rid: 904510000000001001
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.22
         ease: 9
@@ -470,7 +468,7 @@ MonoBehaviour:
     - rid: 904510000000001002
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.22
         ease: 27
@@ -481,7 +479,7 @@ MonoBehaviour:
     - rid: 904510000000001003
       type: {class: UIAlphaMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.14
         ease: 8
@@ -492,7 +490,7 @@ MonoBehaviour:
     - rid: 904510000000001004
       type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.14
         ease: 8

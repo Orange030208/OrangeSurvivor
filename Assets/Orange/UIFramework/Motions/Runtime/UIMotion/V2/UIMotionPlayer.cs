@@ -16,10 +16,6 @@ namespace Orange.UIFramework
         [SerializeField] private bool useUnscaledTime = true;
         [SerializeField] private List<UIMotionClipDefinition> clips = new();
 
-        // 目标注册表保存 Inspector 中配置的 key -> Transform 映射，并缓存初始快照。
-        // Track 通过 key 查找目标，避免 Clip 直接依赖具体层级或硬编码对象引用。
-        [SerializeField] private UIMotionTargetRegistry targets = new();
-
         // 打开对象时是否重新捕获默认状态。用于 UI 被外部逻辑调整后，再次启用时以当前状态作为 Initial。
         [SerializeField] private bool refreshDefaultsOnEnable = true;
 
@@ -28,6 +24,7 @@ namespace Orange.UIFramework
 
         // 以 Channel 为单位记录活跃 Tween，保证“显示/隐藏”“悬停/按下”等动画可以独立冲突处理。
         private readonly Dictionary<string, List<Tween>> activeTweensByChannel = new(StringComparer.Ordinal);
+        private readonly UIMotionTargetCache targetCache = new();
         private bool initialized;
 
         private void Awake()
@@ -122,7 +119,7 @@ namespace Orange.UIFramework
         {
             InitializeIfNeeded();
             // Initial 值来自快照而不是 Prefab 原始值。需要以当前布局作为新起点时，主动调用这里刷新。
-            targets.RefreshSnapshots();
+            targetCache.RefreshSnapshots(clips);
         }
 
         public void Kill()
@@ -193,9 +190,10 @@ namespace Orange.UIFramework
                 return;
             }
 
-            // 初始化会建立 SELF 目标、Inspector 绑定目标，以及首份默认快照。
+            // 初始化会建立 Player 自身默认目标，以及首份默认快照。
             // 后续 Track 的 Initial/InitialPlusOffset 都依赖这份快照。
-            targets.Initialize(transform);
+            targetCache.Initialize(transform);
+            targetCache.RefreshSnapshots(clips);
             initialized = true;
         }
 
@@ -260,7 +258,7 @@ namespace Orange.UIFramework
             {
                 for (int i = 0; i < tracks.Count; i++)
                 {
-                    tracks[i]?.CreateTween(targets, context);
+                    tracks[i]?.CreateTween(targetCache, context);
                 }
 
                 return null;
@@ -281,7 +279,7 @@ namespace Orange.UIFramework
                     continue;
                 }
 
-                Tween trackTween = track.CreateTween(targets, context);
+                Tween trackTween = track.CreateTween(targetCache, context);
                 if (trackTween == null)
                 {
                     continue;

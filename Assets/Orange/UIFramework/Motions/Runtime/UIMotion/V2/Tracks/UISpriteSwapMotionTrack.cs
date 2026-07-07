@@ -13,19 +13,19 @@ public sealed class UISpriteSwapMotionTrack : UIMotionTrackDefinition
     [SerializeField] private bool restoreInitialOnStart;
     [SerializeField] private bool setNativeSizeIfEmpty;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
         return DOVirtual.DelayedCall(0f, () => ApplySprite(targets, useInitial: false));
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
         ApplySprite(targets, useInitial: normalizedTime <= 0f && restoreInitialOnStart);
     }
 
-    private void ApplySprite(UIMotionTargetRegistry targets, bool useInitial)
+    private void ApplySprite(UIMotionTargetCache targets, bool useInitial)
     {
-        if (!targets.TryGetImage(TargetKey, out Image image))
+        if (!targets.TryGetImage(this, out Image image))
         {
             LogMissingTarget(nameof(Image));
             return;

@@ -681,8 +681,6 @@ MonoBehaviour:
     durationScale: 1
     tracks:
     - rid: 451547002770030895
-  targets:
-    bindings: []
   refreshDefaultsOnEnable: 1
   stopAllChannelsOnDestroy: 1
   references:
@@ -691,7 +689,7 @@ MonoBehaviour:
     - rid: 451547002770030894
       type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.24
         ease: 9
@@ -708,7 +706,7 @@ MonoBehaviour:
     - rid: 451547002770030895
       type: {class: UISidebarMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
       data:
-        targetKey: Self
+        target: {fileID: 0}
         startDelay: 0
         duration: 0.22
         ease: 8

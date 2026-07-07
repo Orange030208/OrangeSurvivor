@@ -14,9 +14,9 @@ public sealed class UIGraphicColorMotionTrack : UIMotionTrackDefinition
     [SerializeField] private UIMotionColorValueMode toMode = UIMotionColorValueMode.Custom;
     [SerializeField] private Color toValue = Color.white;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetGraphic(TargetKey, out Graphic graphic))
+        if (!targets.TryGetGraphic(this, out Graphic graphic))
         {
             LogMissingTarget(nameof(Graphic));
             return null;
@@ -41,9 +41,9 @@ public sealed class UIGraphicColorMotionTrack : UIMotionTrackDefinition
         return DOTween.To(() => graphic.color, value => graphic.color = value, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetGraphic(TargetKey, out Graphic graphic)
+        if (!targets.TryGetGraphic(this, out Graphic graphic)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;

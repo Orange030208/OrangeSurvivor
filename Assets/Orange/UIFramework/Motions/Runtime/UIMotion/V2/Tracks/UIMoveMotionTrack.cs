@@ -13,9 +13,9 @@ public sealed class UIMoveMotionTrack : UIMotionTrackDefinition
     [SerializeField] private UIMotionVector2ValueMode toMode = UIMotionVector2ValueMode.InitialPlusOffset;
     [SerializeField] private Vector2 toValue;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetRectTransform(TargetKey, out RectTransform rectTransform))
+        if (!targets.TryGetRectTransform(this, out RectTransform rectTransform))
         {
             LogMissingTarget(nameof(RectTransform));
             return null;
@@ -40,9 +40,9 @@ public sealed class UIMoveMotionTrack : UIMotionTrackDefinition
         return DOTween.To(() => rectTransform.anchoredPosition, value => rectTransform.anchoredPosition = value, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetRectTransform(TargetKey, out RectTransform rectTransform)
+        if (!targets.TryGetRectTransform(this, out RectTransform rectTransform)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;

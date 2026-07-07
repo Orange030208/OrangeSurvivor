@@ -25,9 +25,9 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
     [SerializeField] private Ease enterOvershootEase = Ease.OutCubic;
     [SerializeField] private Ease enterSettleEase = Ease.OutCubic;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetRectTransform(TargetKey, out RectTransform rectTransform))
+        if (!targets.TryGetRectTransform(this, out RectTransform rectTransform))
         {
             LogMissingTarget(nameof(RectTransform));
             return null;
@@ -57,9 +57,9 @@ public sealed class UISidebarMotionTrack : UIMotionTrackDefinition
         return CreateShowTween(rectTransform, canvasGroup, visiblePosition, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetRectTransform(TargetKey, out RectTransform rectTransform)
+        if (!targets.TryGetRectTransform(this, out RectTransform rectTransform)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;

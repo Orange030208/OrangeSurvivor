@@ -27,9 +27,9 @@ public sealed class UITMPTypewriterMotionTrack : UIMotionTrackDefinition
     [SerializeField] private bool useCharactersPerSecond = true;
     [SerializeField] [Min(1f)] private float charactersPerSecond = 24f;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetText(TargetKey, out TMP_Text text))
+        if (!targets.TryGetText(this, out TMP_Text text))
         {
             LogMissingTarget(nameof(TMP_Text));
             return null;
@@ -55,9 +55,9 @@ public sealed class UITMPTypewriterMotionTrack : UIMotionTrackDefinition
             }, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetText(TargetKey, out TMP_Text text))
+        if (!targets.TryGetText(this, out TMP_Text text))
         {
             return;
         }

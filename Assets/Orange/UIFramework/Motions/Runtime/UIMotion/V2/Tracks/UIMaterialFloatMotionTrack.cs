@@ -16,7 +16,7 @@ public sealed class UIMaterialFloatMotionTrack : UIMotionTrackDefinition
     [SerializeField] private float toValue = 1f;
     [SerializeField] private bool instantiateMaterial = true;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
         if (!TryGetMaterial(targets, out Material material))
         {
@@ -43,7 +43,7 @@ public sealed class UIMaterialFloatMotionTrack : UIMotionTrackDefinition
             }, end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
         if (!TryGetMaterial(targets, out Material material))
         {
@@ -56,7 +56,7 @@ public sealed class UIMaterialFloatMotionTrack : UIMotionTrackDefinition
         material.SetFloat(propertyName, Mathf.LerpUnclamped(start, end, normalizedTime));
     }
 
-    private bool TryGetMaterial(UIMotionTargetRegistry targets, out Material material)
+    private bool TryGetMaterial(UIMotionTargetCache targets, out Material material)
     {
         material = null;
         if (string.IsNullOrWhiteSpace(propertyName))
@@ -65,7 +65,7 @@ public sealed class UIMaterialFloatMotionTrack : UIMotionTrackDefinition
             return false;
         }
 
-        if (!targets.TryGetGraphic(TargetKey, out Graphic graphic))
+        if (!targets.TryGetGraphic(this, out Graphic graphic))
         {
             LogMissingTarget(nameof(Graphic));
             return false;
@@ -74,7 +74,7 @@ public sealed class UIMaterialFloatMotionTrack : UIMotionTrackDefinition
         material = ResolveMaterialInstance(graphic);
         if (material == null || !material.HasProperty(propertyName))
         {
-            Debug.LogWarning($"{GetType().Name} could not find material property '{propertyName}' on target '{TargetKey}'.");
+            Debug.LogWarning($"{GetType().Name} could not find material property '{propertyName}' on the resolved target.");
             return false;
         }
 

@@ -13,9 +13,9 @@ public sealed class UIRotateMotionTrack : UIMotionTrackDefinition
     [SerializeField] private UIMotionVector3ValueMode toMode = UIMotionVector3ValueMode.InitialPlusOffset;
     [SerializeField] private Vector3 toValue;
 
-    protected override Tween CreateTrackTween(UIMotionTargetRegistry targets, UIMotionPlaybackContext context)
+    protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
-        if (!targets.TryGetTarget(TargetKey, out Transform target))
+        if (!targets.TryGetTarget(this, out Transform target))
         {
             LogMissingTarget(nameof(Transform));
             return null;
@@ -40,9 +40,9 @@ public sealed class UIRotateMotionTrack : UIMotionTrackDefinition
         return target.DOLocalRotate(end, duration);
     }
 
-    protected override void ApplySample(UIMotionTargetRegistry targets, float normalizedTime)
+    protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)
     {
-        if (!targets.TryGetTarget(TargetKey, out Transform target)
+        if (!targets.TryGetTarget(this, out Transform target)
             || !TryGetSnapshot(targets, out UIMotionTargetSnapshot snapshot))
         {
             return;
