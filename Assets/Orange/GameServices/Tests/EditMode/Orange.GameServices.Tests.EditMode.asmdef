@@ -1,0 +1,21 @@
+{
+    "name": "Orange.GameServices.Tests.EditMode",
+    "rootNamespace": "Orange.GameServices.Tests",
+    "references": [
+        "Orange.GameServices"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
