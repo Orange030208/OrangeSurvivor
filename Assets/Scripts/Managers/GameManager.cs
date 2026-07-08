@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Orange.GameServices;
 using Orange.UIFramework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -561,12 +562,18 @@ public class GameManager : MonoBehaviour
 
     private StageCompletePageContext CreateStageCompletePageContext()
     {
-        if (stageCompleteSummaryManager == null)
+        if (GameServices.TryGet(out RunSummaryService runSummaryService))
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(StageCompleteSummaryManager)} reference.");
+            return new StageCompletePageContext(runSummaryService.CreateResult());
         }
 
-        return new StageCompletePageContext(stageCompleteSummaryManager.CreateResult());
+        if (stageCompleteSummaryManager != null)
+        {
+            return new StageCompletePageContext(stageCompleteSummaryManager.CreateResult());
+        }
+
+        throw new MissingReferenceException(
+            $"{nameof(GameManager)} requires {nameof(RunSummaryService)} from {nameof(GameServices)} or an explicit {nameof(StageCompleteSummaryManager)} reference.");
     }
 
     private ShopPageContext CreateShopPageContext()

@@ -10853,7 +10853,7 @@ MonoBehaviour:
   waveManager: {fileID: 0}
   enemyRegistry: {fileID: 0}
   shopManager: {fileID: 59292223}
-  stageCompleteSummaryManager: {fileID: 1566269878}
+  stageCompleteSummaryManager: {fileID: 0}
   initialGameState: 1
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
@@ -11283,7 +11283,7 @@ GameObject:
   - component: {fileID: 754862648}
   - component: {fileID: 754862647}
   m_Layer: 0
-  m_Name: GameContentBootstrap
+  m_Name: Game Service Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11298,10 +11298,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 754862646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a72a4af9ce2c474c85c69f55ec020cd3, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a8c821f1da986748893e393dd3b7706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  catalog: {fileID: 11400000, guid: 8c20d34dfbc80a944b8ee6fc2bd154eb, type: 2}
+  scopeId: Default
+  bindAsDefault: 1
+  dontDestroyOnLoad: 0
+  profileMode: 0
+  profiles: []
+  localServices:
+  - rid: 754862647001
+  - rid: 754862647002
+  references:
+    version: 2
+    RefIds:
+    - rid: 754862647001
+      type: {class: ContentService, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 1
+        catalog: {fileID: 11400000, guid: 8c20d34dfbc80a944b8ee6fc2bd154eb, type: 2}
+    - rid: 754862647002
+      type: {class: RunSummaryService, ns: , asm: Assembly-CSharp}
+      data:
+        enabled: 1
+        wallet: {fileID: 0}
 --- !u!4 &754862648
 Transform:
   m_ObjectHideFlags: 0
@@ -11928,51 +11948,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   accessoryManager: {fileID: 0}
   player: {fileID: 0}
---- !u!1 &1566269876
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1566269877}
-  - component: {fileID: 1566269878}
-  m_Layer: 0
-  m_Name: 'StageCompleteSummaryManager '
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1566269877
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1566269876}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1566269878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1566269876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7520a964abd20f341ae3e3509f22bbaa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallet: {fileID: 0}
 --- !u!1 &2066110829
 GameObject:
   m_ObjectHideFlags: 0

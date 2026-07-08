@@ -1,4 +1,5 @@
 using System;
+using Orange.GameServices;
 using UnityEngine;
 
 /// <summary>
@@ -26,7 +27,7 @@ public static class GameContentRuntime
 
             throw new InvalidOperationException(
                 $"{nameof(GameContentRuntime)} has not been initialized. " +
-                $"Add {nameof(GameContentBootstrap)} to the active scene and assign a {nameof(GameContentCatalogSO)}.");
+                $"Add {nameof(GameServiceRoot)} with {nameof(ContentService)} or add {nameof(GameContentBootstrap)} to the active scene.");
         }
     }
 
@@ -38,7 +39,7 @@ public static class GameContentRuntime
     }
 
     /// <summary>
-    /// 设置当前 Provider。正常情况下只应由 <see cref="GameContentBootstrap"/> 或测试装配调用。
+    /// 设置当前 Provider。正常情况下只应由 <see cref="ContentService"/>、<see cref="GameContentBootstrap"/> 或测试装配调用。
     /// </summary>
     public static void SetProvider(IGameContentProvider nextProvider)
     {
@@ -65,6 +66,13 @@ public static class GameContentRuntime
         if (provider != null)
         {
             resolvedProvider = provider;
+            return true;
+        }
+
+        if (GameServices.TryGet(out IGameContentProvider serviceProvider))
+        {
+            resolvedProvider = serviceProvider;
+            provider = serviceProvider;
             return true;
         }
 
