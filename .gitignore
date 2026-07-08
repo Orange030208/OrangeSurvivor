@@ -140,6 +140,10 @@ Thumbs.db
 # User Settings
 [Uu]ser[Ss]ettings/
 
+# Local IDE / agent workspace state
+.idea/
+.trae/
+
 # Local Codex tooling state
 .codex/config.toml
 .superpowers/
