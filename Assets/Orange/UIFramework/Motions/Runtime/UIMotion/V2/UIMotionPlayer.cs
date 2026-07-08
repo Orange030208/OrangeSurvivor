@@ -131,33 +131,6 @@ namespace Orange.UIFramework
             }
         }
 
-        public List<string> GetOptionList()
-        {
-            InitializeIfNeeded();
-            List<string> clipIds = new();
-            if (clips == null)
-            {
-                return clipIds;
-            }
-
-            // 供 Inspector/配置面板生成选项列表；去重可以避免重复 ClipId 造成 UI 选择歧义。
-            for (int i = 0; i < clips.Count; i++)
-            {
-                UIMotionClipDefinition clip = clips[i];
-                if (clip == null || string.IsNullOrWhiteSpace(clip.ClipId))
-                {
-                    continue;
-                }
-
-                if (!clipIds.Contains(clip.ClipId))
-                {
-                    clipIds.Add(clip.ClipId);
-                }
-            }
-
-            return clipIds;
-        }
-
         public void PrepareEnter()
         {
             SetImmediate(UIMotionClipIds.HIDDEN);
