@@ -25,7 +25,7 @@ public class SettingsPanelManager : PopupBase
     }
 
     [Header("显示")]
-    [SerializeField] private MonoBehaviour motionSource;
+    [SerializeField] private UIMotionPlayer motionPlayer;
     [FormerlySerializedAs("canvasGroup")]
     [SerializeField] private CanvasGroup panelCanvasGroup;
     [SerializeField] private RectTransform visualRoot;
@@ -88,7 +88,6 @@ public class SettingsPanelManager : PopupBase
     private GameSettingsState savedState;
     private GameSettingsState editingState;
     private PlatformSettingsProfileSO activeProfile;
-    private IUIRuntimeMotion motion;
     private CancellationTokenSource activeRebindCancellation;
     private SettingsCategory currentCategory = SettingsCategory.Audio;
     private Tween visibilityTween;
@@ -110,7 +109,7 @@ public class SettingsPanelManager : PopupBase
         ApplyProfileToSections();
         ApplyEditingStateToView();
         ApplyAudioPreview();
-        motion?.RefreshDefaults();
+        motionPlayer?.RefreshDefaults();
         CaptureAnimationDefaultsIfNeeded();
         SetHiddenImmediate();
     }
@@ -121,7 +120,7 @@ public class SettingsPanelManager : PopupBase
         UnbindControls();
         visibilityTween?.Kill();
         categoryTween?.Kill();
-        motion?.Kill();
+        motionPlayer?.Kill();
     }
 
     private void OnEnable()
@@ -143,7 +142,7 @@ public class SettingsPanelManager : PopupBase
     {
         visibilityTween?.Kill();
         categoryTween?.Kill();
-        motion?.Kill();
+        motionPlayer?.Kill();
     }
 
     public bool IsVisible => visible;
@@ -1318,7 +1317,7 @@ public class SettingsPanelManager : PopupBase
     {
         if (!animateVisibility || panelCanvasGroup == null || visualRoot == null)
         {
-            return motion?.Play(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+            return motionPlayer?.Play(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
         }
 
         CaptureAnimationDefaultsIfNeeded();
@@ -1347,7 +1346,7 @@ public class SettingsPanelManager : PopupBase
     {
         if (!animateVisibility || panelCanvasGroup == null || visualRoot == null)
         {
-            motion?.SetImmediate(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+            motionPlayer?.SetImmediate(show ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
             return;
         }
 
@@ -1486,14 +1485,9 @@ public class SettingsPanelManager : PopupBase
 
     private void ValidateConfiguration()
     {
-        if (motionSource == null)
+        if (motionPlayer == null)
         {
-            throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing motion source.");
-        }
-
-        if (motion == null)
-        {
-            throw new MissingComponentException($"{nameof(SettingsPanelManager)} '{name}' motion source must implement {nameof(IUIRuntimeMotion)}.");
+            throw new MissingReferenceException($"{nameof(SettingsPanelManager)} '{name}' is missing motion player.");
         }
 
         if (panelCanvasGroup == null)
@@ -1574,54 +1568,5 @@ public class SettingsPanelManager : PopupBase
             TryGetComponent(out panelCanvasGroup);
         }
 
-        if (motionSource != null)
-        {
-            motion = ResolveRuntimeMotion(motionSource);
-            return;
-        }
-
-        MonoBehaviour[] behaviours = GetComponents<MonoBehaviour>();
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            MonoBehaviour behaviour = behaviours[i];
-            if (behaviour == null || ReferenceEquals(behaviour, this))
-            {
-                continue;
-            }
-
-            IUIRuntimeMotion resolvedMotion = ResolveRuntimeMotion(behaviour);
-            if (resolvedMotion == null)
-            {
-                continue;
-            }
-
-            motionSource = behaviour;
-            motion = resolvedMotion;
-            return;
-        }
-    }
-
-    private IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source)
-    {
-        if (source == null)
-        {
-            return null;
-        }
-
-        if (source is IUIRuntimeMotion directMotion)
-        {
-            return directMotion;
-        }
-
-        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            if (behaviours[i] is IUIRuntimeMotion siblingMotion)
-            {
-                return siblingMotion;
-            }
-        }
-
-        return null;
     }
 }

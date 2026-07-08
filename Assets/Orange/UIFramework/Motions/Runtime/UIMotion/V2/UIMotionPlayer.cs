@@ -9,9 +9,16 @@ namespace Orange.UIFramework
 
     [DisallowMultipleComponent]
     // UI 动画系统的运行时入口：负责把组件内配置的 Clip 解析成 DOTween 播放序列。
-    // 这个组件只做“播放编排”和“目标解析”，具体属性如何变化由各个 UIMotionTrackDefinition 决定。
-    public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion, IUISequenceMotion
+    // 这个组件只负责播放任意 Clip；页面进出场等生命周期语义由 UIMotionTransition/UIMotionDirector 负责。
+    public sealed class UIMotionPlayer : MonoBehaviour, IUIRuntimeMotion
     {
+        private sealed class ActiveTween
+        {
+            public string Channel;
+            public UIMotionClipDefinition Clip;
+            public Tween Tween;
+        }
+
         // 动效配置直接跟随组件序列化，避免单组件使用的动画还要额外维护 ScriptableObject 资产。
         [SerializeField] private bool useUnscaledTime = true;
         [SerializeField] private List<UIMotionClipDefinition> clips = new();
@@ -23,7 +30,9 @@ namespace Orange.UIFramework
         [SerializeField] private bool stopAllChannelsOnDestroy = true;
 
         // 以 Channel 为单位记录活跃 Tween，保证“显示/隐藏”“悬停/按下”等动画可以独立冲突处理。
-        private readonly Dictionary<string, List<Tween>> activeTweensByChannel = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, List<ActiveTween>> activeTweensByChannel = new(StringComparer.Ordinal);
+        private readonly List<ActiveTween> activeTweenBuffer = new();
+        private readonly List<UIMotionClipDefinition> clipBuffer = new();
         private readonly UIMotionTargetCache targetCache = new();
         private bool initialized;
 
@@ -39,6 +48,13 @@ namespace Orange.UIFramework
             {
                 RefreshDefaults();
             }
+
+            PlayAutoClipsOnEnable();
+        }
+
+        private void OnDisable()
+        {
+            StopClipsOnDisable();
         }
 
         private void OnDestroy()
@@ -60,7 +76,7 @@ namespace Orange.UIFramework
 
             // 播放前先按 Clip 的冲突策略处理旧动画。默认只停同 Channel，避免按钮 hover 打断页面进出场。
             ApplyConflictPolicy(clip);
-            UIMotionPlaybackContext context = new(this, clip, UIMotionPlaybackMode.PlayToEnd, delay,
+            UIMotionPlaybackContext context = new(this, clip, UIMotionPlaybackMode.PlayToEnd, 0f,
                 clip.DurationScale);
             Tween tween = BuildClipTween(clip, context);
             if (tween == null)
@@ -68,8 +84,10 @@ namespace Orange.UIFramework
                 return null;
             }
 
+            tween = ApplyLoopPolicy(clip, tween);
+            tween = WrapInitialDelay(tween, delay);
             tween.SetUpdate(useUnscaledTime);
-            RegisterChannelTween(clip.Channel, tween);
+            RegisterChannelTween(clip.Channel, clip, tween);
             return tween;
         }
 
@@ -100,7 +118,7 @@ namespace Orange.UIFramework
         public void StopChannel(string channel)
         {
             string resolvedChannel = ResolveChannel(channel);
-            if (!activeTweensByChannel.TryGetValue(resolvedChannel, out List<Tween> tweens))
+            if (!activeTweensByChannel.TryGetValue(resolvedChannel, out List<ActiveTween> tweens))
             {
                 return;
             }
@@ -108,10 +126,9 @@ namespace Orange.UIFramework
             // 从后往前 Kill，配合 OnKill 回调移除注册项时不会影响尚未遍历的元素。
             for (int i = tweens.Count - 1; i >= 0; i--)
             {
-                tweens[i]?.Kill();
+                tweens[i]?.Tween?.Kill();
             }
 
-            tweens.Clear();
             activeTweensByChannel.Remove(resolvedChannel);
         }
 
@@ -131,31 +148,6 @@ namespace Orange.UIFramework
             }
         }
 
-        public void PrepareEnter()
-        {
-            SetImmediate(UIMotionClipIds.HIDDEN);
-        }
-
-        public Tween PlayEnter(float delay = 0f)
-        {
-            return Play(UIMotionClipIds.SHOW, delay);
-        }
-
-        public Tween PlayExit(float delay = 0f)
-        {
-            return Play(UIMotionClipIds.HIDE, delay);
-        }
-
-        public void SetHiddenImmediate()
-        {
-            SetImmediate(UIMotionClipIds.HIDDEN);
-        }
-
-        public void CompleteImmediate()
-        {
-            SetImmediate(UIMotionClipIds.VISIBLE);
-        }
-
         private void InitializeIfNeeded()
         {
             if (initialized)
@@ -170,7 +162,7 @@ namespace Orange.UIFramework
             initialized = true;
         }
 
-        private bool TryGetClip(string clipId, out UIMotionClipDefinition clip)
+        public bool TryGetClip(string clipId, out UIMotionClipDefinition clip)
         {
             clip = null;
             if (string.IsNullOrWhiteSpace(clipId) || clips == null)
@@ -199,6 +191,11 @@ namespace Orange.UIFramework
             return false;
         }
 
+        public bool IsClipInfiniteLoop(string clipId)
+        {
+            return TryGetClipWithFallback(clipId, out UIMotionClipDefinition clip) && clip.IsInfiniteLoop;
+        }
+
         private bool TryGetClipWithFallback(string clipId, out UIMotionClipDefinition clip)
         {
             if (TryGetClip(clipId, out clip))
@@ -217,6 +214,80 @@ namespace Orange.UIFramework
             };
 
             return !string.IsNullOrWhiteSpace(fallbackClipId) && TryGetClip(fallbackClipId, out clip);
+        }
+
+        private void PlayAutoClipsOnEnable()
+        {
+            if (clips == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < clips.Count; i++)
+            {
+                UIMotionClipDefinition clip = clips[i];
+                if (clip == null || !clip.AutoPlayOnEnable)
+                {
+                    continue;
+                }
+
+                Play(clip.ClipId);
+            }
+        }
+
+        private void StopClipsOnDisable()
+        {
+            activeTweenBuffer.Clear();
+            clipBuffer.Clear();
+
+            foreach (KeyValuePair<string, List<ActiveTween>> pair in activeTweensByChannel)
+            {
+                List<ActiveTween> entries = pair.Value;
+                if (entries == null)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    ActiveTween entry = entries[i];
+                    if (entry?.Clip == null || !entry.Clip.StopOnDisable)
+                    {
+                        continue;
+                    }
+
+                    activeTweenBuffer.Add(entry);
+                    if (entry.Clip.RestoreOnDisable && !clipBuffer.Contains(entry.Clip))
+                    {
+                        clipBuffer.Add(entry.Clip);
+                    }
+                }
+            }
+
+            for (int i = 0; i < activeTweenBuffer.Count; i++)
+            {
+                activeTweenBuffer[i].Tween?.Kill();
+            }
+
+            for (int i = 0; i < clipBuffer.Count; i++)
+            {
+                SampleClipStart(clipBuffer[i]);
+            }
+
+            activeTweenBuffer.Clear();
+            clipBuffer.Clear();
+        }
+
+        private void SampleClipStart(UIMotionClipDefinition clip)
+        {
+            if (clip == null)
+            {
+                return;
+            }
+
+            UIMotionPlaybackContext context = new(this, clip, UIMotionPlaybackMode.SampleStart, 0f,
+                clip.DurationScale);
+            BuildClipTween(clip, context);
         }
 
         private Tween BuildClipTween(UIMotionClipDefinition clip, UIMotionPlaybackContext context)
@@ -238,11 +309,6 @@ namespace Orange.UIFramework
             }
 
             Sequence sequence = DOTween.Sequence();
-            if (context.Delay > 0f)
-            {
-                sequence.AppendInterval(context.Delay);
-            }
-
             bool hasTween = false;
             for (int i = 0; i < tracks.Count; i++)
             {
@@ -279,6 +345,30 @@ namespace Orange.UIFramework
             return sequence;
         }
 
+        private static Tween ApplyLoopPolicy(UIMotionClipDefinition clip, Tween tween)
+        {
+            int loopCount = clip.LoopCount;
+            if (loopCount == 1)
+            {
+                return tween;
+            }
+
+            return tween.SetLoops(loopCount, clip.LoopType);
+        }
+
+        private static Tween WrapInitialDelay(Tween tween, float delay)
+        {
+            if (delay <= 0f)
+            {
+                return tween;
+            }
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.AppendInterval(delay);
+            sequence.Append(tween);
+            return sequence;
+        }
+
         private void ApplyConflictPolicy(UIMotionClipDefinition clip)
         {
             // 冲突策略放在 Clip 上，便于同一个 Player 内同时支持“页面级动画互斥”和“交互反馈并行”。
@@ -295,32 +385,38 @@ namespace Orange.UIFramework
             }
         }
 
-        private void RegisterChannelTween(string channel, Tween tween)
+        private void RegisterChannelTween(string channel, UIMotionClipDefinition clip, Tween tween)
         {
             string resolvedChannel = ResolveChannel(channel);
-            if (!activeTweensByChannel.TryGetValue(resolvedChannel, out List<Tween> tweens))
+            if (!activeTweensByChannel.TryGetValue(resolvedChannel, out List<ActiveTween> tweens))
             {
-                tweens = new List<Tween>();
+                tweens = new List<ActiveTween>();
                 activeTweensByChannel.Add(resolvedChannel, tweens);
             }
 
-            tweens.Add(tween);
+            ActiveTween entry = new()
+            {
+                Channel = resolvedChannel,
+                Clip = clip,
+                Tween = tween
+            };
+            tweens.Add(entry);
             // DOTween 完成和 Kill 都可能结束播放；两边都注销可覆盖自然完成、手动中断和对象销毁。
-            tween.OnKill(() => RemoveChannelTween(resolvedChannel, tween));
-            tween.OnComplete(() => RemoveChannelTween(resolvedChannel, tween));
+            tween.OnKill(() => RemoveChannelTween(entry));
+            tween.OnComplete(() => RemoveChannelTween(entry));
         }
 
-        private void RemoveChannelTween(string channel, Tween tween)
+        private void RemoveChannelTween(ActiveTween entry)
         {
-            if (!activeTweensByChannel.TryGetValue(channel, out List<Tween> tweens))
+            if (entry == null || !activeTweensByChannel.TryGetValue(entry.Channel, out List<ActiveTween> tweens))
             {
                 return;
             }
 
-            tweens.Remove(tween);
+            tweens.Remove(entry);
             if (tweens.Count == 0)
             {
-                activeTweensByChannel.Remove(channel);
+                activeTweensByChannel.Remove(entry.Channel);
             }
         }
 

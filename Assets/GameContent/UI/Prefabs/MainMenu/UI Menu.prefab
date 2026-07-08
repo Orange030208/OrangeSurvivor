@@ -114,6 +114,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770030888
   - clipId: Hide
@@ -121,6 +126,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770030889
   refreshDefaultsOnEnable: 1
@@ -308,53 +318,83 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterGroups:
-  - name: Root
-    motions:
-    - {fileID: 6642012345678901234}
-    startDelay: 0
-    stagger: 0
-    playTogether: 1
-  - name: Logo
-    motions:
-    - {fileID: 732983955599906064}
-    startDelay: 0.05
-    stagger: 0
-    playTogether: 1
-  - name: MenuButtons
-    motions:
-    - {fileID: 2730136516915399492}
-    - {fileID: 8801776743304149534}
-    - {fileID: 2456184137900680544}
-    - {fileID: 6501161541057188658}
-    - {fileID: 7542961490850603}
-    startDelay: 0.08
-    stagger: 0.055
-    playTogether: 1
-  exitGroups:
-  - name: Root
-    motions:
-    - {fileID: 6642012345678901234}
-    startDelay: 0.02
-    stagger: 0
-    playTogether: 1
-  - name: Logo
-    motions:
-    - {fileID: 732983955599906064}
-    startDelay: 0.02
-    stagger: 0
-    playTogether: 1
-  - name: MenuButtons
-    motions:
-    - {fileID: 2730136516915399492}
-    - {fileID: 8801776743304149534}
-    - {fileID: 2456184137900680544}
-    - {fileID: 6501161541057188658}
-    - {fileID: 7542961490850603}
-    startDelay: 0
-    stagger: 0.035
-    playTogether: 1
-  reverseExitOrder: 1
+  sequences:
+  - sequenceId: Enter
+    groups:
+    - name: Root
+      steps:
+      - player: {fileID: 6642012345678901234}
+        clipId: Show
+        delay: 0
+      startDelay: 0
+      stagger: 0
+      playTogether: 1
+    - name: Logo
+      steps:
+      - player: {fileID: 732983955599906064}
+        clipId: Show
+        delay: 0
+      startDelay: 0.05
+      stagger: 0
+      playTogether: 1
+    - name: MenuButtons
+      steps:
+      - player: {fileID: 231189928808573590}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 102205969254207212}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 390718765879369563}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 251693901487381051}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 494837956667915644}
+        clipId: Show
+        delay: 0
+      startDelay: 0.08
+      stagger: 0.055
+      playTogether: 1
+  - sequenceId: Exit
+    groups:
+    - name: MenuButtons
+      steps:
+      - player: {fileID: 494837956667915644}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 251693901487381051}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 390718765879369563}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 102205969254207212}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 231189928808573590}
+        clipId: Hide
+        delay: 0
+      startDelay: 0
+      stagger: 0.035
+      playTogether: 1
+    - name: Logo
+      steps:
+      - player: {fileID: 732983955599906064}
+        clipId: Hide
+        delay: 0
+      startDelay: 0.02
+      stagger: 0
+      playTogether: 1
+    - name: Root
+      steps:
+      - player: {fileID: 6642012345678901234}
+        clipId: Hide
+        delay: 0
+      startDelay: 0.02
+      stagger: 0
+      playTogether: 1
   useUnscaledTime: 1
   timeScale: 1
 --- !u!114 &7745386225031098841
@@ -369,8 +409,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 4401061136781019396}
-  autoResolveInChildren: 1
+  sourceMode: 0
+  director: {fileID: 4401061136781019396}
+  player: {fileID: 0}
+  enterSequenceId: Enter
+  exitSequenceId: Exit
+  enterClipId: Show
+  exitClipId: Hide
+  hiddenClipId: Hidden
+  visibleClipId: Visible
   hideImmediatelyBeforeEnter: 1
   showImmediatelyWhenSkipped: 1
 --- !u!1 &8953715637430589750
@@ -458,17 +505,86 @@ MonoBehaviour:
   m_GameObject: {fileID: 8953715637430589750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c42ccf815334de38f34e9604d98d02a, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startDelay: 0.45
-  scaleHalfCycleDuration: 2.05
-  floatHalfCycleDuration: 2.35
-  rotationHalfCycleDuration: 2.7
-  scaleMultiplier: 1.025
-  floatAmplitudeY: 8
-  rotationAmplitudeZ: 0.8
   useUnscaledTime: 1
+  clips:
+  - clipId: IdleLogoScale
+    channel: IdleLogoScale
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 493480140835010451
+  - clipId: IdleLogoFloat
+    channel: IdleLogoFloat
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 493480140835010452
+  - clipId: IdleLogoTilt
+    channel: IdleLogoTilt
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 493480140835010453
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 493480140835010451
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.57
+        duration: 2.05
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.025, y: 1.025, z: 1.025}
+    - rid: 493480140835010452
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.45
+        duration: 2.35
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 8}
+    - rid: 493480140835010453
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.73
+        duration: 1.35
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0.8}
+        rotateMode: 0
 --- !u!1001 &1207222198988430331
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -588,6 +704,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &231189928808573590 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1123727943454480492, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
+  m_PrefabInstance: {fileID: 1207222198988430331}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1672402223448962527
@@ -721,6 +848,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &390718765879369563 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1123727943454480492, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
+  m_PrefabInstance: {fileID: 1672402223448962527}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1731493501030559721
@@ -8274,6 +8412,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &494837956667915644 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1123727943454480492, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
+  m_PrefabInstance: {fileID: 3835169999283823508}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2825703889902641300 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1301444067906421504, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
@@ -8416,6 +8565,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &102205969254207212 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1123727943454480492, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
+  m_PrefabInstance: {fileID: 5694168219259726497}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8006077948872246157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8546,6 +8706,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &251693901487381051 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1123727943454480492, guid: fc04a130715c0e64f9fd633ddbe336c2, type: 3}
+  m_PrefabInstance: {fileID: 8006077948872246157}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &9013080568073830541 stripped

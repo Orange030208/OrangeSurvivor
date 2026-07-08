@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd5e3518c219e0f4994a19529fb53e6b, type: 3}
   m_Name: Wave Director 02
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   waveId: DirectorWave_02
   displayName: Wave 2
   duration: 35

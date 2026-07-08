@@ -8,35 +8,44 @@ namespace Orange.UIFramework
     [DisallowMultipleComponent]
     public sealed class UIMotionTransition : MonoBehaviour, IViewTransition
     {
-        [SerializeField] private MonoBehaviour motionSource;
-        [SerializeField] private bool autoResolveInChildren = true;
+        private enum MotionSourceMode
+        {
+            Director,
+            Player
+        }
+
+        [SerializeField] private MotionSourceMode sourceMode = MotionSourceMode.Director;
+        [SerializeField] private UIMotionDirector director;
+        [SerializeField] private UIMotionPlayer player;
+        [SerializeField] private string enterSequenceId = UIMotionSequenceIds.ENTER;
+        [SerializeField] private string exitSequenceId = UIMotionSequenceIds.EXIT;
+        [SerializeField] private string enterClipId = UIMotionClipIds.SHOW;
+        [SerializeField] private string exitClipId = UIMotionClipIds.HIDE;
+        [SerializeField] private string hiddenClipId = UIMotionClipIds.HIDDEN;
+        [SerializeField] private string visibleClipId = UIMotionClipIds.VISIBLE;
         [SerializeField] private bool hideImmediatelyBeforeEnter = true;
         [SerializeField] private bool showImmediatelyWhenSkipped = true;
 
-        private IUISequenceMotion sequenceMotion;
-
         private void Awake()
         {
-            ResolveMotionOrThrow();
+            ValidateSourceOrThrow();
         }
 
         public async UniTask PlayEnterAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            IUISequenceMotion motion = ResolveMotionOrThrow();
-
             if (hideImmediatelyBeforeEnter)
             {
-                motion.RefreshDefaults();
-                motion.SetHiddenImmediate();
+                RefreshDefaults();
+                SetHiddenImmediate();
             }
 
-            Tween tween = motion.PlayEnter();
+            Tween tween = PlayEnterTween();
             if (tween == null)
             {
                 if (showImmediatelyWhenSkipped)
                 {
-                    motion.CompleteImmediate();
+                    SetVisibleImmediate();
                 }
 
                 return;
@@ -48,87 +57,117 @@ namespace Orange.UIFramework
         public UniTask PlayExitAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            Tween tween = ResolveMotionOrThrow().PlayExit();
-            return tween.WaitForCompletionAsync(cancellationToken);
+            Tween tween = PlayExitTween();
+            return tween != null ? tween.WaitForCompletionAsync(cancellationToken) : UniTask.CompletedTask;
         }
 
         public void SetVisibleImmediate()
         {
-            ResolveMotionOrThrow().CompleteImmediate();
+            if (sourceMode == MotionSourceMode.Director)
+            {
+                ResolveDirectorOrThrow().SetImmediate(ResolveSequenceId(enterSequenceId, UIMotionSequenceIds.ENTER),
+                    atEnd: true);
+                return;
+            }
+
+            ResolvePlayerOrThrow().SetImmediate(ResolveClipId(visibleClipId, UIMotionClipIds.VISIBLE));
         }
 
         public void SetHiddenImmediate()
         {
-            ResolveMotionOrThrow().SetHiddenImmediate();
+            if (sourceMode == MotionSourceMode.Director)
+            {
+                ResolveDirectorOrThrow().SetImmediate(ResolveSequenceId(enterSequenceId, UIMotionSequenceIds.ENTER),
+                    atEnd: false);
+                return;
+            }
+
+            ResolvePlayerOrThrow().SetImmediate(ResolveClipId(hiddenClipId, UIMotionClipIds.HIDDEN));
         }
 
         public void Kill()
         {
-            ResolveMotionOrThrow().Kill();
+            if (sourceMode == MotionSourceMode.Director)
+            {
+                ResolveDirectorOrThrow().Kill();
+                return;
+            }
+
+            ResolvePlayerOrThrow().Kill();
         }
 
-        private IUISequenceMotion ResolveMotionOrThrow()
+        private void RefreshDefaults()
         {
-            if (sequenceMotion != null)
+            if (sourceMode == MotionSourceMode.Director)
             {
-                return sequenceMotion;
+                ResolveDirectorOrThrow().RefreshDefaults();
+                return;
             }
 
-            if (motionSource != null)
-            {
-                sequenceMotion = ResolveMotion(motionSource);
-                if (sequenceMotion != null)
-                {
-                    return sequenceMotion;
-                }
-            }
-
-            if (autoResolveInChildren)
-            {
-                MonoBehaviour[] behaviours = GetComponentsInChildren<MonoBehaviour>(true);
-                for (int i = 0; i < behaviours.Length; i++)
-                {
-                    MonoBehaviour behaviour = behaviours[i];
-                    if (behaviour == null || ReferenceEquals(behaviour, this))
-                    {
-                        continue;
-                    }
-
-                    sequenceMotion = ResolveMotion(behaviour);
-                    if (sequenceMotion != null)
-                    {
-                        motionSource = behaviour;
-                        return sequenceMotion;
-                    }
-                }
-            }
-
-            throw new MissingComponentException(
-                $"{nameof(UIMotionTransition)} '{name}' requires a component implementing {nameof(IUISequenceMotion)}.");
+            ResolvePlayerOrThrow().RefreshDefaults();
         }
 
-        private IUISequenceMotion ResolveMotion(MonoBehaviour behaviour)
+        private Tween PlayEnterTween()
         {
-            if (behaviour == null)
+            if (sourceMode == MotionSourceMode.Director)
             {
-                return null;
+                return ResolveDirectorOrThrow().Play(ResolveSequenceId(enterSequenceId, UIMotionSequenceIds.ENTER));
             }
 
-            if (behaviour is IUISequenceMotion directMotion)
+            return ResolvePlayerOrThrow().Play(ResolveClipId(enterClipId, UIMotionClipIds.SHOW));
+        }
+
+        private Tween PlayExitTween()
+        {
+            if (sourceMode == MotionSourceMode.Director)
             {
-                return directMotion;
+                return ResolveDirectorOrThrow().Play(ResolveSequenceId(exitSequenceId, UIMotionSequenceIds.EXIT));
             }
 
-            MonoBehaviour[] behaviours = behaviour.GetComponents<MonoBehaviour>();
-            for (int i = 0; i < behaviours.Length; i++)
+            return ResolvePlayerOrThrow().Play(ResolveClipId(exitClipId, UIMotionClipIds.HIDE));
+        }
+
+        private void ValidateSourceOrThrow()
+        {
+            if (sourceMode == MotionSourceMode.Director)
             {
-                if (behaviours[i] is IUISequenceMotion siblingMotion)
-                {
-                    return siblingMotion;
-                }
+                ResolveDirectorOrThrow();
+                return;
             }
 
-            return null;
+            ResolvePlayerOrThrow();
+        }
+
+        private UIMotionDirector ResolveDirectorOrThrow()
+        {
+            if (director == null)
+            {
+                throw new MissingComponentException(
+                    $"{nameof(UIMotionTransition)} '{name}' requires a {nameof(UIMotionDirector)} reference.");
+            }
+
+            return director;
+        }
+
+        private UIMotionPlayer ResolvePlayerOrThrow()
+        {
+            if (player == null)
+            {
+                throw new MissingComponentException(
+                    $"{nameof(UIMotionTransition)} '{name}' requires a {nameof(UIMotionPlayer)} reference.");
+            }
+
+            return player;
+        }
+
+        private static string ResolveSequenceId(string sequenceId, string fallbackSequenceId)
+        {
+            return string.IsNullOrWhiteSpace(sequenceId) ? fallbackSequenceId : sequenceId;
+        }
+
+        private static string ResolveClipId(string clipId, string fallbackClipId)
+        {
+            return string.IsNullOrWhiteSpace(clipId) ? fallbackClipId : clipId;
         }
     }
 }

@@ -160,17 +160,86 @@ MonoBehaviour:
   m_GameObject: {fileID: 1271013220930277590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c42ccf815334de38f34e9604d98d02a, type: 3}
+  m_Script: {fileID: 11500000, guid: 180d3d0cdbec3cd488d2daddfa2be740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startDelay: 0.45
-  scaleHalfCycleDuration: 2.05
-  floatHalfCycleDuration: 2.35
-  rotationHalfCycleDuration: 2.7
-  scaleMultiplier: 1.025
-  floatAmplitudeY: 8
-  rotationAmplitudeZ: 0.8
   useUnscaledTime: 1
+  clips:
+  - clipId: IdleLogoScale
+    channel: IdleLogoScale
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 292642353436767281
+  - clipId: IdleLogoFloat
+    channel: IdleLogoFloat
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 292642353436767282
+  - clipId: IdleLogoTilt
+    channel: IdleLogoTilt
+    playMode: 0
+    conflictPolicy: 0
+    durationScale: 1
+    loopCount: -1
+    loopType: 1
+    autoPlayOnEnable: 1
+    stopOnDisable: 1
+    restoreOnDisable: 1
+    tracks:
+    - rid: 292642353436767283
+  refreshDefaultsOnEnable: 1
+  stopAllChannelsOnDestroy: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 292642353436767281
+      type: {class: UIScaleMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.57
+        duration: 2.05
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 1, y: 1, z: 1}
+        toMode: 4
+        toValue: {x: 1.025, y: 1.025, z: 1.025}
+    - rid: 292642353436767282
+      type: {class: UIMoveMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.45
+        duration: 2.35
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 0, y: 0}
+        toMode: 3
+        toValue: {x: 0, y: 8}
+    - rid: 292642353436767283
+      type: {class: UIRotateMotionTrack, ns: Orange.UIFramework, asm: Orange.UIFramework}
+      data:
+        target: {fileID: 0}
+        startDelay: 0.73
+        duration: 1.35
+        ease: 4
+        fromMode: 1
+        fromValue: {x: 0, y: 0, z: 0}
+        toMode: 3
+        toValue: {x: 0, y: 0, z: 0.8}
+        rotateMode: 0
 --- !u!1 &1409103284029958246
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +342,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000001
     - rid: 890410000000000002
@@ -282,6 +356,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000005
     - rid: 890410000000000006
@@ -291,6 +370,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000009
     - rid: 890410000000000010
@@ -300,6 +384,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000013
     - rid: 890410000000000014
@@ -308,6 +397,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000017
     - rid: 890410000000000018
@@ -316,6 +410,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000021
     - rid: 890410000000000022
@@ -324,6 +423,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000025
     - rid: 890410000000000026
@@ -332,6 +436,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 2
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
@@ -1044,6 +1153,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000001
     - rid: 890410000000000002
@@ -1053,6 +1167,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000005
     - rid: 890410000000000006
@@ -1062,6 +1181,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000009
     - rid: 890410000000000010
@@ -1071,6 +1195,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000013
     - rid: 890410000000000014
@@ -1079,6 +1208,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000017
     - rid: 890410000000000018
@@ -1087,6 +1221,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000021
     - rid: 890410000000000022
@@ -1095,6 +1234,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000025
     - rid: 890410000000000026
@@ -1103,6 +1247,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 2
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
@@ -1641,6 +1790,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770030888
   - clipId: Hide
@@ -1648,6 +1802,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770030889
   refreshDefaultsOnEnable: 1
@@ -2064,53 +2223,83 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterGroups:
-  - name: Root
-    motions:
-    - {fileID: 6216996182163951823}
-    startDelay: 0
-    stagger: 0
-    playTogether: 1
-  - name: Logo
-    motions:
-    - {fileID: 7156049265932064545}
-    startDelay: 0.05
-    stagger: 0
-    playTogether: 1
-  - name: MenuButtons
-    motions:
-    - {fileID: 7111470628440877861}
-    - {fileID: 4164375355577303355}
-    - {fileID: 7513069928338848157}
-    - {fileID: 8140258325273716144}
-    - {fileID: 6716566108776585527}
-    startDelay: 0.08
-    stagger: 0.055
-    playTogether: 1
-  exitGroups:
-  - name: Root
-    motions:
-    - {fileID: 6216996182163951823}
-    startDelay: 0.02
-    stagger: 0
-    playTogether: 1
-  - name: Logo
-    motions:
-    - {fileID: 7156049265932064545}
-    startDelay: 0.02
-    stagger: 0
-    playTogether: 1
-  - name: MenuButtons
-    motions:
-    - {fileID: 7111470628440877861}
-    - {fileID: 4164375355577303355}
-    - {fileID: 7513069928338848157}
-    - {fileID: 8140258325273716144}
-    - {fileID: 6716566108776585527}
-    startDelay: 0
-    stagger: 0.035
-    playTogether: 1
-  reverseExitOrder: 1
+  sequences:
+  - sequenceId: Enter
+    groups:
+    - name: Root
+      steps:
+      - player: {fileID: 6216996182163951823}
+        clipId: Show
+        delay: 0
+      startDelay: 0
+      stagger: 0
+      playTogether: 1
+    - name: Logo
+      steps:
+      - player: {fileID: 7156049265932064545}
+        clipId: Show
+        delay: 0
+      startDelay: 0.05
+      stagger: 0
+      playTogether: 1
+    - name: MenuButtons
+      steps:
+      - player: {fileID: 8900376996725923651}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 1261216387542069098}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 5327087786708859299}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 7467350684156819892}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 6791441888544767404}
+        clipId: Show
+        delay: 0
+      startDelay: 0.08
+      stagger: 0.055
+      playTogether: 1
+  - sequenceId: Exit
+    groups:
+    - name: MenuButtons
+      steps:
+      - player: {fileID: 6791441888544767404}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 7467350684156819892}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 5327087786708859299}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 1261216387542069098}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 8900376996725923651}
+        clipId: Hide
+        delay: 0
+      startDelay: 0
+      stagger: 0.035
+      playTogether: 1
+    - name: Logo
+      steps:
+      - player: {fileID: 7156049265932064545}
+        clipId: Hide
+        delay: 0
+      startDelay: 0.02
+      stagger: 0
+      playTogether: 1
+    - name: Root
+      steps:
+      - player: {fileID: 6216996182163951823}
+        clipId: Hide
+        delay: 0
+      startDelay: 0.02
+      stagger: 0
+      playTogether: 1
   useUnscaledTime: 1
   timeScale: 1
 --- !u!114 &2656820032187938791
@@ -2125,8 +2314,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 6559247038171939370}
-  autoResolveInChildren: 1
+  sourceMode: 0
+  director: {fileID: 6559247038171939370}
+  player: {fileID: 0}
+  enterSequenceId: Enter
+  exitSequenceId: Exit
+  enterClipId: Show
+  exitClipId: Hide
+  hiddenClipId: Hidden
+  visibleClipId: Visible
   hideImmediatelyBeforeEnter: 1
   showImmediatelyWhenSkipped: 1
 --- !u!1 &3152900890634580774
@@ -2582,6 +2778,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000001
     - rid: 890410000000000002
@@ -2591,6 +2792,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000005
     - rid: 890410000000000006
@@ -2600,6 +2806,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000009
     - rid: 890410000000000010
@@ -2609,6 +2820,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000013
     - rid: 890410000000000014
@@ -2617,6 +2833,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000017
     - rid: 890410000000000018
@@ -2625,6 +2846,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000021
     - rid: 890410000000000022
@@ -2633,6 +2859,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000025
     - rid: 890410000000000026
@@ -2641,6 +2872,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 2
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
@@ -3045,6 +3281,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000001
     - rid: 890410000000000002
@@ -3054,6 +3295,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000005
     - rid: 890410000000000006
@@ -3063,6 +3309,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000009
     - rid: 890410000000000010
@@ -3072,6 +3323,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000013
     - rid: 890410000000000014
@@ -3080,6 +3336,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000017
     - rid: 890410000000000018
@@ -3088,6 +3349,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000021
     - rid: 890410000000000022
@@ -3096,6 +3362,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000025
     - rid: 890410000000000026
@@ -3104,6 +3375,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 2
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032
@@ -4102,6 +4378,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000001
     - rid: 890410000000000002
@@ -4111,6 +4392,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000005
     - rid: 890410000000000006
@@ -4120,6 +4406,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000009
     - rid: 890410000000000010
@@ -4129,6 +4420,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000013
     - rid: 890410000000000014
@@ -4137,6 +4433,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000017
     - rid: 890410000000000018
@@ -4145,6 +4446,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000021
     - rid: 890410000000000022
@@ -4153,6 +4459,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 0
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000025
     - rid: 890410000000000026
@@ -4161,6 +4472,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 2
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 890410000000000029
     - rid: 890410000000000032

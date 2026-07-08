@@ -120,9 +120,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterGroups: []
-  exitGroups: []
-  reverseExitOrder: 1
+  sequences:
+  - sequenceId: Enter
+    groups: []
+  - sequenceId: Exit
+    groups: []
   useUnscaledTime: 1
   timeScale: 0.8
 --- !u!114 &1396330961952481906
@@ -137,8 +139,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 8734120655063267002}
-  autoResolveInChildren: 1
+  sourceMode: 0
+  director: {fileID: 8734120655063267002}
+  player: {fileID: 0}
+  enterSequenceId: Enter
+  exitSequenceId: Exit
+  enterClipId: Show
+  exitClipId: Hide
+  hiddenClipId: Hidden
+  visibleClipId: Visible
   hideImmediatelyBeforeEnter: 1
   showImmediatelyWhenSkipped: 1
 --- !u!1 &8196674466882526671

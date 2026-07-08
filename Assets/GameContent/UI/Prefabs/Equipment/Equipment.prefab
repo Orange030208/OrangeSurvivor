@@ -86,20 +86,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69de6c8d2e621747bac2fc0764d59d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterGroups:
-  - name: EquipmentPopup
-    motions:
-    - {fileID: 6382097534871626424}
-    - {fileID: 9207674158916785465}
-    - {fileID: 5732237887945609337}
-    - {fileID: 3226147237020750670}
-    - {fileID: 4385018653795410703}
-    - {fileID: 3183323278507995465}
-    startDelay: 0
-    stagger: 0
-    playTogether: 1
-  exitGroups: []
-  reverseExitOrder: 1
+  sequences:
+  - sequenceId: Enter
+    groups:
+    - name: EquipmentPopup
+      steps:
+      - player: {fileID: 6382097534871626424}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 5732237887945609337}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Show
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Show
+        delay: 0
+      startDelay: 0
+      stagger: 0
+      playTogether: 1
+  - sequenceId: Exit
+    groups:
+    - name: EquipmentPopup
+      steps:
+      - player: {fileID: 9207674158916785465}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 5732237887945609337}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 9207674158916785465}
+        clipId: Hide
+        delay: 0
+      - player: {fileID: 6382097534871626424}
+        clipId: Hide
+        delay: 0
+      startDelay: 0
+      stagger: 0
+      playTogether: 1
   useUnscaledTime: 1
   timeScale: 1
 --- !u!114 &539579567034897089
@@ -114,8 +151,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fce3ea6d4884f67b6013695bea948bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motionSource: {fileID: 0}
-  autoResolveInChildren: 1
+  sourceMode: 0
+  director: {fileID: 2853622206424412332}
+  player: {fileID: 0}
+  enterSequenceId: Enter
+  exitSequenceId: Exit
+  enterClipId: Show
+  exitClipId: Hide
+  hiddenClipId: Hidden
+  visibleClipId: Visible
   hideImmediatelyBeforeEnter: 1
   showImmediatelyWhenSkipped: 1
 --- !u!1 &3091863213636904539
@@ -818,6 +862,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770032001
   - clipId: Hide
@@ -825,6 +874,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770032002
   refreshDefaultsOnEnable: 1
@@ -1664,6 +1718,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770032101
   - clipId: Hide
@@ -1671,6 +1730,11 @@ MonoBehaviour:
     playMode: 0
     conflictPolicy: 1
     durationScale: 1
+    loopCount: 1
+    loopType: 0
+    autoPlayOnEnable: 0
+    stopOnDisable: 1
+    restoreOnDisable: 0
     tracks:
     - rid: 451547002770032102
   refreshDefaultsOnEnable: 1

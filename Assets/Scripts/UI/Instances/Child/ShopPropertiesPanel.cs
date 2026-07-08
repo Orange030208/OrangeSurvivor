@@ -4,11 +4,10 @@ using UnityEngine.UI;
 
 public class ShopPropertiesPanel : ViewPartBase
 {
-    [SerializeField] private MonoBehaviour motionSource;
+    [SerializeField] private UIMotionPlayer motionPlayer;
     [SerializeField] private Button toggleButton;
     [SerializeField] private Describer propertiesDescriber;
 
-    private IUIRuntimeMotion motion;
     private readonly InfoDocumentService infoDocumentService = new();
     private PropertiesManager propertiesManager;
     private bool visible;
@@ -17,8 +16,7 @@ public class ShopPropertiesPanel : ViewPartBase
     private void Awake()
     {
         ValidateConfiguration();
-        motion = ResolveRuntimeMotion(motionSource, "properties sidebar");
-        motion.RefreshDefaults();
+        motionPlayer.RefreshDefaults();
     }
 
     private void OnDisable()
@@ -38,7 +36,7 @@ public class ShopPropertiesPanel : ViewPartBase
         UnbindEvents();
         BindPropertiesManager(null);
         SetVisibleImmediate(false);
-        motion?.Kill();
+        motionPlayer?.Kill();
     }
 
     private void BindEvents()
@@ -121,20 +119,20 @@ public class ShopPropertiesPanel : ViewPartBase
     private void SetVisible(bool value)
     {
         visible = value;
-        motion?.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        motionPlayer?.Play(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
     }
 
     private void SetVisibleImmediate(bool value)
     {
         visible = value;
-        motion?.SetImmediate(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
+        motionPlayer?.SetImmediate(visible ? UIMotionClipIds.SHOW : UIMotionClipIds.HIDE);
     }
 
     private void ValidateConfiguration()
     {
-        if (motionSource == null)
+        if (motionPlayer == null)
         {
-            throw new MissingReferenceException($"{nameof(ShopPropertiesPanel)} '{name}' is missing motion source.");
+            throw new MissingReferenceException($"{nameof(ShopPropertiesPanel)} '{name}' is missing motion player.");
         }
 
         if (toggleButton == null)
@@ -148,22 +146,4 @@ public class ShopPropertiesPanel : ViewPartBase
         }
     }
 
-    private IUIRuntimeMotion ResolveRuntimeMotion(MonoBehaviour source, string fieldName)
-    {
-        if (source is IUIRuntimeMotion directMotion)
-        {
-            return directMotion;
-        }
-
-        MonoBehaviour[] behaviours = source.GetComponents<MonoBehaviour>();
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            if (behaviours[i] is IUIRuntimeMotion resolvedMotion)
-            {
-                return resolvedMotion;
-            }
-        }
-
-        throw new MissingComponentException($"{nameof(ShopPropertiesPanel)} '{name}' expects {fieldName} to implement {nameof(IUIRuntimeMotion)}.");
-    }
 }
