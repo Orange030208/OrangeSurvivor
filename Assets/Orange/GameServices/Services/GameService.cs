@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 所有托管服务的基类。服务先由 Root/Profile 序列化持有，
+    /// 再由 <see cref="GameServiceHost"/> 统一完成挂载、启动和驱动。
+    /// </summary>
     [Serializable]
     public abstract class GameService
     {
@@ -14,10 +18,22 @@ namespace Orange.GameServices
         public bool Enabled => enabled;
         public GameServiceState State { get; internal set; } = GameServiceState.Created;
 
+        /// <summary>
+        /// 依赖排序前的第一层排序键。它适合表达稳定的默认顺序，
+        /// 真正的强顺序关系仍应通过依赖声明来约束。
+        /// </summary>
         public virtual int Order => 0;
         public virtual GameServiceTickMode TickMode => GameServiceTickMode.None;
+
+        /// <summary>
+        /// 控制生命周期回调抛异常时，Host 采用什么处理策略。
+        /// </summary>
         public virtual GameServiceExecutionPolicy ExecutionPolicy => GameServiceExecutionPolicy.DisableService;
 
+        /// <summary>
+        /// 运行时上下文入口，可访问宿主 Root、同作用域服务以及协程能力。
+        /// 在 Attach 之后可用。
+        /// </summary>
         protected GameServiceContext Context { get; private set; }
 
         protected virtual void DeclareDependencies(GameServiceDependencyBuilder dependencies) { }
@@ -37,6 +53,9 @@ namespace Orange.GameServices
             cleanupBag.Add(cleanup);
         }
 
+        /// <summary>
+        /// 通过服务启动的协程会在服务释放时自动停止，避免场景清理遗漏。
+        /// </summary>
         protected GameServiceCoroutineHandle StartServiceCoroutine(IEnumerator routine)
         {
             if (Context == null)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Orange.GameServices;
 #if YOKIFRAME_INPUTSYSTEM_SUPPORT
 using YokiFrame;
 #endif
@@ -97,15 +98,14 @@ public static class GameSettingsService
 
     public static void ApplyAudio(GameSettingsState state)
     {
-        AudioManager audioManager = AudioManager.Instance;
-        if (audioManager == null || state == null)
+        if (state == null || !GameServices.TryGet(out IAudioService audioService))
         {
             return;
         }
 
-        audioManager.SetMasterVolume(state.MasterVolume);
-        audioManager.SetSfxVolume(state.SfxVolume);
-        audioManager.SetMusicVolume(state.MusicVolume);
+        audioService.SetMasterVolume(state.MasterVolume);
+        audioService.SetSfxVolume(state.SfxVolume);
+        audioService.SetMusicVolume(state.MusicVolume);
     }
 
     public static string NormalizeLanguageCode(string languageCode)

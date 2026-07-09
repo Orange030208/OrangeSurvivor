@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 通过深度优先的依赖遍历解析服务启动顺序。
+    /// </summary>
     internal sealed class GameServiceDependencyGraph
     {
         private readonly List<GameService> services;
@@ -58,6 +61,7 @@ namespace Orange.GameServices
             visitStates[service] = VisitState.Visiting;
             VisitDependencies(service);
             visitStates[service] = VisitState.Visited;
+            // 依赖总是先入结果列表，因此最终顺序可直接用于 Attach/Start 遍历。
             sortedServices.Add(service);
         }
 
@@ -91,6 +95,7 @@ namespace Orange.GameServices
                 {
                     if (rule.Required)
                     {
+                        // 合同可能已经注册，但对应服务仍可能因为禁用而不在有效运行图里。
                         report.AddError("Required service dependency is disabled or unavailable.", service.GetType(), rule.ContractType);
                     }
 

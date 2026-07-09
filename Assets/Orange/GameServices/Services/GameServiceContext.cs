@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 服务在 Attach 后可用的轻量运行时上下文。
+    /// </summary>
     public sealed class GameServiceContext
     {
         private readonly GameServiceHost host;
@@ -29,6 +32,9 @@ namespace Orange.GameServices
             return host.TryGet(out service);
         }
 
+        /// <summary>
+        /// 协程实际运行在 Root MonoBehaviour 上，服务本身仍保持普通可序列化对象形态。
+        /// </summary>
         public Coroutine StartCoroutine(IEnumerator routine)
         {
             if (routine == null)

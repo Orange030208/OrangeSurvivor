@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Orange.GameServices;
 using UnityEngine;
 
 [Serializable]
@@ -45,11 +46,13 @@ public sealed class StateScopedPropertyModifierFeature : FeatureBase
 
     private void ApplyForCurrentState()
     {
-        GameManager gameManager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
-        if (gameManager != null && gameManager.CurrentGameState == targetState)
+        if (GameServices.TryGet(out IGameFlowController gameFlowController) &&
+            gameFlowController.CurrentGameState == targetState)
         {
             ApplyModifiers();
+            return;
         }
+
     }
 
     private void ApplyModifiers()

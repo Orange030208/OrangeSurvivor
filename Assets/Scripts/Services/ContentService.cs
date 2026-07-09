@@ -5,7 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// 场景服务化的运行时内容入口。
-/// 替代独立的 GameContentBootstrap GameObject，同时保留 GameContentRuntime 兼容入口。
+/// 场景服务化的运行时内容入口。
 /// </summary>
 [Serializable]
 public sealed class ContentService : GameService, IGameContentProvider

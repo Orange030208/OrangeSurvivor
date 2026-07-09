@@ -8,7 +8,7 @@ public static class WaveEndPipelineFactory
         return CreateDefault(null, null);
     }
 
-    public static WaveEndPipeline CreateDefault(Player player, EnemyRegistry enemyRegistry)
+    public static WaveEndPipeline CreateDefault(Player player, IEnemyRegistry enemyRegistry)
     {
         List<IWaveEndStep> defaultSteps = new()
         {

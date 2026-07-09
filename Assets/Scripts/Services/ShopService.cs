@@ -1,47 +1,12 @@
 using System;
+using Orange.GameServices;
 using UnityEngine;
 
-public struct ShopItemData : IHasContentTier
-{
-    public ItemDataSO ItemData;
-    public int Level;
-    public bool Lock;
-    public bool SoldOut;
-    public float RunPriceMultiplier;
-    public float PlayerDiscountMultiplier;
-    public ContentTier Tier => ResolveTier();
-
-    public int GetPrice()
-    {
-        return ShopPricingService.GetPrice(
-            ItemData,
-            Level,
-            RunPriceMultiplier,
-            PlayerDiscountMultiplier);
-    }
-
-    private ContentTier ResolveTier()
-    {
-        if (ItemData == null)
-        {
-            return ContentTier.Common;
-        }
-
-        if (ItemData.ItemType == ItemType.Weapon)
-        {
-            return ContentTierResolver.FromWeaponLevel(Level);
-        }
-
-        if (ItemData is AccessoryDataSO accessoryData)
-        {
-            return accessoryData.Tier;
-        }
-
-        return ContentTier.Common;
-    }
-}
-
-public class ShopManager : MonoBehaviour
+/// <summary>
+/// 局内商店服务：负责商品刷新、购买、锁定与商店视图状态发布。
+/// </summary>
+[Serializable]
+public sealed class ShopService : GameService, IShopController
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 4;
     private const int DEFAULT_REROLL_STEP_COST = 1;
@@ -57,41 +22,52 @@ public class ShopManager : MonoBehaviour
     private int totalRerollCount;
     private int paidRerollCountThisWave;
     private int shopRefreshCount;
-    private int currentWaveNumber = 1;
     private int currentCurrency;
+
+    private UnityEngine.Object LogContext => Context != null ? Context.Root : null;
 
     public event Action<ShopViewState> ViewStateChanged;
     public event Action<ShopPurchaseSuccess> PurchaseSucceeded;
     public event Action<ShopPurchaseFailure> PurchaseFailed;
 
-    private void OnEnable()
+    protected override void DeclareDependencies(GameServiceDependencyBuilder dependencies)
+    {
+        dependencies.Require<IGameContentProvider>();
+    }
+
+    protected override void RegisterContracts(GameServiceRegistry registry)
+    {
+        registry.Register<IShopController>(this);
+    }
+
+    protected override void OnAttach()
     {
         YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned));
+
         YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged));
+
         YokiFrame.EventKit.Type.Register<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
-        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted));
 
         TryBindWallet();
         RefreshCurrency();
     }
 
-    private void OnDisable()
-    {
-        UnbindCurrencyWallet();
-        UnbindPropertiesManager();
-
-        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
-        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
-        YokiFrame.EventKit.Type.UnRegister<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
-        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
-    }
-
-    private void Start()
+    protected override void OnStart()
     {
         GenerateShopItems();
         PublishViewState(ShopRefreshReason.Initial);
+    }
+
+    protected override void OnDispose()
+    {
+        UnbindCurrencyWallet();
+        UnbindPropertiesManager();
+        ViewStateChanged = null;
+        PurchaseSucceeded = null;
+        PurchaseFailed = null;
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -170,7 +146,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        AccessoryManager playerAccessoryManager = FindFirstObjectByType<AccessoryManager>();
+        AccessoryManager playerAccessoryManager = ResolveAccessoryManager();
         if (playerAccessoryManager == null)
         {
             NotifyPurchaseFailed("Accessory manager not found.");
@@ -214,7 +190,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        WeaponsHolder weaponsHolder = FindFirstObjectByType<WeaponsHolder>();
+        WeaponsHolder weaponsHolder = ResolveWeaponsHolder();
         if (weaponsHolder == null)
         {
             NotifyPurchaseFailed("Weapons holder not found.");
@@ -399,7 +375,7 @@ public class ShopManager : MonoBehaviour
         return false;
     }
 
-    private bool IsSameShopItem(ShopItemData a, ShopItemData b)
+    private static bool IsSameShopItem(ShopItemData a, ShopItemData b)
     {
         return a.ItemData == b.ItemData && a.Level == b.Level;
     }
@@ -408,7 +384,7 @@ public class ShopManager : MonoBehaviour
     {
         if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
-            Debug.LogError($"[ShopManager] Missing {nameof(IGameContentProvider)}. Cannot roll shop item.", this);
+            Debug.LogError($"[{nameof(ShopService)}] Missing {nameof(IGameContentProvider)}. Cannot roll shop item.", LogContext);
             return default;
         }
 
@@ -416,8 +392,8 @@ public class ShopManager : MonoBehaviour
         if (provider.ContentTierWeightProfile == null)
         {
             Debug.LogError(
-                $"[ShopManager] Missing {nameof(ContentTierWeightProfileSO)} in {nameof(GameContentCatalogSO)}.",
-                this);
+                $"[{nameof(ShopService)}] Missing {nameof(ContentTierWeightProfileSO)} in {nameof(GameContentCatalogSO)}.",
+                LogContext);
             return default;
         }
 
@@ -428,7 +404,9 @@ public class ShopManager : MonoBehaviour
                 context,
                 out ShopExtractionCandidate candidate))
         {
-            Debug.LogWarning("[ShopManager] No shop item could be rolled from configured weapon/accessory candidates.", this);
+            Debug.LogWarning(
+                $"[{nameof(ShopService)}] No shop item could be rolled from configured weapon/accessory candidates.",
+                LogContext);
             return default;
         }
 
@@ -455,9 +433,16 @@ public class ShopManager : MonoBehaviour
 
     private AccessoryManager ResolveAccessoryManager()
     {
-        return player != null && player.TryGetComponent(out AccessoryManager accessoryManager)
-            ? accessoryManager
-            : FindFirstObjectByType<AccessoryManager>();
+        return player != null && player.TryGetComponent(out AccessoryManager resolvedAccessoryManager)
+            ? resolvedAccessoryManager
+            : UnityEngine.Object.FindFirstObjectByType<AccessoryManager>();
+    }
+
+    private WeaponsHolder ResolveWeaponsHolder()
+    {
+        return player != null && player.TryGetComponent(out WeaponsHolder resolvedWeaponsHolder)
+            ? resolvedWeaponsHolder
+            : UnityEngine.Object.FindFirstObjectByType<WeaponsHolder>();
     }
 
     private void PublishViewState(ShopRefreshReason reason = ShopRefreshReason.StateUpdate)
@@ -497,7 +482,9 @@ public class ShopManager : MonoBehaviour
         }
 
         currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
-        print($"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}");
+        Debug.Log(
+            $"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}",
+            LogContext);
         PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
@@ -505,7 +492,7 @@ public class ShopManager : MonoBehaviour
     {
         if (player == null)
         {
-            player = FindFirstObjectByType<Player>();
+            player = UnityEngine.Object.FindFirstObjectByType<Player>();
         }
 
         CurrencyWallet resolvedWallet = null;
@@ -617,7 +604,7 @@ public class ShopManager : MonoBehaviour
             : 0f;
     }
 
-    private float ResolveRunPriceMultiplier()
+    private static float ResolveRunPriceMultiplier()
     {
         RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
         return snapshot.ShopPriceMultiplier > 0f ? snapshot.ShopPriceMultiplier : 1f;
@@ -625,14 +612,13 @@ public class ShopManager : MonoBehaviour
 
     private int ResolveCurrentRerollCost()
     {
-        // 刷新基础价由局内推进快照统一提供，不再保留 ShopManager 本地兜底字段。
         float baseCost = RunProgressionRuntime.CurrentSnapshot.ShopRerollBasePrice;
         float stepCost = ResolveCurrentWaveRerollStepCost();
         float currentCost = baseCost + (paidRerollCountThisWave * stepCost);
         return Mathf.Max(0, Mathf.RoundToInt(currentCost));
     }
 
-    private float ResolveCurrentWaveRerollStepCost()
+    private static float ResolveCurrentWaveRerollStepCost()
     {
         RunProgressionSnapshot snapshot = RunProgressionRuntime.CurrentSnapshot;
         if (snapshot.ShopRerollStepPrice > 0f)
@@ -672,19 +658,6 @@ public class ShopManager : MonoBehaviour
         if (propType == PropType.ShopPriceDiscount)
         {
             PublishViewState(ShopRefreshReason.StateUpdate);
-        }
-    }
-
-    private void OnWaveStarted(WaveStartedEvent eventData)
-    {
-        currentWaveNumber = Mathf.Max(1, eventData.CurrentWave);
-    }
-
-    private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
-    {
-        if (eventData.CurrentWave > 0)
-        {
-            currentWaveNumber = eventData.CurrentWave;
         }
     }
 

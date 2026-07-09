@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 收集服务声明的依赖规则，供 Host 构建运行时顺序时使用。
+    /// </summary>
     public sealed class GameServiceDependencyBuilder
     {
         private readonly List<GameServiceDependencyRule> rules = new List<GameServiceDependencyRule>();

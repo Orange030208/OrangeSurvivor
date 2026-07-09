@@ -1,34 +1,42 @@
+using System;
 using System.Collections.Generic;
 using Orange.Extraction;
+using Orange.GameServices;
 using UnityEngine;
 
-public class DropManager : MonoBehaviour
+[Serializable]
+public sealed class DropService : GameService, IDropService
 {
     private const int BASE_KILL_EXPERIENCE = 1;
+    private const string DROP_PARENT_NAME = "Drops";
 
     [SerializeField] private DropCollectionProfileSO dropCollectionProfile;
     [SerializeField] private List<DropSourceRuleData> dropRules = new();
+    [SerializeField] private Transform dropParent;
 
-    private IContentRandom random = new UnityContentRandom();
+    private readonly IContentRandom random = new UnityContentRandom();
+    private Transform runtimeDropParent;
 
-    private void OnEnable()
+    private UnityEngine.Object LogContext => Context != null ? Context.Root : null;
+
+    protected override void RegisterContracts(GameServiceRegistry registry)
     {
-        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
+        registry.Register<IDropService>(this);
     }
 
-    private void OnDisable()
+    protected override void OnAttach()
     {
-        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
+        YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied));
     }
 
     private void OnEntityDied(EntityDiedEvent deadEvent)
     {
-        if (deadEvent.Reason == EntityDeathReason.WaveCleanup || deadEvent.Entity is not Enemy)
+        if (deadEvent.Reason == EntityDeathReason.WaveCleanup || deadEvent.Entity is not Enemy defeatedEnemy)
         {
             return;
         }
 
-        Enemy defeatedEnemy = deadEvent.Entity as Enemy;
         DropSourceInfo dropSource = DropSourceInfo.FromEnemy(defeatedEnemy);
         TryGrantKillExperience(deadEvent.Source, ResolveKillExperience(dropSource, dropRules));
 
@@ -42,11 +50,15 @@ public class DropManager : MonoBehaviour
 
         if (dropSO.prefab == null)
         {
-            Debug.LogError($"[DropManager] {dropSO.name} has no prefab assigned.", this);
+            Debug.LogError($"[{nameof(DropService)}] {dropSO.name} has no prefab assigned.", LogContext);
             return;
         }
 
-        Collection instance = Instantiate(dropSO.prefab, deadEvent.Position, Quaternion.identity, transform);
+        Collection instance = UnityEngine.Object.Instantiate(
+            dropSO.prefab,
+            deadEvent.Position,
+            Quaternion.identity,
+            ResolveDropParent());
         instance.Configure(dropSO);
         if (dropSO.prefab is Coin && instance is Coin coin)
         {
@@ -182,6 +194,37 @@ public class DropManager : MonoBehaviour
         return GameContentRuntime.TryGetProvider(out IGameContentProvider provider)
             ? provider.DropCollectionProfile
             : null;
+    }
+
+    private Transform ResolveDropParent()
+    {
+        if (dropParent != null)
+        {
+            return dropParent;
+        }
+
+        if (runtimeDropParent != null)
+        {
+            return runtimeDropParent;
+        }
+
+        Transform rootTransform = Context?.RootTransform;
+        if (rootTransform == null)
+        {
+            return null;
+        }
+
+        Transform existing = rootTransform.Find(DROP_PARENT_NAME);
+        if (existing != null)
+        {
+            runtimeDropParent = existing;
+            return runtimeDropParent;
+        }
+
+        GameObject dropParentObject = new(DROP_PARENT_NAME);
+        dropParentObject.transform.SetParent(rootTransform, false);
+        runtimeDropParent = dropParentObject.transform;
+        return runtimeDropParent;
     }
 
     private static bool TryDrawProduct(

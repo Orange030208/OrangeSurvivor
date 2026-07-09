@@ -1,5 +1,8 @@
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 针对具名服务作用域的轻量类型化访问器。
+    /// </summary>
     public readonly struct GameServiceResolver
     {
         private readonly GameServiceHost host;

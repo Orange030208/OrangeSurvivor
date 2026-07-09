@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 持有一个服务作用域，负责校验、依赖排序、生命周期分发和销毁回收。
+    /// </summary>
     public sealed class GameServiceHost
     {
         private readonly GameServiceRoot root;
@@ -63,6 +66,7 @@ namespace Orange.GameServices
                 return;
             }
 
+            // 在任何服务 Attach 之前先完成注册表构建，这样跨服务查询从一开始就可用。
             BuildRegistryAndOrder();
             ThrowIfValidationFailed("GameServices attach validation failed.");
 
@@ -234,12 +238,15 @@ namespace Orange.GameServices
 
             for (int i = 0; i < activeServices.Count; i++)
             {
+                // 具体服务类型始终会注册进去，即使它没有额外暴露接口合同。
                 registry.AddService(activeServices[i]);
             }
 
             for (int i = 0; i < activeServices.Count; i++)
             {
                 GameService service = activeServices[i];
+                // 先做校验和合同注册，再做依赖排序，这样缺失合同会更早暴露，
+                // 不会拖到 Attach/Start 阶段才失败。
                 InvokeServiceValidation(service);
                 InvokeRegisterContracts(service);
             }
@@ -276,6 +283,7 @@ namespace Orange.GameServices
                 allServices.Add(service);
                 if (!service.Enabled)
                 {
+                    // 禁用服务仍会保留在诊断快照里，但不会进入运行时服务图。
                     service.State = GameServiceState.Disabled;
                     continue;
                 }
@@ -374,6 +382,8 @@ namespace Orange.GameServices
             validationReport.AddError(message, service.GetType());
             Debug.LogException(exception, root);
 
+            // 处理策略决定异常是中断整体启动、保留服务继续运行，
+            // 还是仅把当前故障服务移出图。
             switch (service.ExecutionPolicy)
             {
                 case GameServiceExecutionPolicy.Throw:
@@ -406,6 +416,7 @@ namespace Orange.GameServices
             }
             finally
             {
+                // 即便 OnDispose 抛异常，清理袋里的资源也必须继续释放。
                 service.DisposeCleanup();
                 service.ClearContext();
                 service.State = GameServiceState.Disposed;

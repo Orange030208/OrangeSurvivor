@@ -4,9 +4,9 @@ using Cysharp.Threading.Tasks;
 public sealed class PrepareWaveEndRuntimeStep : IWaveEndStep
 {
     private readonly Player player;
-    private readonly EnemyRegistry enemyRegistry;
+    private readonly IEnemyRegistry enemyRegistry;
 
-    public PrepareWaveEndRuntimeStep(Player player, EnemyRegistry enemyRegistry)
+    public PrepareWaveEndRuntimeStep(Player player, IEnemyRegistry enemyRegistry)
     {
         this.player = player;
         this.enemyRegistry = enemyRegistry;

@@ -6,16 +6,16 @@ public sealed class ShopPageContext
         Player player,
         CurrencyWallet currencyWallet,
         PropertiesManager propertiesManager,
-        ShopManager shopManager)
+        IShopController shopController)
     {
         Player = player ?? throw new ArgumentNullException(nameof(player));
         CurrencyWallet = currencyWallet;
         PropertiesManager = propertiesManager;
-        ShopManager = shopManager ?? throw new ArgumentNullException(nameof(shopManager));
+        ShopController = shopController ?? throw new ArgumentNullException(nameof(shopController));
     }
 
     public Player Player { get; }
     public CurrencyWallet CurrencyWallet { get; }
     public PropertiesManager PropertiesManager { get; }
-    public ShopManager ShopManager { get; }
+    public IShopController ShopController { get; }
 }

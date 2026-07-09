@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Orange.GameServices;
 using Orange.UIFramework;
 using UnityEngine;
 
 /// <summary>
-/// 即时奖励选择流程控制器：负责奖励请求排队、暂停/恢复游戏模拟、驱动奖励选择 Popup，并在选择后应用玩法结果。
+/// 即时奖励选择服务：负责奖励请求排队、暂停/恢复游戏模拟、驱动奖励选择 Popup，并在选择后应用玩法结果。
 /// </summary>
-public class RewardSelectionManager : MonoBehaviour
+[Serializable]
+public sealed class RewardSelectionService : GameService
 {
     private const string PAUSE_SOURCE_ID = "rewardSelection";
     private const string POPUP_GROUP_ID = "rewardSelection";
@@ -20,7 +22,8 @@ public class RewardSelectionManager : MonoBehaviour
     private RewardSelectionOption[] currentOptions = Array.Empty<RewardSelectionOption>();
     private Dictionary<RewardSelectionReason, IRewardSelectionHandler> handlers;
     private ViewHandle<RewardSelectionPopup> currentPopupHandle;
-    private GameManager gameManager;
+    private IGameFlowController gameFlowController;
+    private CancellationTokenSource serviceCancellation;
     private CancellationTokenSource flowCancellation;
     private PlayerLevel playerLevel;
     private WeaponsHolder weaponsHolder;
@@ -31,30 +34,46 @@ public class RewardSelectionManager : MonoBehaviour
     private bool pauseApplied;
     private bool upgradeRequestQueuedOrProcessing;
 
-    private void OnEnable()
+    private UnityEngine.Object LogContext => Context != null ? Context.Root : null;
+    private CancellationToken ServiceToken => serviceCancellation != null ? serviceCancellation.Token : CancellationToken.None;
+
+    protected override void DeclareDependencies(GameServiceDependencyBuilder dependencies)
     {
+        dependencies.Require<IGameFlowController>();
+    }
+
+    protected override void OnAttach()
+    {
+        serviceCancellation = new CancellationTokenSource();
         EnsureHandlers();
+
         YokiFrame.EventKit.Enum.Register(RewardTrigger.ChestCollected, OnChestCollected);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(RewardTrigger.ChestCollected, OnChestCollected));
+
         YokiFrame.EventKit.Type.Register<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable));
+
         YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged));
+
         YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned));
+
         YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted));
+
         YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged));
 
         TryBindSceneReferences();
         TryBindPlayerReferences();
     }
 
-    private void OnDisable()
+    protected override void OnDispose()
     {
-        YokiFrame.EventKit.Enum.UnRegister(RewardTrigger.ChestCollected, OnChestCollected);
-        YokiFrame.EventKit.Type.UnRegister<UpgradeRewardAvailableEvent>(OnUpgradeRewardAvailable);
-        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
-        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
-        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
-
+        serviceCancellation?.Cancel();
         ResetRewardFlow(resumeWave: false);
+        DisposeServiceCancellation();
     }
 
     private void OnChestCollected()
@@ -95,7 +114,7 @@ public class RewardSelectionManager : MonoBehaviour
         }
 
         isProcessing = true;
-        flowCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        flowCancellation = CancellationTokenSource.CreateLinkedTokenSource(ServiceToken);
         CancellationToken cancellationToken = flowCancellation.Token;
         ApplyRewardPause();
 
@@ -126,7 +145,7 @@ public class RewardSelectionManager : MonoBehaviour
         }
         catch (Exception exception)
         {
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
         finally
         {
@@ -159,7 +178,7 @@ public class RewardSelectionManager : MonoBehaviour
         TryBindPlayerReferences();
         if (!TryGetHandler(reason, out IRewardSelectionHandler handler))
         {
-            Debug.LogError($"[RewardSelectionManager] No handler registered for reward reason '{reason}'.", this);
+            Debug.LogError($"[{nameof(RewardSelectionService)}] No handler registered for reward reason '{reason}'.", LogContext);
             return;
         }
 
@@ -293,8 +312,8 @@ public class RewardSelectionManager : MonoBehaviour
 
         TryBindSceneReferences();
         pauseApplied = true;
-        gameManager?.RequestSimulationPause(PAUSE_SOURCE_ID);
-        gameManager?.StopCurrentWave();
+        gameFlowController?.RequestSimulationPause(PAUSE_SOURCE_ID);
+        gameFlowController?.StopCurrentWave();
     }
 
     private void ReleaseRewardPause(bool resumeWave)
@@ -306,10 +325,10 @@ public class RewardSelectionManager : MonoBehaviour
 
         TryBindSceneReferences();
         pauseApplied = false;
-        gameManager?.ReleaseSimulationPause(PAUSE_SOURCE_ID);
+        gameFlowController?.ReleaseSimulationPause(PAUSE_SOURCE_ID);
         if (resumeWave)
         {
-            gameManager?.ResumeCurrentWave();
+            gameFlowController?.ResumeCurrentWave();
         }
     }
 
@@ -347,6 +366,17 @@ public class RewardSelectionManager : MonoBehaviour
         flowCancellation = null;
     }
 
+    private void DisposeServiceCancellation()
+    {
+        if (serviceCancellation == null)
+        {
+            return;
+        }
+
+        serviceCancellation.Dispose();
+        serviceCancellation = null;
+    }
+
     private void OnWaveStarted(WaveStartedEvent eventData)
     {
         currentWaveNumber = Mathf.Max(1, eventData.CurrentWave);
@@ -365,13 +395,19 @@ public class RewardSelectionManager : MonoBehaviour
         player = eventData.Player;
         accessoryManager = player != null ? player.GetComponent<AccessoryManager>() : null;
         playerLevel = player != null ? player.GetComponent<PlayerLevel>() : null;
+        weaponsHolder = player != null ? player.GetComponent<WeaponsHolder>() : null;
     }
 
     private void TryBindSceneReferences()
     {
-        if (gameManager == null)
+        if (gameFlowController != null)
         {
-            gameManager = FindFirstObjectByType<GameManager>();
+            return;
+        }
+
+        if (Context != null && Context.TryGet(out IGameFlowController resolvedController))
+        {
+            gameFlowController = resolvedController;
         }
     }
 
@@ -379,13 +415,14 @@ public class RewardSelectionManager : MonoBehaviour
     {
         if (player == null)
         {
-            player = FindFirstObjectByType<Player>();
+            player = UnityEngine.Object.FindFirstObjectByType<Player>();
         }
 
         if (player == null)
         {
             accessoryManager = null;
             playerLevel = null;
+            weaponsHolder = null;
             return;
         }
 
@@ -408,7 +445,7 @@ public class RewardSelectionManager : MonoBehaviour
     private bool IsGameStateActive()
     {
         TryBindSceneReferences();
-        return gameManager != null && gameManager.CurrentGameState == GameState.Game;
+        return gameFlowController != null && gameFlowController.CurrentGameState == GameState.Game;
     }
 
     private bool ContainsUpgradeRequest()
@@ -473,13 +510,13 @@ public class RewardSelectionManager : MonoBehaviour
             provider != null ? provider.Accessories : null,
             provider != null ? provider.Weapons : null,
             provider != null ? provider.ContentTierWeightProfile : null,
-            this);
+            LogContext);
     }
 
     private float ResolvePlayerLuck()
     {
-        return player != null && player.TryGetComponent(out PropertiesManager propertiesManager)
-            ? propertiesManager.GetPropValue(PropType.Luck)
+        return player != null && player.TryGetComponent(out PropertiesManager resolvedPropertiesManager)
+            ? resolvedPropertiesManager.GetPropValue(PropType.Luck)
             : 0f;
     }
 
@@ -492,5 +529,4 @@ public class RewardSelectionManager : MonoBehaviour
 
         public RewardSelectionReason Reason { get; }
     }
-
 }

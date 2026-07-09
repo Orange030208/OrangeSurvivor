@@ -1,15 +1,18 @@
+using System;
+using Orange.GameServices;
 using UnityEngine;
 
 /// <summary>
-/// 敌波管理器：负责波次推进、计时和刷怪导演调度。
-/// 波末状态切换由 GameManager 根据玩家本波收益决定。
+/// 波次运行服务：负责波次推进、计时和刷怪导演调度。
 /// </summary>
-public class WaveManager : MonoBehaviour, IWaveController
+[Serializable]
+public sealed class WaveService : GameService, IWaveController
 {
     private const int COUNTDOWN_WARNING_SECONDS = 5;
 
     [SerializeField] private StageDirectorProfileSO stageDirectorProfile;
     [SerializeField] private Entity spawnAroundEntity;
+    [SerializeField] private Transform spawnParent;
 
     private WaveDirectorRuntimeSession directorSession;
     private EnemyFactory enemyFactory;
@@ -17,6 +20,8 @@ public class WaveManager : MonoBehaviour, IWaveController
     private WaveRuntimeState runtimeState = WaveRuntimeState.CreateIdle();
     private IWaveCompletionRule currentCompletionRule = new TimerOnlyWaveCompletionRule();
     private int lastCountdownSecond = -1;
+
+    public override GameServiceTickMode TickMode => GameServiceTickMode.Update;
 
     private int CurrentWaveIndex => runtimeState.CurrentWaveIndex;
     private float CurrentTimer => runtimeState.Timer;
@@ -29,12 +34,37 @@ public class WaveManager : MonoBehaviour, IWaveController
     private int TotalWaves => HasStarted && directorSession != null
         ? directorSession.GetDisplayTotalWaves(CurrentWaveIndex)
         : 0;
+    private UnityEngine.Object LogContext => Context != null ? Context.Root : null;
+    private Transform SpawnParent => spawnParent != null ? spawnParent : Context?.RootTransform;
 
     public bool HasMoreWaves => HasStarted && directorSession != null && directorSession.HasNextWave(CurrentWaveIndex);
     public bool HasCurrentWave => HasStarted;
     public WaveRuntimeState CurrentState => runtimeState;
 
-    private void Awake()
+    protected override void DeclareDependencies(GameServiceDependencyBuilder dependencies)
+    {
+        dependencies.Require<IGameContentProvider>();
+        dependencies.Require<IEnemyRegistry>();
+    }
+
+    protected override void RegisterContracts(GameServiceRegistry registry)
+    {
+        registry.Register<IWaveController>(this);
+    }
+
+    protected override void OnValidateService(GameServiceValidationReport report)
+    {
+        if (stageDirectorProfile != null &&
+            stageDirectorProfile.FiniteWaveCount == 0 &&
+            !stageDirectorProfile.SupportsEndless)
+        {
+            report.AddError(
+                $"{nameof(WaveService)} requires at least one finite wave or a valid endless profile in {stageDirectorProfile.name}.",
+                GetType());
+        }
+    }
+
+    protected override void OnAttach()
     {
         if (stageDirectorProfile == null && GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
@@ -43,17 +73,14 @@ public class WaveManager : MonoBehaviour, IWaveController
 
         if (stageDirectorProfile == null)
         {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires a {nameof(StageDirectorProfileSO)} from the scene or {nameof(GameContentCatalogSO)}.");
+            throw new MissingReferenceException(
+                $"{nameof(WaveService)} requires a {nameof(StageDirectorProfileSO)} from the service or {nameof(GameContentCatalogSO)}.");
         }
 
         if (stageDirectorProfile.FiniteWaveCount == 0 && !stageDirectorProfile.SupportsEndless)
         {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires at least one finite wave or a valid endless profile in {stageDirectorProfile.name}.");
-        }
-
-        if (FindFirstObjectByType<EnemyRegistry>() == null)
-        {
-            throw new MissingReferenceException($"{nameof(WaveManager)} requires an active {nameof(EnemyRegistry)} in the scene.");
+            throw new MissingReferenceException(
+                $"{nameof(WaveService)} requires at least one finite wave or a valid endless profile in {stageDirectorProfile.name}.");
         }
 
         enemyFactory = new EnemyFactory();
@@ -65,29 +92,24 @@ public class WaveManager : MonoBehaviour, IWaveController
             new UnityEnemySpawnExecutor(enemyFactory));
         runProgressionService.Reset(directorSession.GetProgressionTotalWaves());
         RunProgressionRuntime.SetProvider(runProgressionService);
-    }
 
-    private void OnEnable()
-    {
         YokiFrame.EventKit.Type.Register<PlayerSpawnedEvent>(OnPlayerSpawned);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned));
+
         YokiFrame.EventKit.Type.Register<EnemyRegisteredEvent>(OnEnemyRegistered);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<EnemyRegisteredEvent>(OnEnemyRegistered));
+
         YokiFrame.EventKit.Type.Register<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<EnemyUnregisteredEvent>(OnEnemyUnregistered));
+
         YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied));
 
         TryBindSpawnAnchor();
         PublishWaveRuntimeChanged();
     }
 
-    private void OnDisable()
-    {
-        YokiFrame.EventKit.Type.UnRegister<PlayerSpawnedEvent>(OnPlayerSpawned);
-        YokiFrame.EventKit.Type.UnRegister<EnemyRegisteredEvent>(OnEnemyRegistered);
-        YokiFrame.EventKit.Type.UnRegister<EnemyUnregisteredEvent>(OnEnemyUnregistered);
-        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
-        RunProgressionRuntime.ClearProvider(runProgressionService);
-    }
-
-    private void Update()
+    protected override void OnUpdate(float deltaTime)
     {
         if (!IsTimerOn || runtimeState.CompletionTriggered)
         {
@@ -95,10 +117,10 @@ public class WaveManager : MonoBehaviour, IWaveController
         }
 
         float previousTime = CurrentTimer;
-        float nextTime = previousTime + Time.deltaTime;
+        float nextTime = previousTime + deltaTime;
         ProcessCurrentWaveSpawns(previousTime, nextTime);
         runtimeState.Timer = nextTime;
-        runProgressionService?.Tick(Time.deltaTime);
+        runProgressionService?.Tick(deltaTime);
 
         if (CurrentTimer >= CurrentWaveDuration)
         {
@@ -109,6 +131,14 @@ public class WaveManager : MonoBehaviour, IWaveController
 
         TryPlayCountdownTick();
         PublishWaveProgress();
+    }
+
+    protected override void OnDispose()
+    {
+        RunProgressionRuntime.ClearProvider(runProgressionService);
+        directorSession = null;
+        enemyFactory = null;
+        runProgressionService = null;
     }
 
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
@@ -166,7 +196,7 @@ public class WaveManager : MonoBehaviour, IWaveController
 
         if (HasStarted && !directorSession.HasNextWave(CurrentWaveIndex))
         {
-            Debug.LogWarning("WaveManager: 没有下一波可以开始。");
+            Debug.LogWarning($"{nameof(WaveService)}: 没有下一波可以开始。", LogContext);
             return;
         }
 
@@ -214,7 +244,7 @@ public class WaveManager : MonoBehaviour, IWaveController
             currentTime,
             CurrentWaveDuration,
             spawnAroundEntity,
-            transform,
+            SpawnParent,
             runProgressionService);
         directorSession.Advance(previousTime, currentTime, context);
     }
@@ -223,7 +253,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     {
         if (waveIndex < 0)
         {
-            Debug.LogWarning($"WaveManager: 非法波次索引 {waveIndex}");
+            Debug.LogWarning($"{nameof(WaveService)}: 非法波次索引 {waveIndex}", LogContext);
             return;
         }
 
@@ -255,7 +285,7 @@ public class WaveManager : MonoBehaviour, IWaveController
     {
         if (decision.HasDiagnosticError)
         {
-            Debug.LogError(decision.DiagnosticError, this);
+            Debug.LogError(decision.DiagnosticError, LogContext);
         }
 
         if (decision.StopTimer)
@@ -301,10 +331,10 @@ public class WaveManager : MonoBehaviour, IWaveController
             return;
         }
 
-        Player player = FindFirstObjectByType<Player>();
-        if (player != null)
+        Player resolvedPlayer = UnityEngine.Object.FindFirstObjectByType<Player>();
+        if (resolvedPlayer != null)
         {
-            spawnAroundEntity = player;
+            spawnAroundEntity = resolvedPlayer;
         }
     }
 

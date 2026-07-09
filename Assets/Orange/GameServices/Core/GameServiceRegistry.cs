@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 维护服务实例到具体类型以及显式合同类型的映射关系。
+    /// </summary>
     public sealed class GameServiceRegistry
     {
         private readonly Dictionary<Type, GameService> servicesByContract = new Dictionary<Type, GameService>();
@@ -63,6 +66,7 @@ namespace Orange.GameServices
                 services.Add(service);
             }
 
+            // 默认注册具体类型，这样服务可以在不额外声明合同的情况下被直接解析。
             Register(service.GetType(), service);
         }
 

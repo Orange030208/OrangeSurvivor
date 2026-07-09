@@ -28,7 +28,7 @@ public class ShopUIPage : PageBase
     [FormerlySerializedAs("inventoryPopupButton")]
     [SerializeField] private Button equipmentPopupButton;
 
-    private ShopManager shopManager;
+    private IShopController shopController;
     private CurrencyWallet currencyWallet;
     private ShopPageContext currentContext;
     private ViewHandle<PropertiesPopup> propertiesPopupHandle;
@@ -67,14 +67,14 @@ public class ShopUIPage : PageBase
             throw new ArgumentNullException(nameof(context));
         }
 
-        shopManager = context.ShopManager;
+        shopController = context.ShopController;
         currentContext = context;
 
         BindButtonEvents();
         BindManagerEvents();
         BindCurrencyWallet(context.CurrencyWallet);
         BindItemListEvents();
-        shopManager.RefreshViewState();
+        shopController.RefreshViewState();
     }
 
     private void OnExitShop()
@@ -89,7 +89,7 @@ public class ShopUIPage : PageBase
 
         itemList.Clear();
 
-        shopManager = null;
+        shopController = null;
         currencyWallet = null;
         currentContext = null;
     }
@@ -134,7 +134,7 @@ public class ShopUIPage : PageBase
 
     private void OnRerollRequested()
     {
-        shopManager?.RequestReroll();
+        shopController?.RequestReroll();
     }
 
     private void OnContinueRequested()
@@ -331,12 +331,12 @@ public class ShopUIPage : PageBase
 
     private void OnItemBuyRequested(int itemIndex)
     {
-        shopManager?.RequestBuyItem(itemIndex);
+        shopController?.RequestBuyItem(itemIndex);
     }
 
     private void OnItemLockToggleRequested(int itemIndex)
     {
-        shopManager?.RequestToggleLock(itemIndex);
+        shopController?.RequestToggleLock(itemIndex);
     }
 
     private void BindButtonEvents()
@@ -374,11 +374,11 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        if (shopManager != null)
+        if (shopController != null)
         {
-            shopManager.ViewStateChanged += OnViewStateChanged;
-            shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
-            shopManager.PurchaseFailed += OnPurchaseFailed;
+            shopController.ViewStateChanged += OnViewStateChanged;
+            shopController.PurchaseSucceeded += OnPurchaseSucceeded;
+            shopController.PurchaseFailed += OnPurchaseFailed;
         }
         managerEventsBound = true;
     }
@@ -390,11 +390,11 @@ public class ShopUIPage : PageBase
             return;
         }
 
-        if (shopManager != null)
+        if (shopController != null)
         {
-            shopManager.ViewStateChanged -= OnViewStateChanged;
-            shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
-            shopManager.PurchaseFailed -= OnPurchaseFailed;
+            shopController.ViewStateChanged -= OnViewStateChanged;
+            shopController.PurchaseSucceeded -= OnPurchaseSucceeded;
+            shopController.PurchaseFailed -= OnPurchaseFailed;
         }
         managerEventsBound = false;
     }

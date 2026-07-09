@@ -5,6 +5,9 @@ namespace Orange.GameServices
 {
     [DefaultExecutionOrder(-9000)]
     [DisallowMultipleComponent]
+    /// <summary>
+    /// 面向场景的装配入口，用来把序列化的服务定义转换为运行中的 Host。
+    /// </summary>
     public sealed class GameServiceRoot : MonoBehaviour
     {
         public const string DefaultScopeId = "Default";
@@ -14,6 +17,7 @@ namespace Orange.GameServices
         [SerializeField] private bool dontDestroyOnLoad;
         [SerializeField] private GameServiceProfileMode profileMode = GameServiceProfileMode.ProfilesThenLocal;
         [SerializeField] private GameServiceProfile[] profiles;
+        // 本地服务直接序列化在 Root 上，方便保持场景侧的归属关系和可见性。
         [SerializeReference] private List<GameService> localServices = new List<GameService>();
 
         private readonly List<GameServiceProfile> runtimeProfileInstances = new List<GameServiceProfile>();
@@ -50,6 +54,8 @@ namespace Orange.GameServices
                 DontDestroyOnLoad(gameObject);
             }
 
+            // 先把 Profile 和本地服务拍平成一个列表，再交给 Host 做校验、
+            // 依赖排序和生命周期驱动。
             List<GameService> services = BuildServiceList();
             host = new GameServiceHost(this, ScopeId, services);
             try
@@ -143,6 +149,7 @@ namespace Orange.GameServices
 
                 GameServiceProfile runtimeProfile = Instantiate(profile);
                 runtimeProfileInstances.Add(runtimeProfile);
+                // 运行时克隆 Profile，避免多个 Root 共享同一组服务实例。
                 runtimeProfile.AppendServices(services);
             }
         }

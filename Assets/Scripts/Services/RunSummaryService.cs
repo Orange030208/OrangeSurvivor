@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 单局结算统计服务。
-/// 通过 GameServices 生命周期统一管理，替代场景中的 StageCompleteSummaryManager 壳对象。
+/// 通过 GameServices 生命周期统一管理的单局结算统计服务。
 /// </summary>
 [Serializable]
 public sealed class RunSummaryService : GameService

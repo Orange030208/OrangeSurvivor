@@ -1,22 +1,20 @@
+using System;
+using Orange.GameServices;
 using UnityEngine;
 
 #if YOKIFRAME_INPUTSYSTEM_SUPPORT
-using System;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using YokiFrame;
 #endif
 
-[DisallowMultipleComponent]
-public sealed class InputBootstrap : MonoBehaviour
+[Serializable]
+public sealed class InputService : GameService, IInputService
 {
 #if YOKIFRAME_INPUTSYSTEM_SUPPORT
     private const string GAMEPLAY_ACTION_MAP = "Gameplay";
     private const string UI_ACTION_MAP = "UI";
 
-    private static InputBootstrap instance;
-
-    [SerializeField] private bool dontDestroyOnLoad = true;
     [SerializeField] private InputSystemUIInputModule uiInputModule;
     [SerializeField] private bool configureUiInputModule = true;
     [SerializeField] private float uiMoveRepeatDelay = 0.45f;
@@ -25,32 +23,22 @@ public sealed class InputBootstrap : MonoBehaviour
     private bool ownsInputKitLifecycle;
     private InputActionReference[] runtimeUiReferences = Array.Empty<InputActionReference>();
 
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+    public override GameServiceTickMode TickMode => GameServiceTickMode.Update;
+    public bool IsInitialized => InputKit.IsInitialized;
 
-        instance = this;
-        if (dontDestroyOnLoad && transform.parent == default)
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+    protected override void RegisterContracts(GameServiceRegistry registry)
+    {
+        registry.Register<IInputService>(this);
     }
 
-    private void OnEnable()
+    protected override void OnStart()
     {
-        if (Application.isPlaying)
-        {
-            Initialize();
-        }
+        Initialize();
     }
 
-    private void Update()
+    protected override void OnUpdate(float deltaTime)
     {
-        if (!Application.isPlaying || !InputKit.IsInitialized)
+        if (!InputKit.IsInitialized)
         {
             return;
         }
@@ -60,13 +48,8 @@ public sealed class InputBootstrap : MonoBehaviour
         InputKit.CleanupBuffer();
     }
 
-    private void OnDisable()
+    protected override void OnDispose()
     {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-
         ClearUiInputModuleReferences();
 
         if (!ownsInputKitLifecycle)
@@ -78,15 +61,7 @@ public sealed class InputBootstrap : MonoBehaviour
         ownsInputKitLifecycle = false;
     }
 
-    private void OnDestroy()
-    {
-        if (instance == this)
-        {
-            instance = null;
-        }
-    }
-
-    public bool Initialize()
+    private bool Initialize()
     {
         if (!InputKit.IsRegistered<SurvivorsInputActions>())
         {
@@ -111,13 +86,17 @@ public sealed class InputBootstrap : MonoBehaviour
     {
         if (uiInputModule == default)
         {
-            Debug.LogError($"{nameof(InputBootstrap)} on '{name}' requires an explicit {nameof(InputSystemUIInputModule)} reference.", this);
+            Debug.LogError(
+                $"{nameof(InputService)} requires an explicit {nameof(InputSystemUIInputModule)} reference.",
+                Context?.Root);
             return false;
         }
 
         if (input == default)
         {
-            Debug.LogError($"{nameof(InputBootstrap)} on '{name}' could not resolve {nameof(SurvivorsInputActions)} from {nameof(InputKit)}.", this);
+            Debug.LogError(
+                $"{nameof(InputService)} could not resolve {nameof(SurvivorsInputActions)} from {nameof(InputKit)}.",
+                Context?.Root);
             return false;
         }
 
@@ -169,16 +148,23 @@ public sealed class InputBootstrap : MonoBehaviour
         {
             if (runtimeUiReferences[i] != default)
             {
-                Destroy(runtimeUiReferences[i]);
+                UnityEngine.Object.Destroy(runtimeUiReferences[i]);
             }
         }
 
         runtimeUiReferences = Array.Empty<InputActionReference>();
     }
 #else
-    private void Awake()
+    public bool IsInitialized => false;
+
+    protected override void RegisterContracts(GameServiceRegistry registry)
     {
-        Debug.LogWarning($"{nameof(InputBootstrap)} requires YOKIFRAME_INPUTSYSTEM_SUPPORT.");
+        registry.Register<IInputService>(this);
+    }
+
+    protected override void OnStart()
+    {
+        Debug.LogWarning($"{nameof(InputService)} requires YOKIFRAME_INPUTSYSTEM_SUPPORT.", Context?.Root);
     }
 #endif
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Orange.GameServices;
 using UnityEngine;
 
 /// <summary>
@@ -20,10 +21,11 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     [SerializeField] public bool spawnOnStart = true;
 
     [Header("运行时")]
-    [SerializeField] public EnemyRegistry enemyRegistry;
     [SerializeField] public Transform enemyParent;
 
     private EnemyFactory enemyFactory;
+    private IEnemyRegistry enemyRegistry;
+    private EnemyRegistryRuntime localEnemyRegistry;
 
     private void Awake()
     {
@@ -73,7 +75,7 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     public void ClearTestEnemies()
     {
         EnsureRuntimeRegistry();
-        enemyRegistry.DefeatAllTrackedEnemies();
+        enemyRegistry?.DefeatAllTrackedEnemies();
     }
 
     private void EnsureRuntimeRegistry()
@@ -83,11 +85,15 @@ public sealed class MonsterTestSceneController : MonoBehaviour
             return;
         }
 
-        enemyRegistry = FindFirstObjectByType<EnemyRegistry>();
-        if (enemyRegistry == null)
+        if (GameServices.TryGet(out IEnemyRegistry resolvedEnemyRegistry))
         {
-            enemyRegistry = new GameObject(nameof(EnemyRegistry)).AddComponent<EnemyRegistry>();
+            enemyRegistry = resolvedEnemyRegistry;
+            return;
         }
+
+        localEnemyRegistry ??= new EnemyRegistryRuntime();
+        localEnemyRegistry.StartListening();
+        enemyRegistry = localEnemyRegistry;
     }
 
     private void EnsureEnemyParent()
@@ -197,5 +203,11 @@ public sealed class MonsterTestSceneController : MonoBehaviour
     {
         spawnCount = Math.Max(1, spawnCount);
         spawnRadius = Mathf.Max(0.5f, spawnRadius);
+    }
+
+    private void OnDestroy()
+    {
+        localEnemyRegistry?.Dispose();
+        localEnemyRegistry = null;
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 /// 音频播放桥接入口：
 /// - 统一封装 BGM 播放与停止请求；
 /// - 供状态层与业务层直接表达音频意图；
-/// - 调用方不直接依赖 AudioManager 实现。
+/// - 调用方不直接依赖 AudioService 实现。
 /// </summary>
 public static class AudioPlaybackBridge
 {

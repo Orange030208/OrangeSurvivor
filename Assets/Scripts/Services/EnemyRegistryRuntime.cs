@@ -1,24 +1,44 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyRegistry : MonoBehaviour
+public sealed class EnemyRegistryRuntime : IEnemyRegistry, IDisposable
 {
     private readonly Dictionary<int, Enemy> aliveEnemies = new();
     private readonly HashSet<int> aliveBossIds = new();
+    private bool isListening;
 
     public int AliveEnemyCount => aliveEnemies.Count;
     public int AliveBossCount => aliveBossIds.Count;
 
-    private void OnEnable()
+    public void StartListening()
     {
+        if (isListening)
+        {
+            return;
+        }
+
         YokiFrame.EventKit.Type.Register<EnemyRegisteredEvent>(OnEnemyRegistered);
         YokiFrame.EventKit.Type.Register<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        isListening = true;
     }
 
-    private void OnDisable()
+    public void StopListening()
     {
+        if (!isListening)
+        {
+            return;
+        }
+
         YokiFrame.EventKit.Type.UnRegister<EnemyRegisteredEvent>(OnEnemyRegistered);
         YokiFrame.EventKit.Type.UnRegister<EnemyUnregisteredEvent>(OnEnemyUnregistered);
+        isListening = false;
+    }
+
+    public void Dispose()
+    {
+        StopListening();
+        ClearTracking();
     }
 
     private void OnEnemyRegistered(EnemyRegisteredEvent eventData)
@@ -60,7 +80,7 @@ public class EnemyRegistry : MonoBehaviour
             {
                 continue;
             }
-            
+
             enemies[i].DefeatSilently();
         }
     }
@@ -85,7 +105,9 @@ public class EnemyRegistry : MonoBehaviour
 
     private static void CancelPendingEnemySpawnIndicators()
     {
-        SpawnIndicator[] indicators = FindObjectsByType<SpawnIndicator>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        SpawnIndicator[] indicators = UnityEngine.Object.FindObjectsByType<SpawnIndicator>(
+            FindObjectsInactive.Exclude,
+            FindObjectsSortMode.None);
         for (int i = 0; i < indicators.Length; i++)
         {
             if (indicators[i] == null)
@@ -96,5 +118,4 @@ public class EnemyRegistry : MonoBehaviour
             indicators[i].Cancel();
         }
     }
-
 }

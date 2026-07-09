@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 汇总 Host 在校验期和运行期收集到的诊断消息。
+    /// </summary>
     public sealed class GameServiceValidationReport
     {
         private readonly List<GameServiceValidationMessage> messages = new List<GameServiceValidationMessage>();

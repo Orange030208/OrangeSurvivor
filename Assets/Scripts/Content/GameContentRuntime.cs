@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 当前场景运行时内容 Provider 的访问入口。
-/// 这个静态入口只接受 Bootstrap 显式初始化，不做 Resources 路径加载。
+/// 这个静态入口只接受 GameServices 显式初始化，不做 Resources 路径加载。
 /// </summary>
 public static class GameContentRuntime
 {
@@ -27,7 +27,7 @@ public static class GameContentRuntime
 
             throw new InvalidOperationException(
                 $"{nameof(GameContentRuntime)} has not been initialized. " +
-                $"Add {nameof(GameServiceRoot)} with {nameof(ContentService)} or add {nameof(GameContentBootstrap)} to the active scene.");
+                $"Add {nameof(GameServiceRoot)} with {nameof(ContentService)} to the active scene.");
         }
     }
 
@@ -39,7 +39,7 @@ public static class GameContentRuntime
     }
 
     /// <summary>
-    /// 设置当前 Provider。正常情况下只应由 <see cref="ContentService"/>、<see cref="GameContentBootstrap"/> 或测试装配调用。
+    /// 设置当前 Provider。正常情况下只应由 <see cref="ContentService"/> 或测试装配调用。
     /// </summary>
     public static void SetProvider(IGameContentProvider nextProvider)
     {
@@ -58,8 +58,7 @@ public static class GameContentRuntime
     }
 
     /// <summary>
-    /// 尝试解析当前 Provider。若 Awake 顺序滞后，会查找场景里的 Bootstrap 显式初始化；
-    /// 这里不会退回到任何路径加载。
+    /// 尝试解析当前 Provider。这里不会退回到任何路径加载。
     /// </summary>
     public static bool TryGetProvider(out IGameContentProvider resolvedProvider)
     {
@@ -74,13 +73,6 @@ public static class GameContentRuntime
             resolvedProvider = serviceProvider;
             provider = serviceProvider;
             return true;
-        }
-
-        GameContentBootstrap bootstrap = UnityEngine.Object.FindFirstObjectByType<GameContentBootstrap>();
-        if (bootstrap != null && bootstrap.TryInitializeRuntime())
-        {
-            resolvedProvider = provider;
-            return provider != null;
         }
 
         resolvedProvider = null;

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using Orange.GameServices;
 using Orange.UIFramework;
 using UnityEngine;
@@ -10,26 +9,26 @@ using UnityEngine.SceneManagement;
 using YokiFrame;
 
 /// <summary>
-/// 游戏主状态管理器：负责全局游戏状态切换、暂停控制、回菜单以及主 UI 过渡编排。
-/// 它统一消费 UI 意图事件，并通过 UIManager 驱动页面切换。
+/// 游戏主流程服务：负责全局游戏状态切换、暂停控制、回菜单以及主 UI 过渡编排。
 /// </summary>
-public class GameManager : MonoBehaviour
+[Serializable]
+public sealed class GameFlowService : GameService, IGameFlowController
 {
     private const string STARTER_CARD_SELECTION_PAUSE_SOURCE_ID = "starterCardSelection";
 
     [SerializeField] private Player player;
     [SerializeField] private MapGenerator mapGenerator;
-    [SerializeField] private WaveManager waveManager;
-    [SerializeField] private EnemyRegistry enemyRegistry;
-    [SerializeField] private ShopManager shopManager;
-    [SerializeField] private StageCompleteSummaryManager stageCompleteSummaryManager;
     [SerializeField] private GameState initialGameState = GameState.Menu;
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
+    private IWaveController waveController;
+    private IShopController shopController;
+    private IEnemyRegistry enemyRegistry;
     private GameState currentGameState = GameState.None;
     private ViewHandle<GamePadUI> gamePadHandle;
     private Player moveInputPlayer;
     private IPlayerMoveInputReceiver moveInputReceiver;
+    private CancellationTokenSource serviceCancellation;
     private bool gamePadControlsMoveInput;
     private bool isPaused;
     private bool hasMoreWaves;
@@ -42,55 +41,93 @@ public class GameManager : MonoBehaviour
     private bool hasShownStarterCardSelection;
     private bool shouldRunStarterCardSelectionAfterGamePageOpened;
     private bool shouldStartFirstWaveAfterGamePageOpened;
+    private bool isDisposed;
 
+    public override GameServiceTickMode TickMode => GameServiceTickMode.Update;
     public GameState CurrentGameState => currentGameState;
 
-    private void OnEnable()
+    private CancellationToken ServiceToken => serviceCancellation != null ? serviceCancellation.Token : CancellationToken.None;
+    private UnityEngine.Object LogContext => Context != null ? Context.Root : null;
+
+    protected override void DeclareDependencies(GameServiceDependencyBuilder dependencies)
     {
+        dependencies.Require<IGameContentProvider>();
+        dependencies.Require<IEnemyRegistry>();
+        dependencies.Require<IWaveController>();
+        dependencies.Require<IShopController>();
+        dependencies.Optional<RunSummaryService>();
+    }
+
+    protected override void RegisterContracts(GameServiceRegistry registry)
+    {
+        registry.Register<IGameFlowController>(this);
+    }
+
+    protected override void OnAttach()
+    {
+        isDisposed = false;
+        serviceCancellation = new CancellationTokenSource();
         ResolveSceneReferences();
 
         YokiFrame.EventKit.Type.Register<WaveCompletedEvent>(OnWaveCompleted);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.MenuStartClicked, OnMenuStartClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.MenuStartClicked, OnMenuStartClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.ShopContinueClicked, OnShopContinueClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.ShopContinueClicked, OnShopContinueClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.GameOverRestartClicked, OnGameOverRestartClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverRestartClicked, OnGameOverRestartClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.GameOverReturnToMenuClicked, OnGameOverReturnToMenuClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverReturnToMenuClicked, OnGameOverReturnToMenuClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.StageCompleteRestartClicked, OnStageCompleteRestartClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteRestartClicked, OnStageCompleteRestartClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.StageCompleteReturnToMenuClicked, OnStageCompleteReturnToMenuClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteReturnToMenuClicked, OnStageCompleteReturnToMenuClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseRequested, OnPauseGameRequested);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseRequested, OnPauseGameRequested));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseMenuContinueClicked, OnPauseMenuContinueClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuContinueClicked, OnPauseMenuContinueClicked));
+
         YokiFrame.EventKit.Enum.Register(GameFlowCommand.PauseMenuReturnToMenuClicked, OnPauseMenuReturnToMenuClicked);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuReturnToMenuClicked, OnPauseMenuReturnToMenuClicked));
+
         YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged));
+
         YokiFrame.EventKit.Type.Register<EntityDiedEvent>(OnEntityDied);
-        hasMoreWaves = waveManager != null && waveManager.HasMoreWaves;
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied));
+
+        hasMoreWaves = waveController != null && waveController.HasMoreWaves;
     }
 
-    private void OnDisable()
-    {
-        stateTransitionVersion++;
-        YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.MenuStartClicked, OnMenuStartClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.ShopContinueClicked, OnShopContinueClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverRestartClicked, OnGameOverRestartClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.GameOverReturnToMenuClicked, OnGameOverReturnToMenuClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteRestartClicked, OnStageCompleteRestartClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.StageCompleteReturnToMenuClicked, OnStageCompleteReturnToMenuClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseRequested, OnPauseGameRequested);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuContinueClicked, OnPauseMenuContinueClicked);
-        YokiFrame.EventKit.Enum.UnRegister(GameFlowCommand.PauseMenuReturnToMenuClicked, OnPauseMenuReturnToMenuClicked);
-        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
-        YokiFrame.EventKit.Type.UnRegister<EntityDiedEvent>(OnEntityDied);
-    }
-
-    private void Start()
+    protected override void OnStart()
     {
         Application.targetFrameRate = 60;
         TransitionToState(initialGameState);
         SetPaused(false);
     }
 
-    private void Update()
+    protected override void OnUpdate(float deltaTime)
     {
         UpdateStandaloneMoveInput();
+    }
+
+    protected override void OnDispose()
+    {
+        isDisposed = true;
+        stateTransitionVersion++;
+        serviceCancellation?.Cancel();
+        ClearPlayerMoveInput();
+        DisposeServiceCancellation();
+        Time.timeScale = 1f;
     }
 
     private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
@@ -175,7 +212,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+            CancellationToken cancellationToken = ServiceToken;
             await CloseCurrentStatePageAsync(cancellationToken);
             if (!IsCurrentTransition(transitionVersion))
             {
@@ -203,13 +240,13 @@ public class GameManager : MonoBehaviour
         catch (Exception exception)
         {
             ResetStarterCardSelectionTransitionState();
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
     }
 
     private bool IsCurrentTransition(int transitionVersion)
     {
-        return transitionVersion == stateTransitionVersion && isActiveAndEnabled;
+        return transitionVersion == stateTransitionVersion && !isDisposed;
     }
 
     private void ApplyStateTransition(GameState targetState)
@@ -294,7 +331,6 @@ public class GameManager : MonoBehaviour
 
     private void TerminateRunBecausePlayerDied()
     {
-        // UI 页面切换是异步的，死亡时先锁定本局，避免延迟到达的波次/商店事件覆盖 GameOver。
         isRunTerminated = true;
         StopCurrentWave();
     }
@@ -322,10 +358,7 @@ public class GameManager : MonoBehaviour
         {
             ResetWaves();
             DefeatAllTrackedEnemies();
-            if (enemyRegistry != null)
-            {
-                enemyRegistry.ClearTracking();
-            }
+            enemyRegistry?.ClearTracking();
             pauseSources.Clear();
         }
     }
@@ -335,17 +368,6 @@ public class GameManager : MonoBehaviour
         if (newState == GameState.Game)
         {
             EnterGameState(oldState);
-            return;
-        }
-
-        if (newState == GameState.GameOver)
-        {
-            return;
-        }
-
-        if (newState == GameState.StageComplete)
-        {
-            return;
         }
     }
 
@@ -412,7 +434,7 @@ public class GameManager : MonoBehaviour
         bool transitionRequested = false;
         try
         {
-            await RunWaveEndPipelineAsync(this.GetCancellationTokenOnDestroy());
+            await RunWaveEndPipelineAsync(ServiceToken);
             if (isRunTerminated || currentGameState != GameState.Game)
             {
                 return;
@@ -436,7 +458,7 @@ public class GameManager : MonoBehaviour
         }
         catch (Exception exception)
         {
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
         finally
         {
@@ -557,38 +579,39 @@ public class GameManager : MonoBehaviour
         return new GamingPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
-            waveManager != null ? waveManager.CreateHudViewData() : default);
+            waveController != null ? waveController.CreateHudViewData() : default);
     }
 
     private StageCompletePageContext CreateStageCompletePageContext()
     {
-        if (GameServices.TryGet(out RunSummaryService runSummaryService))
+        if (Context != null && Context.TryGet(out RunSummaryService runSummaryService))
         {
             return new StageCompletePageContext(runSummaryService.CreateResult());
         }
 
-        if (stageCompleteSummaryManager != null)
+        if (GameServices.TryGet(out RunSummaryService globalRunSummaryService))
         {
-            return new StageCompletePageContext(stageCompleteSummaryManager.CreateResult());
+            return new StageCompletePageContext(globalRunSummaryService.CreateResult());
         }
 
         throw new MissingReferenceException(
-            $"{nameof(GameManager)} requires {nameof(RunSummaryService)} from {nameof(GameServices)} or an explicit {nameof(StageCompleteSummaryManager)} reference.");
+            $"{nameof(GameFlowService)} requires {nameof(RunSummaryService)} from {nameof(GameServices)}.");
     }
 
     private ShopPageContext CreateShopPageContext()
     {
         EnsurePlayerReference();
-        if (shopManager == null)
+        ResolveShopController();
+        if (shopController == null)
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(ShopManager)} reference.");
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IShopController)}.");
         }
 
         return new ShopPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
             player.GetComponent<PropertiesManager>(),
-            shopManager);
+            shopController);
     }
 
     private async UniTask OpenGamePadAsync(CancellationToken cancellationToken)
@@ -700,14 +723,14 @@ public class GameManager : MonoBehaviour
         {
             await UIManager.Instance.OpenPageAsync<GamePauseMenu>(
                 CreatePauseMenuContext(),
-                cancellationToken: this.GetCancellationTokenOnDestroy());
+                cancellationToken: ServiceToken);
         }
         catch (OperationCanceledException)
         {
         }
         catch (Exception exception)
         {
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
     }
 
@@ -715,7 +738,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            await ClosePageAsync<GamePauseMenu>(ServiceToken);
             SetPaused(false);
         }
         catch (OperationCanceledException)
@@ -723,7 +746,7 @@ public class GameManager : MonoBehaviour
         }
         catch (Exception exception)
         {
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
     }
 
@@ -731,7 +754,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            await ClosePageAsync<GamePauseMenu>(this.GetCancellationTokenOnDestroy());
+            await ClosePageAsync<GamePauseMenu>(ServiceToken);
             await ReturnToMenuAsync();
         }
         catch (OperationCanceledException)
@@ -739,7 +762,7 @@ public class GameManager : MonoBehaviour
         }
         catch (Exception exception)
         {
-            Debug.LogException(exception, this);
+            Debug.LogException(exception, LogContext);
         }
     }
 
@@ -761,29 +784,67 @@ public class GameManager : MonoBehaviour
 
     private void ResolveSceneReferences()
     {
+        ResolveWaveController();
+        ResolveShopController();
+        ResolveEnemyRegistry();
+
         if (mapGenerator == null)
         {
-            mapGenerator = FindFirstObjectByType<MapGenerator>();
+            mapGenerator = UnityEngine.Object.FindFirstObjectByType<MapGenerator>();
         }
 
-        if (waveManager == null)
+        if (waveController == null)
         {
-            waveManager = FindFirstObjectByType<WaveManager>();
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IWaveController)}.");
         }
 
-        if (enemyRegistry == null)
+        if (shopController == null)
         {
-            enemyRegistry = FindFirstObjectByType<EnemyRegistry>();
-        }
-
-        if (waveManager == null)
-        {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(WaveManager)} reference.");
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IShopController)}.");
         }
 
         if (enemyRegistry == null)
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(EnemyRegistry)} reference.");
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IEnemyRegistry)}.");
+        }
+    }
+
+    private void ResolveWaveController()
+    {
+        if (waveController != null)
+        {
+            return;
+        }
+
+        if (Context != null && Context.TryGet(out IWaveController resolvedWaveController))
+        {
+            waveController = resolvedWaveController;
+        }
+    }
+
+    private void ResolveShopController()
+    {
+        if (shopController != null)
+        {
+            return;
+        }
+
+        if (Context != null && Context.TryGet(out IShopController resolvedShopController))
+        {
+            shopController = resolvedShopController;
+        }
+    }
+
+    private void ResolveEnemyRegistry()
+    {
+        if (enemyRegistry != null)
+        {
+            return;
+        }
+
+        if (Context != null && Context.TryGet(out IEnemyRegistry resolvedEnemyRegistry))
+        {
+            enemyRegistry = resolvedEnemyRegistry;
         }
     }
 
@@ -791,7 +852,8 @@ public class GameManager : MonoBehaviour
     {
         if (player == null)
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
+            throw new MissingReferenceException(
+                $"{nameof(GameFlowService)} requires an explicit {nameof(Player)} reference before opening gameplay UI.");
         }
     }
 
@@ -801,7 +863,8 @@ public class GameManager : MonoBehaviour
         PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
         if (propertiesManager == null)
         {
-            throw new MissingReferenceException($"{nameof(GameManager)} requires player '{player.name}' to have a {nameof(PropertiesManager)} before opening the pause menu.");
+            throw new MissingReferenceException(
+                $"{nameof(GameFlowService)} requires player '{player.name}' to have a {nameof(PropertiesManager)} before opening the pause menu.");
         }
 
         return new GamePauseMenuContext(player, propertiesManager);
@@ -856,11 +919,13 @@ public class GameManager : MonoBehaviour
     {
         if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
-            Debug.LogWarning($"{nameof(GameManager)} could not resolve starter cards because GameContentRuntime is unavailable.", this);
+            Debug.LogWarning(
+                $"{nameof(GameFlowService)} could not resolve starter cards because GameContentRuntime is unavailable.",
+                LogContext);
             return;
         }
 
-        StarterCardSelectionFlow flow = new StarterCardSelectionFlow(player, this);
+        StarterCardSelectionFlow flow = new StarterCardSelectionFlow(player, LogContext);
         await flow.RunAsync(provider.StarterCards, cancellationToken);
     }
 
@@ -868,7 +933,7 @@ public class GameManager : MonoBehaviour
     {
         if (mapGenerator == null)
         {
-            mapGenerator = FindFirstObjectByType<MapGenerator>();
+            mapGenerator = UnityEngine.Object.FindFirstObjectByType<MapGenerator>();
         }
 
         if (mapGenerator == null)
@@ -889,11 +954,11 @@ public class GameManager : MonoBehaviour
         Player playerPrefab = GameContentRuntime.Provider.DefaultPlayerPrefab;
         if (playerPrefab == null)
         {
-            Debug.LogError("GameManager: 默认玩家 prefab 未在 GameContentCatalogSO 中配置，无法进入游戏。");
+            Debug.LogError($"{nameof(GameFlowService)}: 默认玩家 prefab 未在 GameContentCatalogSO 中配置，无法进入游戏。", LogContext);
             return;
         }
 
-        player = Instantiate(playerPrefab, playerSpawnPosition, Quaternion.identity);
+        player = UnityEngine.Object.Instantiate(playerPrefab, playerSpawnPosition, Quaternion.identity);
         YokiFrame.EventKit.Type.Send(new PlayerSpawnedEvent(player));
     }
 
@@ -944,37 +1009,37 @@ public class GameManager : MonoBehaviour
 
     public void StartFirstWave()
     {
-        waveManager?.StartFirstWave();
+        ResolveWaveController();
+        waveController?.StartFirstWave();
     }
 
     public void StartNextWave()
     {
-        waveManager?.StartNextWave();
+        ResolveWaveController();
+        waveController?.StartNextWave();
     }
 
     public void StopCurrentWave()
     {
-        waveManager?.StopCurrentWave();
+        ResolveWaveController();
+        waveController?.StopCurrentWave();
     }
 
     public void ResumeCurrentWave()
     {
-        waveManager?.ResumeCurrentWave();
+        ResolveWaveController();
+        waveController?.ResumeCurrentWave();
     }
 
     public void ResetWaves()
     {
-        waveManager?.ResetWaves();
+        ResolveWaveController();
+        waveController?.ResetWaves();
     }
 
     public void DefeatAllTrackedEnemies()
     {
         enemyRegistry?.DefeatAllTrackedEnemies();
-    }
-
-    private void ManageGameOver()
-    {
-        DOVirtual.DelayedCall(2f, () => RestartGameAsync().Forget()).SetUpdate(true);
     }
 
     private async UniTask RestartGameAsync()
@@ -1001,7 +1066,7 @@ public class GameManager : MonoBehaviour
 
             try
             {
-                await CloseCurrentStatePageAsync(this.GetCancellationTokenOnDestroy());
+                await CloseCurrentStatePageAsync(ServiceToken);
                 if (!IsCurrentTransition(reloadVersion))
                 {
                     return;
@@ -1013,7 +1078,7 @@ public class GameManager : MonoBehaviour
             }
             catch (Exception exception)
             {
-                Debug.LogException(exception, this);
+                Debug.LogException(exception, LogContext);
             }
 
             pauseSources.Clear();
@@ -1026,14 +1091,15 @@ public class GameManager : MonoBehaviour
             isSceneReloading = false;
         }
     }
-}
 
-public enum GameState
-{
-    None,
-    Menu,
-    Game,
-    GameOver,
-    StageComplete,
-    Shop
+    private void DisposeServiceCancellation()
+    {
+        if (serviceCancellation == null)
+        {
+            return;
+        }
+
+        serviceCancellation.Dispose();
+        serviceCancellation = null;
+    }
 }

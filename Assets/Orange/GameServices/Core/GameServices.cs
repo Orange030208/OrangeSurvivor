@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 默认作用域与具名作用域访问的静态门面。
+    /// </summary>
     public static class GameServices
     {
         private static readonly Dictionary<string, GameServiceHost> hostsByScope = new Dictionary<string, GameServiceHost>();
@@ -40,6 +43,7 @@ namespace Orange.GameServices
 
         public static GameServiceResolver For(string scopeId)
         {
+            // 具名作用域适合测试场景或特殊场景挂独立服务图，同时不改调用方写法。
             return TryGetHost(scopeId, out GameServiceHost host)
                 ? new GameServiceResolver(host)
                 : new GameServiceResolver(null);
@@ -57,6 +61,7 @@ namespace Orange.GameServices
                 throw new GameServiceException("Cannot bind a null GameServiceHost.");
             }
 
+            // ScopeId 必须唯一；同一 Id 绑定第二个 Host 往往意味着场景装配有问题。
             if (hostsByScope.TryGetValue(host.ScopeId, out GameServiceHost existingHost) && existingHost != host)
             {
                 throw new GameServiceException($"GameServices scope '{host.ScopeId}' is already bound.");

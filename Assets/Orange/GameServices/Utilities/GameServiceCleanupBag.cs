@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Orange.GameServices
 {
+    /// <summary>
+    /// 集中管理服务级的清理回调与协程句柄，保证释放路径收敛。
+    /// </summary>
     internal sealed class GameServiceCleanupBag : IDisposable
     {
         private readonly List<Action> cleanupActions = new List<Action>();
@@ -64,6 +67,7 @@ namespace Orange.GameServices
             }
 
             disposed = true;
+            // 先停协程，再跑清理回调，避免清理逻辑和仍在执行的协程互相打架。
             StopCoroutines();
             RunCleanupActions();
             context = null;
@@ -91,6 +95,7 @@ namespace Orange.GameServices
 
         private void RunCleanupActions()
         {
+            // 逆序执行更符合“先注册，后回收”的常见资源释放预期。
             for (int i = cleanupActions.Count - 1; i >= 0; i--)
             {
                 try

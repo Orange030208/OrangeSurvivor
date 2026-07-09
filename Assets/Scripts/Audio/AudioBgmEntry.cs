@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 单条背景音乐配置。
-/// 只描述音乐键、音频资源、播放模式与音高；音量统一由 AudioManager 管理。
+/// 只描述音乐键、音频资源、播放模式与音高；音量统一由 AudioService 管理。
 /// </summary>
 [Serializable]
 public class AudioBgmEntry

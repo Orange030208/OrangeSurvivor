@@ -1,28 +1,17 @@
 using System;
 using System.Collections.Generic;
+using Orange.GameServices;
 using UnityEngine;
 
-/// <summary>
-/// 音频总管理器：
-/// - 统一管理 Music / SFX 播放；
-/// - 直接根据强类型枚举解析配置；
-/// - 提供总音量、Music 音量、SFX 根音量与 SFX 分组音量控制；
-/// - 自动创建运行所需的 Music 总线与 SFX 分组池；
-/// - 作为跨场景持久对象存在。
-/// </summary>
-[DisallowMultipleComponent]
-public class AudioManager : MonoBehaviour
+[Serializable]
+public sealed class AudioService : GameService, IAudioService
 {
-    private const string AUDIO_ROOT_OBJECT_NAME = "AudioManager";
+    private const string AUDIO_ROOT_OBJECT_NAME = "Audio";
     private const string MUSIC_BUS_OBJECT_NAME = "MusicBus";
     private const string SFX_BUS_ROOT_OBJECT_NAME = "SfxBuses";
 
-    private static AudioManager instance;
-
     [Header("配置")]
-    [Tooltip("音频运行时设置。提供状态驱动的背景音乐配置与淡变时长。")]
     [SerializeField] private AudioRuntimeSettingsSO runtimeSettings;
-    [Tooltip("音频总线设置。音效分组与各组下的音效条目都在这里配置。")]
     [SerializeField] private AudioBusSettingsSO busSettings;
 
     [Header("音量")]
@@ -30,93 +19,91 @@ public class AudioManager : MonoBehaviour
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float musicVolume = AudioConstants.DEFAULT_VOLUME;
     [SerializeField] [Range(AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME)] private float sfxVolume = AudioConstants.DEFAULT_VOLUME;
 
+    private Transform audioRoot;
     private AudioBusPlayer musicBusPlayer;
     private Transform sfxBusRoot;
     private readonly Dictionary<string, AudioSfxGroupBusPlayer> sfxGroupPlayers = new(StringComparer.Ordinal);
     private readonly HashSet<string> warnedMissingGroups = new(StringComparer.Ordinal);
+    private bool isRuntimeActive;
 
-    public static AudioManager Instance => instance;
     public float MasterVolume => masterVolume;
     public float MusicVolume => musicVolume;
     public float SfxVolume => sfxVolume;
 
-    private void Awake()
+    protected override void RegisterContracts(GameServiceRegistry registry)
     {
-        ValidateConfiguration();
+        registry.Register<IAudioService>(this);
+    }
 
-        if (instance != null && instance != this)
+    protected override void OnValidateService(GameServiceValidationReport report)
+    {
+        if (runtimeSettings == null)
         {
-            Destroy(gameObject);
-            return;
+            report.AddError($"{nameof(AudioService)} requires {nameof(AudioRuntimeSettingsSO)}.", GetType());
         }
 
-        instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (busSettings == null)
+        {
+            report.AddError($"{nameof(AudioService)} requires {nameof(AudioBusSettingsSO)}.", GetType());
+        }
+    }
+
+    protected override void OnAttach()
+    {
+        ValidateConfiguration();
+        ClampVolumeFields();
+        isRuntimeActive = true;
 
         EnsureBusPlayers();
         ApplyVolumeSettings();
-    }
 
-    private void OnEnable()
-    {
         YokiFrame.EventKit.Type.Register<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested));
+
         YokiFrame.EventKit.Type.Register<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested));
+
         YokiFrame.EventKit.Enum.Register(AudioCommand.MusicStopRequested, OnAudioMusicStopRequested);
+        AddCleanup(() => YokiFrame.EventKit.Enum.UnRegister(AudioCommand.MusicStopRequested, OnAudioMusicStopRequested));
+
         YokiFrame.EventKit.Type.Register<AudioStopRequestedEvent>(OnAudioStopRequested);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioStopRequestedEvent>(OnAudioStopRequested));
+
         YokiFrame.EventKit.Type.Register<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested));
+
         YokiFrame.EventKit.Type.Register<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested));
+
         YokiFrame.EventKit.Type.Register<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
+        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged));
     }
 
-    private void OnDisable()
+    protected override void OnStart()
     {
-        YokiFrame.EventKit.Type.UnRegister<AudioBgmPlayRequestedEvent>(OnAudioBgmPlayRequested);
-        YokiFrame.EventKit.Type.UnRegister<AudioMusicPlayRequestedEvent>(OnAudioMusicPlayRequested);
-        YokiFrame.EventKit.Enum.UnRegister(AudioCommand.MusicStopRequested, OnAudioMusicStopRequested);
-        YokiFrame.EventKit.Type.UnRegister<AudioStopRequestedEvent>(OnAudioStopRequested);
-        YokiFrame.EventKit.Type.UnRegister<AudioSfxPlayRequestedEvent>(OnAudioSfxPlayRequested);
-        YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupStopRequestedEvent>(OnAudioSfxGroupStopRequested);
-        YokiFrame.EventKit.Type.UnRegister<AudioSfxGroupVolumeChangedEvent>(OnAudioSfxGroupVolumeChanged);
+        ApplySettingsState(GameSettingsService.Current);
     }
 
-    private void OnValidate()
+    protected override void OnDispose()
     {
-        masterVolume = Mathf.Clamp(masterVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
-        musicVolume = Mathf.Clamp(musicVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
-        sfxVolume = Mathf.Clamp(sfxVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
-
-        if (!Application.isPlaying || instance != this)
+        isRuntimeActive = false;
+        StopAllSfx();
+        if (musicBusPlayer != null)
         {
-            return;
+            musicBusPlayer.StopPlayback();
         }
 
-        ApplyVolumeSettings();
-    }
-
-    public static AudioManager EnsureInstance(AudioRuntimeSettingsSO settings)
-    {
-        return EnsureInstance(settings, null);
-    }
-
-    public static AudioManager EnsureInstance(AudioRuntimeSettingsSO settings, AudioBusSettingsSO busSettings)
-    {
-        if (instance != null)
+        sfxGroupPlayers.Clear();
+        warnedMissingGroups.Clear();
+        musicBusPlayer = null;
+        sfxBusRoot = null;
+        if (audioRoot != null)
         {
-            instance.AssignMissingReferences(settings, busSettings);
-            return instance;
+            UnityEngine.Object.Destroy(audioRoot.gameObject);
+            audioRoot = null;
         }
-
-        GameObject rootObject = new(AUDIO_ROOT_OBJECT_NAME);
-        AudioManager manager = rootObject.AddComponent<AudioManager>();
-        manager.runtimeSettings = settings;
-        manager.busSettings = busSettings;
-        return manager;
     }
 
-    /// <summary>
-    /// 处理一次 BGM 播放请求。
-    /// Music + Loop 会走淡入淡出，其余请求立即执行。
-    /// </summary>
     public void PlayBgm(AudioBgmKey bgmKey, bool restartIfPlaying)
     {
         PlayMusic(bgmKey, restartIfPlaying);
@@ -124,14 +111,14 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(AudioBgmKey bgmKey, bool restartIfPlaying)
     {
-        if (!enabled || bgmKey == AudioBgmKey.None)
+        if (!isRuntimeActive || bgmKey == AudioBgmKey.None)
         {
             return;
         }
 
         if (!runtimeSettings.TryGetBgmCue(bgmKey, out AudioCueData cueData))
         {
-            Debug.LogWarning($"Audio bgm key '{bgmKey}' was not found.", this);
+            Debug.LogWarning($"Audio bgm key '{bgmKey}' was not found.", Context?.Root);
             return;
         }
 
@@ -144,9 +131,6 @@ public class AudioManager : MonoBehaviour
         musicBusPlayer.Play(cueData, restartIfPlaying);
     }
 
-    /// <summary>
-    /// 处理一次语义音效播放请求。
-    /// </summary>
     public void PlaySfx(AudioSfxKey sfxKey)
     {
         PlaySfx(sfxKey, AudioSfxPlayContext.None);
@@ -154,14 +138,14 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySfx(AudioSfxKey sfxKey, AudioSfxPlayContext context)
     {
-        if (!enabled || sfxKey == AudioSfxKey.None)
+        if (!isRuntimeActive || sfxKey == AudioSfxKey.None)
         {
             return;
         }
 
         if (busSettings == null || !busSettings.TryGetSfxCue(sfxKey, out AudioCueData cueData))
         {
-            Debug.LogWarning($"Audio sfx key '{sfxKey}' was not found.", this);
+            Debug.LogWarning($"Audio sfx key '{sfxKey}' was not found.", Context?.Root);
             return;
         }
 
@@ -169,18 +153,13 @@ public class AudioManager : MonoBehaviour
         groupPlayer.Play(cueData, context);
     }
 
-    /// <summary>
-    /// 停止指定总线。
-    /// Music 总线会走淡出，Sfx 总线立即停止。
-    /// </summary>
     public void Stop(AudioBusType busType)
     {
-        if (!enabled)
+        if (!isRuntimeActive)
         {
             return;
         }
 
-        AudioBusPlayer busPlayer = ResolveBusPlayer(busType);
         if (busType == AudioBusType.Music)
         {
             StopMusic();
@@ -192,7 +171,7 @@ public class AudioManager : MonoBehaviour
 
     public void StopMusic()
     {
-        if (!enabled)
+        if (!isRuntimeActive)
         {
             return;
         }
@@ -202,7 +181,7 @@ public class AudioManager : MonoBehaviour
 
     public void StopSfxGroup(string groupId)
     {
-        if (!enabled)
+        if (!isRuntimeActive)
         {
             return;
         }
@@ -230,20 +209,7 @@ public class AudioManager : MonoBehaviour
 
     public bool IsPlayingMusicCue(AudioBgmKey bgmKey)
     {
-        return musicBusPlayer.IsPlayingCue(bgmKey.ToString());
-    }
-
-    private void ValidateConfiguration()
-    {
-        if (runtimeSettings == null)
-        {
-            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioRuntimeSettingsSO)}.");
-        }
-
-        if (busSettings == null)
-        {
-            throw new MissingReferenceException($"{nameof(AudioManager)} '{name}' is missing {nameof(AudioBusSettingsSO)}.");
-        }
+        return musicBusPlayer != null && musicBusPlayer.IsPlayingCue(bgmKey.ToString());
     }
 
     public void SetMasterVolume(float volume)
@@ -302,8 +268,25 @@ public class AudioManager : MonoBehaviour
         SetSfxGroupVolume(eventData.GroupId, eventData.Volume);
     }
 
+    private void ApplySettingsState(GameSettingsState state)
+    {
+        if (state == null)
+        {
+            return;
+        }
+
+        SetMasterVolume(state.MasterVolume);
+        SetSfxVolume(state.SfxVolume);
+        SetMusicVolume(state.MusicVolume);
+    }
+
     private void ApplyVolumeSettings()
     {
+        if (!isRuntimeActive)
+        {
+            return;
+        }
+
         EnsureBusPlayers();
         musicBusPlayer.SetBusVolume(masterVolume * musicVolume * GetBusMusicVolume());
 
@@ -317,22 +300,17 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private AudioBusPlayer ResolveBusPlayer(AudioBusType busType)
-    {
-        EnsureBusPlayers();
-        return musicBusPlayer;
-    }
-
     private void EnsureBusPlayers()
     {
+        EnsureAudioRoot();
         musicBusPlayer ??= GetOrCreateBusPlayer(MUSIC_BUS_OBJECT_NAME);
         if (sfxBusRoot == null)
         {
-            Transform root = transform.Find(SFX_BUS_ROOT_OBJECT_NAME);
+            Transform root = audioRoot.Find(SFX_BUS_ROOT_OBJECT_NAME);
             if (root == null)
             {
                 GameObject rootObject = new(SFX_BUS_ROOT_OBJECT_NAME);
-                rootObject.transform.SetParent(transform, false);
+                rootObject.transform.SetParent(audioRoot, false);
                 root = rootObject.transform;
             }
 
@@ -340,13 +318,38 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    private void EnsureAudioRoot()
+    {
+        if (audioRoot != null)
+        {
+            return;
+        }
+
+        Transform rootTransform = Context?.RootTransform;
+        if (rootTransform == null)
+        {
+            throw new InvalidOperationException($"{nameof(AudioService)} requires an attached {nameof(GameServiceContext)}.");
+        }
+
+        Transform existing = rootTransform.Find(AUDIO_ROOT_OBJECT_NAME);
+        if (existing != null)
+        {
+            audioRoot = existing;
+            return;
+        }
+
+        GameObject audioRootObject = new(AUDIO_ROOT_OBJECT_NAME);
+        audioRootObject.transform.SetParent(rootTransform, false);
+        audioRoot = audioRootObject.transform;
+    }
+
     private AudioBusPlayer GetOrCreateBusPlayer(string objectName)
     {
-        Transform busTransform = transform.Find(objectName);
+        Transform busTransform = audioRoot.Find(objectName);
         if (busTransform == null)
         {
             GameObject busObject = new(objectName);
-            busObject.transform.SetParent(transform, false);
+            busObject.transform.SetParent(audioRoot, false);
             busTransform = busObject.transform;
         }
 
@@ -400,7 +403,9 @@ public class AudioManager : MonoBehaviour
 
         if (warnedMissingGroups.Add(groupId))
         {
-            Debug.LogWarning($"Audio sfx group '{groupId}' was not found. Falling back to '{busSettings.DefaultSfxGroupId}'.", this);
+            Debug.LogWarning(
+                $"Audio sfx group '{groupId}' was not found. Falling back to '{busSettings.DefaultSfxGroupId}'.",
+                Context?.Root);
         }
 
         return busSettings.GetDefaultSfxGroup();
@@ -421,16 +426,23 @@ public class AudioManager : MonoBehaviour
         return busSettings.AudibleDistance;
     }
 
-    private void AssignMissingReferences(AudioRuntimeSettingsSO settings, AudioBusSettingsSO busSettings)
+    private void ValidateConfiguration()
     {
         if (runtimeSettings == null)
         {
-            runtimeSettings = settings;
+            throw new MissingReferenceException($"{nameof(AudioService)} is missing {nameof(AudioRuntimeSettingsSO)}.");
         }
 
-        if (this.busSettings == null)
+        if (busSettings == null)
         {
-            this.busSettings = busSettings;
+            throw new MissingReferenceException($"{nameof(AudioService)} is missing {nameof(AudioBusSettingsSO)}.");
         }
+    }
+
+    private void ClampVolumeFields()
+    {
+        masterVolume = Mathf.Clamp(masterVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        musicVolume = Mathf.Clamp(musicVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
+        sfxVolume = Mathf.Clamp(sfxVolume, AudioConstants.MIN_VOLUME, AudioConstants.MAX_VOLUME);
     }
 }
