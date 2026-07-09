@@ -165,7 +165,7 @@ MonoBehaviour:
   explodeOnTargetContact: 1
   explodeOnObstacleContact: 1
   explodeOnLifetimeExpired: 1
-  explosionVfxPrefab: {fileID: 0}
+  explosionVfxPrefab: {fileID: 6853986081789573359, guid: 328cdf3072124728a1d8bbb0aca4a95c, type: 3}
 --- !u!114 &7002364698567343284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,7 +253,7 @@ SpriteRenderer:
   m_SortingLayerID: 801249745
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 100000015, guid: d6d82f0037e0b5170cf4e0c9cf006ebf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: eaf4de58dc2c4d3f8b5cbce6e853dcc2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

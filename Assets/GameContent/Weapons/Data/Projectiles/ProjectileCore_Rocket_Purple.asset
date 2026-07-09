@@ -19,7 +19,7 @@ MonoBehaviour:
   speedMultiplier: 1
   lifetimeMultiplier: 1
   scaleMultiplier: 1.15
-  sprite: {fileID: 100000015, guid: d6d82f0037e0b5170cf4e0c9cf006ebf, type: 3}
+  sprite: {fileID: 21300000, guid: eaf4de58dc2c4d3f8b5cbce6e853dcc2, type: 3}
   animatorController: {fileID: 0}
   material: {fileID: 0}
   sortingOrder: 0
