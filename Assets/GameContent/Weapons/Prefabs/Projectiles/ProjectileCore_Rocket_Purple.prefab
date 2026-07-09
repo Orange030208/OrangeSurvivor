@@ -14,10 +14,10 @@ GameObject:
   - component: {fileID: 814900668632867821}
   - component: {fileID: 3209196428374101121}
   - component: {fileID: 3209196428374101122}
-  - component: {fileID: 3209196428374101123}
+  - component: {fileID: 3209196428374101124}
   - component: {fileID: 7002364698567343284}
   m_Layer: 0
-  m_Name: ProjectileBase
+  m_Name: ProjectileCore_Rocket_Purple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,7 +73,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.11
+  m_Radius: 0.185
 --- !u!50 &1390684286374318368
 Rigidbody2D:
   serializedVersion: 4
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   movementBehaviour: {fileID: 3209196428374101121}
-  impactBehaviour: {fileID: 3209196428374101123}
+  impactBehaviour: {fileID: 3209196428374101124}
   lifetimeBehaviour: {fileID: 3209196428374101122}
   obstacleLayerMask:
     serializedVersion: 2
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   fallbackMaxLifetime: 5
---- !u!114 &3209196428374101123
+--- !u!114 &3209196428374101124
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,10 +155,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2237431696250686596}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 669aaa5466a94e658b167410b3e06bca, type: 3}
+  m_Script: {fileID: 11500000, guid: 189ffb30e12c4a98973b3601341340fb, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  baseMaxHitCount: 1
+  radiusPoints: 180
+  damageMultiplier: 1
+  maxTargets: 12
+  knockbackMultiplier: 1
+  explodeOnTargetContact: 1
+  explodeOnObstacleContact: 1
+  explodeOnLifetimeExpired: 1
+  explosionVfxPrefab: {fileID: 0}
 --- !u!114 &7002364698567343284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,8 +176,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98308004d0a1e204d8acd8cb0097c799, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   spriteRenderer: {fileID: 8159730140199281861}
 --- !u!1 &6368522929002085402
 GameObject:
@@ -198,7 +205,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6368522929002085402}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -246,12 +253,12 @@ SpriteRenderer:
   m_SortingLayerID: 801249745
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 500840789, guid: 18ac1a8da81b11e40b93afc1e7de2f3f, type: 3}
+  m_Sprite: {fileID: 100000015, guid: d6d82f0037e0b5170cf4e0c9cf006ebf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.5019531, y: 0.5}
+  m_Size: {x: 0.5, y: 0.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -267,13 +274,13 @@ Animator:
   m_GameObject: {fileID: 6368522929002085402}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b28d1e172d294da7a42e168fb0505441, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0

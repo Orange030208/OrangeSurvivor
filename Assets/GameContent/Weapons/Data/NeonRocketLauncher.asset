@@ -31,7 +31,7 @@ MonoBehaviour:
     localRotationOffset: 0
   sequenceProjectileList:
   - spawnPointIndex: 0
-    projectileDefinition: {fileID: 11400000, guid: cd46c7cbdc536324b8476d1b386d7e53, type: 2}
+    projectileDefinition: {fileID: 11400000, guid: c6e0d467624d469f824efb509dcfc943, type: 2}
     burstId: 0
     firingMode: 0
     patternConfig:

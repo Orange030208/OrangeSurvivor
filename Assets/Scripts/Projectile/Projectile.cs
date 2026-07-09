@@ -1,65 +1,56 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
+/// <summary>
+/// 弹射物根协调器：
+/// - 对外保持 IProjectile 发射入口；
+/// - 对内把移动、命中、生命周期交给 prefab 上的显式模块；
+/// - 统一处理表现覆盖、朝向、碰撞分发和销毁。
+/// </summary>
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
 public class Projectile : Entity, IProjectile, IWaveEndStep
 {
     private const string DEFAULT_OBSTACLE_LAYER_NAME = "Wall";
 
-    [Header("基础")]
-    [SerializeField] protected float moveSpeed = 5f;
-    [SerializeField] protected LayerMask targetsLayerMask;
-    [Tooltip("弹射物碰到这些阻挡层时会播放命中特效并销毁。未配置时默认使用项目中的 Wall 层。")]
-    [SerializeField] protected LayerMask obstacleLayerMask;
-    [Tooltip("未收到发射射程时的兜底最长飞行时间，仅用于换算兜底距离。正常武器发射按攻击距离销毁。")]
-    [SerializeField] protected float maxLifetime = 5f;
-    [SerializeField] protected int maxHitCount = 1;
-    [SerializeField] protected Rigidbody2D rb;
+    [Header("模块")]
+    [Tooltip("负责弹体移动，例如直线、追踪或回旋。")]
+    [SerializeField] private ProjectileMovementBehaviour movementBehaviour;
+    [Tooltip("负责弹体命中语义，例如直接伤害或范围爆炸。")]
+    [SerializeField] private ProjectileImpactBehaviour impactBehaviour;
+    [Tooltip("负责弹体何时结束，例如最远距离或兜底时间。")]
+    [SerializeField] private ProjectileLifetimeBehaviour lifetimeBehaviour;
 
-    /// <summary>
-    /// 防止刚生成就接触一群敌人
-    /// </summary>
-    private int currentHitCount = 0;
-    private int currentMaxHitCount;
-    private float traveledDistance;
-    private Vector2 lastPosition;
-    protected ProjectileLaunchContext launchContext;
-    private float currentMoveSpeed;
-    private float currentMaxLifetime;
-    private float currentMaxTravelDistance;
-    private float currentDamageMultiplier = 1f;
+    [Header("碰撞")]
+    [Tooltip("弹射物碰到这些阻挡层时会交给命中模块处理。未配置时默认使用项目中的 Wall 层。")]
+    [SerializeField] private LayerMask obstacleLayerMask;
+
+    [Header("运行时引用")]
+    [SerializeField] private Rigidbody2D rb;
+
+    private ProjectileLaunchContext launchContext;
+    private ProjectileRuntimeContext runtimeContext;
     private Vector3 baseLocalScale;
     private Quaternion baseRotation;
     private SpriteRenderer cachedSpriteRenderer;
     private Animator cachedAnimator;
     private bool isDespawning;
-    private readonly HashSet<HealthComponent> hitTargets = new();
+
     public int WaveEndPriority => WaveEndPriorities.EntityCleanup;
 
     protected virtual void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        currentMoveSpeed = moveSpeed;
-        currentMaxLifetime = maxLifetime;
-        currentMaxTravelDistance = moveSpeed * maxLifetime;
+        ResolveRequiredComponents();
         baseLocalScale = transform.localScale;
         baseRotation = transform.rotation;
-
         cachedSpriteRenderer = EntityRenderer != null ? EntityRenderer.SpriteRenderer : GetComponentInChildren<SpriteRenderer>();
         cachedAnimator = GetComponentInChildren<Animator>();
     }
 
     protected virtual void OnEnable()
     {
-        traveledDistance = 0f;
-        lastPosition = transform.position;
-        currentHitCount = 0;
-        currentMaxHitCount = Mathf.Max(1, maxHitCount);
         isDespawning = false;
-        hitTargets.Clear();
     }
 
     protected virtual void Update()
@@ -69,30 +60,46 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
             return;
         }
 
-        Vector2 currentPosition = transform.position;
-        traveledDistance += Vector2.Distance(lastPosition, currentPosition);
-        lastPosition = currentPosition;
+        float deltaTime = Time.deltaTime;
+        movementBehaviour.Tick(deltaTime);
 
-        if (traveledDistance >= currentMaxTravelDistance)
+        ProjectileLifetimeResult lifetimeResult = lifetimeBehaviour.Tick(deltaTime);
+        if (!lifetimeResult.IsExpired)
         {
-            DestroyProjectile();
+            return;
         }
+
+        ProcessImpactResult(impactBehaviour.HandleLifetimeExpired(lifetimeResult.ImpactPosition));
     }
 
     public virtual void Launch(ProjectileLaunchContext context)
     {
         launchContext = context;
-        targetsLayerMask = context.TargetLayerMask;
-        currentMaxHitCount = Mathf.Max(1, maxHitCount + context.PierceCount);
         ApplyProjectileDefinition(context.ProjectileDefinition);
         transform.position = context.SpawnPosition;
-        lastPosition = context.SpawnPosition;
-        traveledDistance = 0f;
-        currentMaxTravelDistance = ResolveMaxTravelDistance(context);
         ApplyFacing(context.Direction, context.ProjectileDefinition);
-        Rigidbody2D runtimeRigidbody = ResolveRigidbody();
-        runtimeRigidbody.simulated = true;
-        runtimeRigidbody.velocity = context.Direction * currentMoveSpeed;
+
+        ResolveRequiredComponents();
+        runtimeContext = new ProjectileRuntimeContext(
+            this,
+            context,
+            context.ProjectileDefinition,
+            transform,
+            ResolveRigidbody(),
+            EntityCollider,
+            ResolveObstacleLayerMask());
+
+        if (EntityCollider != null)
+        {
+            EntityCollider.enabled = true;
+        }
+
+        movementBehaviour.Initialize(runtimeContext);
+        impactBehaviour.Initialize(runtimeContext);
+        lifetimeBehaviour.Initialize(runtimeContext);
+        impactBehaviour.ResetState();
+        lifetimeBehaviour.ResetState();
+        movementBehaviour.Launch();
         OnLaunched(context);
     }
 
@@ -137,47 +144,34 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
 
     protected virtual void OnTriggerEnter2D(Collider2D collider)
     {
-        if (isDespawning)
+        if (isDespawning || collider == null)
         {
             return;
         }
 
-        if (TryHandleObstacleImpact(collider, ResolveImpactPosition(collider)))
+        Vector2 impactPosition = ResolveImpactPosition(collider);
+        if (TryHandleObstacleImpact(collider, impactPosition))
         {
             return;
         }
 
-        if (!IsInLayerMask(collider.gameObject.layer, targetsLayerMask) || currentHitCount >= currentMaxHitCount)
+        if (!IsInLayerMask(collider.gameObject.layer, launchContext.TargetLayerMask) ||
+            !collider.TryGetComponent(out HealthComponent healthComponent))
         {
             return;
         }
 
-        if (!collider.TryGetComponent(out HealthComponent healthComponent))
-        {
-            return;
-        }
-
-        if (!hitTargets.Add(healthComponent))
-        {
-            return;
-        }
-
-        currentHitCount++;
-        ApplyImpact(healthComponent);
-        if (currentHitCount >= currentMaxHitCount)
-        {
-            DestroyProjectile();
-        }
+        ProjectileContact contact = new(
+            ProjectileContactKind.Target,
+            collider,
+            healthComponent,
+            impactPosition);
+        ProcessImpactResult(impactBehaviour.HandleTargetContact(contact));
     }
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDespawning)
-        {
-            return;
-        }
-
-        if (collision == null || collision.collider == null)
+        if (isDespawning || collision == null || collision.collider == null)
         {
             return;
         }
@@ -185,40 +179,8 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
         TryHandleObstacleImpact(collision.collider, ResolveImpactPosition(collision));
     }
 
-    protected virtual void ApplyImpact(HealthComponent healthComponent)
-    {
-        Entity target = healthComponent != null ? healthComponent.GetComponent<Entity>() : null;
-        if (target == null)
-        {
-            return;
-        }
-
-        HitSpec hitSpec = new HitSpec(
-            launchContext.HitSpec.BaseDamage * currentDamageMultiplier,
-            launchContext.HitSpec.CritChance,
-            launchContext.HitSpec.CritMultiplier,
-            launchContext.HitSpec.KnockbackStrength);
-
-        HitRequest request = new HitRequest(
-            launchContext.Source,
-            target,
-            hitSpec,
-            healthComponent.transform.position,
-            launchContext.Direction,
-            HitSourceKind.Projectile,
-            sourcePosition: launchContext.SpawnPosition,
-            damageSource: launchContext.DamageSource);
-
-        HitService.Apply(request);
-        SpawnImpactEffect(transform.position, launchContext.ProjectileDefinition);
-    }
-
     public void ApplyProjectileDefinition(ProjectileDefinitionSO projectileDefinition)
     {
-        currentMoveSpeed = moveSpeed;
-        currentMaxLifetime = maxLifetime;
-        currentMaxTravelDistance = moveSpeed * maxLifetime;
-        currentDamageMultiplier = 1f;
         transform.localScale = baseLocalScale;
 
         if (projectileDefinition == null)
@@ -226,22 +188,37 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
             return;
         }
 
-        currentMoveSpeed *= projectileDefinition.SpeedMultiplier;
-        currentMaxLifetime *= projectileDefinition.LifetimeMultiplier;
-        currentMaxTravelDistance = currentMoveSpeed * currentMaxLifetime;
-        currentDamageMultiplier *= projectileDefinition.DamageMultiplier;
         transform.localScale = baseLocalScale * projectileDefinition.ScaleMultiplier;
         ApplyPresentation(projectileDefinition);
     }
 
-    private float ResolveMaxTravelDistance(ProjectileLaunchContext context)
+    private void ProcessImpactResult(ProjectileImpactResult result)
     {
-        if (context.MaxTravelDistance > 0f)
+        if (result.SpawnDefaultImpactVfx)
         {
-            return context.MaxTravelDistance;
+            SpawnImpactEffect(result.ImpactPosition, launchContext.ProjectileDefinition);
         }
 
-        return Mathf.Max(0f, currentMoveSpeed * currentMaxLifetime);
+        if (result.ShouldDespawn)
+        {
+            DestroyProjectile();
+        }
+    }
+
+    private bool TryHandleObstacleImpact(Collider2D collider, Vector2 impactPosition)
+    {
+        if (!IsInLayerMask(collider.gameObject.layer, ResolveObstacleLayerMask()))
+        {
+            return false;
+        }
+
+        ProjectileContact contact = new(
+            ProjectileContactKind.Obstacle,
+            collider,
+            null,
+            impactPosition);
+        ProcessImpactResult(impactBehaviour.HandleObstacleContact(contact));
+        return true;
     }
 
     private void ApplyPresentation(ProjectileDefinitionSO projectileDefinition)
@@ -312,30 +289,17 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
         RuntimeVfx.Spawn(projectileDefinition.ImpactVfxPrefab, impactPosition, transform.rotation);
     }
 
-    private bool TryHandleObstacleImpact(Collider2D collider, Vector3 impactPosition)
-    {
-        if (isDespawning || collider == null || !IsInLayerMask(collider.gameObject.layer, ResolveObstacleLayerMask()))
-        {
-            return false;
-        }
-
-        SpawnImpactEffect(impactPosition, launchContext.ProjectileDefinition);
-        DestroyProjectile();
-        return true;
-    }
-
-    private Vector3 ResolveImpactPosition(Collider2D collider)
+    private Vector2 ResolveImpactPosition(Collider2D collider)
     {
         if (collider == null)
         {
             return transform.position;
         }
 
-        Vector2 closestPoint = collider.ClosestPoint(transform.position);
-        return closestPoint;
+        return collider.ClosestPoint(transform.position);
     }
 
-    private Vector3 ResolveImpactPosition(Collision2D collision)
+    private Vector2 ResolveImpactPosition(Collision2D collision)
     {
         if (collision != null && collision.contactCount > 0)
         {
@@ -369,17 +333,54 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
 
     private void StopProjectileMotion()
     {
-        Rigidbody2D runtimeRigidbody = ResolveRigidbody();
-        if (runtimeRigidbody != null)
+        if (movementBehaviour != null)
         {
-            runtimeRigidbody.velocity = Vector2.zero;
-            runtimeRigidbody.angularVelocity = 0f;
-            runtimeRigidbody.simulated = false;
+            movementBehaviour.Stop();
+        }
+        else
+        {
+            Rigidbody2D runtimeRigidbody = ResolveRigidbody();
+            if (runtimeRigidbody != null)
+            {
+                runtimeRigidbody.velocity = Vector2.zero;
+                runtimeRigidbody.angularVelocity = 0f;
+                runtimeRigidbody.simulated = false;
+            }
         }
 
         if (EntityCollider != null)
         {
             EntityCollider.enabled = false;
+        }
+    }
+
+    private void ResolveRequiredComponents()
+    {
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        if (movementBehaviour == null)
+        {
+            movementBehaviour = GetComponent<ProjectileMovementBehaviour>();
+        }
+
+        if (impactBehaviour == null)
+        {
+            impactBehaviour = GetComponent<ProjectileImpactBehaviour>();
+        }
+
+        if (lifetimeBehaviour == null)
+        {
+            lifetimeBehaviour = GetComponent<ProjectileLifetimeBehaviour>();
+        }
+
+        if (movementBehaviour == null || impactBehaviour == null || lifetimeBehaviour == null)
+        {
+            throw new MissingComponentException(
+                $"{nameof(Projectile)} '{name}' requires {nameof(ProjectileMovementBehaviour)}, " +
+                $"{nameof(ProjectileImpactBehaviour)} and {nameof(ProjectileLifetimeBehaviour)} components.");
         }
     }
 
@@ -409,9 +410,25 @@ public class Projectile : Entity, IProjectile, IWaveEndStep
 
     protected virtual void OnValidate()
     {
-        moveSpeed = Mathf.Max(0f, moveSpeed);
-        maxLifetime = Mathf.Max(0f, maxLifetime);
-        maxHitCount = Mathf.Max(1, maxHitCount);
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        if (movementBehaviour == null)
+        {
+            movementBehaviour = GetComponent<ProjectileMovementBehaviour>();
+        }
+
+        if (impactBehaviour == null)
+        {
+            impactBehaviour = GetComponent<ProjectileImpactBehaviour>();
+        }
+
+        if (lifetimeBehaviour == null)
+        {
+            lifetimeBehaviour = GetComponent<ProjectileLifetimeBehaviour>();
+        }
     }
 }
 
