@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: NeonStarWand
   m_EditorClassIdentifier: 
-  itemName: "霓虹星辉魔杖"
+  itemName: "星噪魔杖"
   itemIcon: {fileID: 21300000, guid: 93e7e3481f371f74ff8d69a5fc84fa42, type: 3}
   itemPrice: 35
   itemType: 0

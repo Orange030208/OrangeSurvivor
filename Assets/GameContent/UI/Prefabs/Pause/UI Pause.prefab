@@ -240,6 +240,7 @@ GameObject:
   - component: {fileID: 102002}
   - component: {fileID: 102003}
   - component: {fileID: 102004}
+  - component: {fileID: 102006}
   - component: {fileID: 102005}
   m_Layer: 5
   m_Name: RallyBanner
@@ -354,16 +355,16 @@ MonoBehaviour:
       data:
         target: {fileID: 0}
         startDelay: 0
-        duration: 0.24
+        duration: 0.32
         ease: 9
         phase: 0
         hiddenDirection: 2
         extraHideOffset: 0
-        fade: 0
-        hiddenAlpha: 1
+        fade: 1
+        hiddenAlpha: 0
         useEnterOvershoot: 1
-        enterOvershootDistance: 36
-        enterOvershootDurationRatio: 0.78
+        enterOvershootDistance: 14
+        enterOvershootDurationRatio: 0.86
         enterOvershootEase: 9
         enterSettleEase: 9
     - rid: 451547002770030889
@@ -371,19 +372,31 @@ MonoBehaviour:
       data:
         target: {fileID: 0}
         startDelay: 0
-        duration: 0.22
+        duration: 0.28
         ease: 8
         phase: 1
-        hiddenDirection: 2
-        extraHideOffset: 0
-        fade: 0
-        hiddenAlpha: 1
+        hiddenDirection: 3
+        extraHideOffset: 36
+        fade: 1
+        hiddenAlpha: 0
         useEnterOvershoot: 1
-        enterOvershootDistance: 36
-        enterOvershootDurationRatio: 0.78
+        enterOvershootDistance: 14
+        enterOvershootDurationRatio: 0.86
         enterOvershootEase: 9
         enterSettleEase: 9
 
+--- !u!225 &102006
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102001}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &102101
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,6 +542,7 @@ GameObject:
   - component: {fileID: 103002}
   - component: {fileID: 103003}
   - component: {fileID: 103004}
+  - component: {fileID: 103006}
   - component: {fileID: 103005}
   m_Layer: 5
   m_Name: SkullLogo
@@ -642,16 +656,16 @@ MonoBehaviour:
       data:
         target: {fileID: 0}
         startDelay: 0
-        duration: 0.24
+        duration: 0.36
         ease: 9
         phase: 0
         hiddenDirection: 2
         extraHideOffset: 0
-        fade: 0
-        hiddenAlpha: 1
+        fade: 1
+        hiddenAlpha: 0
         useEnterOvershoot: 1
-        enterOvershootDistance: 36
-        enterOvershootDurationRatio: 0.78
+        enterOvershootDistance: 12
+        enterOvershootDurationRatio: 0.88
         enterOvershootEase: 9
         enterSettleEase: 9
     - rid: 451547002770030889
@@ -659,19 +673,31 @@ MonoBehaviour:
       data:
         target: {fileID: 0}
         startDelay: 0
-        duration: 0.22
+        duration: 0.3
         ease: 8
         phase: 1
-        hiddenDirection: 2
-        extraHideOffset: 0
-        fade: 0
-        hiddenAlpha: 1
+        hiddenDirection: 3
+        extraHideOffset: 40
+        fade: 1
+        hiddenAlpha: 0
         useEnterOvershoot: 1
-        enterOvershootDistance: 36
-        enterOvershootDurationRatio: 0.78
+        enterOvershootDistance: 12
+        enterOvershootDurationRatio: 0.88
         enterOvershootEase: 9
         enterSettleEase: 9
 
+--- !u!225 &103006
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103001}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &200001
 GameObject:
   m_ObjectHideFlags: 0

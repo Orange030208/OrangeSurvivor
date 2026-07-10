@@ -111,11 +111,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a1836d0c46d4c5449bdce6716fe383b7, type: 2}
   - {fileID: 11400000, guid: b26ec788212d04c4abd5ed30e4b8182e, type: 2}
   - {fileID: 11400000, guid: 7b8abfdbf2823cd439dc099f049fc431, type: 2}
+  - {fileID: 11400000, guid: 2d810b98cba942369ebb51107edd83df, type: 2}
+  - {fileID: 11400000, guid: ab82487a1f9541cbaf6b8402ccb5ea96, type: 2}
+  - {fileID: 11400000, guid: 99fcd4fba02b4c1f95441e008cd11eed, type: 2}
+  - {fileID: 11400000, guid: 4ba195dd404443adb11526372fd27857, type: 2}
   starterCards:
+  - {fileID: 11400000, guid: 2e7fb64b563c407d90325fd869e49802, type: 2}
   - {fileID: 11400000, guid: 027eeae3025d25a4bb4e652bd9598ec3, type: 2}
   - {fileID: 11400000, guid: 1bb4450abfe96134abc58311d9955a07, type: 2}
   - {fileID: 11400000, guid: d56627b7db7093548beeebabe386547e, type: 2}
   - {fileID: 11400000, guid: c74b28dfabca48e47847e209174ccbbe, type: 2}
+  - {fileID: 11400000, guid: 126c2608443849feb0726168b7241cf9, type: 2}
   collections:
   - {fileID: 11400000, guid: 8827be155b64dd044969b45be382db33, type: 2}
   - {fileID: 11400000, guid: f14dc316405d93a488411c68d8ab4124, type: 2}

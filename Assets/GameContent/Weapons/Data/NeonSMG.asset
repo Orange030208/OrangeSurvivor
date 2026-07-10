@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6ed1d5cdb374f81a14e5ad663e2458f, type: 3}
   m_Name: NeonSMG
   m_EditorClassIdentifier: 
-  itemName: "霓虹冲锋枪"
+  itemName: "闪链冲锋枪"
   itemIcon: {fileID: 21300000, guid: 306966750125c3b45dfd50df6de0c3df, type: 3}
   itemPrice: 25
   itemType: 0

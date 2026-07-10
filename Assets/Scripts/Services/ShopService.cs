@@ -235,6 +235,7 @@ public sealed class ShopService : GameService, IShopController
         if (TryConsumeFreeShopReroll())
         {
             RerollShopItems(trackAsPaidReroll: false);
+            NotifyShopRerolled(usedFreeReroll: true);
             AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
             PublishViewState(ShopRefreshReason.Reroll);
             return;
@@ -249,6 +250,7 @@ public sealed class ShopService : GameService, IShopController
 
         currencyWallet?.ChangeAmount(-currentRerollCost);
         RerollShopItems(trackAsPaidReroll: true);
+        NotifyShopRerolled(usedFreeReroll: false);
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishViewState(ShopRefreshReason.Reroll);
     }
@@ -455,8 +457,9 @@ public sealed class ShopService : GameService, IShopController
 
         ApplyShopPriceMultiplier();
         int currentRerollCost = ResolveCurrentRerollCost();
-        bool canReroll = currentCurrency >= currentRerollCost || ResolvePlayerFreeRerollCount() > 0;
-        ViewStateChanged?.Invoke(new ShopViewState(currentItems, currentRerollCost, canReroll, reason));
+        int freeRerollCount = ResolvePlayerFreeRerollCount();
+        bool canReroll = currentCurrency >= currentRerollCost || freeRerollCount > 0;
+        ViewStateChanged?.Invoke(new ShopViewState(currentItems, currentRerollCost, freeRerollCount, canReroll, reason));
     }
 
     private void ApplyShopPriceMultiplier()
@@ -694,5 +697,10 @@ public sealed class ShopService : GameService, IShopController
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseFailed);
         PurchaseFailed?.Invoke(new ShopPurchaseFailure(message));
+    }
+
+    private void NotifyShopRerolled(bool usedFreeReroll)
+    {
+        YokiFrame.EventKit.Type.Send(new ShopRerolledEvent(player, usedFreeReroll));
     }
 }

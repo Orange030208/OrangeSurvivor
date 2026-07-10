@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
+  m_Name: HeartSteel_LivingAlloy
+  m_EditorClassIdentifier:
+  id: HeartSteel_LivingAlloy
+  title: "\u6D3B\u4F53\u5408\u91D1"
+  tier: 2
+  tags: 386
+  icon: {fileID: 21300000, guid: 5c4028215e1d60d4e87bf97e7981dcbd, type: 3}
+  description: "\u6700\u5927\u751F\u547D\u8D8A\u9AD8\uFF0C\u9713\u8679\u76FE\u724C\u9020\u6210\u7684\u4F24\u5BB3\u8D8A\u9AD8\u3002"
+  grantedAbilities:
+  - rid: 7274046045303867003
+  references:
+    version: 2
+    RefIds:
+    - rid: 7274046045303867003
+      type: {class: HeartSteelLivingAlloyFeature, ns: , asm: Assembly-CSharp}
+      data:
+        hitModifierTiming: 0
+        targetWeaponId: Weapon_NeonShield
+        damageBonusPercentPer100MaxHealth: 8

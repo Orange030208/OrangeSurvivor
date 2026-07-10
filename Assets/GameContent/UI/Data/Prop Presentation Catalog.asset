@@ -93,6 +93,10 @@ MonoBehaviour:
     chineseName: "\u6CE2\u6B21\u91D1\u5E01\u5956\u52B1"
     description: 
     icon: {fileID: 1653813470, guid: 93b5663cf4f02ec4aba48dee3b2c1564, type: 3}
+  - propType: 23
+    chineseName: "\u5546\u5E97\u514D\u8D39\u5237\u65B0"
+    description:
+    icon: {fileID: 1653813470, guid: 93b5663cf4f02ec4aba48dee3b2c1564, type: 3}
   - propType: 25
     chineseName: "\u4F24\u5BB3\u51CF\u514D"
     description: 

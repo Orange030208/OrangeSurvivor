@@ -13,6 +13,7 @@ public class ShopUIPage : PageBase
     private const string EQUIPMENT_POPUP_GROUP_ID = "equipment";
     private const string PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE = "Not enough currency.";
     private const string REROLL_INSUFFICIENT_CURRENCY_PREFIX = "Not enough currency for reroll";
+    private const string FREE_REROLL_ZERO_TEXT = "<size=135%><color=#FFD84A><b>0</b></color></size>";
 
     [Header("商品")]
     [SerializeField] private ShopItemListUI itemList;
@@ -99,15 +100,29 @@ public class ShopUIPage : PageBase
         itemList.Render(items, reason);
     }
 
-    private void UpdateRerollState(int rerollCost, bool canReroll)
+    private void UpdateRerollState(int rerollCost, int freeRerollCount, bool canReroll)
     {
-        rerollCostText.text = rerollCost.ToString();
+        rerollCostText.richText = true;
+        rerollCostText.text = BuildRerollCostText(rerollCost, freeRerollCount);
         rerollButton.interactable = canReroll;
     }
 
     private void UpdateCurrencyAmount(int amount)
     {
         currencyText.text = amount.ToString();
+    }
+
+    private static string BuildRerollCostText(int rerollCost, int freeRerollCount)
+    {
+        if (freeRerollCount <= 0)
+        {
+            return rerollCost.ToString();
+        }
+
+        string remainingText = freeRerollCount > 1
+            ? $" <size=70%><color=#FFEBA0>x{freeRerollCount}</color></size>"
+            : string.Empty;
+        return $"<s><color=#8F8F8F>{rerollCost}</color></s>  {FREE_REROLL_ZERO_TEXT}{remainingText}";
     }
 
     private void ShowPurchaseSuccess(ShopPurchaseSuccess result)
@@ -415,7 +430,7 @@ public class ShopUIPage : PageBase
 
     private void OnViewStateChanged(ShopViewState viewState)
     {
-        UpdateRerollState(viewState.RerollCost, viewState.CanReroll);
+        UpdateRerollState(viewState.RerollCost, viewState.FreeRerollCount, viewState.CanReroll);
         RenderShopItems(viewState.Items, viewState.Reason);
         LogRefresh(viewState.Reason);
     }
