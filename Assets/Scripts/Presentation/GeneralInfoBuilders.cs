@@ -70,13 +70,10 @@ public sealed class RewardCardInfoBuilder : IInfoDocumentBuilder<RewardCardSO>
             items.Add(InfoDocumentUtility.CreateLineBreak());
         }
 
-        items.Add(InfoDocumentUtility.CreateSectionHeader("基础"));
-        items.Add(InfoDocumentUtility.CreateLineBreak());
-        InfoDocumentUtility.AppendTextLine(items, $"品质: {ItemDescriptionUtility.FormatRarity(source.Tier)}", InfoTone.Emphasis);
-        InfoDocumentContentUtility.AddFeatureItems(items, "特殊效果", source.GrantedAbilities);
-        if (source.GrantedAbilities == null || source.GrantedAbilities.Count == 0)
+        string description = ItemDescriptionUtility.NormalizeManualDescription(source.ManualDescription);
+        if (!string.IsNullOrWhiteSpace(description))
         {
-            InfoDocumentContentUtility.AddDescriptionItems(items, "说明", source.ManualDescription);
+            InfoDocumentUtility.AppendTextLine(items, description);
         }
 
         return new InfoDocument(

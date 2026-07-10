@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(AttributeManager))]
 [RequireComponent(typeof(FeatureHost))]
 public class AccessoryManager : EntityComponentBase
 {
     private FeatureHost featureHost;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private Entity owner;
     private readonly Dictionary<string, List<Accessory>> equippedAccessoryDict = new();
     private readonly List<Accessory> equippedAccessoryList = new();
@@ -22,7 +22,7 @@ public class AccessoryManager : EntityComponentBase
     {
         this.owner = owner;
         featureHost = this.owner.GetComponent<FeatureHost>();
-        propertiesManager = this.owner.GetComponent<PropertiesManager>();
+        AttributeManager = this.owner.GetComponent<AttributeManager>();
         if (!this.owner.TryGetComponent<IInitialAccessoryProvider>(out IInitialAccessoryProvider initialAccessoryProvider))
         {
             return;
@@ -47,7 +47,7 @@ public override void OnDisableComponent()
 
     public bool EquipAccessory(AccessoryDataSO accessoryData, bool playSfx = true)
     {
-        if (accessoryData == null || featureHost == null || propertiesManager == null)
+        if (accessoryData == null || featureHost == null || AttributeManager == null)
         {
             return false;
         }
@@ -70,7 +70,7 @@ public override void OnDisableComponent()
         equippedAccessoryList.Add(newAccessoryData);
 
         featureHost.InstallFeature(newAccessoryData.RuntimeId, newAccessoryData.Data.SpecialFeatures);
-        propertiesManager.AddModifiers(newAccessoryData.RuntimeId, accessoryData.PropertyModifiers);
+        AttributeManager.AddModifiers(newAccessoryData.RuntimeId, accessoryData.PropertyModifiers);
 
         OnAccessoryEquipped?.Invoke(accessoryData);
         if (playSfx)
@@ -123,7 +123,7 @@ public override void OnDisableComponent()
 
     public bool UnequipAccessory(AccessoryDataSO accessoryData)
     {
-        if (accessoryData == null || featureHost == null || propertiesManager == null)
+        if (accessoryData == null || featureHost == null || AttributeManager == null)
         {
             return false;
         }
@@ -145,7 +145,7 @@ public override void OnDisableComponent()
         }
 
         featureHost.RemoveFeature(equipped.RuntimeId);
-        propertiesManager.RemoveModifiers(equipped.RuntimeId);
+        AttributeManager.RemoveModifiers(equipped.RuntimeId);
 
         int index = equippedAccessoryList.LastIndexOf(equipped);
         if (index >= 0) equippedAccessoryList.RemoveAt(index);
@@ -156,7 +156,7 @@ public override void OnDisableComponent()
 
     public bool UnequipAccessoryByRuntimeId(string runtimeId)
     {
-        if (string.IsNullOrWhiteSpace(runtimeId) || featureHost == null || propertiesManager == null)
+        if (string.IsNullOrWhiteSpace(runtimeId) || featureHost == null || AttributeManager == null)
         {
             return false;
         }
@@ -172,7 +172,7 @@ public override void OnDisableComponent()
             equippedAccessoryList.RemoveAt(i);
             RemoveFromAccessoryDictionary(equipped);
             featureHost.RemoveFeature(equipped.RuntimeId);
-            propertiesManager.RemoveModifiers(equipped.RuntimeId);
+            AttributeManager.RemoveModifiers(equipped.RuntimeId);
             OnAccessoryUnequipped?.Invoke(equipped.Data);
             return true;
         }
@@ -219,7 +219,7 @@ public override void OnDisableComponent()
 
     private void ClearEquippedAccessories()
     {
-        if (featureHost == null || propertiesManager == null)
+        if (featureHost == null || AttributeManager == null)
         {
             equippedAccessoryDict.Clear();
             equippedAccessoryList.Clear();
@@ -232,7 +232,7 @@ public override void OnDisableComponent()
             for (int i = 0; i < list.Count; i++)
             {
                 featureHost.RemoveFeature(list[i].RuntimeId);
-                propertiesManager.RemoveModifiers(list[i].RuntimeId);
+                AttributeManager.RemoveModifiers(list[i].RuntimeId);
             }
         }
 

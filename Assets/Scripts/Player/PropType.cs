@@ -20,6 +20,7 @@ public enum PropType
     ExperienceGain = 20,
     ShopPriceDiscount = 21,
     WaveGoldRewardBonus = 22,
+    ShopFreeRerollCount = 23,
     DamageReduction = 25,
     HealingPower = 26,
     WeaponSlotCount = 27,

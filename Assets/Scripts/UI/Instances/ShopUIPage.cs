@@ -180,7 +180,7 @@ public class ShopUIPage : PageBase
                 preferredAnchor: FloatingViewAnchor.Center);
 
             ViewHandle<PropertiesPopup> handle = await UIManager.Instance.ShowPopupAsync<PropertiesPopup>(
-                currentContext.PropertiesManager,
+                currentContext.AttributeManager,
                 options,
                 this.GetCancellationTokenOnDestroy());
 

@@ -96,8 +96,7 @@ public class RewardCardSO : ScriptableObject, IInfoDocumentSource
 
     private string BuildDescription()
     {
-        InfoDocument document = BuildInfoDocument();
-        string formatted = InfoDocumentTextFormatter.ToPlainText(document, includeHeader: false);
+        string formatted = ItemDescriptionUtility.NormalizeManualDescription(description);
         return string.IsNullOrWhiteSpace(formatted) ? "获得一项奖励。" : formatted;
     }
 

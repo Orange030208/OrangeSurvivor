@@ -6,19 +6,19 @@ public abstract class MoveBase : EntityComponentBase, IMovable, IMovementLockabl
     protected Rigidbody2D rb;
     protected float speed;
     protected Vector2 moveDirection;
-    protected PropertiesManager propertiesManager;
+    protected AttributeManager attributeManager;
     private readonly HashSet<object> movementLocks = new();
 
     public float Speed => speed;
     public Vector2 MoveDirection => moveDirection;
     public bool IsMoving => !IsMovementLocked && moveDirection.sqrMagnitude > Mathf.Epsilon;
-    public PropertiesManager PropertiesManager => propertiesManager;
+    public AttributeManager AttributeManager => attributeManager;
     public bool IsMovementLocked => movementLocks.Count > 0;
 
     public override void Initialize(Entity owner)
     {
         rb = owner.GetComponent<Rigidbody2D>();
-        propertiesManager = owner.GetComponent<PropertiesManager>();
+        attributeManager = owner.GetComponent<AttributeManager>();
         movementLocks.Clear();
 
         RefreshMoveSpeed();
@@ -87,34 +87,24 @@ public abstract class MoveBase : EntityComponentBase, IMovable, IMovementLockabl
 
     public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
 
-    protected virtual void OnPropertyChanged(PropType propType, float _)
-    {
-        if (propType == PropType.MoveSpeed)
-        {
-            RefreshMoveSpeed();
-        }
-    }
-
-    protected virtual void OnAllPropertiesChanged()
+    protected virtual void OnMoveSpeedChanged(int newValue)
     {
         RefreshMoveSpeed();
     }
 
     protected void RefreshMoveSpeed()
     {
-        speed = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.MoveSpeed));
+        speed = PropValueUtility.DistancePointsToWorldUnits(attributeManager.GetAttributeValue(PropType.MoveSpeed));
     }
 
     private void BindProperties()
     {
         UnbindProperties();
-        propertiesManager.OnAllPropertiesChanged += OnAllPropertiesChanged;
-        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        attributeManager.SubscribeAttributeChanged(PropType.MoveSpeed, OnMoveSpeedChanged);
     }
 
     private void UnbindProperties()
     {
-        propertiesManager.OnAllPropertiesChanged -= OnAllPropertiesChanged;
-        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        attributeManager.UnsubscribeAttributeChanged(PropType.MoveSpeed, OnMoveSpeedChanged);
     }
 }

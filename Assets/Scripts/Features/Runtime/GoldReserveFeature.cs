@@ -97,7 +97,7 @@ public sealed class GoldReserveFeature : FeatureBase
         RemoveAppliedModifiers();
         appliedStacks = stackCount;
 
-        if (stackCount <= 0 || Context?.PropertiesManager == null || modifiersPerStack == null || modifiersPerStack.Count == 0)
+        if (stackCount <= 0 || Context?.AttributeManager == null || modifiersPerStack == null || modifiersPerStack.Count == 0)
         {
             return;
         }
@@ -109,17 +109,17 @@ public sealed class GoldReserveFeature : FeatureBase
             scaledModifiers.Add(new PropModifierData(modifier.propType, modifier.modifierType, modifier.value * stackCount));
         }
 
-        Context.PropertiesManager.AddModifiers(runtimeSourceId, scaledModifiers);
+        Context.AttributeManager.AddModifiers(runtimeSourceId, scaledModifiers);
     }
 
     private void RemoveAppliedModifiers()
     {
-        if (Context?.PropertiesManager == null || string.IsNullOrWhiteSpace(runtimeSourceId))
+        if (Context?.AttributeManager == null || string.IsNullOrWhiteSpace(runtimeSourceId))
         {
             return;
         }
 
-        Context.PropertiesManager.RemoveModifiers(runtimeSourceId);
+        Context.AttributeManager.RemoveModifiers(runtimeSourceId);
     }
 
     private string ResolveRuntimeSourceId()

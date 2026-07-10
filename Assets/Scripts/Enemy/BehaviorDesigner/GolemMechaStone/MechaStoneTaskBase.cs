@@ -20,7 +20,7 @@ public abstract class MechaStoneTaskBase : Action
     protected IMovable Movable { get; private set; }
     protected IAnimatable Animatable { get; private set; }
     protected IEntityFacingController FacingController { get; private set; }
-    protected PropertiesManager PropertiesManager { get; private set; }
+    protected AttributeManager AttributeManager { get; private set; }
     protected HealthComponent HealthComponent { get; private set; }
     protected EnemyAttackController AttackController { get; private set; }
 
@@ -120,7 +120,7 @@ public abstract class MechaStoneTaskBase : Action
         Movable = OwnerEnemy.MoveComponent;
         Animatable = OwnerEnemy.AnimComponent;
         FacingController = ownerGameObject.GetComponent<IEntityFacingController>();
-        PropertiesManager = OwnerEnemy.PropertiesManager;
+        AttributeManager = OwnerEnemy.AttributeManager;
         HealthComponent = OwnerEnemy.HealthComponent;
         AttackController = ownerGameObject.GetComponent<EnemyAttackController>();
         return HasContext;

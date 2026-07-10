@@ -88,7 +88,7 @@ public class RangedChaseEnemyBrain : EnemyBrain
         attackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             enemyData.NormalAttackAction.ActionId,
             enemyData.normalAttackSpeedBenefitRatio,
             shootPointTransform,

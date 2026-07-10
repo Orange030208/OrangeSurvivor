@@ -26,7 +26,7 @@ public sealed class InfoDocumentService
         BuffInfoBuilder buffInfoBuilder = new();
         Register(new WeaponInfoBuilder());
         Register<PropertiesInfoSource>(propertiesInfoBuilder);
-        Register<PropertiesManager>(propertiesInfoBuilder);
+        Register<AttributeManager>(propertiesInfoBuilder);
         Register(new AccessoryInfoBuilder());
         Register(new RewardCardInfoBuilder());
         Register<BuffDataSO>(buffInfoBuilder);

@@ -11,7 +11,7 @@ public sealed class PropertiesPopup : PopupBase
     [SerializeField] private PropertiesIconTextDescriber propertiesDescriber;
 
     private readonly InfoDocumentService infoDocumentService = new();
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private bool eventsBound;
 
     protected override void OnCreate()
@@ -24,23 +24,23 @@ public sealed class PropertiesPopup : PopupBase
     private void OnDestroy()
     {
         UnbindEvents();
-        BindPropertiesManager(null);
+        BindAttributeManager(null);
     }
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        PropertiesManager manager = context.GetPayload<PropertiesManager>()
-            ?? throw new InvalidOperationException($"{nameof(PropertiesPopup)} requires {nameof(PropertiesManager)} payload.");
+        AttributeManager manager = context.GetPayload<AttributeManager>()
+            ?? throw new InvalidOperationException($"{nameof(PropertiesPopup)} requires {nameof(AttributeManager)} payload.");
 
         BindEvents();
-        BindPropertiesManager(manager);
+        BindAttributeManager(manager);
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
         UnbindEvents();
-        BindPropertiesManager(null);
+        BindAttributeManager(null);
     }
 
     private void BindEvents()
@@ -71,36 +71,36 @@ public sealed class PropertiesPopup : PopupBase
         Handle.CloseAsync(CloseReason.Normal, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    private void BindPropertiesManager(PropertiesManager manager)
+    private void BindAttributeManager(AttributeManager manager)
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged -= OnAttributesChanged;
         }
 
-        propertiesManager = manager;
-        if (propertiesManager != null)
+        AttributeManager = manager;
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged += OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged += OnAttributesChanged;
         }
 
         RefreshPropertiesDisplay();
     }
 
-    private void OnPropertiesChanged()
+    private void OnAttributesChanged()
     {
         RefreshPropertiesDisplay();
     }
 
     private void RefreshPropertiesDisplay()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             propertiesDescriber.Display(null, compactRowsOnly: true);
             return;
         }
 
-        if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
+        if (infoDocumentService.TryBuild(AttributeManager, out InfoDocument document))
         {
             propertiesDescriber.Display(document, compactRowsOnly: true);
             return;

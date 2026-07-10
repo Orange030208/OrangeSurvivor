@@ -5,19 +5,19 @@ public sealed class RetreatMoveStrategy : IMoveStrategy
 {
     private readonly Enemy owner;
     private readonly IMovable movable;
-    private readonly PropertiesManager propertiesManager;
+    private readonly AttributeManager AttributeManager;
     private readonly float safeDistanceRatio;
     private readonly float retreatStepDistanceRatio;
 
     public RetreatMoveStrategy(
         Enemy owner,
         IMovable movable,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         RetreatMoveData data)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
-        this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
+        this.AttributeManager = AttributeManager ?? throw new ArgumentNullException(nameof(AttributeManager));
         safeDistanceRatio = Mathf.Max(0f, data.safeDistanceRatio);
         retreatStepDistanceRatio = Mathf.Max(0f, data.retreatStepDistanceRatio);
     }
@@ -31,7 +31,7 @@ public sealed class RetreatMoveStrategy : IMoveStrategy
         }
 
         float attackRange = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange));
+            AttributeManager.GetAttributeValue(PropType.AttackRange));
         float safeDistance = attackRange * safeDistanceRatio;
         float retreatStepDistance = attackRange * retreatStepDistanceRatio;
         float currentDistance = Vector2.Distance(owner.Center, target.Center);

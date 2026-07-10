@@ -126,7 +126,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
 
     private void DealLaserDamage()
     {
-        if (OwnerEnemy == null || AttackController == null || PropertiesManager == null)
+        if (OwnerEnemy == null || AttackController == null || AttributeManager == null)
         {
             return;
         }
@@ -159,7 +159,7 @@ public sealed class MechaStoneLaserCast : MechaStoneTaskBase
             }
 
             float damage = PropValueUtility.ClampNonNegative(
-                PropertiesManager.GetPropValue(PropType.Attack) * BossData.LaserDamageMultiplier);
+                AttributeManager.GetAttributeValue(PropType.Attack) * BossData.LaserDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - OwnerEnemy.Center;
             Vector2 hitPoint = hitEntity.GetClosestPointTo(laserOrigin);
             HitService.Apply(new HitRequest(

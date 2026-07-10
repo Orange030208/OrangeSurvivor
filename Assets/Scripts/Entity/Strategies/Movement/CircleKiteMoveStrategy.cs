@@ -5,19 +5,19 @@ public sealed class CircleKiteMoveStrategy : IMoveStrategy
 {
     private readonly Enemy owner;
     private readonly IMovable movable;
-    private readonly PropertiesManager propertiesManager;
+    private readonly AttributeManager AttributeManager;
     private readonly float circleSpeedRatio;
     private readonly float idealRangeRatio;
 
     public CircleKiteMoveStrategy(
         Enemy owner,
         IMovable movable,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         CircleKiteMoveData data)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.movable = movable ?? throw new ArgumentNullException(nameof(movable));
-        this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
+        this.AttributeManager = AttributeManager ?? throw new ArgumentNullException(nameof(AttributeManager));
         circleSpeedRatio = Mathf.Max(0f, data.circleSpeedRatio);
         idealRangeRatio = Mathf.Max(0f, data.idealRangeRatio);
     }
@@ -40,7 +40,7 @@ public sealed class CircleKiteMoveStrategy : IMoveStrategy
         targetDirection.Normalize();
         Vector2 circleDirection = new(-targetDirection.y, targetDirection.x);
         float attackRange = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange));
+            AttributeManager.GetAttributeValue(PropType.AttackRange));
         Vector2 targetPosition = (Vector2)target.Center
                                  - targetDirection * idealRangeRatio * attackRange
                                  + circleDirection * Mathf.Sin(circleSpeedRatio * movable.Speed) * 2f;

@@ -5,17 +5,17 @@ public sealed class ShopPageContext
     public ShopPageContext(
         Player player,
         CurrencyWallet currencyWallet,
-        PropertiesManager propertiesManager,
+        AttributeManager attributeManager,
         IShopController shopController)
     {
         Player = player ?? throw new ArgumentNullException(nameof(player));
         CurrencyWallet = currencyWallet;
-        PropertiesManager = propertiesManager;
+        AttributeManager = attributeManager;
         ShopController = shopController ?? throw new ArgumentNullException(nameof(shopController));
     }
 
     public Player Player { get; }
     public CurrencyWallet CurrencyWallet { get; }
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
     public IShopController ShopController { get; }
 }

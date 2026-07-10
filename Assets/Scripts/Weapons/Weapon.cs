@@ -21,6 +21,19 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     private static readonly Color HIT_BOX_IDLE_GIZMO_COLOR = new(1f, 0.15f, 0.15f, 0.85f);
     private static readonly Color HIT_BOX_ACTIVE_GIZMO_COLOR = new(1f, 0.65f, 0f, 0.95f);
     private static readonly Color HIT_BOX_SWEEP_GIZMO_COLOR = new(1f, 0.35f, 0f, 0.45f);
+    private static readonly PropType[] RuntimeStatAttributeTypes =
+    {
+        PropType.Damage,
+        PropType.MeleeAttack,
+        PropType.RangedAttack,
+        PropType.MagicAttack,
+        PropType.SummonAttack,
+        PropType.AttackSpeed,
+        PropType.CriticalChance,
+        PropType.CriticalPercent,
+        PropType.AttackRange,
+        PropType.KnockbackStrength
+    };
 
     [field: SerializeField] public WeaponDataSO WeaponData { get; private set; }
 
@@ -80,7 +93,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     public float KnockbackStrength { get; private set; }
     public bool IsAttacking { get; protected set; }
     public WeaponBenefitData Benefits => runtimeBenefits.Validated();
-    protected PropertiesManager propertiesManager;
+    protected AttributeManager AttributeManager;
     protected Entity owner;
     protected Entity currentTarget;
     private string activeHolderLevelModifierSourceId;
@@ -171,19 +184,19 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     public virtual void Initialize(Entity owner)
     {
         this.owner = owner;
-        propertiesManager = GetComponentInParent<PropertiesManager>();
+        AttributeManager = GetComponentInParent<AttributeManager>();
         sequenceBridge = GetComponent<WeaponSequenceBridge>();
         hitBoxAttackExecutor = new HitBoxAttackExecutor(SpawnHitVfx);
     }
 
     public virtual void OnEnableComponent()
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
-            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
-            propertiesManager.OnAllPropertiesChanged += RefreshRuntimeStats;
-            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+            AttributeManager.OnAttributesChanged -= RefreshRuntimeStats;
+            UnsubscribeRuntimeStatAttributes();
+            AttributeManager.OnAttributesChanged += RefreshRuntimeStats;
+            SubscribeRuntimeStatAttributes();
         }
 
         SubscribeSequenceEvents();
@@ -195,10 +208,10 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     public virtual void OnDisableComponent()
     {
         RemoveLevelHolderModifiers();
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= RefreshRuntimeStats;
-            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+            AttributeManager.OnAttributesChanged -= RefreshRuntimeStats;
+            UnsubscribeRuntimeStatAttributes();
         }
 
         UnsubscribeSequenceEvents();
@@ -259,7 +272,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     public void SetBenefits(WeaponBenefitData value)
     {
         runtimeBenefits = value.Validated();
-        if (WeaponData != null && propertiesManager != null)
+        if (WeaponData != null && AttributeManager != null)
         {
             RefreshRuntimeStats();
         }
@@ -875,9 +888,9 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
 
     private int ResolveProjectilePierceCount()
     {
-        return propertiesManager != null
+        return AttributeManager != null
             ? PropValueUtility.FloatPointsToNonNegativeFlooredInt(
-                propertiesManager.GetPropValue(PropType.ProjectilePierceCount))
+                AttributeManager.GetAttributeValue(PropType.ProjectilePierceCount))
             : 0;
     }
 
@@ -1020,18 +1033,18 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
 
     protected virtual void RecalculateRuntimeStats()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             throw new MissingComponentException(
-                $"{nameof(propertiesManager)} is null on {name}. Cannot recalculate runtime stats. " +
-                $"Ensure the weapon is a child of an entity with a {nameof(PropertiesManager)} component.");
+                $"{nameof(AttributeManager)} is null on {name}. Cannot recalculate runtime stats. " +
+                $"Ensure the weapon is a child of an entity with a {nameof(AttributeManager)} component.");
         }
 
         float previousAttackInterval = AttackInterval;
         WeaponStats stats = statsResolver.Resolve(new WeaponStatsRequest(
             WeaponData,
             Level,
-            propertiesManager,
+            AttributeManager,
             Benefits));
 
         Damage = stats.Damage;
@@ -1057,7 +1070,7 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
     private void ApplyLevelHolderModifiers()
     {
         RemoveLevelHolderModifiers();
-        if (WeaponData == null || propertiesManager == null)
+        if (WeaponData == null || AttributeManager == null)
         {
             return;
         }
@@ -1070,18 +1083,18 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
         }
 
         activeHolderLevelModifierSourceId = BuildHolderLevelModifierSourceId();
-        propertiesManager.AddModifiers(activeHolderLevelModifierSourceId, holderModifiers);
+        AttributeManager.AddModifiers(activeHolderLevelModifierSourceId, holderModifiers);
     }
 
     private void RemoveLevelHolderModifiers()
     {
-        if (propertiesManager == null || string.IsNullOrWhiteSpace(activeHolderLevelModifierSourceId))
+        if (AttributeManager == null || string.IsNullOrWhiteSpace(activeHolderLevelModifierSourceId))
         {
             activeHolderLevelModifierSourceId = null;
             return;
         }
 
-        propertiesManager.RemoveModifiers(activeHolderLevelModifierSourceId);
+        AttributeManager.RemoveModifiers(activeHolderLevelModifierSourceId);
         activeHolderLevelModifierSourceId = null;
     }
 
@@ -1137,20 +1150,24 @@ public class Weapon : Entity, ILifecycle, IProjectileLauncher, IWaveEndStep, IDa
         return WeaponData.HoldAimWhenAttackReady;
     }
 
-    private void OnPropertyChanged(PropType propType, float _)
+    private void OnRuntimeStatAttributeChanged(int newValue)
     {
-        if (propType == PropType.Damage ||
-            propType == PropType.MeleeAttack ||
-            propType == PropType.RangedAttack ||
-            propType == PropType.MagicAttack ||
-            propType == PropType.SummonAttack ||
-            propType == PropType.AttackSpeed ||
-            propType == PropType.CriticalChance ||
-            propType == PropType.CriticalPercent ||
-            propType == PropType.AttackRange ||
-            propType == PropType.KnockbackStrength)
+        RefreshRuntimeStats();
+    }
+
+    private void SubscribeRuntimeStatAttributes()
+    {
+        for (int i = 0; i < RuntimeStatAttributeTypes.Length; i++)
         {
-            RefreshRuntimeStats();
+            AttributeManager.SubscribeAttributeChanged(RuntimeStatAttributeTypes[i], OnRuntimeStatAttributeChanged);
+        }
+    }
+
+    private void UnsubscribeRuntimeStatAttributes()
+    {
+        for (int i = 0; i < RuntimeStatAttributeTypes.Length; i++)
+        {
+            AttributeManager.UnsubscribeAttributeChanged(RuntimeStatAttributeTypes[i], OnRuntimeStatAttributeChanged);
         }
     }
 

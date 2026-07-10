@@ -515,8 +515,8 @@ public sealed class RewardSelectionService : GameService
 
     private float ResolvePlayerLuck()
     {
-        return player != null && player.TryGetComponent(out PropertiesManager resolvedPropertiesManager)
-            ? resolvedPropertiesManager.GetPropValue(PropType.Luck)
+        return player != null && player.TryGetComponent(out AttributeManager resolvedAttributeManager)
+            ? resolvedAttributeManager.GetAttributeValue(PropType.Luck)
             : 0f;
     }
 

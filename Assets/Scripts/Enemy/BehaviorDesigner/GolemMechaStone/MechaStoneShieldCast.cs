@@ -60,12 +60,12 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
 
     private void ApplyModifiers()
     {
-        if (modifiersApplied || PropertiesManager == null)
+        if (modifiersApplied || AttributeManager == null)
         {
             return;
         }
 
-        PropertiesManager.AddModifiers(SHIELD_MODIFIER_SOURCE, BossData.ShieldModifiers);
+        AttributeManager.AddModifiers(SHIELD_MODIFIER_SOURCE, BossData.ShieldModifiers);
         modifiersApplied = true;
     }
 
@@ -82,12 +82,12 @@ public sealed class MechaStoneShieldCast : MechaStoneTaskBase
 
     private void RemoveModifiers()
     {
-        if (!modifiersApplied || PropertiesManager == null)
+        if (!modifiersApplied || AttributeManager == null)
         {
             return;
         }
 
-        PropertiesManager.RemoveModifiers(SHIELD_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(SHIELD_MODIFIER_SOURCE);
         modifiersApplied = false;
     }
 }

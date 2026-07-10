@@ -39,7 +39,7 @@ public class WeaponsHolder : EntityComponentBase
     public WeaponBenefitData CurrentWeaponBenefitBonus => currentWeaponBenefitBonus;
 
     private Entity owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
 
     public override Entity Owner => owner;
     public override int Priority => EntityComponentBase.PriorityPreset.RelyOthers;
@@ -51,15 +51,15 @@ public class WeaponsHolder : EntityComponentBase
             throw new ArgumentNullException(nameof(owner));
         }
 
-        UnsubscribeFromPropertiesManager();
+        UnsubscribeFromAttributeManager();
         this.owner = owner;
-        propertiesManager = owner.GetComponent<PropertiesManager>();
+        AttributeManager = owner.GetComponent<AttributeManager>();
 
         BuildWeaponPositionPool();
         ResizeWeaponSlotsFromProperties();
         RebuildEquippedWeaponsCache();
         AddInitialWeapons();
-        SubscribeToPropertiesManager();
+        SubscribeToAttributeManager();
     }
 
     private void AddInitialWeapons()
@@ -97,7 +97,7 @@ public class WeaponsHolder : EntityComponentBase
 
     public override void OnDisableComponent()
     {
-        UnsubscribeFromPropertiesManager();
+        UnsubscribeFromAttributeManager();
         ClearWeaponBenefitModifiers();
         DisableRuntimeWeapons();
         runtimeWeaponsDisabled = false;
@@ -387,7 +387,7 @@ public class WeaponsHolder : EntityComponentBase
 
     private int ResolveWeaponSlotCount()
     {
-        float rawSlotCount = propertiesManager.GetPropValue(PropType.WeaponSlotCount);
+        float rawSlotCount = AttributeManager.GetAttributeValue(PropType.WeaponSlotCount);
 
         return PropValueUtility.FloatPointsToNonNegativeRoundedInt(rawSlotCount);
     }
@@ -540,34 +540,29 @@ public class WeaponsHolder : EntityComponentBase
         return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * weaponSlotRadius;
     }
 
-    private void SubscribeToPropertiesManager()
+    private void SubscribeToAttributeManager()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
-        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
-        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        AttributeManager.UnsubscribeAttributeChanged(PropType.WeaponSlotCount, OnWeaponSlotCountChanged);
+        AttributeManager.SubscribeAttributeChanged(PropType.WeaponSlotCount, OnWeaponSlotCountChanged);
     }
 
-    private void UnsubscribeFromPropertiesManager()
+    private void UnsubscribeFromAttributeManager()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
-        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        AttributeManager.UnsubscribeAttributeChanged(PropType.WeaponSlotCount, OnWeaponSlotCountChanged);
     }
 
-    private void OnPropertyChanged(PropType propType, float newValue)
+    private void OnWeaponSlotCountChanged(int newValue)
     {
-        if (propType != PropType.WeaponSlotCount)
-        {
-            return;
-        }
-
         int previousSlotCount = WeaponSlotCount;
         ResizeWeaponSlotsFromProperties();
 

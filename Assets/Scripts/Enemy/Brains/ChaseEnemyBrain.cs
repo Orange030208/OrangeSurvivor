@@ -95,7 +95,7 @@ public class ChaseEnemyBrain : EnemyBrain
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             enemyData.AttackAction.ActionId,
             enemyData.AttackSpeedBenefitRatio,
             meleePointTransform);
@@ -113,7 +113,7 @@ public class ChaseEnemyBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.AddModifiers(ATTACK_MOVE_MODIFIER_SOURCE, enemyData.AttackStateMoveModifiers);
+        AttributeManager.AddModifiers(ATTACK_MOVE_MODIFIER_SOURCE, enemyData.AttackStateMoveModifiers);
         attackMoveModifiersApplied = true;
     }
 
@@ -124,7 +124,7 @@ public class ChaseEnemyBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.RemoveModifiers(ATTACK_MOVE_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(ATTACK_MOVE_MODIFIER_SOURCE);
         attackMoveModifiersApplied = false;
     }
 

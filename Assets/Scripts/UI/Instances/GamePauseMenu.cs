@@ -167,7 +167,7 @@ public class GamePauseMenu : PageBase
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.UiConfirm);
         propertiesPopupHandle = await UIManager.Instance.ShowPopupAsync<PropertiesPopup>(
-            currentContext.PropertiesManager,
+            currentContext.AttributeManager,
             CreatePropertiesPopupOptions(),
             this.GetCancellationTokenOnDestroy());
         ClearPropertiesHandleWhenClosedAsync(propertiesPopupHandle).Forget();

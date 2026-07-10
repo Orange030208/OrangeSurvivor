@@ -7,7 +7,7 @@ public sealed class CyberOrangeBossSO : EnemySO
     public const string ATTACK_ACTION_ID = "CyberOrangeBoss_Attack";
     public const string CHARGE_ACTION_ID = "CyberOrangeBoss_Charge";
     public const string BARRAGE_SKILL_ID = "CyberOrangeBoss_Barrage";
-    private const float DEFAULT_ATTACK_MOVE_FINAL_MULTIPLIER = -100f;
+    private const int DEFAULT_ATTACK_MOVE_FINAL_MULTIPLIER = -100;
     private const string DEFAULT_ATTACK_ANIMATION_STATE = "Attack";
     private const string DEFAULT_CHARGE_ANIMATION_STATE = "Charge";
 
@@ -36,7 +36,7 @@ public sealed class CyberOrangeBossSO : EnemySO
     [SerializeField, Min(0f)] private float chargeDamageMultiplier = 1.6f;
     [SerializeField] private List<PropModifierData> chargeModifiers = new()
     {
-        new(PropType.MoveSpeed, PropModifierType.FinalMultiplier, 160f)
+        new(PropType.MoveSpeed, PropModifierType.FinalMultiplier, 160)
     };
     [SerializeField] private bool enableChargeScreenShake = true;
     [SerializeField] private ScreenShakeSettings chargeScreenShake = ScreenShakeSettings.CreateBossMeleeDefault();
@@ -57,9 +57,9 @@ public sealed class CyberOrangeBossSO : EnemySO
     [SerializeField, Range(0f, 1f)] private float enrageHealthRatio = 0.45f;
     [SerializeField] private List<PropModifierData> enrageModifiers = new()
     {
-        new(PropType.MoveSpeed, PropModifierType.FinalMultiplier, 20f),
-        new(PropType.AttackSpeed, PropModifierType.FinalMultiplier, 20f),
-        new(PropType.Attack, PropModifierType.FinalMultiplier, 15f)
+        new(PropType.MoveSpeed, PropModifierType.FinalMultiplier, 20),
+        new(PropType.AttackSpeed, PropModifierType.FinalMultiplier, 20),
+        new(PropType.Attack, PropModifierType.FinalMultiplier, 15)
     };
     [SerializeField] private AudioSfxKey enrageSfxKey = AudioSfxKey.None;
 

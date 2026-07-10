@@ -10,19 +10,19 @@ using UnityEngine;
 [RequireComponent(typeof(AccessoryManager))]
 [RequireComponent(typeof(WeaponsHolder))]
 [RequireComponent(typeof(CurrencyWallet))]
-[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(AttributeManager))]
 public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitialWeaponProvider, IInitialAccessoryProvider,IFeatureEffectsProvider
     , IAnimationConfigProvider, IProceduralAnimationProfileProvider, ICharacterSpriteProvider
 {
     [Header("组件")]
     private Rigidbody2D rb;
     private PlayerController playerController;
-    private PropertiesManager propertiesManager;
+    private AttributeManager attributeManager;
     [SerializeField] private CharacterDataSO characterData;
 
     public override IMovable MoveComponent => playerController;
     public Rigidbody2D Rb => rb;
-    public PropertiesManager PropertiesManager => propertiesManager;
+    public AttributeManager AttributeManager => attributeManager;
 
     public CharacterDataSO CharacterData => characterData;
     public Sprite CharacterSprite => characterData != null ? characterData.CharacterSprite : null;
@@ -76,7 +76,7 @@ public class Player : Entity, IPropGroupProvider,IPropModifierProvider, IInitial
     private void InitComponentReferences()
     {
         rb = GetComponent<Rigidbody2D>();
-        propertiesManager = GetComponent<PropertiesManager>();
+        attributeManager = GetComponent<AttributeManager>();
         playerController = GetComponent<PlayerController>();
     }
 

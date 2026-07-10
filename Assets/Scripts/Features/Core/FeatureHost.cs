@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Entity), typeof(PropertiesManager))]
-public class FeatureHost : EntityComponentBase,IHitModifierProvider
+[RequireComponent(typeof(Entity), typeof(AttributeManager))]
+public class FeatureHost : EntityComponentBase,IHitModifierProvider, IEntityDamageEventReceiver
 {
     private Entity owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private FeatureContext featureContext;
     private readonly Dictionary<string, FeatureHostSourceHandle> installedSources = new();
 
@@ -18,12 +18,31 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
         return handle;
     }
 
+    public void CollectRuntimeEffects<T>(List<T> results)
+    {
+        if (results == null)
+        {
+            throw new ArgumentNullException(nameof(results));
+        }
+
+        foreach (FeatureHostSourceHandle handle in installedSources.Values)
+        {
+            for (int i = 0; i < handle.RuntimeEffects.Count; i++)
+            {
+                if (handle.RuntimeEffects[i] is T effect)
+                {
+                    results.Add(effect);
+                }
+            }
+        }
+    }
+
     public override Entity Owner => owner;
     public override void Initialize(Entity owner)
     {
         this.owner = owner;
-        propertiesManager = GetComponent<PropertiesManager>();
-        featureContext = new FeatureContext(owner, propertiesManager);
+        AttributeManager = GetComponent<AttributeManager>();
+        featureContext = new FeatureContext(owner, AttributeManager);
         var featureEffectsProvider = owner.GetComponent<IFeatureEffectsProvider>();
         InstallFeature(owner.RuntimeId, featureEffectsProvider.FeatureEffects);
     }
@@ -143,6 +162,54 @@ public class FeatureHost : EntityComponentBase,IHitModifierProvider
             }
         }
         return results;
+    }
+
+    public void OnOwnerDamageDealt(HitResult result)
+    {
+        if (result.Source != owner || installedSources.Count == 0)
+        {
+            return;
+        }
+
+        DispatchDamageDealt(result);
+    }
+
+    public void OnOwnerDamageReceived(HitResult result)
+    {
+        if (result.Target != owner || installedSources.Count == 0)
+        {
+            return;
+        }
+
+        DispatchDamageReceived(result);
+    }
+
+    private void DispatchDamageDealt(HitResult result)
+    {
+        foreach (FeatureHostSourceHandle handle in installedSources.Values)
+        {
+            for (int i = 0; i < handle.RuntimeEffects.Count; i++)
+            {
+                if (handle.RuntimeEffects[i] is IDamageDealtFeatureEffect effect)
+                {
+                    effect.OnDamageDealt(result);
+                }
+            }
+        }
+    }
+
+    private void DispatchDamageReceived(HitResult result)
+    {
+        foreach (FeatureHostSourceHandle handle in installedSources.Values)
+        {
+            for (int i = 0; i < handle.RuntimeEffects.Count; i++)
+            {
+                if (handle.RuntimeEffects[i] is IDamageReceivedFeatureEffect effect)
+                {
+                    effect.OnDamageReceived(result);
+                }
+            }
+        }
     }
 }
 

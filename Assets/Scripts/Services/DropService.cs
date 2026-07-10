@@ -311,25 +311,25 @@ public sealed class DropService : GameService, IDropService
 
     private static float ResolveLuck(Entity source)
     {
-        PropertiesManager propertiesManager = ResolvePropertiesManager(source);
-        return propertiesManager != null ? propertiesManager.GetPropValue(PropType.Luck) : 0f;
+        AttributeManager AttributeManager = ResolveAttributeManager(source);
+        return AttributeManager != null ? AttributeManager.GetAttributeValue(PropType.Luck) : 0f;
     }
 
-    private static PropertiesManager ResolvePropertiesManager(Entity source)
+    private static AttributeManager ResolveAttributeManager(Entity source)
     {
         if (source == null)
         {
             return null;
         }
 
-        if (source.TryGetComponent(out PropertiesManager propertiesManager))
+        if (source.TryGetComponent(out AttributeManager AttributeManager))
         {
-            return propertiesManager;
+            return AttributeManager;
         }
 
         return source is Weapon weapon && weapon.Owner != null &&
-               weapon.Owner.TryGetComponent(out PropertiesManager ownerPropertiesManager)
-            ? ownerPropertiesManager
+               weapon.Owner.TryGetComponent(out AttributeManager ownerAttributeManager)
+            ? ownerAttributeManager
             : null;
     }
 }

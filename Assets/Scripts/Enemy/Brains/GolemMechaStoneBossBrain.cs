@@ -174,7 +174,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
         meleeAttackStrategy = new DirectDamageAttackStrategy(
             this.owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             GolemMechaStoneBossSO.MELEE_ACTION_ID,
             bossData.MeleeAttackSpeedBenefitRatio,
             meleePointTransform,
@@ -183,7 +183,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
         shootAttackStrategy = new ProjectileAttackStrategy(
             this.owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             GolemMechaStoneBossSO.SHOOT_ACTION_ID,
             bossData.ShootAttackSpeedBenefitRatio,
             shootPointTransform,
@@ -222,7 +222,7 @@ public sealed class GolemMechaStoneBossBrain : EnemyBrain
     private float ResolveAttackRangeWorldUnits(float multiplier)
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, multiplier);
+            AttributeManager.GetAttributeValue(PropType.AttackRange)) * Mathf.Max(0f, multiplier);
     }
 
     private float ResolveHealthRatio()

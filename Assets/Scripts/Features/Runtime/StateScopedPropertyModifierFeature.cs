@@ -57,23 +57,23 @@ public sealed class StateScopedPropertyModifierFeature : FeatureBase
 
     private void ApplyModifiers()
     {
-        if (isApplied || Context?.PropertiesManager == null || modifiers == null || modifiers.Count == 0)
+        if (isApplied || Context?.AttributeManager == null || modifiers == null || modifiers.Count == 0)
         {
             return;
         }
 
-        Context.PropertiesManager.AddModifiers(runtimeSourceId, modifiers);
+        Context.AttributeManager.AddModifiers(runtimeSourceId, modifiers);
         isApplied = true;
     }
 
     private void RemoveModifiers()
     {
-        if (!isApplied || Context?.PropertiesManager == null)
+        if (!isApplied || Context?.AttributeManager == null)
         {
             return;
         }
 
-        Context.PropertiesManager.RemoveModifiers(runtimeSourceId);
+        Context.AttributeManager.RemoveModifiers(runtimeSourceId);
         isApplied = false;
     }
 

@@ -17,7 +17,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     public DirectDamageAttackStrategy(
         Enemy owner,
         EnemyAttackController attackController,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         string actionId,
         float attackSpeedBenefitRatio,
         Transform attackPointTransform = null,
@@ -26,7 +26,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
         DirectDamageHitShape hitShape = DirectDamageHitShape.Circle,
         Func<Vector2> attackDirectionProvider = null,
         Func<Entity, Vector2> rangeDirectionProvider = null)
-        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio)
+        : base(owner, attackController, AttributeManager, actionId, attackSpeedBenefitRatio)
     {
         this.attackPointTransform = attackPointTransform;
         this.rangeMultiplier = Mathf.Max(0f, rangeMultiplier);
@@ -121,7 +121,7 @@ public sealed class DirectDamageAttackStrategy : AttackStrategyBase
     private float ResolveAttackRadius()
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange)) * rangeMultiplier;
+            AttributeManager.GetAttributeValue(PropType.AttackRange)) * rangeMultiplier;
     }
 
     private Vector2 ResolveAttackCenter()

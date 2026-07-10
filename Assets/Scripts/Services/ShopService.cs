@@ -10,6 +10,8 @@ public sealed class ShopService : GameService, IShopController
 {
     private const int DEFAULT_CONTAINERS_TO_ADD = 4;
     private const int DEFAULT_REROLL_STEP_COST = 1;
+    private const string FREE_REROLL_CONSUMPTION_SOURCE_PREFIX = "ShopService.FreeRerollConsumption";
+    private const string FREE_REROLL_GRANT_SOURCE_PREFIX = "ShopService.FreeRerollGrant";
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     [SerializeField] private CurrencyWallet currencyWallet;
@@ -17,8 +19,7 @@ public sealed class ShopService : GameService, IShopController
     private readonly ShopExtractionRoller extractionRoller = new();
     private ShopItemData[] currentItems;
     private Player player;
-    private PropertiesManager propertiesManager;
-    private int freeShopRerolls;
+    private AttributeManager AttributeManager;
     private int totalRerollCount;
     private int paidRerollCountThisWave;
     private int shopRefreshCount;
@@ -64,7 +65,7 @@ public sealed class ShopService : GameService, IShopController
     protected override void OnDispose()
     {
         UnbindCurrencyWallet();
-        UnbindPropertiesManager();
+        UnbindAttributeManager();
         ViewStateChanged = null;
         PurchaseSucceeded = null;
         PurchaseFailed = null;
@@ -73,7 +74,7 @@ public sealed class ShopService : GameService, IShopController
     private void OnPlayerSpawned(PlayerSpawnedEvent eventData)
     {
         player = eventData.Player;
-        BindPropertiesManager(player != null ? player.GetComponent<PropertiesManager>() : null);
+        BindAttributeManager(player != null ? player.GetComponent<AttributeManager>() : null);
         BindCurrencyWallet(player != null ? player.GetComponent<CurrencyWallet>() : null);
     }
 
@@ -454,7 +455,7 @@ public sealed class ShopService : GameService, IShopController
 
         ApplyShopPriceMultiplier();
         int currentRerollCost = ResolveCurrentRerollCost();
-        bool canReroll = currentCurrency >= currentRerollCost || freeShopRerolls > 0;
+        bool canReroll = currentCurrency >= currentRerollCost || ResolvePlayerFreeRerollCount() > 0;
         ViewStateChanged?.Invoke(new ShopViewState(currentItems, currentRerollCost, canReroll, reason));
     }
 
@@ -506,9 +507,9 @@ public sealed class ShopService : GameService, IShopController
             resolvedWallet = currencyWallet;
         }
 
-        if (player != null && propertiesManager == null)
+        if (player != null && AttributeManager == null)
         {
-            BindPropertiesManager(player.GetComponent<PropertiesManager>());
+            BindAttributeManager(player.GetComponent<AttributeManager>());
         }
 
         if (resolvedWallet != null)
@@ -562,19 +563,30 @@ public sealed class ShopService : GameService, IShopController
             return;
         }
 
-        freeShopRerolls += count;
+        AddShopFreeRerollModifier(FREE_REROLL_GRANT_SOURCE_PREFIX, count);
         PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     private bool TryConsumeFreeShopReroll()
     {
-        if (freeShopRerolls <= 0)
+        if (ResolvePlayerFreeRerollCount() <= 0)
         {
             return false;
         }
 
-        freeShopRerolls--;
+        AddShopFreeRerollModifier(FREE_REROLL_CONSUMPTION_SOURCE_PREFIX, -1);
         return true;
+    }
+
+    private void AddShopFreeRerollModifier(string sourcePrefix, int value)
+    {
+        if (AttributeManager == null || value == 0)
+        {
+            return;
+        }
+
+        string sourceId = $"{sourcePrefix}:{Guid.NewGuid():N}";
+        AttributeManager.AddModifier(sourceId, new PropModifierData(PropType.ShopFreeRerollCount, value));
     }
 
     private bool IsEventForCurrentPlayer(Player eventPlayer)
@@ -589,19 +601,27 @@ public sealed class ShopService : GameService, IShopController
 
     private float ResolvePlayerDiscountMultiplier()
     {
-        float discount = propertiesManager != null
+        float discount = AttributeManager != null
             ? PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.ShopPriceDiscount,
-                propertiesManager.GetPropValue(PropType.ShopPriceDiscount))
+                AttributeManager.GetAttributeValue(PropType.ShopPriceDiscount))
             : 0f;
         return Mathf.Max(PropValueUtility.MIN_EFFECTIVE_SHOP_PRICE_MULTIPLIER, 1f - discount);
     }
 
     private float ResolvePlayerLuck()
     {
-        return propertiesManager != null
-            ? propertiesManager.GetPropValue(PropType.Luck)
+        return AttributeManager != null
+            ? AttributeManager.GetAttributeValue(PropType.Luck)
             : 0f;
+    }
+
+    private int ResolvePlayerFreeRerollCount()
+    {
+        return AttributeManager != null
+            ? PropValueUtility.FloatPointsToNonNegativeFlooredInt(
+                AttributeManager.GetAttributeValue(PropType.ShopFreeRerollCount))
+            : 0;
     }
 
     private static float ResolveRunPriceMultiplier()
@@ -629,36 +649,35 @@ public sealed class ShopService : GameService, IShopController
         return DEFAULT_REROLL_STEP_COST;
     }
 
-    private void BindPropertiesManager(PropertiesManager newPropertiesManager)
+    private void BindAttributeManager(AttributeManager newAttributeManager)
     {
-        if (propertiesManager == newPropertiesManager)
+        if (AttributeManager == newAttributeManager)
         {
             return;
         }
 
-        UnbindPropertiesManager();
-        propertiesManager = newPropertiesManager;
-        if (propertiesManager != null)
+        UnbindAttributeManager();
+        AttributeManager = newAttributeManager;
+        if (AttributeManager != null)
         {
-            propertiesManager.OnPropertyChanged += OnPlayerPropertyChanged;
+            AttributeManager.SubscribeAttributeChanged(PropType.ShopPriceDiscount, OnShopAttributeChanged);
+            AttributeManager.SubscribeAttributeChanged(PropType.ShopFreeRerollCount, OnShopAttributeChanged);
         }
     }
 
-    private void UnbindPropertiesManager()
+    private void UnbindAttributeManager()
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnPropertyChanged -= OnPlayerPropertyChanged;
-            propertiesManager = null;
+            AttributeManager.UnsubscribeAttributeChanged(PropType.ShopPriceDiscount, OnShopAttributeChanged);
+            AttributeManager.UnsubscribeAttributeChanged(PropType.ShopFreeRerollCount, OnShopAttributeChanged);
+            AttributeManager = null;
         }
     }
 
-    private void OnPlayerPropertyChanged(PropType propType, float value)
+    private void OnShopAttributeChanged(int value)
     {
-        if (propType == PropType.ShopPriceDiscount)
-        {
-            PublishViewState(ShopRefreshReason.StateUpdate);
-        }
+        PublishViewState(ShopRefreshReason.StateUpdate);
     }
 
     private void RefreshCurrency()

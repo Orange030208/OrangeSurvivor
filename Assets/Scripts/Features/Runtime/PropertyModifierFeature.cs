@@ -28,23 +28,23 @@ public sealed class PropertyModifierFeature : FeatureBase
 
     public override void OnInstall()
     {
-        if (Context?.PropertiesManager == null)
+        if (Context?.AttributeManager == null)
         {
             return;
         }
 
         runtimeSourceId = ResolveRuntimeSourceId();
-        Context.PropertiesManager.AddModifier(runtimeSourceId, modifier);
+        Context.AttributeManager.AddModifier(runtimeSourceId, modifier);
     }
 
     public override void OnUninstall()
     {
-        if (Context?.PropertiesManager == null)
+        if (Context?.AttributeManager == null)
         {
             return;
         }
 
-        Context.PropertiesManager.RemoveModifier(ResolveRuntimeSourceId(), modifier.propType, modifier.modifierType);
+        Context.AttributeManager.RemoveModifier(ResolveRuntimeSourceId(), modifier.propType, modifier.modifierType);
     }
 
     private string ResolveRuntimeSourceId()

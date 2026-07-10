@@ -57,13 +57,13 @@ public sealed class WaveStartedTriggerFeature : FeatureBase
 
     private void ApplyWaveStartPropertyModifiers()
     {
-        if (Context?.PropertiesManager == null || waveStartPropertyModifiers == null || waveStartPropertyModifiers.Count == 0)
+        if (Context?.AttributeManager == null || waveStartPropertyModifiers == null || waveStartPropertyModifiers.Count == 0)
         {
             return;
         }
 
         RemoveWaveStartPropertyModifiers();
-        Context.PropertiesManager.AddModifiers(runtimeSourceId, waveStartPropertyModifiers);
+        Context.AttributeManager.AddModifiers(runtimeSourceId, waveStartPropertyModifiers);
         if (propertyModifierDurationSeconds > 0f)
         {
             propertyModifierRemainingSeconds = propertyModifierDurationSeconds;
@@ -77,9 +77,9 @@ public sealed class WaveStartedTriggerFeature : FeatureBase
 
     private void RemoveWaveStartPropertyModifiers()
     {
-        if (Context?.PropertiesManager != null && !string.IsNullOrWhiteSpace(runtimeSourceId))
+        if (Context?.AttributeManager != null && !string.IsNullOrWhiteSpace(runtimeSourceId))
         {
-            Context.PropertiesManager.RemoveModifiers(runtimeSourceId);
+            Context.AttributeManager.RemoveModifiers(runtimeSourceId);
         }
 
         propertyModifierRemainingSeconds = 0f;

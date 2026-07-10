@@ -1,21 +1,22 @@
 using System;
+using UnityEngine;
 
 public readonly struct WeaponStatsRequest
 {
     public WeaponDataSO WeaponData { get; }
     public int Level { get; }
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
     public WeaponBenefitData WeaponBenefits { get; }
 
     public WeaponStatsRequest(
         WeaponDataSO weaponData,
         int level,
-        PropertiesManager propertiesManager,
+        AttributeManager attributeManager,
         WeaponBenefitData weaponBenefits)
     {
         WeaponData = weaponData;
         Level = level;
-        PropertiesManager = propertiesManager;
+        AttributeManager = attributeManager;
         WeaponBenefits = weaponBenefits;
     }
 }
@@ -55,9 +56,9 @@ public sealed class WeaponStatsResolver
             throw new ArgumentNullException(nameof(request.WeaponData));
         }
 
-        if (request.PropertiesManager == null)
+        if (request.AttributeManager == null)
         {
-            throw new ArgumentNullException(nameof(request.PropertiesManager));
+            throw new ArgumentNullException(nameof(request.AttributeManager));
         }
 
         WeaponLevelStatData weaponStats = request.WeaponData.GetLevelStats(request.Level);
@@ -72,21 +73,21 @@ public sealed class WeaponStatsResolver
 
         float playerCriticalChance = benefits.ApplyToExternalValue(
             PropType.CriticalChance,
-            PropValueUtility.PercentPointsToRatio(request.PropertiesManager.GetPropValue(PropType.CriticalChance)));
+            PropValueUtility.PercentPointsToRatio(request.AttributeManager.GetAttributeValue(PropType.CriticalChance)));
         float playerCriticalBonus = benefits.ApplyToExternalValue(
             PropType.CriticalPercent,
-            PropValueUtility.PercentPointsToRatio(request.PropertiesManager.GetPropValue(PropType.CriticalPercent)));
+            PropValueUtility.PercentPointsToRatio(request.AttributeManager.GetAttributeValue(PropType.CriticalPercent)));
 
-        float resolvedAttackSpeedPoints = request.PropertiesManager.GetPropValueWithAdditionalBase(
+        float resolvedAttackSpeedPoints = request.AttributeManager.GetAttributeValueWithAdditionalBase(
             PropType.AttackSpeed,
-            weaponAttackSpeed);
+            Mathf.RoundToInt(weaponAttackSpeed));
         float finalAttackSpeedPoints = benefits.ApplyToResolvedStat(
             PropType.AttackSpeed,
             weaponAttackSpeed,
             resolvedAttackSpeedPoints);
-        float typedAttackContribution = ResolveAttackTypeContribution(request.PropertiesManager, benefits);
+        float typedAttackContribution = ResolveAttackTypeContribution(request.AttributeManager, benefits);
         float damageMultiplier = 1f + PropValueUtility.PercentPointsToRatio(
-            request.PropertiesManager.GetPropValue(PropType.Damage));
+            request.AttributeManager.GetAttributeValue(PropType.Damage));
         float damage = PropValueUtility.ClampNonNegative((weaponAttack + typedAttackContribution) * damageMultiplier);
         float attackInterval = PropValueUtility.AttackSpeedPointsToAttackInterval(finalAttackSpeedPoints);
         float criticalChance = PropValueUtility.ClampEffectiveRatio(
@@ -94,14 +95,14 @@ public sealed class WeaponStatsResolver
             weaponCriticalChance + playerCriticalChance);
         float criticalMultiplier = PropValueUtility.ClampEffectiveCriticalMultiplier(
             weaponCriticalMultiplier + playerCriticalBonus);
-        float resolvedRangePoints = request.PropertiesManager.GetPropValueWithAdditionalBase(
+        float resolvedRangePoints = request.AttributeManager.GetAttributeValueWithAdditionalBase(
             PropType.AttackRange,
-            weaponRange);
+            Mathf.RoundToInt(weaponRange));
         float rangePoints = benefits.ApplyToResolvedStat(PropType.AttackRange, weaponRange, resolvedRangePoints);
         float range = PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(rangePoints);
-        float resolvedKnockbackStrength = request.PropertiesManager.GetPropValueWithAdditionalBase(
+        float resolvedKnockbackStrength = request.AttributeManager.GetAttributeValueWithAdditionalBase(
             PropType.KnockbackStrength,
-            weaponKnockbackStrength);
+            Mathf.RoundToInt(weaponKnockbackStrength));
         float knockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(
             benefits.ApplyToResolvedStat(
                 PropType.KnockbackStrength,
@@ -124,21 +125,21 @@ public sealed class WeaponStatsResolver
         return weaponBenefits + weaponStats.StatBenefits;
     }
 
-    private static float ResolveAttackTypeContribution(PropertiesManager propertiesManager, WeaponBenefitData benefits)
+    private static float ResolveAttackTypeContribution(AttributeManager attributeManager, WeaponBenefitData benefits)
     {
         if (!benefits.HasAnyUsage)
         {
             return 0f;
         }
 
-        return ResolveAttackTypeContribution(propertiesManager, PropType.MeleeAttack, benefits.MeleeAttackUsagePercent) +
-               ResolveAttackTypeContribution(propertiesManager, PropType.RangedAttack, benefits.RangedAttackUsagePercent) +
-               ResolveAttackTypeContribution(propertiesManager, PropType.MagicAttack, benefits.MagicAttackUsagePercent) +
-               ResolveAttackTypeContribution(propertiesManager, PropType.SummonAttack, benefits.SummonAttackUsagePercent);
+        return ResolveAttackTypeContribution(attributeManager, PropType.MeleeAttack, benefits.MeleeAttackUsagePercent) +
+               ResolveAttackTypeContribution(attributeManager, PropType.RangedAttack, benefits.RangedAttackUsagePercent) +
+               ResolveAttackTypeContribution(attributeManager, PropType.MagicAttack, benefits.MagicAttackUsagePercent) +
+               ResolveAttackTypeContribution(attributeManager, PropType.SummonAttack, benefits.SummonAttackUsagePercent);
     }
 
     private static float ResolveAttackTypeContribution(
-        PropertiesManager propertiesManager,
+        AttributeManager attributeManager,
         PropType propType,
         float usagePercent)
     {
@@ -147,6 +148,6 @@ public sealed class WeaponStatsResolver
             return 0f;
         }
 
-        return propertiesManager.GetPropValue(propType) * PropValueUtility.PercentPointsToRatio(usagePercent);
+        return attributeManager.GetAttributeValue(propType) * PropValueUtility.PercentPointsToRatio(usagePercent);
     }
 }

@@ -7,7 +7,7 @@ public sealed class FeatureContext
 
     public Entity OwnerEntity { get; }
     public Transform Transform => OwnerEntity.Transform;
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
     public HealthComponent HealthComponent { get; }
     public FeatureHost FeatureHost => featureHost != null
         ? featureHost
@@ -16,10 +16,10 @@ public sealed class FeatureContext
         ? currencyWallet
         : currencyWallet = OwnerEntity != null ? OwnerEntity.GetComponent<CurrencyWallet>() : null;
 
-    public FeatureContext(Entity ownerEntity, PropertiesManager propertiesManager)
+    public FeatureContext(Entity ownerEntity, AttributeManager attributeManager)
     {
         OwnerEntity = ownerEntity;
-        PropertiesManager = propertiesManager;
+        AttributeManager = attributeManager;
         HealthComponent = ownerEntity != null ? ownerEntity.GetComponent<HealthComponent>() : null;
     }
 

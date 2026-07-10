@@ -9,9 +9,9 @@ using UnityEngine;
 public struct BasePropData
 {
     public PropType propType;
-    public float value;
+    public int value;
 
-    public BasePropData(PropType propType, float value)
+    public BasePropData(PropType propType, int value)
     {
         this.propType = propType;
         this.value = value;
@@ -204,16 +204,14 @@ public struct PropMappingData
     public PropType sourcePropType;
     public PropType targetPropType;
     [Tooltip("映射比例，百分比点口径：100 表示源属性 1 点映射为目标属性 +1，50 表示 +0.5。")]
-    public float conversionPercent;
+    public int conversionPercent;
 
-    public PropMappingData(PropType sourcePropType, PropType targetPropType, float conversionPercent)
+    public PropMappingData(PropType sourcePropType, PropType targetPropType, int conversionPercent)
     {
         this.sourcePropType = sourcePropType;
         this.targetPropType = targetPropType;
         this.conversionPercent = conversionPercent;
     }
-
-    public readonly float ConversionRatio => PropValueUtility.PercentPointsToRatio(conversionPercent);
 }
 
 /// <summary>
@@ -225,16 +223,16 @@ public struct PropModifierData
 {
     public PropType propType;
     public PropModifierType modifierType;
-    public float value;
+    public int value;
 
-    public PropModifierData(PropType propType, float value)
+    public PropModifierData(PropType propType, int value)
     {
         this.propType = propType;
         modifierType = PropModifierType.Add;
         this.value = value;
     }
 
-    public PropModifierData(PropType propType, PropModifierType modifierType, float value)
+    public PropModifierData(PropType propType, PropModifierType modifierType, int value)
     {
         this.propType = propType;
         this.modifierType = modifierType;

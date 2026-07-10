@@ -4,28 +4,28 @@ using UnityEngine;
 
 public readonly struct PropertiesInfoSource
 {
-    public PropertiesInfoSource(PropertiesManager propertiesManager, bool includeZeroValues = true)
+    public PropertiesInfoSource(AttributeManager attributeManager, bool includeZeroValues = true)
     {
-        PropertiesManager = propertiesManager;
+        AttributeManager = attributeManager;
         IncludeZeroValues = includeZeroValues;
     }
 
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
     public bool IncludeZeroValues { get; }
 }
 
 public sealed class PropertiesInfoBuilder :
     IInfoDocumentBuilder<PropertiesInfoSource>,
-    IInfoDocumentBuilder<PropertiesManager>
+    IInfoDocumentBuilder<AttributeManager>
 {
-    public InfoDocument Build(PropertiesManager source)
+    public InfoDocument Build(AttributeManager source)
     {
         return Build(new PropertiesInfoSource(source));
     }
 
     public InfoDocument Build(PropertiesInfoSource source)
     {
-        if (source.PropertiesManager == null)
+        if (source.AttributeManager == null)
         {
             return new InfoDocument(
                 string.Empty,
@@ -35,12 +35,12 @@ public sealed class PropertiesInfoBuilder :
                     InfoDocumentUtility.CreateLineBreak(),
                     InfoDocumentUtility.CreateSectionHeader("角色属性"),
                     InfoDocumentUtility.CreateLineBreak(),
-                    InfoDocumentUtility.CreateText("无法生成属性详情：PropertiesManager 为空。", InfoTone.Warning),
+                    InfoDocumentUtility.CreateText("无法生成属性详情：AttributeManager 为空。", InfoTone.Warning),
                     InfoDocumentUtility.CreateLineBreak()
                 });
         }
 
-        Dictionary<PropType, float> values = source.PropertiesManager.GetAllPropValues();
+        Dictionary<PropType, int> values = source.AttributeManager.GetAllAttributeValues();
         List<InfoItem> items = new()
         {
             InfoDocumentUtility.CreateTitle("属性"),
@@ -53,9 +53,9 @@ public sealed class PropertiesInfoBuilder :
         for (int i = 0; i < propTypes.Length; i++)
         {
             PropType propType = (PropType)propTypes.GetValue(i);
-            float value = values.TryGetValue(propType, out float resolvedValue)
+            int value = values.TryGetValue(propType, out int resolvedValue)
                 ? resolvedValue
-                : PropertiesManager.GetDefaultValue(propType);
+                : AttributeManager.GetDefaultAttributeValue(propType);
 
             if (!source.IncludeZeroValues && Mathf.Approximately(value, 0f))
             {

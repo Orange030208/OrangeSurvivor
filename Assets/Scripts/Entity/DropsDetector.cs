@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(AttributeManager))]
 public class DropsDetector : EntityComponentBase
 {
     private const float MIN_DETECT_INTERVAL = 0.01f;
@@ -10,14 +10,14 @@ public class DropsDetector : EntityComponentBase
     [SerializeField] private int collectLayerMask;
     private Entity owner;
     private float detectTimer;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private float detectRadius;
 
     public override Entity Owner => owner;
     public override void Initialize(Entity owner)
     {
         this.owner = owner;
-        propertiesManager = GetComponent<PropertiesManager>();
+        AttributeManager = GetComponent<AttributeManager>();
         
         detectTimer = 0;
         collectLayerMask = LayerMask.GetMask(COLLECTOR_LAYER_NAME);
@@ -28,19 +28,19 @@ public class DropsDetector : EntityComponentBase
 
     public override void OnEnableComponent()
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged += UpdateRadius;
-            propertiesManager.OnPropertyChanged += OnPropertyChanged;
+            AttributeManager.OnAttributesChanged += UpdateRadius;
+            AttributeManager.SubscribeAttributeChanged(PropType.PickupRadius, OnPickupRadiusChanged);
         }
     }
 
     public override void OnDisableComponent()
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= UpdateRadius;
-            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+            AttributeManager.OnAttributesChanged -= UpdateRadius;
+            AttributeManager.UnsubscribeAttributeChanged(PropType.PickupRadius, OnPickupRadiusChanged);
         }
     }
 
@@ -54,18 +54,15 @@ public class DropsDetector : EntityComponentBase
         }
     }
 
-    private void OnPropertyChanged(PropType propType, float newValue)
+    private void OnPickupRadiusChanged(int newValue)
     {
-        if (propType == PropType.PickupRadius)
-        {
-            RefreshDetectRadius(newValue);
-        }
+        RefreshDetectRadius(newValue);
     }
 
     private void UpdateRadius()
     {
-        if (propertiesManager == null) return;
-        RefreshDetectRadius(propertiesManager.GetPropValue(PropType.PickupRadius));
+        if (AttributeManager == null) return;
+        RefreshDetectRadius(AttributeManager.GetAttributeValue(PropType.PickupRadius));
     }
 
     private void RefreshDetectRadius(float radiusPoints)

@@ -9,7 +9,7 @@ public class ShopPropertiesPanel : ViewPartBase
     [SerializeField] private Describer propertiesDescriber;
 
     private readonly InfoDocumentService infoDocumentService = new();
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private bool visible;
     private bool eventsBound;
 
@@ -24,17 +24,17 @@ public class ShopPropertiesPanel : ViewPartBase
         EndSession();
     }
 
-    public void BeginSession(PropertiesManager manager)
+    public void BeginSession(AttributeManager manager)
     {
         BindEvents();
-        BindPropertiesManager(manager);
+        BindAttributeManager(manager);
         SetVisibleImmediate(false);
     }
 
     public void EndSession()
     {
         UnbindEvents();
-        BindPropertiesManager(null);
+        BindAttributeManager(null);
         SetVisibleImmediate(false);
         motionPlayer?.Kill();
     }
@@ -61,17 +61,17 @@ public class ShopPropertiesPanel : ViewPartBase
         eventsBound = false;
     }
 
-    private void BindPropertiesManager(PropertiesManager manager)
+    private void BindAttributeManager(AttributeManager manager)
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged -= OnAttributesChanged;
         }
 
-        propertiesManager = manager;
-        if (propertiesManager != null)
+        AttributeManager = manager;
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged += OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged += OnAttributesChanged;
         }
 
         RefreshPropertiesDisplay();
@@ -83,20 +83,20 @@ public class ShopPropertiesPanel : ViewPartBase
         SetVisible(!visible);
     }
 
-    private void OnPropertiesChanged()
+    private void OnAttributesChanged()
     {
         RefreshPropertiesDisplay();
     }
 
     private void RefreshPropertiesDisplay()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             DisplayPropertiesDocument(null);
             return;
         }
 
-        if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
+        if (infoDocumentService.TryBuild(AttributeManager, out InfoDocument document))
         {
             DisplayPropertiesDocument(document);
             return;

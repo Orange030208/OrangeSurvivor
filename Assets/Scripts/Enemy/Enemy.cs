@@ -7,12 +7,12 @@ using UnityEngine;
 [RequireComponent(typeof(IAnimatable))]
 [RequireComponent(typeof(HealthComponent))]
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(AttributeManager))]
 public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWaveEndStep
 {
     private IAnimatable animComponent;
     private HealthComponent healthComponent;
-    private PropertiesManager propertiesManager;
+    private AttributeManager attributeManager;
     private IMovable activeMovement;
     private Entity targetEntity;
     private EnemySO enemyData;
@@ -32,7 +32,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
     public EnemyRole Role => enemyData != null ? enemyData.role : EnemyRole.Normal;
     public Entity TargetEntity => targetEntity;
     public EnemySO EnemyData => enemyData;
-    public PropertiesManager PropertiesManager => propertiesManager;
+    public AttributeManager AttributeManager => attributeManager;
     public EnemyBrain Brain => brain;
     public Rigidbody2D Rb => rb;
     public BasePropGroupSO BasePropsGroup => enemyData.BasePropsAsset;
@@ -72,7 +72,7 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
     {
         animComponent = GetComponent<IAnimatable>();
         healthComponent = GetComponent<HealthComponent>();
-        propertiesManager = GetComponent<PropertiesManager>();
+        attributeManager = GetComponent<AttributeManager>();
         activeMovement = GetComponent<IMovable>();
         brain = GetComponent<EnemyBrain>();
         rb = GetComponent<Rigidbody2D>();
@@ -110,14 +110,14 @@ public class Enemy : Entity, IPropGroupProvider, IAnimationConfigProvider, IWave
         }
     }
 
-    public void ApplyInitialProgressionModifiers(PropertiesManager targetPropertiesManager)
+    public void ApplyInitialProgressionModifiers(AttributeManager targetAttributeManager)
     {
-        if (targetPropertiesManager == null || initialProgressionModifiers.Count == 0)
+        if (targetAttributeManager == null || initialProgressionModifiers.Count == 0)
         {
             return;
         }
 
-        targetPropertiesManager.AddModifiers(RunProgressionEnemyScaling.SourceId, initialProgressionModifiers);
+        targetAttributeManager.AddModifiers(RunProgressionEnemyScaling.SourceId, initialProgressionModifiers);
     }
 
     public override void EnableRuntime()

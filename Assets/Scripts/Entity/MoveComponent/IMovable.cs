@@ -15,7 +15,7 @@ public interface IMovable
     
     public bool IsMoving { get; }
     
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
     
     public static IMovable Empty =  new EmptyMovable();
 }
@@ -45,5 +45,5 @@ internal class EmptyMovable : IMovable
     public float Speed => 0;
     public Vector2 MoveDirection => Vector2.zero;
     public bool IsMoving => false;
-    public PropertiesManager PropertiesManager { get;}
+    public AttributeManager AttributeManager { get;}
 }

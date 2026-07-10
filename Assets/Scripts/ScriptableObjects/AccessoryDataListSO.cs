@@ -17,7 +17,6 @@ public class AccessoryDataListSO : ScriptableObject
         GameContentAssetPaths.AccessoriesData
     };
     
-    [NaughtyAttributes.Button]
     public void RefreshAccessories()
     {
         string[] guids = AssetDatabase.FindAssets("t:AccessoryDataSO", GetExistingAccessoryDataPaths());

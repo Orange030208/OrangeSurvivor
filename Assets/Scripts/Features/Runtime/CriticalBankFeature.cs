@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public sealed class CriticalBankFeature : HitModifierFeatureBase
+public sealed class CriticalBankFeature : HitModifierFeatureBase, IDamageDealtFeatureEffect
 {
     private enum PendingConsumptionMode
     {
@@ -35,12 +35,10 @@ public sealed class CriticalBankFeature : HitModifierFeatureBase
     {
         currentBankPoints = Mathf.Clamp(currentBankPoints, 0, MaxBankPoints);
         ClearPendingConsumption();
-        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
     }
 
     public override void OnUninstall()
     {
-        YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
         ClearPendingConsumption();
     }
 
@@ -75,9 +73,8 @@ public sealed class CriticalBankFeature : HitModifierFeatureBase
     private int MaxBankPoints => Mathf.Max(1, maxBankPoints);
     private int PointsPerNonCriticalHit => Mathf.Max(1, pointsPerNonCriticalHit);
 
-    private void OnEntityDamaged(EntityDamagedEvent eventData)
+    public void OnDamageDealt(HitResult result)
     {
-        HitResult result = eventData.HitResult;
         if (result.Source != Context?.OwnerEntity ||
             result.FinalDamage <= 0f ||
             !FeatureRuntimeUtility.AllowsSourceKind(result.SourceKind, allowedSourceKinds))

@@ -2,12 +2,12 @@ using System;
 
 public sealed class GamePauseMenuContext
 {
-    public GamePauseMenuContext(Player player, PropertiesManager propertiesManager)
+    public GamePauseMenuContext(Player player, AttributeManager AttributeManager)
     {
         Player = player ?? throw new ArgumentNullException(nameof(player));
-        PropertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
+        AttributeManager = AttributeManager ?? throw new ArgumentNullException(nameof(AttributeManager));
     }
 
     public Player Player { get; }
-    public PropertiesManager PropertiesManager { get; }
+    public AttributeManager AttributeManager { get; }
 }

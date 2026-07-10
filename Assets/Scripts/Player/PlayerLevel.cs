@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(PropertiesManager))]
+[RequireComponent(typeof(AttributeManager))]
 public class PlayerLevel : EntityComponentBase
 {
     private const int MIN_LEVEL = 1;
@@ -12,7 +12,7 @@ public class PlayerLevel : EntityComponentBase
     [SerializeField] private PlayerLevelConfigSO levelConfig;
 
     private Entity owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private int requiredXP;
     private int currentXP;
     private int currentLevel = MIN_LEVEL;
@@ -30,7 +30,7 @@ public class PlayerLevel : EntityComponentBase
     public override void Initialize(Entity owner)
     {
         this.owner = owner;
-        propertiesManager = GetComponent<PropertiesManager>();
+        AttributeManager = GetComponent<AttributeManager>();
         if (levelConfig == null)
         {
             levelConfig = GameContentRuntime.Provider.PlayerLevelConfig;
@@ -141,8 +141,8 @@ public class PlayerLevel : EntityComponentBase
             return 0;
         }
 
-        float bonus = propertiesManager != null
-            ? PropValueUtility.PercentPointsToNonNegativeRatio(propertiesManager.GetPropValue(PropType.ExperienceGain))
+        float bonus = AttributeManager != null
+            ? PropValueUtility.PercentPointsToNonNegativeRatio(AttributeManager.GetAttributeValue(PropType.ExperienceGain))
             : 0f;
         pendingExperienceGain += baseXp * (1f + bonus);
         int resolvedXp = Mathf.FloorToInt(pendingExperienceGain);

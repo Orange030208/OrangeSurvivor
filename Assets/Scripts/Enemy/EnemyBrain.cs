@@ -12,7 +12,7 @@ public abstract class EnemyBrain : EntityBrain
     protected IAnimatable currentAnimatable;
     protected IEntityFacingController facingController;
     protected HealthComponent healthComponent;
-    protected PropertiesManager propertiesManager;
+    protected AttributeManager AttributeManager;
 
     protected bool isDead;
     protected bool isBrainActive;
@@ -33,7 +33,7 @@ public abstract class EnemyBrain : EntityBrain
         target = this.owner.TargetEntity;
         currentMovable = this.owner.MoveComponent;
         healthComponent = this.owner.HealthComponent;
-        propertiesManager = this.owner.PropertiesManager;
+        AttributeManager = this.owner.AttributeManager;
         currentAnimatable = this.owner.AnimComponent;
         facingController = this.owner.GetComponent<IEntityFacingController>();
 

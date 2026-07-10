@@ -122,7 +122,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
         meleeAttackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             bossData.AttackAction.ActionId,
             bossData.AttackSpeedBenefitRatio,
             meleePointTransform,
@@ -162,7 +162,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
         enrageApplied = true;
         if (bossData.EnrageModifiers != null && bossData.EnrageModifiers.Count > 0)
         {
-            propertiesManager.AddModifiers(ENRAGE_MODIFIER_SOURCE, bossData.EnrageModifiers);
+            AttributeManager.AddModifiers(ENRAGE_MODIFIER_SOURCE, bossData.EnrageModifiers);
         }
 
         if (bossData.EnrageSfxKey != AudioSfxKey.None)
@@ -190,7 +190,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.AddModifiers(ATTACK_MOVE_MODIFIER_SOURCE, bossData.AttackStateMoveModifiers);
+        AttributeManager.AddModifiers(ATTACK_MOVE_MODIFIER_SOURCE, bossData.AttackStateMoveModifiers);
         attackMoveModifiersApplied = true;
     }
 
@@ -201,7 +201,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.RemoveModifiers(ATTACK_MOVE_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(ATTACK_MOVE_MODIFIER_SOURCE);
         attackMoveModifiersApplied = false;
     }
 
@@ -212,7 +212,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.AddModifiers(CHARGE_MODIFIER_SOURCE, bossData.ChargeModifiers);
+        AttributeManager.AddModifiers(CHARGE_MODIFIER_SOURCE, bossData.ChargeModifiers);
         chargeModifiersApplied = true;
     }
 
@@ -223,7 +223,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.RemoveModifiers(CHARGE_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(CHARGE_MODIFIER_SOURCE);
         chargeModifiersApplied = false;
     }
 
@@ -231,7 +231,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
     {
         RemoveAttackMoveModifiers();
         RemoveChargeModifiers();
-        propertiesManager?.RemoveModifiers(ENRAGE_MODIFIER_SOURCE);
+        AttributeManager?.RemoveModifiers(ENRAGE_MODIFIER_SOURCE);
     }
 
     private void CaptureChargeDirection()
@@ -291,7 +291,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
 
             chargeHitTargets.Add(hitEntity);
             float damage = PropValueUtility.ClampNonNegative(
-                propertiesManager.GetPropValue(PropType.Attack) * bossData.ChargeDamageMultiplier);
+                AttributeManager.GetAttributeValue(PropType.Attack) * bossData.ChargeDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - owner.Center;
             HitService.Apply(new HitRequest(
                 owner,
@@ -361,7 +361,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
         float spread = ResolveShotSpreadOffset();
         Vector2 shotDirection = Quaternion.Euler(0f, 0f, spread) * direction;
         float damage = PropValueUtility.ClampNonNegative(
-            propertiesManager.GetPropValue(PropType.Attack) * bossData.BarrageDamageMultiplier);
+            AttributeManager.GetAttributeValue(PropType.Attack) * bossData.BarrageDamageMultiplier);
         Projectile projectile = ProjectileFactory.CreateProjectile(
             bossData.BarrageProjectileDefinition,
             firePosition,
@@ -463,7 +463,7 @@ public sealed class CyberOrangeBossBrain : EnemyBrain
     private float ResolveAttackRangeWorldUnits(float multiplier)
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange)) * Mathf.Max(0f, multiplier);
+            AttributeManager.GetAttributeValue(PropType.AttackRange)) * Mathf.Max(0f, multiplier);
     }
 
     private Vector2 ResolveFacingDirection()

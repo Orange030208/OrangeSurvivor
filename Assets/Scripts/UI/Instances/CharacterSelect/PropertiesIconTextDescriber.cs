@@ -72,9 +72,9 @@ public sealed class PropertiesIconTextDescriber : Describer
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot as RectTransform);
     }
 
-    public void DisplayProperties(PropertiesManager propertiesManager)
+    public void DisplayProperties(AttributeManager AttributeManager)
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             Clear();
             return;
@@ -85,7 +85,7 @@ public sealed class PropertiesIconTextDescriber : Describer
         for (int i = 0; i < propTypes.Length; i++)
         {
             PropType propType = (PropType)propTypes.GetValue(i);
-            RenderProperty(displayIndex++, propertiesManager, ResolvePresentation(propType));
+            RenderProperty(displayIndex++, AttributeManager, ResolvePresentation(propType));
         }
 
         HideUnusedContainers(displayIndex);
@@ -291,11 +291,11 @@ public sealed class PropertiesIconTextDescriber : Describer
 
     private void RenderProperty(
         int displayIndex,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         PropPresentationEntry presentation)
     {
         PropType propType = presentation.PropType;
-        float rawValue = propertiesManager.GetPropValue(propType);
+        float rawValue = AttributeManager.GetAttributeValue(propType);
         PropContainer container = GetOrCreateContainer(displayIndex);
         container.gameObject.SetActive(true);
         container.Configure(

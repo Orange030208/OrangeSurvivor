@@ -80,12 +80,12 @@ public class KitingRangedEnemyBrain : EnemyBrain
     private void BuildRuntimeStrategies()
     {
         approachMoveStrategy = new DirectChaseMoveStrategy(currentMovable);
-        retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, propertiesManager, enemyData.retreatMovement);
+        retreatMoveStrategy = new RetreatMoveStrategy(owner, currentMovable, AttributeManager, enemyData.retreatMovement);
 
         attackStrategy = new ProjectileAttackStrategy(
             owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             enemyData.AttackAction.ActionId,
             enemyData.attackSpeedBenefitRatio,
             attackPointTransform,
@@ -115,7 +115,7 @@ public class KitingRangedEnemyBrain : EnemyBrain
     private float ResolveAttackRangeWorldUnits()
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange));
+            AttributeManager.GetAttributeValue(PropType.AttackRange));
     }
 
     private float GetDistanceToTarget()

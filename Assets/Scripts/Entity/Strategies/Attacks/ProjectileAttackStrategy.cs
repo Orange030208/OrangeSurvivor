@@ -10,13 +10,13 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
     public ProjectileAttackStrategy(
         Enemy owner,
         EnemyAttackController attackController,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         string actionId,
         float attackSpeedBenefitRatio,
         Transform firePointTransform,
         ProjectileDefinitionSO projectileDefinition,
         float attackRangeMultiplier = 1f)
-        : base(owner, attackController, propertiesManager, actionId, attackSpeedBenefitRatio)
+        : base(owner, attackController, AttributeManager, actionId, attackSpeedBenefitRatio)
     {
         this.firePointTransform = firePointTransform;
         this.projectileDefinition = projectileDefinition;
@@ -70,7 +70,7 @@ public sealed class ProjectileAttackStrategy : AttackStrategyBase
     private float ResolveAttackRange()
     {
         return PropValueUtility.DistancePointsToEffectiveAttackRangeWorldUnits(
-            propertiesManager.GetPropValue(PropType.AttackRange)) * attackRangeMultiplier;
+            AttributeManager.GetAttributeValue(PropType.AttackRange)) * attackRangeMultiplier;
     }
 
     private Vector3 ResolveFirePointPosition()

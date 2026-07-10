@@ -68,6 +68,6 @@ public static class RunProgressionEnemyScaling
             return;
         }
 
-        modifiers.Add(new PropModifierData(propType, PropModifierType.FinalMultiplier, delta * 100f));
+        modifiers.Add(new PropModifierData(propType, PropModifierType.FinalMultiplier, Mathf.RoundToInt(delta * 100f)));
     }
 }

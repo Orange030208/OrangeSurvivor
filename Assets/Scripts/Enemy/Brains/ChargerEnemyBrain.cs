@@ -108,7 +108,7 @@ public class ChargerEnemyBrain : EnemyBrain
         attackStrategy = new DirectDamageAttackStrategy(
             owner,
             attackController,
-            propertiesManager,
+            AttributeManager,
             ChargerEnemySO.ATTACK_ACTION_ID,
             enemyData.AttackSpeedBenefitRatio,
             meleePointTransform);
@@ -147,7 +147,7 @@ public class ChargerEnemyBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.AddModifiers(CHARGE_MODIFIER_SOURCE, enemyData.ChargeModifiers);
+        AttributeManager.AddModifiers(CHARGE_MODIFIER_SOURCE, enemyData.ChargeModifiers);
         chargeModifiersApplied = true;
     }
 
@@ -158,7 +158,7 @@ public class ChargerEnemyBrain : EnemyBrain
             return;
         }
 
-        propertiesManager.RemoveModifiers(CHARGE_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(CHARGE_MODIFIER_SOURCE);
         chargeModifiersApplied = false;
     }
 
@@ -232,7 +232,7 @@ public class ChargerEnemyBrain : EnemyBrain
 
             chargeHitTargets.Add(hitEntity);
             float damage = PropValueUtility.ClampNonNegative(
-                propertiesManager.GetPropValue(PropType.Attack) * enemyData.ChargeDamageMultiplier);
+                AttributeManager.GetAttributeValue(PropType.Attack) * enemyData.ChargeDamageMultiplier);
             Vector2 knockbackDirection = hitEntity.Center - owner.Center;
             HitService.Apply(new HitRequest(
                 owner,

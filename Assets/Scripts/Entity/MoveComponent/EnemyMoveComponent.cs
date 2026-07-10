@@ -8,7 +8,7 @@ public class EnemyMoveComponent : MoveBase
         base.Initialize(owner);
         this.owner = owner as Enemy;
 
-        PropertiesManager propertiesManager = this.owner != null ? this.owner.GetComponent<PropertiesManager>() : null;
-        speed = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.MoveSpeed));
+        AttributeManager AttributeManager = this.owner != null ? this.owner.GetComponent<AttributeManager>() : null;
+        speed = PropValueUtility.DistancePointsToWorldUnits(AttributeManager.GetAttributeValue(PropType.MoveSpeed));
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class SkeletonEnemySO : EnemySO
 {
     public const string ATTACK_ACTION_ID = "Skeleton_Attack";
-    private const float DEFAULT_ATTACK_MOVE_FINAL_MULTIPLIER = -100f;
+    private const int DEFAULT_ATTACK_MOVE_FINAL_MULTIPLIER = -100;
 
     [Header("攻击时机")]
     [SerializeField] private EnemyActionDefinition attackAction = new();

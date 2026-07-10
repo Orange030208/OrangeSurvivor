@@ -9,7 +9,7 @@ public class ShopPropertiesPopup : PopupBase
     [SerializeField] private Describer propertiesDescriber;
 
     private readonly InfoDocumentService infoDocumentService = new();
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
 
     protected override void OnCreate()
     {
@@ -20,48 +20,48 @@ public class ShopPropertiesPopup : PopupBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        PropertiesManager manager = context.GetPayload<PropertiesManager>()
-            ?? throw new InvalidOperationException($"{nameof(ShopPropertiesPopup)} requires {nameof(PropertiesManager)} payload.");
+        AttributeManager manager = context.GetPayload<AttributeManager>()
+            ?? throw new InvalidOperationException($"{nameof(ShopPropertiesPopup)} requires {nameof(AttributeManager)} payload.");
 
-        BindPropertiesManager(manager);
+        BindAttributeManager(manager);
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        BindPropertiesManager(null);
+        BindAttributeManager(null);
     }
 
-    private void BindPropertiesManager(PropertiesManager manager)
+    private void BindAttributeManager(AttributeManager manager)
     {
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged -= OnAttributesChanged;
         }
 
-        propertiesManager = manager;
-        if (propertiesManager != null)
+        AttributeManager = manager;
+        if (AttributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged += OnPropertiesChanged;
+            AttributeManager.OnAttributesChanged += OnAttributesChanged;
         }
 
         RefreshPropertiesDisplay();
     }
 
-    private void OnPropertiesChanged()
+    private void OnAttributesChanged()
     {
         RefreshPropertiesDisplay();
     }
 
     private void RefreshPropertiesDisplay()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             DisplayPropertiesDocument(null);
             return;
         }
 
-        if (infoDocumentService.TryBuild(propertiesManager, out InfoDocument document))
+        if (infoDocumentService.TryBuild(AttributeManager, out InfoDocument document))
         {
             DisplayPropertiesDocument(document);
             return;

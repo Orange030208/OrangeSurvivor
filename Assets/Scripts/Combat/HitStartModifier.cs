@@ -26,20 +26,20 @@ public class HitStartModifier : IHitModifier
             return;
         }
 
-        if (target.TryGetComponent(out PropertiesManager propertiesManager))
+        if (target.TryGetComponent(out AttributeManager AttributeManager))
         {
             hitContext.DodgeChance = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.Dodge,
-                propertiesManager.GetPropValue(PropType.Dodge));
+                AttributeManager.GetAttributeValue(PropType.Dodge));
             float armorReduction = PropValueUtility.ResolveArmorDamageReductionRatio(
-                propertiesManager.GetPropValue(PropType.Armor));
+                AttributeManager.GetAttributeValue(PropType.Armor));
             float damageReduction = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.DamageReduction,
-                propertiesManager.GetPropValue(PropType.DamageReduction));
+                AttributeManager.GetAttributeValue(PropType.DamageReduction));
             hitContext.DamageReduction = PropValueUtility.CombineDamageReductionRatios(armorReduction, damageReduction);
             float knockbackResistance = PropValueUtility.PercentPointsToEffectiveRatio(
                 PropType.KnockbackResistance,
-                propertiesManager.GetPropValue(PropType.KnockbackResistance));
+                AttributeManager.GetAttributeValue(PropType.KnockbackResistance));
             hitContext.KnockbackStrength = PropValueUtility.ClampEffectiveKnockbackStrength(
                 hitContext.KnockbackStrength * (1f - knockbackResistance));
         }

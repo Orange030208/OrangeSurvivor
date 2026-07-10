@@ -5,18 +5,18 @@ public abstract class AttackStrategyBase : IAttackStrategy
 {
     protected readonly Enemy owner;
     protected readonly EnemyAttackController attackController;
-    protected readonly PropertiesManager propertiesManager;
+    protected readonly AttributeManager AttributeManager;
 
     protected AttackStrategyBase(
         Enemy owner,
         EnemyAttackController attackController,
-        PropertiesManager propertiesManager,
+        AttributeManager AttributeManager,
         string actionId,
         float attackSpeedBenefitRatio)
     {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
         this.attackController = attackController ?? throw new ArgumentNullException(nameof(attackController));
-        this.propertiesManager = propertiesManager ?? throw new ArgumentNullException(nameof(propertiesManager));
+        this.AttributeManager = AttributeManager ?? throw new ArgumentNullException(nameof(AttributeManager));
         ActionId = string.IsNullOrWhiteSpace(actionId)
             ? throw new ArgumentException("Action id cannot be null or whitespace.", nameof(actionId))
             : actionId;
@@ -59,7 +59,7 @@ public abstract class AttackStrategyBase : IAttackStrategy
 
     protected float ResolveDamage()
     {
-        return PropValueUtility.ClampNonNegative(propertiesManager.GetPropValue(PropType.Attack));
+        return PropValueUtility.ClampNonNegative(AttributeManager.GetAttributeValue(PropType.Attack));
     }
 
     public abstract bool IsTargetInRange(Entity target);

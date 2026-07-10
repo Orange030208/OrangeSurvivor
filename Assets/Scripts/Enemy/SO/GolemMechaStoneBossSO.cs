@@ -15,7 +15,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Range(0f, 1f)] private float phaseThreeHealthRatio = 0.35f;
     [SerializeField] private List<PropModifierData> phaseTransitionModifiers = new()
     {
-        new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 100f),
+        new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 100),
     };
 
     [Header("攻击时机")]
@@ -50,7 +50,7 @@ public sealed class GolemMechaStoneBossSO : EnemySO
     [SerializeField, Min(1)] private int shieldMinPhase = 3;
     [SerializeField] private List<PropModifierData> shieldModifiers = new()
     {
-        new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 40f),
+        new PropModifierData(PropType.DamageReduction, PropModifierType.Add, 40),
     };
 
     [Header("近战攻击")]

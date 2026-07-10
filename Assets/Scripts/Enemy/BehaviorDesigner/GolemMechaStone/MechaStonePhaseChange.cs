@@ -62,23 +62,23 @@ public sealed class MechaStonePhaseChange : MechaStoneTaskBase
 
     private void ApplyModifiers()
     {
-        if (modifiersApplied || PropertiesManager == null)
+        if (modifiersApplied || AttributeManager == null)
         {
             return;
         }
 
-        PropertiesManager.AddModifiers(PHASE_TRANSITION_MODIFIER_SOURCE, BossData.PhaseTransitionModifiers);
+        AttributeManager.AddModifiers(PHASE_TRANSITION_MODIFIER_SOURCE, BossData.PhaseTransitionModifiers);
         modifiersApplied = true;
     }
 
     private void RemoveModifiers()
     {
-        if (!modifiersApplied || PropertiesManager == null)
+        if (!modifiersApplied || AttributeManager == null)
         {
             return;
         }
 
-        PropertiesManager.RemoveModifiers(PHASE_TRANSITION_MODIFIER_SOURCE);
+        AttributeManager.RemoveModifiers(PHASE_TRANSITION_MODIFIER_SOURCE);
         modifiersApplied = false;
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 /// 通用生命组件：
 /// - 维护当前生命值与最大生命值；
 /// - 处理已结算 hit 的应用、治疗、死亡、回血；
-/// - 与 PropertiesManager 同步防御、吸血、恢复等属性；
+/// - 与 AttributeManager 同步防御、吸血、恢复等属性；
 /// - 对外广播生命变化和受伤事件。
 /// </summary>
 public class HealthComponent : EntityComponentBase
@@ -25,7 +25,7 @@ public class HealthComponent : EntityComponentBase
     private float healthRecoveryPerSecond;
     private float recoveryBuffer;
     private Entity owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
     private bool isDeathSequenceRunning;
     private Entity lastDamageSource;
 
@@ -57,7 +57,7 @@ public class HealthComponent : EntityComponentBase
     public override void Initialize(Entity owner)
     {
         this.owner = owner;
-        propertiesManager = owner.GetComponent<PropertiesManager>();
+        AttributeManager = owner.GetComponent<AttributeManager>();
 
         InitializeRuntimeState();
         SubscribeEvents();
@@ -67,7 +67,7 @@ public class HealthComponent : EntityComponentBase
     {
         recoveryBuffer = 0f;
 
-        if (propertiesManager != null)
+        if (AttributeManager != null)
         {
             UpdateAllProperties();
             return;
@@ -80,24 +80,28 @@ public class HealthComponent : EntityComponentBase
 
     private void SubscribeEvents()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
-        propertiesManager.OnAllPropertiesChanged += UpdateAllProperties;
-        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        AttributeManager.OnAttributesChanged += UpdateAllProperties;
+        AttributeManager.SubscribeAttributeChanged(PropType.MaxHealth, OnMaxHealthChanged);
+        AttributeManager.SubscribeAttributeChanged(PropType.LifeSteal, OnLifeStealChanged);
+        AttributeManager.SubscribeAttributeChanged(PropType.HealthRecoverySpeed, OnHealthRecoverySpeedChanged);
     }
 
     public override void OnDisableComponent()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
-        propertiesManager.OnAllPropertiesChanged -= UpdateAllProperties;
-        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        AttributeManager.OnAttributesChanged -= UpdateAllProperties;
+        AttributeManager.UnsubscribeAttributeChanged(PropType.MaxHealth, OnMaxHealthChanged);
+        AttributeManager.UnsubscribeAttributeChanged(PropType.LifeSteal, OnLifeStealChanged);
+        AttributeManager.UnsubscribeAttributeChanged(PropType.HealthRecoverySpeed, OnHealthRecoverySpeedChanged);
     }
 
     public override void OnTick(float deltaTime)
@@ -154,6 +158,7 @@ public class HealthComponent : EntityComponentBase
         lastDamageSource = appliedResult.Source;
         OnDamaged?.Invoke(appliedResult);
         YokiFrame.EventKit.Type.Send(new EntityDamagedEvent(owner, appliedResult));
+        NotifyDamageEventReceivers(appliedResult);
         ApplyLifeStealToSource(appliedResult);
 
         PublishHealthChanged();
@@ -164,6 +169,19 @@ public class HealthComponent : EntityComponentBase
         }
 
         return true;
+    }
+
+    private static void NotifyDamageEventReceivers(HitResult result)
+    {
+        if (result.Source != null && result.Source.TryGetComponent(out IEntityDamageEventReceiver sourceReceiver))
+        {
+            sourceReceiver.OnOwnerDamageDealt(result);
+        }
+
+        if (result.Target != null && result.Target.TryGetComponent(out IEntityDamageEventReceiver targetReceiver))
+        {
+            targetReceiver.OnOwnerDamageReceived(result);
+        }
     }
 
     public bool ForceDeath(Entity source, EntityDeathReason deathReason)
@@ -271,28 +289,27 @@ public class HealthComponent : EntityComponentBase
         Destroy(gameObject);
     }
 
-    private void OnPropertyChanged(PropType propType, float newValue)
+    private void OnMaxHealthChanged(int newValue)
     {
-        switch (propType)
-        {
-            case PropType.MaxHealth:
-                UpdateMaxHealth();
-                break;
-            case PropType.LifeSteal:
-                lifeStealRatio = PropValueUtility.PercentPointsToNonNegativeRatio(newValue);
-                break;
-            case PropType.HealthRecoverySpeed:
-                healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(newValue);
-                break;
-        }
+        UpdateMaxHealth();
+    }
+
+    private void OnLifeStealChanged(int newValue)
+    {
+        lifeStealRatio = PropValueUtility.PercentPointsToNonNegativeRatio(newValue);
+    }
+
+    private void OnHealthRecoverySpeedChanged(int newValue)
+    {
+        healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(newValue);
     }
 
     private void UpdateAllProperties()
     {
         UpdateMaxHealth();
         lifeStealRatio = PropValueUtility.PercentPointsToNonNegativeRatio(
-            propertiesManager.GetPropValue(PropType.LifeSteal));
-        healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(propertiesManager.GetPropValue(PropType.HealthRecoverySpeed));
+            AttributeManager.GetAttributeValue(PropType.LifeSteal));
+        healthRecoveryPerSecond = ResolveHealthRecoveryPerSecond(AttributeManager.GetAttributeValue(PropType.HealthRecoverySpeed));
     }
 
     private static float ResolveHealthRecoveryPerSecond(float value)
@@ -302,7 +319,7 @@ public class HealthComponent : EntityComponentBase
 
     private void UpdateMaxHealth()
     {
-        SetMaxHealth(propertiesManager.GetPropValue(PropType.MaxHealth), true);
+        SetMaxHealth(AttributeManager.GetAttributeValue(PropType.MaxHealth), true);
     }
 
     private void SetMaxHealth(float value, bool preserveRatio)

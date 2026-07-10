@@ -8,21 +8,20 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
 
     private Rigidbody2D rb;
     private Player owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager attributeManager;
     private Vector2 moveDirection;
     private readonly HashSet<object> movementLocks = new();
     public override Entity Owner => owner;
-    public PropertiesManager PropertiesManager => propertiesManager;
+    public AttributeManager AttributeManager => attributeManager;
     public bool IsMovementLocked => movementLocks.Count > 0;
     public override void Initialize(Entity owner)
     {
         this.owner = owner as Player;
         this.rb = this.owner.Rb;
-        this.propertiesManager = this.owner.PropertiesManager;
+        attributeManager = this.owner.AttributeManager;
         movementLocks.Clear();
 
-        propertiesManager.OnAllPropertiesChanged += UpdateSpeed;
-        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        attributeManager.SubscribeAttributeChanged(PropType.MoveSpeed, OnMoveSpeedChanged);
 
         UpdateSpeed();
     }
@@ -46,10 +45,9 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
 
     public override void OnDisableComponent()
     {
-        if (propertiesManager != null)
+        if (attributeManager != null)
         {
-            propertiesManager.OnAllPropertiesChanged -= UpdateSpeed;
-            propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+            attributeManager.UnsubscribeAttributeChanged(PropType.MoveSpeed, OnMoveSpeedChanged);
         }
     }
 
@@ -69,17 +67,14 @@ public class PlayerController : EntityComponentBase, IMovable, IMovementLockable
         this.moveDirection = moveDirection;
     }
 
-    private void OnPropertyChanged(PropType propType, float newValue)
+    private void OnMoveSpeedChanged(int newValue)
     {
-        if (propType == PropType.MoveSpeed)
-        {
-            UpdateSpeed();
-        }
+        UpdateSpeed();
     }
 
     private void UpdateSpeed()
     {
-        speed = PropValueUtility.DistancePointsToWorldUnits(propertiesManager.GetPropValue(PropType.MoveSpeed));
+        speed = PropValueUtility.DistancePointsToWorldUnits(attributeManager.GetAttributeValue(PropType.MoveSpeed));
     }
 
     public void EnableMovement()

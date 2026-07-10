@@ -503,14 +503,14 @@ public sealed class GameFlowService : GameService, IGameFlowController
         }
 
         CurrencyWallet currencyWallet = player.GetComponent<CurrencyWallet>();
-        PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
-        if (currencyWallet == null || propertiesManager == null)
+        AttributeManager AttributeManager = player.GetComponent<AttributeManager>();
+        if (currencyWallet == null || AttributeManager == null)
         {
             return;
         }
 
         int rewardAmount = PropValueUtility.FloatPointsToNonNegativeFlooredInt(
-            propertiesManager.GetPropValue(PropType.WaveGoldRewardBonus));
+            AttributeManager.GetAttributeValue(PropType.WaveGoldRewardBonus));
         if (rewardAmount <= 0)
         {
             return;
@@ -610,7 +610,7 @@ public sealed class GameFlowService : GameService, IGameFlowController
         return new ShopPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
-            player.GetComponent<PropertiesManager>(),
+            player.GetComponent<AttributeManager>(),
             shopController);
     }
 
@@ -860,14 +860,14 @@ public sealed class GameFlowService : GameService, IGameFlowController
     private GamePauseMenuContext CreatePauseMenuContext()
     {
         EnsurePlayerReference();
-        PropertiesManager propertiesManager = player.GetComponent<PropertiesManager>();
-        if (propertiesManager == null)
+        AttributeManager AttributeManager = player.GetComponent<AttributeManager>();
+        if (AttributeManager == null)
         {
             throw new MissingReferenceException(
-                $"{nameof(GameFlowService)} requires player '{player.name}' to have a {nameof(PropertiesManager)} before opening the pause menu.");
+                $"{nameof(GameFlowService)} requires player '{player.name}' to have a {nameof(AttributeManager)} before opening the pause menu.");
         }
 
-        return new GamePauseMenuContext(player, propertiesManager);
+        return new GamePauseMenuContext(player, AttributeManager);
     }
 
     private async UniTask RunPostStatePageOpenedAsync(

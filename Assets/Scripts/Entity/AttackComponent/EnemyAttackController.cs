@@ -111,7 +111,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
     private readonly Dictionary<string, BasicAttackSlot> basicAttackSlotLookup = new(StringComparer.Ordinal);
     private LayerMask attackLayer;
     private Entity owner;
-    private PropertiesManager propertiesManager;
+    private AttributeManager AttributeManager;
 
     public override Entity Owner => owner;
     public LayerMask AttackLayer
@@ -126,10 +126,10 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
     {
         this.owner = owner;
         attackLayer = LayerMask.GetMask("Player");
-        propertiesManager = owner.GetComponent<PropertiesManager>();
-        if (propertiesManager == null)
+        AttributeManager = owner.GetComponent<AttributeManager>();
+        if (AttributeManager == null)
         {
-            throw new MissingComponentException($"{nameof(EnemyAttackController)} requires a {nameof(PropertiesManager)} on {owner.name}.");
+            throw new MissingComponentException($"{nameof(EnemyAttackController)} requires a {nameof(AttributeManager)} on {owner.name}.");
         }
 
         RebuildLookup();
@@ -318,15 +318,7 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
         return !string.IsNullOrWhiteSpace(attackId);
     }
 
-    private void OnPropertyChanged(PropType propType, float _)
-    {
-        if (propType == PropType.AttackSpeed)
-        {
-            RefreshBasicAttackSlots();
-        }
-    }
-
-    private void OnAllPropertiesChanged()
+    private void OnAttackSpeedChanged(int newValue)
     {
         RefreshBasicAttackSlots();
     }
@@ -342,31 +334,29 @@ public class EnemyAttackController : EntityComponentBase, IProjectileLauncher
 
     private float ResolveAttackSpeed()
     {
-        return propertiesManager != null
-            ? propertiesManager.GetPropValue(PropType.AttackSpeed)
+        return AttributeManager != null
+            ? AttributeManager.GetAttributeValue(PropType.AttackSpeed)
             : PropValueUtility.ATTACK_SPEED_POINTS_PER_ATTACK_PER_SECOND;
     }
 
     private void BindProperties()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
         UnbindProperties();
-        propertiesManager.OnAllPropertiesChanged += OnAllPropertiesChanged;
-        propertiesManager.OnPropertyChanged += OnPropertyChanged;
+        AttributeManager.SubscribeAttributeChanged(PropType.AttackSpeed, OnAttackSpeedChanged);
     }
 
     private void UnbindProperties()
     {
-        if (propertiesManager == null)
+        if (AttributeManager == null)
         {
             return;
         }
 
-        propertiesManager.OnAllPropertiesChanged -= OnAllPropertiesChanged;
-        propertiesManager.OnPropertyChanged -= OnPropertyChanged;
+        AttributeManager.UnsubscribeAttributeChanged(PropType.AttackSpeed, OnAttackSpeedChanged);
     }
 }

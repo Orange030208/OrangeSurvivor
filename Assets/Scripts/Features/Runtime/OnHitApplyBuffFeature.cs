@@ -8,7 +8,7 @@ public enum FeatureBuffApplyTarget
 }
 
 [Serializable]
-public sealed class OnHitApplyBuffFeature : FeatureBase
+public sealed class OnHitApplyBuffFeature : FeatureBase, IDamageDealtFeatureEffect
 {
     [SerializeField] private BuffDataSO buffData;
     [SerializeField, Range(0f, 100f)] private float applyChancePercent = 100f;
@@ -25,19 +25,8 @@ public sealed class OnHitApplyBuffFeature : FeatureBase
     public override string Title => "命中附加 Buff";
     public override string Description => BuildDescription();
 
-    public override void OnInstall()
+    public void OnDamageDealt(HitResult result)
     {
-        YokiFrame.EventKit.Type.Register<EntityDamagedEvent>(OnEntityDamaged);
-    }
-
-    public override void OnUninstall()
-    {
-        YokiFrame.EventKit.Type.UnRegister<EntityDamagedEvent>(OnEntityDamaged);
-    }
-
-    private void OnEntityDamaged(EntityDamagedEvent eventData)
-    {
-        HitResult result = eventData.HitResult;
         if (buffData == null ||
             result.Source != Context?.OwnerEntity ||
             result.FinalDamage <= 0f ||
