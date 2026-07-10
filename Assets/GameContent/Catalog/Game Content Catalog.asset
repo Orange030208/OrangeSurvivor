@@ -119,6 +119,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2a47ea57cc874f1892e6c89e4d617745, type: 2}
   - {fileID: 11400000, guid: 36d2b66b8a564ebba6832a57a628b749, type: 2}
   - {fileID: 11400000, guid: 27ff6864d4bc46929c93848be03271b4, type: 2}
+  - {fileID: 11400000, guid: 5e4d392392804599851ea075350f0799, type: 2}
   starterCards:
   - {fileID: 11400000, guid: 2e7fb64b563c407d90325fd869e49802, type: 2}
   - {fileID: 11400000, guid: d56627b7db7093548beeebabe386547e, type: 2}
