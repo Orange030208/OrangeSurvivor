@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02e0c1952452be8479f9f9bc09a3f761, type: 3}
-  m_Name: Upgrade_GoldenTicket
+  m_Name: Build_RebuyEcho
   m_EditorClassIdentifier:
-  id: Upgrade_GoldenTicket
-  title: "黄金门票"
-  tier: 2
+  id: Build_RebuyEcho
+  title: "回购回声"
+  tier: 3
   tags: 64
   icon: {fileID: 21300000, guid: 153b20ebc55809c4bbff3655a7ea4795, type: 3}
-  description: "每次刷新商店时，有 40% 概率获得 1 次免费刷新。"
+  description: "每次付费刷新获得 5 + 当前波次金币；免费刷新只获得当前波次金币。"
   grantedAbilities:
-  - rid: 7290100100000000001
+  - rid: 7290100400000000001
   references:
     version: 2
     RefIds:
-    - rid: 7290100100000000001
-      type: {class: RerollChanceFreeRerollFeature, ns: , asm: Assembly-CSharp}
+    - rid: 7290100400000000001
+      type: {class: RerollGoldRewardFeature, ns: , asm: Assembly-CSharp}
       data:
-        chancePercent: 40
-        freeRerollCount: 1
+        paidRerollBaseGold: 5
+        fallbackWaveNumber: 1

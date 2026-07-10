@@ -172,7 +172,7 @@ public sealed class ShopService : GameService, IShopController
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
-        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
+        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level, price);
     }
 
     private void ProcessWeaponPurchase(ShopItemData itemData, int itemIndex)
@@ -216,7 +216,7 @@ public sealed class ShopService : GameService, IShopController
         }
 
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
-        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level);
+        NotifyPurchaseSucceeded(itemData.ItemData, itemData.Level, price);
     }
 
     private void MarkItemAsSoldOut(int index)
@@ -486,6 +486,11 @@ public sealed class ShopService : GameService, IShopController
         }
 
         currentItems[itemIndex].Lock = !currentItems[itemIndex].Lock;
+        if (currentItems[itemIndex].Lock)
+        {
+            NotifyItemLocked(itemIndex, currentItems[itemIndex]);
+        }
+
         Debug.Log(
             $"物品:{currentItems[itemIndex].ItemData.ItemName} 锁定状态:{currentItems[itemIndex].Lock}",
             LogContext);
@@ -688,9 +693,10 @@ public sealed class ShopService : GameService, IShopController
         currentCurrency = currencyWallet != null ? currencyWallet.CurrentAmount : 0;
     }
 
-    private void NotifyPurchaseSucceeded(ItemDataSO itemData, int level)
+    private void NotifyPurchaseSucceeded(ItemDataSO itemData, int level, int price)
     {
         PurchaseSucceeded?.Invoke(new ShopPurchaseSuccess(itemData, level));
+        YokiFrame.EventKit.Type.Send(new ShopItemPurchasedEvent(player, itemData, level, price));
     }
 
     private void NotifyPurchaseFailed(string message)
@@ -702,5 +708,10 @@ public sealed class ShopService : GameService, IShopController
     private void NotifyShopRerolled(bool usedFreeReroll)
     {
         YokiFrame.EventKit.Type.Send(new ShopRerolledEvent(player, usedFreeReroll));
+    }
+
+    private void NotifyItemLocked(int itemIndex, ShopItemData itemData)
+    {
+        YokiFrame.EventKit.Type.Send(new ShopItemLockedEvent(player, itemIndex, itemData.ItemData, itemData.Level));
     }
 }

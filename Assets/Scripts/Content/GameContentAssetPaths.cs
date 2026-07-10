@@ -41,6 +41,9 @@ public static class GameContentAssetPaths
     public const string Upgrades = Root + "/Upgrades";
     public const string UpgradeCards = Upgrades + "/Cards";
     public const string UpgradePresentation = Upgrades + "/Presentation";
+    public const string BuildCards = Root + "/BuildCards";
+    public const string ShopBuildCards = BuildCards + "/Shop/Cards";
+    public const string HeartSteelBuildCards = BuildCards + "/HeartSteel/Cards";
 
     public const string Waves = Root + "/Waves";
     public const string WavesData = Waves + "/Data";

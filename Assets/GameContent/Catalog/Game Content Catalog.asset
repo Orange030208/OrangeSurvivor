@@ -115,6 +115,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ab82487a1f9541cbaf6b8402ccb5ea96, type: 2}
   - {fileID: 11400000, guid: 99fcd4fba02b4c1f95441e008cd11eed, type: 2}
   - {fileID: 11400000, guid: 4ba195dd404443adb11526372fd27857, type: 2}
+  - {fileID: 11400000, guid: 502527ea8fe44c1595d85a9cff9720bd, type: 2}
+  - {fileID: 11400000, guid: 2a47ea57cc874f1892e6c89e4d617745, type: 2}
+  - {fileID: 11400000, guid: 36d2b66b8a564ebba6832a57a628b749, type: 2}
+  - {fileID: 11400000, guid: 27ff6864d4bc46929c93848be03271b4, type: 2}
   starterCards:
   - {fileID: 11400000, guid: 2e7fb64b563c407d90325fd869e49802, type: 2}
   - {fileID: 11400000, guid: d56627b7db7093548beeebabe386547e, type: 2}
