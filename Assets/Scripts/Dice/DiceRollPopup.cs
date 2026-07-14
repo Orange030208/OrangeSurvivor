@@ -76,7 +76,7 @@ public sealed class DiceRollPopup : PopupBase
     {
         try
         {
-            diceMotionPlayer.Play(ROLL_CLIP_ID);
+            PlayMotionIfConfigured(ROLL_CLIP_ID);
 
             float elapsed = 0f;
             int previousFaceValue = DiceRollResult.MIN_FACE_VALUE;
@@ -102,7 +102,7 @@ public sealed class DiceRollPopup : PopupBase
             diceImage.sprite = GetFaceSprite(result.FaceValue);
             resultText.text = $"结果：{result.FaceValue}";
             resultText.gameObject.SetActive(true);
-            diceMotionPlayer.Play(SETTLE_CLIP_ID);
+            PlayMotionIfConfigured(SETTLE_CLIP_ID);
             await UniTask.Delay(
                 TimeSpan.FromSeconds(0.2f),
                 DelayType.UnscaledDeltaTime,
@@ -160,6 +160,14 @@ public sealed class DiceRollPopup : PopupBase
         }
 
         return sprite;
+    }
+
+    private void PlayMotionIfConfigured(string clipId)
+    {
+        if (diceMotionPlayer.TryGetClip(clipId, out _))
+        {
+            diceMotionPlayer.Play(clipId);
+        }
     }
 
     private void BindCloseButton()

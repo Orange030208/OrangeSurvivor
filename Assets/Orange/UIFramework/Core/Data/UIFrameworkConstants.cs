@@ -3,9 +3,6 @@ namespace Orange.UIFramework
 {
     public static class UIFrameworkConstants
     {
-        public const string MENU_ROOT = "Orange/UI Framework/";
-        public const string SETTINGS_MENU_PATH = MENU_ROOT + "Settings";
-        public const string CATALOG_MENU_PATH = MENU_ROOT + "View Catalog";
         public const string DEFAULT_INSTANCE_ID_PREFIX = "UIInst_";
         public const int LAYER_BACKGROUND_SORTING_ORDER = -300;
         public const int LAYER_SCENE_OVERLAY_SORTING_ORDER = -100;

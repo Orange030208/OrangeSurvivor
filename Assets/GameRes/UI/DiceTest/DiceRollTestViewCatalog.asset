@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d79c9f3236e488a8f4f91f09e64606e, type: 3}
+  m_Name: DiceRollTestViewCatalog
+  views:
+  - id: page.diceRollTest
+    kind: 0
+    layer: 2
+    prefab: {fileID: 200000, guid: 14ee382116144d0da9e343ee7d758f7e, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 1
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: -1
+    allowDuplicateViewType: 0
+  - id: popup.diceRoll
+    kind: 1
+    layer: 3
+    prefab: {fileID: 100000, guid: 10d2864bbdce442fb095b7dd8d985a91, type: 3}
+    singleton: 1
+    cacheOnClose: 1
+    trackInBackStack: 0
+    closeOnBackgroundClick: 0
+    warmupCount: 0
+    maxCachedInstancesOverride: 1
+    allowDuplicateViewType: 0
