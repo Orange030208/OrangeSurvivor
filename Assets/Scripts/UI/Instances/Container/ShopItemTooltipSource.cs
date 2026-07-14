@@ -7,34 +7,26 @@ public sealed class ShopItemTooltipSource : MonoBehaviour, ITooltipContentSource
     [SerializeField] private ShopItemContainer targetContainer;
 
     private readonly ItemInfoViewDataBuilder itemInfoBuilder = new();
-    private ShopItemData currentShopItem;
+    private ShopOfferViewData currentShopOffer;
 
-    public void Bind(ShopItemData shopItem)
+    public void Bind(ShopOfferViewData shopOffer)
     {
-        currentShopItem = shopItem;
+        currentShopOffer = shopOffer;
     }
 
     public void Clear()
     {
-        currentShopItem = default;
+        currentShopOffer = default;
     }
 
     public bool TryBuildTooltipContent(out TooltipContent content)
     {
-        ItemDataSO itemData = currentShopItem.ItemData;
-        ItemInfoViewData data;
-        if (itemData is WeaponDataSO weaponData)
-        {
-            data = itemInfoBuilder.Build(weaponData, currentShopItem.Level);
-        }
-        else if (itemData is AccessoryDataSO accessoryData)
-        {
-            data = itemInfoBuilder.Build(accessoryData);
-        }
-        else
-        {
-            data = itemInfoBuilder.Build(itemData);
-        }
+        ItemInfoViewData data = currentShopOffer.InfoDocument != null
+            ? itemInfoBuilder.Build(
+                currentShopOffer.InfoDocument,
+                currentShopOffer.TypeText,
+                currentShopOffer.DisplayName)
+            : itemInfoBuilder.Build(currentShopOffer.DisplayItem);
 
         if (string.IsNullOrWhiteSpace(data.Name) && string.IsNullOrWhiteSpace(data.BodyRichText))
         {

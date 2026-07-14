@@ -31,7 +31,7 @@ public sealed class ShopExtractionPool : WeightedExtractionPool<ShopExtractionCa
 
         foreach (ShopExtractionCandidate candidate in candidates)
         {
-            if (candidate == null || candidate.ItemData == null)
+            if (candidate == null || candidate.Product == null)
             {
                 continue;
             }
@@ -48,11 +48,11 @@ public sealed class ShopExtractionPool : WeightedExtractionPool<ShopExtractionCa
         WeightedExtractionEntry<ShopExtractionCandidate, ShopExtractionContext> entry,
         ShopExtractionContext context)
     {
-        if (entry?.Item?.ItemData is not AccessoryDataSO accessory)
+        if (entry?.Item?.Product is not AccessoryShopProduct accessoryProduct)
         {
             return true;
         }
 
-        return context.AccessoryManager == null || context.AccessoryManager.CanEquipAccessory(accessory);
+        return context.AccessoryManager == null || context.AccessoryManager.CanEquipAccessory(accessoryProduct.AccessoryData);
     }
 }

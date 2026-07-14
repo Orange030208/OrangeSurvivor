@@ -22,7 +22,7 @@ public sealed class GameFlowService : GameService, IGameFlowController
     [SerializeField] private Vector3 playerSpawnPosition = Vector3.zero;
 
     private IWaveController waveController;
-    private IShopController shopController;
+    private ShopManager shopManager;
     private IEnemyRegistry enemyRegistry;
     private GameState currentGameState = GameState.None;
     private ViewHandle<GamePadUI> gamePadHandle;
@@ -54,7 +54,7 @@ public sealed class GameFlowService : GameService, IGameFlowController
         dependencies.Require<IGameContentProvider>();
         dependencies.Require<IEnemyRegistry>();
         dependencies.Require<IWaveController>();
-        dependencies.Require<IShopController>();
+        dependencies.Require<ShopManager>();
         dependencies.Optional<RunSummaryService>();
     }
 
@@ -601,17 +601,17 @@ public sealed class GameFlowService : GameService, IGameFlowController
     private ShopPageContext CreateShopPageContext()
     {
         EnsurePlayerReference();
-        ResolveShopController();
-        if (shopController == null)
+        ResolveShopManager();
+        if (shopManager == null)
         {
-            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IShopController)}.");
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(ShopManager)}.");
         }
 
         return new ShopPageContext(
             player,
             player.GetComponent<CurrencyWallet>(),
             player.GetComponent<AttributeManager>(),
-            shopController);
+            shopManager);
     }
 
     private async UniTask OpenGamePadAsync(CancellationToken cancellationToken)
@@ -785,7 +785,7 @@ public sealed class GameFlowService : GameService, IGameFlowController
     private void ResolveSceneReferences()
     {
         ResolveWaveController();
-        ResolveShopController();
+        ResolveShopManager();
         ResolveEnemyRegistry();
 
         if (mapGenerator == null)
@@ -798,9 +798,9 @@ public sealed class GameFlowService : GameService, IGameFlowController
             throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IWaveController)}.");
         }
 
-        if (shopController == null)
+        if (shopManager == null)
         {
-            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(IShopController)}.");
+            throw new MissingReferenceException($"{nameof(GameFlowService)} requires {nameof(ShopManager)}.");
         }
 
         if (enemyRegistry == null)
@@ -822,16 +822,16 @@ public sealed class GameFlowService : GameService, IGameFlowController
         }
     }
 
-    private void ResolveShopController()
+    private void ResolveShopManager()
     {
-        if (shopController != null)
+        if (shopManager != null)
         {
             return;
         }
 
-        if (Context != null && Context.TryGet(out IShopController resolvedShopController))
+        if (Context != null && Context.TryGet(out ShopManager resolvedShopManager))
         {
-            shopController = resolvedShopController;
+            shopManager = resolvedShopManager;
         }
     }
 

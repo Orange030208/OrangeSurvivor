@@ -2,26 +2,15 @@ using System;
 
 public sealed class ShopExtractionCandidate : IHasContentTier
 {
-    private ShopExtractionCandidate(
-        string entryId,
-        ItemDataSO itemData,
-        int level,
-        ContentTier tier)
+    private ShopExtractionCandidate(IShopProduct product)
     {
-        if (string.IsNullOrWhiteSpace(entryId))
-        {
-            throw new ArgumentException("Shop extraction candidate entry id cannot be null, empty, or whitespace.", nameof(entryId));
-        }
-
-        EntryId = entryId;
-        ItemData = itemData ?? throw new ArgumentNullException(nameof(itemData));
-        Level = WeaponLevelHelper.ClampLevel(level);
-        Tier = ContentTierResolver.FromQualityValue((int)tier);
+        Product = product ?? throw new ArgumentNullException(nameof(product));
+        EntryId = product.Key.StableId;
+        Tier = ContentTierResolver.FromQualityValue((int)product.Tier);
     }
 
     public string EntryId { get; }
-    public ItemDataSO ItemData { get; }
-    public int Level { get; }
+    public IShopProduct Product { get; }
     public ContentTier Tier { get; }
 
     public static ShopExtractionCandidate CreateAccessory(AccessoryDataSO accessory)
@@ -31,14 +20,7 @@ public sealed class ShopExtractionCandidate : IHasContentTier
             return null;
         }
 
-        string entryId = !string.IsNullOrWhiteSpace(accessory.AccessoryId)
-            ? accessory.AccessoryId
-            : accessory.name;
-        return new ShopExtractionCandidate(
-            entryId,
-            accessory,
-            WeaponLevelHelper.MinLevel,
-            accessory.Tier);
+        return new ShopExtractionCandidate(new AccessoryShopProduct(accessory));
     }
 
     public static ShopExtractionCandidate CreateWeapon(WeaponDataSO weapon, int level)
@@ -48,11 +30,6 @@ public sealed class ShopExtractionCandidate : IHasContentTier
             return null;
         }
 
-        int clampedLevel = WeaponLevelHelper.ClampLevel(level);
-        return new ShopExtractionCandidate(
-            $"{weapon.WeaponId}_Lv{clampedLevel}",
-            weapon,
-            clampedLevel,
-            ContentTierResolver.FromWeaponLevel(clampedLevel));
+        return new ShopExtractionCandidate(new WeaponShopProduct(weapon, level));
     }
 }

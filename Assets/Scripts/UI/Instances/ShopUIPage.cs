@@ -29,13 +29,13 @@ public class ShopUIPage : PageBase
     [FormerlySerializedAs("inventoryPopupButton")]
     [SerializeField] private Button equipmentPopupButton;
 
-    private IShopController shopController;
+    private ShopManager shopManager;
     private CurrencyWallet currencyWallet;
     private ShopPageContext currentContext;
     private ViewHandle<PropertiesPopup> propertiesPopupHandle;
     private ViewHandle<EquipmentPopup> equipmentPopupHandle;
     private bool buttonEventsBound;
-    private bool managerEventsBound;
+    private bool shopManagerEventsBound;
     private bool propertiesPopupOpen;
     private bool equipmentPopupOpen;
     private int propertiesPopupVersion;
@@ -68,14 +68,14 @@ public class ShopUIPage : PageBase
             throw new ArgumentNullException(nameof(context));
         }
 
-        shopController = context.ShopController;
+        shopManager = context.ShopManager;
         currentContext = context;
 
         BindButtonEvents();
         BindManagerEvents();
         BindCurrencyWallet(context.CurrencyWallet);
         BindItemListEvents();
-        shopController.RefreshViewState();
+        shopManager.RefreshViewState();
     }
 
     private void OnExitShop()
@@ -90,14 +90,14 @@ public class ShopUIPage : PageBase
 
         itemList.Clear();
 
-        shopController = null;
+        shopManager = null;
         currencyWallet = null;
         currentContext = null;
     }
 
-    private void RenderShopItems(ShopItemData[] items, ShopRefreshReason reason)
+    private void RenderShopItems(ShopOfferViewData[] offers, ShopRefreshReason reason)
     {
-        itemList.Render(items, reason);
+        itemList.Render(offers, reason);
     }
 
     private void UpdateRerollState(int rerollCost, int freeRerollCount, bool canReroll)
@@ -127,9 +127,8 @@ public class ShopUIPage : PageBase
 
     private void ShowPurchaseSuccess(ShopPurchaseSuccess result)
     {
-        ItemDataSO itemData = result.ItemData;
-        string itemName = itemData != null && !string.IsNullOrWhiteSpace(itemData.ItemName)
-            ? itemData.ItemName
+        string itemName = !string.IsNullOrWhiteSpace(result.Offer.DisplayName)
+            ? result.Offer.DisplayName
             : "商品";
 
         Debug.Log($"[Shop] 购买成功：{itemName}", this);
@@ -149,7 +148,7 @@ public class ShopUIPage : PageBase
 
     private void OnRerollRequested()
     {
-        shopController?.RequestReroll();
+        shopManager?.RequestReroll();
     }
 
     private void OnContinueRequested()
@@ -344,14 +343,14 @@ public class ShopUIPage : PageBase
         await handle.CloseAsync(reason);
     }
 
-    private void OnItemBuyRequested(int itemIndex)
+    private void OnItemBuyRequested(int offerId)
     {
-        shopController?.RequestBuyItem(itemIndex);
+        shopManager?.RequestBuyOffer(offerId);
     }
 
-    private void OnItemLockToggleRequested(int itemIndex)
+    private void OnItemLockToggleRequested(int offerId)
     {
-        shopController?.RequestToggleLock(itemIndex);
+        shopManager?.RequestToggleOfferLock(offerId);
     }
 
     private void BindButtonEvents()
@@ -384,34 +383,34 @@ public class ShopUIPage : PageBase
 
     private void BindManagerEvents()
     {
-        if (managerEventsBound)
+        if (shopManagerEventsBound)
         {
             return;
         }
 
-        if (shopController != null)
+        if (shopManager != null)
         {
-            shopController.ViewStateChanged += OnViewStateChanged;
-            shopController.PurchaseSucceeded += OnPurchaseSucceeded;
-            shopController.PurchaseFailed += OnPurchaseFailed;
+            shopManager.ViewStateChanged += OnViewStateChanged;
+            shopManager.PurchaseSucceeded += OnPurchaseSucceeded;
+            shopManager.PurchaseFailed += OnPurchaseFailed;
         }
-        managerEventsBound = true;
+        shopManagerEventsBound = true;
     }
 
     private void UnbindManagerEvents()
     {
-        if (!managerEventsBound)
+        if (!shopManagerEventsBound)
         {
             return;
         }
 
-        if (shopController != null)
+        if (shopManager != null)
         {
-            shopController.ViewStateChanged -= OnViewStateChanged;
-            shopController.PurchaseSucceeded -= OnPurchaseSucceeded;
-            shopController.PurchaseFailed -= OnPurchaseFailed;
+            shopManager.ViewStateChanged -= OnViewStateChanged;
+            shopManager.PurchaseSucceeded -= OnPurchaseSucceeded;
+            shopManager.PurchaseFailed -= OnPurchaseFailed;
         }
-        managerEventsBound = false;
+        shopManagerEventsBound = false;
     }
 
     private void BindItemListEvents()
@@ -431,7 +430,7 @@ public class ShopUIPage : PageBase
     private void OnViewStateChanged(ShopViewState viewState)
     {
         UpdateRerollState(viewState.RerollCost, viewState.FreeRerollCount, viewState.CanReroll);
-        RenderShopItems(viewState.Items, viewState.Reason);
+        RenderShopItems(viewState.Offers, viewState.Reason);
         LogRefresh(viewState.Reason);
     }
 
@@ -522,10 +521,13 @@ public class ShopUIPage : PageBase
         return message switch
         {
             "Item index out of range." => "商品已失效",
+            "Invalid shop offer." => "商品已失效",
             "Item data is null." => "商品数据异常，无法购买",
+            "Item already sold out." => "商品已售罄",
             "Accessory data is null or wrong type." => "饰品数据异常，无法购买",
             "Weapon data is null or wrong type." => "武器数据异常，无法购买",
             PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE => "金币不足，无法购买",
+            "Shop reroll is blocked." => "本轮商店无法刷新",
             "Accessory manager not found." => "当前角色无法装备饰品",
             "Weapons holder not found." => "当前角色无法装备武器",
             "Accessory owned limit reached." => "饰品数量已达上限",

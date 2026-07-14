@@ -64,7 +64,7 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
     [SerializeField] private ShopItemTierConsumer tierConsumer = new();
 
     private int currentIndex = -1;
-    private ShopItemData currentShopItem;
+    private ShopOfferViewData currentShopOffer;
     private bool isSoldOut;
     private GameObject soldOutOverlayInstance;
     private bool missingSoldOutOverlayLogged;
@@ -77,55 +77,44 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         SetSoldOutState(false);
     }
 
-    public void Configure(InfoAddIndex<ShopItemData> resource)
+    public void Configure(InfoAddIndex<ShopOfferViewData> resource)
     {
-        ShopItemData shopItem = resource.info;
-        ItemDataSO itemData = shopItem.ItemData;
+        ShopOfferViewData shopOffer = resource.info;
 
-        if (itemData == null)
+        if (string.IsNullOrWhiteSpace(shopOffer.DisplayName))
         {
-            throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' received a shop item without {nameof(ItemDataSO)}.");
+            throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' received a shop offer without display name.");
         }
 
-        if (itemData is AccessoryDataSO)
-        {
-            SetNameText(ItemNameStyleUtility.GetAccessoryDisplayName(itemData.ItemName, shopItem.Tier));
-        }
-        else if (itemData is WeaponDataSO)
-        {
-            SetNameText(ItemNameStyleUtility.GetWeaponDisplayName(itemData.ItemName, shopItem.Level));
-        }
-        else
-        {
-            throw new InvalidOperationException($"{nameof(ShopItemContainer)} '{name}' does not support item type '{itemData.GetType().Name}'.");
-        }
+        SetNameText(shopOffer.DisplayName);
 
         if (lockImage != null)
         {
-            lockImage.sprite = shopItem.Lock ? lockSprite : unlockSprite;
+            lockImage.sprite = shopOffer.IsLocked ? lockSprite : unlockSprite;
         }
 
         if (priceText != null)
         {
-            priceText.text = shopItem.GetPrice().ToString();
+            priceText.richText = true;
+            priceText.text = BuildPriceText(shopOffer);
         }
 
         if (iconImage != null)
         {
-            iconImage.sprite = itemData.ItemIcon;
-            iconImage.enabled = itemData.ItemIcon != null;
+            iconImage.sprite = shopOffer.Icon;
+            iconImage.enabled = shopOffer.Icon != null;
         }
 
-        if (!tierConsumer.Consume(shopItem.Tier))
+        if (!tierConsumer.Consume(shopOffer.Tier))
         {
-            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' could not resolve shop item tier '{shopItem.Tier}'.", this);
+            Debug.LogWarning($"{nameof(ShopItemContainer)} '{name}' could not resolve shop item tier '{shopOffer.Tier}'.", this);
         }
 
         RemoveButtonListeners();
 
         currentIndex = resource.index;
-        currentShopItem = shopItem;
-        SetSoldOutState(shopItem.SoldOut);
+        currentShopOffer = shopOffer;
+        SetSoldOutState(shopOffer.IsSoldOut);
         AddButtonListeners();
     }
 
@@ -140,29 +129,13 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         BuyRequested = null;
         LockToggleRequested = null;
         currentIndex = -1;
-        currentShopItem = default;
+        currentShopOffer = default;
         SetSoldOutState(false);
     }
 
     public InfoDocument BuildInfoDocument()
     {
-        ItemDataSO itemData = currentShopItem.ItemData;
-        if (itemData == null)
-        {
-            return null;
-        }
-
-        if (itemData is WeaponDataSO weaponData)
-        {
-            return new WeaponLevelDescribable(weaponData, currentShopItem.Level).BuildInfoDocument();
-        }
-
-        if (itemData is IInfoDocumentSource infoDocumentSource)
-        {
-            return infoDocumentSource.BuildInfoDocument();
-        }
-
-        return null;
+        return currentShopOffer.InfoDocument;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -202,6 +175,16 @@ public class ShopItemContainer : ViewPartBase, IDisposable, IPointerClickHandler
         {
             nameText.text = text;
         }
+    }
+
+    private static string BuildPriceText(ShopOfferViewData shopOffer)
+    {
+        if (shopOffer.OriginalPrice > shopOffer.Price)
+        {
+            return $"<s><color=#8F8F8F>{shopOffer.OriginalPrice}</color></s> <color=#FFD84A>{shopOffer.Price}</color>";
+        }
+
+        return shopOffer.Price.ToString();
     }
 
     private void AddButtonListeners()

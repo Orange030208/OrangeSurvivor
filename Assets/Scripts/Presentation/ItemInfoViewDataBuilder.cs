@@ -65,6 +65,11 @@ public sealed class ItemInfoViewDataBuilder
             itemData.ManualDescription);
     }
 
+    public ItemInfoViewData Build(InfoDocument document, string fallbackTypeText, string overrideName = null)
+    {
+        return BuildFromDocument(document, fallbackTypeText, overrideName);
+    }
+
     private static ItemInfoViewData BuildFromDocument(
         InfoDocument document,
         string fallbackTypeText,

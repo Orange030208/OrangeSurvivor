@@ -11181,7 +11181,7 @@ MonoBehaviour:
         spawnAroundEntity: {fileID: 0}
         spawnParent: {fileID: 0}
     - rid: 754862647004
-      type: {class: ShopService, ns: , asm: Assembly-CSharp}
+      type: {class: ShopManager, ns: , asm: Assembly-CSharp}
       data:
         enabled: 1
         containersToAdd: 6

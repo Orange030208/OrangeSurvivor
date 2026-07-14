@@ -1,27 +1,35 @@
 public readonly struct ShopViewState
 {
-    public ShopItemData[] Items { get; }
+    public ShopOfferViewData[] Offers { get; }
     public int RerollCost { get; }
     public int FreeRerollCount { get; }
     public bool CanReroll { get; }
+    public bool IsRerollBlocked { get; }
     public ShopRefreshReason Reason { get; }
 
-    public ShopViewState(ShopItemData[] items, int rerollCost, bool canReroll)
-        : this(items, rerollCost, 0, canReroll, ShopRefreshReason.StateUpdate)
+    public ShopViewState(ShopOfferViewData[] offers, int rerollCost, bool canReroll)
+        : this(offers, rerollCost, 0, canReroll, false, ShopRefreshReason.StateUpdate)
     {
     }
 
-    public ShopViewState(ShopItemData[] items, int rerollCost, bool canReroll, ShopRefreshReason reason)
-        : this(items, rerollCost, 0, canReroll, reason)
+    public ShopViewState(ShopOfferViewData[] offers, int rerollCost, bool canReroll, ShopRefreshReason reason)
+        : this(offers, rerollCost, 0, canReroll, false, reason)
     {
     }
 
-    public ShopViewState(ShopItemData[] items, int rerollCost, int freeRerollCount, bool canReroll, ShopRefreshReason reason)
+    public ShopViewState(
+        ShopOfferViewData[] offers,
+        int rerollCost,
+        int freeRerollCount,
+        bool canReroll,
+        bool isRerollBlocked,
+        ShopRefreshReason reason)
     {
-        Items = items;
+        Offers = offers;
         RerollCost = rerollCost;
         FreeRerollCount = freeRerollCount;
         CanReroll = canReroll;
+        IsRerollBlocked = isRerollBlocked;
         Reason = reason;
     }
 }

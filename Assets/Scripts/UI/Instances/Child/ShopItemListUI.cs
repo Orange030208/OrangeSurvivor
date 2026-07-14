@@ -28,9 +28,9 @@ public class ShopItemListUI : ViewPartBase
         LockToggleRequested = null;
     }
 
-    public void Render(ShopItemData[] items, ShopRefreshReason reason)
+    public void Render(ShopOfferViewData[] offers, ShopRefreshReason reason)
     {
-        if (items == null || items.Length == 0)
+        if (offers == null || offers.Length == 0)
         {
             Clear();
             return;
@@ -43,10 +43,10 @@ public class ShopItemListUI : ViewPartBase
         renderedItems.Clear();
         renderedItemIdentities.Clear();
 
-        for (int i = 0; i < items.Length; i++)
+        for (int i = 0; i < offers.Length; i++)
         {
             RenderItem(
-                items[i],
+                offers[i],
                 i,
                 previousItems,
                 previousIdentities,
@@ -68,19 +68,19 @@ public class ShopItemListUI : ViewPartBase
     }
 
     private void RenderItem(
-        ShopItemData itemData,
-        int itemIndex,
+        ShopOfferViewData offerData,
+        int slotIndex,
         List<ShopItemContainer> previousItems,
         List<ShopItemIdentity> previousIdentities,
         bool[] previousItemConsumed)
     {
-        if (itemData.ItemData == null)
+        if (string.IsNullOrWhiteSpace(offerData.DisplayName))
         {
-            Debug.LogWarning($"{nameof(ShopItemListUI)} on '{name}' skipped rendering a shop item without {nameof(ItemDataSO)}.", this);
+            Debug.LogWarning($"{nameof(ShopItemListUI)} on '{name}' skipped rendering a shop offer without display name.", this);
             return;
         }
 
-        ShopItemIdentity nextIdentity = ShopItemIdentity.From(itemData);
+        ShopItemIdentity nextIdentity = ShopItemIdentity.From(offerData);
         int reusableItemIndex = FindReusableItemIndex(nextIdentity, previousItems, previousIdentities, previousItemConsumed);
         ShopItemContainer container = reusableItemIndex >= 0
             ? previousItems[reusableItemIndex]
@@ -91,9 +91,9 @@ public class ShopItemListUI : ViewPartBase
             previousItemConsumed[reusableItemIndex] = true;
         }
 
-        container.transform.SetSiblingIndex(itemIndex);
-        container.Configure(new InfoAddIndex<ShopItemData>(itemData, itemIndex));
-        ConfigureTooltip(container, itemData);
+        container.transform.SetSiblingIndex(slotIndex);
+        container.Configure(new InfoAddIndex<ShopOfferViewData>(offerData, offerData.OfferId));
+        ConfigureTooltip(container, offerData);
 
         renderedItems.Add(container);
         renderedItemIdentities.Add(nextIdentity);
@@ -162,7 +162,7 @@ public class ShopItemListUI : ViewPartBase
         container.LockToggleRequested += OnItemLockToggleRequested;
     }
 
-    private void ConfigureTooltip(ShopItemContainer container, ShopItemData shopItem)
+    private void ConfigureTooltip(ShopItemContainer container, ShopOfferViewData shopOffer)
     {
         if (container == null)
         {
@@ -182,7 +182,7 @@ public class ShopItemListUI : ViewPartBase
             return;
         }
 
-        tooltipSource.Bind(shopItem);
+        tooltipSource.Bind(shopOffer);
         tooltipTrigger.Configure(
             tooltipSource,
             canPin: false,
@@ -220,23 +220,21 @@ public class ShopItemListUI : ViewPartBase
 
     private readonly struct ShopItemIdentity : IEquatable<ShopItemIdentity>
     {
-        private readonly ItemDataSO itemData;
-        private readonly int level;
+        private readonly int offerId;
 
-        private ShopItemIdentity(ItemDataSO itemData, int level)
+        private ShopItemIdentity(int offerId)
         {
-            this.itemData = itemData;
-            this.level = level;
+            this.offerId = offerId;
         }
 
-        public static ShopItemIdentity From(ShopItemData itemData)
+        public static ShopItemIdentity From(ShopOfferViewData offerData)
         {
-            return new ShopItemIdentity(itemData.ItemData, itemData.Level);
+            return new ShopItemIdentity(offerData.OfferId);
         }
 
         public bool Equals(ShopItemIdentity other)
         {
-            return itemData == other.itemData && level == other.level;
+            return offerId == other.offerId;
         }
     }
 }

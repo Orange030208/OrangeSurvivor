@@ -1,11 +1,9 @@
 public readonly struct ShopPurchaseSuccess
 {
-    public ItemDataSO ItemData { get; }
-    public int Level { get; }
+    public ShopOfferSnapshot Offer { get; }
 
-    public ShopPurchaseSuccess(ItemDataSO itemData, int level)
+    public ShopPurchaseSuccess(ShopOfferSnapshot offer)
     {
-        ItemData = itemData;
-        Level = level;
+        Offer = offer;
     }
 }

@@ -6,16 +6,16 @@ public sealed class ShopPageContext
         Player player,
         CurrencyWallet currencyWallet,
         AttributeManager attributeManager,
-        IShopController shopController)
+        ShopManager shopManager)
     {
         Player = player ?? throw new ArgumentNullException(nameof(player));
         CurrencyWallet = currencyWallet;
         AttributeManager = attributeManager;
-        ShopController = shopController ?? throw new ArgumentNullException(nameof(shopController));
+        ShopManager = shopManager ?? throw new ArgumentNullException(nameof(shopManager));
     }
 
     public Player Player { get; }
     public CurrencyWallet CurrencyWallet { get; }
     public AttributeManager AttributeManager { get; }
-    public IShopController ShopController { get; }
+    public ShopManager ShopManager { get; }
 }

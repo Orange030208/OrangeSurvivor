@@ -25,15 +25,13 @@ public readonly struct ShopRerolledEvent
 public readonly struct ShopItemPurchasedEvent
 {
     public Player Player { get; }
-    public ItemDataSO ItemData { get; }
-    public int Level { get; }
+    public ShopOfferSnapshot Offer { get; }
     public int Price { get; }
 
-    public ShopItemPurchasedEvent(Player player, ItemDataSO itemData, int level, int price)
+    public ShopItemPurchasedEvent(Player player, ShopOfferSnapshot offer, int price)
     {
         Player = player;
-        ItemData = itemData;
-        Level = level;
+        Offer = offer;
         Price = price;
     }
 }
@@ -41,15 +39,11 @@ public readonly struct ShopItemPurchasedEvent
 public readonly struct ShopItemLockedEvent
 {
     public Player Player { get; }
-    public int ItemIndex { get; }
-    public ItemDataSO ItemData { get; }
-    public int Level { get; }
+    public ShopOfferSnapshot Offer { get; }
 
-    public ShopItemLockedEvent(Player player, int itemIndex, ItemDataSO itemData, int level)
+    public ShopItemLockedEvent(Player player, ShopOfferSnapshot offer)
     {
         Player = player;
-        ItemIndex = itemIndex;
-        ItemData = itemData;
-        Level = level;
+        Offer = offer;
     }
 }
