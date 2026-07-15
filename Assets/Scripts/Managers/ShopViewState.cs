@@ -37,7 +37,6 @@ public readonly struct ShopViewState
 public enum ShopRefreshReason
 {
     StateUpdate,
-    Initial,
     Purchase,
     Reroll,
     WaveRefresh

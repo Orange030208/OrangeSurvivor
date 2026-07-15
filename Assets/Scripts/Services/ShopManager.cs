@@ -66,12 +66,6 @@ public sealed class ShopManager : GameService
         RefreshCurrency();
     }
 
-    protected override void OnStart()
-    {
-        GenerateShopOffers();
-        PublishViewState(ShopRefreshReason.Initial);
-    }
-
     protected override void OnDispose()
     {
         UnbindCurrencyWallet();
@@ -329,14 +323,6 @@ public sealed class ShopManager : GameService
     {
         int count = ResolveOfferCount();
         List<ShopOfferState> nextOffers = CreateLockedCarryoverOffers(count, markLockedAsPreviousVisit: true);
-        FillWithRandomOffers(nextOffers, count);
-        board.ReplaceOffers(nextOffers);
-    }
-
-    private void GenerateShopOffers()
-    {
-        int count = ResolveOfferCount();
-        List<ShopOfferState> nextOffers = new(count);
         FillWithRandomOffers(nextOffers, count);
         board.ReplaceOffers(nextOffers);
     }
