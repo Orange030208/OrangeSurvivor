@@ -58,7 +58,7 @@ public sealed class FirstPurchaseHalfPriceFeature : FeatureBase
         }
     }
 
-    private void OnPurchaseCompleted()
+    private void OnPurchaseCompleted(ShopPurchaseSuccess _)
     {
         if (!couponAvailable || !IsEventForOwner(shopManager.CurrentPlayer))
         {

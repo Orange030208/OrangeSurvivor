@@ -1,13 +1,12 @@
 using System;
+using Orange.GameServices;
 using UnityEngine;
 
 [Serializable]
 public sealed class RerollGoldRewardFeature : FeatureBase
 {
     [SerializeField, Min(0)] private int paidRerollBaseGold = 5;
-    [SerializeField, Min(0)] private int fallbackWaveNumber = 1;
-
-    private int currentWaveNumber = 1;
+    private ShopManager shopManager;
 
     public override string Title => "刷新金币回响";
     public override string Description =>
@@ -15,24 +14,27 @@ public sealed class RerollGoldRewardFeature : FeatureBase
 
     public override void OnInstall()
     {
-        currentWaveNumber = Mathf.Max(1, fallbackWaveNumber);
-        YokiFrame.EventKit.Type.Register<ShopRerolledEvent>(OnShopRerolled);
-        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.Register<WaveCompletedEvent>(OnWaveCompleted);
-        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        if (!GameServices.TryGet(out shopManager))
+        {
+            Debug.LogWarning($"[{nameof(RerollGoldRewardFeature)}] {nameof(ShopManager)} is unavailable.");
+            return;
+        }
+
+        shopManager.RerollCompleted += OnRerollCompleted;
     }
 
     public override void OnUninstall()
     {
-        YokiFrame.EventKit.Type.UnRegister<ShopRerolledEvent>(OnShopRerolled);
-        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted);
-        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        if (shopManager != null)
+        {
+            shopManager.RerollCompleted -= OnRerollCompleted;
+            shopManager = null;
+        }
     }
 
-    private void OnShopRerolled(ShopRerolledEvent eventData)
+    private void OnRerollCompleted()
     {
-        if (Context?.OwnerEntity is not Player player || eventData.Player != player)
+        if (!IsShopOwner())
         {
             return;
         }
@@ -43,34 +45,16 @@ public sealed class RerollGoldRewardFeature : FeatureBase
             return;
         }
 
-        int waveNumber = Mathf.Max(1, currentWaveNumber);
-        int rewardGold = eventData.UsedFreeReroll
+        int waveNumber = Mathf.Max(1, RunProgressionRuntime.CurrentSnapshot.WaveNumber);
+        int rewardGold = shopManager.Board.IsCurrentRerollFree
             ? waveNumber
             : Mathf.Max(0, paidRerollBaseGold) + waveNumber;
 
         wallet.ChangeAmount(rewardGold);
     }
 
-    private void OnWaveStarted(WaveStartedEvent eventData)
+    private bool IsShopOwner()
     {
-        SetCurrentWave(eventData.CurrentWave);
-    }
-
-    private void OnWaveCompleted(WaveCompletedEvent eventData)
-    {
-        SetCurrentWave(eventData.WaveNumber);
-    }
-
-    private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
-    {
-        SetCurrentWave(eventData.CurrentWave);
-    }
-
-    private void SetCurrentWave(int waveNumber)
-    {
-        if (waveNumber > 0)
-        {
-            currentWaveNumber = waveNumber;
-        }
+        return Context?.OwnerEntity is Player player && shopManager.CurrentPlayer == player;
     }
 }

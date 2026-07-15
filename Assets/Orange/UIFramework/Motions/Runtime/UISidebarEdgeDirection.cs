@@ -1,11 +1,10 @@
-
 namespace Orange.UIFramework
 {
     public enum UISidebarEdgeDirection
-{
-    Left,
-    Right,
-    Top,
-    Bottom
-}
+    {
+        Left,
+        Right,
+        Top,
+        Bottom
+    }
 }

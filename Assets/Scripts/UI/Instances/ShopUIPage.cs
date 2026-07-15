@@ -11,8 +11,6 @@ public class ShopUIPage : PageBase
 {
     private const string PROPERTIES_POPUP_GROUP_ID = "properties";
     private const string EQUIPMENT_POPUP_GROUP_ID = "equipment";
-    private const string PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE = "Not enough currency.";
-    private const string REROLL_INSUFFICIENT_CURRENCY_PREFIX = "Not enough currency for reroll";
     private const string FREE_REROLL_ZERO_TEXT = "<size=135%><color=#FFD84A><b>0</b></color></size>";
 
     [Header("商品")]
@@ -136,14 +134,12 @@ public class ShopUIPage : PageBase
 
     private void ShowPurchaseFailure(string message)
     {
-        string feedbackMessage = BuildPurchaseFailureFeedbackMessage(message);
-        if (IsPurchaseInsufficientCurrency(message))
+        if (string.IsNullOrWhiteSpace(message))
         {
-            ShowToast(feedbackMessage);
             return;
         }
 
-        Debug.LogWarning($"[Shop] {feedbackMessage}", this);
+        ShowToast(message);
     }
 
     private void OnRerollRequested()
@@ -499,41 +495,6 @@ public class ShopUIPage : PageBase
             new ToastPayload(message),
             new ToastOptions(displayMode: ToastDisplayMode.ReplaceCurrent),
             cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
-    }
-
-    private static bool IsPurchaseInsufficientCurrency(string message)
-    {
-        return string.Equals(message, PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE, StringComparison.Ordinal);
-    }
-
-    private static string BuildPurchaseFailureFeedbackMessage(string message)
-    {
-        if (string.IsNullOrWhiteSpace(message))
-        {
-            return "购买失败";
-        }
-
-        if (message.StartsWith(REROLL_INSUFFICIENT_CURRENCY_PREFIX, StringComparison.Ordinal))
-        {
-            return "金币不足，无法刷新商店";
-        }
-
-        return message switch
-        {
-            "Item index out of range." => "商品已失效",
-            "Invalid shop offer." => "商品已失效",
-            "Item data is null." => "商品数据异常，无法购买",
-            "Item already sold out." => "商品已售罄",
-            "Accessory data is null or wrong type." => "饰品数据异常，无法购买",
-            "Weapon data is null or wrong type." => "武器数据异常，无法购买",
-            PURCHASE_INSUFFICIENT_CURRENCY_MESSAGE => "金币不足，无法购买",
-            "Shop reroll is blocked." => "本轮商店无法刷新",
-            "Accessory manager not found." => "当前角色无法装备饰品",
-            "Weapons holder not found." => "当前角色无法装备武器",
-            "Accessory owned limit reached." => "饰品数量已达上限",
-            "No empty weapon slot available." => "武器栏已满",
-            _ => "购买失败"
-        };
     }
 
     private void ValidateConfiguration()

@@ -1,4 +1,5 @@
 using System;
+using Orange.GameServices;
 using UnityEngine;
 
 [Serializable]
@@ -8,9 +9,8 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
     [SerializeField, Range(0, 100)] private int rebatePercent = 50;
     [SerializeField, Min(0)] private int penaltyBaseGold = 20;
     [SerializeField, Min(0)] private int penaltyGoldPerWave = 2;
-    [SerializeField, Min(1)] private int fallbackWaveNumber = 1;
 
-    private int currentWaveNumber = 1;
+    private ShopManager shopManager;
     private int purchaseCountThisShop;
     private int spentGoldThisShop;
 
@@ -19,44 +19,53 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
 
     public override void OnInstall()
     {
-        currentWaveNumber = Mathf.Max(1, fallbackWaveNumber);
-        YokiFrame.EventKit.Type.Register<ShopItemPurchasedEvent>(OnShopItemPurchased);
-        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
-        YokiFrame.EventKit.Type.Register<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.Register<WaveCompletedEvent>(OnWaveCompleted);
-        YokiFrame.EventKit.Type.Register<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        if (!GameServices.TryGet(out shopManager))
+        {
+            Debug.LogWarning($"[{nameof(ShopPurchaseCommitmentFeature)}] {nameof(ShopManager)} is unavailable.");
+            return;
+        }
+
+        shopManager.VisitOpened += OnVisitOpened;
+        shopManager.PurchaseCompleted += OnPurchaseCompleted;
+        shopManager.VisitClosing += OnVisitClosing;
     }
 
     public override void OnUninstall()
     {
-        YokiFrame.EventKit.Type.UnRegister<ShopItemPurchasedEvent>(OnShopItemPurchased);
-        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
-        YokiFrame.EventKit.Type.UnRegister<WaveStartedEvent>(OnWaveStarted);
-        YokiFrame.EventKit.Type.UnRegister<WaveCompletedEvent>(OnWaveCompleted);
-        YokiFrame.EventKit.Type.UnRegister<WaveRuntimeChangedEvent>(OnWaveRuntimeChanged);
+        if (shopManager != null)
+        {
+            shopManager.VisitOpened -= OnVisitOpened;
+            shopManager.PurchaseCompleted -= OnPurchaseCompleted;
+            shopManager.VisitClosing -= OnVisitClosing;
+            shopManager = null;
+        }
+
         ResetShopTracking();
     }
 
-    private void OnShopItemPurchased(ShopItemPurchasedEvent eventData)
+    private void OnPurchaseCompleted(ShopPurchaseSuccess purchase)
     {
-        if (Context?.OwnerEntity is not Player player || eventData.Player != player || eventData.Price <= 0)
+        int price = purchase.Price;
+        if (!IsShopOwner() || price <= 0)
         {
             return;
         }
 
         purchaseCountThisShop++;
-        spentGoldThisShop += eventData.Price;
+        spentGoldThisShop += price;
     }
 
-    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    private void OnVisitOpened()
     {
-        if (eventData.NewState == GameState.Shop)
+        if (IsShopOwner())
         {
             ResetShopTracking();
-            return;
         }
+    }
 
-        if (eventData.OldState == GameState.Shop && eventData.NewState == GameState.Game)
+    private void OnVisitClosing()
+    {
+        if (IsShopOwner())
         {
             ResolveCommitment();
             ResetShopTracking();
@@ -78,31 +87,13 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
             return;
         }
 
-        int penaltyGold = penaltyBaseGold + Mathf.Max(1, currentWaveNumber) * penaltyGoldPerWave;
+        int penaltyGold = penaltyBaseGold + Mathf.Max(1, RunProgressionRuntime.CurrentSnapshot.WaveNumber) * penaltyGoldPerWave;
         wallet.ChangeAmount(-Mathf.Min(wallet.CurrentAmount, penaltyGold));
     }
 
-    private void OnWaveStarted(WaveStartedEvent eventData)
+    private bool IsShopOwner()
     {
-        SetCurrentWave(eventData.CurrentWave);
-    }
-
-    private void OnWaveCompleted(WaveCompletedEvent eventData)
-    {
-        SetCurrentWave(eventData.WaveNumber);
-    }
-
-    private void OnWaveRuntimeChanged(WaveRuntimeChangedEvent eventData)
-    {
-        SetCurrentWave(eventData.CurrentWave);
-    }
-
-    private void SetCurrentWave(int waveNumber)
-    {
-        if (waveNumber > 0)
-        {
-            currentWaveNumber = waveNumber;
-        }
+        return Context?.OwnerEntity is Player player && shopManager.CurrentPlayer == player;
     }
 
     private void ResetShopTracking()

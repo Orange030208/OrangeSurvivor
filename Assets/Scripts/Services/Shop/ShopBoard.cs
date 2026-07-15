@@ -13,18 +13,22 @@ public sealed class ShopBoard
     private int nextOfferId = 1;
     private int visitFreeRerollCount;
     private int paidRerollCountThisVisit;
-
-    public ShopBoardOperation CurrentOperation { get; } = new();
+    private bool isGeneratingOffers;
 
     public ShopFlowStage Stage { get; private set; } = ShopFlowStage.Closed;
     public int VisitId { get; private set; }
-    public ShopOfferGenerationReason? CurrentGenerationReason { get; private set; }
     public IReadOnlyList<ShopOfferState> Offers => offers;
     public bool IsVisitOpen => Stage != ShopFlowStage.Closed;
     public bool IsReady => Stage == ShopFlowStage.Ready;
     public bool IsRerollBlocked => rerollBlocks.Count > 0;
     public int VisitFreeRerollCount => visitFreeRerollCount;
     public int PaidRerollCountThisVisit => paidRerollCountThisVisit;
+
+    // 仅在对应的操作阶段有效；操作完成或商店关闭时统一重置。
+    public int CurrentRerollCost { get; private set; }
+    public bool IsCurrentRerollFree { get; private set; }
+    public bool IsCurrentOperationRejected { get; private set; }
+    public string CurrentOperationRejectMessage { get; private set; } = string.Empty;
 
     public bool TryBeginVisit(int visitId)
     {
@@ -38,8 +42,8 @@ public sealed class ShopBoard
         visitFreeRerollCount = 0;
         paidRerollCountThisVisit = 0;
         rerollBlocks.Clear();
-        CurrentGenerationReason = null;
-        ClearCurrentOperation();
+        isGeneratingOffers = false;
+        ResetCurrentActionState();
         Stage = ShopFlowStage.Opening;
         return true;
     }
@@ -49,39 +53,38 @@ public sealed class ShopBoard
         return TrySetStage(ShopFlowStage.Opening, ShopFlowStage.Ready);
     }
 
-    public bool TryBeginPurchase(ShopOfferState offer)
+    public bool TryBeginPurchase()
     {
-        if (offer == null || !TrySetStage(ShopFlowStage.Ready, ShopFlowStage.Purchasing))
+        if (!TrySetStage(ShopFlowStage.Ready, ShopFlowStage.Purchasing))
         {
             return false;
         }
 
-        CurrentOperation.BeginPurchase(offer);
+        ResetCurrentActionState();
         return true;
     }
 
-    public bool TryBeginReroll(int attributeFreeRerollCount, int paidCost)
+    public bool TryBeginReroll(bool isFreeReroll, int paidCost)
     {
         if (!TrySetStage(ShopFlowStage.Ready, ShopFlowStage.Rerolling))
         {
             return false;
         }
 
-        CurrentOperation.BeginReroll(
-            visitFreeRerollCount,
-            Math.Max(0, attributeFreeRerollCount),
-            Math.Max(0, paidCost));
+        ResetCurrentActionState();
+        IsCurrentRerollFree = isFreeReroll;
+        CurrentRerollCost = Math.Max(0, paidCost);
         return true;
     }
 
-    public bool TryBeginLock(ShopOfferState offer, bool willBeLocked)
+    public bool TryBeginLock()
     {
-        if (offer == null || !TrySetStage(ShopFlowStage.Ready, ShopFlowStage.Locking))
+        if (!TrySetStage(ShopFlowStage.Ready, ShopFlowStage.Locking))
         {
             return false;
         }
 
-        CurrentOperation.BeginLock(offer, willBeLocked);
+        ResetCurrentActionState();
         return true;
     }
 
@@ -94,7 +97,7 @@ public sealed class ShopBoard
             return false;
         }
 
-        ClearCurrentOperation();
+        ResetCurrentActionState();
         Stage = ShopFlowStage.Ready;
         return true;
     }
@@ -115,20 +118,20 @@ public sealed class ShopBoard
         return true;
     }
 
-    public void BeginOfferGeneration(ShopOfferGenerationReason reason)
+    public void BeginOfferGeneration()
     {
         excludedProductKeys.Clear();
-        CurrentGenerationReason = reason;
+        isGeneratingOffers = true;
     }
 
     public void EndOfferGeneration()
     {
-        CurrentGenerationReason = null;
+        isGeneratingOffers = false;
     }
 
     public void ExcludeCurrentCandidate(ShopProductKey productKey)
     {
-        if (CurrentGenerationReason.HasValue)
+        if (isGeneratingOffers)
         {
             excludedProductKeys.Add(productKey);
         }
@@ -231,27 +234,14 @@ public sealed class ShopBoard
         return PropValueUtility.ResolveNonNegativePrice(Math.Max(0, price) * multiplier);
     }
 
-    public int ApplyCurrentPurchaseModifiers(int price)
-    {
-        float multiplier = CurrentOperation.Type == ShopBoardOperationType.Purchase
-            ? CurrentOperation.PriceMultiplier
-            : 1f;
-        return PropValueUtility.ResolveNonNegativePrice(ApplyVisitPriceModifiers(price) * multiplier);
-    }
-
-    public void MultiplyCurrentPurchasePrice(float multiplier)
-    {
-        if (CurrentOperation.Type == ShopBoardOperationType.Purchase)
-        {
-            CurrentOperation.MultiplyPrice(Math.Max(0f, multiplier));
-        }
-    }
-
     public void RejectCurrentOperation(string message = null)
     {
-        if (CurrentOperation.Type != ShopBoardOperationType.None)
+        if (IsOperationInProgress())
         {
-            CurrentOperation.Reject(message);
+            IsCurrentOperationRejected = true;
+            CurrentOperationRejectMessage = string.IsNullOrWhiteSpace(message)
+                ? "商店操作已被拒绝"
+                : message;
         }
     }
 
@@ -262,17 +252,17 @@ public sealed class ShopBoard
 
     public void GrantCurrentRerollFree()
     {
-        if (CurrentOperation.Type == ShopBoardOperationType.Reroll)
+        if (Stage == ShopFlowStage.Rerolling)
         {
-            CurrentOperation.GrantFreeReroll();
+            IsCurrentRerollFree = true;
         }
     }
 
     public void SetCurrentRerollCost(int cost)
     {
-        if (CurrentOperation.Type == ShopBoardOperationType.Reroll)
+        if (Stage == ShopFlowStage.Rerolling)
         {
-            CurrentOperation.SetPaidRerollCost(Math.Max(0, cost));
+            CurrentRerollCost = Math.Max(0, cost);
         }
     }
 
@@ -321,9 +311,19 @@ public sealed class ShopBoard
         return true;
     }
 
-    private void ClearCurrentOperation()
+    private bool IsOperationInProgress()
     {
-        CurrentOperation.Reset();
+        return Stage == ShopFlowStage.Purchasing ||
+               Stage == ShopFlowStage.Rerolling ||
+               Stage == ShopFlowStage.Locking;
+    }
+
+    private void ResetCurrentActionState()
+    {
+        CurrentRerollCost = 0;
+        IsCurrentRerollFree = false;
+        IsCurrentOperationRejected = false;
+        CurrentOperationRejectMessage = string.Empty;
     }
 
     private void ClearVisitState()
@@ -333,8 +333,8 @@ public sealed class ShopBoard
         paidRerollCountThisVisit = 0;
         rerollBlocks.Clear();
         excludedProductKeys.Clear();
-        CurrentGenerationReason = null;
-        ClearCurrentOperation();
+        isGeneratingOffers = false;
+        ResetCurrentActionState();
     }
 }
 
@@ -347,107 +347,4 @@ public enum ShopFlowStage
     Rerolling,
     Locking,
     Closing
-}
-
-public enum ShopBoardOperationType
-{
-    None,
-    Purchase,
-    Reroll,
-    Lock
-}
-
-public enum ShopOfferGenerationReason
-{
-    Initial,
-    VisitEntry,
-    Reroll
-}
-
-public enum ShopFreeRerollSource
-{
-    None,
-    Visit,
-    Attribute,
-    Granted
-}
-
-/// <summary>
-/// Board 中唯一的阶段临时状态。Feature 只读它，并通过 <see cref="ShopBoard"/> 的方法修改允许的数据。
-/// </summary>
-public sealed class ShopBoardOperation
-{
-    public ShopBoardOperationType Type { get; private set; }
-    public ShopOfferState Offer { get; private set; }
-    public bool WillBeLocked { get; private set; }
-    public float PriceMultiplier { get; private set; } = 1f;
-    public int PaidRerollCost { get; private set; }
-    public int AttributeFreeRerollCount { get; private set; }
-    public ShopFreeRerollSource FreeRerollSource { get; private set; }
-    public bool IsRejected { get; private set; }
-    public string RejectMessage { get; private set; } = string.Empty;
-
-    public bool UsesFreeReroll => FreeRerollSource != ShopFreeRerollSource.None;
-
-    internal void BeginPurchase(ShopOfferState offer)
-    {
-        Reset();
-        Type = ShopBoardOperationType.Purchase;
-        Offer = offer;
-    }
-
-    internal void BeginReroll(int visitFreeRerollCount, int attributeFreeRerollCount, int paidCost)
-    {
-        Reset();
-        Type = ShopBoardOperationType.Reroll;
-        PaidRerollCost = paidCost;
-        AttributeFreeRerollCount = attributeFreeRerollCount;
-        FreeRerollSource = visitFreeRerollCount > 0
-            ? ShopFreeRerollSource.Visit
-            : attributeFreeRerollCount > 0
-                ? ShopFreeRerollSource.Attribute
-                : ShopFreeRerollSource.None;
-    }
-
-    internal void BeginLock(ShopOfferState offer, bool willBeLocked)
-    {
-        Reset();
-        Type = ShopBoardOperationType.Lock;
-        Offer = offer;
-        WillBeLocked = willBeLocked;
-    }
-
-    internal void MultiplyPrice(float multiplier)
-    {
-        PriceMultiplier *= multiplier;
-    }
-
-    internal void GrantFreeReroll()
-    {
-        FreeRerollSource = ShopFreeRerollSource.Granted;
-    }
-
-    internal void SetPaidRerollCost(int cost)
-    {
-        PaidRerollCost = cost;
-    }
-
-    internal void Reject(string message)
-    {
-        IsRejected = true;
-        RejectMessage = string.IsNullOrWhiteSpace(message) ? "Shop operation rejected." : message;
-    }
-
-    internal void Reset()
-    {
-        Type = ShopBoardOperationType.None;
-        Offer = null;
-        WillBeLocked = false;
-        PriceMultiplier = 1f;
-        PaidRerollCost = 0;
-        AttributeFreeRerollCount = 0;
-        FreeRerollSource = ShopFreeRerollSource.None;
-        IsRejected = false;
-        RejectMessage = string.Empty;
-    }
 }

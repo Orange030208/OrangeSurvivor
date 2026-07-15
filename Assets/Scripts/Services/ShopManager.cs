@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Orange.Extraction;
 using Orange.GameServices;
 using UnityEngine;
 
@@ -9,19 +10,19 @@ using UnityEngine;
 [Serializable]
 public sealed class ShopManager : GameService
 {
-    private const int DEFAULT_CONTAINERS_TO_ADD = 4;
+    private const int DEFAULT_CONTAINERS_TO_ADD = 6;
     private const int DEFAULT_REROLL_STEP_COST = 1;
-    private const string FREE_REROLL_CONSUMPTION_SOURCE_PREFIX = "ShopManager.FreeRerollConsumption";
-    private const string FREE_REROLL_GRANT_SOURCE_PREFIX = "ShopManager.FreeRerollGrant";
+    private const string ATTRIBUTE_FREE_REROLL_CONSUMPTION_SOURCE_ID = "ShopManager.AttributeFreeRerollConsumption";
 
     [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
-    [SerializeField] private CurrencyWallet currencyWallet;
+    private CurrencyWallet currencyWallet;
 
     private readonly ShopExtractionRoller extractionRoller = new();
     private readonly ShopBoard board = new();
     private Player player;
     private AttributeManager AttributeManager;
     private int currentCurrency;
+    private int consumedAttributeFreeRerollCount;
     private bool isExecutingShopOperation;
     private bool hasDeferredViewState;
     private ShopRefreshReason deferredViewStateReason;
@@ -37,12 +38,12 @@ public sealed class ShopManager : GameService
     public event Action VisitClosing;
     public event Action VisitClosed;
     public event Action OffersGenerating;
-    public event Action PurchasePreparing;
-    public event Action PurchaseCompleted;
+    public event Action<ShopOfferState> PurchasePreparing;
+    public event Action<ShopPurchaseSuccess> PurchaseCompleted;
     public event Action RerollPreparing;
     public event Action RerollCompleted;
-    public event Action LockChanging;
-    public event Action LockChanged;
+    public event Action<ShopOfferState, bool> LockChanging;
+    public event Action<ShopOfferState, bool> LockChanged;
 
     public ShopBoard Board => board;
     public ShopFlowStage CurrentStage => board.Stage;
@@ -62,9 +63,6 @@ public sealed class ShopManager : GameService
 
         YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
         AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged));
-
-        YokiFrame.EventKit.Type.Register<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted);
-        AddCleanup(() => YokiFrame.EventKit.Type.UnRegister<ShopFreeRerollsGrantedEvent>(OnShopFreeRerollsGranted));
 
         TryBindWallet();
         RefreshCurrency();
@@ -137,54 +135,48 @@ public sealed class ShopManager : GameService
 
         if (!board.TryGetOffer(offerId, out ShopOfferState offer))
         {
-            NotifyPurchaseFailed("Invalid shop offer.");
+            NotifyPurchaseFailed("商品已失效");
             return;
         }
 
-        if (!board.TryBeginPurchase(offer))
+        if (!board.TryBeginPurchase())
         {
             return;
         }
 
         NotifyStageChanged();
-        ExecuteShopOperation(RequestBuyOfferCore);
+        ExecuteShopOperation(() => RequestBuyOfferCore(offer));
     }
 
-    private void RequestBuyOfferCore()
+    private void RequestBuyOfferCore(ShopOfferState offer)
     {
-        ShopOfferState offer = board.CurrentOperation.Offer;
         if (offer?.Product == null)
         {
-            NotifyPurchaseFailed("Item data is null.");
+            NotifyPurchaseFailed("商品数据异常，无法购买");
             return;
         }
 
         if (offer.IsSoldOut)
         {
-            NotifyPurchaseFailed("Item already sold out.");
+            NotifyPurchaseFailed("商品已售罄");
             return;
         }
 
-        PurchasePreparing?.Invoke();
-        if (board.CurrentOperation.IsRejected)
+        PurchasePreparing?.Invoke(offer);
+        if (board.IsCurrentOperationRejected)
         {
-            NotifyPurchaseFailed(board.CurrentOperation.RejectMessage);
+            NotifyPurchaseFailed(board.CurrentOperationRejectMessage);
             return;
         }
 
-        int price = board.ApplyCurrentPurchaseModifiers(ResolveBaseOfferPrice(offer));
+        int price = board.ApplyVisitPriceModifiers(ResolveBaseOfferPrice(offer));
         if (currentCurrency < price)
         {
-            NotifyPurchaseFailed("Not enough currency.");
+            NotifyPurchaseFailed("金币不足，无法购买");
             return;
         }
 
-        ShopPurchaseContext purchaseContext = new(
-            player,
-            ResolveWeaponsHolder(),
-            ResolveAccessoryManager(),
-            currencyWallet);
-        ShopPurchaseResult purchaseResult = offer.Product.TryPurchase(purchaseContext);
+        ShopPurchaseResult purchaseResult = offer.Product.TryPurchase(player);
         if (!purchaseResult.Succeeded)
         {
             NotifyPurchaseFailed(purchaseResult.FailureMessage);
@@ -193,9 +185,10 @@ public sealed class ShopManager : GameService
 
         offer.MarkSoldOut();
         currencyWallet?.ChangeAmount(-price);
-        PurchaseCompleted?.Invoke();
+        ShopPurchaseSuccess success = new(offer.CreateSnapshot(), price);
+        PurchaseCompleted?.Invoke(success);
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseSucceeded);
-        NotifyPurchaseSucceeded(offer, price);
+        PurchaseSucceeded?.Invoke(success);
         PublishViewState(ShopRefreshReason.Purchase);
     }
 
@@ -208,52 +201,50 @@ public sealed class ShopManager : GameService
 
         if (board.IsRerollBlocked)
         {
-            NotifyPurchaseFailed("Shop reroll is blocked.");
             return;
         }
 
-        if (!board.TryBeginReroll(ResolvePlayerFreeRerollCount(), ResolveCurrentRerollCost()))
+        bool useVisitFreeReroll = board.VisitFreeRerollCount > 0;
+        bool useAttributeFreeReroll = !useVisitFreeReroll && ResolvePlayerFreeRerollCount() > 0;
+        if (!board.TryBeginReroll(useVisitFreeReroll || useAttributeFreeReroll, ResolveCurrentRerollCost()))
         {
             return;
         }
 
         NotifyStageChanged();
-        ExecuteShopOperation(RequestRerollCore);
+        ExecuteShopOperation(() => RequestRerollCore(useVisitFreeReroll, useAttributeFreeReroll));
     }
 
-    private void RequestRerollCore()
+    private void RequestRerollCore(bool useVisitFreeReroll, bool useAttributeFreeReroll)
     {
         RerollPreparing?.Invoke();
-        if (board.CurrentOperation.IsRejected)
+        if (board.IsCurrentOperationRejected)
         {
-            NotifyPurchaseFailed(board.CurrentOperation.RejectMessage);
             return;
         }
 
-        bool useFreeReroll = board.CurrentOperation.UsesFreeReroll;
-        int rerollCost = board.CurrentOperation.PaidRerollCost;
+        bool useFreeReroll = board.IsCurrentRerollFree;
+        int rerollCost = board.CurrentRerollCost;
         if (!useFreeReroll && currentCurrency < rerollCost)
         {
-            NotifyPurchaseFailed($"Not enough currency for reroll. Cost: {rerollCost}");
             return;
         }
 
-        switch (board.CurrentOperation.FreeRerollSource)
+        if (useVisitFreeReroll)
         {
-            case ShopFreeRerollSource.Visit:
-                board.TryConsumeVisitFreeReroll();
-                break;
-            case ShopFreeRerollSource.Attribute:
-                TryConsumeAttributeFreeReroll();
-                break;
-            case ShopFreeRerollSource.None:
-                currencyWallet?.ChangeAmount(-rerollCost);
-                break;
+            board.TryConsumeVisitFreeReroll();
+        }
+        else if (useAttributeFreeReroll)
+        {
+            TryConsumeAttributeFreeReroll();
+        }
+        else if (!useFreeReroll)
+        {
+            currencyWallet?.ChangeAmount(-rerollCost);
         }
 
         RerollShopOffers(trackAsPaidReroll: !useFreeReroll);
         RerollCompleted?.Invoke();
-        NotifyShopRerolled(usedFreeReroll: useFreeReroll);
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopRerolled);
         PublishViewState(ShopRefreshReason.Reroll);
     }
@@ -262,32 +253,31 @@ public sealed class ShopManager : GameService
     {
         if (isExecutingShopOperation ||
             !board.TryGetOffer(offerId, out ShopOfferState offer) ||
-            offer.IsSoldOut ||
-            !board.TryBeginLock(offer, !offer.IsLocked))
+            offer.IsSoldOut)
+        {
+            return;
+        }
+
+        bool willBeLocked = !offer.IsLocked;
+        if (!board.TryBeginLock())
         {
             return;
         }
 
         NotifyStageChanged();
-        ExecuteShopOperation(RequestToggleOfferLockCore);
+        ExecuteShopOperation(() => RequestToggleOfferLockCore(offer, willBeLocked));
     }
 
-    private void RequestToggleOfferLockCore()
+    private void RequestToggleOfferLockCore(ShopOfferState offer, bool willBeLocked)
     {
-        LockChanging?.Invoke();
-        if (board.CurrentOperation.IsRejected)
+        LockChanging?.Invoke(offer, willBeLocked);
+        if (board.IsCurrentOperationRejected)
         {
             return;
         }
 
-        ShopOfferState offer = board.CurrentOperation.Offer;
-        offer.SetLocked(board.CurrentOperation.WillBeLocked);
-        LockChanged?.Invoke();
-        if (offer.IsLocked)
-        {
-            NotifyItemLocked(offer);
-        }
-
+        offer.SetLocked(willBeLocked);
+        LockChanged?.Invoke(offer, willBeLocked);
         Debug.Log($"物品:{offer.Product.DisplayName} 锁定状态:{offer.IsLocked}", LogContext);
         PublishViewState(ShopRefreshReason.StateUpdate);
     }
@@ -341,7 +331,7 @@ public sealed class ShopManager : GameService
     {
         int count = ResolveOfferCount();
         List<ShopOfferState> nextOffers = CreateLockedCarryoverOffers(count, markLockedAsPreviousVisit: true);
-        FillWithRandomOffers(nextOffers, count, ShopOfferGenerationReason.VisitEntry);
+        FillWithRandomOffers(nextOffers, count);
         board.ReplaceOffers(nextOffers);
     }
 
@@ -349,7 +339,7 @@ public sealed class ShopManager : GameService
     {
         int count = ResolveOfferCount();
         List<ShopOfferState> nextOffers = new(count);
-        FillWithRandomOffers(nextOffers, count, ShopOfferGenerationReason.Initial);
+        FillWithRandomOffers(nextOffers, count);
         board.ReplaceOffers(nextOffers);
     }
 
@@ -362,7 +352,7 @@ public sealed class ShopManager : GameService
 
         int count = ResolveOfferCount();
         List<ShopOfferState> nextOffers = CreateLockedCarryoverOffers(count, markLockedAsPreviousVisit: false);
-        FillWithRandomOffers(nextOffers, count, ShopOfferGenerationReason.Reroll);
+        FillWithRandomOffers(nextOffers, count);
         board.ReplaceOffers(nextOffers);
     }
 
@@ -389,20 +379,25 @@ public sealed class ShopManager : GameService
         return nextOffers;
     }
 
-    private bool FillWithRandomOffers(List<ShopOfferState> offers, int targetCount, ShopOfferGenerationReason reason)
+    private bool FillWithRandomOffers(List<ShopOfferState> offers, int targetCount)
     {
         if (offers == null)
         {
             return false;
         }
 
-        board.BeginOfferGeneration(reason);
+        board.BeginOfferGeneration();
         OffersGenerating?.Invoke();
         try
         {
+            if (!TryCreateShopExtractionPool(out ShopExtractionPool pool, out ShopExtractionContext context))
+            {
+                return false;
+            }
+
             while (offers.Count < targetCount)
             {
-                ShopOfferState offer = GenerateRandomShopOffer(offers);
+                ShopOfferState offer = GenerateRandomShopOffer(offers, pool, context);
                 if (offer == null)
                 {
                     break;
@@ -419,18 +414,21 @@ public sealed class ShopManager : GameService
         }
     }
 
-    private ShopOfferState GenerateRandomShopOffer(IReadOnlyList<ShopOfferState> existingOffers)
+    private ShopOfferState GenerateRandomShopOffer(
+        IReadOnlyList<ShopOfferState> existingOffers,
+        ShopExtractionPool pool,
+        ShopExtractionContext context)
     {
         for (int attempt = 0; attempt < 8; attempt++)
         {
-            IShopProduct product = RollShopProduct();
+            IShopProduct product = RollShopProduct(pool, context);
             if (product != null && board.IsCurrentCandidateAllowed(product) && !ContainsDuplicate(existingOffers, product))
             {
                 return board.CreateOffer(product);
             }
         }
 
-        IShopProduct fallbackProduct = RollShopProduct();
+        IShopProduct fallbackProduct = RollShopProduct(pool, context);
         return fallbackProduct != null && board.IsCurrentCandidateAllowed(fallbackProduct)
             ? board.CreateOffer(fallbackProduct)
             : null;
@@ -454,12 +452,14 @@ public sealed class ShopManager : GameService
         return false;
     }
 
-    private IShopProduct RollShopProduct()
+    private bool TryCreateShopExtractionPool(out ShopExtractionPool pool, out ShopExtractionContext context)
     {
+        pool = null;
+        context = default;
         if (!GameContentRuntime.TryGetProvider(out IGameContentProvider provider))
         {
             Debug.LogError($"[{nameof(ShopManager)}] Missing {nameof(IGameContentProvider)}. Cannot roll shop item.", LogContext);
-            return null;
+            return false;
         }
 
         if (provider.ContentTierWeightProfile == null)
@@ -467,16 +467,20 @@ public sealed class ShopManager : GameService
             Debug.LogError(
                 $"[{nameof(ShopManager)}] Missing {nameof(ContentTierWeightProfileSO)} in {nameof(GameContentCatalogSO)}.",
                 LogContext);
-            return null;
+            return false;
         }
 
-        ShopExtractionContext context = new(ResolveAccessoryManager(), ResolvePlayerLuck());
-        if (!extractionRoller.TryRollOne(
-                provider.Weapons,
-                provider.Accessories,
-                provider.ContentTierWeightProfile,
-                context,
-                out ShopExtractionCandidate candidate))
+        context = new ShopExtractionContext(ResolveAccessoryManager(), ResolvePlayerLuck());
+        pool = extractionRoller.CreatePool(
+            provider.Weapons,
+            provider.Accessories,
+            provider.ContentTierWeightProfile);
+        return true;
+    }
+
+    private IShopProduct RollShopProduct(ShopExtractionPool pool, ShopExtractionContext context)
+    {
+        if (pool == null || !pool.TryDrawOne(context, out ExtractionResult<ShopExtractionCandidate> candidate))
         {
             Debug.LogWarning(
                 $"[{nameof(ShopManager)}] No shop item could be rolled from configured weapon/accessory candidates.",
@@ -484,7 +488,7 @@ public sealed class ShopManager : GameService
             return null;
         }
 
-        return candidate.Product;
+        return candidate.Item.Product;
     }
 
     private AccessoryManager ResolveAccessoryManager()
@@ -492,13 +496,6 @@ public sealed class ShopManager : GameService
         return player != null && player.TryGetComponent(out AccessoryManager resolvedAccessoryManager)
             ? resolvedAccessoryManager
             : UnityEngine.Object.FindFirstObjectByType<AccessoryManager>();
-    }
-
-    private WeaponsHolder ResolveWeaponsHolder()
-    {
-        return player != null && player.TryGetComponent(out WeaponsHolder resolvedWeaponsHolder)
-            ? resolvedWeaponsHolder
-            : UnityEngine.Object.FindFirstObjectByType<WeaponsHolder>();
     }
 
     private void PublishViewState(ShopRefreshReason reason = ShopRefreshReason.StateUpdate)
@@ -612,15 +609,6 @@ public sealed class ShopManager : GameService
         }
     }
 
-    private void OnShopFreeRerollsGranted(ShopFreeRerollsGrantedEvent eventData)
-    {
-        if (IsEventForCurrentPlayer(eventData.Player) && eventData.Count > 0)
-        {
-            AddAttributeFreeRerollModifier(FREE_REROLL_GRANT_SOURCE_PREFIX, eventData.Count);
-            PublishViewState(ShopRefreshReason.StateUpdate);
-        }
-    }
-
     private bool TryConsumeAttributeFreeReroll()
     {
         if (ResolvePlayerFreeRerollCount() <= 0)
@@ -628,25 +616,11 @@ public sealed class ShopManager : GameService
             return false;
         }
 
-        AddAttributeFreeRerollModifier(FREE_REROLL_CONSUMPTION_SOURCE_PREFIX, -1);
-        return true;
-    }
-
-    private void AddAttributeFreeRerollModifier(string sourcePrefix, int value)
-    {
-        if (AttributeManager == null || value == 0)
-        {
-            return;
-        }
-
+        consumedAttributeFreeRerollCount++;
         AttributeManager.AddModifier(
-            $"{sourcePrefix}:{Guid.NewGuid():N}",
-            new PropModifierData(PropType.ShopFreeRerollCount, value));
-    }
-
-    private bool IsEventForCurrentPlayer(Player eventPlayer)
-    {
-        return eventPlayer == null || player == null || player == eventPlayer;
+            ATTRIBUTE_FREE_REROLL_CONSUMPTION_SOURCE_ID,
+            new PropModifierData(PropType.ShopFreeRerollCount, -consumedAttributeFreeRerollCount));
+        return true;
     }
 
     private float ResolvePlayerDiscountMultiplier()
@@ -713,8 +687,11 @@ public sealed class ShopManager : GameService
         {
             AttributeManager.UnsubscribeAttributeChanged(PropType.ShopPriceDiscount, OnShopAttributeChanged);
             AttributeManager.UnsubscribeAttributeChanged(PropType.ShopFreeRerollCount, OnShopAttributeChanged);
+            AttributeManager.RemoveModifiers(ATTRIBUTE_FREE_REROLL_CONSUMPTION_SOURCE_ID);
             AttributeManager = null;
         }
+
+        consumedAttributeFreeRerollCount = 0;
     }
 
     private void OnShopAttributeChanged(int value)
@@ -727,27 +704,10 @@ public sealed class ShopManager : GameService
         currentCurrency = currencyWallet != null ? currencyWallet.CurrentAmount : 0;
     }
 
-    private void NotifyPurchaseSucceeded(ShopOfferState offer, int price)
-    {
-        ShopOfferSnapshot snapshot = offer.CreateSnapshot();
-        PurchaseSucceeded?.Invoke(new ShopPurchaseSuccess(snapshot));
-        YokiFrame.EventKit.Type.Send(new ShopItemPurchasedEvent(player, snapshot, price));
-    }
-
     private void NotifyPurchaseFailed(string message)
     {
         AudioSfxBridge.RequestPlay(AudioSfxKey.ShopPurchaseFailed);
         PurchaseFailed?.Invoke(new ShopPurchaseFailure(message));
-    }
-
-    private void NotifyShopRerolled(bool usedFreeReroll)
-    {
-        YokiFrame.EventKit.Type.Send(new ShopRerolledEvent(player, usedFreeReroll));
-    }
-
-    private void NotifyItemLocked(ShopOfferState offer)
-    {
-        YokiFrame.EventKit.Type.Send(new ShopItemLockedEvent(player, offer.CreateSnapshot()));
     }
 
     private void ExecuteShopOperation(Action operation)

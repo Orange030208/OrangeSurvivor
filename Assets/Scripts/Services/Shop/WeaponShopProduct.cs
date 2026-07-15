@@ -26,15 +26,15 @@ public sealed class WeaponShopProduct : IShopProduct
         return new WeaponLevelDescribable(WeaponData, WeaponLevel).BuildInfoDocument();
     }
 
-    public ShopPurchaseResult TryPurchase(ShopPurchaseContext context)
+    public ShopPurchaseResult TryPurchase(Player player)
     {
-        if (context.WeaponsHolder == null)
+        if (player == null || !player.TryGetComponent(out WeaponsHolder weaponsHolder))
         {
-            return ShopPurchaseResult.Failure("Weapons holder not found.");
+            return ShopPurchaseResult.Failure("当前角色无法装备武器");
         }
 
-        return context.WeaponsHolder.AddWeapon(WeaponData, WeaponLevel, false)
+        return weaponsHolder.AddWeapon(WeaponData, WeaponLevel, false)
             ? ShopPurchaseResult.Success()
-            : ShopPurchaseResult.Failure("No empty weapon slot available.");
+            : ShopPurchaseResult.Failure("武器栏已满");
     }
 }

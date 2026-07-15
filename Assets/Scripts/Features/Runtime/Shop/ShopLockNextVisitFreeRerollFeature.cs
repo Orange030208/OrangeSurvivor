@@ -1,4 +1,5 @@
 using System;
+using Orange.GameServices;
 using UnityEngine;
 
 [Serializable]
@@ -6,6 +7,7 @@ public sealed class ShopLockNextVisitFreeRerollFeature : FeatureBase
 {
     [SerializeField, Min(1)] private int freeRerollCount = 3;
 
+    private ShopManager shopManager;
     private bool hasLockedItemForNextShop;
 
     public override string Title => "锁柜免费刷新";
@@ -14,45 +16,49 @@ public sealed class ShopLockNextVisitFreeRerollFeature : FeatureBase
 
     public override void OnInstall()
     {
-        YokiFrame.EventKit.Type.Register<ShopItemLockedEvent>(OnShopItemLocked);
-        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        if (!GameServices.TryGet(out shopManager))
+        {
+            Debug.LogWarning($"[{nameof(ShopLockNextVisitFreeRerollFeature)}] {nameof(ShopManager)} is unavailable.");
+            return;
+        }
+
+        shopManager.LockChanged += OnLockChanged;
+        shopManager.VisitOpened += OnVisitOpened;
     }
 
     public override void OnUninstall()
     {
-        YokiFrame.EventKit.Type.UnRegister<ShopItemLockedEvent>(OnShopItemLocked);
-        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
+        if (shopManager != null)
+        {
+            shopManager.LockChanged -= OnLockChanged;
+            shopManager.VisitOpened -= OnVisitOpened;
+            shopManager = null;
+        }
+
         hasLockedItemForNextShop = false;
     }
 
-    private void OnShopItemLocked(ShopItemLockedEvent eventData)
+    private void OnLockChanged(ShopOfferState _, bool isLocked)
     {
-        if (Context?.OwnerEntity is not Player player || eventData.Player != player)
+        if (IsShopOwner() && isLocked)
         {
-            return;
+            hasLockedItemForNextShop = true;
         }
-
-        hasLockedItemForNextShop = true;
     }
 
-    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    private void OnVisitOpened()
     {
-        if (eventData.NewState != GameState.Shop || eventData.OldState == GameState.Shop)
-        {
-            return;
-        }
-
-        GrantPendingFreeRerolls();
-    }
-
-    private void GrantPendingFreeRerolls()
-    {
-        if (!hasLockedItemForNextShop || freeRerollCount <= 0 || Context?.OwnerEntity is not Player player)
+        if (!IsShopOwner() || !hasLockedItemForNextShop || freeRerollCount <= 0)
         {
             return;
         }
 
         hasLockedItemForNextShop = false;
-        YokiFrame.EventKit.Type.Send(new ShopFreeRerollsGrantedEvent(player, freeRerollCount));
+        shopManager.Board.GrantVisitFreeRerolls(freeRerollCount);
+    }
+
+    private bool IsShopOwner()
+    {
+        return Context?.OwnerEntity is Player player && shopManager.CurrentPlayer == player;
     }
 }

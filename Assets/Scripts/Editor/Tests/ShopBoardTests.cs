@@ -7,11 +7,11 @@ public sealed class ShopBoardTests
     {
         ShopBoard board = new();
 
-        Assert.IsFalse(board.TryBeginReroll(0, 10));
+        Assert.IsFalse(board.TryBeginReroll(false, 10));
         Assert.IsTrue(board.TryBeginVisit(1));
-        Assert.IsFalse(board.TryBeginReroll(0, 10));
+        Assert.IsFalse(board.TryBeginReroll(false, 10));
         Assert.IsTrue(board.CompleteVisitOpening());
-        Assert.IsTrue(board.TryBeginReroll(0, 10));
+        Assert.IsTrue(board.TryBeginReroll(false, 10));
         Assert.IsFalse(board.TryBeginClosing());
         Assert.IsTrue(board.CompleteOperation());
         Assert.IsTrue(board.TryBeginClosing());
@@ -34,17 +34,20 @@ public sealed class ShopBoardTests
     }
 
     [Test]
-    public void Board_PrefersVisitFreeRerollBeforeAttributeFreeReroll()
+    public void Board_RecordsFreeRerollForCurrentStage()
     {
         ShopBoard board = new();
         board.TryBeginVisit(1);
         board.CompleteVisitOpening();
         board.GrantVisitFreeRerolls(1);
 
-        Assert.IsTrue(board.TryBeginReroll(2, 20));
+        Assert.IsTrue(board.TryBeginReroll(true, 20));
 
-        Assert.AreEqual(ShopFreeRerollSource.Visit, board.CurrentOperation.FreeRerollSource);
+        Assert.IsTrue(board.IsCurrentRerollFree);
         Assert.IsTrue(board.TryConsumeVisitFreeReroll());
+        Assert.IsTrue(board.CompleteOperation());
+        Assert.IsFalse(board.IsCurrentRerollFree);
+        Assert.AreEqual(0, board.CurrentRerollCost);
     }
 
     [Test]
@@ -53,7 +56,7 @@ public sealed class ShopBoardTests
         ShopBoard board = new();
         board.TryBeginVisit(1);
         board.CompleteVisitOpening();
-        board.TryBeginReroll(0, 10);
+        board.TryBeginReroll(false, 10);
 
         board.RecordPaidReroll();
 

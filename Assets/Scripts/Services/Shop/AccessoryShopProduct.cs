@@ -24,15 +24,15 @@ public sealed class AccessoryShopProduct : IShopProduct
         return AccessoryData.BuildInfoDocument();
     }
 
-    public ShopPurchaseResult TryPurchase(ShopPurchaseContext context)
+    public ShopPurchaseResult TryPurchase(Player player)
     {
-        if (context.AccessoryManager == null)
+        if (player == null || !player.TryGetComponent(out AccessoryManager accessoryManager))
         {
-            return ShopPurchaseResult.Failure("Accessory manager not found.");
+            return ShopPurchaseResult.Failure("当前角色无法装备饰品");
         }
 
-        return context.AccessoryManager.EquipAccessory(AccessoryData, false)
+        return accessoryManager.EquipAccessory(AccessoryData, false)
             ? ShopPurchaseResult.Success()
-            : ShopPurchaseResult.Failure("Accessory owned limit reached.");
+            : ShopPurchaseResult.Failure("饰品数量已达上限");
     }
 }

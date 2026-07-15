@@ -10,5 +10,5 @@ public interface IShopProduct : IHasContentTier
     int BasePrice { get; }
 
     InfoDocument BuildInfoDocument();
-    ShopPurchaseResult TryPurchase(ShopPurchaseContext context);
+    ShopPurchaseResult TryPurchase(Player player);
 }

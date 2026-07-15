@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Orange.GameServices;
 using UnityEngine;
 
 [Serializable]
@@ -10,6 +11,7 @@ public sealed class ShopSpendingAttributeFeature : FeatureBase
     [SerializeField, Min(1)] private int maxStacks = 5;
     [SerializeField] private List<PropModifierData> modifiersPerStack = new();
 
+    private ShopManager shopManager;
     private string runtimeSourceId;
     private int currentShopSpentGold;
     private int appliedStacks;
@@ -20,40 +22,56 @@ public sealed class ShopSpendingAttributeFeature : FeatureBase
     public override void OnInstall()
     {
         runtimeSourceId = ResolveRuntimeSourceId();
-        YokiFrame.EventKit.Type.Register<ShopItemPurchasedEvent>(OnShopItemPurchased);
-        YokiFrame.EventKit.Type.Register<GameStateChangedEvent>(OnGameStateChanged);
+        if (!GameServices.TryGet(out shopManager))
+        {
+            Debug.LogWarning($"[{nameof(ShopSpendingAttributeFeature)}] {nameof(ShopManager)} is unavailable.");
+            return;
+        }
+
+        shopManager.VisitOpened += OnVisitOpened;
+        shopManager.PurchaseCompleted += OnPurchaseCompleted;
+        shopManager.VisitClosing += OnVisitClosing;
     }
 
     public override void OnUninstall()
     {
-        YokiFrame.EventKit.Type.UnRegister<ShopItemPurchasedEvent>(OnShopItemPurchased);
-        YokiFrame.EventKit.Type.UnRegister<GameStateChangedEvent>(OnGameStateChanged);
+        if (shopManager != null)
+        {
+            shopManager.VisitOpened -= OnVisitOpened;
+            shopManager.PurchaseCompleted -= OnPurchaseCompleted;
+            shopManager.VisitClosing -= OnVisitClosing;
+            shopManager = null;
+        }
+
         RemoveAppliedModifiers();
         currentShopSpentGold = 0;
         appliedStacks = 0;
         runtimeSourceId = null;
     }
 
-    private void OnShopItemPurchased(ShopItemPurchasedEvent eventData)
+    private void OnPurchaseCompleted(ShopPurchaseSuccess purchase)
     {
-        if (Context?.OwnerEntity is not Player player || eventData.Player != player || eventData.Price <= 0)
+        int price = purchase.Price;
+        if (!IsShopOwner() || price <= 0)
         {
             return;
         }
 
-        currentShopSpentGold += eventData.Price;
+        currentShopSpentGold += price;
     }
 
-    private void OnGameStateChanged(GameStateChangedEvent eventData)
+    private void OnVisitOpened()
     {
-        if (eventData.NewState == GameState.Shop)
+        if (IsShopOwner())
         {
             RemoveAppliedModifiers();
             currentShopSpentGold = 0;
-            return;
         }
+    }
 
-        if (eventData.OldState == GameState.Shop && eventData.NewState == GameState.Game)
+    private void OnVisitClosing()
+    {
+        if (IsShopOwner())
         {
             ApplyModifiersForCurrentShopSpending();
         }
@@ -97,6 +115,11 @@ public sealed class ShopSpendingAttributeFeature : FeatureBase
         }
 
         return Mathf.Clamp(spentGold / goldPerStack, 0, maxStacks);
+    }
+
+    private bool IsShopOwner()
+    {
+        return Context?.OwnerEntity is Player player && shopManager.CurrentPlayer == player;
     }
 
     private string ResolveRuntimeSourceId()
