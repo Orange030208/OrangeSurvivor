@@ -12,7 +12,7 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
 
     private ShopManager shopManager;
     private int purchaseCountThisShop;
-    private int spentGoldThisShop;
+    private int rebateEligibleGoldThisShop;
 
     public override string Title => "商店购买承诺";
     public override string Description => BuildDescription();
@@ -45,14 +45,17 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
 
     private void OnPurchaseCompleted(ShopPurchaseSuccess purchase)
     {
-        int price = purchase.Price;
-        if (!IsShopOwner() || price <= 0)
+        if (!IsShopOwner())
         {
             return;
         }
 
+        if (purchaseCountThisShop < Mathf.Max(1, requiredPurchaseCount))
+        {
+            rebateEligibleGoldThisShop += Mathf.Max(0, purchase.Price);
+        }
+
         purchaseCountThisShop++;
-        spentGoldThisShop += price;
     }
 
     private void OnVisitOpened()
@@ -75,14 +78,15 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
     private void ResolveCommitment()
     {
         CurrencyWallet wallet = Context?.CurrencyWallet;
-        if (wallet == null || purchaseCountThisShop <= 0)
+        if (wallet == null)
         {
             return;
         }
 
         if (purchaseCountThisShop >= Mathf.Max(1, requiredPurchaseCount))
         {
-            int rebateGold = Mathf.RoundToInt(spentGoldThisShop * Mathf.Clamp(rebatePercent, 0, 100) / 100f);
+            int rebateGold = Mathf.RoundToInt(
+                rebateEligibleGoldThisShop * Mathf.Clamp(rebatePercent, 0, 100) / 100f);
             wallet.ChangeAmount(rebateGold);
             return;
         }
@@ -99,7 +103,7 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
     private void ResetShopTracking()
     {
         purchaseCountThisShop = 0;
-        spentGoldThisShop = 0;
+        rebateEligibleGoldThisShop = 0;
     }
 
     private string BuildDescription()
@@ -108,8 +112,7 @@ public sealed class ShopPurchaseCommitmentFeature : FeatureBase
         int safeRebatePercent = Mathf.Clamp(rebatePercent, 0, 100);
         int safePenaltyBaseGold = Mathf.Max(0, penaltyBaseGold);
         int safePenaltyGoldPerWave = Mathf.Max(0, penaltyGoldPerWave);
-        return $"每波商店结束时，若本波购买至少 {safeRequiredPurchaseCount} 件商品，返还本波消费金币的 {safeRebatePercent}%；" +
-               $"若购买了 1-{safeRequiredPurchaseCount - 1} 件商品，则失去 {safePenaltyBaseGold} + 当前波次 * {safePenaltyGoldPerWave} 金币；" +
-               "若没有购买商品，则无影响。";
+        return $"每波商店结束时，若本波购买至少 {safeRequiredPurchaseCount} 件商品，返还前 {safeRequiredPurchaseCount} 件商品消费金币的 {safeRebatePercent}%；" +
+               $"后续购买不计入返利；若购买少于 {safeRequiredPurchaseCount} 件商品，则失去 {safePenaltyBaseGold} + 当前波次 * {safePenaltyGoldPerWave} 金币。";
     }
 }

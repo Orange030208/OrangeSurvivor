@@ -142,6 +142,7 @@ Thumbs.db
 
 # Local IDE / agent workspace state
 .idea/
+.vscode/
 .trae/
 
 # Local Codex tooling state

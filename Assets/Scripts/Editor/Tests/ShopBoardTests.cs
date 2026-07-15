@@ -20,17 +20,35 @@ public sealed class ShopBoardTests
     }
 
     [Test]
-    public void Board_AggregatesVisitPriceModifiers()
+    public void Board_ClearsGlobalPriceModifiersWhenVisitEnds()
     {
         ShopBoard board = new();
         board.TryBeginVisit(1);
 
-        board.SetVisitPriceMultiplier("coupon", 0.5f);
-        board.SetVisitPriceMultiplier("sale", 0.8f);
+        board.SetPriceModifier("coupon", 0.5f);
+        board.SetPriceModifier("coupon", 0.8f);
+        board.SetPriceModifier("sale", 0.5f);
 
-        Assert.AreEqual(40, board.ApplyVisitPriceModifiers(100));
-        board.RemoveVisitPriceMultiplier("coupon");
-        Assert.AreEqual(80, board.ApplyVisitPriceModifiers(100));
+        Assert.IsTrue(board.TryGetPriceModifier("coupon", out float couponMultiplier));
+        Assert.AreEqual(0.8f, couponMultiplier);
+        Assert.AreEqual(0.4f, board.GetPriceModifierMultiplier());
+        Assert.IsTrue(board.CompleteVisitOpening());
+        Assert.IsTrue(board.TryBeginClosing());
+        Assert.IsTrue(board.CompleteClosing());
+        Assert.IsFalse(board.TryGetPriceModifier("coupon", out _));
+    }
+
+    [Test]
+    public void PriceCalculation_AggregatesGlobalAndOfferModifiers()
+    {
+        int price = ShopPricingService.ApplyPriceMultiplier(
+            100,
+            1f,
+            1f,
+            0.5f,
+            0.8f);
+
+        Assert.AreEqual(40, price);
     }
 
     [Test]

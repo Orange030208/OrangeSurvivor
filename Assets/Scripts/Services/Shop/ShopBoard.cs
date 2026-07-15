@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public sealed class ShopBoard
 {
     private readonly List<ShopOfferState> offers = new();
+    private readonly Dictionary<string, float> priceModifiers = new();
     private readonly Dictionary<string, string> rerollBlocks = new();
-    private readonly Dictionary<string, float> visitPriceMultipliers = new();
     private readonly HashSet<ShopProductKey> excludedProductKeys = new();
     private int nextOfferId = 1;
     private int visitFreeRerollCount;
@@ -38,7 +38,7 @@ public sealed class ShopBoard
         }
 
         VisitId = Math.Max(1, visitId);
-        visitPriceMultipliers.Clear();
+        ClearPriceModifiers();
         visitFreeRerollCount = 0;
         paidRerollCountThisVisit = 0;
         rerollBlocks.Clear();
@@ -183,55 +183,46 @@ public sealed class ShopBoard
         return false;
     }
 
-    public void SetVisitPriceMultiplier(string sourceId, float multiplier)
+    public void SetPriceModifier(string sourceId, float multiplier)
     {
         if (string.IsNullOrWhiteSpace(sourceId))
         {
             throw new ArgumentException("商店价格修饰来源不能为空。", nameof(sourceId));
         }
 
-        visitPriceMultipliers[sourceId] = Math.Max(0f, multiplier);
+        priceModifiers[sourceId] = Math.Max(0f, multiplier);
     }
 
-    public void RemoveVisitPriceMultiplier(string sourceId)
+    public bool TryGetPriceModifier(string sourceId, out float multiplier)
     {
-        if (!string.IsNullOrWhiteSpace(sourceId))
+        if (string.IsNullOrWhiteSpace(sourceId))
         {
-            visitPriceMultipliers.Remove(sourceId);
-        }
-    }
-
-    public bool SetOfferPriceMultiplier(int offerId, string sourceId, float multiplier)
-    {
-        if (!TryGetOffer(offerId, out ShopOfferState offer))
-        {
+            multiplier = 1f;
             return false;
         }
 
-        offer.SetStatePriceMultiplier(sourceId, multiplier);
-        return true;
+        return priceModifiers.TryGetValue(sourceId, out multiplier);
     }
 
-    public bool RemoveOfferPriceMultiplier(int offerId, string sourceId)
+    public bool RemovePriceModifier(string sourceId)
     {
-        if (!TryGetOffer(offerId, out ShopOfferState offer))
-        {
-            return false;
-        }
-
-        offer.RemoveStatePriceMultiplier(sourceId);
-        return true;
+        return !string.IsNullOrWhiteSpace(sourceId) && priceModifiers.Remove(sourceId);
     }
 
-    public int ApplyVisitPriceModifiers(int price)
+    public void ClearPriceModifiers()
+    {
+        priceModifiers.Clear();
+    }
+
+    public float GetPriceModifierMultiplier()
     {
         float multiplier = 1f;
-        foreach (KeyValuePair<string, float> pair in visitPriceMultipliers)
+        foreach (KeyValuePair<string, float> pair in priceModifiers)
         {
             multiplier *= pair.Value;
         }
 
-        return PropValueUtility.ResolveNonNegativePrice(Math.Max(0, price) * multiplier);
+        return multiplier;
     }
 
     public void RejectCurrentOperation(string message = null)
@@ -328,7 +319,7 @@ public sealed class ShopBoard
 
     private void ClearVisitState()
     {
-        visitPriceMultipliers.Clear();
+        ClearPriceModifiers();
         visitFreeRerollCount = 0;
         paidRerollCountThisVisit = 0;
         rerollBlocks.Clear();

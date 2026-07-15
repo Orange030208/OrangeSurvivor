@@ -42,7 +42,7 @@ public sealed class FirstPurchaseHalfPriceFeature : FeatureBase
         {
             shopManager.VisitOpened -= OnVisitOpened;
             shopManager.PurchaseCompleted -= OnPurchaseCompleted;
-            shopManager.Board.RemoveVisitPriceMultiplier(runtimeSourceId);
+            shopManager.Board.RemovePriceModifier(runtimeSourceId);
             shopManager = null;
         }
 
@@ -66,14 +66,14 @@ public sealed class FirstPurchaseHalfPriceFeature : FeatureBase
         }
 
         couponAvailable = false;
-        shopManager.Board.RemoveVisitPriceMultiplier(runtimeSourceId);
+        shopManager.Board.RemovePriceModifier(runtimeSourceId);
     }
 
     private void EnableCoupon()
     {
         couponAvailable = true;
         float multiplier = 1f - Mathf.Clamp(discountPercent, 1, 100) / 100f;
-        shopManager.Board.SetVisitPriceMultiplier(runtimeSourceId, multiplier);
+        shopManager.Board.SetPriceModifier(runtimeSourceId, multiplier);
     }
 
     private bool IsEventForOwner(Player eventPlayer)

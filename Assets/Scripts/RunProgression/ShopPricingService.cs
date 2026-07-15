@@ -6,7 +6,8 @@ public static class ShopPricingService
         IShopProduct product,
         float runPriceMultiplier,
         float playerDiscountMultiplier,
-        float statePriceMultiplier)
+        float globalPriceModifierMultiplier = 1f,
+        float productPriceModifierMultiplier = 1f)
     {
         return product == null
             ? 0
@@ -14,7 +15,8 @@ public static class ShopPricingService
                 product.BasePrice,
                 runPriceMultiplier,
                 playerDiscountMultiplier,
-                statePriceMultiplier);
+                globalPriceModifierMultiplier,
+                productPriceModifierMultiplier);
     }
 
     public static int GetPrice(
@@ -34,19 +36,21 @@ public static class ShopPricingService
         return ApplyPriceMultiplier(
             basePrice,
             runPriceMultiplier,
-            playerDiscountMultiplier,
-            1f);
+            playerDiscountMultiplier);
     }
 
     public static int ApplyPriceMultiplier(
         int basePrice,
         float runPriceMultiplier,
         float playerDiscountMultiplier,
-        float statePriceMultiplier = 1f)
+        float globalPriceModifierMultiplier = 1f,
+        float productPriceModifierMultiplier = 1f)
     {
         float runMultiplier = runPriceMultiplier > 0f ? runPriceMultiplier : 1f;
         float discountMultiplier = PropValueUtility.ResolveEffectiveShopPriceMultiplier(playerDiscountMultiplier);
-        float stateMultiplier = statePriceMultiplier > 0f ? statePriceMultiplier : 1f;
-        return PropValueUtility.ResolveNonNegativePrice(basePrice * runMultiplier * discountMultiplier * stateMultiplier);
+        float globalMultiplier = Mathf.Max(0f, globalPriceModifierMultiplier);
+        float productMultiplier = Mathf.Max(0f, productPriceModifierMultiplier);
+        return PropValueUtility.ResolveNonNegativePrice(
+            basePrice * runMultiplier * discountMultiplier * globalMultiplier * productMultiplier);
     }
 }

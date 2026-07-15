@@ -161,7 +161,7 @@ public sealed class ShopManager : GameService
             return;
         }
 
-        int price = board.ApplyVisitPriceModifiers(ResolveBaseOfferPrice(offer));
+        int price = ResolveOfferPrice(offer);
         if (currentCurrency < price)
         {
             NotifyPurchaseFailed("金币不足，无法购买");
@@ -518,7 +518,10 @@ public sealed class ShopManager : GameService
         for (int i = 0; i < offers.Count; i++)
         {
             ShopOfferState offer = offers[i];
-            int originalPrice = ShopPricingService.GetPrice(offer.Product, runPriceMultiplier, playerDiscountMultiplier, 1f);
+            int originalPrice = ShopPricingService.GetPrice(
+                offer.Product,
+                runPriceMultiplier,
+                playerDiscountMultiplier);
             viewData[i] = offer.CreateViewData(ResolveOfferPrice(offer), originalPrice);
         }
 
@@ -527,17 +530,12 @@ public sealed class ShopManager : GameService
 
     private int ResolveOfferPrice(ShopOfferState offer)
     {
-        int basePrice = ResolveBaseOfferPrice(offer);
-        return board.ApplyVisitPriceModifiers(basePrice);
-    }
-
-    private int ResolveBaseOfferPrice(ShopOfferState offer)
-    {
         return ShopPricingService.GetPrice(
             offer?.Product,
             ResolveRunPriceMultiplier(),
             ResolvePlayerDiscountMultiplier(),
-            offer != null ? offer.StatePriceMultiplier : 1f);
+            board.GetPriceModifierMultiplier(),
+            offer != null ? offer.GetPriceModifierMultiplier() : 1f);
     }
 
     private int ResolveOfferCount()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public sealed class ShopOfferState
 {
-    private readonly ShopPriceModifierSet priceModifiers = new();
+    private readonly Dictionary<string, float> priceModifiers = new();
 
     public ShopOfferState(int offerId, IShopProduct product)
     {
@@ -20,8 +21,6 @@ public sealed class ShopOfferState
     public bool WasLockedLastVisit { get; private set; }
     public bool IsLocked { get; private set; }
     public bool IsSoldOut { get; private set; }
-    public ShopPriceModifierSet PriceModifiers => priceModifiers;
-    public float StatePriceMultiplier => priceModifiers.EffectiveMultiplier;
 
     public void SetSlotIndex(int slotIndex)
     {
@@ -50,14 +49,46 @@ public sealed class ShopOfferState
         IsLocked = false;
     }
 
-    public void SetStatePriceMultiplier(string sourceId, float multiplier)
+    public void SetPriceModifier(string sourceId, float multiplier)
     {
-        priceModifiers.SetMultiplier(sourceId, multiplier);
+        if (string.IsNullOrWhiteSpace(sourceId))
+        {
+            throw new ArgumentException("商品价格修饰来源不能为空。", nameof(sourceId));
+        }
+
+        priceModifiers[sourceId] = Math.Max(0f, multiplier);
     }
 
-    public void RemoveStatePriceMultiplier(string sourceId)
+    public bool TryGetPriceModifier(string sourceId, out float multiplier)
     {
-        priceModifiers.RemoveMultiplier(sourceId);
+        if (string.IsNullOrWhiteSpace(sourceId))
+        {
+            multiplier = 1f;
+            return false;
+        }
+
+        return priceModifiers.TryGetValue(sourceId, out multiplier);
+    }
+
+    public bool RemovePriceModifier(string sourceId)
+    {
+        return !string.IsNullOrWhiteSpace(sourceId) && priceModifiers.Remove(sourceId);
+    }
+
+    public void ClearPriceModifiers()
+    {
+        priceModifiers.Clear();
+    }
+
+    public float GetPriceModifierMultiplier()
+    {
+        float multiplier = 1f;
+        foreach (KeyValuePair<string, float> pair in priceModifiers)
+        {
+            multiplier *= pair.Value;
+        }
+
+        return multiplier;
     }
 
     public ShopOfferSnapshot CreateSnapshot()
