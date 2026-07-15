@@ -28,7 +28,6 @@ public sealed class UIScaleMotionTrack : UIMotionTrackDefinition
 
         Vector3 start = ResolveValue(fromMode, fromValue, target.localScale, snapshot.LocalScale);
         Vector3 end = ResolveValue(toMode, toValue, target.localScale, snapshot.LocalScale);
-        target.localScale = start;
 
         float duration = ResolveDuration(context);
         if (Mathf.Approximately(duration, 0f))
@@ -37,7 +36,8 @@ public sealed class UIScaleMotionTrack : UIMotionTrackDefinition
             return null;
         }
 
-        return target.DOScale(end, duration);
+        // 延后写入起点，保证 Sequential Clip 的每个缩放段在自身开始时才接管目标。
+        return target.DOScale(end, duration).From(start, false, false);
     }
 
     protected override void ApplySample(UIMotionTargetCache targets, float normalizedTime)

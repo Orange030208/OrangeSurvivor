@@ -191,6 +191,30 @@ namespace Orange.UIFramework
             return false;
         }
 
+        public bool TryGetTrack<TTrack>(string clipId, out TTrack track)
+            where TTrack : UIMotionTrackDefinition
+        {
+            track = null;
+            if (!TryGetClip(clipId, out UIMotionClipDefinition clip))
+            {
+                return false;
+            }
+
+            IReadOnlyList<UIMotionTrackDefinition> tracks = clip.Tracks;
+            for (int i = 0; i < tracks.Count; i++)
+            {
+                if (tracks[i] is not TTrack candidate)
+                {
+                    continue;
+                }
+
+                track = candidate;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool IsClipInfiniteLoop(string clipId)
         {
             return TryGetClipWithFallback(clipId, out UIMotionClipDefinition clip) && clip.IsInfiniteLoop;

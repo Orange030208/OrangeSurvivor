@@ -17,9 +17,9 @@ MonoBehaviour:
     warmupCount: 0
     maxCachedInstancesOverride: -1
     allowDuplicateViewType: 0
-  - id: popup.diceRoll
-    kind: 1
-    layer: 3
+  - id: modal.diceRoll
+    kind: 2
+    layer: 5
     prefab: {fileID: 100000, guid: 10d2864bbdce442fb095b7dd8d985a91, type: 3}
     singleton: 1
     cacheOnClose: 1

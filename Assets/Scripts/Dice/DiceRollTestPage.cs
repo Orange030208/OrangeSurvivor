@@ -5,22 +5,19 @@ using Orange.UIFramework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using YokiFrame;
 
 /// <summary>
-/// 独立测试页：验证 Orange 弹窗链路、回调与类型事件拿到的是同一个结果。
+/// 独立测试页：验证 Modal 异步返回的结果与传入表现层的点数一致。
 /// </summary>
 public sealed class DiceRollTestPage : PageBase
 {
-    private const string DICE_POPUP_GROUP_ID = "dice-roll";
-
     [SerializeField] private Button rollButton;
     [SerializeField] private TextMeshProUGUI resultText;
     [SerializeField] private TextMeshProUGUI eventText;
 
     private readonly DiceRoller diceRoller = new();
-    private bool eventsBound;
-    private bool openingPopup;
+    private bool buttonBound;
+    private bool rolling;
 
     protected override void OnCreate()
     {
@@ -30,50 +27,46 @@ public sealed class DiceRollTestPage : PageBase
 
     protected override UniTask OnOpeningAsync(OpenContext context, CancellationToken cancellationToken)
     {
-        BindEvents();
-        resultText.text = "回调结果：-";
-        eventText.text = "事件结果：-";
+        BindButton();
+        resultText.text = "请求点数：-";
+        eventText.text = "Modal 返回：-";
         rollButton.interactable = true;
         return UniTask.CompletedTask;
     }
 
     protected override void OnClosed(CloseReason reason)
     {
-        UnbindEvents();
-        openingPopup = false;
+        UnbindButton();
+        rolling = false;
     }
 
     private void OnRollClicked()
     {
-        OpenDicePopupAsync().Forget();
+        RollDiceAsync().Forget();
     }
 
-    private async UniTaskVoid OpenDicePopupAsync()
+    private async UniTaskVoid RollDiceAsync()
     {
-        if (openingPopup)
+        if (rolling)
         {
             return;
         }
 
-        openingPopup = true;
+        rolling = true;
         rollButton.interactable = false;
 
         try
         {
             DiceRollResult result = diceRoller.Roll();
-            PopupOptions options = new(
-                closeOnOutsideClick: false,
-                groupId: DICE_POPUP_GROUP_ID,
-                replaceSameGroup: true,
-                trackInStack: false,
-                preferredAnchor: FloatingViewAnchor.Center,
-                showBackdrop: true);
+            resultText.text = $"请求点数：{result.FaceValue}";
 
-            ViewHandle<DiceRollPopup> handle = await UIManager.Instance.ShowPopupAsync<DiceRollPopup>(
-                new DiceRollPopupContext(result, OnDiceRollCompleted),
-                options,
+            ModalResult<DiceRollResult> modalResult = await UIManager.Instance.ShowModalAsync<DiceRollModal, DiceRollResult>(
+                new DiceRollModalContext(result),
                 this.GetCancellationTokenOnDestroy());
-            await handle.ClosedTask;
+
+            eventText.text = modalResult.Confirmed
+                ? $"Modal 返回：{modalResult.Value.FaceValue}"
+                : "Modal 已取消";
         }
         catch (OperationCanceledException)
         {
@@ -84,7 +77,7 @@ public sealed class DiceRollTestPage : PageBase
         }
         finally
         {
-            openingPopup = false;
+            rolling = false;
             if (rollButton != null)
             {
                 rollButton.interactable = true;
@@ -92,38 +85,26 @@ public sealed class DiceRollTestPage : PageBase
         }
     }
 
-    private void OnDiceRollCompleted(DiceRollResult result)
+    private void BindButton()
     {
-        resultText.text = $"回调结果：{result.FaceValue}";
-    }
-
-    private void OnDiceRolled(DiceRolledEvent eventData)
-    {
-        eventText.text = $"事件结果：{eventData.Result.FaceValue}";
-    }
-
-    private void BindEvents()
-    {
-        if (eventsBound)
+        if (buttonBound)
         {
             return;
         }
 
         rollButton.onClick.AddListener(OnRollClicked);
-        EventKit.Type.Register<DiceRolledEvent>(OnDiceRolled);
-        eventsBound = true;
+        buttonBound = true;
     }
 
-    private void UnbindEvents()
+    private void UnbindButton()
     {
-        if (!eventsBound)
+        if (!buttonBound)
         {
             return;
         }
 
         rollButton.onClick.RemoveListener(OnRollClicked);
-        EventKit.Type.UnRegister<DiceRolledEvent>(OnDiceRolled);
-        eventsBound = false;
+        buttonBound = false;
     }
 
     private void ValidateConfiguration()

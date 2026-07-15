@@ -32,6 +32,37 @@ public sealed class UISpriteSequenceMotionTrack : UIMotionTrackDefinition
     [SerializeField] [Min(1f)] private float framesPerSecond = 12f;
     [SerializeField] private List<FrameEvent> frameEvents = new();
 
+    /// <summary>
+    /// 为单次播放替换帧序列；例如将运行时结算结果固定到最后一帧。
+    /// </summary>
+    public void SetFrames(IReadOnlyList<Sprite> sourceFrames)
+    {
+        if (sourceFrames == null)
+        {
+            throw new ArgumentNullException(nameof(sourceFrames));
+        }
+
+        if (sourceFrames.Count == 0)
+        {
+            throw new ArgumentException("Sprite sequence requires at least one frame.", nameof(sourceFrames));
+        }
+
+        for (int i = 0; i < sourceFrames.Count; i++)
+        {
+            if (sourceFrames[i] == null)
+            {
+                throw new ArgumentException($"Sprite sequence frame {i} is missing.", nameof(sourceFrames));
+            }
+        }
+
+        frames ??= new List<Sprite>();
+        frames.Clear();
+        for (int i = 0; i < sourceFrames.Count; i++)
+        {
+            frames.Add(sourceFrames[i]);
+        }
+    }
+
     protected override Tween CreateTrackTween(UIMotionTargetCache targets, UIMotionPlaybackContext context)
     {
         if (!targets.TryGetImage(this, out Image image))
