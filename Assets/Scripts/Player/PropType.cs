@@ -29,4 +29,5 @@ public enum PropType
     RangedAttack = 30,
     MagicAttack = 31,
     SummonAttack = 32,
+    ShopOfferCount = 33,
 }

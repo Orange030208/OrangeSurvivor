@@ -116,7 +116,8 @@ public static class PropDescriptionUtility
         return propType == PropType.AttackSpeed ||
                propType == PropType.WeaponSlotCount ||
                propType == PropType.ProjectilePierceCount ||
-               propType == PropType.ShopFreeRerollCount;
+               propType == PropType.ShopFreeRerollCount ||
+               propType == PropType.ShopOfferCount;
     }
 
     private static bool IsDistancePointProp(PropType propType)

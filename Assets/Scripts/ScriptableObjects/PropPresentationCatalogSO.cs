@@ -153,6 +153,7 @@ public struct PropPresentationEntry
             PropType.ShopPriceDiscount => "商店折扣",
             PropType.WaveGoldRewardBonus => "波次金币奖励",
             PropType.ShopFreeRerollCount => "商店免费刷新",
+            PropType.ShopOfferCount => "商店商品数量",
             PropType.DamageReduction => "伤害减免",
             PropType.HealingPower => "治疗效果",
             PropType.Damage => "伤害提升",

@@ -129,3 +129,7 @@ MonoBehaviour:
     chineseName: "\u53EC\u5524\u653B\u51FB"
     description: 
     icon: {fileID: 1323036363, guid: 93b5663cf4f02ec4aba48dee3b2c1564, type: 3}
+  - propType: 33
+    chineseName: "\u5546\u5E97\u5546\u54C1\u6570\u91CF"
+    description:
+    icon: {fileID: 0}

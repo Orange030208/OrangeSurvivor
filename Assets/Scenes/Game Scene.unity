@@ -11184,8 +11184,7 @@ MonoBehaviour:
       type: {class: ShopManager, ns: , asm: Assembly-CSharp}
       data:
         enabled: 1
-        containersToAdd: 6
-        currencyWallet: {fileID: 0}
+        containersToAdd: 4
     - rid: 754862647005
       type: {class: GameFlowService, ns: , asm: Assembly-CSharp}
       data:

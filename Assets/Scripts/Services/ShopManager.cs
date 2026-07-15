@@ -10,11 +10,9 @@ using UnityEngine;
 [Serializable]
 public sealed class ShopManager : GameService
 {
-    private const int DEFAULT_CONTAINERS_TO_ADD = 6;
     private const int DEFAULT_REROLL_STEP_COST = 1;
     private const string ATTRIBUTE_FREE_REROLL_CONSUMPTION_SOURCE_ID = "ShopManager.AttributeFreeRerollConsumption";
 
-    [SerializeField] private int containersToAdd = DEFAULT_CONTAINERS_TO_ADD;
     private CurrencyWallet currencyWallet;
 
     private readonly ShopExtractionRoller extractionRoller = new();
@@ -558,7 +556,7 @@ public sealed class ShopManager : GameService
 
     private int ResolveOfferCount()
     {
-        return Mathf.Max(1, containersToAdd);
+        return Mathf.Max(1, AttributeManager.GetAttributeValue(PropType.ShopOfferCount));
     }
 
     private void TryBindWallet()
