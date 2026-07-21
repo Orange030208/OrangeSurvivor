@@ -1,0 +1,22 @@
+{
+    "name": "Orange.Flows.Tests.EditMode",
+    "rootNamespace": "Orange.Flows.Tests",
+    "references": [
+        "Orange.Flows",
+        "UniTask"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
